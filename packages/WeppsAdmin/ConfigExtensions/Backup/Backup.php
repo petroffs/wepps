@@ -10,7 +10,7 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Admin\AdminWepps;
 
-class RequestBackupWepps extends RequestWepps {
+class BackupWepps extends RequestWepps {
 	public function request($action="") {
 		$smarty = SmartyWepps::getSmarty();
 		$tpl = 'Backup.tpl';

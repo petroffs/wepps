@@ -1,19 +1,19 @@
 <?
-namespace PPSExtensions\Addons;
+namespace WeppsExtensions\Addons;
 
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\FilesPPS;
-use PPS\Utils\RequestPPS;
-use PPS\Connect\ConnectPPS;
-use PPS\Utils\UtilsPPS;
-use PPSExtensions\Mail\MailPPS;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\FilesWepps;
+use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Mail\MailWepps;
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
 if (!session_start()) session_start();
 
-class RequestAddonsPPS extends RequestPPS {
+class RequestAddonsWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
@@ -67,7 +67,7 @@ class RequestAddonsPPS extends RequestPPS {
 							
 							      ],
 							      "modified": [
-							        "packages/PPSExtensions/Addons/Request.php"
+							        "packages/WeppsExtensions/Addons/Request.php"
 							      ],
 							      "removed": [
 							
@@ -86,7 +86,7 @@ class RequestAddonsPPS extends RequestPPS {
 							  }
 							}';
 				$body = json_decode($json, true);
-				UtilsPPS::debug("git message - ".$body['commits'][0]['message'],1);
+				UtilsWepps::debug("git message - ".$body['commits'][0]['message'],1);
 				//$cmd = "git --work-tree=/var/www/pps.ubu --git-dir=/var/www/pps.ubu/.git fetch origin master";
 				$cmd = "ssh -vT git@gitlab.com";
 				system($cmd.' 2>&1');
@@ -96,9 +96,9 @@ class RequestAddonsPPS extends RequestPPS {
 				exit();
 				$token = $_SERVER['HTTP_X_GITLAB_TOKEN'];
 				if ($token!='X-pps-601-master') {
-					ExceptionPPS::error404();
+					ExceptionWepps::error404();
 				}
-				$dir = ConnectPPS::$projectDev['root'];
+				$dir = ConnectWepps::$projectDev['root'];
 				$git = "{$dir}/.git";
 				$json = file_get_contents('php://input');
 				$body = json_decode($json, true);
@@ -110,24 +110,24 @@ class RequestAddonsPPS extends RequestPPS {
 					$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
 					exec($cmd);
 					//system($cmd.' 2>&1', $cmd_error);
-					//UtilsPPS::debugf('gited.');
+					//UtilsWepps::debugf('gited.');
 					//echo "gited.";
 					//echo "gited.";
-					//$mail = new MailPPS();
+					//$mail = new MailWepps();
 					//$mail->mail("mail@petroffs.com", "git - ".$body['project']['name'], "git message - ".$body['commits'][0]['message']);
 				}
 				break;
 			case 'files':
-				if (!isset($this->get['fileUrl'])) ExceptionPPS::error404();
-				FilesPPS::output($this->get['fileUrl']);
+				if (!isset($this->get['fileUrl'])) ExceptionWepps::error404();
+				FilesWepps::output($this->get['fileUrl']);
 				break;
 			case 'upload':
-				if (!isset($this->get['filesfield'])) ExceptionPPS::error404();
-				if (!isset($this->get['myform'])) ExceptionPPS::error404();
-				if (!isset($_FILES)) ExceptionPPS::error404();
-				$data = FilesPPS::upload($_FILES,$this->get['filesfield'],$this->get['myform']);
+				if (!isset($this->get['filesfield'])) ExceptionWepps::error404();
+				if (!isset($this->get['myform'])) ExceptionWepps::error404();
+				if (!isset($_FILES)) ExceptionWepps::error404();
+				$data = FilesWepps::upload($_FILES,$this->get['filesfield'],$this->get['myform']);
 				echo $data['js'];
-				ConnectPPS::$instance->close();
+				ConnectWepps::$instance->close();
 				break;
 			default:
 				$this->tpl = "RequestCustom1.tpl";
@@ -136,7 +136,7 @@ class RequestAddonsPPS extends RequestPPS {
 	}
 }
 
-$request = new RequestAddonsPPS ($_REQUEST);
+$request = new RequestAddonsWepps ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

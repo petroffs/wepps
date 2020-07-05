@@ -36,7 +36,7 @@ class RequestAdminWepps extends RequestWepps {
 				} else {
 					
 					$ppsmess = $translate['mess_welcome'];
-					$authKey = rand(10101, 9999999999999999);
+					$authKey = rand(10101, 999999999);
 					ConnectWepps::$instance->query("update s_Users set AuthKey=" . $authKey . " where Id=" . $currUser[0]['Id']);
 					setcookie('authKey', $authKey, time() + 3600 * 24 * 360, '/');
 					setcookie('authEmail', $currUser[0]['Login'], time() + 3600 * 24 * 360, '/');

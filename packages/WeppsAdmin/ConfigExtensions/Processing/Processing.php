@@ -9,7 +9,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Core\DataWepps;
 
-class RequestProcessingWepps extends RequestWepps {
+class ProcessingWepps extends RequestWepps {
 	public $tpl='';
 	public $title='';
 	public $headers;

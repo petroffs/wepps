@@ -54,7 +54,7 @@ class ConfigExtensionsWepps {
 			}
 			$request = array('action'=>$action);
 			$request = array_merge($request,$_REQUEST,array('ext'=>$ext));
-			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['KeyUrl']}\\Request{$ext['KeyUrl']}Wepps";
+			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['KeyUrl']}\\{$ext['KeyUrl']}Wepps";
 			$extResult = new $extClass ($request);
 			$smarty->assign('ext',$smarty->fetch( __DIR__ . '/' . $ext['KeyUrl'] . '/' . $extResult->tpl));
 			$smarty->assign('way',$extResult->way);

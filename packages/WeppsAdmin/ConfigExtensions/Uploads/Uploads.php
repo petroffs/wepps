@@ -9,7 +9,7 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\DataWepps;
 
-class RequestUploadsWepps extends RequestWepps {
+class UploadsWepps extends RequestWepps {
 	public function request($action="") {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Uploads.tpl';

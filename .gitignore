@@ -1,5 +1,5 @@
 /packages/vendor/*
-/packages/PPSAdmin/ConfigExtensions/Backup/files/*
+/packages/WeppsAdmin/ConfigExtensions/Backup/files/*
 /files/tpl/compile/*
 /files/lists/*
 /pic/*

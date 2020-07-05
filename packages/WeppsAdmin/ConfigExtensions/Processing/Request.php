@@ -1,6 +1,5 @@
 <?
 namespace WeppsAdmin\ConfigExtensions\Processing;
-
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;

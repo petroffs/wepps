@@ -1,7 +1,9 @@
 <?php
+namespace WeppsAdmin\Bot;
 use WeppsAdmin\Bot\BotWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
+
 require_once dirname(__FILE__) . '/../../../config.php';
 require_once dirname(__FILE__) . '/../../../autoloader.php';
 require_once dirname(__FILE__) . '/../../../configloader.php';

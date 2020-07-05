@@ -1,6 +1,5 @@
 <?
 namespace WeppsAdmin\ConfigExtensions\Orders;
-
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
@@ -9,7 +8,7 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\DataWepps;
 
-class RequestOrdersWepps extends RequestWepps {
+class OrdersWepps extends RequestWepps {
 	public function request($action="") {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Orders.tpl';
