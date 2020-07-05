@@ -1,0 +1,10 @@
+div.modalProduct div.descr div.title {
+	text-transform: uppercase;
+	font-weight: 500;
+	font-size: 20px;
+}
+
+div.modalProduct div.descr div.chars label.pps.pps_select {
+	display: inline-block;
+	width: auto;	
+}

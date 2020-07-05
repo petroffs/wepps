@@ -1,0 +1,99 @@
+<?
+namespace WeppsExtensions\FirstPage;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Connect\ConnectWepps;
+
+class FirstPageWepps extends ExtensionWepps {
+	public $topTpl = '';
+	public function request() {
+		$smarty = SmartyWepps::getSmarty();
+		$rand = $this->headers::$rand;
+		switch (NavigatorWepps::$pathItem) {
+			case '':
+				$this->topTpl = "";
+				/*
+				 * Карусель на главной
+				 */
+				$obj = new DataWepps("Sliders");
+				$res = $obj->getMax ( "t.DisplayOff=0 and SPlace=1 and sm2.Id={$this->navigator->content['Id']}" );
+				if (isset( $res[0]['Id'] )) {
+					$smarty->assign ( 'carousel', $res );
+					$this->topTpl = $smarty->fetch ( 'packages/WeppsExtensions/Addons/Carousel/Carousel.tpl', null, 'a' );
+					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick.css" );
+					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick-theme.css" );
+					$this->headers->js ( "/packages/vendor/kenwheeler/slick/slick/slick.min.js" );
+					$this->headers->css ( "/ext/Addons/Carousel/Carousel.{$rand}.css" );
+				}
+				
+				/*
+				 * Услуги
+				 */
+				$obj = new DataWepps("Services");
+				$res = $obj->getMax ( "t.DisplayOff=0" );
+				$smarty->assign('services',$res);
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageServices.tpl', null, 'a' );
+
+				/*
+				 * Галерея
+				 */
+				$this->headers->css("/packages/vendor_local/fresco/css/fresco/fresco.css");
+				$this->headers->js("/packages/vendor_local/fresco/js/fresco/fresco.js");
+				$this->headers->css("/ext/Gallery/Gallery.{$rand}.css");
+				$this->headers->js("/ext/Gallery/Gallery.{$rand}.js");
+				
+				$obj = new DataWepps("s_Files");
+				$obj->setJoin("inner join Gallery as fg on fg.Id=t.TableNameId and t.TableName='Gallery'");
+				$res = $obj->getMax("t.TableName='Gallery' and fg.DirectoryId=17",500,1,'t.Priority');
+				$smarty->assign('elements',$res);
+				$smarty->assign('galleryTpl',$smarty->fetch ( 'packages/WeppsExtensions/Gallery/Gallery.tpl', null, 'a' ));
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageGallery.tpl', null, 'a' );
+				/*
+				 * Преимущества
+				 */
+				$obj = new DataWepps("Advantages");
+				$res = $obj->getMax ( "t.DisplayOff=0" );
+				$smarty->assign('advantages',$res);
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageAdvantages.tpl', null, 'a' );
+				/*
+				 * Контакты
+				 */
+				//$this->headers->js("/ext/Addons/GoogleMaps/GoogleMaps.js");
+				//$this->headers->css("/ext/Addons/GoogleMaps/GoogleMaps.css");
+				//$this->headers->js('https://maps.googleapis.com/maps/api/js?key=AIzaSyDpwLH4rSQRyL3_59AoDsdecpX7KcRjAqo');
+				$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$rand}.js");
+				$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$rand}.css");
+				$apikey = ConnectWepps::$projectServices['yandexmaps']['apikey'];
+				$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
+				
+				$this->headers->css("/ext/Contacts/Contacts.{$rand}.css");
+				$this->headers->js("/ext/Contacts/Contacts.{$rand}.js");
+				
+				
+				$obj = new DataWepps("Contacts");
+				$res = $obj->getMax("t.DisplayOff=0",1);
+				$smarty->assign('contacts',$res);
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageContacts.tpl', null, 'a' );
+				
+				break;
+			default:
+				ExceptionWepps::error404();
+				break;
+		}
+		/**
+		 * Нормальное представление
+		 */
+		$smarty->assign ( 'normalHeader1', 0 );
+		$smarty->assign ( 'normalView', 0 );
+		$this->navigator->content['Text1'] = '';
+		$this->headers->css("/ext/FirstPage/FirstPage.{$rand}.css");
+		$smarty->assign ('horizontalTopTpl', $this->topTpl);
+		return;
+	}
+}
+?>

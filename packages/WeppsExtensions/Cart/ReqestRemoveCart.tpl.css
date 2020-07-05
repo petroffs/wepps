@@ -1,0 +1,26 @@
+div.modalProduct {
+	
+}
+
+div.modalProduct div.img {
+	
+}
+
+div.modalProduct div.img img {
+	
+}
+
+div.modalProduct div.descr {
+	padding: 0 20px;
+}
+
+div.modalProduct div.descr div.title {
+	font-size: 24px;
+	font-weight: bold;
+}
+
+div.modalProduct div.descr div.price {
+	font-size: 28px;
+	font-weight: bold;
+	margin-top: 20px;
+}

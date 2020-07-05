@@ -1,0 +1,151 @@
+@import url('ProductsItems.css') screen;
+@import url('ProductsItem.css') screen;
+
+
+div.price:after {
+	content: "\f158";
+	font: 90% 'FontAwesome';
+	margin-left: 5px;
+}
+
+div.priceOld {
+	text-decoration: line-through;
+}
+div.priceOld:after {
+	content: "\f158";
+	font:90% 'FontAwesome';
+	margin-left: 5px;
+	
+	display: inline-block;
+}
+
+div.status {
+	width: 50px;
+	height: 50px;
+	background-color: #97de90;
+	border-radius: 25px;
+	border: 3px solid white;
+	box-shadow: 0 0 5px #af9d92;
+	position: absolute;
+	text-align: center;
+	z-index:1;
+	top: 20px;
+	left: 20px;
+}
+
+div.status:before {
+	content: "\f295";
+	font-size: 32px;
+	line-height: 100%;
+	font-family: 'FontAwesome';
+	text-align: center;
+	z-index: 1;
+	pointer-events: none;
+	color: white;
+	position: absolute;
+	left:0;
+	top: 5px;
+	width: 100%;
+}
+
+div.status.statusSale {
+	
+}
+
+/*хит*/
+
+div.status.status3 {
+	background-color: #de9090;
+}
+div.status.status3:before {
+	content: "\f005";
+}
+/*распродажа*/
+div.status.status4 {
+	background-color: #97de90; 
+}
+div.status.status4:before {
+	content: "\f295";
+}
+/*лидер продаж*/
+div.status.status5 {
+	background-color: #90bade; 
+}
+div.status.status5:before {
+	content: "\f087";
+}
+
+
+div.extension.Products ul.extNav {
+	list-style-type: none;
+	background: transparent;
+	padding: 0px;
+	margin: 0px;
+	font-size: 18px;
+}
+
+div.extension.Products ul.extNav li {
+	padding: 5px 0px;
+}
+
+div.extension.Products ul.extNav li a {
+	color: #3b2314;
+}
+
+div.extension.Products ul.extNav li:hover a {
+	color: #000;
+	text-decoration: none;
+}
+
+div.extension.Products ul.extNav li.active a {
+	color: #d15658;
+	text-decoration: none;
+	font-weight: 700;
+}
+
+div.rate {
+	
+}
+
+div.rate div.rateitems {
+	background: url(/files/template/rate0.png) 0 0 repeat-x;
+	min-width: 190px;
+	max-width: 190px;
+	height: 32px;
+}
+
+div.rate div.rateitems div.rateitem {
+	background: url(/files/template/rate1.png) 0 0 repeat-x;
+	min-width: 0px;
+	max-width: 0px;
+	height: 32px;
+}
+
+div.rate div.rateitems div.rateitem.rateitem1 {
+	max-width: 38px
+}
+
+div.rate div.rateitems div.rateitem.rateitem2 {
+	max-width: 76px
+}
+
+div.rate div.rateitems div.rateitem.rateitem3 {
+	max-width: 114px
+}
+
+div.rate div.rateitems div.rateitem.rateitem4 {
+	max-width: 152px
+}
+
+div.rate div.rateitems div.rateitem.rateitem5 {
+	max-width: 190px
+}
+
+.refresh {
+	position: absolute;
+	top: 200px;
+	left: 50%;
+	opacity: 0.5; 
+	z-index:1;
+	
+}

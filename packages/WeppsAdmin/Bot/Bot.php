@@ -1,0 +1,65 @@
+<?php
+namespace WeppsAdmin\Bot;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Core\DataWepps;
+use Curl\Curl;
+
+class BotWepps {
+	public $parent = 1;
+	protected $host;
+	protected $root;
+
+	public function __construct($myPost=[]) {
+		$this->host = ConnectWepps::$projectDev['host'];
+		$this->root = ConnectWepps::$projectDev['root'];
+		$action = (!isset($myPost[1])) ? "" : $myPost[1];
+		if ($this->parent==1) {
+			switch ($action) {
+				case "sitemap":
+					$obj = new BotSitemapWepps();
+					$obj->setSitemap();
+					break;
+					
+				case "addBackupIgnored":
+					$obj = new BotBackupWepps();
+					$obj->addBackupIgnoredByGit();
+					break;
+				case "addBackup":
+					$obj = new BotBackupWepps();
+					$obj->addBackup();
+					break;
+				case "addBackupDB":
+					$obj = new BotBackupWepps();
+					$obj->addBackupDB(false);
+					break;
+				case "filescleaner":
+					$obj = new BotHashesWepps();
+					$obj->removeFiles();
+					break;
+				case "yandexmarket":
+			
+					break;
+				case "setBackupYandex":
+					$obj->backupYandexDisk("add");
+					$obj->backupYandexDisk("send");
+					$obj->backupYandexDisk("rotation");
+					break;
+				case "hashes":
+					$obj = new BotHashesWepps();
+					$obj->setHashes();
+					break;
+				case "telegram":
+					$obj = new BotTelegramWepps();
+					$obj->test2();
+					break;
+				default:
+					echo "\nERROR\n";
+					exit();
+					break;
+			}
+			echo "\n$action - OK\n";
+		}
+	}
+}
+?>

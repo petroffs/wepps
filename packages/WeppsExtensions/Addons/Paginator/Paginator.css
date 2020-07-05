@@ -1,0 +1,54 @@
+hr {
+	border: 0;
+	border-top: 1px solid #a39790;
+	display: block;
+	clear: both;
+}
+
+div.paginator {
+	text-align: center;
+	margin-bottom: 50px;
+}
+
+div.paginator div.item {
+	display: inline-block;
+	width: 30px;
+	height: 30px;
+	border-radius: 15px;
+	border: 1px solid #a39790;
+	overflow: hidden;
+	margin: 0 5px 5px 0;
+}
+
+div.paginator div.item a {
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	line-height: 200%;
+	margin: 0;
+	font-weight: 700;
+	font-size: 100%;
+	color: #666;
+	cursor: pointer;
+}
+div.paginator div.item:hover {
+	border-color: #666666; 
+}
+div.paginator div.item:hover a {
+	text-decoration: none;
+}
+
+div.paginator div.item.active {
+	background: #666666;
+	border-color: #666666;	
+}
+
+div.paginator div.item.active a {
+	color: white;	
+}
+
+div.paginator div.item.next {
+	width: auto;
+	border-color: white;
+	
+}

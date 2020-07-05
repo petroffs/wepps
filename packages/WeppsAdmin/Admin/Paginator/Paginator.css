@@ -1,0 +1,46 @@
+hr {
+	border: 0;
+	border-top: 1px solid #a39790;
+	display: block;
+	clear: both;
+}
+
+div.paginator {
+	
+}
+
+div.paginator div.item {
+	width: 30px;
+	height: 30px;
+	overflow: hidden;
+}
+
+
+div.paginator div.item span,
+div.paginator div.item a {
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	line-height: 200%;
+	margin: 0;
+	font-weight: 700;
+	font-size: 100%;
+	color: #666;
+	cursor: pointer;
+}
+div.paginator div.item:hover {
+	border-color: #666666; 
+}
+div.paginator div.item:hover a {
+	text-decoration: none;
+}
+
+div.paginator div.item.active {
+	background: #666666;
+	border-color: #666666;	
+}
+
+div.paginator div.item.active a {
+	color: white;	
+}
+

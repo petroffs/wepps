@@ -1,0 +1,55 @@
+.elements.News {
+	overflow: hidden;
+}
+
+.elements.News .items {
+	background: transparent;
+	width: auto;
+	margin: 0 -10px;
+}
+
+.elements.News .items .item {
+	cursor: pointer;
+}
+
+.elements.News .items .item .title {
+	font-size: 160%;
+}
+
+.elements.News .items .item .title a {
+	color: black;
+	text-decoration: none;
+}
+
+.elements.News .items .item .descr {
+	
+}
+
+.elements.News .items .item .date {
+	font-size: 80%;
+}
+
+.element-wrapper.News {
+	
+}
+
+.element-wrapper.News .element {
+	padding: 10px;
+}
+
+.element-wrapper.News .element .img {
+	
+}
+
+.element-wrapper.News .element .date {
+	font-size: 80%;
+	margin-top: 10px;
+}
+
+.element-wrapper.News .element .descr {
+	
+}
+
+.element-wrapper.News .element .img {
+	
+}

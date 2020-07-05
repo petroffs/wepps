@@ -1,0 +1,10 @@
+.selectUpload label.pps.pps_upload span {
+	display: block;
+	top: -4px;
+	padding-top: 5px;
+}
+
+ul.pps_list.lastUploads>li {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}

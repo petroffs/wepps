@@ -1,0 +1,16 @@
+/packages/vendor/*
+/packages/PPSAdmin/ConfigExtensions/Backup/files/*
+/files/tpl/compile/*
+/files/lists/*
+/pic/*
+/.htaccess
+/config.php
+/debug.conf
+/sitemap.xml
+/robots.txt
+/.settings
+/.project
+/.buildpath
+/.pps*.sh
+*.sql.gz
+*.7z

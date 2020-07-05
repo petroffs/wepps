@@ -1,0 +1,47 @@
+p.mkcite {
+	background: #f1f1f1;
+	padding: 10px
+}
+
+p.mkcite1 {
+	background: #ffffdc;
+	padding: 10px;
+	font-weight: bold
+}
+
+p.style1header {
+	font-weight: bold;
+	color: #0880c6
+}
+
+p.style1text {
+	color: #888888;
+	background: #eaeaea;
+	border: 1px solid #dad9d9;
+	padding: 10px;
+	border-radius: 5px
+}
+
+p.style2cite {
+	background: #f0f0f0;
+	padding: 10px 10px 10px 100px;
+	font-style: italic;
+	font-size: 14px
+}
+
+p.video {
+	background: tomato;
+	padding: 10px;
+}
+
+p.video iframe {
+	max-width: 100%;
+	width: 100%;
+	min-width: 100%;
+}
+
+a.hrefbutton {
+	display: inline-block;
+	background: silver;
+	border-radius: 5px;
+}

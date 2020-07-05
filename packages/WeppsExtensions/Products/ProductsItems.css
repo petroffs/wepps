@@ -1,0 +1,101 @@
+div.extension.Products div.extFilters {
+	margin-top:30px;
+	margin-bottom: 10px;
+}
+
+div.extension.Products div.extFilters div.title {
+	font-size: 18px;
+	font-weight: 700;
+	margin: 20px 0 0 7px;
+}
+
+div.extension.Products div.extFilters div.items {
+	padding-left: 3px
+}
+
+div.extension.Products div.extFilters div.items ul {
+	list-style-type: none;
+	background: transparent;
+	padding: 0;
+	margin: 0px;
+}
+
+div.extension.Products div.extFilters div.items ul li {
+	
+}
+
+div.extension.Products div.extFilters div.items ul li.hide {
+	display:none;
+}
+
+div.extension.Products div.extFilters div.items ul li.more {
+	padding-left: 24px;
+}
+
+div.extension.Products div.extFilters div.items ul li.more a {
+	color: #d15658;
+	font-weight: 700;
+	font-size: 14px;
+}
+
+/**Все что ниже - В переделку, делаем pps_flex*/
+div.extension.Products div.products-container {
+	width: 100%;
+	overflow: hidden;
+}
+ 
+div.extension.Products div.products-container div.items {
+	width: auto;
+	margin: 10px -20px;	
+}
+
+div.extension.Products div.products-container div.items div.item {
+	position: relative;
+	border-width: 15px;
+}
+
+div.extension.Products div.products-container div.items div.item div.item2 .descr {
+	
+}
+
+div.extension.Products div.products-container div.items div.item div.title {
+	padding: 10px;
+}
+
+div.extension.Products div.products-container div.items div.item div.title a {
+	font-size: 140%;
+	text-decoration: none;
+}
+
+div.extension.Products div.products-container div.items div.item:hover {
+	cursor: pointer;
+}
+
+div.extension.Products div.products-container div.items div.item:hover div.title a {
+	text-decoration: none;
+}
+
+
+div.extension.Products div.products-container div.items div.item:hover label.pps.pps_button input {
+}
+
+
+div.extension.Products div.products-container div.items div.item div.itemfooter {
+	width: 100%;
+	min-width: 100%;
+	padding: 10px;
+}
+
+div.extension.Products div.products-container div.items div.item div.prices div.price {
+	font-size: 140%;
+}
+
+div.extension.Products div.products-container div.items div.item div.prices div.priceOld {
+	font-size: 14px;
+	opacity: 0.5;
+	text-decoration: line-through;
+}
+
+div.extension.Products div.products-container div.items div.item div.action {
+	text-align: right;
+}

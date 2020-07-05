@@ -1,0 +1,25 @@
+table td {
+	font-size: 8pt
+}
+
+table.tablethin {
+	border-collapse: collapse;
+}
+
+table.tablethin td {
+	
+	border: 1px solid;
+}
+
+.s002 {
+	width: 600px;
+	margin: 0 auto;
+}
+
+.s001 {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	font-size: 8pt;
+	width: 600px;
+	margin: 0 auto;
+}

@@ -1,0 +1,541 @@
+<?
+namespace WeppsCore\Utils;
+
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Spell\SpellWepps;
+use WeppsCore\Validator\ValidatorWepps;
+use variant;
+
+/**
+ * Утилиты
+ * @author Petroffscom
+ *
+ */
+class UtilsWepps {
+	/**
+	 * Вывод информации о переменной в браузер или в переменную
+	 *
+	 * @param number|array|string $var - переменная, которую нужно вывести
+	 * @param number $exit        	
+	 * @param bool $print
+	 * @return string
+	 */
+	public static function debug($var, $exit = 0, $print = true) {
+		$backtrace = debug_backtrace();
+		$debuginfo = date('Y-m-d H:i:s') . "\n";
+		$debuginfo.= "{$backtrace[0]['file']}:{$backtrace[0]['line']}\n";
+		$debuginfo.= "===================\n";
+		if (ConnectWepps::$projectDev['debug']==0) {
+			$debuginfo = "";
+		}
+		if (empty ( $var ) && $var != 0) {
+			$var = "[" . date ( "d/m/Y" ) . "] Variable is empty.";
+		}
+			
+		$tmp = "\n<pre style='text-align:left;color:black;font:11px trebuchet ms;border:0px;background: #80FF80;'>\n";
+		$tmp .= $debuginfo . htmlspecialchars ( print_r ( $var, true ) ) . "\n";
+		$tmp .= "</pre>";
+		$val = "";
+		foreach ( explode ( "\n", $tmp ) as $value ) {
+			$val .= "{$value}\n";
+		}
+		$tmp = "<div style='overflow:scroll;width:98%;height:200px;border:1px solid gray;background: #80FF80;position:relative;left:1%;z-index:999;'>{$val}</div>\n";
+		if ($print == true) {
+			echo $tmp;
+			$tmp = 1;
+		}
+		if ($exit == 1) {
+			ConnectWepps::$instance->close();
+		}
+		return $tmp;
+	}
+	
+	/**
+	 * 
+	 * @param $var - Переменная для вывода
+	 * @param number $exit
+	 * @param number $trace
+	 * @param string $filename
+	 */
+	public static function debugf($var, $exit = 0, $trace=0, $filename='debug.conf') {
+		$t = print_r($var,true);
+		$filename = dirname(__FILE__)."/../../{$filename}";
+		if (!is_file($filename)) {
+			echo "\n$filename\n";
+			echo dirname(__FILE__)."\n";
+			return ;
+		}
+		$backtrace = debug_backtrace();
+		$backtrace2 = print_r($backtrace,true);
+		
+		$debuginfo = date('Y-m-d H:i:s') . "\n";
+		$debuginfo.= "{$backtrace[0]['file']}:{$backtrace[0]['line']}\n";
+		$debuginfo.= "===================\n";
+		if ($trace==1) {
+			$debuginfo.= $backtrace2."\n===================\n";
+		}
+		$debuginfo.= $t;
+		file_put_contents ($filename,$debuginfo);
+		if ($exit == 1) {
+			exit ();
+		}
+	}
+	
+	/**
+	 * Форматирование входной строки
+	 * @param (string|array) $value
+	 * @return string
+	 */
+	public static function getStringFormatted($value) {
+		if (is_array($value)) {
+			//UtilsWepps::debug($value,1);
+			foreach ( $value as $k => $v ) {
+				if (is_array($v)) {
+					foreach ($v as $k1=>$v1) {
+						$value[$k][$k1] = UtilsWepps::getStringFormatted ( $v1 );
+					}
+				} else {
+					//$v = trim ( $v );
+					//$v = htmlspecialchars ( $v );
+					$value[$k] = UtilsWepps::getStringFormatted ( $v );
+				}
+			}
+			return $value;
+		}
+		if (is_string($value)) {
+			$value = trim ( $value );
+		}
+		
+		//$value = htmlspecialchars ( $value );
+		return $value;
+	}
+	
+	/**
+	 * Форматирование телефонного номера
+	 * @param string|array $value
+	 * @return array
+	 */
+	public static function getPhoneFormatted($string='') {
+		if ($string=='') return array();
+		$tmp = $string;
+		$t = preg_replace("/[^0-9]/","",$tmp);
+		$t = preg_replace("/^8(.+)/","7$1",$t);
+	
+		if (strlen($t)==11) {
+			//РФ
+			$part1 = substr($t,0,4);
+			$part2 = substr($t,4,3);
+			$part3 = substr($t,7,2);
+			$part4 = substr($t,9,2);
+			return array('num'=>$t,'view'=>"+".$part1." ".$part2."-".$part3."-".$part4,'viewpref'=>substr($part1,1),'viewnum'=>$part2."-".$part3."-".$part4,'view2'=>$part1.$part2.$part3.$part4);
+		} elseif (strlen($t)==12) {
+			//Белоруссия
+			if (substr($t,0,3)!="375") return array();
+			$part1 = substr($t,0,5);
+			$part2 = substr($t,5,3);
+			$part3 = substr($t,8,2);
+			$part4 = substr($t,10,2);
+			return array('num'=>$t,'view'=>"+".$part1." ".$part2."-".$part3."-".$part4,'viewpref'=>substr($part1,1),'viewnum'=>$part2."-".$part3."-".$part4,'view2'=>$part1.$part2.$part3.$part4);
+		}
+		return array();
+	}
+	
+	/**
+	 * Компоновка SQL запроса на основе входного массива array('Row1'=>'ROW1','Row2'=>'ROW2');
+	 * @param array $row
+	 * @return string[]|mixed[]
+	 */
+	public static function setQuery($row) {
+		echo "!setQuery->getQuuery!<br>"."<br>";
+		UtilsWepps::debug(debug_backtrace());
+		return self::getQuery($row);
+	}
+	public static function getQuery($row) {
+		$strCond = $strUpdate = $strInsert1 = $strInsert2 = "";
+		if (count ( $row ) == 0)
+			return array ();
+		foreach ( $row as $key => $value ) {
+			$value = trim ( self::_setQueryFormatted ( $value ) );
+			$strCond .= "{$key}='{$value}' and ";
+			$strUpdate .= "{$key}='{$value}', ";
+			$strInsert1 .= "$key,";
+			$strInsert2 .= "" . ConnectWepps::$db->quote ( $value ) . ",";
+		}
+		$strCond = ($strCond != "") ? trim ( $strCond, " and " ) : "";
+		$strCond = str_replace ( "\n", "\\n", $strCond );
+		$strUpdate = ($strCond != "") ? trim ( $strUpdate, ", " ) : "";
+		$strUpdate = str_replace ( "\r\n", "\\n", $strUpdate );
+		$strInsert = ($strCond != "") ? "(" . trim ( $strInsert1, "," ) . ") values (" . trim ( $strInsert2, "," ) . ")" : "";
+		$strInsert = str_replace ( "\n", "\\n", $strInsert ) . ";";
+		return ($strCond != "") ? array (
+				"insert" => $strInsert,
+				"update" => $strUpdate,
+				"condition" => $strCond
+		) : array ();
+	}
+	
+	/**
+	 * Запись SQL-данных в указанный файл
+	 * @param string $sql
+	 * @param number $go
+	 * @param string $filenamepath
+	 * @return number|string
+	 */
+	public static function setFileRow($sql="",$go=0,$filenamepath="dump.sql") {
+		$db = ConnectWepps::$projectDB['dbname'];
+		$dir_root = ConnectWepps::$projectDev['root'];
+		
+		$filename = "{$dir_root}/packages/vendor_local/import_pps/{$filenamepath}";
+		if ($sql=="")  return file_put_contents($filename,' ');
+		$sql = "set names utf8;\n".$sql;
+		$f = fopen($filename,'a');
+		fwrite($f,$sql);
+		fclose($f);
+		$systemMessage = "file is updated";
+		if ($go==1) {
+			//sleep(3);
+			
+			$tmp="mysql --defaults-extra-file=".ConnectWepps::$projectDB['cnf']." {$db} --default-character-set=utf8 < {$filename}";
+			//echo $tmp;
+			system($tmp,$tmp_error);
+			$systemMessage = ($tmp_error==0) ? "OK":"Error";
+		}
+		if ($systemMessage=='Error')  return exit($tmp);
+		if ($systemMessage) return $systemMessage;
+		return 1;
+	}
+	
+	
+	/**
+	 * Форматирование значения, используется в self::setQuery()
+	 * @param array $value
+	 * @return mixed
+	 */
+	private static function _setQueryFormatted($value) {
+		return str_replace ( array (
+				"&gt;",
+				"&lt;",
+				"&quot;",
+				"'"
+		), array (
+				">",
+				"<",
+				"\"",
+				"\'"
+		), $value );
+	}
+	
+	/**
+	 * Установка массиву ключей по произвольному полю
+	 * @param array $value
+	 * @param string $index
+	 * @return array
+	 */
+	public static function getArrayId($value,$index='Id',$output=null) {
+		$arr = array();
+		if (!is_array($value)) return array();
+		
+		if ($output==null) {
+			foreach ($value as $v) {
+				$arr[$v[$index]] = $v;
+			}
+		} else {
+			foreach ($value as $v) {
+				$arr[$v[$index]] = $v[$output];
+			}
+		}
+		return $arr;
+	}
+	
+	public static function getModal($message) {
+		$js = "
+                    <script>
+                    $('#dialog').html('<p>{$message}</p>').dialog({
+        				'title':'Сообщение',
+        				'modal': true,
+        				'buttons' : [
+						{
+        					text : 'ОК',
+        					icon : 'ui-icon-check',
+        					click : function() {
+        						$(this).dialog('close');
+        					}
+        				},{
+        					text : 'Обновить',
+        					icon : 'ui-icon-refresh',
+        					click : function() {
+                                location.reload();
+        					}
+						}]
+        			});
+                    </script>
+                    ";
+		echo $js;
+		ConnectWepps::$instance->close();
+	}
+}
+
+/**
+ * Запросы AJAX
+ * @author Petroffscom
+ *
+ */
+abstract class RequestWepps {
+	/**
+	 * Массив со всеми переменными
+	 * @var array
+	 */
+	public $get = array ();
+	
+	/**
+	 * Шаблон вывода
+	 * @var string
+	 */
+	public $tpl;
+	
+	/**
+	 * Инициализация $smarty
+	 * @var \Smarty
+	 */
+	public $smarty;
+	/**
+	 * Подключение шаблона, который передается в общий шаблон sefl::$tpl
+	 * @var array
+	 */
+	private $fetch = array();
+	
+	/**
+	 * Глобальный шаблон, который можно включить в любой self::fetch
+	 * @var array
+	 */
+	private $fetch2 = array();
+	
+	/*
+	 * Закрытие соединения с БД
+	 */
+	public $noclose = 0;
+	
+	
+	public function __construct($myPost) {
+		$this->get = UtilsWepps::getStringFormatted ( $myPost );
+		$action = (isset($this->get['action'])) ? $this->get['action'] : '';
+		$this->request($action);
+		if ($this->noclose==0) {
+			if ($this->tpl == '') {
+				ConnectWepps::$instance->close();
+			}
+			$this->cssjs();
+			ConnectWepps::$instance->close(0);
+		}
+		return;
+	}
+	
+	/**
+	 * Обработка запроса (Реализация логики)
+	 */
+	abstract function request();
+	
+	/**
+	 * Подключение стилей и js-сценариев
+	 * Подключаются автоматически, при наличии файла:
+	 * Для шаблона $this->tpl = "RequestExample.tpl" требуется 
+	 * файл RequestExample.tpl.css или RequestExample.tpl.js
+	 * Шаблон следует определять в self::request()
+	 */
+	private function cssjs() {
+		if ($this->tpl == '') return;
+		$smarty = SmartyWepps::getSmarty();
+		$css = (is_file($this->tpl.'.css')) ? 1 : 0;
+		$js = (is_file($this->tpl.'.js')) ? 1 : 0;
+		if ($css==1 || $js==1) {
+			$this->get['cssjs'] = '';
+			if ($css == 1) $this->get['cssjs']  = "<style>{$smarty->fetch($this->tpl.'.css')}</style>";
+			if ($js == 1)  $this->get['cssjs'] .= "<script type=\"text/javascript\">{$smarty->fetch($this->tpl.'.js')}</script>";
+		}
+		foreach ($this->get as $key=>$value) {
+		    if ($key!='cssjs') $smarty->assign($key,$value);
+		}
+		if (count($this->fetch) != 0) {
+			if (count($this->fetch2) != 0) {
+				foreach ($this->fetch2 as $key=>$value) {
+					$smarty->assign($key,$smarty->fetch($value));
+				}
+			}
+			foreach ($this->fetch as $key=>$value) {
+				$this->get[$key] = $smarty->fetch($value);
+			}
+		}
+	}
+	
+	public function assign($key,$value) {
+		$this->get[$key] = $value;
+	}
+	
+	public function fetch($key,$value) {
+		$this->fetch[$key] = $value;
+	}
+	
+	public function fetch2($key,$value) {
+		$this->fetch2[$key] = $value;
+	}
+}
+
+/**
+ * Генерация html-кода ссылок на css-таблицы и js-библиотеки для применения в шаблоне сайта
+ * Генерация html-кода meta-тегов
+ * @author Petroffscom
+ *
+ */
+class TemplateHeadersWepps {
+	public static $rand;
+	private $output = array (
+			'meta' => '',
+			'cssjs' => '' 
+	);
+	private $cssjs = array(
+			'js' => array(),
+			'css' => array()
+	);
+	
+	public function js($filename) {
+		return $this->cssjs['js'][] = "\n".'<script type="text/javascript" src="'.$filename.'"></script>';
+	}
+	public function css($filename) {
+		return $this->cssjs['css'][] .= "\n".'<link rel="stylesheet" type="text/css" href="'.$filename.'"/>';
+	}
+	public function meta($meta) {
+		return $this->output['meta'] .= "\n".$meta;
+	}
+	private function join_old($str) {
+		$ex = explode("\n",$str);
+		if ($ex[0]=='') unset($ex[0]);
+		foreach ($ex as $value) {
+			if (strstr($value, "text/javascript")) {
+				preg_match('/src="(.+)"></', $value,$match);
+				$this->js($match[1]);
+			} else {
+				preg_match('/href="(.+)"\/>/', $value,$match);
+				$this->css($match[1]);
+			}
+		}
+	}
+	public function join(TemplateHeadersWepps $headers) {
+		$this->cssjs['js'] = array_merge($this->cssjs['js'],$headers->cssjs['js']);
+		$this->cssjs['css'] = array_merge($this->cssjs['css'],$headers->cssjs['css']);
+	}
+	/**
+	 * Установка $this->output - содержит html-код
+	 * @return string[]
+	 */
+	public function get() {
+		$this->cssjs['css'] = array_unique($this->cssjs['css']);
+		$this->cssjs['js'] = array_unique($this->cssjs['js']);
+		$this->output['cssjs'] = implode("", $this->cssjs['css']) . implode("", $this->cssjs['js']);
+		return $this->output;
+	}
+}
+
+/**
+ * Работа с файлами
+ * @author Petroffscom
+ *
+ */
+
+class FilesWepps {
+
+	/**
+	 * Вывод указанного файла в браузер на сохранение или открытие на стороне клиента
+	 * @param string $file
+	 */
+	public static function output($file) {
+		$root = $_SERVER['DOCUMENT_ROOT'];
+		$filename = $root . $file;
+		//UtilsWepps::debug($filename,1);
+		if (!is_file($filename)) ExceptionWepps::error404();
+		$sql = "select * from s_Files where FileUrl='$file' limit 1";
+		$res = ConnectWepps::$instance->fetch($sql);
+		if (count($res) == 0) ExceptionWepps::error404();
+		$row = $res[0];
+		$filetitle = $row['Name'];
+
+		header("Content-type: application/octet-stream");
+		//header("Content-Disposition: attachment; filename=\"".iconv('utf-8','windows-1251',$filetitle)."\"");
+		header("Content-Disposition: attachment; filename=\"$filetitle\"");
+		header("Content-Length: ".filesize($filename));
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s",mktime (0,0,0,1,1,2000)) . " GMT"); // Дата в прошлом
+		header('Content-Transfer-Encoding: binary');
+		header('Expires: 0');
+		header('Cache-Control: must-revalidate');
+		header('Pragma: public');
+		readfile($filename);
+		exit();
+	}
+
+	/**
+	 * Очистка файловой ситсемы от файлов, не указанных в s_Files
+	 */
+	public static function clear() {
+
+	}
+
+	/**
+	 * Запись файлов в s_Files с физическим копировнием
+	 */
+	public static function save($file) {
+
+	}
+	
+	/**
+	 * Загрузка файлов из формы, расчитано что за один раз грузится 1 файл,
+	 * в дальнешем проработать возможность мультизагрузки (или вызывать этот
+	 * метод необходимое кол-во раз при таком случае.
+	 * 
+	 * @param array $myFiles - $_FILES
+	 * @param string $filesfield - Наименование поля type="file"
+	 * @param string $myform - Идентификатор формы
+	 * @return array
+	 */
+	public static function upload($myFiles,$filesfield,$myform) {
+		$root = $_SERVER['DOCUMENT_ROOT'];
+		$errors = array();
+		/**
+		 * Не все изображения имеют эту метку, возможны ошибки
+		 * Переработать таким образом, чтобы была входная информация
+		 * о типе загруженного файла и в зависимости от этого делать
+		 * валидацию
+		 */
+		if (!strstr($myFiles[0]['type'],"image/")) {
+			$errors[$filesfield] = "Неверный тип файла";
+			$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
+			return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
+		}
+		if ((int)$myFiles[0]['size']>3000000) {
+			/**
+			 * 1 мегабайт = 1 000 000 байт
+			 */
+			$errors[$filesfield] = "Слишком большой файл";
+			$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
+			return array('error'=>$error[$filesfield],'js'=>$outer['Out']);
+		}
+		$filepathinfo = pathinfo($myFiles[0]['name']);
+		$filepathinfo['filename'] = strtolower(SpellWepps::getTranslit($filepathinfo['filename'],2));
+		$filedest = "{$root}/packages/WeppsExtensions/Addons/Forms/uploads/{$filepathinfo['filename']}-".date("U").".{$filepathinfo['extension']}";
+		move_uploaded_file($myFiles[0]['tmp_name'],$filedest);
+		if (!isset($_SESSION['uploads'][$myform][$filesfield])) {
+			$_SESSION['uploads'][$myform][$filesfield] = array();
+		}
+		array_push($_SESSION['uploads'][$myform][$filesfield], $filedest);
+		$_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
+		$js = "	<script>
+		$('.fileadd').remove();
+		$('input[name=\"{$filesfield}\"]').parent().append($('<p class=\"fileadd\">Загружен файл &laquo;{$myFiles[0]['name']}&raquo;</p>'));
+		$('label.{$filesfield}').siblings('.controlserrormess').trigger('click');
+		</script>";
+		$data = array('success' => 'Form was submitted','js'=>$js);
+		return $data;
+	}
+}
+
+?>

@@ -1,0 +1,1 @@
+<div id="cart-wrapper">{$tpl}</div>

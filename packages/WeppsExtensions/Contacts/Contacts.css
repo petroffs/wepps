@@ -1,0 +1,30 @@
+div.elements.ContactsMain {
+	font-size: 120%;
+	line-height: 140%;
+}
+
+div.elements.ContactsMain div.items div.item div.title {
+	font-weight: 700;
+}
+
+div.elements.ContactsMap #map {
+	width: 100%;
+	height: 400px;
+	margin-top: 20px;
+}
+
+div.elements.ContactsForm {
+	width: 70%;
+	
+	margin-bottom: 50px;
+}
+
+div.elements.ContactsForm label.pps_area textarea {
+	height: 135px;
+}
+
+@media screen and (max-width: 768px) {
+	div.elements.ContactsForm {
+		width: 100%;
+	}
+}

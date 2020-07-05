@@ -1,0 +1,28 @@
+optiongroup {
+	font-weight: 600;
+}
+
+.list-data .title {
+	text-transform: uppercase;
+	margin-top: 10px;
+}
+
+.list-data ul.pps_list {
+	
+}
+
+.list-data ul.pps_list li {
+	padding: 5px;
+}
+
+.list-data ul.pps_list li:hover {
+	background: #ededed;
+}
+
+.list-data ul.pps_list li .descr {
+	font-weight: 300;
+}
+
+.listsBox {
+	max-width: 200px;
+}

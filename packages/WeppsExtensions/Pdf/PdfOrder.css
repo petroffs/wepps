@@ -1,0 +1,32 @@
+table.invoice_bank_rekv {
+	border-collapse: collapse;
+	border: 1px solid;
+}
+
+table.invoice_items {
+	border: 1px solid;
+	border-collapse: collapse;
+}
+
+table.invoice_items td, table.invoice_items th {
+	border: 1px solid;
+}
+
+.s000 {
+	font-size: 8pt;
+	text-align: center;
+}
+
+.s001 {
+	text-align: center;
+	font-weight: bold;
+	padding-top: 3mm;
+}
+
+table.s002 td {
+	font-weight: bold;
+	text-align: right;
+}
+.s003 {
+	
+}

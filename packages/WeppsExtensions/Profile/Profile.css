@@ -1,0 +1,93 @@
+div.extBlock {
+	background: transparent;
+	min-height: inherit;
+	max-height: inherit;
+}
+
+div.extBlock ul.way {
+	padding: 0px 0 0px 0px;
+	margin: 20px 0 0 5px;
+}
+
+div.extBlock h1 {
+	padding: 0px 0px 0px 5px;
+	margin: 0;
+	min-width: auto;
+	max-width: auto;
+	width: auto;
+}
+
+.centerBlock {
+	margin-bottom: 20px;
+}
+
+label.pps input[name="capchadub"] {
+	display: none
+}
+
+
+div.summary {
+	margin-top: 20px;
+	background: transparent;
+	min-height: 250px;
+}
+
+div.summary div.items div.item {
+	height: 200px;
+	
+}
+
+div.summary div.items div.item:nth-child(3n) a {
+	color: #83c1d5;
+} 
+
+div.summary div.items div.item:nth-child(3n-1) a {
+	color: #fdd634;
+}
+
+div.summary div.items div.item:nth-child(3n-2) a {
+	color: #eb7879;
+}
+
+div.orders {
+	width: auto;
+	margin: 15px -5px;
+}
+
+div.orders div.items {
+	
+}
+
+div.orders div.items div.item {
+	
+}
+
+
+div.orders div.items div.item span {
+	font-size: 110%;
+	font-weight: 700;
+}
+
+div.orders div.ordermore {
+	display: none;
+}
+
+div.ordermore2 {
+	font-family: monospace;
+    white-space: pre;
+ }
+
+div.orders {
+	
+}
+
+div.settings #setEmailContent {
+	display: none;
+}
+
+#setEmailContent div.text {
+	margin: 20px 0;
+}
+#setEmailContent div.form {
+	margin: 0 0px;
+}

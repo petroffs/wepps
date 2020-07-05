@@ -1,0 +1,201 @@
+
+.pps_padding.centercontent {
+	
+}
+
+.lists-items {
+	
+}
+.list-search {
+	position: relative;
+	opacity: 0.6;
+}
+.list-search::after {
+    content: '\f002';
+    font-size: 15px;
+    font-family: 'FontAwesome';
+    color: #b8b8b8;
+    position: absolute;
+    z-index: 20;
+    top: 7px;
+    right: 10px;
+    line-height: 90%;
+}
+
+.lists-items .title {
+	font-weight: 900;
+	margin: 20px 0 10px 0;
+}
+
+.lists-items .descr {
+	
+}
+
+.lists-items .descr .descr2 {
+	border-bottom: 1px solid #cecece;
+	padding: 10px 0 5px 0px;
+}
+
+.lists-items .descr .descr2:last-child {
+	border-bottom: 0px solid #cecece;
+}
+
+.lists-items .descr .descr2 .title3 {
+	
+}
+
+.lists-items .descr .descr2 .descr3 {
+	
+}
+
+.lists-items .descr .descr2 .num3 {
+	color: #cecece;
+	font-size: 0.9rem;
+}
+
+.lists-items .descr .descr2:hover {
+	background: white;
+}
+.lists-items .descr .descr2:hover .title3 {
+	
+}
+
+.lists-items .descr .descr2:hover .num3 {
+	
+}
+
+
+.controls-area {
+	background: transparent;
+	padding: 8px 10px !important;
+	margin: 0 2px !important;
+	width: auto !important;
+}
+
+.controls-area label {
+	opacity: 0.6;
+}
+
+.controls-area a {
+	text-decoration: none;
+}
+.controls-area a:hover {
+	text-decoration: none;
+}
+.controls-area a.active {
+	color: #666;
+}
+
+.controls-area a i {
+	width: 10px;
+	max-width: 10px;
+	min-width: 10px;
+}
+
+.lists-items-list {
+	overflow-x: auto;
+	width: 100%;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.lists-items-list > table {
+	width: 100%;
+	background: #f7f7f7;
+	
+}
+.lists-items-list > table > thead > tr.titles > th {
+	background: #555555;
+	
+}
+.lists-items-list > table > thead > tr.titles > th > div {
+	padding: 10px 5px;
+}
+
+.lists-items-list > table > thead > tr.titles > th {
+	color: white;
+	text-decoration: none;
+}
+
+.lists-items-list > table > thead > tr.titles>td {
+	min-width: 50px;
+	max-width: 250px;
+	padding: 0px 0px;
+	
+}
+
+.lists-items-list > table > thead > tr.filters > th {
+	background: #fff;
+	text-align: right;
+}
+
+.lists-items-list > table > thead > tr.filters > th a {
+	font-size: 0.9rem;
+	font-weight: normal;
+	color: #555555;
+}
+
+.lists-items-list > table > thead > tr.filters > th a.active {
+	color: #0080C0;
+}
+
+.lists-items-list > table > thead > tr.filters > th .filter2 {
+	font-weight: 300;
+	text-align: left;
+	
+	font-size: 0.9rem;
+}
+
+.lists-items-list > table > thead > tr.filters > th .filter2 a {
+	font-weight: 300;
+	display: block;
+	padding: 5px;
+}
+
+.lists-items-list > table > thead > tr.filters > th .filter2 a:hover {
+	background: #555555;
+	text-decoration: none;
+	color: white;
+}
+
+
+.lists-items-list > table td {
+	min-width: 50px;
+	max-width: 250px;
+}
+
+.lists-items-list > table > tbody > tr.data.hidden {
+	opacity: 0.5;
+}
+
+.lists-items-list > table > tbody > tr > td {
+	border-bottom: 1px solid #ddd;
+}
+
+.lists-items-list > table > tbody > tr:hover > td {
+	background: #fff;
+}
+
+.lists-items-list > table > tbody > tr.data-last > td {
+	border-bottom: 0px solid #ddd;
+}
+
+.lists-items-list>table>tbody>tr>td>div {
+	width: 100%;
+	overflow: hidden;
+	padding: 5px;
+	
+}
+
+.lists-items-list>table>tbody>tr>td.int {
+	min-width: 50px;
+	max-width: 50px;
+}
+
+.lists-items-list>table tbody>tr>td.flag {
+
+}
+

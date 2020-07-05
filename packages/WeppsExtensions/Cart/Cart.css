@@ -1,0 +1,101 @@
+.cart.default {
+
+}
+
+.cart.default>div {
+	
+}
+
+
+.cart.default .item {
+	margin: 0 0 10px 0;
+	
+}
+
+
+.cart.default .item .title {
+    text-transform: uppercase;
+    color: #333;
+    font-weight: 500;
+    display: inline-block;
+}
+
+
+.cart.default .item .pps.pps_select {
+	width: auto;
+	display: inline-block;
+}
+
+
+.cart.default .item a.edit,
+.cart.default .item a.remove {
+	padding-left: 10px;
+}
+
+.cart.default .item .sizes span {
+	padding-right: 5px;
+}
+
+.cart.default .cartabout .title {
+	text-transform: uppercase;
+    color: #333;
+    font-weight: 500;
+}
+
+.cart.default .cartabout .descr ul {
+	list-style: none;
+	padding: 0;
+}
+
+.cart.default .cartabout .descr ul li {
+	padding: 5px 0 0 20px;
+	position: relative;
+}
+
+.cart.default .cartabout .descr ul li:before {
+	content: '\f058 ';
+	font-family: 'FontAwesome';
+	position: absolute;
+	left: 0;
+}
+
+.cart.default .cartabout .descr ul li.active:before {
+	color: #007fff;
+}
+
+
+.cartForm .city {
+	
+}
+
+.cartForm .delivery-payment {
+	opacity: 0;
+}
+
+.cartForm .cart-other {
+	opacity: 0.5;
+}
+
+.cartForm .cart-other .final-info {
+	padding-bottom: 20px;
+	font-weight: 700;
+}
+
+@media screen and (max-width: 768px) {
+
+}
+
+@media screen and (max-width: 480px) {
+	.cart.default .item .params .priceone {
+		order: 2;
+	}
+	.cart.default .item .params .sizes {
+		order: 1;
+	}
+	.cart.default .item .params .qty {
+		order: 3;
+	}
+	.cart.default .item .params .priceall {
+		order: 4;
+	}
+}

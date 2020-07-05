@@ -1,0 +1,56 @@
+div.elements.Tiles {
+
+}
+div.elements.Tiles div.items div.item div.img.img2 {
+	order: 1;
+}
+
+div.elements.Tiles div.items div.item div.descr {
+	padding: 0 20px;
+	font-size: 120%;
+}
+
+div.elements.Tiles div.items div.item div.descr div.title2 {
+	font-size: 120%;
+	color: #666666;
+	text-transform: uppercase;
+	padding-bottom: 20px;
+	
+}
+
+div.elements.Tiles div.items div.item div.descr div.descr2 {
+	
+}
+
+div.elements.Tiles div.items div.item div.descr {
+	
+}
+
+div.elements.Tiles div.items div.item div.descr {
+	
+}
+
+@media screen and (max-width: 768px) {
+	div.elements.Tiles div.items div.item div.descr {
+		padding: 0 10px;
+		font-size: 100%;
+	}
+	div.elements.Tiles div.items div.item div.descr div.title2 {
+		font-size: 100%;
+		
+	}
+}
+
+@media screen and (max-width: 480px) {
+	div.elements.Tiles div.items div.item div.img.img2 {
+		order: inherit;
+	}
+	div.elements.Tiles div.items div.item div.descr>div {
+		margin-bottom: 20px;
+	}
+	div.elements.Tiles div.items div.item div.descr div.title2 {
+
+	padding-bottom: 5px;
+	
+}
+}

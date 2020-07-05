@@ -1,0 +1,61 @@
+ul.tabs {
+	
+}
+
+ul.tabs li {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+	color: black;
+	font-size: 100%;
+	padding: 5px 10px 5px 10px !important;
+	white-space: wrap;
+	text-align: center;
+}
+
+ul.tabs li.active {
+	background: #333;
+	color: white;
+}
+
+div.tabs-content {
+	padding: 20px 0;
+	
+}
+
+div.tabs-content div.tabs-item {
+	display: none;
+	padding: 0 10px;
+}
+
+div.tabs-content div.tabs-item.active {
+	display: block;
+}
+
+@media screen and (max-width: 1020px) {
+	ul.tabs li {
+		font-size: 100%;
+		font-weight: 700;
+		padding: 8px 15px 0 15px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	ul.tabs li {
+		font-size: 80%;
+		font-weight: 700;
+		padding: 12px 5px 0 5px;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	ul.tabs {
+		
+	}
+	ul.tabs li {
+		
+    	
+    	
+	}
+}

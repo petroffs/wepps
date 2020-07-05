@@ -1,0 +1,55 @@
+.elements.Services {
+	overflow: hidden;
+}
+
+.elements.Services .items {
+	background: transparent;
+	width: auto;
+	margin: 0 -10px;
+}
+
+.elements.Services .items .item {
+	cursor: pointer;
+}
+
+.elements.Services .items .item .title {
+	font-size: 160%;
+}
+
+.elements.Services .items .item .title a {
+	color: black;
+	text-decoration: none;
+}
+
+.elements.Services .items .item .descr {
+	
+}
+
+.elements.Services .items .item .date {
+	font-size: 80%;
+}
+
+.element-wrapper.Services {
+	
+}
+
+.element-wrapper.Services .element {
+	padding: 10px;
+}
+
+.element-wrapper.Services .element .img {
+	
+}
+
+.element-wrapper.Services .element .date {
+	font-size: 80%;
+	margin-top: 10px;
+}
+
+.element-wrapper.Services .element .descr {
+	
+}
+
+.element-wrapper.Services .element .img {
+	
+}

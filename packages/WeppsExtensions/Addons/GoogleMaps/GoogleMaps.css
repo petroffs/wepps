@@ -1,0 +1,35 @@
+.gm-style-iw {
+	z-index: 2;
+}
+
+.infobox {
+	background: #634e3f;
+	color: white;
+}
+
+.infobox * {
+	background: #634e3f !important;
+	border-color: #634e3f  !important;
+	color: white;
+}
+
+
+
+.infobox div:nth-child(1) {
+	background: transparent !important;
+	border-color: transparent  !important;
+	border-top-color: #634e3f !important;
+	z-index: 1;
+}
+
+.infobox div:nth-child(2) {
+	background: transparent !important;
+	border-color: transparent !important;
+	
+}
+
+.infobox label.pps.pps_button input {
+	background: inherit !important;
+	border: 1px solid white !important;
+	
+}

@@ -1,0 +1,75 @@
+.pps_admin_list {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	z-index: 10;
+	background: #fff;
+	box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	
+}
+.pps_admin_list>a {
+	display: flex;
+	text-decoration: none;
+}
+.pps_admin_list>a:before {
+	width: 100%;
+	font-size: 24px;
+	font-family: 'FontAwesome';
+	content: '\f11b';
+	line-height: 90%;
+	color: #007fff;
+	opacity: 0.5;
+	transition: all 0.3s ease;
+}
+.pps_admin_list>a:hover:before {
+	opacity: 1;
+}
+.pps_admin_navigator {
+	width: 60px;
+	height: 60px;
+	border-radius: 50%;
+	position: fixed;
+	bottom: 10px;
+	right: 10px;
+	z-index: 10;
+	background: #fff;
+	box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+.pps_admin_navigator>a {
+	display: flex;
+	text-decoration: none;
+}
+.pps_admin_navigator>a:before {
+	width: 100%;
+	font-size: 24px;
+	font-family: 'FontAwesome';
+	content: '\f11b';
+	line-height: 90%;
+	color: #007fff;
+	opacity: 0.5;
+	transition: all 0.3s ease;
+}
+.pps_admin_navigator>a:hover:before {
+	opacity: 1;
+}
+@media screen and (max-width: 480px) {
+	.pps_admin_list {
+		width: 40px;
+		height: 40px;
+	}
+	.pps_admin_navigator {
+		width: 40px;
+		height: 40px;
+	}
+}

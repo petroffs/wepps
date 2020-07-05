@@ -1,0 +1,41 @@
+div.elements.Accordion div.items div.item div.title {
+	text-transform: uppercase;
+	color: white;
+	font-size: 140%;
+	font-weight: normal;
+	background: #4e4e4e;
+	padding: 15px 10px;
+	cursor: pointer;
+	margin: 0px 0 2px 0;
+	position: relative;
+}
+
+div.elements.Accordion div.items div.item div.title:after {
+	content: '\f055';
+	font-family: 'FontAwesome';
+	font-size: 22px;
+	width: 30px;
+	height: 30px;
+	color: white;
+	right: 10px;
+	position: absolute;
+	
+}
+
+div.elements.Accordion div.items div.item.active div.title:after {
+	content: '\f056';
+}
+
+div.elements.Accordion div.items div.item div.descr {
+	background: #e7e6e6;
+	font-weight: 700;
+	color: #272727;
+	padding: 15px 10px;
+	font-size: 115%;
+	line-height: 130%;
+	display: none;
+}
+
+div.elements.Accordion div.items div.item.active div.descr {
+	display: block;
+}

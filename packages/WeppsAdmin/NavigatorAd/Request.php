@@ -1,0 +1,54 @@
+<?
+namespace WeppsAdmin\NavigatorAd;
+
+use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Validator\ValidatorWepps;
+use WeppsExtensions\Mail\MailWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Utils\FilesWepps;
+use WeppsAdmin\Lists\ListsWepps;
+use WeppsAdmin\Admin\AdminWepps;
+use WeppsCore\Spell\SpellWepps;
+
+require_once '../../../config.php';
+require_once '../../../autoloader.php';
+require_once '../../../configloader.php';
+
+if (!session_start()) session_start();
+
+class RequestNavigatorAdWepps extends RequestWepps {
+    public function request($action="") {
+        $this->tpl = '';
+        if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) ExceptionWepps::error404();
+        switch ($action) {
+            case "search":
+                if (!isset($this->get['term'])) {
+                    ConnectWepps::$instance->close();
+                }
+                $id = $this->get['term'];
+                $condition = "(t.Name like '%$id%' or t.NameMenu like '%$id%' or t.Id = '$id')";
+                
+                $obj = new DataWepps("s_Directories");
+                $obj->setConcat("t.Id as id,if (t.NameMenu!='',t.NameMenu,t.Name) as value,concat('/_pps/navigator',t.Url) as Url");
+                $res = $obj->getMax($condition);
+                if (!isset($res[0]['Id'])) {
+                    ConnectWepps::$instance->close();
+                }
+                $json = SpellWepps::getJsonCyr($res);
+                header('Content-type:application/json;charset=utf-8');
+                echo $json;
+                ConnectWepps::$instance->close();
+                break;
+            default:
+                ExceptionWepps::error404();
+                break;
+        }
+    }
+}
+$request = new RequestNavigatorAdWepps ($_REQUEST);
+$smarty->assign('get',$request->get);
+$smarty->display($request->tpl);
+?>

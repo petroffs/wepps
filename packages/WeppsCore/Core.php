@@ -1,0 +1,825 @@
+<?
+namespace WeppsCore\Core;
+
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
+
+
+/**
+ * Класс по работе со списками данных
+ * @author petroffs
+ *
+ */
+class DataWepps {
+	/**
+	 * Таблица БД, с которой производятся операции
+	 */
+	public $tableName;
+	
+	/**
+	 * Количество строк запроса
+	 */
+	public $count = 0;
+	/**
+	 * Пагинация, заполяется при вызове методов get, getMax
+	 */
+	public $paginator;
+	/**
+	 * Запрос БД, сформированный в get, getMax
+	 */
+	public $sql;
+	/**
+	 * Схема текущей таблицы БД
+	 */
+	private $scheme;
+	
+	/**
+	 * Перечисление полей таблицы
+	 */
+	private $fields = '';
+	
+	/**
+	 * Дополнительные поля, уточняющие вывод
+	 */
+	private $concat = '';
+	
+	/**
+	 * Добавление данных из других таблиц
+	 */
+	private $join = '';
+	
+	/**
+	 * Добавление данных из других таблиц
+	 */
+	private $group = '';
+	
+	/**
+	 * 
+	 */
+	public $lang;
+	
+	public function __construct($tableName='') {
+		if ($tableName == "")
+			exit ();
+			return $this->tableName = UtilsWepps::getStringFormatted ( $tableName );
+	}
+	/**
+	 * Получить набор строк таблицы
+	 */
+	function get($id = NULL, $onPage = "20", $currentPage = "1", $orderBy = "Priority") {
+		if ($id == NULL)
+			$id = "Id!=0";
+		$fields = $this->fields;
+		$fields = ($fields != '') ? $fields : '*';
+		$concat = $this->concat;
+		if ($concat != '') {
+			$concat = "," . $concat;
+		}
+		$formatted = $this->_getFormatted ( $id, $onPage, $currentPage, $orderBy );
+		$this->sql = "select SQL_CALC_FOUND_ROWS $fields $concat from {$this->tableName} where {$formatted['id']} {$formatted['orderBy']} {$formatted['limit']}";
+		$res = ConnectWepps::$instance->fetch ( $this->sql );
+		$paginator = $this->_getPaginator ( $formatted ['onPage'], $formatted ['currentPage'] );
+		$this->paginator = $paginator;
+		$res = LanguageWepps::getRows ( $res, $this->scheme, $this->lang );
+		if (count($res)==0) return array(0=>array());
+		return $res;
+	}
+	/**
+	 * Получить набор строк таблицы с соединением на основе схемы поля
+	 * @param integer $id
+	 * @param string $onPage
+	 * @param string $currentPage
+	 * @param string $orderBy
+	 * @return array
+	 */
+	public function getMax($id = NULL, $onPage = "20", $currentPage = "1", $orderBy = "t.Priority") {
+		if ($id == NULL)
+			$id = "t.Id!=0";
+			$formatted = $this->_getFormatted ( $id, $onPage, $currentPage, $orderBy );
+			if (substr($formatted['id'], 0,2)=='Id') $formatted['id'] = "t.".$formatted['id'];
+			$settings = $this->getScheme ();
+			$fields = $joins = "";
+			$joinCustom = $this->join;
+			$f = 1;
+				
+			foreach ( $settings as $key=>$value ) {
+				$ex = explode ( "::", $value[0] ['Type'], 4 );
+				switch ($ex [0]) {
+					case "file" :
+						$fields .= "
+						'f{$f}' as {$key}_Coordinate,
+						group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$key}_FileUrl,
+						";
+						//$joins .= "
+						//left join s_Files as f{$f} on cast(f{$f}.TableNameId as signed) = t.Id and binary f{$f}.TableNameField = '{$key}' and binary f{$f}.TableName = '{$this->tableName}'
+						//";
+						
+						$joins .= "
+						left join s_Files as f{$f} on f{$f}.TableNameId = t.Id and binary f{$f}.TableNameField = '{$key}' and binary f{$f}.TableName = '{$this->tableName}'
+						";
+						$f ++;
+						break;
+					case "select" :
+						$str = "";
+						foreach ( explode ( ",", $ex [2] ) as $v ) {
+							$str .= "s{$f}.{$v} as {$key}_{$v},";
+						}
+						$str = trim ( $str, "," );
+						$fields .= "
+						t.{$key},'s{$f}' as {$key}_Coordinate,$str,
+						";
+						$joins .= "
+						left join {$ex[1]} as s{$f} on s{$f}.Id = cast(t.{$key} as signed)
+						";
+						$f ++;
+						break;
+					case "select_multi" :
+						$fields .= "
+						t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},
+						";
+							
+						$joins .= "
+						left join s_SearchKeys as sk{$f} on cast(sk{$f}.Name as signed) = t.Id
+                            and binary sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
+						left join {$ex[1]} as sm{$f} on sm{$f}.Id = cast(sk{$f}.Field1 as signed)
+						";
+						$formatted['id'] .= "";
+						$f ++;
+						break;
+					default :
+						$fields .= "t.{$key},";
+						break;
+				}
+			}
+			$fields = trim ( trim($fields), "," );
+			$concat = $this->concat;
+			if ($concat != '') {
+				$concat = "," . $concat;
+			}
+			$group = ($this->group=='') ? 't.Id' : $this->group;
+			$sql = "select SQL_CALC_FOUND_ROWS
+			$fields $concat
+			from {$this->tableName} as t
+			$joins $joinCustom
+			where {$formatted['id']}
+			group by $group {$formatted['orderBy']} {$formatted['limit']}";
+			$this->sql = $sql;
+			if ($this->tableName=='DataTbls') {
+				//UtilsWepps::debug($this->sql,1);
+				//$res = ConnectWepps::$instance->fetch ( $this->sql );
+			}
+			$res = ConnectWepps::$instance->fetch ( $this->sql );
+			$paginator = $this->_getPaginator ( $formatted ['onPage'], $formatted ['currentPage'] );
+			$this->paginator = $paginator;
+			$res = LanguageWepps::getRows ( $res, $this->scheme, $this->lang );
+			if (count($res)==0) return array(0=>array());
+			return $res;
+	}
+	/**
+	 * Вспомогательная функция для обработки исходных переменных
+	 * 
+	 * @param integer $id
+	 * @param integer $onPage
+	 * @param integer $currentPage
+	 * @param string $orderBy
+	 * @return array
+	 */
+	private function _getFormatted($id, $onPage, $currentPage, $orderBy) {
+		$onPage = UtilsWepps::getStringFormatted ( $onPage );
+		if ($onPage=='') $onPage = 100; 
+		$currentPage = UtilsWepps::getStringFormatted ( $currentPage );
+		$orderBy = UtilsWepps::getStringFormatted ( $orderBy );
+		if ($orderBy!='') $orderBy = "order by $orderBy";
+		$currentPage = (( int ) $currentPage <= 0) ? 1 : ( int ) $currentPage;
+		$limit = ($currentPage - 1) * $onPage;
+		$id = (is_numeric ( $id )) ? "Id='{$id}'" : $id;
+		return array (
+				'id' => $id,
+				'onPage' => $onPage,
+				'currentPage' => $currentPage,
+				'orderBy' => $orderBy,
+				'limit' => "limit {$limit},{$onPage}" 
+		);
+	}
+	/**
+	 * Пагинация для организации постраничного вывода
+	 * 
+	 * @param integer $onPage
+	 * @param integer $currentPage
+	 * @return array
+	 */
+	private function _getPaginator($onPage, $currentPage) {
+		$currentPage = ($currentPage <= 0) ? 1 : $currentPage;
+		$res = ConnectWepps::$instance->fetch ( "SELECT FOUND_ROWS() as Co" );
+		$dataPages = ceil ( $res [0] ['Co'] / $onPage );
+		$this->count = $res [0] ['Co'];
+		$arr = array ();
+		$arr ['current'] = $currentPage;
+		for($i = 1; $i <= $dataPages; $i ++)
+			$arr ['pages'] [$i] = $i;
+		if ($currentPage < $dataPages)
+			$arr ['next'] = $currentPage + 1;
+		if ($currentPage > 1)
+			$arr ['prev'] = $currentPage - 1;
+		if (isset($arr ['next']) && $dataPages < $arr ['next'])
+			unset ( $arr ['next'] );
+		if (isset($arr ['prev']) && $dataPages < $arr ['prev'])
+			$arr ['prev'] = $dataPages;
+		if ($dataPages == 1)
+			return array ();
+		return $arr;
+	}
+	/**
+	 * Получение схемы полей таблицы
+	 * 
+	 * @return array
+	 */
+	public function getScheme() {
+		if ($this->scheme == NULL) {
+			$fields = $this->fields;
+			if ($fields != '') {
+				$fields = " and t.Field in ('".str_replace(",", "','", $fields)."')";
+			}
+			
+			/*
+			 * Быстрый
+			 */
+			$sql = "select
+			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.DisplayOff,t.FGroup
+			from s_ConfigFields as t
+			where t.TableName = '{$this->tableName}' $fields order by t.Priority";
+			
+			$res = ConnectWepps::$instance->fetch ( $sql,NULL,'group');
+			if (count($res)==0) {
+				http_response_code(404);
+				ExceptionWepps::write("Указанной таблицы {$this->tableName} не существует");
+			}
+			$this->scheme = $res;
+		}
+		return $this->scheme;
+	}
+	/**
+	 * Установка $this->fields
+	 * Перечисление полей
+	 * @param string $value
+	 */
+	public function setFields($value) {
+		$this->fields = $value;
+	}
+	
+	/**
+	 * Установка $this->concat
+	 * Перечисление дополнительных полей (с функциями, например)
+	 * @param string $value
+	 */
+	public function setConcat($value) {
+		$this->concat = $value;
+	}
+	
+	/**
+	 * Установка $this->join
+	 * Компоновка left outer join для сложных запросов
+	 * @param string $value
+	 */
+	public function setJoin($value) {
+		$this->join = $value;
+	}
+	
+	/**
+	 * Установка $this->group
+	 * Указание стобца для группировки
+	 * @param string $value
+	 */
+	public function setGroup($value) {
+		$this->group = $value;
+	}
+	/**
+	 * Обвновить строку
+	 * @param integer $id - Id строки
+	 * @param array $row - Массив столбцов и новых значений
+	 */
+	public function set($id, $row) {
+		$id = UtilsWepps::getStringFormatted ( $id );
+		foreach ( $row as $key => $value ) {
+			$row[$key] = UtilsWepps::getStringFormatted ( $value );
+		}
+		$arr = UtilsWepps::getQuery ( $row );
+		$this->sql = "update {$this->tableName} set {$arr['update']} where Id = '{$id}'";
+		return ConnectWepps::$instance->query ( $this->sql);
+	}
+	
+	/**
+	 * Добавить строку
+	 * @param array $row
+	 * @param string $param
+	 * @return number
+	 */
+	public function add($row,$param=null) {
+		$flag = "";
+		if ($param=='ignore') {
+			$flag = "ignore";
+		}
+		$arr = UtilsWepps::getQuery ( $row );
+		$sql = "insert $flag into {$this->tableName} (Priority) select max(Priority)+1 from {$this->tableName}";
+		$instanse = ConnectWepps::$db->query($sql);
+		$id = ConnectWepps::$db->lastInsertId();
+		if ((int)$id!=0) {
+			$sql = "update $flag {$this->tableName} set {$arr['update']} where Id='{$id}'";
+			$instanse = ConnectWepps::$db->query($sql);
+		}
+		return ($instanse->rowCount()>0) ? $id : 0;
+	}
+	
+	
+	
+	
+	/**
+	 * Удаление строки
+	 * @param integer $id
+	 */
+	public function remove($id) {
+		$sql = "delete from {$this->tableName} where Id = '{$id}'";
+		ConnectWepps::$instance->query ( $sql );
+		$sql = "delete from s_Files where TableName='{$this->tableName}' and TableNameId='{$id}'";
+		ConnectWepps::$instance->query ( $sql );
+		return true;
+	}
+}
+
+class NavigatorWepps {
+	private $data;
+	/**
+	 * Раздел сайта
+	 * 
+	 * @var object
+	 */
+	public $path;
+	/**
+	 * Раздел сайта/ITEM.html
+	 *
+	 * @var string
+	 */
+	public static $pathItem;
+	/**
+	 * Навигация верхнего уровня
+	 * @var array
+	 */
+	public $nav = array();
+	/**
+	 * Содержание раздела
+	 * 
+	 * @var array
+	 */
+	public $content ;
+	/**
+	 * Подразделы родительского уровня
+	 *
+	 * @var array
+	 */
+	public $parent;
+	/**
+	 * Подразделы текущего раздела
+	 * 
+	 * @var array
+	 */
+	public $child;
+	/**
+	 * Путь до текущего раздела (Хлебные крошки)
+	 * 
+	 * @var array
+	 */
+	public $way;
+	/**
+	 * Данные о настройках языковой версии текущего контекста
+	 * 
+	 * @var array
+	 */
+	public $lang;
+	/**
+	 * Перевод шаблонных фраз из таблицы "Перевод"
+	 * 
+	 * @var array
+	 */
+	public $multilang;
+	/**
+	 * Признак текущего расположение (=1 если в админчасти)
+	 * 
+	 * @var integer
+	 */
+	public $backOffice = 0;
+	/**
+	 * Уровень вложенности для групп навигации
+	 * @var integer
+	 */
+	public $navLevel = 2;
+	
+	/**
+	 * Шаблон страницы
+	 * @var string
+	 */
+	public $tpl;
+	
+	function __construct($url = null,$backOffice = null) {
+		if ($url==null) {
+			$url = (isset($_GET['ppsUrl'])) ? $_GET['ppsUrl'] : "";
+		}
+		/*
+		 * Для компоновки страницы создания нового элемента
+		 */
+		if ($backOffice == 1) {
+			$url = str_replace("/addNavigator/", "/", $url);
+		}
+		
+		$navigate = $this->getNavigateUrl ( $url );
+		$this->path = $navigate ['path'];
+		$this->lang = $navigate ['lang'];
+		$this->multilang = $navigate ['multilanguage'];
+		
+		$this->data = new NavigatorDataWepps ( "s_Directories" );
+		$this->data->backOffice = $backOffice;
+		$this->data->lang = $this->lang;
+		
+		
+		
+		$res = $this->data->getMax ( "t.Url='{$this->path}'" );
+		
+		if (isset($res[0]['Id'])) {
+			$this->content = $res[0];
+		}
+		if (count($this->content)==0) {
+			ExceptionWepps::error404();
+		}
+		
+		$this->child = $this->data->getChild($this->content['Id']);
+		$this->parent = $this->data->getChild($this->content['ParentDir']);
+		$this->data->setConcat("if (t.NameMenu!='',t.NameMenu,t.Name) as NameMenu");
+		$this->way = $this->data->getWay($this->content['Id']);
+		$this->nav = $this->data->getNav($this->navLevel);
+		
+		foreach ($this->way as $value) {
+			if ($value['Template']!=0) {
+				$this->tpl = array('tpl'=>$value['Template_FileTemplate']);
+			}
+		}
+		
+		return;
+	}
+	/**
+	 * Извлечение переменных (на основе Url) для работы с мультиязычной составляющей
+	 * 
+	 * @param string $url
+	 * @return array
+	 */
+	private function getNavigateUrl($url) {
+		$match = array();
+		$m = preg_match ( "/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match );
+		if (substr ( $url, - 1 ) != '/' && $m==0 && $url!='' && $_SERVER['REQUEST_URI']!='/') {
+			header("HTTP/1.1 301 Moved Permanently");
+			header("Location: {$url}/");
+			exit();
+		} elseif (strstr($_SERVER['REQUEST_URI'],'index.php')) {
+ 			header("HTTP/1.1 301 Moved Permanently");
+ 			header("Location: /");
+			exit();
+		} elseif (substr($_SERVER['REQUEST_URI'], -1)=='/' && substr($_SERVER['REQUEST_URI'],1,1)=='/') {
+			$url = "!";
+		} elseif (isset($match[1])) {
+			self::$pathItem = $match[1];
+		}
+		$navigateUrl = (empty ( $url )) ? '/' : UtilsWepps::getStringFormatted ( $url );
+		$navigateUrl = substr ( $navigateUrl, 0, strrpos ( $navigateUrl, "/", - 1 ) + 1 );
+		$langLink = '/' . substr ( $navigateUrl, 1, strpos ( $navigateUrl, '/', 1 ) );
+		$langData = LanguageWepps::getLanguage ( $langLink );
+		if ($langData ['default'] != 1) {
+			$navigateUrl = substr ( $navigateUrl, strlen ( $langLink ) - 1 );
+		}
+		$multilanguage = LanguageWepps::getMultilanguage ( $langData );
+		return array (
+				'path' => $navigateUrl,
+				'lang' => $langData,
+				'multilanguage' => $multilanguage 
+		);
+	}
+	
+	
+}
+class NavigatorDataWepps extends DataWepps {
+	public $backOffice = 0;
+	private $way = array();
+	private $nav = array();
+	private $navLevel = 0;
+	private $rchild = array();
+	
+	public function getNav($navLevel) {
+		$condition = ($this->backOffice==1) ? "t.DisplayOff in (0,1)" : "t.DisplayOff = 0";
+		if ($this->navLevel==0) {
+			$this->nav[$this->navLevel] = $this->getMax("{$condition} and t.ParentDir in (1,0) and t.NGroup!=0 and t.TableId=0",100,1,"t.NGroup,t.Priority");
+			$this->navLevel++;
+			return $this->getNav($navLevel);
+		} elseif ($navLevel <= $this->navLevel) {
+			$arr = array();
+			foreach ($this->nav[0] as $value) {
+				$arr[$value['NGroup']][] = $value;
+			}
+			
+			unset($this->nav[0]);
+			$sub = array();
+			foreach ($this->nav as $value) {
+				foreach ($value as $v) {
+					if (isset($v['ParentDir'])) $sub[$v['ParentDir']][] = $v;
+				}
+			}
+			return array ('groups'=>$arr,'subs'=>$sub);
+		} else {
+			$res = $this->nav[$this->navLevel-1];
+			$res2 = UtilsWepps::getArrayId($res);
+			unset($res2[1]);
+			$res2Keys = implode(",", array_keys($res2));
+			if ($res2Keys=="") {
+				$this->navLevel++;
+				return $this->getNav($navLevel);
+			}
+			$res = $this->getMax("{$condition} and t.ParentDir in ({$res2Keys}) and t.TableId=0",100,1,"t.Priority");
+			$this->nav[$this->navLevel] = $res;
+			$this->navLevel++;
+			return $this->getNav($navLevel);
+		}
+		return $res;
+	}
+	
+	/**
+	 * Путь до раздела (Хлебные крошки)
+	 * 
+	 * @param integer $id
+	 */
+	public function getWay($id) {
+		$res = $this->getMax($id);
+		array_push($this->way,$res[0]);
+		if ($res[0]['ParentDir']==0) return array_reverse($this->way);
+		return $this->getWay($res[0]['ParentDir']);
+	}
+	
+	/**
+	 * Получение подраздела
+	 * 
+	 * @param integer $id
+	 * @return array
+	 */
+	public function getChild($id) {
+	    $condition = ($this->backOffice==1) ? "" : "and DisplayOff = 0";
+	    $this->setConcat("if (NameMenu!='',NameMenu,Name) as NameMenu");
+	    $res = $this->get("ParentDir='{$id}' $condition");
+	    return $res;
+	}
+	
+	/**
+	 * Получение подраздела в рекурсии
+	 * @param integer $id
+	 * @return array
+	 */
+	public function getRChild($id) {
+		$res = $this->get("ParentDir='{$id}' and DisplayOff=0");
+		if (isset($res[0]['Id'])) {
+			foreach ($res as $value) {
+				$this->rchild[] = $value['Id'];
+				$this->getRChild($value['Id']);
+			}
+		}
+		return $this->rchild;
+	}
+	
+	public function getChildTree($res=array(), $parent=1) {
+	    if ($parent==1) {
+	        $sql = "select if(ParentDir=0,1,ParentDir) as ParentDir,Id,Name,NameMenu,Url,NGroup,DisplayOff 
+                    from s_Directories
+                    order by ParentDir,Priority";
+	        $res = ConnectWepps::$instance->fetch($sql,array(),"group");
+	    }
+	    $tree = array();
+	    if (isset($res[$parent])) {
+	        foreach ($res[$parent] as $value) {
+	            if ($value['Id']!=$parent) {
+	               $node = array('element'=>$value,'child'=>$this->getChildTree($res,$value['Id']));
+	            } else {
+	                $node = array('element'=>$value,'child'=>array());
+	            }
+	            if ($parent == 1 ) {
+	                $tree[$value['NGroup']][$value['Id']] = $node;
+	            } else {
+	                $tree[$value['Id']] = $node;
+	            }
+	        }
+	    }
+	    return $tree;
+	}
+}
+
+/**
+ * Расширение для разделов
+ * @author Petroffscom
+ *
+ */
+abstract class ExtensionWepps {
+	/**
+	 * Навигатор
+	 * @var NavigatorWepps
+	 */
+	public $navigator;
+	/**
+	 * Подключение css, js
+	 * @var TemplateHeadersWepps
+	 */
+	public $headers;
+	/**
+	 * Входные данные
+	 * @var array
+	 */
+	public $get = array();
+	/**
+	 * Наименование шаблона
+	 * @var string
+	 */
+	public $tpl = '';
+	/**
+	 * Содержание шаблона
+	 * @var string
+	 */
+	public $destinationOuter = '';
+	/**
+	 * Указание шаблона назначения (в него передается результат)
+	 * @var string
+	 */
+	public $destinationTpl = 'extension';
+	/**
+	 * Текущая страница в постраничном выводе
+	 * @var integer
+	 */
+	public $page = 1;
+	
+	public $rand;
+	
+	function __construct(NavigatorWepps $navigator, TemplateHeadersWepps $headers, $get = array()) {
+		$this->get = UtilsWepps::getStringFormatted ( $get );
+		$this->navigator = &$navigator;
+		$this->headers = &$headers;
+		$this->rand = $headers::$rand;
+		$this->page = (isset ( $_GET ['page'] )) ? ( int ) $_GET ['page'] : 1;
+		$this->destinationOuter = $this->request();
+		return;
+	}
+
+	public function getItem($tableName, $condition='') {
+		$id = NavigatorWepps::$pathItem;
+		$prefix = ($condition!='') ? ' and ' : '';
+		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = '{$id}'" : $condition." {$prefix} binary t.KeyUrl = '{$id}'";
+		$obj = new DataWepps($tableName);
+		$res = $obj->getMax($condition)[0];
+		if (!isset($res['Id'])) ExceptionWepps::error404();
+		$this->extensionData['element'] = 1;
+		$this->navigator->content['Name'] = $res['Name'];
+		if (isset($res['MetaTitle']) && $res['MetaTitle']!='') {
+			$this->navigator->content['MetaTitle'] = $res['MetaTitle'];
+		} else {
+			$this->navigator->content['MetaTitle'] = $res['Name'];
+		}
+		if (isset($res['MetaKeyword']) && $res['MetaKeyword']!='') $this->navigator->content['MetaKeyword'] = $res['MetaKeyword'];
+		if (isset($res['MetaDescription']) && $res['MetaDescription']!='') $this->navigator->content['MetaDescription'] = $res['MetaDescription'];
+		return $res;
+	}
+	
+	/**
+	 * Реализация логики
+	 */
+	abstract function request();
+}
+
+/**
+ * Мультиязычность
+ * @author Petroffscom
+ */
+class LanguageWepps {
+	/**
+	 * Текущий язык раздела
+	 * ($langLink - например /en/)
+	 *
+	 * @param string $langLink
+	 * @return array
+	 */
+	public static function getLanguage($langLink = null) {
+		$langLink = ($langLink != '/') ? "LinkDirectory='" . $langLink . "' or" : "";
+		$sql = "select * from s_NGroupsLang where DisplayOff='0' and {$langLink} LinkDirectory='/' order by Priority desc limit 2";
+		$langData = ConnectWepps::$instance->fetch ( $sql );
+		if (count ( $langData ) == 1) {
+			return array (
+					'id' => $langData [0] ['Id'],
+					'defaultId' => $langData [0] ['Id'],
+					'default' => 1,
+					'interface' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
+					'interfaceDefault' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
+					'link' => ""
+			);
+		} else {
+			return array (
+					'id' => $langData [0] ['Id'],
+					'defaultId' => $langData [1] ['Id'],
+					'default' => 0,
+					'interface' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
+					'interfaceDefault' => "Lang" . substr ( $langData [1] ['Name'], 0, 2 ),
+					'link' => substr ( $langData [0] ['LinkDirectory'], 0, - 1 )
+			);
+		}
+	}
+
+	/**
+	 * Перевод для шаблонов (список "Перевод")
+	 *
+	 * @param array $langData
+	 * @param number $backOffice
+	 * @return array
+	 */
+	public static function getMultilanguage($langData, $backOffice = 0) {
+		$ppsInterface = array ();
+		$condition = ($backOffice == 0) ? "Category='front'" : "Category='back'";
+		$interfaceLangs = ($langData ['default'] == 1) ? $langData ['interface'] : $langData ['interface'] . "," . $langData ['interfaceDefault'];
+		foreach ( ConnectWepps::$instance->fetch ( "select Name," . $interfaceLangs . " from s_Lang where $condition order by Name" ) as $v ) {
+			$ppsInterface [$v ['Name']] = ($v [$langData ['interface']] != '') ? $v [$langData ['interface']] : $v [$langData ['interfaceDefault']];
+		}
+		return $ppsInterface;
+	}
+	/**
+	 * Перевод элементов списка данных
+	 * 
+	 * @param array $data
+	 * @param array $scheme
+	 * @param array $lang
+	 * @return array
+	 */
+	public static function getRows($data, $scheme, $lang) {
+		if (count ( $lang ) == 0 || ! is_array ( $data ) || $lang ['default'] == 1 || ! isset ( $scheme ['TableId'] ) || ! isset ( $scheme ['LanguageId'] )) {
+			return $data;
+		}
+		$res = UtilsWepps::getArrayId($data);
+		$resKeys = implode(",", array_keys($res));
+		if ($resKeys=="") {
+			return $data;
+		}
+		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId='".$lang['id']."' and DisplayOff=0";
+		$res2 = ConnectWepps::$instance->fetch($sql);
+		if (count($res2)==0) return $data;
+		$resParall = UtilsWepps::getArrayId($res2,'TableId');
+		$resParall2 = array();
+		foreach ($res as $key=>$value) {
+			if (!empty($resParall[$key]['Id'])) {
+				$resParall2[$key] = $resParall[$key];
+				foreach ($value as $k => $v) {
+					$resParall2[$key][$k] = (!isset($resParall[$key][$k]) || $resParall[$key][$k]=='') ? $v : $resParall[$key][$k];
+				}
+				$resParall2[$key]['Id']=$value['Id'];
+				if (isset($value['Template'])) $resParall2[$key]['Template']=$value['Template'];
+				if (isset($value['NGroup'])) $resParall2[$key]['NGroup']=$value['NGroup'];
+				if (isset($value['ParentDir'])) $resParall2[$key]['ParentDir']=$value['ParentDir'];
+				if (isset($value['KeyUrl'])) $resParall2[$key]['KeyUrl']=$value['KeyUrl'];
+				if (isset($value['Url'])) $resParall2[$key]['Url']=$value['Url'];
+			} else {
+				$resParall2[$key] = $value;
+			}
+		}
+		return array_merge($resParall2);
+	}
+}
+
+class PermissionsWepps {
+	function getRights($userId = NULL) {
+	}
+}
+/**
+ * Инициализация шаблонизатора
+ * @author Petroffscom
+ *
+ */
+class SmartyWepps {
+	private static $instance;
+	private function __construct($backOffice = 0) {
+		//$root =  $_SERVER['DOCUMENT_ROOT'] . "/";
+		$root =  ConnectWepps::$projectDev['root'] . "/";
+		$smarty = new \Smarty();
+		//$smarty->template_dir = ($backOffice == 0) ? 'tpl/' : 'control/tpl/';
+		$smarty->addTemplateDir( $root . 'packages/' );
+		$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_pps/');
+		$smarty->compile_dir = $root . 'files/tpl/compile';
+		$smarty->cache_dir = $root . 'files/tpl/cache/';
+		$smarty->error_reporting = error_reporting() & ~E_NOTICE;
+		self::$instance = $smarty;
+	}
+	public static function getSmarty($backOffice = 0) {
+		if (empty ( self::$instance )) {
+			new SmartyWepps ( $backOffice );
+		}
+		return self::$instance;
+	}
+}
+
+?>

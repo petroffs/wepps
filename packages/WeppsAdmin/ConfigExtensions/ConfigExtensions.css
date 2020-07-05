@@ -1,0 +1,51 @@
+.lists-items .title {
+	font-weight: 900;
+	margin: 20px 0 10px 0;
+}
+
+.lists-items .descr {
+	
+}
+
+.lists-items .descr .descr2 {
+	border-bottom: 1px solid #cecece;
+	padding: 10px 0 5px 0px;
+}
+
+.lists-items .descr .descr2:last-child {
+	border-bottom: 0px solid #cecece;
+}
+
+.lists-items .descr .descr2 .title3 {
+	
+}
+
+.lists-items .descr .descr2 .descr3 {
+	
+}
+
+.lists-items .descr .descr2 .num3 {
+	color: #cecece;
+	font-size: 0.9rem;
+}
+
+.lists-items .descr .descr2:hover {
+	background: white;
+}
+.lists-items .descr .descr2:hover .title3 {
+	
+}
+
+.lists-items .descr .descr2:hover .num3 {
+	
+}
+.controls-area {
+    background: transparent;
+    
+    margin: 0 2px !important;
+    width: auto !important;
+}
+
+.controls-area>div {
+	padding: 20px !important;
+}
