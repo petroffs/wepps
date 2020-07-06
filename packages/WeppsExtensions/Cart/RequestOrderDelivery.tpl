@@ -9,6 +9,6 @@
 $('.delivery-payment').css('opacity',1);
 $('input[name="delivery"]').on('change',function(event) {
 	event.stopPropagation();
-	layoutPPS.request('action=payment&city='+$(this).data('city')+'&delivery='+$(this).attr('value'), '/ext/Cart/Request.php',$('#payment'));
+	layoutWepps.request('action=payment&city='+$(this).data('city')+'&delivery='+$(this).attr('value'), '/ext/Cart/Request.php',$('#payment'));
 });
 </script>

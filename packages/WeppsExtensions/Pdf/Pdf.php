@@ -1,14 +1,14 @@
 <?
-namespace PPSExtensions\Pdf;
+namespace WeppsExtensions\Pdf;
 
-use PPS\Utils\UtilsPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Spell\SpellPPS;
-use PPSExtensions\Cart\CartUtilsPPS;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Spell\SpellWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
 
-class PdfPPS {
+class PdfWepps {
 	private $get;
 	private $output;
 	private $css;
@@ -17,11 +17,11 @@ class PdfPPS {
 	private $filename = 'pdf.pdf';
 	function __construct($get) {
 		$this->get = $get;
-		$action = UtilsPPS::getStringFormatted($this->get['action']);
-		$id = UtilsPPS::getStringFormatted($this->get['id']);
-		if ($action == '' || $id == '') ExceptionPPS::error404();
-		$smarty = SmartyPPS::getSmarty();
-		$obj = new DataPPS("TradeShops");
+		$action = UtilsWepps::getStringFormatted($this->get['action']);
+		$id = UtilsWepps::getStringFormatted($this->get['id']);
+		if ($action == '' || $id == '') ExceptionWepps::error404();
+		$smarty = SmartyWepps::getSmarty();
+		$obj = new DataWepps("TradeShops");
 		$shop = $obj->getMax(1)[0];
 		$smarty->assign('shopInfo',$shop);
 		$this->css = $smarty->fetch('Pdf.css');
@@ -29,19 +29,19 @@ class PdfPPS {
 		$this->footer = $smarty->fetch('PdfFooter.tpl');
 		switch ($action) {
 			case "Order" :
-				$order = CartUtilsPPS::getOrder($this->get['id']);
-				$obj = new DataPPS("TradeClientsHistory");
+				$order = CartUtilsWepps::getOrder($this->get['id']);
+				$obj = new DataWepps("TradeClientsHistory");
 				$orderPositions = $obj->getMax("OrderId='{$this->get['id']}'");
 				if ($shop['UrNDS']!=0) {
 					$orderNDS = round($order['Summ'] / ((100 + $shop['UrNDS']) / 100) * ($shop['UrNDS'] / 100));
 					$smarty->assign('orderNDS',$orderNDS);
 				}
-				$orderSummLetter = SpellPPS::num2str($order['Summ']);
+				$orderSummLetter = SpellWepps::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
 				}
-				$obj = new DataPPS("s_Users");
+				$obj = new DataWepps("s_Users");
 				$user = $obj->getMax($order['UserId'])[0];
 				$smarty->assign('order',$order);
 				$smarty->assign('orderPositions',$orderPositions);
@@ -50,18 +50,18 @@ class PdfPPS {
 				$smarty->assign('user',$user);
 				$this->css .= $smarty->fetch('PdfOrder.css');
 				$this->output = $smarty->fetch('PdfOrder.tpl');
-				$this->filename = "Заказ ". SpellPPS::getNumberOrder($order['Id']).".pdf";
+				$this->filename = "Заказ ". SpellWepps::getNumberOrder($order['Id']).".pdf";
 				break;
 			case "Receipt" :
-				$order = CartUtilsPPS::getOrder($this->get['id']);
-				$obj = new DataPPS("TradeClientsHistory");
+				$order = CartUtilsWepps::getOrder($this->get['id']);
+				$obj = new DataWepps("TradeClientsHistory");
 				$orderPositions = $obj->getMax("OrderId='{$this->get['id']}'");
-				$orderSummLetter = SpellPPS::num2str($order['Summ']);
+				$orderSummLetter = SpellWepps::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
 				}
-				$obj = new DataPPS("s_Users");
+				$obj = new DataWepps("s_Users");
 				$user = $obj->getMax($order['UserId'])[0];
 				$smarty->assign('order',$order);
 				$smarty->assign('orderPositions',$orderPositions);
@@ -70,17 +70,17 @@ class PdfPPS {
 				$smarty->assign('user',$user);
 				$this->css .= $smarty->fetch('PdfReceipt.css');
 				$this->output = $smarty->fetch('PdfReceipt.tpl');
-				$this->filename = "Квитанция ". SpellPPS::getNumberOrder($order['Id']).".pdf";
+				$this->filename = "Квитанция ". SpellWepps::getNumberOrder($order['Id']).".pdf";
 				break;
 			case "Invoice" :
-				$order = CartUtilsPPS::getOrder($this->get['id']);
-				$obj = new DataPPS("TradeClientsHistory");
+				$order = CartUtilsWepps::getOrder($this->get['id']);
+				$obj = new DataWepps("TradeClientsHistory");
 				$orderPositions = $obj->getMax("OrderId='{$this->get['id']}'");
 				if ($shop['UrNDS']!=0) {
 					$orderNDS = round($order['Summ'] / ((100 + $shop['UrNDS']) / 100) * ($shop['UrNDS'] / 100));
 					$smarty->assign('orderNDS',$orderNDS);
 				}
-				$orderSummLetter = SpellPPS::num2str($order['Summ']);
+				$orderSummLetter = SpellWepps::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
@@ -91,10 +91,10 @@ class PdfPPS {
 				$smarty->assign('orderSummLetter',$orderSummLetter);
 				$this->css .= $smarty->fetch('PdfInvoice.css');
 				$this->output = $smarty->fetch('PdfInvoice.tpl');
-				$this->filename = "Счет на оплату ". SpellPPS::getNumberOrder($order['Id']).".pdf";
+				$this->filename = "Счет на оплату ". SpellWepps::getNumberOrder($order['Id']).".pdf";
 				break;
 			default :
-				ExceptionPPS::error404 ();
+				ExceptionWepps::error404 ();
 				break;
 		}
 	}

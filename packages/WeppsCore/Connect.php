@@ -28,7 +28,7 @@ class ConnectWepps {
 		} catch ( \Exception $e ) {
 			echo "sql connect error.";
 			exit();
-			ExceptionPPS::writeMessage ( $e );
+			ExceptionWepps::writeMessage ( $e );
 		}
 	}
 	function __destruct() {
@@ -51,7 +51,7 @@ class ConnectWepps {
 				return $sth->fetchAll ( PDO::FETCH_ASSOC );
 			}
 		} catch ( \Exception $e ) {
-			ExceptionPPS::logMessage( $e );
+			ExceptionWepps::logMessage( $e );
 		}
 	}
 	public function query($sql) {
@@ -60,11 +60,11 @@ class ConnectWepps {
 			$state = self::$db->query ( $sql );
 			return $state->rowCount();
 		} catch ( \Exception $e ) {
-			ExceptionPPS::writeMessage ( $e );
+			ExceptionWepps::writeMessage ( $e );
 		}
 	}
 	public function insert($tableName,$row) {
-		$arr = UtilsPPS::setQuery($row);
+		$arr = UtilsWepps::setQuery($row);
 		$sql = "insert into $tableName (Priority) select max(Priority)+1 from $tableName";
 		self::$instance->query($sql);
 		$id = self::$db->lastInsertId();

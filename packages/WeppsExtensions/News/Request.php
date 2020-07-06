@@ -1,13 +1,12 @@
 <?
-namespace PPSExtensions\News;
-
-use PPS\Utils\RequestPPS;
+namespace WeppsExtensions\News;
+use WeppsCore\Utils\RequestWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestNewsPPS extends RequestPPS {
+class RequestNewsWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
@@ -19,7 +18,7 @@ class RequestNewsPPS extends RequestPPS {
 		}
 	}
 }
-$request = new RequestNewsPPS ($_REQUEST);
+$request = new RequestNewsWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

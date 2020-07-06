@@ -2,24 +2,24 @@
 
 /*
  * В htaccess требуется прописать 
- * RewriteRule ^yandexkassa/(.+)/$ packages/PPSExtensions/Addons/Merchant/YandexKassa/Request.php?action=$1&%{QUERY_STRING} [L]
+ * RewriteRule ^yandexkassa/(.+)/$ packages/WeppsExtensions/Addons/Merchant/YandexKassa/Request.php?action=$1&%{QUERY_STRING} [L]
  */
 
-namespace PPSExtensions\Addons\Merchant\YandexKassa;
+namespace WeppsExtensions\Addons\Merchant\YandexKassa;
 
-use PPS\Connect\ConnectPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\UtilsPPS;
-use PPSExtensions\Mail\MailPPS;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Mail\MailWepps;
 use YandexCheckout\Client;
 
 use YandexCheckout\Model\Notification\NotificationSucceeded;
 use YandexCheckout\Model\Notification\NotificationWaitingForCapture;
 use YandexCheckout\Model\NotificationEventType;
-use PPS\Core\DataPPS;
-use PPSExtensions\Cart\CartUtilsPPS;
+use WeppsCore\Core\DataWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
 
-class YandexKassaPPS {
+class YandexKassaWepps {
 	private $shopId;
 	private $secretKey;
 	private $currency;
@@ -31,7 +31,7 @@ class YandexKassaPPS {
 		$this->get = $get;
 		$this->date = date("Y-m-d H:i:s");
 	
-		if (ConnectPPS::$projectDev['debug']==1) {
+		if (ConnectWepps::$projectDev['debug']==1) {
 			/*
 			 * Тестовая среда
 			 */
@@ -47,11 +47,11 @@ class YandexKassaPPS {
 			$this->currency = '___________';
 		}
 		
-		$action = UtilsPPS::getStringFormatted ( $this->get ['action'] );
+		$action = UtilsWepps::getStringFormatted ( $this->get ['action'] );
 		switch ($action) {
 			case "form" :
 				if (empty($this->get['id'])) {
-					ExceptionPPS::error404();
+					ExceptionWepps::error404();
 				}
 				
 				/*
@@ -63,9 +63,9 @@ class YandexKassaPPS {
 				 * Получить заказ и сформировать массив, записать ответ от системы (OBuyOrderIdResponse)
 				 */
 				$sql = "select * from TradeOrders where Id='{$this->get['id']}'";
-				$res = ConnectPPS::$instance->fetch($sql);
+				$res = ConnectWepps::$instance->fetch($sql);
 				if (!isset($res[0]['Id'])) {
-					ExceptionPPS::error404();
+					ExceptionWepps::error404();
 				}
 				$order = $res[0];
 				
@@ -86,7 +86,7 @@ class YandexKassaPPS {
 								),
 								'confirmation' => array(
 										'type' => 'redirect',
-								    'return_url' => ConnectPPS::$projectDev['protocol'].ConnectPPS::$projectDev['host'].'/yandexkassa/return/?token='.md5($order['Name'].$order['Email'].$orderIdU),
+								    'return_url' => ConnectWepps::$projectDev['protocol'].ConnectWepps::$projectDev['host'].'/yandexkassa/return/?token='.md5($order['Name'].$order['Email'].$orderIdU),
 								),
 								"payment_method_data"=> array(
 									"type"=>"bank_card"
@@ -97,7 +97,7 @@ class YandexKassaPPS {
 						uniqid('', true)
 						);
 				$sql = "update TradeOrders set OBuyOrderId='$orderIdU',OBuyOrderIdResponse='{$payment->jsonSerialize()['id']}',OBuyMerchant='YandexKassa' where Id= '{$this->get['id']}'";
-				ConnectPPS::$instance->query($sql);
+				ConnectWepps::$instance->query($sql);
 				$payment->jsonSerialize()['confirmation']['confirmation_url'];
 				header("location: " . $payment->jsonSerialize()['confirmation']['confirmation_url']);
 				break;
@@ -113,7 +113,7 @@ class YandexKassaPPS {
 					];
 				} else {
 					//$sql = "select * from TradeOrders where ";
-					$obj = new DataPPS ( "TradeOrders" );
+					$obj = new DataWepps ( "TradeOrders" );
 					$order = $obj->getMax ( "md5(concat(t.Name,t.Email,t.OBuyOrderId))='{$this->get['token']}'" ) [0];
 					if (empty ( $order )) {
 						$output = [
@@ -148,7 +148,7 @@ class YandexKassaPPS {
 				 */
 				$source = file_get_contents('php://input' );
 				$response = $this->getNotification ( $source );
-				UtilsPPS::debugf($response);
+				UtilsWepps::debugf($response);
 				break;
 			case "test":
 				/*
@@ -202,7 +202,7 @@ class YandexKassaPPS {
 				
 				$response = $this->getNotification($source);
 				
-				//UtilsPPS::debugf($response,1);
+				//UtilsWepps::debugf($response,1);
 				
 				if ($response['error']==0) {
 					$_SESSION['merch'] = [
@@ -222,7 +222,7 @@ class YandexKassaPPS {
 			default :
 				$source = file_get_contents('php://input' );
 				$response = $this->getNotification ( $source );
-				UtilsPPS::debugf($response);
+				UtilsWepps::debugf($response);
 				break;
 		}
 		$this->output = json_encode($response,JSON_UNESCAPED_UNICODE);
@@ -246,7 +246,7 @@ class YandexKassaPPS {
 				/*
 				 * Заказ
 				 */
-				$obj = new DataPPS ( "TradeOrders" );
+				$obj = new DataWepps ( "TradeOrders" );
 				//$body['object']['payment_method']['id']
 				//$body['object']['id']
 				$order = $obj->getMax ( "t.OBuyOrderIdResponse='{$body['object']['id']}' and t.OBuyMerchant='YandexKassa'" ) [0];
@@ -269,14 +269,14 @@ class YandexKassaPPS {
 				$sql = "update TradeOrders set OBuySumm=Summ,
                         OBuyDate='{$this->date}'
                         where OBuyOrderIdResponse='{$body['object']['payment_method']['id']}' and OBuyMerchant='YandexKassa'";
-				ConnectPPS::$instance->query ( $sql );
+				ConnectWepps::$instance->query ( $sql );
 				$output = [ 
 						'action' => 'payment',
 						'message' => $subject,
 						'error' => 0];
-				$mail = new MailPPS();
-				$mail->mail(ConnectPPS::$projectDev['email'], $subject, $message);
-				CartUtilsPPS::sendOrderNotify($order);
+				$mail = new MailWepps();
+				$mail->mail(ConnectWepps::$projectDev['email'], $subject, $message);
+				CartUtilsWepps::sendOrderNotify($order);
 				return $output;
 				break;
 			case "payment.waiting_for_capture":

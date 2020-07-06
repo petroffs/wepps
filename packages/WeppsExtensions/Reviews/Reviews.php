@@ -1,8 +1,8 @@
 <?
-namespace PPSExtensions\Reviews;
+namespace WeppsExtensions\Reviews;
 
 
-class ReviewsPPS {
+class ReviewsWepps {
 	
 }
 ?>

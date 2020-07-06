@@ -1,33 +1,33 @@
 <?
-namespace PPSExtensions\Example;
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Utils\TemplateHeadersPPS;
+namespace WeppsExtensions\Example;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 
-class ExamplePPS extends ExtensionPPS {
+class ExampleWepps extends ExtensionWepps {
 	public function request() {
-		$smarty = SmartyPPS::getSmarty ();
+		$smarty = SmartyWepps::getSmarty ();
 		$rand = $this->headers::$rand;
-		switch (NavigatorPPS::$pathItem) {
+		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Example/Example.tpl';
+				$this->tpl = 'packages/WeppsExtensions/Example/Example.tpl';
 				$extensionConditions = "";
 				//if ($this->navigator->content['Id']==11) $extensionConditions = "t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'";
-				$obj = new DataPPS("Example");
+				$obj = new DataWepps("Example");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
 				$res = $obj->getMax($extensionConditions,5,$this->page,"t.Priority");
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
-				$smarty->assign('paginatorTpl', $smarty->fetch('packages/PPSExtensions/Addons/Paginator/Paginator.tpl'));
+				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Addons/Paginator/Paginator.tpl'));
 				break;
 			default:
-				$this->tpl = 'packages/PPSExtensions/Example/ExampleItem.tpl';
+				$this->tpl = 'packages/WeppsExtensions/Example/ExampleItem.tpl';
 				$res = $this->getItem("Example");
 				$smarty->assign('element',$res);
 				$extensionConditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
-				$obj = new DataPPS("Example");
+				$obj = new DataWepps("Example");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
 				$res = $obj->getMax($extensionConditions,3,1,"t.Priority");
 				$smarty->assign('elements',$res);

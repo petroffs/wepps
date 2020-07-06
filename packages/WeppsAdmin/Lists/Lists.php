@@ -234,7 +234,6 @@ class ListsWepps {
             $addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
             $addActionRequest = new $addActionClass (array('listSettings'=>&$listSettings,'listScheme'=>&$listScheme,'element'=>&$element,'headers'=>&$headers));
         }
-       
         return array('permFields'=>$permFields['status'],'tabs'=>$tabs,'element'=>$element,
             'listScheme'=>$listScheme,'listSettings'=>$listSettings,'headers'=>$headers);
     }

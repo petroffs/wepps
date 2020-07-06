@@ -13,7 +13,7 @@ $(document).ready(function() {
 		UIkit.modal(obj).hide();
 	});
 	$('div.uk-modal-footer').find('button').eq(1).on('click',function() {
-		layoutPPS.request('action=setSettings&form=emailForm&email='+$('#setEmailInput').val()+'&code='+$('#setEmailCodeClone').val(), '/ext/User/Request.php','');
+		layoutWepps.request('action=setSettings&form=emailForm&email='+$('#setEmailInput').val()+'&code='+$('#setEmailCodeClone').val(), '/ext/User/Request.php','');
 		UIkit.modal(obj).hide();
 	});
 });

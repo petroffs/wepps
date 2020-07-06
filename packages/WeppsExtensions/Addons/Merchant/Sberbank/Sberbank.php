@@ -1,16 +1,16 @@
 <?
-namespace PPSExtensions\Addons\Merchant\Sberbank;
+namespace WeppsExtensions\Addons\Merchant\Sberbank;
 
-use PPS\Utils\UtilsPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Spell\SpellPPS;
-use PPSExtensions\Cart\CartUtilsPPS;
-use PPSExtensions\Mail\MailPPS;
-use PPS\Connect\ConnectPPS;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Spell\SpellWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Mail\MailWepps;
+use WeppsCore\Connect\ConnectWepps;
 
-class SberbankPPS {
+class SberbankWepps {
     private $login;
     private $password;
 	private $get;
@@ -24,7 +24,7 @@ class SberbankPPS {
 		$this->date = date("Y-m-d H:i:s");
 			
 		
-		if (ConnectPPS::$projectDev['debug']==1) {
+		if (ConnectWepps::$projectDev['debug']==1) {
 		    /*
 		     * Тестовая среда
 		     */
@@ -40,16 +40,16 @@ class SberbankPPS {
     	    $this->url = "https://securepayments.sberbank.ru/payment/rest/";
 		}
 		
-	    $action = UtilsPPS::getStringFormatted ( $this->get ['action'] );
+	    $action = UtilsWepps::getStringFormatted ( $this->get ['action'] );
 		if ($action == '')
-			ExceptionPPS::error404 ();
+			ExceptionWepps::error404 ();
 		
 		switch ($action) {
 		    case "form":
 		        $sql = "select * from TradeOrders where Id='{$this->get['id']}'";
-		        $res = ConnectPPS::$instance->fetch($sql);
+		        $res = ConnectWepps::$instance->fetch($sql);
 		        if (!isset($res[0]['Id'])) {
-		            ExceptionPPS::error404();
+		            ExceptionWepps::error404();
 		        }
 		        $orderContent = $res[0];
                 $date = new \DateTime($orderContent['ODate']);
@@ -59,7 +59,7 @@ class SberbankPPS {
 		        
 		        $orderIdU = "{$this->get['id']}_{$dateU}";
 		        $sql = "update TradeOrders set OBuyOrderId='$orderIdU',OBuyMerchant='Sberbank' where Id= '{$this->get['id']}'";
-                ConnectPPS::$instance->query($sql);
+                ConnectWepps::$instance->query($sql);
 		        
 		        $data = array();
 		        $data['userName'] = $this->login;
@@ -67,9 +67,9 @@ class SberbankPPS {
 		        $data['orderNumber'] = urlencode($orderIdU);
 		        $data['amount'] = $orderContent['Summ']*100;
 		        $data['email'] = $orderContent['Email'];
-		        $data['returnUrl'] = ConnectPPS::$projectDev['protocol'].ConnectPPS::$projectDev['host']."/ext/Addons/Merchant/Sberbank/Request.php?action=success";
-		        $data['failUrl'] = ConnectPPS::$projectDev['protocol'].ConnectPPS::$projectDev['host']."/ext/Addons/Merchant/SberbankRequest.php?action=fail";
-		        $data['description'] = "Оплата товаров по заказу №".CartUtilsPPS::setOrderNumber($orderContent['Id'])." от ".$date->format('d.m.Y H:i:s');
+		        $data['returnUrl'] = ConnectWepps::$projectDev['protocol'].ConnectWepps::$projectDev['host']."/ext/Addons/Merchant/Sberbank/Request.php?action=success";
+		        $data['failUrl'] = ConnectWepps::$projectDev['protocol'].ConnectWepps::$projectDev['host']."/ext/Addons/Merchant/SberbankRequest.php?action=fail";
+		        $data['description'] = "Оплата товаров по заказу №".CartUtilsWepps::setOrderNumber($orderContent['Id'])." от ".$date->format('d.m.Y H:i:s');
 		        
 		        
 		        /*
@@ -77,7 +77,7 @@ class SberbankPPS {
 		         */
 		        
 		        $sql = "select * from TradeClientsHistory where OrderId='{$orderContent['Id']}'";
-		        $res = ConnectPPS::$instance->fetch($sql);
+		        $res = ConnectWepps::$instance->fetch($sql);
 		        $positions = array();
 		        foreach ($res as $key=>$value) {
 		        	$positions[] = array(
@@ -92,7 +92,7 @@ class SberbankPPS {
 		        	);
 		        }
 		        
-		        $phone = UtilsPPS::getPhoneFormatted($orderContent['Phone']);
+		        $phone = UtilsWepps::getPhoneFormatted($orderContent['Phone']);
 		        
 		        $orderBundle = array(
 		        		'customerDetails'=>array('phone'=>"{$phone['view2']}",'email'=>$orderContent['Email']),
@@ -106,7 +106,7 @@ class SberbankPPS {
 		            echo 'Ошибка #' . $response['errorCode'] . ': ' . $response['errorMessage'];
 		        } else {
 		            $sql = "update TradeOrders set OBuyOrderIdResponse='{$response['orderId']}' where Id='{$this->get['id']}'";
-		            ConnectPPS::$instance->query($sql);
+		            ConnectWepps::$instance->query($sql);
 		            header('Location: ' . $response['formUrl']);
 		            exit();
 		        }
@@ -115,7 +115,7 @@ class SberbankPPS {
 			    $sql = "update TradeOrders set OBuySumm=Summ,
                         OBuyDate='{$this->date}' 
                         where OBuyOrderIdResponse='{$this->get['orderId']}' and OBuyMerchant='Sberbank'";
-			    ConnectPPS::$instance->query($sql);
+			    ConnectWepps::$instance->query($sql);
 			    $this->output = array (
 						'action' => $action,
 						'error'> 0,
@@ -129,7 +129,7 @@ class SberbankPPS {
 				
 				break;
 			case "fail" :
-			    UtilsPPS::debug('fail',1);
+			    UtilsWepps::debug('fail',1);
 				$this->output = array (
 						'action' => $action,
 						'error' => 1 
@@ -156,10 +156,10 @@ class SberbankPPS {
 		}
 		
 		if (isset ( $res ['error'] ) && $res['error']!=0 ) {
-			$t = UtilsPPS::debug( $res, 0, false );
-			$t .= UtilsPPS::debug ( $this->get, 0, false );
-			$obj = new MailPPS ( 'html' );
-			$obj->mail ( "mail@petroffs.com", "Платежи Сбербанк", $t );
+			$t = UtilsWepps::debug( $res, 0, false );
+			$t .= UtilsWepps::debug ( $this->get, 0, false );
+			$obj = new MailWepps ( 'html' );
+			$obj->mail ( ConnectWepps::$projectDev['email'], "Платежи Сбербанк", $t );
 		}
 	}
 	

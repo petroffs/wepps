@@ -1,26 +1,25 @@
 <?
-namespace PPSExtensions\Gallery;
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\TemplateHeadersPPS;
+namespace WeppsExtensions\Gallery;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 
-class GalleryPPS extends ExtensionPPS {
+class GalleryWepps extends ExtensionWepps {
 	public function request() {
-		$smarty = SmartyPPS::getSmarty();
-		$rand = $this->headers::$rand;
-		switch (NavigatorPPS::$pathItem) {
+		$smarty = SmartyWepps::getSmarty();
+		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Gallery/Gallery.tpl';
-				$obj = new DataPPS("s_Files");
+				$this->tpl = 'packages/WeppsExtensions/Gallery/Gallery.tpl';
+				$obj = new DataWepps("s_Files");
 				$obj->setJoin("inner join Gallery as fg on fg.Id=t.TableNameId and t.TableName='Gallery'");
 				$res = $obj->getMax("t.TableName='Gallery' and fg.DirectoryId = '{$this->navigator->content['Id']}'",500,1,'t.Priority');
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 		/**
@@ -28,8 +27,8 @@ class GalleryPPS extends ExtensionPPS {
 		 */
 		$this->headers->css("/packages/vendor_local/fresco/css/fresco/fresco.css");
 		$this->headers->js("/packages/vendor_local/fresco/js/fresco/fresco.js");
-		$this->headers->css("/ext/Gallery/Gallery.{$rand}.css");
-		$this->headers->js("/ext/Gallery/Gallery.{$rand}.js");
+		$this->headers->css("/ext/Gallery/Gallery.{$this->rand}.css");
+		$this->headers->js("/ext/Gallery/Gallery.{$this->rand}.js");
 		
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;

@@ -1,31 +1,30 @@
 <?
-namespace PPSExtensions\Alignment1;
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\TemplateHeadersPPS;
+namespace WeppsExtensions\Alignment1;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 
-class Alignment1PPS extends ExtensionPPS {
+class Alignment1Wepps extends ExtensionWepps {
 	public function request() {
-		$smarty = SmartyPPS::getSmarty();
-		$rand = $this->headers::$rand;
-		switch (NavigatorPPS::$pathItem) {
+		$smarty = SmartyWepps::getSmarty();
+		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Alignment1/Alignment1.tpl';
+				$this->tpl = 'packages/WeppsExtensions/Alignment1/Alignment1.tpl';
 				$smarty->assign('element',$this->navigator->content);
 				$this->navigator->content['Text1'] = '';
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 		/**
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/Alignment1/Alignment1.{$rand}.css");
-		$this->headers->js("/ext/Alignment1/Alignment1.{$rand}.js");
+		$this->headers->css("/ext/Alignment1/Alignment1.{$this->rand}.css");
+		$this->headers->js("/ext/Alignment1/Alignment1.{$this->rand}.js");
 		
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;

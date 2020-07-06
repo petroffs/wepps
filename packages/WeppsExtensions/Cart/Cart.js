@@ -10,12 +10,12 @@ var readyCartInit = function() {
 	$('a.remove').on('click',function(event) {
 		event.preventDefault();
 		var id = $(this).data('id');
-		layoutPPS.add('action=removePromt&id='+id,'/ext/Cart/Request.php');
+		layoutWepps.add('action=removePromt&id='+id,'/ext/Cart/Request.php');
 	});
 	$('select.qtyselect').on('change',function(event) {
 		event.stopPropagation();
 		var id = $(this).data('id');
-		layoutPPS.request('action=qty&id='+id+'&qty='+$(this).val(),'/ext/Cart/Request.php',$('#cart-wrapper'));
+		layoutWepps.request('action=qty&id='+id+'&qty='+$(this).val(),'/ext/Cart/Request.php',$('#cart-wrapper'));
 	});
 	$('#orderCart').on('click',function(event) {
 		event.preventDefault();

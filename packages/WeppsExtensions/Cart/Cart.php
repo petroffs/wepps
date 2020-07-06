@@ -1,53 +1,53 @@
 <?
-namespace PPSExtensions\Cart;
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\TemplateHeadersPPS;
-use PPS\Utils\UtilsPPS;
-use PPS\Spell\SpellPPS;
+namespace WeppsExtensions\Cart;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Spell\SpellWepps;
 
-class CartPPS extends ExtensionPPS {
+class CartWepps extends ExtensionWepps {
 	public function request() {
 		$headers = $this->headers;
-		$smarty = SmartyPPS::getSmarty();
-		$cartSummary = CartUtilsPPS::cartSummary();
+		$smarty = SmartyWepps::getSmarty();
+		$cartSummary = CartUtilsWepps::cartSummary();
 		
-// 		UtilsPPS::debug($cartSummary['cart']);
-// 		CartUtilsPPS::addOrderPositions(0);
+// 		UtilsWepps::debug($cartSummary['cart']);
+// 		CartUtilsWepps::addOrderPositions(0);
 // 		exit();
 		
-		switch (NavigatorPPS::$pathItem) {
+		switch (NavigatorWepps::$pathItem) {
 			case 'order':
-				if (!isset($_SESSION['user']['Id'])) ExceptionPPS::error404 ();
+				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404 ();
 				$this->extensionData ['element'] = 1;
 				
 				if ($cartSummary ['qty'] == 0) {
-					$this->tpl = 'packages/PPSExtensions/Cart/CartEmpty.tpl';
+					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
 					$this->navigator->content ['Name'] = "Ваша корзина пуста";
 				} else {
-					$this->tpl = 'packages/PPSExtensions/Cart/CartOrder.tpl';
+					$this->tpl = 'packages/WeppsExtensions/Cart/CartOrder.tpl';
 					$this->navigator->content ['Name'] = "Оформление заказа";
 					$this->headers->js ( "/ext/Cart/CartOrder.js" );
 					
-					$obj = new DataPPS ( "s_Users" );
+					$obj = new DataWepps ( "s_Users" );
 					$user = $obj->getMax ( $_SESSION ['user'] ['Id'] ) [0];
 					$smarty->assign ( 'user', $user );
 					if ($_SESSION['user']['ShowAdmin']==1) {
 						$this->headers->js("/ext/Profile/Profile.{$headers::$rand}.js");
-						$smarty->assign( 'profileStaffTpl' , $smarty->fetch('packages/PPSExtensions/Profile/ProfileStaff.tpl'));
+						$smarty->assign( 'profileStaffTpl' , $smarty->fetch('packages/WeppsExtensions/Profile/ProfileStaff.tpl'));
 					}
-					$smarty->assign ( 'cartAboutTpl', $smarty->fetch ( 'packages/PPSExtensions/Cart/CartAbout.tpl' ) );
-					$obj = new DataPPS ( "GeoCities" );
+					$smarty->assign ( 'cartAboutTpl', $smarty->fetch ( 'packages/WeppsExtensions/Cart/CartAbout.tpl' ) );
+					$obj = new DataWepps ( "GeoCities" );
 					$res = $obj->get ( "DisplayOff=0 and Name = '{$user['City']}'", 1, 1, "Priority,Name" );
-					// UtilsPPS::debug($user,1);
+					// UtilsWepps::debug($user,1);
 					if (isset ( $res [0] ['Id'] )) {
 						$js = "
 					<script>
 					setTimeout(function() {
-						layoutPPS.request('action=delivery&city={$res[0]['Name']}&cityId={$res[0]['Id']}', '/ext/Cart/Request.php',$('#delivery'));
+						layoutWepps.request('action=delivery&city={$res[0]['Name']}&cityId={$res[0]['Id']}', '/ext/Cart/Request.php',$('#delivery'));
 					},500);
 					</script>
 					";
@@ -58,19 +58,19 @@ class CartPPS extends ExtensionPPS {
 				break;
 			case 'finish':
 				//echo $text;
-				//UtilsPPS::debug($text,0);
-				//UtilsPPS::debug($_SESSION,1);
+				//UtilsWepps::debug($text,0);
+				//UtilsWepps::debug($_SESSION,1);
 				$this->extensionData['element'] = 1;
 				
 				
 				if ($cartSummary['qty']==0) {
 					$this->navigator->content['Name'] = "Ваша корзина пуста";
-					$this->tpl = 'packages/PPSExtensions/Cart/CartEmpty.tpl';
+					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
 				} else {
 					/*
 					 * Создать заказ, смотрим структуру текущиего сайта (HISTORY ORDERS STATUSES)
 					 */
-					$this->tpl = 'packages/PPSExtensions/Cart/CartFinish.tpl';
+					$this->tpl = 'packages/WeppsExtensions/Cart/CartFinish.tpl';
 					//$this->pathItem = $ppsUrl;
 					
 					
@@ -84,7 +84,7 @@ class CartPPS extends ExtensionPPS {
 						return;
 					}
 					
-					$orderId = SpellPPS::getNumberOrder($_SESSION['cartAdd']['orderId']);
+					$orderId = SpellWepps::getNumberOrder($_SESSION['cartAdd']['orderId']);
 					
 					$this->navigator->content['Name'] = "Заказ № {$orderId} успешно отправлен";
 					
@@ -92,9 +92,9 @@ class CartPPS extends ExtensionPPS {
 					/*
 					 * Дополнение к финальному сообщению
 					 */
-					$obj = new DataPPS("TradePaymentVars");
+					$obj = new DataWepps("TradePaymentVars");
 					$payment = $obj->getMax($cartSummary['cartAdd']['paymentChecked'])[0];
-					$paymentFinishDir = 'packages/PPSExtensions/Cart/'.$payment['PaymentExtFinish'];
+					$paymentFinishDir = 'packages/WeppsExtensions/Cart/'.$payment['PaymentExtFinish'];
 					if (is_file($paymentFinishDir)) require_once $paymentFinishDir;
 					$smarty->assign('messageFinal',$payment['DescrFinish']);
 					
@@ -117,25 +117,25 @@ class CartPPS extends ExtensionPPS {
 				
 				break;
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Cart/CartSummary.tpl';
+				$this->tpl = 'packages/WeppsExtensions/Cart/CartSummary.tpl';
 				if (isset($_SESSION['user']['ShowAdmin']) && $_SESSION['user']['ShowAdmin']==1) {
 					$this->headers->js("/ext/Profile/Profile.{$headers::$rand}.js");
-					$smarty->assign( 'profileStaffTpl' , $smarty->fetch('packages/PPSExtensions/Profile/ProfileStaff.tpl'));
+					$smarty->assign( 'profileStaffTpl' , $smarty->fetch('packages/WeppsExtensions/Profile/ProfileStaff.tpl'));
 				}
 				$smarty->assign('cartSummary',$cartSummary);
 				
-				$smarty->assign('cartAboutTpl',$smarty->fetch('packages/PPSExtensions/Cart/CartAbout.tpl'));
-// 				$obj = new DataPPS("Cart");
+				$smarty->assign('cartAboutTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartAbout.tpl'));
+// 				$obj = new DataWepps("Cart");
 // 				$res = $obj->getMax("t.DisplayOff=0");
 // 				$smarty->assign('elements',$res);
 
 				if ($cartSummary['qty']==0) {
 					$this->navigator->content['Name'] = "Ваша корзина пуста";
-					$this->tpl = 'packages/PPSExtensions/Cart/CartEmpty.tpl';
+					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
 				}
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 		
@@ -147,11 +147,11 @@ class CartPPS extends ExtensionPPS {
 		$this->headers->css("/ext/Cart/Cart.{$headers::$rand}.css");
 		$this->headers->js("/ext/Cart/Cart.{$headers::$rand}.js");
 		$this->headers->css("/ext/Products/Products.{$headers::$rand}.css");
-		//UtilsPPS::debug($this->destinationOuter);
+		//UtilsWepps::debug($this->destinationOuter);
 		//$smarty->assign($this->destinationTpl,$this->destinationOuter);
 		$smarty->assign('tpl',$smarty->fetch($this->tpl));
-		$smarty->assign('extension',$smarty->fetch('packages/PPSExtensions/Cart/Cart.tpl'));
-		//UtilsPPS::debug(1,1);
+		$smarty->assign('extension',$smarty->fetch('packages/WeppsExtensions/Cart/Cart.tpl'));
+		//UtilsWepps::debug(1,1);
 		return;
 	}
 }

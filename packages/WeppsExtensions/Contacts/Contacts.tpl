@@ -1,4 +1,3 @@
-qsqds
 <div class="elements ContactsMain">
 	<div
 		class="items pps_flex pps_flex_row pps_flex_row_top pps_animate">
@@ -51,7 +50,7 @@ qsqds
 
 <div class="elements ContactsForm formWrapper pps_padding pps_shadow">
 		<form
-			action="javascript:formSenderPPS.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
+			action="javascript:formSenderWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
 			id="feedbackForm" class="pps_flex_11 ">
 			<input type="hidden" name="pageurl"
 				value="{$smarty.server.REQUEST_URI}" />
@@ -111,7 +110,7 @@ qsqds
 {*
 <div class="elements ContactsForm pps_bg_silver pps_shadow">
 	<form
-		action="javascript:formSenderPPS.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
+		action="javascript:formSenderWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
 		id="feedbackForm" class="pps_flex_11 ">
 		<input type="hidden" name="pageurl"
 			value="{$smarty.server.REQUEST_URI}" />

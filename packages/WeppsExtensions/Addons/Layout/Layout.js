@@ -13,7 +13,7 @@ $(document).ready(readyLayoutInit);
  * WindowLayer Object
  * deprecated
  */
-var LayoutPPS = function() {
+var LayoutWepps = function() {
 	this.add = function(serialized, url) {
 		$('.winLayer').remove();
 		this.parent = $('body').eq(0);
@@ -119,7 +119,7 @@ var LayoutPPS = function() {
 	}
 }
 
-class Layout2PPS {
+class Layout2Wepps {
 	constructor(settings={}) {
 		if (settings != undefined) {
 			this.settings = settings 
@@ -229,12 +229,12 @@ class Layout2PPS {
 	}
 }
 
-class UtilsPPS {
+class UtilsWepps {
 	money(val) {
 		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
 	}
 }
 
-var layoutPPS = new LayoutPPS(); //deprecated
-var layout2PPS = new Layout2PPS();
-var utilsPPS = new UtilsPPS();
+var layoutWepps = new LayoutWepps(); //deprecated
+var layout2Wepps = new Layout2Wepps();
+var utilsWepps = new UtilsWepps();

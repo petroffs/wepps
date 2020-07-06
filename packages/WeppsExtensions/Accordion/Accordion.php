@@ -1,25 +1,25 @@
 <?
-namespace PPSExtensions\Accordion;
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\TemplateHeadersPPS;
-use PPS\Utils\UtilsPPS;
+namespace WeppsExtensions\Accordion;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Utils\UtilsWepps;
 
-class AccordionPPS extends ExtensionPPS {
+class AccordionWepps extends ExtensionWepps {
 	public function request() {
-		$smarty = SmartyPPS::getSmarty();
-		switch (NavigatorPPS::$pathItem) {
+		$smarty = SmartyWepps::getSmarty();
+		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Accordion/Accordion.tpl';
-				$obj = new DataPPS("Services");
+				$this->tpl = 'packages/WeppsExtensions/Accordion/Accordion.tpl';
+				$obj = new DataWepps("Services");
 				$res = $obj->getMax("t.DisplayOff=0");
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 		/**

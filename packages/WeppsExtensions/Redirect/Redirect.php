@@ -1,20 +1,20 @@
 <?
-namespace PPSExtensions\Redirect;
+namespace WeppsExtensions\Redirect;
 
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\TemplateHeadersPPS;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 
-class RedirectPPS extends ExtensionPPS {
+class RedirectWepps extends ExtensionWepps {
 	public function request() {
-		$smarty = SmartyPPS::getSmarty();
+		$smarty = SmartyWepps::getSmarty();
 		$rand = $this->headers::$rand;
-		switch (NavigatorPPS::$pathItem) {
+		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Redirect/Redirect.tpl';
+				$this->tpl = 'packages/WeppsExtensions/Redirect/Redirect.tpl';
 				if (isset($this->navigator->child[0])) {
 					header("HTTP/1.1 301 Moved Permanently");
 					header("Location: {$this->navigator->child[0]['Url']}");
@@ -22,7 +22,7 @@ class RedirectPPS extends ExtensionPPS {
 				}
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 		/**

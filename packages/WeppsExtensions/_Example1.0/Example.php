@@ -1,26 +1,26 @@
 <?
-namespace PPSExtensions\Example;
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\TemplateHeadersPPS;
+namespace WeppsExtensions\Example;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 
-class ExamplePPS extends ExtensionPPS {
+class ExampleWepps extends ExtensionWepps {
 	public function request() {
 		//$this->destinationTpl = 'extension'; //horizontalBottomTpl
-		$smarty = SmartyPPS::getSmarty();
+		$smarty = SmartyWepps::getSmarty();
 		$rand = $this->headers::$rand;
-		switch (NavigatorPPS::$pathItem) {
+		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Example/Example.tpl';
-				$obj = new DataPPS("Example");
+				$this->tpl = 'packages/WeppsExtensions/Example/Example.tpl';
+				$obj = new DataWepps("Example");
 				$res = $obj->getMax("t.DisplayOff=0");
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 		/*

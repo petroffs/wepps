@@ -1,13 +1,24 @@
 <?php
 
-namespace PPSExtensions\Addons\RemoteServices;
+namespace WeppsExtensions\Addons\RemoteServices;
 
 use Curl\Curl;
-use PPS\Utils\UtilsPPS;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect\ConnectWepps;
 
-class RecaptchaPPS extends RemoteServicesPPS {
-	private $sitekey = '6LdYpawUAAAAAKrtzBJFkum0OifxfwRNvNESvHhv';
-	private $secret = '6LdYpawUAAAAAPAu2TWj5ZS2Eo1Ka5ixnHrQsdUg';
+class RecaptchaWepps extends RemoteServicesWepps {
+	
+	private $sitekey;
+	private $secret;
+	
+	public function __construct($settings=[]) {
+		$this->curl = new Curl();
+		$this->curl->setHeader('Content-Type', 'application/json;charset=UTF-8');
+		$this->settings = $settings;
+		
+		$this->sitekey = ConnectWepps::$projectServices['recaptcha']['sitekey'];
+		$this->secret = ConnectWepps::$projectServices['recaptcha']['secret'];
+	}
 
 	/*
 	 * Получить ответ V2

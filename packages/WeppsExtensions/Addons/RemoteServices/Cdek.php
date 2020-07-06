@@ -1,16 +1,15 @@
 <?php
 
-namespace PPSExtensions\Addons\RemoteServices;
-
-use PPS\Connect\ConnectPPS;
+namespace WeppsExtensions\Addons\RemoteServices;
+use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
-use PPS\Utils\UtilsPPS;
+use WeppsCore\Utils\UtilsWepps;
 
 /*
  * СДЕК
  * добавить логику ПВЗ
  */
-class CdekPPS extends RemoteServicesPPS {
+class CdekWepps extends RemoteServicesWepps {
 	private $login = '0f29bYnPm7pKRezEh3qHFk566Sc62jjR';
 	private $password = 'qSJ5A4SKImvGFTltRXyM9fR5awbFJkX9';
 	private $url = 'https://integration.cdek.ru';
@@ -61,7 +60,7 @@ class CdekPPS extends RemoteServicesPPS {
 	public function getCityId($city) {
 	    $city = addslashes($city);
 	    $sql = "select * from CitiesCdek where Name='$city'";
-	    $res = ConnectPPS::$instance->fetch($sql);
+	    $res = ConnectWepps::$instance->fetch($sql);
 	    if (!empty($res[0]['Id'])) {
 	        return $res[0]['Id'];
 	    } else {
@@ -85,7 +84,7 @@ class CdekPPS extends RemoteServicesPPS {
 	    $url = "https://integration.cdek.ru/pvzlist/v1/json?cityid=$city";
 	    $this->cache = 1;
 	    $response = $this->getResponse($url);
-	    //UtilsPPS::debugf($response);
+	    //UtilsWepps::debugf($response);
 	    return $response;
 	}
 }

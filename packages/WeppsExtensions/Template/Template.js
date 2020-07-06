@@ -6,7 +6,7 @@ var readyTemplateInit = function() {
 	});
 	/*
 	$('#contactme').on('click',function(e) {
-		layoutPPS.add('action=contactme','/ext/Addons/Request.php');
+		layoutWepps.add('action=contactme','/ext/Addons/Request.php');
 	});
 	$('input[name="phone"]').inputmask({ "mask": "+ 7 (999) 999-99-99" });
 	*/

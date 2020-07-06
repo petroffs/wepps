@@ -1,13 +1,12 @@
 <?
-namespace PPSExtensions\Services;
-
-use PPS\Utils\RequestPPS;
+namespace WeppsExtensions\Services;
+use WeppsCore\Utils\RequestWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestServicesPPS extends RequestPPS {
+class RequestServicesWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
@@ -19,7 +18,7 @@ class RequestServicesPPS extends RequestPPS {
 		}
 	}
 }
-$request = new RequestServicesPPS ($_REQUEST);
+$request = new RequestServicesWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

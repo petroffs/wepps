@@ -11,7 +11,7 @@
 				</ul>
 			</div>
 			<form
-				action="javascript:formSenderPPS.send('addOrder','addOrderForm','/ext/Cart/Request.php')"
+				action="javascript:formSenderWepps.send('addOrder','addOrderForm','/ext/Cart/Request.php')"
 				id="addOrderForm">
 				<div class="cartForm">
 					<!-- Город -->

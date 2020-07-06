@@ -1,15 +1,14 @@
 <?
-namespace PPSExtensions\User;
-
-use PPS\Utils\RequestPPS;
-use PPS\Utils\UtilsPPS;
-use PPSExtensions\User\UserPPS;
-use PPS\Validator\ValidatorPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Connect\ConnectPPS;
-use PPS\Core\DataPPS;
-use PPSExtensions\Mail\MailPPS;
-use PPS\Spell\SpellPPS;
+namespace WeppsExtensions\User;
+use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\User\UserWepps;
+use WeppsCore\Validator\ValidatorWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsExtensions\Mail\MailWepps;
+use WeppsCore\Spell\SpellWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -17,25 +16,25 @@ require_once '../../../configloader.php';
 
 if (! session_start ())
 	session_start ();
-class RequestUserPPS extends RequestPPS {
+class RequestUserWepps extends RequestWepps {
 	public function request($action = "") {
-		$users = new DataPPS("s_Users");
+		$users = new DataWepps("s_Users");
 		$dateCurr = date("Y-m-d H:i:s");
 		switch ($action) {
 			case 'getAuth' :
 				$errors = array();
-				$errors['email'] = ValidatorPPS::isNotEmpty($this->get['email'], "Не заполнено");
-				$errors['pass'] = ValidatorPPS::isNotEmpty($this->get['pass'], "Не заполнено");
-				$outer = ValidatorPPS::setFormErrorsIndicate($errors, $this->get['form']);
+				$errors['email'] = ValidatorWepps::isNotEmpty($this->get['email'], "Не заполнено");
+				$errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
+				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
-					$user = UserPPS::getAuth($this->get['email'],$this->get['pass']);
+					$user = UserWepps::getAuth($this->get['email'],$this->get['pass']);
 					if (count($user)==0) {
 						$errors = array();
 						$errors['email'] = "Ошибка входа";
-						$outer = ValidatorPPS::setFormErrorsIndicate($errors, $this->get['form']);
+						$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 						echo $outer['Out'];
-						ConnectPPS::$instance->close();
+						ConnectWepps::$instance->close();
 					}
 					$js = "
 						<script>
@@ -44,20 +43,20 @@ class RequestUserPPS extends RequestPPS {
 						";
 					echo $js;
 				}
-				ConnectPPS::$instance->close();				
+				ConnectWepps::$instance->close();				
 				break;
 			case 'addUser' :
 				$errors = array();
-				$errors['name'] = ValidatorPPS::isNotEmpty($this->get['name'], "Не заполнено");
-				$errors['surname'] = ValidatorPPS::isNotEmpty($this->get['surname'], "Не заполнено");
-				//$errors['patronymic'] = ValidatorPPS::isNotEmpty($this->get['patronymic'], "Не заполнено");
-				$errors['email'] = ValidatorPPS::isEmail($this->get['email'], "Не заполнено");
-				$errors['phone'] = ValidatorPPS::isNotEmpty($this->get['phone'], "Не заполнено");
+				$errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
+				$errors['surname'] = ValidatorWepps::isNotEmpty($this->get['surname'], "Не заполнено");
+				//$errors['patronymic'] = ValidatorWepps::isNotEmpty($this->get['patronymic'], "Не заполнено");
+				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Не заполнено");
+				$errors['phone'] = ValidatorWepps::isNotEmpty($this->get['phone'], "Не заполнено");
 				if ($errors['email']=='') {
 					$res = $users->get("Email='{$this->get['email']}'")[0];
 					if (count($res)!=0) $errors['email'] = "E-mail уже существует";
 				}
-				$phone = UtilsPPS::getPhoneFormatted($this->get['phone']);
+				$phone = UtilsWepps::getPhoneFormatted($this->get['phone']);
 				if ($errors['phone']=='' && !isset($phone['view2'])) {
 					$errors['phone'] = "Неверный формат";
 				}
@@ -66,7 +65,7 @@ class RequestUserPPS extends RequestPPS {
 					/**
 					 * Проверка на существование телефона
 					 */
-					$res = ConnectPPS::$instance->fetch("select count(*) as Co from s_Users where Phone='".$phone['view2']."'");
+					$res = ConnectWepps::$instance->fetch("select count(*) as Co from s_Users where Phone='".$phone['view2']."'");
 					if ($res[0]['Co']!=0) {
 						$errors['phone'] = "Уже используется";
 					}
@@ -77,8 +76,8 @@ class RequestUserPPS extends RequestPPS {
 					/**
 					 * Проверка введенного пароля
 					 */
-					$errors['pass'] = ValidatorPPS::isNotEmpty($this->get['pass'], "Не заполнено");
-					$errors['pass2'] = ValidatorPPS::isNotEmpty($this->get['pass2'], "Не заполнено");
+					$errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
+					$errors['pass2'] = ValidatorWepps::isNotEmpty($this->get['pass2'], "Не заполнено");
 					if ($errors['pass']=="" && $errors['pass2']=="") {
 						if (strlen($this->get['pass'])<5) {
 							$errors['pass'] = "Длина пароля от 6 символов";
@@ -88,7 +87,7 @@ class RequestUserPPS extends RequestPPS {
 					}
 					$password = $this->get['pass'];
 				}
-				$outer = ValidatorPPS::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					
@@ -99,7 +98,7 @@ class RequestUserPPS extends RequestPPS {
 					 * Добавить пользователя и выслать уведомление
 					 * См. валидацию и другое по регистрации в ппс5
 					 * */
-					$password = ($password=='') ? UserPPS::addPassword() : $password;
+					$password = ($password=='') ? UserWepps::addPassword() : $password;
 					$row = array();
 					$row['NameFirst'] = mb_convert_case($this->get['name'], MB_CASE_TITLE, "UTF-8");
 					$row['NameSurname'] = mb_convert_case($this->get['surname'], MB_CASE_TITLE, "UTF-8");
@@ -125,12 +124,12 @@ class RequestUserPPS extends RequestPPS {
 					$mess .= "http://".$_SERVER['HTTP_HOST']."\n";
 					$mess .= "логин: ".$row['Email']."\n";
 					$mess .= "пароль: ".$password."\n\n";
-					$mess.= "С уважением, ".ConnectPPS::$projectInfo['name']."\n";
+					$mess.= "С уважением, ".ConnectWepps::$projectInfo['name']."\n";
 					$mess = nl2br($mess);
-					$obj = new MailPPS('html');
+					$obj = new MailWepps('html');
 					$obj->mail($row['Email'],"Регистрация на сайте",$mess);
 					//$obj->setDebug();
-					$user = UserPPS::getAuth($this->get['email'],$password);
+					$user = UserWepps::getAuth($this->get['email'],$password);
 					
 					
 					/*
@@ -146,41 +145,41 @@ class RequestUserPPS extends RequestPPS {
 						";
 					echo $js;
 				}
-				ConnectPPS::$instance->close();
+				ConnectWepps::$instance->close();
 				break;
 			case 'removeAuth':
-				UserPPS::removeAuth();
+				UserWepps::removeAuth();
 				$js = "
 						<script>
 						location.reload();
 						</script>
 						";
 				echo $js;
-				ConnectPPS::$instance->close();
+				ConnectWepps::$instance->close();
 				break;
 			case "setPassback":
 				$errors = array();
-				$errors['email'] = ValidatorPPS::isEmail($this->get['email'], "Неверное значение");
+				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
 				if ($errors['email']=='') {
 					$user = $users->get("Email='{$this->get['email']}'")[0];
 					if (!isset($user['Id'])) $errors['email'] = "E-mail не найден";
 				}
 				
-				$recapcha = UserPPS::getRecapcha($this->get['g-recaptcha-response']);
+				$recapcha = UserWepps::getRecapcha($this->get['g-recaptcha-response']);
 				if ($recapcha->success!=1) {
 					$errors['capchadub'] = 'Код неверный, обновите страницу';
 				}
-				$outer = ValidatorPPS::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					/**
 					 * Логика и отправка сообщения
 					 * $user - известен
 					 */
-					$password = UserPPS::addPassword();
+					$password = UserWepps::addPassword();
 					$row = array();
 					$row['FieldChange'] = "Password:".$password;
-					$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserPPS::addPassword());
+					$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserWepps::addPassword());
 					$users->set($user['Id'], $row);
 					$mess = "";
 					$mess .= "дата: ".date("d.m.Y")." время: ".date("H:i")."\n\n";
@@ -194,28 +193,28 @@ class RequestUserPPS extends RequestPPS {
 					$mess .= "ДОСТУП НА САЙТЕ:"."\n";
 					$mess .= "http://".$_SERVER['HTTP_HOST']."\n";
 					$mess .= "логин: ".$user['Email']."\n";
-					$mess.= "\nС уважением, ".ConnectPPS::$projectInfo['name']."\n";
+					$mess.= "\nС уважением, ".ConnectWepps::$projectInfo['name']."\n";
 					$mess = nl2br($mess);
-					$obj = new MailPPS('html');
+					$obj = new MailWepps('html');
 					$obj->setDebug();
 					$obj->mail($user['Email'],"Восстановление доступа",$mess);
-					$arr = ValidatorPPS::setFormSuccess("На электронную почту отправлено сообщение для подтверждения запроса. Спасибо.", $this->get['form']);
+					$arr = ValidatorWepps::setFormSuccess("На электронную почту отправлено сообщение для подтверждения запроса. Спасибо.", $this->get['form']);
 					echo $arr['Out'];
 					
 				}
-				ConnectPPS::$instance->close();
+				ConnectWepps::$instance->close();
 				break;
 			case 'setUser':
-				if (!isset($_SESSION['user']['Id'])) ExceptionPPS::error404();
+				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404();
 				$errors = array();
-				$errors['name'] = ValidatorPPS::isNotEmpty($this->get['name'], "Неверное значение");
-				$errors['surname'] = ValidatorPPS::isNotEmpty($this->get['surname'], "Неверное значение");
-				$obj = new DataPPS("GeoCities");
+				$errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Неверное значение");
+				$errors['surname'] = ValidatorWepps::isNotEmpty($this->get['surname'], "Неверное значение");
+				$obj = new DataWepps("GeoCities");
 				$city = $obj->get("Name='{$this->get['city']}'")[0];
 				if (!isset($city['Id'])) {
 					$errors['city'] = 'Неверное значение';
 				}
-				$outer = ValidatorPPS::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					$row = array();
@@ -231,19 +230,19 @@ class RequestUserPPS extends RequestPPS {
 						$row['City'] = $this->get['city'];
 					}
 					$users->set($_SESSION['user']['Id'], $row);
-					$arr = ValidatorPPS::setFormSuccess ( 'Ваши персональные данные обновлены', 'message', true);
+					$arr = ValidatorWepps::setFormSuccess ( 'Ваши персональные данные обновлены', 'message', true);
 					echo $arr['Out'];
 				}
-				ConnectPPS::$instance->close();
+				ConnectWepps::$instance->close();
 				break;
 			case 'setSettings':
-				if (!isset($_SESSION['user']['Id'])) ExceptionPPS::error404();
+				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404();
 				$user = $users->get($_SESSION['user']['Id'])[0];
-				if (!isset($user['Id'])) ExceptionPPS::error404();
+				if (!isset($user['Id'])) ExceptionWepps::error404();
 				$errors = array();
 				switch ($this->get ['form']) {
 					case 'emailForm' :
-						$errors['email'] = ValidatorPPS::isEmail($this->get['email'], "Неверное значение");
+						$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
 						if ($errors['email']=='' && $this->get['email'] == $user['Email']) {
 							//$errors['email'] = 'E-mail не изменен';
 						} elseif ($errors['email']=='') {
@@ -255,7 +254,7 @@ class RequestUserPPS extends RequestPPS {
 						
 						
 						
-						//UtilsPPS::debug($this->get,1);
+						//UtilsWepps::debug($this->get,1);
 						
 						if ($errors['email']=='' && $this->get['code']=='') {
 							
@@ -265,9 +264,9 @@ class RequestUserPPS extends RequestPPS {
 							$mess .= "---------------\n";
 							$mess .= "День добрый!\nМы получили запрос на обновление настроек аккаунта на сайте http://".$_SERVER['HTTP_HOST']."\n\n";
 							$mess .= "Код: {$_SESSION['userAddons']['EmailCode']}\n\n";
-							$mess.= "С уважением, ".ConnectPPS::$projectInfo['name']."\n";
+							$mess.= "С уважением, ".ConnectWepps::$projectInfo['name']."\n";
 							$mess = nl2br($mess);
-							$obj = new MailPPS('html');
+							$obj = new MailWepps('html');
 							
 							/**
 							 * Временно установлен mail@petroffs.com
@@ -283,7 +282,7 @@ class RequestUserPPS extends RequestPPS {
 									</script>
 									";
 							echo $js;
-							ConnectPPS::$instance->close();
+							ConnectWepps::$instance->close();
 						}
 						
 						if (isset($this->get['code']) && $_SESSION['userAddons']['EmailCode']!=$this->get['code']) {
@@ -294,12 +293,12 @@ class RequestUserPPS extends RequestPPS {
 						if ($errors['email']=='') {
 							$row = array();
 							$row['FieldChange'] = "Email:".$this->get['email'];
-							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserPPS::addPassword());
+							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserWepps::addPassword());
 							$users->set($user['Id'], $row);
 						}
 						break;
 					case 'phoneForm' :
-						$phone = UtilsPPS::getPhoneFormatted($this->get['phone']);
+						$phone = UtilsWepps::getPhoneFormatted($this->get['phone']);
 						$errors['phone'] = '';
 						if ($errors['phone']=='' && !isset($phone['view2'])) {
 							$errors['phone'] = "Неверный формат";
@@ -307,13 +306,13 @@ class RequestUserPPS extends RequestPPS {
 						if ($errors['phone']=='') {
 							$row = array();
 							$row['FieldChange'] = "Phone:".$phone['view2'];
-							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserPPS::addPassword());
+							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserWepps::addPassword());
 							$users->set($user['Id'], $row);
 						}
 						break;
 					case 'passForm' :
-						$errors['pass'] = ValidatorPPS::isNotEmpty($this->get['pass'], "Не заполнено");
-						$errors['pass2'] = ValidatorPPS::isNotEmpty($this->get['pass2'], "Не заполнено");
+						$errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
+						$errors['pass2'] = ValidatorWepps::isNotEmpty($this->get['pass2'], "Не заполнено");
 						if ($errors['pass']=="" && $error['pass2']=="") {
 							if (strlen($this->get['pass'])<5) {
 								$errors['pass'] = "Длина пароля от 6 символов";
@@ -325,17 +324,17 @@ class RequestUserPPS extends RequestPPS {
 						if ($errors['pass']=='') {
 							$row = array();
 							$row['FieldChange'] = "Password:".$this->get['pass'];
-							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserPPS::addPassword());
+							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserWepps::addPassword());
 							$users->set($user['Id'], $row);
 						}
 						
 						break;
 					default :
-						ExceptionPPS::error404 ();
+						ExceptionWepps::error404 ();
 						break;
 				}
 				
-				$outer = ValidatorPPS::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					$mess = "";
@@ -350,20 +349,20 @@ class RequestUserPPS extends RequestPPS {
 					$mess .= "ДОСТУП НА САЙТЕ:"."\n";
 					$mess .= "http://".$_SERVER['HTTP_HOST']."\n";
 					$mess .= "логин: ".$user['Email']."\n\n";
-					$mess.= "С уважением, ".ConnectPPS::$projectInfo['name']."\n";
+					$mess.= "С уважением, ".ConnectWepps::$projectInfo['name']."\n";
 					$mess = nl2br($mess);
-					$obj = new MailPPS('html');
+					$obj = new MailWepps('html');
 					$obj->mail($user['Email'],"Обновление аккаунта",$mess);
-					$arr = ValidatorPPS::setFormSuccess ( '<h3>Вам отправлено электронное письмо со ссылкой для завершения операции.<br/>Проверьте почту.</h3>', 'message');
+					$arr = ValidatorWepps::setFormSuccess ( '<h3>Вам отправлено электронное письмо со ссылкой для завершения операции.<br/>Проверьте почту.</h3>', 'message');
 					echo $arr['Out'];
 				}
-				ConnectPPS::$instance->close();
+				ConnectWepps::$instance->close();
 				break;
 			case "ulogin":
 				if (isset($_REQUEST ['token'])) {
 					$s = file_get_contents ( 'http://ulogin.ru/token.php?token=' . $_REQUEST ['token'] . '&host=' . $_SERVER ['HTTP_HOST'] );
 				} else {
-					ConnectPPS::$instance->close();
+					ConnectWepps::$instance->close();
 					echo "test.";
 					$s = '{"profile":"http:\/\/vk.com\/id135368","first_name":"\u0410\u043b\u0435\u043a\u0441\u0435\u0439","email":"mail@petroffs.com","network":"vkontakte","identity":"http:\/\/vk.com\/id135368","city":"\u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433","photo_big":"https:\/\/pp.vk.me\/c622517\/v622517368\/3ffe2\/5BDwvVXe-qw.jpg","last_name":"\u041f\u0435\u0442\u0440\u043e\u0432","bdate":"29.12.1979","uid":"135368","sex":"2","verified_email":"1"}';
 				}
@@ -391,7 +390,7 @@ class RequestUserPPS extends RequestPPS {
 							'ProfileNetwork'=>$userJSON->network,
 					);
 					$users->set($user['Id'], $row);
-					UserPPS::getAuth();
+					UserWepps::getAuth();
 					
 					
 					/*
@@ -410,12 +409,12 @@ class RequestUserPPS extends RequestPPS {
 				} else {
 					// Регистрируем
 					if (isset ( $userJSON->phone )) {
-						$phone = UtilsPPS::getPhoneFormatted($userJSON->phone);
+						$phone = UtilsWepps::getPhoneFormatted($userJSON->phone);
 						if (isset($phone['view2'])) {
 						}
 					}
 					
-					$password = UserPPS::addPassword();
+					$password = UserWepps::addPassword();
 					$row = array();
 					$row['NameFirst'] = mb_convert_case($userJSON->first_name, MB_CASE_TITLE, "UTF-8");
 					$row['NameSurname'] = (isset($userJSON->last_name)) ? mb_convert_case($userJSON->last_name, MB_CASE_TITLE, "UTF-8") : '';
@@ -443,11 +442,11 @@ class RequestUserPPS extends RequestPPS {
 					$mess .= "http://".$_SERVER['HTTP_HOST']."\n";
 					$mess .= "логин: ".$row['Email']."\n";
 					$mess .= "пароль: ".$password."\n\n";
-					$mess.= "С уважением, ".ConnectPPS::$projectInfo['name']."\n";
+					$mess.= "С уважением, ".ConnectWepps::$projectInfo['name']."\n";
 					$mess = nl2br($mess);
-					$obj = new MailPPS('html');
+					$obj = new MailWepps('html');
 					$obj->mail($row['Email'],"Регистрация на сайте",$mess);
-					$user = UserPPS::getAuth($userJSON->email,$password);
+					$user = UserWepps::getAuth($userJSON->email,$password);
 					
 					
 					
@@ -462,16 +461,16 @@ class RequestUserPPS extends RequestPPS {
 							</script>
 							";
 				}
-				ConnectPPS::$instance->close();
+				ConnectWepps::$instance->close();
 				break;
 			default :
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 	}
 }
 
-$request = new RequestUserPPS ($_REQUEST);
+$request = new RequestUserWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

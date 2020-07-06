@@ -100,9 +100,9 @@ var displayFilteredProducts = function(page) {
 			serialized += '&filter_' + $(value).data('id') + '=' + str;
 		}
 	});
-	url = "/packages/PPSExtensions/Products/Request.php";
+	url = "/packages/WeppsExtensions/Products/Request.php";
 	//ajaxExts(serialized, url);
-	layoutPPS.request(serialized, url);
+	layoutWepps.request(serialized, url);
 	$("html, body").animate({ scrollTop: 0 }, 600);
 	//location.href = "#!"+serialized;
 }

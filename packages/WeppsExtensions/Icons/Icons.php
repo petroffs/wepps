@@ -1,25 +1,25 @@
 <?
-namespace PPSExtensions\Icons;
-use PPS\Core\NavigatorPPS;
-use PPS\Core\SmartyPPS;
-use PPS\Core\DataPPS;
-use PPS\Core\ExtensionPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\TemplateHeadersPPS;
+namespace WeppsExtensions\Icons;
+use WeppsCore\Core\NavigatorWepps;
+use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 
-class IconsPPS extends ExtensionPPS {
+class IconsWepps extends ExtensionWepps {
 	public function request() {
-		$smarty = SmartyPPS::getSmarty();
+		$smarty = SmartyWepps::getSmarty();
 		$rand = $this->headers::$rand;
-		switch (NavigatorPPS::$pathItem) {
+		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/PPSExtensions/Icons/Icons.tpl';
-				$obj = new DataPPS("Gallery");
+				$this->tpl = 'packages/WeppsExtensions/Icons/Icons.tpl';
+				$obj = new DataWepps("Gallery");
 				$res = $obj->getMax("t.DisplayOff=0 and s1.Id='{$this->navigator->content['Id']}'");
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 		/**

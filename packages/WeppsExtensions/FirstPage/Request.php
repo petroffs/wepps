@@ -1,13 +1,12 @@
 <?
-namespace PPSExtensions\FirstPage;
-
-use PPS\Utils\RequestPPS;
+namespace WeppsExtensions\FirstPage;
+use WeppsCore\Utils\RequestWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestCustomPPS extends RequestPPS {
+class RequestCustomWepps extends RequestWepps {
 	public function request($get) {
 		$action = (isset($get['action'])) ? $get['action'] : '';
 
@@ -22,7 +21,7 @@ class RequestCustomPPS extends RequestPPS {
 	}
 }
 
-$request = new RequestCustomPPS ($_REQUEST);
+$request = new RequestCustomWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

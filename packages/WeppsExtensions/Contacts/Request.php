@@ -1,12 +1,11 @@
 <?
-namespace PPSExtensions\Contacts;
-
-use PPS\Utils\RequestPPS;
-use PPS\Utils\UtilsPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Connect\ConnectPPS;
-use PPS\Validator\ValidatorPPS;
-use PPSExtensions\Mail\MailPPS;
+namespace WeppsExtensions\Contacts;
+use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Validator\ValidatorWepps;
+use WeppsExtensions\Mail\MailWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -14,7 +13,7 @@ require_once '../../../configloader.php';
 
 if (!session_start()) session_start();
 
-class RequestContactsPPS extends RequestPPS {
+class RequestContactsWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'feedback':
@@ -22,17 +21,17 @@ class RequestContactsPPS extends RequestPPS {
 				 * Проверка формы
 				 */
 				$errors = array();
-				$errors['name'] = ValidatorPPS::isNotEmpty($this->get['name'], "Не заполнено");
-				$errors['email'] = ValidatorPPS::isEmail($this->get['email'], "Неверно заполнено");
-				$errors['phone'] = ValidatorPPS::isNotEmpty($this->get['phone'], "Не заполнено");
-				$errors['comment'] = ValidatorPPS::isNotEmpty($this->get['comment'], "Не заполнено");
+				$errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
+				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверно заполнено");
+				$errors['phone'] = ValidatorWepps::isNotEmpty($this->get['phone'], "Не заполнено");
+				$errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
 				if ($this->get['phone']!='') {
-					$phone = UtilsPPS::getPhoneFormatted($this->get['phone']);
+					$phone = UtilsWepps::getPhoneFormatted($this->get['phone']);
 					if (!isset($phone['view2'])) {
 						$errors['phone'] = "Неверный формат";
 					}
 				}
-				$outer = ValidatorPPS::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 				$this->assign('jscode', $outer['Out']);
 				if ($outer['Co']==0) {
 					/**
@@ -53,10 +52,10 @@ class RequestContactsPPS extends RequestPPS {
 					if (isset($_SESSION['uploads'][$this->get['form']]['feedback-upload']) && is_array($_SESSION['uploads'][$this->get['form']]['feedback-upload'])) {
 						$attachment = $_SESSION['uploads'][$this->get['form']]['feedback-upload'];
 					}
-					$mail = new MailPPS();
+					$mail = new MailWepps();
 					$mail->setAttach($attachment);
-					//UtilsPPS::debug($attachment,1);
-					$mail->mail(ConnectPPS::$projectInfo['email'], $subject, $message);
+					//UtilsWepps::debug($attachment,1);
+					$mail->mail(ConnectWepps::$projectInfo['email'], $subject, $message);
 					
 					/**
 					 * Добавление в список
@@ -70,24 +69,24 @@ class RequestContactsPPS extends RequestPPS {
 							'SGroup'=>'Обратная связь',
 							'SPage'=>$this->get['pageurl'],
 					);
-					ConnectPPS::$instance->insert("FormsData", $row);
+					ConnectWepps::$instance->insert("FormsData", $row);
 					
 					/**
 					 * Вывод сообщения о добавлении отзыва
 					 */
-					$arr = ValidatorPPS::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);
+					$arr = ValidatorWepps::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);
 					$this->assign('jscode', $arr['Out']);
 				}
 				$this->tpl = "RequestContacts.tpl";
 				break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 	}
 }
 
-$request = new RequestContactsPPS ($_REQUEST);
+$request = new RequestContactsWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

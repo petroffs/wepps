@@ -1,11 +1,11 @@
 <?php
 
-namespace PPSExtensions\Addons\RemoteServices;
+namespace WeppsExtensions\Addons\RemoteServices;
 
 use Curl\Curl;
-use PPS\Utils\UtilsPPS;
+use WeppsCore\Utils\UtilsWepps;
 
-class DeliveryPochtaRfPPS extends RemoteServicesPPS {
+class DeliveryPochtaRfWepps extends RemoteServicesWepps {
 	private $token 		= '';
 	private $auth 		= '';
 	private $protocol 	= 'https://';

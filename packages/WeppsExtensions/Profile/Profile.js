@@ -17,7 +17,7 @@ var readyProfileInit = function() {
 		      source: "/ext/Cart/Request.php?action=cities",
 		      minLength: 2,
 		      select: function( event, ui ) {
-		    	  layoutPPS.request('action=delivery&city='+ui.item.Name+'&cityId='+ui.item.Id, '/ext/Cart/Request.php',$('#delivery'));
+		    	  layoutWepps.request('action=delivery&city='+ui.item.Name+'&cityId='+ui.item.Id, '/ext/Cart/Request.php',$('#delivery'));
 		    	  $('#payment').html('');
 		    	  $('.cart-other').css('opacity',0.5);
 		      }

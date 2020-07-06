@@ -1,18 +1,17 @@
 <?
-namespace PPSExtensions\Products;
-
-use PPS\Utils\RequestPPS;
-use PPS\Core\NavigatorPPS;
-//use PPSExtensions\Products\ProductsPPS;
-use PPS\Utils\UtilsPPS;
-use PPS\Core\DataPPS;
-use PPS\Connect\ConnectPPS;
+namespace WeppsExtensions\Products;
+use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Core\NavigatorWepps;
+//use WeppsExtensions\Products\ProductsWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Connect\ConnectWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestProductsPPS extends RequestPPS {
+class RequestProductsWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
@@ -24,17 +23,17 @@ class RequestProductsPPS extends RequestPPS {
 				 * Формируем навигацию в фильтрах
 				 */
 				$ppsUrl = (isset($this->get['url'])) ? $this->get['url'] : "/catalog/";
-				$navigatorAjax = new NavigatorPPS($ppsUrl);
+				$navigatorAjax = new NavigatorWepps($ppsUrl);
 				
-				//UtilsPPS::debug($navigatorAjax,1);
+				//UtilsWepps::debug($navigatorAjax,1);
 				
-				$extensionConditions = ProductsPPS::setExtensionConditions ( $navigatorAjax )['condition'];
+				$extensionConditions = ProductsWepps::setExtensionConditions ( $navigatorAjax )['condition'];
 				foreach ($this->get as $key=>$value) {
 					if (strstr($key, 'filter_')) {
 						$extensionConditions .= "and t.Id in (select distinct TableNameId from s_PropertiesValues where Name ='" . str_replace('filter_', '', $key) . "' and KeyUrl in ('" .str_replace(",","','", $value)."'))\n";
 					}
 				}
-				$filters = ProductsPPS::getProductsItemsProperties($extensionConditions);
+				$filters = ProductsWepps::getProductsItemsProperties($extensionConditions);
 			
 				/**
 				 * Для корректного UI
@@ -49,7 +48,7 @@ class RequestProductsPPS extends RequestPPS {
 							$extensionConditionsActive .= "and t.Id in (select distinct TableNameId from s_PropertiesValues where Name ='" . str_replace ( 'filter_', '', $key ) . "' and KeyUrl in ('" . str_replace ( ",", "','", $value ) . "'))\n";
 						}
 					}
-					$filtersActive = ProductsPPS::getProductsItemsProperties ( $extensionConditionsActive );
+					$filtersActive = ProductsWepps::getProductsItemsProperties ( $extensionConditionsActive );
 					$filters[$this->get['last']] = $filtersActive[$this->get['last']];
 				}
 			
@@ -91,10 +90,10 @@ class RequestProductsPPS extends RequestPPS {
 						'condition' => $extensionConditions,
 						'onPage' => '20',
 						'page' => (isset ( $this->get ['page'] )) ? ( int ) $this->get ['page'] : 1,
-						'orderBy' => ProductsPPS::setExtensionOrderBy()
+						'orderBy' => ProductsWepps::setExtensionOrderBy()
 				);
 			
-				$data = new DataPPS($extensionSettings['tableName']);
+				$data = new DataWepps($extensionSettings['tableName']);
 				$data->setConcat("concat('',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
 				$res = $data->getMax($extensionConditions,$extensionSettings['onPage'],$extensionSettings['page'],$extensionSettings['orderBy']);
 				$this->assign('elements', $res);
@@ -105,13 +104,13 @@ class RequestProductsPPS extends RequestPPS {
 				 * Опции сортировки
 				 */
 				$sql = "select Id,Name from s_Vars where VarsGroup='ПродукцияСортировка' and DisplayOff=0 order by Priority";
-				$res = ConnectPPS::$instance->fetch($sql,null,'group');
+				$res = ConnectWepps::$instance->fetch($sql,null,'group');
 				$orderBySel = (!isset($_COOKIE['optionsSort']) || !isset($res[$_COOKIE['optionsSort']])) ? 0 : $_COOKIE['optionsSort'];
 			
 				$this->assign('orderBy', $res);
 				$this->assign('orderBySel', $orderBySel);
-				$this->fetch2('paginatorTpl', "../packages/PPSExtensions/Addons/Paginator/Paginator.tpl");
-				$this->fetch ('productsItemsTpl', '../packages/PPSExtensions/Products/ProductsItems.tpl');
+				$this->fetch2('paginatorTpl', "../packages/WeppsExtensions/Addons/Paginator/Paginator.tpl");
+				$this->fetch ('productsItemsTpl', '../packages/WeppsExtensions/Products/ProductsItems.tpl');
 			
 				$js .= "
 				var obj = $('div.extProductsItems').find('div.extProductsItems2').eq(0);
@@ -140,7 +139,7 @@ class RequestProductsPPS extends RequestPPS {
 		}
 	}
 }
-$request = new RequestProductsPPS ($_REQUEST);
+$request = new RequestProductsWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

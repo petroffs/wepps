@@ -1,18 +1,18 @@
 <?
-namespace PPSExtensions\User;
+namespace WeppsExtensions\User;
 
-use PPS\Connect\ConnectPPS;
-use PPS\Core\DataPPS;
-use PPS\Utils\UtilsPPS;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Utils\UtilsWepps;
 use Curl\Curl;
 
-class UserPPS {
+class UserWepps {
 	public static function getAuth($login='',$password='') {
-		$login = UtilsPPS::getStringFormatted($login);
-		$password = UtilsPPS::getStringFormatted($password);
-		$obj = new DataPPS( "s_Users" );
+		$login = UtilsWepps::getStringFormatted($login);
+		$password = UtilsWepps::getStringFormatted($password);
+		$obj = new DataWepps( "s_Users" );
 		if ($login=='' && $password=='' && isset($_COOKIE['authLogin']) && isset($_COOKIE['authKey'])) {
-			$sql = "Login='".addslashes($_COOKIE['authLogin'])."' and AuthKey regexp '".ConnectPPS::$instance->selectRegx(addslashes($_COOKIE['authKey']))."' and AuthKey!=0 and UserBlock!=1";
+			$sql = "Login='".addslashes($_COOKIE['authLogin'])."' and AuthKey regexp '".ConnectWepps::$instance->selectRegx(addslashes($_COOKIE['authKey']))."' and AuthKey!=0 and UserBlock!=1";
 			$user = $obj->get($sql)[0];
 		} else {
 			$password = md5($password);
@@ -31,7 +31,7 @@ class UserPPS {
 	public static function removeAuth() {
 		if (!isset($_SESSION['user'])) return 0;
 		$id = (isset($_SESSION['user']['Id'])) ? $_SESSION['user']['Id'] : 0;
-		ConnectPPS::$instance->query("update s_Users set AuthKey='' where Id = '{$id}'");
+		ConnectWepps::$instance->query("update s_Users set AuthKey='' where Id = '{$id}'");
 		$_SESSION['user'] = array();
 		unset($_SESSION);
 		setcookie('authKey','');
@@ -53,7 +53,7 @@ class UserPPS {
 			
 			setcookie ( 'authKey', $authKey, time () + 3600 * 24 * 360, '/' );
 			setcookie ( 'authLogin', $user ['Login'], time () + 3600 * 24 * 360, '/' );
-			ConnectPPS::$instance->query ( "update s_Users set AuthKey='{$authKey2}' where Id = {$user['Id']}" );
+			ConnectWepps::$instance->query ( "update s_Users set AuthKey='{$authKey2}' where Id = {$user['Id']}" );
 		}
 		return $_SESSION['user'] = $user;
 	}
@@ -104,7 +104,7 @@ class UserPPS {
 				$row[trim($ex[0])] = trim($ex[1]);
 				break;
 		}
-		$users = new DataPPS("s_Users");
+		$users = new DataWepps("s_Users");
 		$users->set($user['Id'], $row);
 		return array('status'=>true,'value'=>$ex);
 	}

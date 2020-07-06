@@ -1,12 +1,12 @@
 <?
-namespace PPSExtensions\Cart;
+namespace WeppsExtensions\Cart;
 
-use PPS\Core\DataPPS;
-use PPS\Utils\UtilsPPS;
-use PPS\Connect\ConnectPPS;
-use PPS\Spell\SpellPPS;
+use WeppsCore\Core\DataWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Spell\SpellWepps;
 
-class CartUtilsPPS {
+class CartUtilsWepps {
 	public static function cartSummary() {
 		if (isset ( $_SESSION ['cart'] )) {
 			$price = 0;
@@ -33,7 +33,7 @@ class CartUtilsPPS {
 				$addCartValues['city'] = (string) $_SESSION['cartAdd']['city'];
 			}
 			$priceTotal = $price + $addCartValues['deliveryPrice'] + $addCartValues['paymentPrice'];
-			//UtilsPPS::debug($_SESSION);
+			//UtilsWepps::debug($_SESSION);
 			return array (
 					'priceAmount' => $price,
 					'priceTotal' => $priceTotal,
@@ -48,7 +48,7 @@ class CartUtilsPPS {
 		if (!isset($_SESSION['user']) && $userId==null) return array('error'=>1);
 		$cartSummary = self::cartSummary();
 		$userId = ($userId==null) ? $_SESSION['user']['Id'] : $userId;
-		$obj = new DataPPS("s_Users");
+		$obj = new DataWepps("s_Users");
 		$user = $obj->get($userId)[0];
 		$obj->set($user['Id'], array(
 			'CityRegion'=>$cartSummary['cartAdd']['cityChecked'],	
@@ -73,10 +73,10 @@ class CartUtilsPPS {
 		$row['Address'] = $settings['address'];
 		$row['AddressIndex'] = $settings['addressIndex'];
 		$row['OComment'] = $settings['comment'];
-		$orderId = ConnectPPS::$instance->insert("TradeOrders", $row);
+		$orderId = ConnectWepps::$instance->insert("TradeOrders", $row);
 		$order = 	self::getOrder($orderId);
 					self::addOrderPositions($orderId);
-		$text = "<h4>ЗАКАЗ №".SpellPPS::getNumberOrder($orderId)." : ".$order['Name']."</h4>\n\n";
+		$text = "<h4>ЗАКАЗ №".SpellWepps::getNumberOrder($orderId)." : ".$order['Name']."</h4>\n\n";
 		if (strlen($row['OComment'])!=0) $text.= "<h4>ПРИМЕЧАНИЯ К ЗАКАЗУ</h4>\n".$order['OComment']."\n\n";
 		$text.= "<h4>ТОВАРЫ ЗАКАЗА</h4>\n";
 		
@@ -101,11 +101,11 @@ class CartUtilsPPS {
 		}
 		$text .= "</table>";
 		
-		$str = ($cartSummary['cartAdd']['deliveryPrice']!=0) ? " (".SpellPPS::money($cartSummary['cartAdd']['deliveryPrice'])." Р.)" : "";
+		$str = ($cartSummary['cartAdd']['deliveryPrice']!=0) ? " (".SpellWepps::money($cartSummary['cartAdd']['deliveryPrice'])." Р.)" : "";
 		$text .= "<p><b>ДОСТАВКА</b>: ".$order['ODelivery_Name'].$str."</p>\n";
-		$str = ($cartSummary['cartAdd']['paymentPrice']!=0) ? " (".SpellPPS::money($cartSummary['cartAdd']['paymentPrice'])." Р.)" : "";
+		$str = ($cartSummary['cartAdd']['paymentPrice']!=0) ? " (".SpellWepps::money($cartSummary['cartAdd']['paymentPrice'])." Р.)" : "";
 		$text .= "<p><b>ОПЛАТА:</b> ".$order['OPayment_Name'].$str."</p>\n";
-		$text .= "<p><b>ИТОГО К ОПЛАТЕ:</b> ".SpellPPS::money($cartSummary['priceTotal'])." Р.</p>\n\n";
+		$text .= "<p><b>ИТОГО К ОПЛАТЕ:</b> ".SpellWepps::money($cartSummary['priceTotal'])." Р.</p>\n\n";
 		$text.= "<p><b>ИНФОРМАЦИЯ О КЛИЕНТЕ</b><br/>\n";
 		$text.= $user['Name']."<br/>\n";
 		$text.= "Адрес доставки: ".$order['AddressIndex'].", ".$order['City']."<br/>\n";
@@ -115,20 +115,20 @@ class CartUtilsPPS {
 		$text.= "</p>";
 		
 		
-// 		UtilsPPS::debug($text,0);
-// 		UtilsPPS::debug($cartSummary,1);
+// 		UtilsWepps::debug($text,0);
+// 		UtilsWepps::debug($cartSummary,1);
 		
 		//$text = nl2br($text);
 		
-		ConnectPPS::$instance->query("update TradeOrders set OText='$text' where Id='$orderId'");
-		$from = ($order['Email']) ? "=?utf-8?B?" .base64_encode($order['Name']). "?=" . " <".$order['Email'].">" : ConnectPPS::$projectInfo['name']." <".ConnectPPS::$projectInfo['email'].">";
+		ConnectWepps::$instance->query("update TradeOrders set OText='$text' where Id='$orderId'");
+		$from = ($order['Email']) ? "=?utf-8?B?" .base64_encode($order['Name']). "?=" . " <".$order['Email'].">" : ConnectWepps::$projectInfo['name']." <".ConnectWepps::$projectInfo['email'].">";
 		
-		//UtilsPPS::mail(ConnectPPS::$projectInfo['email'], "Новый заказ", $text);
+		//UtilsWepps::mail(ConnectWepps::$projectInfo['email'], "Новый заказ", $text);
 		//exit();
 		return $orderId;
 	}
 	public static function getOrder($id) {
-		$obj = new DataPPS("TradeOrders");
+		$obj = new DataWepps("TradeOrders");
 		$obj->setJoin('left join GeoCities as c on c.Id = t.City');
 		$obj->setConcat('c.Name as CityName');
 		$order = $obj->getMax($id)[0];
@@ -138,7 +138,7 @@ class CartUtilsPPS {
 		$dateCurr = date("Y-m-d H:i:s");
 		$cartSummary = self::cartSummary();
 		$date = date('Y-m-d H:i:s');
-		$obj = new DataPPS("TradeClientsHistory");
+		$obj = new DataWepps("TradeClientsHistory");
 		foreach ($cartSummary['cart'] as $key =>$value) {
 			$row = array();
 			$row['Name'] = "{$value['Data']['ProductType_NameOsn']} {$value['Data']['Name']}";

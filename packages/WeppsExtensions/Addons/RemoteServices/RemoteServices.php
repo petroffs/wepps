@@ -1,12 +1,12 @@
 <?php
 
-namespace PPSExtensions\Addons\RemoteServices;
+namespace WeppsExtensions\Addons\RemoteServices;
 
 use Curl\Curl;
-use PPS\Utils\UtilsPPS;
-use PPS\Connect\ConnectPPS;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect\ConnectWepps;
 
-class RemoteServicesPPS {
+class RemoteServicesWepps {
 	public $curl;
 	public $settings;
 	public $cache = 1;
@@ -49,7 +49,7 @@ class RemoteServicesPPS {
 	
 	private function getCache($hash) {
 	    $sql = "select * from RemoteServicesCache where binary KeyUrl = '$hash'";
-	    $res = ConnectPPS::$instance->fetch($sql);
+	    $res = ConnectWepps::$instance->fetch($sql);
 	    if (!empty($res[0]['Id'])) {
 	        $url = (!empty($res[0]['Url'])) ? $res[0]['Url'] : '';
 	        $body = (!empty($res[0]['Descr'])) ? $res[0]['Descr'] : '';
@@ -62,7 +62,7 @@ class RemoteServicesPPS {
 	
 	private function addCache($url='',$body='',$response='') {
 	    $className = get_class($this);
-	    $arr = UtilsPPS::setQuery([
+	    $arr = UtilsWepps::setQuery([
 	        'Name' => substr($className, strrpos($className, '\\')+1),
 	        'KeyUrl' => md5($url.$body),
 	        'Url' => $url,
@@ -70,7 +70,7 @@ class RemoteServicesPPS {
 	        'DescrResponse' => $response,
 	    ]);
 	    $sql = "insert ignore RemoteServicesCache {$arr['insert']}";
-	    ConnectPPS::$instance->query($sql);
+	    ConnectWepps::$instance->query($sql);
 	    return 1;
 	}
 }

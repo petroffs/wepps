@@ -8,7 +8,7 @@
 <script>
 $('input[name="payment"]').on('change',function(event) {
 	event.stopPropagation();
-	layoutPPS.request('action=shipping&city='+$(this).data('city')+'&delivery={$get.deliveryChecked}&payment='+$(this).attr('value'), '/ext/Cart/Request.php');
+	layoutWepps.request('action=shipping&city='+$(this).data('city')+'&delivery={$get.deliveryChecked}&payment='+$(this).attr('value'), '/ext/Cart/Request.php');
 });
 {$get.jscode}
 </script>

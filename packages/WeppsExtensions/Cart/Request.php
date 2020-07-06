@@ -1,16 +1,15 @@
 <?
-namespace PPSExtensions\Cart;
-
-use PPS\Utils\RequestPPS;
-use PPS\Core\DataPPS;
-use PPSExtensions\Cart\CartPPS;
-//use PPSExtensions\Cart\CartPPS;
-use PPS\Exception\ExceptionPPS;
-use PPS\Utils\UtilsPPS;
-use PPSExtensions\Cart\CartUtilsPPS;
-use PPS\Spell\SpellPPS;
-use PPS\Validator\ValidatorPPS;
-use PPSExtensions\Products\ExtensionProductsPPS;
+namespace WeppsExtensions\Cart;
+use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Core\DataWepps;
+use WeppsExtensions\Cart\CartWepps;
+//use WeppsExtensions\Cart\CartWepps;
+use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Spell\SpellWepps;
+use WeppsCore\Validator\ValidatorWepps;
+use WeppsExtensions\Products\ExtensionProductsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -18,7 +17,7 @@ require_once '../../../configloader.php';
 
 if (!session_start()) session_start();
 
-class RequestCartPPS extends RequestPPS {
+class RequestCartWepps extends RequestWepps {
 	public function request($action="") {
 		$priceKey = "Price";
 		if (isset($_SESSION['user']) && $_SESSION['user']['Opt']==1) {
@@ -33,7 +32,7 @@ class RequestCartPPS extends RequestPPS {
 				exit();
 				break;
 			case 'cartSummary':
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				echo $cartSummary['qty'];
 				exit();
 			case 'addCart':
@@ -44,7 +43,7 @@ class RequestCartPPS extends RequestPPS {
 				if (!isset($this->get['image']) || $this->get['image']=='') exit();
 				if (!isset($this->get['add'])) exit();
 				$this->get['qty'] = (!isset($this->get['qty'])) ? 1 : $this->get['qty'];
-				$data = new DataPPS("Products");
+				$data = new DataWepps("Products");
 				 
 				/*
 				 * Обнуление сессии при тестировании
@@ -54,14 +53,14 @@ class RequestCartPPS extends RequestPPS {
 				$data->setFields("Id,Name,Price,PriceOpt,PriceOld,PriceOptOld,Brand,Code,Articul,ArticulInner,DirectoryId,ProductType,ProductSex,QtyMin");
 				$data->setConcat("concat('/product/',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url,s3.NameOsn as ProductType_NameOsn");
 				$product = $data->getMax($this->get['id'])[0];
-				$productId = $product['Id']."_".SpellPPS::getTranslit($this->get['color'],2).$this->get['add'];
+				$productId = $product['Id']."_".SpellWepps::getTranslit($this->get['color'],2).$this->get['add'];
 				
 				/*
 				 * Акция
 				 *
 				 */
 				if (isset($_SESSION['actionFire']) && $_SESSION['actionFire']==1) {
-					$actions = ExtensionProductsPPS::getProductsItemActions($product);
+					$actions = ExtensionProductsWepps::getProductsItemActions($product);
 					if (isset($actions['Persent'])) {
 						$product['PriceOpt'] = $actions['Price'];
 						$product['PriceOptAction'] = 1;
@@ -83,7 +82,7 @@ class RequestCartPPS extends RequestPPS {
 				/*
 				 * Расчет кол-ва
 				 */
-				$depo = ExtensionProductsPPS::getProductsItemDepo($product);
+				$depo = ExtensionProductsWepps::getProductsItemDepo($product);
 				if (!isset($depo['summary'][$this->get['color']])) exit();
 				if (isset($this->get['add']) && $this->get['add']!='') {
 					$qtyMax = min($depo['summaryAdd'][$this->get['color']]);
@@ -111,7 +110,7 @@ class RequestCartPPS extends RequestPPS {
 				$_SESSION['cart'][$productId]['QtyMin'] = $qtyMin;
 				$_SESSION['cart'][$productId]['QtyMax'] = $qtyMax;
 				$_SESSION['cart'][$productId]['PriceAmount'] = $_SESSION['cart'][$productId]['Data']['PriceAmount'] * $_SESSION['cart'][$productId]['Data']['OptionQty'] * $_SESSION['cart'][$productId]['Qty'];
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				$this->assign('cartSummary',$cartSummary);
 				$this->assign('product', $_SESSION['cart'][$productId]);
 				break;
@@ -127,12 +126,12 @@ class RequestCartPPS extends RequestPPS {
 				$_SESSION['cart'][$productId]['Qty'] = ($_SESSION['cart'][$productId]['Qty']<=$_SESSION['cart'][$productId]['QtyMin']) ? $_SESSION['cart'][$productId]['QtyMin'] : $_SESSION['cart'][$productId]['Qty'];
 				$_SESSION['cart'][$productId]['Qty'] = ($_SESSION['cart'][$productId]['Qty']>=$_SESSION['cart'][$productId]['QtyMax']) ? $_SESSION['cart'][$productId]['QtyMax'] : $_SESSION['cart'][$productId]['Qty'];
 				$_SESSION['cart'][$productId]['PriceAmount'] = $_SESSION['cart'][$productId]['Qty'] * $_SESSION['cart'][$productId]['Data']['OptionQty'] * $_SESSION['cart'][$productId]['Data']['PriceAmount'];
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				$js .= "
 					readyCartInit();
 					cartTopUpdate({
 						'qtyTop' : '{$cartSummary['qty']}',
-						'priceAmountTop' : '".SpellPPS::money($cartSummary['priceAmount'])."'
+						'priceAmountTop' : '".SpellWepps::money($cartSummary['priceAmount'])."'
 					});
 					
 				";
@@ -160,12 +159,12 @@ class RequestCartPPS extends RequestPPS {
 				$product = $_SESSION['cart'][$this->get['id']];
 				$this->tpl = 'RequestTemplate.tpl';
 				unset($_SESSION['cart'][$id]);
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				$js .= "
 				readyCartInit();
 				cartTopUpdate({
 					'qtyTop' : '{$cartSummary['qty']}',
-					'priceAmountTop' : '". SpellPPS::money($cartSummary['priceAmount'])."'
+					'priceAmountTop' : '". SpellWepps::money($cartSummary['priceAmount'])."'
 				});
 				";
 				
@@ -181,11 +180,11 @@ class RequestCartPPS extends RequestPPS {
 				break;
 			case 'cities':
 				if (!isset($this->get['term'])) exit();
-				$obj = new DataPPS("GeoCities");
+				$obj = new DataWepps("GeoCities");
 				$obj->setFields('Name,Id');
 				$obj->setConcat('Name as value');
 				$res = $obj->get("DisplayOff=0 and (CountryId=3159 or (CountryId=9908 and RegionId=10227)) and Name like '%{$this->get['term']}%'",10,1,"Priority,Name");
-				$json = SpellPPS::getJsonCyr($res);
+				$json = SpellWepps::getJsonCyr($res);
 				header('Content-type:application/json;charset=utf-8');
 				echo $json;
 				exit();
@@ -202,7 +201,7 @@ class RequestCartPPS extends RequestPPS {
 				
 				
 				
-				$obj = new DataPPS("TradeDeliveryVars");
+				$obj = new DataWepps("TradeDeliveryVars");
 				$res = $obj->getMax("t.DisplayOff=0 and (Region = '' or Region like '%{$this->get['city']}%') and RegionExcl not like ('%{$this->get['city']}%') $cond",30,1,'t.Priority,t.Name');
 				$this->assign('delivery', $res);
 				$this->assign('city', $this->get['city']);
@@ -218,7 +217,7 @@ class RequestCartPPS extends RequestPPS {
 				 * Способы оплаты текущего delivery
 				 * Вычислить и передать в шаблон
 				 */
-				$obj = new DataPPS("TradePaymentVars");
+				$obj = new DataWepps("TradePaymentVars");
 				$res = $obj->getMax("t.DisplayOff=0 and sk1.Field1 = '{$this->get['delivery']}'",30,1,'t.Priority,t.Name');
 				
 				
@@ -226,14 +225,14 @@ class RequestCartPPS extends RequestPPS {
 				
 				$this->assign('payment', $res);
 				$this->assign('city', $this->get['city']);
-				$obj = new DataPPS("TradeDeliveryVars");
+				$obj = new DataWepps("TradeDeliveryVars");
 				$res = $obj->getMax($this->get['delivery']);
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				$priceAdd = ($res[0]['PriceDelivMorePers']==1) ? round($cartSummary['priceAmount'] * $res[0]['PriceDelivMore'] / 100,0) : $res[0]['PriceDelivMore'];
 				if ($res[0]['DeliveryExt']!='' && is_file($res[0]['DeliveryExt'])) require_once $res[0]['DeliveryExt'];
 				$_SESSION['cartAdd']['deliveryChecked'] = $this->get['delivery'];
 				$_SESSION['cartAdd']['deliveryPrice'] = $priceAdd;
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				$js = "
 						$('input[name=\"delivery\"]').attr('data-price','0');
 						$('input[name=\"delivery\"]:checked').attr('data-price','{$priceAdd}');
@@ -252,14 +251,14 @@ class RequestCartPPS extends RequestPPS {
 				 * Вычисление стоимости доставки
 				 * на основе данных в списке TradeDeliveryVars,TradePaymentVars
 				 */
-				$obj = new DataPPS("TradePaymentVars");
+				$obj = new DataWepps("TradePaymentVars");
 				$res = $obj->getMax($this->get['payment']);
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				$priceAdd = ($res[0]['PriceMorePers']==1) ? round($cartSummary['priceAmount'] * $res[0]['PriceMore'] / 100,0) : $res[0]['PriceMore'];
 				if ($res[0]['PaymentExt']!='' && is_file($res[0]['PaymentExt'])) require_once $res[0]['PaymentExt'];
 				$_SESSION['cartAdd']['paymentChecked'] = $this->get['payment'];
 				$_SESSION['cartAdd']['paymentPrice'] = $priceAdd;
-				$cartSummary = CartUtilsPPS::cartSummary();
+				$cartSummary = CartUtilsWepps::cartSummary();
 				$js = "
 						<script>
 						$('input[name=\"payment\"]').attr('data-price','0');
@@ -271,7 +270,7 @@ class RequestCartPPS extends RequestPPS {
 						</script>
 					";
 				echo $js;
-				//UtilsPPS::debug($_SESSION['cartAdd']);
+				//UtilsWepps::debug($_SESSION['cartAdd']);
 				exit ();
 				break;
 			case "addOrder" :
@@ -279,9 +278,9 @@ class RequestCartPPS extends RequestPPS {
 				 * Проверка данных, индикация ошибок
 				 */
 				$errors = array ();
-				$errors ['address'] = ValidatorPPS::isNotEmpty ( $this->get ['address'], "Не заполнено" );
-				$errors ['addressIndex'] = ValidatorPPS::isNotEmpty ( $this->get ['addressIndex'], "Не заполнено" );
-				$outer = ValidatorPPS::setFormErrorsIndicate ( $errors, $this->get ['form'] );
+				$errors ['address'] = ValidatorWepps::isNotEmpty ( $this->get ['address'], "Не заполнено" );
+				$errors ['addressIndex'] = ValidatorWepps::isNotEmpty ( $this->get ['addressIndex'], "Не заполнено" );
+				$outer = ValidatorWepps::setFormErrorsIndicate ( $errors, $this->get ['form'] );
 				echo $outer ['Out'];
 				if ($outer ['Co'] == 0) {
 					/**
@@ -294,11 +293,11 @@ class RequestCartPPS extends RequestPPS {
 							'addressIndex' => $this->get ['addressIndex'],
 							'comment' => $this->get ['comment'],
 					);
-					$orderId = CartUtilsPPS::addOrder($settings);
+					$orderId = CartUtilsWepps::addOrder($settings);
 					$_SESSION['cartAdd']['orderId'] = $orderId;
 					
 					
-					//UtilsPPS::debug($order,1);
+					//UtilsWepps::debug($order,1);
 					
 					
 					/**
@@ -316,13 +315,13 @@ class RequestCartPPS extends RequestPPS {
 				exit();
 			break;
 			default:
-				ExceptionPPS::error404();
+				ExceptionWepps::error404();
 				break;
 		}
 	}
 }
 
-$request = new RequestCartPPS ($_REQUEST);
+$request = new RequestCartWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

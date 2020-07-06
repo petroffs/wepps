@@ -1,4 +1,4 @@
-var FormSenderPPS  = function () {
+var FormSenderWepps  = function () {
 	var uploadaction = function(event,filesfield,myform) {
 		event.stopPropagation();
 		var files = event.target.files;
@@ -28,15 +28,15 @@ var FormSenderPPS  = function () {
 		$('.controlserrormess').remove();
 		var str = 'action=' + action + '&form=' + myform + '&link=' + lang + '&';
 		var serialized = $("#" + myform).serialize();
-		if (!layoutPPS) var layoutPPS = new LayoutPPS();
-		layoutPPS.request(str + serialized, url)
+		if (!layoutWepps) var layoutWepps = new LayoutWepps();
+		layoutWepps.request(str + serialized, url)
 	}
 }
-var formSenderPPS = new FormSenderPPS();
+var formSenderWepps = new FormSenderWepps();
 
 
 var readyFormsInit = function() {
-	$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderPPS.upload);
+	$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderWepps.upload);
 	$('.pps_form_group').find('.pps_flex_14').on('click',function(event) {
 		var parent1 = $(this).parent();
 		var input1 = parent1.find('input');

@@ -1,3 +1,3 @@
 <?
-$smarty->assign('paymentTpl',$smarty->fetch('packages/PPSExtensions/Cart/Payment/PaymentOnline.tpl'));
+$smarty->assign('paymentTpl',$smarty->fetch('packages/WeppsExtensions/Cart/Payment/PaymentOnline.tpl'));
 ?>

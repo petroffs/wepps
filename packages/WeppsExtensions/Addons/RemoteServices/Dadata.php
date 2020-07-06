@@ -1,11 +1,9 @@
 <?php
-
-namespace PPSExtensions\Addons\RemoteServices;
-
+namespace WeppsExtensions\Addons\RemoteServices;
 use Curl\Curl;
-use PPSExtensions\Addons\RemoteServices\RemoteServicesPPS;
+use WeppsExtensions\Addons\RemoteServices\RemoteServicesWepps;
 
-class DadataPPS extends RemoteServicesPPS {
+class DadataWepps extends RemoteServicesWepps {
 	private $token = '';
 	private $secret = '';
 	
