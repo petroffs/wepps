@@ -1,0 +1,3 @@
+Запись NULL при сохранении списка, см. UtilsPPS::setQuery()
+public static function getQuery($row) - обновить из loyality
+Lists.php - обсновить создание поля GUID - обновить из loyality

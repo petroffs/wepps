@@ -8,9 +8,12 @@
 /debug.conf
 /sitemap.xml
 /robots.txt
-/.settings
-/.project
-/.buildpath
+
 /.pps*.sh
 *.sql.gz
 *.7z
+
+#eclipse
+/.settings
+/.project
+/.buildpath
