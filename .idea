@@ -1,3 +1,10 @@
+1. 
 Запись NULL при сохранении списка, см. UtilsPPS::setQuery()
 public static function getQuery($row) - обновить из loyality
 Lists.php - обсновить создание поля GUID - обновить из loyality
+
+2.
+PPSAdmin/ConfigExtensions/Uploads/UploadsExcelFields.php:39:
+	$sql = "delete from s_ConfigFields where TableName = ''";
+	ConnectPPS::$instance->query($sql);
+	- сделать перед каждым инсертом
