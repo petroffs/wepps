@@ -33,7 +33,7 @@ class ContactsWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		/*
 		 * Для глобального шаблона
 		 */
 		$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.js");
