@@ -88,8 +88,8 @@ class RequestUploadsWepps extends RequestWepps {
 				/*
 				 * Загрузка данных по шаблону
 				 */				
-				if (!empty($source['KeyUrl'])) {
-					$class = "WeppsAdmin\\ConfigExtensions\\Uploads\\".$source['KeyUrl'];
+				if (!empty($source['Alias'])) {
+					$class = "WeppsAdmin\\ConfigExtensions\\Uploads\\".$source['Alias'];
 					$uploadObj = new $class(['title'=>$sheetTitle,'data'=>$sheetData]);
 					$response = $uploadObj->setData();
 				} else {

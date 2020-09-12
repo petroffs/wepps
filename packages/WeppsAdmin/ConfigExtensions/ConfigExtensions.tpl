@@ -30,7 +30,7 @@
 								{foreach name="o" item="i" key="k" from=$item.ENav|explode:"\n"}
 								{assign var="extlink" value=$i|strarr}
 								<div class="descr2">
-									<div class="title3"><a href="/_pps/extensions/{$item.KeyUrl}/{$extlink.1}.html">{$extlink.0}</a></div>
+									<div class="title3"><a href="/_pps/extensions/{$item.Alias}/{$extlink.1}.html">{$extlink.0}</a></div>
 									<div class="num3">{$extlink.1}</div>
 								</div>
 								{/foreach}

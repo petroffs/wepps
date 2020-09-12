@@ -19,8 +19,8 @@
 							<a href="/">Сайт</a>
 						</div>
 						{foreach name="out" item="item" key="key" from=$navtop}
-						<div class="item{if $contenttop.KeyUrl==$item.KeyUrl} active{/if}">
-							<a href="/_pps/{$item.KeyUrl}/">{$item.Name}</a>
+						<div class="item{if $contenttop.Alias==$item.Alias} active{/if}">
+							<a href="/_pps/{$item.Alias}/">{$item.Name}</a>
 						</div>
 						{/foreach}
 					</div>

@@ -30,7 +30,7 @@ class RequestProductsWepps extends RequestWepps {
 				$extensionConditions = ProductsWepps::setExtensionConditions ( $navigatorAjax )['condition'];
 				foreach ($this->get as $key=>$value) {
 					if (strstr($key, 'filter_')) {
-						$extensionConditions .= "and t.Id in (select distinct TableNameId from s_PropertiesValues where Name ='" . str_replace('filter_', '', $key) . "' and KeyUrl in ('" .str_replace(",","','", $value)."'))\n";
+						$extensionConditions .= "and t.Id in (select distinct TableNameId from s_PropertiesValues where Name ='" . str_replace('filter_', '', $key) . "' and Alias in ('" .str_replace(",","','", $value)."'))\n";
 					}
 				}
 				$filters = ProductsWepps::getProductsItemsProperties($extensionConditions);
@@ -45,7 +45,7 @@ class RequestProductsWepps extends RequestWepps {
 					$extensionConditionsActive = $extensionConditions . "\n";
 					foreach ( $this->get as $key => $value ) {
 						if (strstr ( $key, 'filter_' ) && $key != 'filter_' . $this->get ['last']) {
-							$extensionConditionsActive .= "and t.Id in (select distinct TableNameId from s_PropertiesValues where Name ='" . str_replace ( 'filter_', '', $key ) . "' and KeyUrl in ('" . str_replace ( ",", "','", $value ) . "'))\n";
+							$extensionConditionsActive .= "and t.Id in (select distinct TableNameId from s_PropertiesValues where Name ='" . str_replace ( 'filter_', '', $key ) . "' and Alias in ('" . str_replace ( ",", "','", $value ) . "'))\n";
 						}
 					}
 					$filtersActive = ProductsWepps::getProductsItemsProperties ( $extensionConditionsActive );
@@ -68,7 +68,7 @@ class RequestProductsWepps extends RequestWepps {
 						";
 						foreach ( $value as $v ) {
 							$js .= "
-							var obj = $('div.extFilters').find('input[name=\"{$v['KeyUrl']}\"]');
+							var obj = $('div.extFilters').find('input[name=\"{$v['Alias']}\"]');
 							obj.prop('disabled', false)
 							obj.siblings('span').children().html('{$v['Co']}').removeClass('pps_hide');
 							";
@@ -94,7 +94,7 @@ class RequestProductsWepps extends RequestWepps {
 				);
 			
 				$data = new DataWepps($extensionSettings['tableName']);
-				$data->setConcat("concat('',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
+				$data->setConcat("concat('',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $data->getMax($extensionConditions,$extensionSettings['onPage'],$extensionSettings['page'],$extensionSettings['orderBy']);
 				$this->assign('elements', $res);
 				$this->assign('paginator', $data->paginator);

@@ -16,7 +16,7 @@
 					$smarty.foreach.o.iteration>10} {assign var=hide value="hide"}
 					{/if}
 					<li class="{$hide}"><label class="pps pps_checkbox"> <input
-							type="checkbox" name="{$i.KeyUrl}" /> <span>{$i.PValue} <span>{$i.Co}</span></span>
+							type="checkbox" name="{$i.Alias}" /> <span>{$i.PValue} <span>{$i.Co}</span></span>
 					</label></li> {/foreach} {if $hide!=""}
 					<li class="more"><a href="">Еще</a></li> {/if}
 				</ul>

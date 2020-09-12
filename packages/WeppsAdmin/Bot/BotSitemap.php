@@ -27,15 +27,15 @@ class BotSitemapWepps extends BotWepps {
 		 * Данные в структуре
 		 */
 		$obj = new DataWepps("News");
-		$obj->setFields("Name,KeyUrl,Id");
-		$obj->setConcat ( "concat('/novosti/',if(KeyUrl!='',KeyUrl,Id),'.html') as Url" );
+		$obj->setFields("Name,Alias,Id");
+		$obj->setConcat ( "concat('/novosti/',if(Alias!='',Alias,Id),'.html') as Url" );
 		$res = $obj->get("DisplayOff=0",50000,1);
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>http://{$this->host}{$value['Url']}</loc></url>";
 		}
 		
 		/*
-		 $sql = "select Id,Name,concat('/blog/',if(KeyUrl!='',KeyUrl,Id),'.html') as Url from Blog where DisplayOff=0";
+		 $sql = "select Id,Name,concat('/blog/',if(Alias!='',Alias,Id),'.html') as Url from Blog where DisplayOff=0";
 		 $res = ConnectWepps::$instance->fetch($sql);
 		 foreach ($res as $value) {
 		 $arr[$value['Url']] = "<url><loc>http://izburg.ru{$value['Url']}</loc></url>";

@@ -20,7 +20,7 @@
 				{foreach name="o" item="i" key="k" from=$item.ENav|explode:"\n"}
 				{assign var="extlink" value=$i|strarr}
 				<li class="{if $extsActive==$extlink.1}active{/if}"><a
-					href="/_pps/extensions/{$item.KeyUrl}/{$extlink.1}.html">{$extlink.0}</a></li>
+					href="/_pps/extensions/{$item.Alias}/{$extlink.1}.html">{$extlink.0}</a></li>
 				{/foreach}
 			</ul>
 		</li> {/foreach}

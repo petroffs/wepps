@@ -28,7 +28,7 @@ class ConfigExtensionsWepps {
 			$content['Name'] = "Все системные расширения";
 			$content['NameNavItem'] = "Системные расширения";
 		} elseif (isset($ppsUrlEx[1])) {
-			$res = $objExt->getMax("t.KeyUrl='{$ppsUrlEx[1]}'");
+			$res = $objExt->getMax("t.Alias='{$ppsUrlEx[1]}'");
 			
 			if (!isset($res[0]['Id'])) {
 				ExceptionWepps::error404();
@@ -49,14 +49,14 @@ class ConfigExtensionsWepps {
 				$action = substr($action, 0, -5);
 				$smarty->assign('extsActive',$action);
 			}
-			if ($action=="" && $_GET['ppsUrl']!="extensions/{$ext['KeyUrl']}/") {
+			if ($action=="" && $_GET['ppsUrl']!="extensions/{$ext['Alias']}/") {
 				ExceptionWepps::error404();
 			}
 			$request = array('action'=>$action);
 			$request = array_merge($request,$_REQUEST,array('ext'=>$ext));
-			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['KeyUrl']}\\{$ext['KeyUrl']}Wepps";
+			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['Alias']}\\{$ext['Alias']}Wepps";
 			$extResult = new $extClass ($request);
-			$smarty->assign('ext',$smarty->fetch( __DIR__ . '/' . $ext['KeyUrl'] . '/' . $extResult->tpl));
+			$smarty->assign('ext',$smarty->fetch( __DIR__ . '/' . $ext['Alias'] . '/' . $extResult->tpl));
 			$smarty->assign('way',$extResult->way);
 			$content['Name'] = $extResult->title;
 			if (isset($extResult->headers) && !empty($extResult->headers)) {

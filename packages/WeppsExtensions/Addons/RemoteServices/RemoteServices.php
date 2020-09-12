@@ -48,7 +48,7 @@ class RemoteServicesWepps {
 	}
 	
 	private function getCache($hash) {
-	    $sql = "select * from RemoteServicesCache where binary KeyUrl = '$hash'";
+	    $sql = "select * from RemoteServicesCache where binary Alias = '$hash'";
 	    $res = ConnectWepps::$instance->fetch($sql);
 	    if (!empty($res[0]['Id'])) {
 	        $url = (!empty($res[0]['Url'])) ? $res[0]['Url'] : '';
@@ -64,7 +64,7 @@ class RemoteServicesWepps {
 	    $className = get_class($this);
 	    $arr = UtilsWepps::setQuery([
 	        'Name' => substr($className, strrpos($className, '\\')+1),
-	        'KeyUrl' => md5($url.$body),
+	        'Alias' => md5($url.$body),
 	        'Url' => $url,
 	        'Descr' => $body,
 	        'DescrResponse' => $response,

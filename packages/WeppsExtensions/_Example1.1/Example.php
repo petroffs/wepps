@@ -16,7 +16,7 @@ class ExampleWepps extends ExtensionWepps {
 				$extensionConditions = "";
 				//if ($this->navigator->content['Id']==11) $extensionConditions = "t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'";
 				$obj = new DataWepps("Example");
-				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
+				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->getMax($extensionConditions,5,$this->page,"t.Priority");
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
@@ -28,7 +28,7 @@ class ExampleWepps extends ExtensionWepps {
 				$smarty->assign('element',$res);
 				$extensionConditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
 				$obj = new DataWepps("Example");
-				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
+				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->getMax($extensionConditions,3,1,"t.Priority");
 				$smarty->assign('elements',$res);
 				break;

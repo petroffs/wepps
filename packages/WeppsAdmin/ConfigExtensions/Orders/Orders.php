@@ -13,7 +13,7 @@ class OrdersWepps extends RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Orders.tpl';
 		$this->title = $this->get['ext']['Name'];
-		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['KeyUrl']}/",'Name'=>$this->title));
+		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",'Name'=>$this->title));
 		$this->headers = new TemplateHeadersWepps();
 		$this->headers->js ("/packages/WeppsAdmin/ConfigExtensions/Orders/Orders.{$this->headers::$rand}.js");
 		$this->headers->css ("/packages/WeppsAdmin/ConfigExtensions/Orders/Orders.{$this->headers::$rand}.css");

@@ -17,7 +17,7 @@ class ProcessingWepps extends RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$tpl = 'Processing.tpl';
 		$this->title = $this->get['ext']['Name'];
-		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['KeyUrl']}/",'Name'=>$this->title));
+		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",'Name'=>$this->title));
 		$headers = new TemplateHeadersWepps();
 		switch ($action) {
 			case 'searchindex':

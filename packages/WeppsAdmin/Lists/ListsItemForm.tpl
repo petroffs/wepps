@@ -48,7 +48,7 @@
 					<div>{$key}</div>
 					{/if}
 					{if $item.0.Description}<div>{$item.0.Description}</div>{/if}
-					{if $key=="KeyUrl"}
+					{if $key=="Alias"}
 					<div><a href="" class="field-translit">траслит</a></div>
 					{elseif $item.0.Type=="area"}
 					<div><a href="" class="field-ve">визуальный редактор</a></div>

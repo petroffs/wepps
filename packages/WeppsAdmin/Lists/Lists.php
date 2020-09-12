@@ -658,7 +658,7 @@ class ListsWepps {
 					'TableName'=>$list,
 					'TableNameId'=>$id,
 					'TableNameField'=>$field,
-					'KeyUrl'=>strtolower(SpellWepps::getTranslit($v,2)),
+					'Alias'=>strtolower(SpellWepps::getTranslit($v,2)),
 					'PValue'=>$v,
 					'DisplayOff2'=>0,
 			);
@@ -684,8 +684,8 @@ class ListsWepps {
 	            $row['DisplayOff2'] = 0;
 	            $arr2 = UtilsWepps::getQuery($row);
 	            $md5 = md5($row['Name']."::".$row['Field1']."::".$row['Field2']."::".$row['Field3']);
-	            $str2 .= "insert ignore into s_SearchKeys (KeyUrl) values ('$md5');\n";
-	            $str2 .= "update s_SearchKeys set ".$arr2['update']." where KeyUrl = '$md5';\n";
+	            $str2 .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
+	            $str2 .= "update s_SearchKeys set ".$arr2['update']." where Alias = '$md5';\n";
 	        }
 	    }
 	    $str2 .= "delete from s_SearchKeys where DisplayOff2=1 and Name='{$id}' 
@@ -775,7 +775,7 @@ class ListsWepps {
 		$sql = "CREATE TABLE IF NOT EXISTS {$list} (
 				Id int(11) NOT NULL auto_increment,
 				Name varchar(128) COLLATE utf8_unicode_ci NOT NULL default '',
-				KeyUrl varchar(128) COLLATE utf8_unicode_ci NOT NULL default '',
+				Alias varchar(128) COLLATE utf8_unicode_ci NOT NULL default '',
 				DisplayOff int(11) NOT NULL default '0',
 				Priority int(11) NOT NULL default '0',
                 Descr text COLLATE utf8_unicode_ci NOT NULL default '',
@@ -790,7 +790,7 @@ class ListsWepps {
 		$sql .= "DELETE FROM s_ConfigFields WHERE TableName = '{$list}';\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','ID','Идентификатор','Id',1,0,'int','hidden','disabled','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Заголовок','','Name',2,0,'text','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Ключ','','KeyUrl',3,0,'latin','','','FieldDefault');\n";
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Ключ','','Alias',3,0,'latin','','','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Скрыть','','DisplayOff',4,0,'flag','','','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Приоритет','','Priority',5,0,'int','hidden','','FieldDefault');\n";
 		
@@ -944,8 +944,8 @@ class ListsWepps {
 					$rowData['DisplayOff2'] = 0;
 					$arr = UtilsWepps::getQuery($rowData);
 					$md5 = md5($rowData['Name'] . "::" . $rowData['Field1'] . "::" . $rowData['Field2'] . "::" . $rowData['Field3']);
-					$str .= "insert ignore into s_SearchKeys (KeyUrl) values ('$md5');\n";
-					$str .= "update s_SearchKeys set " . $arr['update'] . " where KeyUrl = '$md5';\n";
+					$str .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
+					$str .= "update s_SearchKeys set " . $arr['update'] . " where Alias = '$md5';\n";
 				}
 			}
 		}

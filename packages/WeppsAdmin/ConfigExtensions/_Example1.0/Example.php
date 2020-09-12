@@ -13,7 +13,7 @@ class RequestExampleWepps extends RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$tpl = 'Example.tpl';
 		$this->title = $this->get['ext']['Name'];
-		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['KeyUrl']}/",'Name'=>$this->title));
+		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",'Name'=>$this->title));
 		$headers = new TemplateHeadersWepps();
 		$headers->js ("/packages/WeppsAdmin/ConfigExtensions/Example/Example.{$headers::$rand}.js");
 		$headers->css ("/packages/WeppsAdmin/ConfigExtensions/Example/Example.{$headers::$rand}.css");

@@ -60,7 +60,7 @@
 					class="soc pps_flex pps_flex_row pps_flex_center">
 					{foreach name=out item=item from=$socials}
 					<div class="item pps_flex_fix pps_padding">
-						<a class="fa fa-stack fa-lg fa-{$item.KeyUrl}" href="{$item.Field1}"
+						<a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}"
 							title="{$item.Name}"></a>
 					</div>
 					{/foreach}

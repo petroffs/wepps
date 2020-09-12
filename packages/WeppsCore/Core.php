@@ -674,7 +674,7 @@ abstract class ExtensionWepps {
 	public function getItem($tableName, $condition='') {
 		$id = NavigatorWepps::$pathItem;
 		$prefix = ($condition!='') ? ' and ' : '';
-		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = '{$id}'" : $condition." {$prefix} binary t.KeyUrl = '{$id}'";
+		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = '{$id}'" : $condition." {$prefix} binary t.Alias = '{$id}'";
 		$obj = new DataWepps($tableName);
 		$res = $obj->getMax($condition)[0];
 		if (!isset($res['Id'])) ExceptionWepps::error404();
@@ -781,7 +781,7 @@ class LanguageWepps {
 				if (isset($value['Template'])) $resParall2[$key]['Template']=$value['Template'];
 				if (isset($value['NGroup'])) $resParall2[$key]['NGroup']=$value['NGroup'];
 				if (isset($value['ParentDir'])) $resParall2[$key]['ParentDir']=$value['ParentDir'];
-				if (isset($value['KeyUrl'])) $resParall2[$key]['KeyUrl']=$value['KeyUrl'];
+				if (isset($value['Alias'])) $resParall2[$key]['Alias']=$value['Alias'];
 				if (isset($value['Url'])) $resParall2[$key]['Url']=$value['Url'];
 			} else {
 				$resParall2[$key] = $value;

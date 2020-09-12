@@ -20,11 +20,11 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
 	    $root = ConnectWepps::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='s_ConfigExtensions') {
 	    	
-    		$this->copyExts($this->element['KeyUrl'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['KeyUrl'], ".tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['KeyUrl'], ".css", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['KeyUrl'], ".js",  "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['KeyUrl'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
+    		$this->copyExts($this->element['Alias'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
+    		$this->copyExts($this->element['Alias'], ".tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
+    		$this->copyExts($this->element['Alias'], ".css", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
+    		$this->copyExts($this->element['Alias'], ".js",  "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
+    		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
     	
 	    }
 	    

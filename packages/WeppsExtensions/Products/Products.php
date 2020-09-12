@@ -21,7 +21,7 @@ class ProductsWepps extends ExtensionWepps {
 			 * Список товаров
 			 */
 			$obj = new DataWepps("Products");
-			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
+			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 			$res = $obj->getMax($extensionConditions,20,$this->page,self::setExtensionOrderBy());
 			$smarty->assign('elements',$res);
 			$smarty->assign('elementsCount',$obj->count);
@@ -67,7 +67,7 @@ class ProductsWepps extends ExtensionWepps {
 			$smarty->assign('element',$res);
 			$extensionConditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
 			$obj = new DataWepps("Products");
-			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.KeyUrl!='',t.KeyUrl,t.Id),'.html') as Url");
+			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 			$res = $obj->getMax($extensionConditions,3,1,"t.Priority");
 			$smarty->assign('elements',$res);
 			
@@ -95,13 +95,13 @@ class ProductsWepps extends ExtensionWepps {
 	 * @return array
 	 */
 	public static function getProductsItemsProperties($extensionConditions) {
-		$sql = "select distinct p.Id as PropertyKeyUrl,pv.Name,pv.PValue,pv.KeyUrl,
+		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
 		p.Name as PropertyName,count(*) as Co
 		from Products as t
 		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id
 		left outer join s_Properties as p on p.Id = pv.Name
 		where $extensionConditions
-		group by pv.KeyUrl
+		group by pv.Alias
 		order by p.Priority,pv.PValue
 		limit 500
 		";

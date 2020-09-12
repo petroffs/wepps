@@ -24,22 +24,22 @@ class AdminWepps {
 		$this->headers = &$headers;
 		$this->nav = $nav = array (
 				'home' => array (
-						'KeyUrl' => 'home',
+						'Alias' => 'home',
 						'Name' => "CMS.PSS",
 						'Extension' => 'Home'
 				),
 				'navigator' => array (
-						'KeyUrl' => 'navigator',
+						'Alias' => 'navigator',
 						'Name' => "Навигатор",
 						'Extension' => 'NavigatorAd'
 				),
 				'lists' => array (
-						'KeyUrl' => 'lists',
+						'Alias' => 'lists',
 						'Name' => "Списки данных",
 						'Extension' => 'Lists'
 				),
 				'extensions' => array (
-						'KeyUrl' => 'extensions',
+						'Alias' => 'extensions',
 						'Name' => "Системные расширения",
 						'Extension' => 'ConfigExtensions'
 				)

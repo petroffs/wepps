@@ -20,7 +20,7 @@ class ContactsWepps extends ExtensionWepps {
 				$res = $obj->getMax("t.DisplayOff=0");
 				$tmp = array();
 				foreach ($res as $value) {
-					$keyurl = ($value['KeyUrl']=='') ? 'second' : 'main';
+					$keyurl = ($value['Alias']=='') ? 'second' : 'main';
 					$tmp[$keyurl][] = $value;
 				}
 				if (isset($tmp['main'])) $smarty->assign('elementsMain',$tmp['main']);
