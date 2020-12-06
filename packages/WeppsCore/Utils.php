@@ -153,27 +153,45 @@ class UtilsWepps {
 		return self::getQuery($row);
 	}
 	public static function getQuery($row) {
-		$strCond = $strUpdate = $strInsert1 = $strInsert2 = "";
+		$strCond = $strUpdate = $strInsert1 = $strInsert2 = $strSelect = "";
 		if (count ( $row ) == 0)
 			return array ();
-		foreach ( $row as $key => $value ) {
-			$value = trim ( self::_setQueryFormatted ( $value ) );
-			$strCond .= "{$key}='{$value}' and ";
-			$strUpdate .= "{$key}='{$value}', ";
-			$strInsert1 .= "$key,";
-			$strInsert2 .= "" . ConnectWepps::$db->quote ( $value ) . ",";
-		}
-		$strCond = ($strCond != "") ? trim ( $strCond, " and " ) : "";
-		$strCond = str_replace ( "\n", "\\n", $strCond );
-		$strUpdate = ($strCond != "") ? trim ( $strUpdate, ", " ) : "";
-		$strUpdate = str_replace ( "\r\n", "\\n", $strUpdate );
-		$strInsert = ($strCond != "") ? "(" . trim ( $strInsert1, "," ) . ") values (" . trim ( $strInsert2, "," ) . ")" : "";
-		$strInsert = str_replace ( "\n", "\\n", $strInsert ) . ";";
-		return ($strCond != "") ? array (
-				"insert" => $strInsert,
-				"update" => $strUpdate,
-				"condition" => $strCond
-		) : array ();
+			foreach ( $row as $key => $value ) {
+				$value = trim ( self::_setQueryFormatted ( $value ) );
+				$value1 = (empty($value)) ? "null" : "'{$value}'";
+				
+				if (strstr($key,'@')) {
+					$key = str_replace('@', '', $key);
+					$value1 = $value;
+					$strUpdate .= "{$key}={$value}, ";
+					$strInsert2 .= "{$value},";
+				} elseif ($value1=="null" && $key=="GUID") {
+					$value1 = "uuid()";
+					$strUpdate .= "{$key}=uuid(), ";
+					$strInsert2 .= "uuid(),";
+				} else {
+					$strUpdate .= "{$key}=". ConnectWepps::$db->quote ( $value ) .", ";
+					$strInsert2 .= "" . ConnectWepps::$db->quote ( $value ) . ",";
+				}
+				$strInsert1 .= "$key,";
+				$strCond .= "{$key}={$value1} and ";
+				$strSelect .= "{$value1} {$key}, ";
+			}
+			$strCond = ($strCond != "") ? trim ( $strCond, " and " ) : "";
+			$strCond = str_replace ( "\n", "\\n", $strCond );
+			$strUpdate = ($strCond != "") ? trim ( $strUpdate, ", " ) : "";
+			$strUpdate = str_replace ( "\r\n", "\\n", $strUpdate );
+			$strInsert = ($strCond != "") ? "(" . trim ( $strInsert1, "," ) . ") values (" . trim ( $strInsert2, "," ) . ")" : "";
+			$strInsert = str_replace ( "\n", "\\n", $strInsert ) . ";";
+			$strSelect= ($strCond != "") ? trim ( $strSelect, ", " ) : "";
+			$strSelect = str_replace ( "\r\n", "\\n", $strSelect );
+			$outer = ($strCond != "") ? array (
+					"insert" => $strInsert,
+					"update" => $strUpdate,
+					"condition" => $strCond,
+					"select" => $strSelect
+			) : array ();
+			return $outer;
 	}
 	
 	/**
