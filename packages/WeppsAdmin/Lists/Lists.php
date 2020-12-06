@@ -762,8 +762,6 @@ class ListsWepps {
 		if ($list=="") {
 			return "";
 		}
-		
-		
 		$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS
                     WHERE TABLE_SCHEMA = '".ConnectWepps::$projectDB['dbname']."' and TABLE_NAME = '$list'
                 ";
@@ -771,19 +769,14 @@ class ListsWepps {
 		if (count($schemeReal)>0) {
 			return "";
 		}
-		
+
 		$sql = "CREATE TABLE IF NOT EXISTS {$list} (
 				Id int(11) NOT NULL auto_increment,
 				Name varchar(128) COLLATE utf8_unicode_ci NOT NULL default '',
-				Alias varchar(128) COLLATE utf8_unicode_ci NOT NULL default '',
+				Alias varchar(64) COLLATE utf8_unicode_ci NOT NULL default '',
 				DisplayOff int(11) NOT NULL default '0',
 				Priority int(11) NOT NULL default '0',
-                Descr text COLLATE utf8_unicode_ci NOT NULL default '',
-        		FCategory varchar(128) COLLATE utf8_unicode_ci NOT NULL default '',
-        		FDate datetime NOT NULL default '0000-00-00 00:00:00',
-        		Images int(11) NOT NULL default '0',
-        		Files  int(11) NOT NULL default '0',
-        		DirectoryId int(11) COLLATE utf8_unicode_ci NOT NULL default '0',
+				GUID char(36) COLLATE utf8_unicode_ci default null,
 				PRIMARY KEY (Id)
 			)
 				ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;\n";
@@ -793,16 +786,12 @@ class ListsWepps {
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Ключ','','Alias',3,0,'latin','','','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Скрыть','','DisplayOff',4,0,'flag','','','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Приоритет','','Priority',5,0,'int','hidden','','FieldDefault');\n";
-		
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Текст','','Descr',6,0,'area','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Категория','','FCategory',7,0,'text','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Дата','','FDate',8,0,'date','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Изображения','','Images',9,0,'file','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Файлы','','Files',10,0,'file','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Раздел','','DirectoryId',11,0,'select::s_Directories::Name::ParentDir!=\'\'::ParentDir','','','FieldDefault');\n";
-		UtilsWepps::debugf($sql);
-	
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','GUID',6,0,'guid','','','FieldIntegration');\n";
+		//UtilsWepps::debugf($sql);
 		return $sql;
+		
+		
+		
 	}
 	public static function copyListItem($list="",$id=0,$path="lists") {
 		if ($list=="" || (int) $id == 0) {
