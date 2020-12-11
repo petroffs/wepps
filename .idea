@@ -8,3 +8,5 @@ PPSAdmin/ConfigExtensions/Uploads/UploadsExcelFields.php:39:
 	$sql = "delete from s_ConfigFields where TableName = ''";
 	ConnectPPS::$instance->query($sql);
 	- сделать перед каждым инсертом
+	
+3. border-bottom: 1px solid #e2e2e2; - цвет линий в админке
