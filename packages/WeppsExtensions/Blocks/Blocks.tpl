@@ -1,5 +1,5 @@
 {foreach name="panels" item="panel" from=$panels}
-<div class="pps_panel">
+<div class="pps_panel" id="pps_panel_{$panel.Id}">
 	<div class="wrapper">
 		<div
 			class="pps_blocks pps_sortable pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin">
