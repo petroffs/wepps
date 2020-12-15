@@ -805,7 +805,9 @@ class ListsWepps {
 			if ($path=='navigator') {
 				$source['Url'] = "/rand".date("u")."-".rand(101,999)."/";
 			}
-			
+			if (isset($source['GUID'])) {
+				$source['GUID'] = "";
+			}
 			/*
 			 * Копирование элемента
 			 * $newId = 5; - для тестирования
