@@ -10,3 +10,8 @@ PPSAdmin/ConfigExtensions/Uploads/UploadsExcelFields.php:39:
 	- сделать перед каждым инсертом
 	
 3. border-bottom: 1px solid #e2e2e2; - цвет линий в админке
+
+
+3. Приоритет +5 (см. лоялитиапп)
+
+4. Блоки управление

@@ -9,7 +9,6 @@
 /sitemap.xml
 /robots.txt
 
-/.pps*.sh
 *.sql.gz
 *.7z
 
