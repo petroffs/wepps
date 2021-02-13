@@ -15,3 +15,50 @@ PPSAdmin/ConfigExtensions/Uploads/UploadsExcelFields.php:39:
 3. Приоритет +5 (см. лоялитиапп)
 
 4. Блоки управление
+
+
+GITIGNORE, сделать аналогичным:
+/packages/vendor/*
+/packages/composer.phar
+/packages/composer.lock
+/packages/WeppsAdmin/ConfigExtensions/Backup/files/*
+/packages/WeppsAdmin/Bot/files/*
+/packages/WeppsAdmin/Bot/files.bak/*
+/packages/WeppsAdmin/Rest/files/*
+/packages/WeppsAdmin/Rest/files.bak/*
+
+/files/tpl/compile/*
+/files/lists/*
+/pic/*
+/.htaccess
+/config.php
+/debug.conf
+/sitemap.xml
+/robots.txt
+
+/.pps*.sh
+*.sql.gz
+*.7z
+
+#eclipse
+/.settings
+/.project
+/.buildpath
+
+- главное vendor
+
+
+
+
+
+
+
+
+mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
+
+mysql --defaults-extra-file=/y/domains/config.cnf keune_shopdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
+mysql --defaults-extra-file=/y/domains/config.cnf keune_profiledb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
+
+
+mysql --defaults-extra-file=/var/www/config.cnf keune_shopdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
+mysql --defaults-extra-file=/var/www/config.cnf keune_profiledb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
