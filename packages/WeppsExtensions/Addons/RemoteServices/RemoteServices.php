@@ -62,7 +62,7 @@ class RemoteServicesWepps {
 	
 	private function addCache($url='',$body='',$response='') {
 	    $className = get_class($this);
-	    $arr = UtilsWepps::setQuery([
+	    $arr = UtilsWepps::getQuery([
 	        'Name' => substr($className, strrpos($className, '\\')+1),
 	        'Alias' => md5($url.$body),
 	        'Url' => $url,

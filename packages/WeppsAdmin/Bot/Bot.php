@@ -4,6 +4,7 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use Curl\Curl;
+use WeppsExtensions\Addons\RemoteServices\DadataWepps;
 
 class BotWepps {
 	public $parent = 1;
@@ -52,6 +53,10 @@ class BotWepps {
 				case "telegram":
 					$obj = new BotTelegramWepps();
 					$obj->test2();
+					break;
+				case "dbtest":
+					$obj = new DataWepps("DataTbls");
+					$obj->add(['Name'=>'test']);
 					break;
 				default:
 					echo "\nERROR\n";

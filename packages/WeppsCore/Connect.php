@@ -64,8 +64,9 @@ class ConnectWepps {
 		}
 	}
 	public function insert($tableName,$row) {
-		$arr = UtilsWepps::setQuery($row);
-		$sql = "insert into $tableName (Priority) select max(Priority)+1 from $tableName";
+		$arr = UtilsWepps::getQuery($row);
+		//$sql = "insert into $tableName (Priority) select max(Priority)+1 from $tableName";
+		$sql = "insert into $tableName (Priority) select round((max(Priority)+5)/5)*5 from $tableName";
 		self::$instance->query($sql);
 		$id = self::$db->lastInsertId();
 		$sql = "update $tableName set {$arr['update']} where Id='{$id}'";

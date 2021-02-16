@@ -606,7 +606,7 @@ class ListsWepps {
 			}
 			$_SESSION['uploads'][$myform][$filesfield][] = array('path'=>$filedest,'title'=>$value['name'],'url'=>$fileurl,'type'=>$value['type'],'size'=>$value['size']);
 			//$_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
-			$co = count($_SESSION['uploads'][$myform][$filesfield])-1;
+			//$co = count($_SESSION['uploads'][$myform][$filesfield])-1;
 			$js .= "
 					$('input[name=\"{$filesfield}\"]').parent().parent().append($('<p class=\"fileadd pps_flex_13\">{$value['name']} <a href=\"\" class=\"file-remove\" rel=\"{$fileurl}\"><i class=\"fa fa-remove\"></i></a></p>'));
 			";
@@ -650,7 +650,7 @@ class ListsWepps {
 		$arr = UtilsWepps::getQuery($row);
 		$str = "update s_PropertiesValues set DisplayOff2=1 where {$arr['condition']};\n";
 		$ex = explode(":::", $value);
-		foreach ($ex as $k=>$v) {
+		foreach ($ex as $v) {
 			$hash = md5($list . $field . $id . $prop . $v);
 			$str .= "insert ignore into s_PropertiesValues (HashValue) values ('{$hash}');\n";
 			$row = array(
@@ -675,7 +675,7 @@ class ListsWepps {
 	    $str2 = "update s_SearchKeys set DisplayOff2=1 where Name='{$id}' and 
                     Field3='List::{$list}::{$field}';\n";
 	    if (is_array($value)) {
-	        foreach ($value as $k2=>$v2) {
+	        foreach ($value as $v2) {
 	            $row = array();
 	            $row['Name'] =   $id;
 	            $row['Field1'] = $v2;
@@ -712,6 +712,7 @@ class ListsWepps {
 		$schemeReal = ConnectWepps::$instance->fetch($sql);
 		
 		$alterDefault = "";
+		$alterNull = "NOT NULL";
 		if ($field == 'LanguageId' || $field == 'TableId') {
 			$typeReal = "int(11)";
 			$alterDefault = "default '0'";
@@ -742,6 +743,11 @@ class ListsWepps {
 				$typeReal = 'int(11)';
 				$alterDefault = "default '0'";
 				break;
+			case "guid":
+				$typeReal = 'char(36) COLLATE utf8_unicode_ci';
+				$alterDefault = "default NULL";
+				$alterNull = "";
+				break;
 			default:
 				$typeReal = 'varchar(128) COLLATE utf8_unicode_ci';
 				$alterDefault = "default ''";
@@ -750,9 +756,9 @@ class ListsWepps {
 		
 		$str = "";
 		if (isset($schemeReal[0]['Col'])) {
-			$str = "ALTER TABLE $list CHANGE $field $field $typeReal NOT NULL $alterDefault";
+			$str = "ALTER TABLE $list CHANGE $field $field $typeReal $alterNull $alterDefault";
 		} else{
-			$str = "ALTER TABLE $list ADD $field $typeReal NOT NULL $alterDefault";
+			$str = "ALTER TABLE $list ADD $field $typeReal $alterNull $alterDefault";
 		}
 		return $str;
 	}

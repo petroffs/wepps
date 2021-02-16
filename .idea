@@ -1,18 +1,24 @@
-1. 
+++1. 
 Запись NULL при сохранении списка, см. UtilsPPS::setQuery()
-public static function getQuery($row) - обновить из loyality
-Lists.php - обсновить создание поля GUID - обновить из loyality
+	public static function getQuery($row) - обновить из loyality
+	Lists.php - обсновить создание поля GUID - обновить из loyality
+	АП: DataTbls - бекапим и тестируем
+	Lists.php#517 - закомментили пегергрузку
+	SaveItemConfigFields.php - смотрим SQL из создания поля
+	АП: ГОТОВО
 
-2.
+++2.
 PPSAdmin/ConfigExtensions/Uploads/UploadsExcelFields.php:39:
 	$sql = "delete from s_ConfigFields where TableName = ''";
 	ConnectPPS::$instance->query($sql);
 	- сделать перед каждым инсертом
+	АП: ГОТОВО
 	
-3. border-bottom: 1px solid #e2e2e2; - цвет линий в админке
+++3. border-bottom: 1px solid #e2e2e2; - цвет линий в админке
+	АП: ГОТОВО
 
-
-3. Приоритет +5 (см. лоялитиапп)
+++3. Приоритет +5 (см. лоялитиапп)
+	АП: ГОТОВО
 
 4. Блоки управление
 

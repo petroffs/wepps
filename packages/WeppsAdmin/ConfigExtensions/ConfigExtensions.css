@@ -8,12 +8,12 @@
 }
 
 .lists-items .descr .descr2 {
-	border-bottom: 1px solid #cecece;
+	border-bottom: 1px solid #e2e2e2;
 	padding: 10px 0 5px 0px;
 }
 
 .lists-items .descr .descr2:last-child {
-	border-bottom: 0px solid #cecece;
+	border-bottom: 0px solid #e2e2e2;
 }
 
 .lists-items .descr .descr2 .title3 {

@@ -323,7 +323,7 @@ class DataWepps {
 			$flag = "ignore";
 		}
 		$arr = UtilsWepps::getQuery ( $row );
-		$sql = "insert $flag into {$this->tableName} (Priority) select max(Priority)+1 from {$this->tableName}";
+		$sql = "insert $flag into {$this->tableName} (Priority) select round((max(Priority)+5)/5)*5 from {$this->tableName}";
 		$instanse = ConnectWepps::$db->query($sql);
 		$id = ConnectWepps::$db->lastInsertId();
 		if ((int)$id!=0) {

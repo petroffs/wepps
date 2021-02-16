@@ -147,17 +147,12 @@ class UtilsWepps {
 	 * @param array $row
 	 * @return string[]|mixed[]
 	 */
-	public static function setQuery($row) {
-		echo "!setQuery->getQuuery!<br>"."<br>";
-		UtilsWepps::debug(debug_backtrace());
-		return self::getQuery($row);
-	}
 	public static function getQuery($row) {
 		$strCond = $strUpdate = $strInsert1 = $strInsert2 = $strSelect = "";
 		if (count ( $row ) == 0)
 			return array ();
 			foreach ( $row as $key => $value ) {
-				$value = trim ( self::_setQueryFormatted ( $value ) );
+				$value = trim ( self::_getQueryFormatted ( $value ) );
 				$value1 = (empty($value)) ? "null" : "'{$value}'";
 				
 				if (strstr($key,'@')) {
@@ -165,6 +160,10 @@ class UtilsWepps {
 					$value1 = $value;
 					$strUpdate .= "{$key}={$value}, ";
 					$strInsert2 .= "{$value},";
+					
+					//UtilsPPS::debugf($key,1);
+					
+					
 				} elseif ($value1=="null" && $key=="GUID") {
 					$value1 = "uuid()";
 					$strUpdate .= "{$key}=uuid(), ";
@@ -227,11 +226,11 @@ class UtilsWepps {
 	
 	
 	/**
-	 * Форматирование значения, используется в self::setQuery()
+	 * Форматирование значения, используется в self::getQuery()
 	 * @param array $value
 	 * @return mixed
 	 */
-	private static function _setQueryFormatted($value) {
+	private static function _getQueryFormatted($value) {
 		return str_replace ( array (
 				"&gt;",
 				"&lt;",

@@ -36,6 +36,9 @@ class UploadsExcelFieldsWepps {
 							"FGroup"=>$value['E'],
 					);
 					
+					$sql = "delete from s_ConfigFields where TableName='' and Field=''";
+					ConnectWepps::$instance->query($sql);
+					
 					$res = $obj->get("TableName = '{$row1['TableName']}' and Field = '{$row1['Field']}'");
 					if (!isset($res[0]['Id'])) {
 						$id = $obj->add($row1,'ignore');

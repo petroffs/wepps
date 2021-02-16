@@ -125,6 +125,10 @@ class RequestListsWepps extends RequestWepps {
 				if (!isset($this->get['pps_tablename_id']) || !isset($this->get['pps_tablename'])) {
 					ExceptionWepps::error404();
 				}
+				
+				$sql = "delete from s_ConfigFields where TableName='' and Field=''";
+				ConnectWepps::$instance->query($sql);
+				
 				/*
 				 * Проверка введенных данных (обязательные поля) с индикацией ошибки
 				 */
