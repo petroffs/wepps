@@ -1,24 +1,10 @@
-++1. 
-Запись NULL при сохранении списка, см. UtilsPPS::setQuery()
-	public static function getQuery($row) - обновить из loyality
-	Lists.php - обсновить создание поля GUID - обновить из loyality
-	АП: DataTbls - бекапим и тестируем
-	Lists.php#517 - закомментили пегергрузку
-	SaveItemConfigFields.php - смотрим SQL из создания поля
-	АП: ГОТОВО
+mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
+mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 
-++2.
-PPSAdmin/ConfigExtensions/Uploads/UploadsExcelFields.php:39:
-	$sql = "delete from s_ConfigFields where TableName = ''";
-	ConnectPPS::$instance->query($sql);
-	- сделать перед каждым инсертом
-	АП: ГОТОВО
-	
-++3. border-bottom: 1px solid #e2e2e2; - цвет линий в админке
-	АП: ГОТОВО
 
-++3. Приоритет +5 (см. лоялитиапп)
-	АП: ГОТОВО
+
+
+composer rm cached
 
 4. Блоки управление
 
@@ -60,11 +46,9 @@ GITIGNORE, сделать аналогичным:
 
 
 
-mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
 
 mysql --defaults-extra-file=/y/domains/config.cnf keune_shopdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
 mysql --defaults-extra-file=/y/domains/config.cnf keune_profiledb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
-
 
 mysql --defaults-extra-file=/var/www/config.cnf keune_shopdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
 mysql --defaults-extra-file=/var/www/config.cnf keune_profiledb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
