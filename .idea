@@ -1,48 +1,7 @@
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 
-
-
-
-composer rm cached
-
-4. Блоки управление
-
-
-GITIGNORE, сделать аналогичным:
-/packages/vendor/*
-/packages/composer.phar
-/packages/composer.lock
-/packages/WeppsAdmin/ConfigExtensions/Backup/files/*
-/packages/WeppsAdmin/Bot/files/*
-/packages/WeppsAdmin/Bot/files.bak/*
-/packages/WeppsAdmin/Rest/files/*
-/packages/WeppsAdmin/Rest/files.bak/*
-
-/files/tpl/compile/*
-/files/lists/*
-/pic/*
-/.htaccess
-/config.php
-/debug.conf
-/sitemap.xml
-/robots.txt
-
-/.pps*.sh
-*.sql.gz
-*.7z
-
-#eclipse
-/.settings
-/.project
-/.buildpath
-
-- главное vendor
-
-
-
-
-
+Блоки управление
 
 
 
