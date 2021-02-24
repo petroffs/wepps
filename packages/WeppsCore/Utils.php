@@ -266,6 +266,22 @@ class UtilsWepps {
 		return $arr;
 	}
 	
+	/**
+	 * Получить массив из строки
+	 */
+	public static function getArrayFromStringTabs($string) {
+		$output = [];
+		$string = trim($string);
+		$ex = explode("\r\n",$string);
+		foreach ($ex as $i=>$value) {
+			$tabs = explode("\t", trim($value));
+			foreach ($tabs as $j=>$v) {
+				$output[$i][$j] = $v;
+			}
+		}
+		return $output;
+	}
+	
 	public static function getModal($message) {
 		$js = "
                     <script>

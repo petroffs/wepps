@@ -3,9 +3,6 @@ mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/
 
 Блоки управление
 
-
-
-
 mysql --defaults-extra-file=/y/domains/config.cnf keune_shopdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
 mysql --defaults-extra-file=/y/domains/config.cnf keune_profiledb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
 
