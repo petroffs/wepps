@@ -10,3 +10,20 @@ mysql --defaults-extra-file=/y/domains/config.cnf keune_profiledb < /y/domains/w
 
 mysql --defaults-extra-file=/var/www/config.cnf keune_shopdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
 mysql --defaults-extra-file=/var/www/config.cnf keune_profiledb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
+
+
+1. Настроить git-релизы
+
+	http://falbar.ru/article/uspeshnaya-model-organizacii-raboty-v-git
+	git checkout develop
+	git merge --no-ff myfeature !!!!
+	git branch -d myfeature
+	git push origin develop
+	
+	- как пример, сделать проще:
+	из dev - релизы в master
+	
+	Пример:
+		Работаем в dev, коммитим всё вместе
+		Релизы делаем в master
+		В master должны быть коммиты релизов (0.1.1, 0.1.2, 0.1.n)
