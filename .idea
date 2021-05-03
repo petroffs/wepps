@@ -1,18 +1,24 @@
+remote:
 apt install php-curl php-dom mysql-server
-
+local:
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 
-Блоки управление
 
-mysql --defaults-extra-file=/y/domains/config.cnf keune_shopdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
-mysql --defaults-extra-file=/y/domains/config.cnf keune_profiledb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
-
-mysql --defaults-extra-file=/var/www/config.cnf keune_shopdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
-mysql --defaults-extra-file=/var/www/config.cnf keune_profiledb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.wepps-20200912-164514.sql
+1. Блоки управление
+	s_Panels/PTemplate (Panel1)
+		Создается Panel1.tpl Panel1.css Panel1.js - тут и будет всё настраиваться
+2. ymaps 2.1
 
 
-1. Настроить git-релизы
+
+
+
+
+
+
+
+Настроить git-релизы
 
 	http://falbar.ru/article/uspeshnaya-model-organizacii-raboty-v-git
 	git checkout develop
@@ -27,3 +33,4 @@ mysql --defaults-extra-file=/var/www/config.cnf keune_profiledb < /var/www/wepps
 		Работаем в dev, коммитим всё вместе
 		Релизы делаем в master
 		В master должны быть коммиты релизов (0.1.1, 0.1.2, 0.1.n)
+		

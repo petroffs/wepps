@@ -1,12 +1,15 @@
 {foreach name="panels" item="panel" from=$panels}
 <div class="pps_panel" id="pps_panel_{$panel.Id}">
+	{$panel.Id|pps:"s_Panels"}
 	<div class="wrapper">
 		<div
-			class="pps_blocks pps_sortable pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin">
+			class="pps_blocks{if $user.ShowAdmin} pps_sortable{/if} pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin">
 			{foreach name="blocks" item="block" from=$blocks[$panel.Id]}
-			<div class="pps_block pps_flex_13">{$block.Name}</div>
+			<div class="pps_block pps_flex_13">
+				{$block.Id|pps:"s_Blocks"}
+				{$block.Name}
+			</div>
 			{/foreach}
-			
 		</div>
 	</div>
 </div>

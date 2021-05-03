@@ -15,8 +15,15 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			$this->headers->js ( "/packages/vendor/components/jqueryui/jquery-ui.min.js" );
 			$this->headers->css ( "/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css" );
 			$this->headers->css ( "/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css" );
+			
+			/*
+			 * Авторизация
+			 */
+			if (isset($_SESSION['user']['Id'])) {
+				$smarty->assign('user',$_SESSION['user']);
+			}
 	
-			/**
+			/*
 			 * Проект
 			 */
 			$this->headers->js ( "/ext/Addons/Layout/Layout.{$rand}.js" );
@@ -24,7 +31,7 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			//$this->headers->css ( "/ext/Addons/Layout/WinLayer.{$rand}.css" );		
 			$this->headers->css ( "/ext/Addons/Layout/Win.{$rand}.css" );		
 			
-			/**
+			/*
 			 * Навигация
 			 */
 			$this->headers->js ("/ext/Addons/Nav/Nav.{$rand}.js");
@@ -32,13 +39,13 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			$smarty->assign('nav',$this->navigator->nav);
 			$smarty->assign('navTpl',$smarty->fetch( __DIR__ .'/Nav/Nav.tpl'));
 	
-			/**
+			/*
 			 * Формы
 			 */
 			$this->headers->js ("/ext/Addons/Forms/Forms.{$rand}.js");
 			$this->headers->css ("/ext/Addons/Forms/Forms.{$rand}.css");
 	
-			/**
+			/*
 			 * Информация организации
 			 */
 			$obj = new DataWepps ( "TradeShops" );
@@ -46,7 +53,7 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			$smarty->assign ( 'shopInfo', $res );
 			unset ( $obj );
 	
-			/**
+			/*
 			 * Соцсети
 			 */
 			$obj = new DataWepps ( "ServList" );
@@ -54,7 +61,7 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			$smarty->assign ('socials', $res );
 			unset ( $obj );
 	
-			/**
+			/*
 			 * Нормальное представление
 			 */
 			$smarty->assign ( 'normalView', 1 );
