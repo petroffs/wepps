@@ -5,18 +5,7 @@
 }
 
 .pps_panel>.wrapper {
-	max-width: 1280px;
+	max-width: 1360px;
 	margin: 0 auto;
 	overflow: hidden;
-}
-
-.pps_panel>.wrapper>.pps_blocks {
-	margin: 0px -10px;
-}
-
-.pps_panel>.wrapper>.pps_blocks>.pps_block {
-	min-height: 100px;
-	text-align: center;
-	background: tomato;
-	position: relative;
 }

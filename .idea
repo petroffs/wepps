@@ -8,6 +8,10 @@ mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/
 1. Блоки управление
 	s_Panels/PTemplate (Panel1)
 		Создается Panel1.tpl Panel1.css Panel1.js - тут и будет всё настраиваться
+		
+		$block.Template - эта переменная может быть установлена в Panel.Template в коде, для гибкости
+		
+		
 2. ymaps 2.1
 3. Внедрить select2 (аналогично лоялити)
 4. Проверка layout js
