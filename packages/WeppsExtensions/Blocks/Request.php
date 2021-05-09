@@ -17,7 +17,18 @@ class RequestBlocksWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'sortable':
-				echo "hello";
+				if (isset($_SESSION['user']['ShowAdmin']) && $_SESSION['user']['ShowAdmin']==1 && !empty($this->get['items'])) {
+					$ex = explode(",", $this->get['items']);
+					$co = 50;
+					$str = "";
+					foreach ($ex as $value) {
+						$str .= "update s_Blocks set Priority='{$co}' where Id='{$value}';\n";
+						$co += 5;
+					}
+					ConnectWepps::$db->exec($str);
+				} else {
+					exit();
+				}
 				break;
 			default:
 				ExceptionWepps::error404();
@@ -25,6 +36,18 @@ class RequestBlocksWepps extends RequestWepps {
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 $request = new RequestBlocksWepps ($_REQUEST);
 $smarty->assign('get',$request->get);
