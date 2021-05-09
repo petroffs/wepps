@@ -59,7 +59,6 @@ var FormSenderWepps  = function () {
 }
 var formSenderWepps = new FormSenderWepps();
 
-
 var readyFormsInit = function() {
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderWepps.upload);
 	$('.pps_form_group').find('.pps_flex_14').on('click',function(event) {

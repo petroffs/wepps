@@ -11,5 +11,9 @@ var readyAdminWeppsInit = function() {
 		event.preventDefault()
 		layoutWepps.request('action=logoff', '/packages/WeppsAdmin/Admin/Request.php');
 	});
+	$('.pps_select').find('select').select2({
+		language: "ru",
+		delay: 250
+	});
 }
 $(document).ready(readyAdminWeppsInit);

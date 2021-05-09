@@ -74,14 +74,14 @@ class AdminWepps {
 		if (!isset($this->nav[$path])) {
 			ExceptionWepps::error404();
 		}
-		
-		
-		
 		$navItem = $this->nav[$path];
 		$this->headers->js ( "/packages/vendor/components/jquery/jquery.min.js" );
 		$this->headers->js ( "/packages/vendor/components/jqueryui/jquery-ui.min.js" );
 		$this->headers->css ( "/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css" );
 		$this->headers->css ( "/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css" );
+		$this->headers->js  ("/packages/vendor/select2/select2/dist/js/select2.min.js");
+		$this->headers->js  ("/packages/vendor/select2/select2/dist/js/i18n/ru.js");
+		$this->headers->css ("/packages/vendor/select2/select2/dist/css/select2.min.css");
 		$this->headers->js ( "/packages/WeppsAdmin/Admin/Layout/Layout.{$headers::$rand}.js" );
 		$this->headers->css ( "/packages/WeppsAdmin/Admin/Layout/Layout.{$headers::$rand}.css" );
 		$this->headers->css ( "/packages/WeppsAdmin/Admin/Layout/WinLayer.{$headers::$rand}.css" );

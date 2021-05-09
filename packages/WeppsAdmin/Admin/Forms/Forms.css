@@ -149,69 +149,8 @@ label.pps.pps_radio input[type="radio"][disabled]+span:before {
 	color: silver;
 }
 
-label.pps.pps_select {
+label.pps.pps_select>select {
 	width: 100%;
-	padding: 0px 0px 0 0;
-	border: 1px solid #9a9a9a;
-	border-radius: 3px;
-	overflow: hidden;
-	position: relative;
-	outline: none;
-}
-
-label.pps.pps_select:before {
-	content: "\f0dd";
-	color: #9a9a9a;
-	font-size: 14px;
-	height: 100%;
-	line-height: 100%;
-	font-family: 'FontAwesome';
-	position: absolute;
-	right: 12px;
-	padding: 5px 0px 0 10px;
-	top: 0px;
-	z-index: 1;
-	pointer-events: none;
-	border-left: 1px solid #9a9a9a;
-}
-
-label.pps.pps_select select {
-	padding: 0px 38px 0px 5px;
-	height: 28px;
-	margin: 0;
-	background: #fff;
-	border: 0;
-	outline: none;
-	width: 99.7%;
-	display: block;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	cursor: pointer;
-	position: relative;
-}
-
-label.pps.pps_select select::-ms-expand {
-    display: none;
-}
-
-label.pps.pps_select select option[selected] {
-	color: inherit;
-	background: inherit;
-}
-
-label.pps.pps_select select option:hover  {
-	color: inherit;
-	background: inherit;
-}
-
-label.pps.pps_select_multi select[multiple] {
-	padding: 0px 5px 0px 5px;
-	height: inherit;
-}
-
-label.pps.pps_select_multi:before {
-	display: none;
 }
 
 label.pps.pps_upload {
