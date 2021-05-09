@@ -4,7 +4,7 @@
 	
 }
 
-.pps_panel>.wrapper>.pps_blocks>.pps_block {
+.pps_panel.exampletest>.wrapper>.pps_blocks>.pps_block {
 	min-height: 100px;
 	text-align: center;
 	background: tomato;

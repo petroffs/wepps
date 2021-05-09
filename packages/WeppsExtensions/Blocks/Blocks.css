@@ -2,10 +2,16 @@
 	width: 100%;
 	overflow: hidden;
 	margin: 0 0px;
+	position: relative;
 }
-
 .pps_panel>.wrapper {
 	max-width: 1360px;
 	margin: 0 auto;
 	overflow: hidden;
+}
+.pps_panel.blockstest>.wrapper>.pps_blocks>.pps_block {
+	min-height: 100px;
+	text-align: center;
+	background: red;
+	position: relative;
 }
