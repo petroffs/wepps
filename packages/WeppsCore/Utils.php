@@ -154,16 +154,11 @@ class UtilsWepps {
 			foreach ( $row as $key => $value ) {
 				$value = trim ( self::_getQueryFormatted ( $value ) );
 				$value1 = (empty($value)) ? "null" : "'{$value}'";
-				
 				if (strstr($key,'@')) {
 					$key = str_replace('@', '', $key);
 					$value1 = $value;
 					$strUpdate .= "{$key}={$value}, ";
 					$strInsert2 .= "{$value},";
-					
-					//UtilsPPS::debugf($key,1);
-					
-					
 				} elseif ($value1=="null" && $key=="GUID") {
 					$value1 = "uuid()";
 					$strUpdate .= "{$key}=uuid(), ";
