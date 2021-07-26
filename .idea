@@ -53,4 +53,4 @@ mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/
 			git push origin master
 			
 idea1
-		
+idea2
