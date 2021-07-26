@@ -51,4 +51,6 @@ mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/
 			git checkout master
 			git merge --no-ff dev
 			git push origin master
+			
+idea1
 		
