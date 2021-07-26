@@ -54,3 +54,4 @@ mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/
 			
 idea1
 idea2
+idea3
