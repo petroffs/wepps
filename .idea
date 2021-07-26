@@ -44,3 +44,11 @@ mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/
 		Релизы делаем в master
 		В master должны быть коммиты релизов (0.1.1, 0.1.2, 0.1.n)
 		
+		
+		1. Сделали коммиты в dev
+		2. Перешли в мастер
+		
+			git checkout master
+			git merge --no-ff dev
+			git push origin master
+		
