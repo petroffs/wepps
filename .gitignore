@@ -1,11 +1,8 @@
 /packages/vendor/*
 /packages/composer.phar
 /packages/composer.lock
-/packages/WeppsAdmin/ConfigExtensions/Backup/files/*
-/packages/WeppsAdmin/Bot/files/*
-/packages/WeppsAdmin/Bot/files.bak/*
-/packages/WeppsAdmin/Rest/files/*
-/packages/WeppsAdmin/Rest/files.bak/*
+/packages/WeppsAdmin/*/*/files*
+/packages/WeppsAdmin/*/files*
 /files/tpl/compile/*
 /files/lists/*
 /pic/*

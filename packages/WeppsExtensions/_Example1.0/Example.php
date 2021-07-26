@@ -11,7 +11,6 @@ class ExampleWepps extends ExtensionWepps {
 	public function request() {
 		//$this->destinationTpl = 'extension'; //horizontalBottomTpl
 		$smarty = SmartyWepps::getSmarty();
-		$rand = $this->headers::$rand;
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Example/Example.tpl';
@@ -26,8 +25,8 @@ class ExampleWepps extends ExtensionWepps {
 		/*
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/Example/Example.{$rand}.css");
-		$this->headers->js("/ext/Example/Example.{$rand}.js");
+		$this->headers->css("/ext/Example/Example.{$this->rand}.css");
+		$this->headers->js("/ext/Example/Example.{$this->rand}.js");
 		
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;

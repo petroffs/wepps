@@ -312,10 +312,16 @@ class UtilsWepps {
  */
 abstract class RequestWepps {
 	/**
-	 * Массив со всеми переменными
+	 * Массив с входными переменными
 	 * @var array
 	 */
-	public $get = array ();
+	public $get = [];
+	
+	/**
+	 * Переменные для шаблонов
+	 * @var array
+	 */
+	private $assign = [];
 	
 	/**
 	 * Шаблон вывода
@@ -327,20 +333,14 @@ abstract class RequestWepps {
 	 * Инициализация $smarty
 	 * @var \Smarty
 	 */
-	public $smarty;
+	private $smarty;
 	/**
-	 * Подключение шаблона, который передается в общий шаблон sefl::$tpl
+	 * Подключение шаблона, который передается в общий шаблон self::$tpl
 	 * @var array
 	 */
 	private $fetch = array();
 	
 	/**
-	 * Глобальный шаблон, который можно включить в любой self::fetch
-	 * @var array
-	 */
-	private $fetch2 = array();
-	
-	/*
 	 * Закрытие соединения с БД
 	 */
 	public $noclose = 0;
@@ -368,7 +368,7 @@ abstract class RequestWepps {
 	/**
 	 * Подключение стилей и js-сценариев
 	 * Подключаются автоматически, при наличии файла:
-	 * Для шаблона $this->tpl = "RequestExample.tpl" требуется 
+	 * Для шаблона $this->tpl = "RequestExample.tpl" требуется
 	 * файл RequestExample.tpl.css или RequestExample.tpl.js
 	 * Шаблон следует определять в self::request()
 	 */
@@ -382,31 +382,21 @@ abstract class RequestWepps {
 			if ($css == 1) $this->get['cssjs']  = "<style>{$smarty->fetch($this->tpl.'.css')}</style>";
 			if ($js == 1)  $this->get['cssjs'] .= "<script type=\"text/javascript\">{$smarty->fetch($this->tpl.'.js')}</script>";
 		}
-		foreach ($this->get as $key=>$value) {
-		    if ($key!='cssjs') $smarty->assign($key,$value);
+		foreach ($this->assign as $key=>$value) {
+			$smarty->assign($key,$value);
 		}
-		if (count($this->fetch) != 0) {
-			if (count($this->fetch2) != 0) {
-				foreach ($this->fetch2 as $key=>$value) {
-					$smarty->assign($key,$smarty->fetch($value));
-				}
-			}
+		if (count($this->fetch)!=0) {
 			foreach ($this->fetch as $key=>$value) {
-				$this->get[$key] = $smarty->fetch($value);
+				$smarty->assign($key,$smarty->fetch($value));
 			}
 		}
 	}
-	
 	public function assign($key,$value) {
-		$this->get[$key] = $value;
+		$this->assign[$key] = $value;
 	}
 	
 	public function fetch($key,$value) {
 		$this->fetch[$key] = $value;
-	}
-	
-	public function fetch2($key,$value) {
-		$this->fetch2[$key] = $value;
 	}
 }
 
@@ -439,6 +429,7 @@ class TemplateHeadersWepps {
 	private function join_old($str) {
 		$ex = explode("\n",$str);
 		if ($ex[0]=='') unset($ex[0]);
+		$match = [];
 		foreach ($ex as $value) {
 			if (strstr($value, "text/javascript")) {
 				preg_match('/src="(.+)"></', $value,$match);

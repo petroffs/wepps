@@ -9,7 +9,6 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 class ServicesWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
-		$rand = $this->headers::$rand;
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Services/Services.tpl';
@@ -36,8 +35,8 @@ class ServicesWepps extends ExtensionWepps {
 		/*
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/Services/Services.{$rand}.css");
-		$this->headers->js("/ext/Services/Services.{$rand}.js");
+		$this->headers->css("/ext/Services/Services.{$this->rand}.css");
+		$this->headers->js("/ext/Services/Services.{$this->rand}.js");
 		$this->headers->css ( "/ext/Addons/Paginator/Paginator.css" );
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;

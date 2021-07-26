@@ -9,8 +9,6 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 	class AddonsWepps extends ExtensionWepps {
 		public function request() {
 			$smarty = SmartyWepps::getSmarty();
-			$rand = $this->headers::$rand;
-			
 			$this->headers->js ( "/packages/vendor/components/jquery/jquery.min.js" );
 			$this->headers->js ( "/packages/vendor/components/jqueryui/jquery-ui.min.js" );
 			$this->headers->css ( "/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css" );
@@ -26,24 +24,24 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			/*
 			 * Проект
 			 */
-			$this->headers->js ( "/ext/Addons/Layout/Layout.{$rand}.js" );
-			$this->headers->css ( "/ext/Addons/Layout/Layout.{$rand}.css" );		
-			//$this->headers->css ( "/ext/Addons/Layout/WinLayer.{$rand}.css" );		
-			$this->headers->css ( "/ext/Addons/Layout/Win.{$rand}.css" );		
+			$this->headers->js ( "/ext/Addons/Layout/Layout.{$this->rand}.js" );
+			$this->headers->css ( "/ext/Addons/Layout/Layout.{$this->rand}.css" );		
+			//$this->headers->css ( "/ext/Addons/Layout/WinLayer.{$this->rand}.css" );		
+			$this->headers->css ( "/ext/Addons/Layout/Win.{$this->rand}.css" );		
 			
 			/*
 			 * Навигация
 			 */
-			$this->headers->js ("/ext/Addons/Nav/Nav.{$rand}.js");
-			$this->headers->css ("/ext/Addons/Nav/Nav.{$rand}.css");
+			$this->headers->js ("/ext/Addons/Nav/Nav.{$this->rand}.js");
+			$this->headers->css ("/ext/Addons/Nav/Nav.{$this->rand}.css");
 			$smarty->assign('nav',$this->navigator->nav);
 			$smarty->assign('navTpl',$smarty->fetch( __DIR__ .'/Nav/Nav.tpl'));
 	
 			/*
 			 * Формы
 			 */
-			$this->headers->js ("/ext/Addons/Forms/Forms.{$rand}.js");
-			$this->headers->css ("/ext/Addons/Forms/Forms.{$rand}.css");
+			$this->headers->js ("/ext/Addons/Forms/Forms.{$this->rand}.js");
+			$this->headers->css ("/ext/Addons/Forms/Forms.{$this->rand}.css");
 	
 			/*
 			 * Информация организации

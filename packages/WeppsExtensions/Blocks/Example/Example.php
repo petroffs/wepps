@@ -7,10 +7,9 @@ use WeppsCore\Core\SmartyWepps;
 class ExampleWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
-		$rand = $this->headers::$rand;
 		$this->tpl = $smarty->fetch('packages/WeppsExtensions/Blocks/Example/Example.tpl');
-		$this->headers->css("/ext/Blocks/Example/Example.{$rand}.css");
-		$this->headers->js("/ext/Blocks/Example/Example.{$rand}.js");
+		$this->headers->css("/ext/Blocks/Example/Example.{$this->rand}.css");
+		$this->headers->js("/ext/Blocks/Example/Example.{$this->rand}.js");
 	}
 }
 ?>

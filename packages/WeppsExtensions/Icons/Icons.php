@@ -10,7 +10,6 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 class IconsWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
-		$rand = $this->headers::$rand;
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Icons/Icons.tpl';
@@ -25,8 +24,8 @@ class IconsWepps extends ExtensionWepps {
 		/**
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/Icons/Icons.{$rand}.css");
-		$this->headers->js("/ext/Icons/Icons.{$rand}.js");
+		$this->headers->css("/ext/Icons/Icons.{$this->rand}.css");
+		$this->headers->js("/ext/Icons/Icons.{$this->rand}.js");
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;
 	}

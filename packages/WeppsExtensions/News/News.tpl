@@ -1,4 +1,4 @@
-<input type="button" value="ajax popup" onclick="layout2Wepps.win({ size:'small',data:'action=test',url:'/ext/Addons/Request.php' });"/>
+<input type="button" value="ajax popup" onclick="layout2Wepps.win({ size:'small',data:'action=test1',url:'/ext/Addons/Request.php' });"/>
 <input type="button" value="plain popup" onclick="layout2Wepps.win({ size:'medium',content: $('#test')});"/>
 <input type="button" value="ajaxtoobj" onclick="layout2Wepps.request({ data:'action=test',url:'/ext/Addons/Request.php',obj:$('#test2') });"/>
 <input type="button" value="ajaxplain" onclick="layout2Wepps.request({ data:'action=test',url:'/ext/Addons/Request.php' });"/>

@@ -1,3 +1,3 @@
 $(document).ready(function() {
-	alert('example from request');
+	console.log('example from request');
 });

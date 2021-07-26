@@ -10,7 +10,6 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 class TilesWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
-		$rand = $this->headers::$rand;
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Tiles/Tiles.tpl';
@@ -22,11 +21,11 @@ class TilesWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		/*
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/Tiles/Tiles.{$rand}.css");
-		$this->headers->js("/ext/Tiles/Tiles.{$rand}.js");
+		$this->headers->css("/ext/Tiles/Tiles.{$this->rand}.css");
+		$this->headers->js("/ext/Tiles/Tiles.{$this->rand}.js");
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;
 	}

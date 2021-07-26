@@ -20,8 +20,7 @@ class TemplateWepps extends ExtensionWepps {
 		$smarty->assign('language',$this->navigator->lang);
 		$smarty->assign('multilang',$this->navigator->multilang);
 		$tpl = str_replace(".tpl", "", $this->navigator->tpl['tpl']);
-		$rand = $this->headers::$rand;
-		$this->headers->css ( "/ext/Template/{$tpl}.{$rand}.css" );
+		$this->headers->css ( "/ext/Template/{$tpl}.{$this->rand}.css" );
 		
 		/*
 		 * Дополнительный глобальный функционал
@@ -51,14 +50,14 @@ class TemplateWepps extends ExtensionWepps {
 		 * Управление
 		 */
 		if (isset($_SESSION['user']['ShowAdmin']) && $_SESSION['user']['ShowAdmin']==1) {
-			$this->headers->css("/packages/WeppsAdmin/Admin/Admin.{$rand}.css");
-			$this->headers->js("/packages/WeppsAdmin/Admin/Admin.{$rand}.js");
+			$this->headers->css("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.css");
+			$this->headers->js("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.js");
 		}
 		
 		/*
 		 * Передача данных в шаблон
 		 */
-		$this->headers->js("/ext/Template/{$tpl}.{$rand}.js");
+		$this->headers->js("/ext/Template/{$tpl}.{$this->rand}.js");
 		$smarty->assign('headers',$this->headers->get());
 		$smarty->assign('content',$this->navigator->content);
 		$smarty->assign('nav',$this->navigator->nav);

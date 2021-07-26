@@ -21,7 +21,6 @@ class ProfileWepps {
 			}
 		}
 		$smarty = SmartyWepps::getSmarty ();
-		$rand = $this->headers::$rand;
 		$this->pathItem = $ppsUrl;
 		$users = new DataWepps("s_Users");
 		$user = array();
@@ -130,8 +129,8 @@ if (isset ( $navigator )) {
 	}
 	$smarty->assign('get',$obj->get);
 	$smarty->assign('tpl',$obj->outer);
-	$headers->css ( "/ext/Profile/Profile.{$rand}.css" );
-	$headers->js ( "/ext/Profile/Profile.{$rand}.js" );
+	$headers->css ( "/ext/Profile/Profile.{$this->rand}.css" );
+	$headers->js ( "/ext/Profile/Profile.{$this->rand}.js" );
 	$headers->js('/packages/vendor/components/jqueryui/jquery-ui.min.js');
 	$headers->css('/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css');
 	$headers->js ( "https://www.google.com/recaptcha/api.js" );

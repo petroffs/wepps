@@ -11,7 +11,6 @@ use WeppsCore\Utils\UtilsWepps;
 class BlocksWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
-		$rand = $this->headers::$rand;
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = "";
@@ -19,8 +18,8 @@ class BlocksWepps extends ExtensionWepps {
 				/*
 				 * Переменные для глобального шаблона
 				 */
-				$this->headers->css("/ext/Blocks/Blocks.{$rand}.css");
-				$this->headers->js("/ext/Blocks/Blocks.{$rand}.js");
+				$this->headers->css("/ext/Blocks/Blocks.{$this->rand}.css");
+				$this->headers->js("/ext/Blocks/Blocks.{$this->rand}.js");
 				
 				$obj = new DataWepps("s_Panels");
 				$panels = $obj->getMax("t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'");

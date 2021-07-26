@@ -11,7 +11,6 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 class RedirectWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
-		$rand = $this->headers::$rand;
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Redirect/Redirect.tpl';
@@ -28,8 +27,8 @@ class RedirectWepps extends ExtensionWepps {
 		/**
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/Redirect/Redirect.{$rand}.css");
-		$this->headers->js("/ext/Redirect/Redirect.{$rand}.js");
+		$this->headers->css("/ext/Redirect/Redirect.{$this->rand}.css");
+		$this->headers->js("/ext/Redirect/Redirect.{$this->rand}.js");
 		
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;

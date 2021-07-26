@@ -10,7 +10,6 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 class NewsWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
-		$rand = $this->headers::$rand;
 		switch (NavigatorWepps::$pathItem) {
 			case '' :
 				$this->tpl = 'packages/WeppsExtensions/News/News.tpl';
@@ -37,9 +36,9 @@ class NewsWepps extends ExtensionWepps {
 		/**
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/News/News.{$rand}.css");
-		$this->headers->js("/ext/News/News.{$rand}.js");
-		$this->headers->css ( "/ext/Addons/Paginator/Paginator.{$rand}.css" );
+		$this->headers->css("/ext/News/News.{$this->rand}.css");
+		$this->headers->js("/ext/News/News.{$this->rand}.js");
+		$this->headers->css ( "/ext/Addons/Paginator/Paginator.{$this->rand}.css" );
 
 		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
 		return;
