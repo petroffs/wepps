@@ -16,43 +16,8 @@ mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/
 			2. Слайдер из загруженных в Images файлов
 			3. Проверить CSS стили в Template (проверить гибкость)
 		
-		
-2. ymaps 2.1
-3. Внедрить select2 (аналогично лоялити)
-4. Проверка layout js
+2. Проверка layout js
+3. Внедрить тип поля select_ajax
 
-
-
-
-
-
-
-
-Настроить git-релизы
-
+Настроить git-релизы ??
 	http://falbar.ru/article/uspeshnaya-model-organizacii-raboty-v-git
-	git checkout develop
-	git merge --no-ff myfeature !!!!
-	git branch -d myfeature
-	git push origin develop
-	
-	- как пример, сделать проще:
-	из dev - релизы в master
-	
-	Пример:
-		Работаем в dev, коммитим всё вместе
-		Релизы делаем в master
-		В master должны быть коммиты релизов (0.1.1, 0.1.2, 0.1.n)
-		
-		
-		1. Сделали коммиты в dev
-		2. Перешли в мастер
-		
-			git checkout master
-			git merge --no-ff dev
-			git push origin master
-			
-idea1
-idea2
-idea3
-idea4
