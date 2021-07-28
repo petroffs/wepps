@@ -32,6 +32,11 @@ class DataWepps {
 	 */
 	public $sql;
 	/**
+	 * Для полей area обрезать возвращаемые значения в getMax()
+	 * @var integer
+	 */
+	public $truncate=0;
+	/**
 	 * Схема текущей таблицы БД
 	 */
 	private $scheme;
@@ -144,10 +149,17 @@ class DataWepps {
 						$joins .= "
 						left join s_SearchKeys as sk{$f} on cast(sk{$f}.Name as signed) = t.Id
                             and binary sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
-						left join {$ex[1]} as sm{$f} on sm{$f}.Id = cast(sk{$f}.Field1 as signed)
+						left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1
 						";
 						$formatted['id'] .= "";
 						$f ++;
+						break;
+					case "area":
+						if ($this->truncate!=0) {
+							$fields .= "substr(t.{$key},1,{$this->truncate}) as {$key},";
+						} else {
+							$fields .= "t.{$key},";
+						}
 						break;
 					default :
 						$fields .= "t.{$key},";

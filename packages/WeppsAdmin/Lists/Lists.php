@@ -124,7 +124,7 @@ class ListsWepps {
         			$listCondition = "t.{$this->get['field']} = '{$this->get['filter']}'";
         		}
         	}
-        	//UtilsWepps::debug($listCondition,1);
+        	$listObj->truncate = 160;
         	$listItems = $listObj->getMax($listCondition,$listSettings['ItemsOnPage'],$page,"t.".$listSettings['IsOrderBy']);
         	
         	if (isset($listItems[0]['Id'])) {
