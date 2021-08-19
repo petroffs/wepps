@@ -453,10 +453,7 @@ class NavigatorWepps {
 		$this->data = new NavigatorDataWepps ( "s_Directories" );
 		$this->data->backOffice = $backOffice;
 		$this->data->lang = $this->lang;
-		
-		
-		
-		$res = $this->data->getMax ( "t.Url='{$this->path}'" );
+		$res = $this->data->getMax ( "binary t.Url='{$this->path}'" );
 		
 		if (isset($res[0]['Id'])) {
 			$this->content = $res[0];
