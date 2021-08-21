@@ -770,7 +770,7 @@ class LanguageWepps {
 	 * @return array
 	 */
 	public static function getRows($data, $scheme, $lang) {
-		if (count ( $lang ) == 0 || ! is_array ( $data ) || $lang ['default'] == 1 || ! isset ( $scheme ['TableId'] ) || ! isset ( $scheme ['LanguageId'] )) {
+		if (!empty($lang) || !is_array($data) || $lang['default']==1 || !isset($scheme['TableId']) || !isset($scheme['LanguageId'])) {
 			return $data;
 		}
 		$res = UtilsWepps::getArrayId($data);
@@ -823,7 +823,7 @@ class SmartyWepps {
 		$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_pps/');
 		$smarty->compile_dir = $root . 'files/tpl/compile';
 		$smarty->cache_dir = $root . 'files/tpl/cache/';
-		$smarty->error_reporting = error_reporting() & ~E_NOTICE;
+		$smarty->error_reporting = error_reporting() & ~E_NOTICE & ~E_WARNING;
 		self::$instance = $smarty;
 	}
 	public static function getSmarty($backOffice = 0) {
