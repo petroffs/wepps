@@ -26,6 +26,6 @@ $smarty = SmartyWepps::getSmarty();
 
 $headers = new TemplateHeadersWepps();
 
-$headers::$rand = "may-1";
+$headers::$rand = "aug22-1";
 $headers::$rand .= "-".rand(100,10000000);
 ?>
