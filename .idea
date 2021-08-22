@@ -3,21 +3,4 @@ apt install php-curl php-dom mysql-server
 local:
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
-
-
-1. Блоки управление
-	s_Panels/PTemplate (Panel1)
-		$panel.Template - создать на основе Example
-		$block.Template - эта переменная может быть установлена в Panel/Template в коде, для гибкости
-		Сделать sortable рабочим
-		
-		Настроить несколько Template
-			1. Фото на ширину, заголовок, текст, вложенные файлы
-			2. Слайдер из загруженных в Images файлов
-			3. Проверить CSS стили в Template (проверить гибкость)
-		
-2. Проверка layout js
-3. Внедрить тип поля select_ajax
-
-Настроить git-релизы ??
-	http://falbar.ru/article/uspeshnaya-model-organizacii-raboty-v-git
+	
