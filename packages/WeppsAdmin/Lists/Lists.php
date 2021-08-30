@@ -104,12 +104,16 @@ class ListsWepps {
         		$addAction = str_replace(".php","",$listSettings['ActionShow']);
         		$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
 	       		$addActionRequest = new $addActionClass (array('listSettings'=>$listSettings,'listScheme'=>$listScheme));
-        		
-        		
         		$listCondition = $addActionRequest->condition;
-        		$listScheme = $addActionRequest->scheme;
-        		$smarty->assign('listScheme',$listScheme);
-        		
+        		if (!empty($addActionRequest->fields)) {
+        			if (!empty($addActionRequest->scheme)) {
+        				$listScheme = $addActionRequest->scheme;
+        				$smarty->assign('listScheme',$listScheme);
+        			}
+        			$listObj->setFields($addActionRequest->fields);
+        			$listScheme = $listObj->getScheme(1);
+        			$smarty->assign('listScheme',$listScheme);
+        		}
         	}
         	
         	if (isset($this->get['field']) && isset($this->get['search'])) {
