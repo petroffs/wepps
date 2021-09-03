@@ -62,6 +62,11 @@ class DataWepps {
 	private $group = '';
 	
 	/**
+	 * Включить having в sql
+	 */
+	private $having='';
+	
+	/**
 	 * 
 	 */
 	public $lang;
@@ -172,12 +177,13 @@ class DataWepps {
 				$concat = "," . $concat;
 			}
 			$group = ($this->group=='') ? 't.Id' : $this->group;
+			$having = (!empty($this->having)) ? "having {$this->having}" : '';
 			$sql = "select SQL_CALC_FOUND_ROWS
 			$fields $concat
 			from {$this->tableName} as t
 			$joins $joinCustom
 			where {$formatted['id']}
-			group by $group {$formatted['orderBy']} {$formatted['limit']}";
+			group by $group $having {$formatted['orderBy']} {$formatted['limit']}";
 			$this->sql = $sql;
 			if ($this->tableName=='DataTbls') {
 				//UtilsWepps::debug($this->sql,1);
