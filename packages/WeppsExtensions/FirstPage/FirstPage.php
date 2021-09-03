@@ -8,6 +8,7 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsExtensions\Addons\AddonsUtilsWepps;
 
 class FirstPageWepps extends ExtensionWepps {
 	public $topTpl = '';
@@ -16,6 +17,7 @@ class FirstPageWepps extends ExtensionWepps {
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->topTpl = "";
+				
 				/*
 				 * Карусель на главной
 				 */
@@ -84,7 +86,7 @@ class FirstPageWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		/*
 		 * Нормальное представление
 		 */
 		$smarty->assign ( 'normalHeader1', 0 );
