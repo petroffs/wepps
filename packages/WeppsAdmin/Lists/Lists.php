@@ -455,6 +455,8 @@ class ListsWepps {
 		foreach ($listScheme as $k=>$v) {
 			if ($v[0]['Type']=='flag' && !isset($data[$k])) {
 				$row[$k] = 0;
+			} elseif (strstr($v[0]['Type'], '_multi') && !isset($data[$k])) {
+				$row[$k] = '';
 			}
 		}
 		if (count($row)==0) return 0;
