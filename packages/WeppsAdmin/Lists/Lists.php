@@ -273,8 +273,23 @@ class ListsWepps {
 		
 		foreach ($listScheme as $key=>$value) {
 		    
-			if (strstr($value[0]['Type'], 'select')) {
-			    
+			if (strstr($value[0]['Type'], 'remote')) {
+				$ex = explode("::", $value[0]["Type"]);
+				$ex[2] = (strstr($ex[2], ",")) ? substr($ex[2], 0, strpos($ex[2], ",")) : $ex[2];
+				$tablename = $ex[1];
+				
+				/*
+				 * Выбранные элементы
+				 */
+				$where = (!empty($element[0][$key])) ? "where Id in ({$element[0][$key]})" : "where Id in (0)";
+				$sql = "select Id,{$ex[2]} from {$tablename} {$where} order by {$ex[2]}";
+				$res = ConnectWepps::$instance->fetch($sql);
+				$selected = array();
+				foreach ($res as $k=>$v) {
+					$selected[$v['Id']] = "{$v[$ex[2]]} ({$v['Id']})";
+				}
+				$element[0]["{$key}_SelectChecked"] = $selected;
+			} elseif (strstr($value[0]['Type'], 'select')) {
 				$ex = explode("::", $value[0]["Type"]);
 				$ex[2] = (strstr($ex[2], ",")) ? substr($ex[2], 0, strpos($ex[2], ",")) : $ex[2];
 				$tablename = $ex[1];

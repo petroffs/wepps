@@ -345,3 +345,28 @@ function urlRusLat(str) {
     }
     return newStr.replace(/[_]{2,}/gim, '_').replace(/\n/gim, '');
 }
+
+var getSelectRemote = function(obj) {
+	let id = obj.id
+	let url = obj.url
+	$(id).select2({
+		language: "ru",
+		ajax: {
+			headers: {
+		        "ClientApiEmail" : '',
+		        "ClientApiToken" : '',
+		    },
+			url: url,
+			//delay: 500,
+			dataType: 'json',
+			data: function(params) {
+				var query = {
+					search: params.term,
+					page: params.page || 1
+				}
+				return query;
+			},
+		}
+	});
+	//console.log ($(id).select2("destroy"));
+}

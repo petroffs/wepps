@@ -142,6 +142,27 @@
 					{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 					</select>
 				</label>
+				{elseif $item.0.Type|strstr:"remote"}
+				{if $item.0.Type|strstr:"remote_multi"}
+				<label class="pps pps_select">
+					<select name="{$key}[]" id="remote_{$key}" multiple="multiple">
+					{foreach name="o" item="i" key="k" from=$element[$key|cat:"_SelectChecked"]}
+					<option value="{$k}" selected="selected">{$i}</option>
+					{/foreach}
+					</select>
+				</label>
+				{else}
+				<label class="pps pps_select">
+					<select name="{$key}" id="remote_{$key}">
+					{foreach name="o" item="i" key="k" from=$element[$key|cat:"_SelectChecked"]}
+					<option value="{$k}" selected="selected">{$i}</option>
+					{/foreach}
+					</select>
+				</label>
+				{/if}
+				<script>
+				$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}" })});
+				</script>
 				{elseif $item.0.Type|strstr:"properties"}
 				<label class="pps pps_select list-item-properties">
 					<select name="{$key}">

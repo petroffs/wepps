@@ -118,7 +118,7 @@ class DataWepps {
 			foreach ( $settings as $key=>$value ) {
 				$ex = explode ( "::", $value[0] ['Type'], 4 );
 				switch ($ex [0]) {
-					case "file" :
+					case "file":
 						$fields .= "
 						'f{$f}' as {$key}_Coordinate,
 						group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$key}_FileUrl,
@@ -132,7 +132,8 @@ class DataWepps {
 						";
 						$f ++;
 						break;
-					case "select" :
+					case "select":
+					case "remote":
 						$str = "";
 						foreach ( explode ( ",", $ex [2] ) as $v ) {
 							$str .= "s{$f}.{$v} as {$key}_{$v},";
@@ -146,7 +147,8 @@ class DataWepps {
 						";
 						$f ++;
 						break;
-					case "select_multi" :
+					case "select_multi":
+					case "remote_multi":
 						$fields .= "
 						t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},
 						";
