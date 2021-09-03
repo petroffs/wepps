@@ -6,9 +6,9 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Spell\SpellWepps;
 
-class AddonsUtilsWepps {
+class AddonsUtilsWepps extends UtilsWepps {
 	public static function test() {
-		UtilsWepps::debugf(1,1);
+		self::debugf(1,1);
 	}
 		
 
