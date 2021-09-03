@@ -78,17 +78,16 @@
 							</td>
 							{elseif $i.0.Type=='file'}
 							<td class="{$i.0.Type}">
-							{foreach name="o2" key="k2" item="i2" from=$item[$k|cat:"_FileUrl"]|strarr}
-							{if $i2|stristr:"jpg" || $i2|stristr:"png"}
-							<div class="{if $k2>=3}pps_hide{/if}">
-							<a href="/f{$i2}"><img src="/pic/lists{$i2}"/></a>
-							</div>
-							{elseif $i2!=''}
+							{foreach name="o2" key="k2" item="i2" from=$item[$k|cat:"_FileUrl"]|strarr|array_slice:0:2}
 							<div>
-							<a href="/f{$i2}">Открыть</a>
+							<a href="/f{$i2}">
+								{if $i2|stristr:"jpg" || $i2|stristr:"png"}
+								<img src="/pic/lists{$i2}"/>
+								{elseif $i2!=''}
+								Открыть
+								{/if}
+							</a>
 							</div>
-							{/if}
-							
 							{/foreach}
 							</td>
 							{else}

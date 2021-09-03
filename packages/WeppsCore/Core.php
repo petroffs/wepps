@@ -249,8 +249,8 @@ class DataWepps {
 	 * 
 	 * @return array
 	 */
-	public function getScheme() {
-		if ($this->scheme == NULL) {
+	public function getScheme($renew=0) {
+		if ($this->scheme==NULL || $renew==1) {
 			$fields = $this->fields;
 			if ($fields != '') {
 				$fields = " and t.Field in ('".str_replace(",", "','", $fields)."')";
