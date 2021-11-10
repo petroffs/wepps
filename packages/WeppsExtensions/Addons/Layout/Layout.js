@@ -131,10 +131,11 @@ class Layout2Wepps {
 	remove() {
 		let self = this;
 		this.body.removeClass('pps_win_parent');
+		$('html').removeClass('pps_overflow');
+		self.back.remove();
 		this.back.fadeOut(500, function() {
-			self.back.remove();
 			self.back2.remove();
-			$('html').removeClass('pps_overflow');
+			
 		});
 		return 2;
 	}
