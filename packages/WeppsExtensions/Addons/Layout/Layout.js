@@ -133,6 +133,8 @@ class Layout2Wepps {
 		this.body.removeClass('pps_win_parent');
 		this.back.fadeOut(500, function() {
 			self.back.remove();
+			self.back2.remove();
+			$('html').removeClass('pps_overflow');
 		});
 		return 2;
 	}
@@ -152,7 +154,6 @@ class Layout2Wepps {
 		this.content = $('<div></div>');
 		this.content.addClass('pps_win_content');
 		this.window.append(this.content);
-		
 		switch (settings.size) {
 			case 'small':
 				this.window.addClass('pps_win_small');
@@ -167,9 +168,13 @@ class Layout2Wepps {
 		this.back = $('<div></div>');
 		this.back.addClass('pps_win_bg');
 		this.back.append(this.window);
+		this.back2 = $('<div></div>');
+		this.back2.addClass('pps_win_bg2');
 		this.body = $('body');
 		this.body.addClass('pps_win_parent');
+		this.body.prepend(this.back2);
 		this.body.prepend(this.back);
+		$('html').addClass('pps_overflow');
 		this.window.fadeIn();
 		if (settings.content != undefined) {
 			let clone = settings.content.clone();

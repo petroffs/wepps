@@ -1,12 +1,10 @@
-.pps_win_parent {
-	overflow: hidden;
+.pps_win_parent > :not(.pps_win_bg) {
+    filter: blur(3px);
 }
-
 .pps_win_bg {
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
-	background: rgba(0,0,0,0.5);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -14,7 +12,20 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	z-index: 199999991;
+	z-index: 9999;
+}
+.pps_win_bg2 {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    position: fixed;
+    z-index: 9998;
+    background: rgba(255,255,255,0.5);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
 }
 .pps_win_element {
 	position: relative;
@@ -29,6 +40,7 @@
 	border-radius: 0px;
 	box-shadow:0 0 5px #666;
 	overflow: auto;
+	scrollbar-width: thin;
 }
 
 .pps_win_element.pps_win_small {

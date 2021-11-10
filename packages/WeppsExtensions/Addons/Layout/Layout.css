@@ -364,7 +364,7 @@ ul.pps_list, ol.pps_list {
 
 
 /**adaptive**/
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 810px) {
 	.pps_hide_view_medium {
 		display: none;
 	}
@@ -467,7 +467,7 @@ ul.pps_list, ol.pps_list {
 	.pps_flex.pps_flex_margin_small_view_medium>* {
 		border: 2.5px solid transparent;
 	}
-	.pps_flex.pps_flex_margin_mediun_view_medium {
+	.pps_flex.pps_flex_margin_medium_view_medium {
 		padding: 0px;
 		margin: 0 -10px;
 		overflow: hidden;
@@ -486,6 +486,12 @@ ul.pps_list, ol.pps_list {
 	.pps_flex.pps_flex_start_view_medium {
 		-webkit-justify-content: flex-start;
 		justify-content: flex-start;
+	}
+	.pps_flex.pps_flex_center_view_medium {
+		-webkit-justify-content: center;
+		-webkit-align-items: center;
+		justify-content: center;
+		align-items: center;
 	}
 	.pps_flex.pps_flex_between_view_medium {
 		-webkit-justify-content: space-between;
