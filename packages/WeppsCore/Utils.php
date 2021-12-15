@@ -377,13 +377,13 @@ abstract class RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$css = (is_file($this->tpl.'.css')) ? 1 : 0;
 		$js = (is_file($this->tpl.'.js')) ? 1 : 0;
+		foreach ($this->assign as $key=>$value) {
+			$smarty->assign($key,$value);
+		}
 		if ($css==1 || $js==1) {
 			$this->get['cssjs'] = '';
 			if ($css == 1) $this->get['cssjs']  = "<style>{$smarty->fetch($this->tpl.'.css')}</style>";
 			if ($js == 1)  $this->get['cssjs'] .= "<script type=\"text/javascript\">{$smarty->fetch($this->tpl.'.js')}</script>";
-		}
-		foreach ($this->assign as $key=>$value) {
-			$smarty->assign($key,$value);
 		}
 		if (count($this->fetch)!=0) {
 			foreach ($this->fetch as $key=>$value) {
