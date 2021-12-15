@@ -6,7 +6,7 @@ use Curl\Curl;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 
-class RecaptchaWepps extends RemoteServicesWepps {
+class RecaptchaV2Wepps extends RemoteServicesWepps {
 	
 	private $sitekey;
 	private $secret;
@@ -23,11 +23,11 @@ class RecaptchaWepps extends RemoteServicesWepps {
 	/*
 	 * Получить ответ V2
 	 */
-	public function getRecaptchaV2($recaptcha) {
+	public function check($response) {
 		$url = "https://www.google.com/recaptcha/api/siteverify";
 		$body = array(
 		    'secret' => $this->secret,
-		    'response' => $recaptcha
+				'response' => $response
 		);
 		$this->curl = new Curl();
 		$this->cache = 0;
@@ -38,23 +38,26 @@ class RecaptchaWepps extends RemoteServicesWepps {
 		return $this->sitekey;
 	}
 	
-	public function getCallback($id='greacptchaV2') {
+	public function render($gwidgetId='gwidgetId',$id='greacptchaV2',$recaptchadub='recaptchadub') {
 		$html = "
+		<label class=\"pps pps_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
+		<div class=\"g-recaptcha\" id=\"{$id}\"></div>
+		<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit\" async defer></script>		
 		<script>
 		var onloadRecapchaV2 = function() {
-			grecaptcha.render('$id', {
+			{$gwidgetId} = grecaptcha.render('{$id}', {
 				'sitekey' : '".$this->sitekey."'
 			});
 		};
 		</script>
-		<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit\" async defer></script>
+		
 		";
 		return $html;
 	}
-	public function getCallbackReset() {
+	public function reset($gwidgetId='gwidgetId') {
 	    $html = "
         <script>
-            grecaptcha.reset();
+            grecaptcha.reset($gwidgetId);
         </script>
         ";
 	    return $html;
