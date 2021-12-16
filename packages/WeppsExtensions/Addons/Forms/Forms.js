@@ -28,8 +28,14 @@ var FormSenderWepps  = function () {
 		$('.controlserrormess').remove();
 		var str = 'action=' + action + '&form=' + myform + '&link=' + lang + '&';
 		var serialized = $("#" + myform).serialize();
-		if (!layoutWepps) var layoutWepps = new LayoutWepps();
-		layoutWepps.request(str + serialized, url)
+		if (!layout2Wepps) {
+			var layout2Wepps = new Layout2Wepps();	
+		}
+		let settings = {
+			url: url,
+			data : str + serialized
+		}
+		layout2Wepps.request(settings);
 	}
 }
 var formSenderWepps = new FormSenderWepps();
