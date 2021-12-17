@@ -4,6 +4,10 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
+setlocale(LC_NUMERIC, 'en_EN');
+if (!isset($_SESSION)) {
+	@session_start ();
+}
 /*
  * Инициализация соединения с БД
  * 
@@ -26,6 +30,6 @@ $smarty = SmartyWepps::getSmarty();
 
 $headers = new TemplateHeadersWepps();
 
-$headers::$rand = "aug22-1";
+$headers::$rand = "dev-1";
 $headers::$rand .= "-".rand(100,10000000);
 ?>

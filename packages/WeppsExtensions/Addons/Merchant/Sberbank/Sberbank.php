@@ -18,7 +18,6 @@ class SberbankWepps {
 	private $date;
 	private $url;
 	function __construct($get) {
-		if (!session_start()) session_start();
 		
 		$this->get = $get;
 		$this->date = date("Y-m-d H:i:s");

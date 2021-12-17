@@ -20,8 +20,6 @@ require_once '../../../../config.php';
 require_once '../../../../autoloader.php';
 require_once '../../../../configloader.php';
 
-if (!session_start()) session_start();
-
 //http://pps.lubluweb.ru/packages/WeppsAdmin/ConfigExtensions/Processing/Request.php?id=5
 
 class RequestOrdersWepps extends RequestWepps {

@@ -62,7 +62,7 @@ var LayoutWepps = function() {
 		this.el.append(lay);
 		lay.animate({
 			'top' : 0
-		}, 500);
+		}, 300);
 		var content = $('<div></div>');
 		content.addClass('winLayerContent');
 		lay.append(content);
@@ -73,7 +73,7 @@ var LayoutWepps = function() {
 				footer.addClass('winLayerFooter');
 				lay.append(footer);
 			}
-		}, 700);
+		}, 300);
 
 		content.attr('id', 'winLayerContent');
 			
@@ -85,7 +85,7 @@ var LayoutWepps = function() {
 		});
 		setTimeout(function() {
 			content.prepend(closer);
-		}, 500);
+		}, 300);
 
 	}
 
@@ -125,32 +125,35 @@ class Layout2Wepps {
 			this.settings = settings 
 		}
 	}
-	add() {
+	init() {
+		$('body').removeClass('pps_win_parent');
+		$('html').removeClass('pps_overflow');
+		$('.pps_win_bg2').remove();
+		$('.pps_win_bg').remove();
+		$('.pps_loader').remove();	
 		return 1;
 	}
 	remove() {
-		let self = this;
-		this.body.removeClass('pps_win_parent');
-		$('html').removeClass('pps_overflow');
-		self.back.remove();
-		this.back.fadeOut(500, function() {
-			self.back2.remove();
-			
+		let self = this;	
+		$('.pps_win_element').fadeOut(300, function() {
+			self.init();		
 		});
 		return 2;
 	}
 	win(settings={}) {
 		let self = this;
+		this.init();
 		this.window = $('<div></div>');
 		this.window.addClass('pps_win_element');
 		this.window.attr('id', 'pps_win_element');
 		
 		this.closer = $('<div></div>');
+		this.closer.addClass('pps_win_closer');
+		this.window.append(this.closer);
+		
 		this.closer.on('click', function() {
 			self.remove();
 		});
-		this.closer.addClass('pps_win_closer');
-		this.window.append(this.closer);
 		
 		this.content = $('<div></div>');
 		this.content.addClass('pps_win_content');
@@ -185,15 +188,16 @@ class Layout2Wepps {
 			settings.obj = this.content;
 			this.request(settings);
 		} 
+		$(document).off('keyup');
 		$(document).keyup(function(e) {
 		    if (e.keyCode == 27) {
 		    	self.remove();
 		    }
 		});
+		$(document).off('mouseup');
 		$(document).mouseup(function(e) {
-		    if (!self.window.is(e.target) && self.window.has(e.target).length === 0 && $(e.target).hasClass('pps_loader')==false) {
-		    	//console.log()
-		        self.remove();
+		    if ($('.pps_win_element').has(e.target).length === 0 && $(e.target).hasClass('pps_win_element')==false && $(e.target).hasClass('pps_loader')==false) {
+		      	self.remove();
 		    }
 		});
 		return 1;
@@ -212,9 +216,10 @@ class Layout2Wepps {
 		        
 		    }
 		}).done(function(responseText) {
+			$('.pps_loader').fadeOut()
 			setTimeout(function() {
-				$('.pps_loader').fadeOut();
-			},300);
+				$('.pps_loader').remove();
+			},500);
 			if (settings.obj) {
 				settings.obj.html(responseText);
 				$("#pps_ajax").remove();

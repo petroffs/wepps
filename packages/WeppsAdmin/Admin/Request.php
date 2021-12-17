@@ -17,8 +17,6 @@ require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-if (!session_start()) session_start();
-
 class RequestAdminWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
