@@ -3,7 +3,6 @@ namespace WeppsCore\Exception;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsExtensions\Template\TemplateWepps;
 use WeppsCore\Connect\ConnectWepps;
@@ -30,18 +29,25 @@ class ExceptionWepps {
 	 * @param \Exception $e        	
 	 */
 	public static function logMessage(\Exception $e) {
-		// QueryWepps::$db->fetch();
-		//echo "Будем писать в бд ошибки";
-		
-		if ($e->getTrace () [1] ['class'] == 'Wepps\Connect\ConnectWepps')
-			UtilsWepps::debug ( $e->getTrace () [1], 0 );
-		UtilsWepps::debug($e->getMessage(),1);
+		if (ConnectWepps::$projectDev['debug']==1) {
+			$error = [];
+			$error['message'] = $e->getMessage();
+			$trace = $e->getTrace();
+			if ($trace[1]['class']=='WeppsCore\Connect\ConnectWepps') {
+				$error['file'] = $trace[1]['file'];
+				$error['line'] = $trace[1]['line'];
+				$error['args'] = $trace[1]['args'];
+			}
+			UtilsWepps::debugf($error,1);
+		} else {
+			exit();
+		}
 	}
 	
 	public static function error404() {
-		header("HTTP/1.0 404 Not Found");
+		http_response_code(404);
 		$navigator = new NavigatorWepps('/error404/');
-		$smarty = SmartyWepps::getSmarty();
+		//$smarty = SmartyWepps::getSmarty();
 		$headers = new TemplateHeadersWepps();
 		$obj = new TemplateWepps($navigator, $headers);
 		unset($obj);
