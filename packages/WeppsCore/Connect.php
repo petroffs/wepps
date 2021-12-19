@@ -54,11 +54,17 @@ class ConnectWepps {
 			ExceptionWepps::logMessage( $e );
 		}
 	}
-	public function query($sql) {
+	public function query($sql,$params=[]) {
 		$this->count++;
 		try {
-			$state = self::$db->query ( $sql );
-			return $state->rowCount();
+			if (empty($params)) {
+				$state = self::$db->query ( $sql );
+				return $state->rowCount();
+			} else {
+				$this->sth = self::$db->prepare ( $sql );
+				$this->sth->execute( $params );
+				return $this->sth->rowCount();
+			}
 		} catch ( \Exception $e ) {
 			ExceptionWepps::writeMessage ( $e );
 		}

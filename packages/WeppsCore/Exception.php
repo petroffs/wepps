@@ -17,10 +17,17 @@ class ExceptionWepps {
 	 */
 	public static function writeMessage (\Exception $e) {
 		if (ConnectWepps::$projectDev['debug']==1) {
-			UtilsWepps::debug($e->getTraceAsString());
-			UtilsWepps::debug($e->getMessage());
+			$error = [];
+			$error['message'] = $e->getMessage();
+			$trace = $e->getTrace();
+			if ($trace[1]['class']=='WeppsCore\Connect\ConnectWepps') {
+				$error['file'] = $trace[1]['file'];
+				$error['line'] = $trace[1]['line'];
+				$error['args'] = $trace[1]['args'];
+			}
+			UtilsWepps::debug($error,1);
 		} else {
-			ConnectWepps::$instance->close();
+			exit();
 		}
 	}
 	/**
