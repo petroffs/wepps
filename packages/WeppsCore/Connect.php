@@ -13,6 +13,7 @@ class ConnectWepps {
 	public static $projectDB;
 	public static $projectServices;
 	public $count;
+	private $sth;
 	private function __construct($projectSettings = array()) {
 		try {
 			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
