@@ -954,6 +954,9 @@ class ListsWepps {
 			foreach ($t as $v) {
 				$ex2 = explode(",", $v['FieldName']);
 				foreach ($ex2 as $v2) {
+					if (empty($v2)) {
+						continue;
+					}
 					$rowData = array();
 					$rowData['Name'] = $v['Id'];
 					$rowData['Field1'] = $v2;
