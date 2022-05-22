@@ -1,9 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,500,700,900&subset=cyrillic-ext');
-
 * {
 	outline: none;
 }
-
 html {
 	background: #fff;
 	min-height: 100%;
@@ -11,13 +9,11 @@ html {
 	color: #666;
 	font-size: 14px;
 	line-height: 130%;
-	
 	display: -webkit-flex;
 	display: flex;
 	-webkit-flex-flow: column nowrap;
 	flex-flow: column nowrap;
 }
-
 body {
 	margin: 0px 0 0 0;
 	padding: 10px 0 0 0;
@@ -28,7 +24,6 @@ body {
 	flex-flow: column nowrap;
 	flex: auto;
 }
-
 a {
 	color: #0080C0;
 	text-decoration: none;
@@ -39,21 +34,16 @@ a:focus {
 	color: #0000ff;
 	text-decoration: underline;
 }
-
 .page {
 	max-width: 1920px;
 	margin: 0 auto;
 }
-
-
 .page.main {
 	padding: 0 0px;
 }
-
 .page.main .page2 {
 	padding: 0 0px;
 }
-
 .page.main .page2 h1 {
 	background: #ededed;
 	margin: 0 10px;
@@ -63,15 +53,10 @@ a:focus {
 	text-transform: none;
 	line-height: 100%;
 }
-
 .nav {
 	background: #555555;
 	margin: 0 10px !important;
 	width: auto !important;
-}
-
-.nav>div div.item {
-	
 }
 .nav>div div.item>a {
 	display: block;
@@ -80,35 +65,26 @@ a:focus {
 	color: #fff;
 	font-weight: 700;
 }
-
 .nav>div div.item>a:hover {
 	background: #fff;
 	color: #555;
-}
-
-.nav>div div.item.active {
-	
 }
 .nav>div div.item.active>a {
 	background: #ededed;
 	color: #555;
 }
-
 .way {
 	padding: 10px 20px 0px 20px;
 }
-
 .way>ul>li {
 	margin: 0 20px 0 0;
 	position: relative;
 	font-weight: 500;
 }
-
 .way>ul>li a {
 	color: #666;
 	text-decoration: none;
 }
-
 .way>ul>li:after {
 	content: '\f0da';
 	font-family: 'FontAwesome';
@@ -116,64 +92,48 @@ a:focus {
 	top:0;
 	right: -12px;
 }
-
 .way>ul>li:last-child:after {
 	content: '';
 }
-
 .leftmenu {
 	line-height: 120%;
 	font-size: 1.1rem;
 }
-
 .leftmenu .title {
 	font-weight: 500;
 	padding: 40px 10px 5px 10px;
 	font-size: 18px;
 }
-
 .leftmenu ul.dir {
 	margin-left: 10px;
 	margin-right: 10px;
 }
-
 .leftmenu ul.dir li {
 	padding-top: 10px;
 }
-
 .leftmenu ul.dir li.active a {
 	font-weight: 700;
 	color: #666;
 }
-
 .leftmenu ul.dir li.hidden a {
 	opacity: 0.5;
 }
-
 .leftmenu>ul {
 	padding-bottom: 10px;
 }
-
-.centercontent {
-
-}
-
 .centercontent>div h2 {
 	margin: 30px 0 20px 0;
 	font-size: 1.8rem;
 	font-weight: 500;
 	line-height: 100%;
 }
-
 .bg1 {
 	background: #e5e5e5;
 	padding: 10px;
 }
-
 .bg1>.title {
 	font-weight: 700;
 }
-
 .select2-container .select2-selection--single {
     height: 30px;
 }
@@ -183,5 +143,3 @@ a:focus {
 .select2-container--default .select2-results__group {
     opacity: 0.5;
 }
-
-
