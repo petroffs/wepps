@@ -11,6 +11,7 @@
 		<input type="hidden" name="{$key}" value="{$element.$key|escape:'html'}"/>
 		{/if}
 		{/foreach}
+		<div class="pps_hide"><input type="submit"/></div>
 		{$controlsTpl}
 		<div class="pps_interval_small"></div>
 		{if $tabs|@count>1 || $listSettings.ActionShowIdAddons}
