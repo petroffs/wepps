@@ -30,7 +30,9 @@ class RequestListsWepps extends RequestWepps {
 				$this->tpl = "RequestListFilter.tpl";
 				$obj = new DataWepps($this->get['list']);
 				$scheme = $obj->getScheme();
-				if (!isset($scheme[$this->get['field']][0])) ExceptionWepps::error404();
+				if (!isset($scheme[$this->get['field']][0])) {
+					ExceptionWepps::error404();
+				}
 				$type = $scheme[$this->get['field']][0]['Type'];
 				if ($type=='area' || $type=='file') {
 					ConnectWepps::$instance->close();

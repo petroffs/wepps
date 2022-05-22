@@ -476,6 +476,8 @@ class ListsWepps {
 		}
 		if (count($row)==0) return 0;
 		if (isset($_SESSION['uploads']['list-data-form'])) {
+			$sql = "delete from s_Files where Name = ''";
+			ConnectWepps::$instance->query($sql);
 			$objFile = new DataWepps("s_Files");
 			foreach ($_SESSION['uploads']['list-data-form'] as $key=>$value) {
 				foreach ($value as $k=>$v) {
@@ -492,7 +494,7 @@ class ListsWepps {
 							'TableNameField'=>$file['field'],						
 							'FileUrl'=>$file['url'],						
 					);
-					$objFile->add($rowFile,'ignore');
+					$objFile->add($rowFile);
 					self::removeUpload($key,$v['url']);
 				}
 			}
@@ -559,7 +561,7 @@ class ListsWepps {
 		$pathinfo = pathinfo($upload['path']);
 		$translit = SpellWepps::getTranslit($upload['title']);
 		$prefix = sprintf("%06d", $id) . "_{$field}_" . date("U") . "_";
-		$lengthMax = 12;
+		$lengthMax = 36;
 		$translitPos = strrpos($translit, '.');
 		if ($translitPos > $lengthMax) {
 			$translit = substr($translit, $translitPos - $lengthMax);

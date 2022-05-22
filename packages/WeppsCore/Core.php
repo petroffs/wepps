@@ -128,7 +128,7 @@ class DataWepps {
 						//";
 						
 						$joins .= "
-						left join s_Files as f{$f} on f{$f}.TableNameId = t.Id and binary f{$f}.TableNameField = '{$key}' and binary f{$f}.TableName = '{$this->tableName}'
+						left join s_Files as f{$f} on f{$f}.TableNameId = t.Id and f{$f}.TableNameField = '{$key}' and f{$f}.TableName = '{$this->tableName}'
 						";
 						$f ++;
 						break;
@@ -143,7 +143,7 @@ class DataWepps {
 						t.{$key},'s{$f}' as {$key}_Coordinate,$str,
 						";
 						$joins .= "
-						left join {$ex[1]} as s{$f} on s{$f}.Id = cast(t.{$key} as signed)
+						left join {$ex[1]} as s{$f} on s{$f}.Id = t.{$key}
 						";
 						$f ++;
 						break;
@@ -154,8 +154,8 @@ class DataWepps {
 						";
 							
 						$joins .= "
-						left join s_SearchKeys as sk{$f} on cast(sk{$f}.Name as signed) = t.Id
-                            and binary sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
+						left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id
+                            and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
 						left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1
 						";
 						$formatted['id'] .= "";
