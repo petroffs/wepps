@@ -49,15 +49,11 @@ class BlocksWepps extends ExtensionWepps {
 						$this->tpl .= $extension->tpl;
 					}
 				}
-				
-				//UtilsWepps::debugf($this->tpl,1);
-				
 				break;
 			default:
 				ExceptionWepps::error404();
 				break;
 		}
-		//$smarty->assign('blocks',$smarty->fetch($this->tpl));
 		$smarty->assign('blocks',$this->tpl);
 		return;
 	}

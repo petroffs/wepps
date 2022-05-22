@@ -1,5 +1,5 @@
 <div class="pps_panel blockstest" id="pps_panel_{$panel.Id}">
-	{$panel.Id|pps:"s_Panels"}
+	{$content.Id|pps:"panels":$panel.Id}
 	<div class="wrapper">
 		<div class="pps_blocks{if $user.ShowAdmin} pps_sortable{/if} {$panel.LayoutCSS}">
 			{foreach name="blocks" item="block" from=$blocks}

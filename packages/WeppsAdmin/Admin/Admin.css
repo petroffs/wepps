@@ -12,11 +12,11 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	
 }
 .pps_admin_list>a {
 	display: flex;
 	text-decoration: none;
+	border: none;
 }
 .pps_admin_list>a:before {
 	width: 100%;
@@ -31,6 +31,20 @@
 .pps_admin_list>a:hover:before {
 	opacity: 1;
 }
+.pps_admin_list.pps_admin_panels>a {
+	display: block;
+}
+.pps_admin_list.pps_admin_panels>a:nth-child(2):before {
+	content: '\f247';
+	font-size: 14px;
+	display: inline-block;
+}
+.pps_admin_list.pps_admin_panels>a:nth-child(3):before {
+	content: '\f248';
+	font-size: 14px;
+	display: inline-block;
+}
+
 .pps_admin_navigator {
 	width: 60px;
 	height: 60px;

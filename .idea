@@ -4,4 +4,3 @@ sudo certbot certonly -d wepps.dev -d www.wepps.dev -d wepps.ru -d www.wepps.ru 
 local:
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
-	
