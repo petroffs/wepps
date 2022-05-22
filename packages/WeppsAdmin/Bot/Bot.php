@@ -52,7 +52,8 @@ class BotWepps {
 					break;
 				case "telegram":
 					$obj = new BotTelegramWepps();
-					$obj->test2();
+					#$obj->test2();
+					$obj->attach();
 					break;
 				case "dbtest":
 					$obj = new DataWepps("DataTbls");

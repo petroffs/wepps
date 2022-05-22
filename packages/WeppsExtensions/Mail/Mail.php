@@ -103,7 +103,7 @@ class MailWepps {
 	private function getAttachInput() {
 		$msg = "";
 		$mime_boundary = md5(time());
-		if (count($this->attachmentInput) != 0) {
+		if (!empty($this->attachmentInput)) {
 			foreach ($this->attachmentInput as $value) {
 				$f_contents = chunk_split(base64_encode($value['content']));
 				$msg .= "--" . $mime_boundary . "\n";

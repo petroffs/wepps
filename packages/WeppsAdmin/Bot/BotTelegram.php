@@ -41,7 +41,7 @@ class BotTelegramWepps extends BotWepps {
 		 */
 		$mail = new MailWepps();
 		$data = [
-				'chat_id' => 306118632,
+				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
 				'text' => 'Привет от BOT (MailWepps) через прокси'
 		];
 		$tg = $mail->telergam("sendMessage",$data);
@@ -50,6 +50,23 @@ class BotTelegramWepps extends BotWepps {
 	}
 	public function call($method = "getUpdates", array $data = null) {
 		
+	}
+	public function attach() {
+		$res = [
+				[
+						'test'=>1,
+						'test2'=>2
+				],[
+						'test'=>3,
+						'test2'=>4
+				]
+		];
+		$mail = new MailWepps();
+		$content = UtilsWepps::setExcel($res,1);
+		$mail->setAttachInput([
+				['title'=>'forms.xlsx','content'=>$content]
+		]);
+		$mail->mail(ConnectWepps::$projectDev['email'], "test attach", "См. вложение");
 	}
 }
 ?>
