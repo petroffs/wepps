@@ -72,7 +72,8 @@
 							{foreach name="o" item="i" key="k" from=$listScheme}
 							{if $i.0.Type|@strstr:"select"}
 							<td class="{$i.0.Type}">
-							{foreach name="o2" item="i2" from=$item[$k|cat:'_Name']|strarr}
+							{assign var="typex" value=$i.0.Type|explode:'::'}
+							{foreach name="o2" item="i2" from=$item[$k|cat:'_'|cat:$typex.2]|strarr}
 							<div>{$i2}</div>
 							{/foreach}
 							</td>
