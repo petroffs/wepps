@@ -97,16 +97,16 @@ class RequestAdminWepps extends RequestWepps {
 				}
 				$dir = ConnectWepps::$projectDev['root'];
 				$git = "{$dir}/.git";
-				$jdata = json_decode($json, true);
 				$branch = 'master';
-				if (strstr($jdata['commits'][0]['message'], $branch)) {
+				#$jdata = json_decode($json, true);
+				#if (strstr($jdata['commits'][0]['message'], $branch)) {
 					echo "git start\n";
 					$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
 					exec($cmd);
 					$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
 					exec($cmd);
 					echo "\n";
-				}
+				#}
 				break;
 			default:
 				ExceptionWepps::error404();
