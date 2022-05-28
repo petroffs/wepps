@@ -88,6 +88,24 @@ class RequestAdminWepps extends RequestWepps {
 					//$mail->mail("mail@petroffs.com", "git - ".$body['project']['name'], "git message - {$body['commits'][0]['message']}\n{$str}");
 				}
 				break;
+			case "git":
+				$json = file_get_contents('php://input');
+				$token = ConnectWepps::$projectServices['git']['token'];
+				if ($token!=$_SERVER['HTTP_CLIENTTOKEN']) {
+					exit();
+				}
+				$dir = ConnectWepps::$projectDev['root'];
+				$git = "{$dir}/.git";
+				$jdata = json_decode($json, true);
+				$branch = 'master';
+				if (strstr($jdata['commits'][0]['message'], $branch)) {
+					$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
+					exec($cmd);
+					$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
+					exec($cmd);
+					echo "\n";
+				}
+				break;
 			default:
 				ExceptionWepps::error404();
 				break;
