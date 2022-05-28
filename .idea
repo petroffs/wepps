@@ -5,4 +5,4 @@ local:
 	mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 	mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 	
-test2
+test3
