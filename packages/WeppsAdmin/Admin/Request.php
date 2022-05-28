@@ -91,6 +91,7 @@ class RequestAdminWepps extends RequestWepps {
 			case "git":
 				$json = file_get_contents('php://input');
 				$token = ConnectWepps::$projectServices['git']['token'];
+				echo "{$token} / {$_SERVER['HTTP_CLIENTTOKEN']}";
 				if ($token!=$_SERVER['HTTP_CLIENTTOKEN']) {
 					exit();
 				}
@@ -99,6 +100,7 @@ class RequestAdminWepps extends RequestWepps {
 				$jdata = json_decode($json, true);
 				$branch = 'master';
 				if (strstr($jdata['commits'][0]['message'], $branch)) {
+					echo "git start\n";
 					$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
 					exec($cmd);
 					$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
