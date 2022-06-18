@@ -1,126 +1,82 @@
-.lists-items-item {
-	
-}
-
-form.list-data {
-	
-}
-
-form.list-data .item:nth-child(even) {
-	
-}
-
 form.list-data .item {
 	margin: 0;
 	border-bottom: 1px solid #f7f7f7;
 }
-
-form.list-data .item .title {
-	
-}
-
 form.list-data .item .title .title2 {
 	width: auto;
 	overflow: hidden;
-		
 }
-
 form.list-data .item .title .descr {
 	font-weight: 300;
 	font-size: 0.9rem;
 }
-
-form.list-data .item .field {
-	
-}
-
 form.list-data .item .field .pps_area textarea {
 	min-width: 100%;
 	max-width: 100%;
 	min-height: 150px;  
 }
-
 form.list-data .item .field .descr {
 	font-weight: 300;
 	font-size: 0.9rem;
 }
-
 form.list-data .item .field .list-item-int {
 	max-width: 150px;
 }
-
 form.list-data .item .field .files {
 	margin-bottom: 5px;
 	width: 100%;
 	position: relative;
 }
-
 form.list-data .item .field .files .files-item {
 	border-bottom: 1px solid #f7f7f7;
 }
-
 form.list-data .item .field .files>* {
 	min-height: 90px;
 	height: 90px;
 }
-
 form.list-data .item .field .files>.sortable-active {
 	background: #0080C0;
 }
-
 form.list-data .item .field .files .files-item:hover {
 	background-color: #f0f0f0;
 }
-
 form.list-data .item .field .files .files-item .files-controls {
 	font-weight: 300;
 	font-size: 1.2rem;
 	padding-top: 8px;
 }
-
-form.list-data .item .field .files .files-item .files-controls a {
-	
-}
-
 form.list-data .item .field .files .files-item .files-controls a i.fa-remove {
 	color: red;
 }
-
+form.list-data .item .field .files .files-item .files-controls a:hover i.fa-remove {
+	color: #007fff;
+}
+form.list-data .item .field .files .files-item .files-controls a:focus i.fa-remove {
+	color: #007fff;
+}
 form.list-data .item .field .fileadd a.file-remove {
 	color: red;
 }
-
-
-
+form.list-data .item .field .fileadd a.file-remove:hover {
+	color: #007fff;
+}
+form.list-data .item .field .fileadd a.file-remove:focus {
+	color: #007fff;
+}
 form.list-data .item .field .properties {
 	padding: 10px 10px;
 	margin: 10px 0;
 }
-
-form.list-data .item .field .properties>div {
-	
-}
-
 form.list-data .item .field .properties .title2 {
 	margin-bottom: 5px;
 	margin-top: 15px;
 }
-
 form.list-data .item .field .properties .title2 span {
 	font-weight: 300;
 }
-
 form.list-data .item .field .properties .descr2{
 	font-weight: 300;
 }
-
-form.list-data .item .field .properties .title2{
-	
-}
-
-
 form.list-data .item.item-controls {
 	background: transparent;
 }
-
-

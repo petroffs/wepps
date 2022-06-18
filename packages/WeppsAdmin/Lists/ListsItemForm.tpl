@@ -81,6 +81,10 @@
 				<label class="pps pps_area">
 					<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
 				</label>
+				{elseif $item.0.Type=="blob"}
+				<label class="pps pps_area">
+					<textarea name="{$key}">{$element.$key}</textarea>
+				</label>
 				{elseif $item.0.Type=="date"}
 				<label class="pps pps_input list-item-date">
 					<input type="datetime" name="{$k}" value="{$element.$key}"/>

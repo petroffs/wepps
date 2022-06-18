@@ -21,7 +21,6 @@ class BotWepps {
 					$obj = new BotSitemapWepps();
 					$obj->setSitemap();
 					break;
-					
 				case "addBackupIgnored":
 					$obj = new BotBackupWepps();
 					$obj->addBackupIgnoredByGit();
@@ -57,7 +56,11 @@ class BotWepps {
 					break;
 				case "dbtest":
 					$obj = new DataWepps("DataTbls");
-					$obj->add(['Name'=>'test']);
+					$t = $obj->add([
+							'Name'=>"test2",
+							'Alias'=>'test',
+					]);
+					UtilsWepps::debugf($t,1);
 					break;
 				default:
 					echo "\nERROR\n";

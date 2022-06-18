@@ -87,5 +87,27 @@ class ConnectWepps {
 		self::$db = null;
 		if ($exit==1) exit();
 	}
+	public function prepare($row=[],$settings=[]) {
+		$insert = $insert2 = $update = $condition = $select = "";
+		$keys = array_keys($row);
+		
+		$insert = '('.implode(',', $keys).') values ';
+		foreach ($keys as $value) {
+			$insert2 .= ":{$value},";
+			$update .= "{$value} = :{$value}, ";
+			$select .= ":{$value} {$value}, ";
+		}
+		$insert .= '('.trim($insert2,',').')';
+		$update = trim($update,', ');
+		$select = trim($select,', ');
+		$output = [
+				"insert" => $insert,
+				"update" => $update,
+				"select" => $select,
+				'row'=>$row
+		];
+		
+		return $output;
+	}
 }
 ?>

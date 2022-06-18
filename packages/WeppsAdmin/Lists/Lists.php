@@ -442,6 +442,7 @@ class ListsWepps {
 	public static function setListItem($list,$id,$data) {
 		$obj = new DataWepps($list);
 		$listScheme = $obj->getScheme();
+		$settings = [];
 		$row = array();
 		$props = array();
 		foreach ($data as $key=>$value) {
@@ -455,6 +456,11 @@ class ListsWepps {
 						$value = implode(",",$value);
 					} elseif ($v[0]['Type']=='password' && strlen($value)!=32) {
 					    $value = md5($value);
+					} elseif ($v[0]['Type']=='blob') {
+						$settings[$key]['fn'] = "compress(:$key)";
+					} elseif ($v[0]['Type']=='guid' && empty($value)) {
+						$settings[$key]['fn'] = "uuid()";
+						$settings[$key]['rule'] = "rm";
 					}
 					$row[$key] = htmlspecialchars_decode($value);
 					break;
@@ -729,59 +735,57 @@ class ListsWepps {
 		$list = $element['TableName'];
 		$field = $element['Field'];
 		$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
-                    WHERE TABLE_SCHEMA = '".ConnectWepps::$projectDB['dbname']."' and TABLE_NAME = '$list'
+                WHERE TABLE_SCHEMA = '".ConnectWepps::$projectDB['dbname']."' and TABLE_NAME = '$list'
                 and COLUMN_NAME = '$field'
                 ";
 		$schemeReal = ConnectWepps::$instance->fetch($sql);
 		
 		$alterDefault = "";
-		$alterNull = "NOT NULL";
 		if ($field == 'LanguageId' || $field == 'TableId') {
 			$typeReal = "int(11)";
-			$alterDefault = "default '0'";
+			$alterDefault = "NOT NULL default '0'";
 		}
 		
 		switch ($type) {
 			case "area":
 				$typeReal = 'text COLLATE utf8_unicode_ci';
-				$alterDefault = "default ''";
+				$alterDefault = "NOT NULL default ''";
 				break;
 			case "digit":
 				$typeReal = 'decimal(12,2)';
-				$alterDefault = "default '0.00'";
+				$alterDefault = "NOT NULL default '0.00'";
 				break;
 			case "date":
 				$typeReal = 'datetime';
-				$alterDefault = "default '0000-00-00 00:00:00'";
+				$alterDefault = "NOT NULL default '0000-00-00 00:00:00'";
 				break;
 			case "file":
 				$typeReal = 'int(11)';
-				$alterDefault = "default '0'";
+				$alterDefault = "NOT NULL default '0'";
 				break;
 			case "int":
 				$typeReal = 'int(11)';
-				$alterDefault = "default '0'";
+				$alterDefault = "NOT NULL default '0'";
 				break;
 			case "flag":
 				$typeReal = 'int(11)';
-				$alterDefault = "default '0'";
+				$alterDefault = "NOT NULL default '0'";
 				break;
-			case "guid":
-				$typeReal = 'char(36) COLLATE utf8_unicode_ci';
-				$alterDefault = "default NULL";
-				$alterNull = "";
+			case "blob":
+				$typeReal = 'blob null';
+				$alterDefault = "";
 				break;
 			default:
 				$typeReal = 'varchar(128) COLLATE utf8_unicode_ci';
-				$alterDefault = "default ''";
+				$alterDefault = "NOT NULL default ''";
 				break;
 		}
 		
 		$str = "";
 		if (isset($schemeReal[0]['Col'])) {
-			$str = "ALTER TABLE $list CHANGE $field $field $typeReal $alterNull $alterDefault";
-		} else{
-			$str = "ALTER TABLE $list ADD $field $typeReal $alterNull $alterDefault";
+			$str = "ALTER TABLE $list CHANGE $field $field $typeReal $alterDefault";
+		} else {
+			$str = "ALTER TABLE $list ADD $field $typeReal $alterDefault";
 		}
 		return $str;
 	}

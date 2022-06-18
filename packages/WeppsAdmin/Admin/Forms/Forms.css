@@ -161,7 +161,7 @@ label.pps.pps_upload input[type="file"] {
 	opacity: 0;
 }
 
-label.pps.pps_upload span {
+label.pps.pps_upload input[type="file"]+span {
 	display: inline-block;
 	padding: 5px 12px 0px 12px;
 	width: auto;
@@ -173,18 +173,22 @@ label.pps.pps_upload span {
 	border-radius: 3px;
 	overflow: hidden;
 	position: absolute;
-	top: 0px;
 	left: 0;
 }
 
-label.pps.pps_upload span:hover {
+label.pps.pps_upload input[type="file"]:hover+span {
 	background-color: #f7f7f7;
 	box-shadow: 0 0 5px #ededed;
 }
 
-label.pps.pps_upload span:active {
+label.pps.pps_upload input[type="file"]:active+span {
 	background-color: #f7f7f7;
 	box-shadow:inset 0 0 5px #d2d2d2;
+}
+label.pps.pps_upload input[type="file"]:focus+span {
+	background-color: #f7f7f7;
+	box-shadow:inset 0 0 5px #d2d2d2;
+	border-color: #007fff;
 }
 
 label.pps.pps_upload {
@@ -245,12 +249,15 @@ label.pps.pps_button input:hover {
 	background-color: #f7f7f7;
 	box-shadow: 0 0 5px #ededed;
 }
-
 label.pps.pps_button input:active {
 	background-color: #f7f7f7;
 	box-shadow:inset 0 0 5px #d2d2d2;
 }
-
+label.pps.pps_button input:focus {
+	background-color: #f7f7f7;
+	box-shadow:inset 0 0 5px #d2d2d2;
+	border-color: #007fff;
+}
 form {
 	width: auto;
 	margin:0px;

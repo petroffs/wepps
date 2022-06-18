@@ -168,6 +168,9 @@ class DataWepps {
 							$fields .= "t.{$key},";
 						}
 						break;
+					case "blob":
+						$fields .= "uncompress (t.{$key}) {$key},";
+						break;
 					default :
 						$fields .= "t.{$key},";
 						break;
@@ -321,40 +324,31 @@ class DataWepps {
 	 * @param integer $id - Id строки
 	 * @param array $row - Массив столбцов и новых значений
 	 */
-	public function set($id, $row) {
-		$id = UtilsWepps::getStringFormatted ( $id );
-		foreach ( $row as $key => $value ) {
-			$row[$key] = UtilsWepps::getStringFormatted ( $value );
+	public function set($id, $row=[],$settings=[]) {
+		if (!is_numeric($id)) {
+			return null;
 		}
-		$arr = UtilsWepps::getQuery ( $row );
+		$arr = ConnectWepps::$instance->prepare($row,$settings);
 		$this->sql = "update {$this->tableName} set {$arr['update']} where Id = '{$id}'";
-		return ConnectWepps::$instance->query ( $this->sql);
+		return ConnectWepps::$instance->query($this->sql,$arr['row']);
 	}
-	
 	/**
 	 * Добавить строку
 	 * @param array $row
-	 * @param string $param
+	 * @param array $settings
 	 * @return number
 	 */
-	public function add($row,$param=null) {
-		$flag = "";
-		if ($param=='ignore') {
-			$flag = "ignore";
-		}
-		$arr = UtilsWepps::getQuery ( $row );
-		$sql = "insert $flag into {$this->tableName} (Priority) select round((max(Priority)+5)/5)*5 from {$this->tableName}";
-		$instanse = ConnectWepps::$db->query($sql);
+	public function add($row=[],$settings=[]) {
+		$sql = "insert ignore into {$this->tableName} (Priority) select round((max(Priority)+5)/5)*5 from {$this->tableName} on duplicate key update Id=last_insert_id(`Id`)";
+		ConnectWepps::$db->query($sql);
 		$id = ConnectWepps::$db->lastInsertId();
 		if ((int)$id!=0) {
-			$sql = "update $flag {$this->tableName} set {$arr['update']} where Id='{$id}'";
-			$instanse = ConnectWepps::$db->query($sql);
+			$arr = ConnectWepps::$instance->prepare($row,$settings);
+			$sql = "update ignore {$this->tableName} set {$arr['update']} where Id='{$id}'";
+			$count = ConnectWepps::$instance->query($sql,$arr['row']);
 		}
-		return ($instanse->rowCount()>0) ? $id : 0;
+		return ($count>0) ? $id : 0;
 	}
-	
-	
-	
 	
 	/**
 	 * Удаление строки
