@@ -324,7 +324,7 @@ class DataWepps {
 	 * @param integer $id - Id строки
 	 * @param array $row - Массив столбцов и новых значений
 	 */
-	public function set($id, $row=[],$settings=[]) {
+	public function set($id, $row,$settings=[]) {
 		if (!is_numeric($id)) {
 			return null;
 		}
