@@ -339,15 +339,7 @@ class DataWepps {
 	 * @return number
 	 */
 	public function add($row=[],$settings=[]) {
-		$sql = "insert ignore into {$this->tableName} (Priority) select round((max(Priority)+5)/5)*5 from {$this->tableName} on duplicate key update Id=last_insert_id(`Id`)";
-		ConnectWepps::$db->query($sql);
-		$id = ConnectWepps::$db->lastInsertId();
-		if ((int)$id!=0) {
-			$arr = ConnectWepps::$instance->prepare($row,$settings);
-			$sql = "update ignore {$this->tableName} set {$arr['update']} where Id='{$id}'";
-			$count = ConnectWepps::$instance->query($sql,$arr['row']);
-		}
-		return ($count>0) ? $id : 0;
+		return ConnectWepps::$instance->insert($this->tableName, $row, $settings);
 	}
 	
 	/**

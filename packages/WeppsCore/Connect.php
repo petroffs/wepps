@@ -69,15 +69,32 @@ class ConnectWepps {
 			ExceptionWepps::writeMessage ( $e );
 		}
 	}
-	public function insert($tableName,$row) {
+	public function insert($tableName,$row,$settings=[]) {
 		$arr = UtilsWepps::getQuery($row);
-		//$sql = "insert into $tableName (Priority) select max(Priority)+1 from $tableName";
-		$sql = "insert into $tableName (Priority) select round((max(Priority)+5)/5)*5 from $tableName";
+		$arr = self::prepare($row);
+		$sql = "insert ignore into $tableName (Priority) select round((max(Priority)+5)/5)*5 from $tableName on duplicate key update Id=last_insert_id(`Id`)";	
 		self::$instance->query($sql);
 		$id = self::$db->lastInsertId();
+		if ((int)$id!=0) {
+			$arr = self::prepare($row,$settings);
+			$sql = "update ignore $tableName set {$arr['update']} where Id='{$id}'";
+			$count = self::query($sql,$arr['row']);
+		}
 		$sql = "update $tableName set {$arr['update']} where Id='{$id}'";
-		self::$instance->query($sql);
+		self::$instance->query($sql,$arr['row']);
 		return $id;
+		
+		
+		
+		$sql = "insert ignore into {$this->tableName} (Priority) select round((max(Priority)+5)/5)*5 from {$this->tableName} on duplicate key update Id=last_insert_id(`Id`)";
+		ConnectWepps::$db->query($sql);
+		$id = ConnectWepps::$db->lastInsertId();
+		if ((int)$id!=0) {
+			$arr = ConnectWepps::$instance->prepare($row,$settings);
+			$sql = "update ignore {$this->tableName} set {$arr['update']} where Id='{$id}'";
+			$count = ConnectWepps::$instance->query($sql,$arr['row']);
+		}
+		return ($count>0) ? $id : 0;
 	}
 	public function selectRegx ($id) {
 		return "(,+|^)".$id."(,+|$)";

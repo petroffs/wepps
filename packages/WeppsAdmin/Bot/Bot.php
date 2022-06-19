@@ -56,13 +56,32 @@ class BotWepps {
 					$obj->attach();
 					break;
 				case "dbtest":
+					$row = [ 
+							'Name' => 'TEST1',
+							'BTest' => 'test text',
+							'Priority'=>0
+					];
+					$settings = [ 
+							'BTest' => [ 
+									'fn' => 'compress(:BTest)'
+							]
+					];
+					$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
+					UtilsWepps::debugf($t,1);
+					break;
+					
+					$obj = new DataWepps("DataTbls");
+					$t = $obj->add([
+							'Name'=>'TEST1',
+							'BTest'=>'test text',
+					],['BTest'=>['fn'=>'compress(:BTest)']]);
+					break;
+					
 					$t = ListsWepps::setListItem(
 						"DataTbls", 
 						55, 
 						[ 
 							'pps_path'=>'list',
-							
-							
 							'GUID' => "",
 							'BTest' => 'test text'
 						]
@@ -70,13 +89,7 @@ class BotWepps {
 					UtilsWepps::debugf($t,1);
 					break;
 					
-					$obj = new DataWepps("DataTbls");
-					$t = $obj->set(55,[
-							'GUID'=>"",
-							'BTest'=>'test text',
-					]);
-					UtilsWepps::debugf($t,1);
-					break;
+					
 				default:
 					echo "\nERROR\n";
 					exit();
