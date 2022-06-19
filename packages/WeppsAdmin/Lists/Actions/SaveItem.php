@@ -14,7 +14,7 @@ class SaveItemWepps extends RequestWepps {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
-	    echo $this->listSettings['TableName'] . " - вывод тестовый - " . __FILE__;
+	    #echo $this->listSettings['TableName'] . " - вывод тестовый - " . __FILE__;
 	}
 }
 ?>

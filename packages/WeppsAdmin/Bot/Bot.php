@@ -5,6 +5,7 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use Curl\Curl;
 use WeppsExtensions\Addons\RemoteServices\DadataWepps;
+use WeppsAdmin\Lists\ListsWepps;
 
 class BotWepps {
 	public $parent = 1;
@@ -55,10 +56,24 @@ class BotWepps {
 					$obj->attach();
 					break;
 				case "dbtest":
+					$t = ListsWepps::setListItem(
+						"DataTbls", 
+						55, 
+						[ 
+							'pps_path'=>'list',
+							
+							
+							'GUID' => "",
+							'BTest' => 'test text'
+						]
+					);
+					UtilsWepps::debugf($t,1);
+					break;
+					
 					$obj = new DataWepps("DataTbls");
-					$t = $obj->add([
-							'Name'=>"test2",
-							'Alias'=>'test',
+					$t = $obj->set(55,[
+							'GUID'=>"",
+							'BTest'=>'test text',
 					]);
 					UtilsWepps::debugf($t,1);
 					break;

@@ -460,7 +460,7 @@ class ListsWepps {
 						$settings[$key]['fn'] = "compress(:$key)";
 					} elseif ($v[0]['Type']=='guid' && empty($value)) {
 						$settings[$key]['fn'] = "uuid()";
-						$settings[$key]['rule'] = "rm";
+						$settings[$key]['rm'] = 1;
 					}
 					$row[$key] = htmlspecialchars_decode($value);
 					break;
@@ -522,7 +522,7 @@ class ListsWepps {
 		/*
 		 * Запись основных данных
 		 */
-		$obj->set($id,$row);
+		$obj->set($id,$row,$settings);
 		
 		/*
 		 * Дополнения Actions
@@ -534,19 +534,15 @@ class ListsWepps {
 		    $addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
 		    $addActionRequest = new $addActionClass (array('listSettings'=>$listSettings,'listScheme'=>$listScheme,'element'=>$row));
 		}
-		
 		$path = "/_pps/lists/{$list}/{$id}/";
 		if ($data['pps_path']=='navigator') {
 			$path = "/_pps/navigator{$addActionRequest->element['Url']}";
 		}
-		
 		$jslocation = "";
-		
-		if (isset($_SESSION['uploads']) || $data['pps_tablename_id']=='add') {
+		if (isset($_SESSION['uploads']) || @$data['pps_tablename_id']=='add') {
 			$jslocation = "location.href = '{$path}'";;
 			unset($_SESSION['uploads']);
 		}
-		
 		$js = "
 			<script>
 				$(\"#dialog\").html('<p>Данные сохранены</p>').dialog({

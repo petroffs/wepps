@@ -41,7 +41,7 @@ class ConnectWepps {
 		}
 		return self::$instance;
 	}
-	public function fetch($sql, $params = array(), $group = '') {
+	public function fetch($sql, $params=[], $group='') {
 		$this->count++;
 		try {
 			$sth = self::$db->prepare ( $sql );
@@ -88,14 +88,23 @@ class ConnectWepps {
 		if ($exit==1) exit();
 	}
 	public function prepare($row=[],$settings=[]) {
-		$insert = $insert2 = $update = $condition = $select = "";
+		$insert = $insert2 = $update = $select = "";
 		$keys = array_keys($row);
 		
 		$insert = '('.implode(',', $keys).') values ';
 		foreach ($keys as $value) {
-			$insert2 .= ":{$value},";
-			$update .= "{$value} = :{$value}, ";
-			$select .= ":{$value} {$value}, ";
+			if (!empty($settings[$value]['fn'])) {
+				$insert2 .= "{$settings[$value]['fn']},";
+				$update .= "{$value} = {$settings[$value]['fn']}, ";
+				$select .= "{$settings[$value]['fn']} {$value}, ";
+			} else {
+				$insert2 .= ":{$value},";
+				$update .= "{$value} = :{$value}, ";
+				$select .= ":{$value} {$value}, ";
+			}
+			if (!empty($settings[$value]['rm'])) {
+				unset($row[$value]);
+			}
 		}
 		$insert .= '('.trim($insert2,',').')';
 		$update = trim($update,', ');
@@ -106,7 +115,6 @@ class ConnectWepps {
 				"select" => $select,
 				'row'=>$row
 		];
-		
 		return $output;
 	}
 }
