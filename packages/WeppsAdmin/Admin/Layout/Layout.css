@@ -776,6 +776,24 @@ ol.pps_list>li {
 	.pps_bg_position_view_small:hover {
 		background-size: inherit;
 	}
+	.pps_order_1_view_small {
+		order: 1;
+	}
+	.pps_order_2_view_small {
+		order: 2;
+	}
+	.pps_order_3_view_small {
+		order: 3;
+	}
+	.pps_order_4_view_small {
+		order: 4;
+	}
+	.pps_order_5_view_small {
+		order: 5;
+	}
+	.pps_order_6_view_small {
+		order: 6;
+	}
 }
 
 @media screen and (max-width: 350px) {
