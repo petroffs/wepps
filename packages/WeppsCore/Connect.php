@@ -17,7 +17,6 @@ class ConnectWepps {
 	private function __construct($projectSettings = array()) {
 		try {
 			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
-			//$db = new PDO ( $connectionString, $projectSettings ['DB'] ['user'], $projectSettings ['DB'] ['password'] );
 			$db = new PDO ( $connectionString, $projectSettings ['DB'] ['user'], $projectSettings ['DB'] ['password'] , array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''));
 			if ($projectSettings ['Dev'] ['debug'] == 1)
 				$db->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
