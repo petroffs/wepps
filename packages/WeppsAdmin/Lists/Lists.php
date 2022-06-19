@@ -443,8 +443,8 @@ class ListsWepps {
 		$obj = new DataWepps($list);
 		$listScheme = $obj->getScheme();
 		$settings = [];
-		$row = array();
-		$props = array();
+		$row = [];
+		$props = [];
 		foreach ($data as $key=>$value) {
 		    foreach ($listScheme as $k=>$v) {
 				if ($key==$k) {
@@ -556,7 +556,7 @@ class ListsWepps {
 				},1500);
 			</script>
 		";
-		return array('status'=>'1','output'=>$js);
+		return ['status'=>'1','output'=>$js];
 	}
 	
 	public static function getUploadFileName ($upload,$list,$field,$id) {
@@ -766,6 +766,10 @@ class ListsWepps {
 			case "flag":
 				$typeReal = 'int(11)';
 				$alterDefault = "NOT NULL default '0'";
+				break;
+			case "guid":
+				$typeReal = 'char(36) COLLATE utf8_unicode_ci null';
+				$alterDefault = "";
 				break;
 			case "blob":
 				$typeReal = 'blob null';
