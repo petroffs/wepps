@@ -4,6 +4,7 @@ use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsAdmin\Lists\ListsWepps;
+use WeppsCore\Connect\ConnectWepps;
 
 require_once '../../../../config.php';
 require_once '../../../../autoloader.php';
@@ -17,7 +18,8 @@ class RequestProcessingWepps extends RequestWepps {
 		if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) ExceptionWepps::error404();
 		switch ($action) {
 			case "searchindex":
-				ListsWepps::setSearchIndex();
+				$str = ListsWepps::setSearchIndex();
+				ConnectWepps::$db->exec($str);
 				UtilsWepps::getModal('Поисковый индекс построен');
 				break;
 			default:

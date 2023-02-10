@@ -449,10 +449,6 @@ class ListsWepps {
 		    foreach ($listScheme as $k=>$v) {
 				if ($key==$k) {
 					if (is_array($value)) {
-					    $str = self::addListIndex($list,$id,$key,$value);
-					    if ($str != "") {
-					        ConnectWepps::$db->exec($str);
-					    }
 						$value = implode(",",$value);
 					} elseif ($v[0]['Type']=='password' && strlen($value)!=32) {
 					    $value = md5($value);
@@ -523,6 +519,14 @@ class ListsWepps {
 		 * Запись основных данных
 		 */
 		$obj->set($id,$row,$settings);
+		
+		/*
+		 * Индексирование
+		 */
+		$str = ListsWepps::setSearchIndex($list,$id);
+		if (!empty($str)) {
+			ConnectWepps::$db->exec($str);
+		}
 		
 		/*
 		 * Дополнения Actions
@@ -941,21 +945,26 @@ class ListsWepps {
 		";
 		return array('status'=>'1','output'=>$js);
 	}
-	public static function setSearchIndex() {
-		$sql = "select * from s_ConfigFields where Type like 'select_multi%' order by TableName,Priority";
+	public static function setSearchIndex($list='',$id=0) {
+		switch ($list) {
+			case '':
+				$str = "truncate s_SearchKeys;\n";
+				$conditions = "";
+				$conditions2 = "";
+				break;
+			default:
+				$str = "update s_SearchKeys sk set sk.DisplayOff2=1 where sk.Name=$id and sk.Field3 regexp 'List::{$list}::';\n";
+				$conditions = "and TableName='$list'";
+				$conditions2 = "where Id=$id";
+				break;
+		}
+		$sql = "select * from s_ConfigFields where Type like 'select_multi%' $conditions order by TableName,Priority";
 		$res = ConnectWepps::$instance->fetch($sql);
-		
-		$str = "truncate s_SearchKeys;\n";
 		foreach ($res as $value) {
-			$ex = explode("::", $value['Type']);
-			//$fieldNameEx = trim($ex[2]);
-			//$tableNameEx = trim($ex[1]);
 			$tableName = $value['TableName'];
 			$fieldName = $value['Field'];
-			
-			$sql = "select Id,$fieldName as FieldName from $tableName";
+			$sql = "select Id,$fieldName as FieldName from $tableName $conditions2";
 			$t = ConnectWepps::$instance->fetch($sql);
-			
 			foreach ($t as $v) {
 				$ex2 = explode(",", $v['FieldName']);
 				foreach ($ex2 as $v2) {
@@ -975,7 +984,8 @@ class ListsWepps {
 				}
 			}
 		}
-		ConnectWepps::$db->exec($str);
+		$str .= "update s_SearchKeys set DisplayOff=DisplayOff2;\n";
+		return $str;
 	}
 }
 ?>

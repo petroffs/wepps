@@ -155,7 +155,7 @@ class DataWepps {
 							
 						$joins .= "
 						left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id
-                            and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
+                            and sk{$f}.DisplayOff=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
 						left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1
 						";
 						$formatted['id'] .= "";
