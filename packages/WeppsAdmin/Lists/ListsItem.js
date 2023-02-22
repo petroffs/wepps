@@ -177,8 +177,6 @@ var readyListsItemInit = function() {
 		
 		
 	});
-	
-	
 	$('form.list-data').find('a.list-item-remove').off('click');
 	$('form.list-data').find('a.list-item-remove').on('click',function(event) {
 		event.preventDefault();
@@ -287,6 +285,12 @@ var readyListsItemInit = function() {
       }
     });
 	$('form.list-data').find('.files').disableSelection();
+	$(document).keydown(function (event) {
+	    if (event.ctrlKey && event.which === 83) {
+  			$('#list-data-form').submit();
+	        event.preventDefault();
+	    }
+	});
 }
 
 $(document).ready(readyListsItemInit);
