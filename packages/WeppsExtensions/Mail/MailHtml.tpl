@@ -47,8 +47,8 @@
 	color: gray;
 	border: 1px solid #cdcdcd;
 	border-radius: 0px">
-				<a href="https://$site" style="color: gray">{$host.title}</a> | <a
-					href="mailto:{$settings.email}" style="color: gray">{$settings.email}</a>
+				<a href="{$host.url}" style="color: gray">{$host.title}</a> |
+				<a href="mailto:{$settings.email}" style="color: gray">{$settings.email}</a>
 			</div>
 		</td>
 		<td style="background-color: #f7f7f7">&nbsp;</td>
