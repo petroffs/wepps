@@ -2,7 +2,6 @@
 namespace WeppsAdmin\Admin;
 
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\DataWepps;
@@ -22,7 +21,7 @@ class AdminWepps {
 		self::getNavigateUrl($ppsUrl);
 		$this->page = (isset ( $_GET ['page'] )) ? ( int ) $_GET ['page'] : 1;
 		$this->headers = &$headers;
-		$this->nav = $nav = array (
+		$this->nav = array (
 				'home' => array (
 						'Alias' => 'home',
 						'Name' => "CMS.PSS",

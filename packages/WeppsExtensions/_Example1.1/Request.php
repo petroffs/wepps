@@ -19,6 +19,7 @@ class RequestExampleWepps extends RequestWepps {
 	}
 }
 $request = new RequestExampleWepps ($_REQUEST);
+/** @var \Smarty $smarty */
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

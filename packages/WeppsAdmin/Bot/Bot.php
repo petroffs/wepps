@@ -3,8 +3,6 @@ namespace WeppsAdmin\Bot;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
-use Curl\Curl;
-use WeppsExtensions\Addons\RemoteServices\DadataWepps;
 use WeppsAdmin\Lists\ListsWepps;
 
 class BotWepps {

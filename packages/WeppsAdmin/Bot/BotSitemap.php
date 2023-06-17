@@ -3,7 +3,6 @@ namespace WeppsAdmin\Bot;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 class BotSitemapWepps extends BotWepps {
 	public $parent = 0;

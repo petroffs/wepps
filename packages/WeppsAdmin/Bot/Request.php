@@ -1,13 +1,11 @@
 <?php
 namespace WeppsAdmin\Bot;
-use WeppsAdmin\Bot\BotWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 
-require_once dirname(__FILE__) . '/../../../config.php';
-require_once dirname(__FILE__) . '/../../../autoloader.php';
-require_once dirname(__FILE__) . '/../../../configloader.php';
+require_once __DIR__ . '/../../../config.php';
+require_once __DIR__ . '/../../../autoloader.php';
+require_once __DIR__ . '/../../../configloader.php';
 
+/** @var array $argv */
 if (!isset($argv[1])) exit();
 $obj = new BotWepps($argv);
 unset($obj);

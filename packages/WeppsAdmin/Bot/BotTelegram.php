@@ -2,7 +2,6 @@
 namespace WeppsAdmin\Bot;
 
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
 use WeppsCore\Utils\UtilsWepps;
 use Curl\Curl;
 use WeppsExtensions\Mail\MailWepps;
@@ -26,10 +25,7 @@ class BotTelegramWepps extends BotWepps {
 		//$str = "https://api.telegram.org/{$this->token}/getUpdates";
 		$str = "https://api.telegram.org/{$this->token}/sendMessage?chat_id=306118632&text=Привет от BOT через прокси";
 		$res = $curl->get($str);
-		
-		//UtilsWepps::debugf($res->response,1);
-		//UtilsWepps::debugf($str,1);
-		
+		UtilsWepps::debugf($res->response,1);
 	}
 	
 	public function test2() {

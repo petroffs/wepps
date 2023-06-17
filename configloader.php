@@ -13,6 +13,7 @@ if (!isset($_SESSION)) {
  * 
  * @var \WeppsCore\Connect\ConnectWepps $db
  */
+/** @var array $projectSettings */
 ConnectWepps::getInstance($projectSettings);
 
 /*
@@ -20,6 +21,7 @@ ConnectWepps::getInstance($projectSettings);
  * 
  * @var \Smarty $smarty
  */
+/** @var \Smarty $smarty */
 $smarty = SmartyWepps::getSmarty();
 
 /*
@@ -27,9 +29,7 @@ $smarty = SmartyWepps::getSmarty();
  * 
  * @var \WeppsCore\Utils\TemplateHeadersWepps $headers
  */
-
 $headers = new TemplateHeadersWepps();
-
 $headers::$rand = "dev-1";
 $headers::$rand .= "-".rand(100,10000000);
 ?>

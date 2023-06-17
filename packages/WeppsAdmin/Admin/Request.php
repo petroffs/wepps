@@ -2,16 +2,8 @@
 namespace WeppsAdmin\Admin;
 
 use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Mail\MailWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Utils\FilesWepps;
-use WeppsAdmin\Lists\ListsWepps;
-use WeppsAdmin\Admin\AdminWepps;
-use WeppsCore\Spell\SpellWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -32,7 +24,6 @@ class RequestAdminWepps extends RequestWepps {
 				if (! isset($currUser[0]['Id'])) {
 					$ppsmess = $translate['mess_denied'];
 				} else {
-					
 					$ppsmess = $translate['mess_welcome'];
 					$authKey = rand(10101, 999999999);
 					ConnectWepps::$instance->query("update s_Users set AuthKey=" . $authKey . " where Id=" . $currUser[0]['Id']);
@@ -98,15 +89,12 @@ class RequestAdminWepps extends RequestWepps {
 				$dir = ConnectWepps::$projectDev['root'];
 				$git = "{$dir}/.git";
 				$branch = 'master';
-				#$jdata = json_decode($json, true);
-				#if (strstr($jdata['commits'][0]['message'], $branch)) {
-					echo "git start\n";
-					$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
-					exec($cmd);
-					$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
-					exec($cmd);
-					echo "\n";
-				#}
+				echo "git start\n";
+				$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
+				exec($cmd);
+				$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
+				exec($cmd);
+				echo "\n";
 				break;
 			default:
 				ExceptionWepps::error404();
@@ -115,6 +103,7 @@ class RequestAdminWepps extends RequestWepps {
 	}
 }
 $request = new RequestAdminWepps ($_REQUEST);
+/** @var \Smarty $smarty */
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>

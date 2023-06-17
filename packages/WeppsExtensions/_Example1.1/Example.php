@@ -4,7 +4,6 @@ use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 
 class ExampleWepps extends ExtensionWepps {
 	public function request() {
