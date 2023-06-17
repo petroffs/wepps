@@ -3,13 +3,12 @@ namespace WeppsExtensions\Cart;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsExtensions\Cart\CartWepps;
-//use WeppsExtensions\Cart\CartWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsCore\Spell\SpellWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Products\ExtensionProductsWepps;
+use WeppsExtensions\Products\ProductsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -58,7 +57,7 @@ class RequestCartWepps extends RequestWepps {
 				 *
 				 */
 				if (isset($_SESSION['actionFire']) && $_SESSION['actionFire']==1) {
-					$actions = ExtensionProductsWepps::getProductsItemActions($product);
+					$actions = ProductsWepps::getProductsItemActions($product);
 					if (isset($actions['Persent'])) {
 						$product['PriceOpt'] = $actions['Price'];
 						$product['PriceOptAction'] = 1;
@@ -80,7 +79,7 @@ class RequestCartWepps extends RequestWepps {
 				/*
 				 * Расчет кол-ва
 				 */
-				$depo = ExtensionProductsWepps::getProductsItemDepo($product);
+				$depo = ProductsWepps::getProductsItemDepo($product);
 				if (!isset($depo['summary'][$this->get['color']])) exit();
 				if (isset($this->get['add']) && $this->get['add']!='') {
 					$qtyMax = min($depo['summaryAdd'][$this->get['color']]);

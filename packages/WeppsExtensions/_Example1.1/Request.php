@@ -1,6 +1,6 @@
 <?
 namespace WeppsExtensions\Example;
-use Wepps\Utils\RequestWepps;
+use WeppsCore\Utils\RequestWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';

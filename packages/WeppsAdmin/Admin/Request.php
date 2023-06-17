@@ -76,7 +76,7 @@ class RequestAdminWepps extends RequestWepps {
 				$json = file_get_contents('php://input');
 				$body = json_decode($json, true);
 				$branch = str_replace("X-pps-601-","",$token);
-				if ("refs/heads/{$branch}" == $body["ref"]) {
+				if ("refs/heads/{$branch}" == $body["ref"] && strstr($body['commits'][0]['message'], 'master')) {
 					$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
 					exec($cmd);
 					//system($cmd.' 2>&1', $cmd_error);

@@ -38,14 +38,6 @@ class BotWepps {
 					$obj = new BotHashesWepps();
 					$obj->removeFiles();
 					break;
-				case "yandexmarket":
-			
-					break;
-				case "setBackupYandex":
-					$obj->backupYandexDisk("add");
-					$obj->backupYandexDisk("send");
-					$obj->backupYandexDisk("rotation");
-					break;
 				case "hashes":
 					$obj = new BotHashesWepps();
 					$obj->setHashes();
