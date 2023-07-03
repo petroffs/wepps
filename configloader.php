@@ -30,6 +30,6 @@ $smarty = SmartyWepps::getSmarty();
  * @var \WeppsCore\Utils\TemplateHeadersWepps $headers
  */
 $headers = new TemplateHeadersWepps();
-$headers::$rand = "dev-3";
+$headers::$rand = "dev-1";
 $headers::$rand .= "-".rand(100,10000000);
 ?>
