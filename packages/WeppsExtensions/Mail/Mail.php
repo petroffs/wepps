@@ -6,62 +6,68 @@ use WeppsCore\Core\SmartyWepps;
 use Curl\Curl;
 
 class MailWepps {
-	private $attachment = array();
-	private $attachmentInput = array ();
-	private $from = '';
+	private $attachment=[];
+	private $attachmentInput=[];
+	private $from;
 	private $type;
 	private $outer;
+	private $content;
+	private $contentAll;
 	private $debug;
-	public $output = false;
+	private $mime_boundary;
 	public function __construct($type='plain') {
 		$this->type = $type;
 		$this->from = "=?utf-8?B?" .base64_encode(ConnectWepps::$projectInfo['name']). "?=" . " <".ConnectWepps::$projectInfo['email'].">";
+		$this->mime_boundary=md5(time());
+		if (ConnectWepps::$projectDev['debug']==1) {
+			$this->debug = 1;
+		}
 	}
 	public function mail($to,$subject,$text) {
 		$from = $this->from;
-		$mime_boundary=md5(time());
 		$subj = "=?utf-8?B?" . base64_encode($subject) . "?=";
 		$headers =  "";
 		$headers .= "From: $from\n";
 		$headers .= "Reply-to: $from\n";
 		$headers .= "X-Mailer: PHP v".phpversion()."\n";
 		$headers .= "MIME-Version: 1.0"."\n";
-		$headers .= "Content-Type: multipart/related; boundary=\"".$mime_boundary."\""."\n";
-		$msg = "";
-		$msg .= "--".$mime_boundary."\n";
+		$headers .= "Content-Type: multipart/related; boundary=\"{$this->mime_boundary}\""."\n";
+		$this->contentAll = "--".$this->mime_boundary."\n";
 		
 		$smarty = SmartyWepps::getSmarty();
-		$smarty->assign('settings',ConnectWepps::$projectInfo);
-		$smarty->assign('host',array('title'=>ConnectWepps::$projectDev['host'],'url'=>'http://'.ConnectWepps::$projectDev['host']));
-		
+		$settings = ConnectWepps::$projectInfo;
+		$settings['host'] = [
+				'title'=>ConnectWepps::$projectDev['host'],
+				'url'=>ConnectWepps::$projectDev['protocol'].ConnectWepps::$projectDev['host']
+		];
+		$smarty->assign('settings',$settings);
 		switch ($this->type) {
 			case "html":
 				$smarty->assign('subject',$subject);
 				$smarty->assign('text',$text);
-				$this->outer = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Mail/MailHtml.tpl');
-				$msg .= "Content-Type: text/html; charset=\"utf-8\"\n";
-				$msg .= "Content-Transfer-Encoding: 8bit"."\n\n";
-				$msg .= $this->outer."\r\n";
-				$msg = self::getImagesHtml($msg,$mime_boundary);
-				$msg .= "\r\n";
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Mail/MailHtml.tpl');
+				$this->contentAll .= "Content-Type: text/html; charset=\"utf-8\"\n";
+				$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
+				$this->contentAll .= $this->content."\r\n";
+				$this->contentAll = self::getImagesHtml($this->contentAll);
+				$this->contentAll .= "\r\n";
 				break;
 			default:
 				$smarty->assign('text',$text);
-				$this->outer = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Mail/MailPlain.tpl');
-				$msg .= "Content-Type: text/plain; charset=\"utf-8\"\n";
-				$msg .= "Content-Transfer-Encoding: 8bit"."\n\n";
-				$msg .= $this->outer."\n\n";
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Mail/MailPlain.tpl');
+				$this->contentAll .= "Content-Type: text/plain; charset=\"utf-8\"\n";
+				$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
+				#$this->contentAll = self::getImagesHtml($this->contentAll);
+				$this->contentAll .= $this->content."\n\n";
 				break;
 		}
-		$msg .= self::getAttach();
-		$msg .= self::getAttachInput();
-		$msg .= "--".$mime_boundary."--"."\n\n";
-		if ($this->output == true) {
-			echo $this->outer;
-			exit();
+		$this->contentAll .= self::getAttach();
+		$this->contentAll .= self::getAttachInput();
+		$this->contentAll .= "--{$this->mime_boundary}--\n\n";
+		if ($this->debug==1) {
+			$to = ConnectWepps::$projectDev['email'];
 		}
-		if ($this->debug==1) $to = ConnectWepps::$projectDev['email'];
-		return mail($to,$subj,$msg,$headers,"-f".ConnectWepps::$projectInfo['email']);
+		return mail($to,$subj,$this->contentAll,$headers,"-f".ConnectWepps::$projectInfo['email']);
 	}
 	public function setSender($name,$email) {
 		$this->from = "=?utf-8?B?" .base64_encode($name). "?=" . " <".$email.">";
@@ -73,12 +79,23 @@ class MailWepps {
 		$this->attachmentInput = $attachment;
 	}
 	public function setDebug() {
-		if (ConnectWepps::$projectDev['debug']==1)
+		if (ConnectWepps::$projectDev['debug']==1) {
 			return $this->debug = 1;
+		}
+	}
+	public function unsetDebug() {
+		if (ConnectWepps::$projectDev['debug']==1) {
+			return $this->debug = 0;
+		}
+	}
+	public function getContent(bool $contentAll = false) {
+		if ($contentAll==true) {
+			return $this->contentAll;
+		}
+		return $this->content;
 	}
 	private function getAttach() {
 		$msg = "";
-		$mime_boundary=md5(time());
 		if (count ( $this->attachment ) != 0) {
 			foreach ( $this->attachment as $value ) {
 				if (! is_file ( $value )) {
@@ -90,7 +107,7 @@ class MailWepps {
 					$f_contents = chunk_split ( base64_encode ( $f_contents ) );
 					fclose ( $handle );
 					$f_info = pathinfo ( $f_name );
-					$msg .= "--" . $mime_boundary . "\n";
+					$msg .= "--{$this->mime_boundary}\n";
 					$msg .= "Content-Type: 	application/octet-stream; name=\"" . $f_info ['basename'] . "\"\n";
 					$msg .= "Content-Transfer-Encoding: base64" . "\n";
 					$msg .= "Content-Disposition: attachment; filename=\"" . $f_info ['basename'] . "\"\n\n";
@@ -102,11 +119,10 @@ class MailWepps {
 	}
 	private function getAttachInput() {
 		$msg = "";
-		$mime_boundary = md5(time());
 		if (!empty($this->attachmentInput)) {
 			foreach ($this->attachmentInput as $value) {
 				$f_contents = chunk_split(base64_encode($value['content']));
-				$msg .= "--" . $mime_boundary . "\n";
+				$msg .= "--{$this->mime_boundary}\n";
 				$msg .= "Content-Type: 	application/octet-stream; name=\"" . $value['title'] . "\"\n";
 				$msg .= "Content-Transfer-Encoding: base64" . "\n";
 				$msg .= "Content-Disposition: attachment; filename=\"" . $value['title'] . "\"\n\n";
@@ -115,7 +131,7 @@ class MailWepps {
 		}
 		return $msg;
 	}
-	private function getImagesHtml($msg,$mime_boundary) {
+	private function getImagesHtml($msg) {
 		$matches = [];
 		preg_match_all("/img src=\"([0-9a-zA-Z\.\-\_\/\:]+)/",$msg,$matches);
 		$messfiles = "";
@@ -131,7 +147,7 @@ class MailWepps {
 			foreach ($matches[1] as $key=>$filename) {
 				if (!isset($tmp[$filename])) {
 					$f_info = pathinfo($filename);
-					$messfiles .= "\n\n--$mime_boundary\n";
+					$messfiles .= "\n\n--{$this->mime_boundary}\n";
 					$f_info['extension'] = str_replace("jpg","jpeg",$f_info['extension']);
 					$messfiles.="Content-Type: image/".$f_info['extension']."; name=\"".basename($filename)."\"\n";
 					$messfiles.="Content-Transfer-Encoding:base64\n";
@@ -154,7 +170,6 @@ class MailWepps {
 		$datalb .= $data;
 		return $datalb;
 	}
-	
 	public function devinotele($destAddress,$message,$from="TITLE") {
 		$login = ConnectWepps::$projectServices['devinotele']['login'];
 		$passw = ConnectWepps::$projectServices['devinotele']['password'];

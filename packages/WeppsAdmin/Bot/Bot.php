@@ -13,80 +13,66 @@ class BotWepps {
 	public function __construct($myPost=[]) {
 		$this->host = ConnectWepps::$projectDev['host'];
 		$this->root = ConnectWepps::$projectDev['root'];
+		$start = microtime(true);
 		$action = (!isset($myPost[1])) ? "" : $myPost[1];
-		if ($this->parent==1) {
-			switch ($action) {
-				case "sitemap":
-					$obj = new BotSitemapWepps();
-					$obj->setSitemap();
-					break;
-				case "addBackupIgnored":
-					$obj = new BotBackupWepps();
-					$obj->addBackupIgnoredByGit();
-					break;
-				case "addBackup":
-					$obj = new BotBackupWepps();
-					$obj->addBackup();
-					break;
-				case "addBackupDB":
-					$obj = new BotBackupWepps();
-					$obj->addBackupDB(false);
-					break;
-				case "filescleaner":
-					$obj = new BotHashesWepps();
-					$obj->removeFiles();
-					break;
-				case "hashes":
-					$obj = new BotHashesWepps();
-					$obj->setHashes();
-					break;
-				case "telegram":
-					$obj = new BotTelegramWepps();
-					#$obj->test2();
-					$obj->attach();
-					break;
-				case "dbtest":
-					$row = [ 
-							'Name' => 'TEST1',
-							'BTest' => 'test text',
-							'Priority'=>0
-					];
-					$settings = [ 
-							'BTest' => [ 
-									'fn' => 'compress(:BTest)'
-							]
-					];
-					$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
-					UtilsWepps::debugf($t,1);
-					break;
-					
-					$obj = new DataWepps("DataTbls");
-					$t = $obj->add([
-							'Name'=>'TEST1',
-							'BTest'=>'test text',
-					],['BTest'=>['fn'=>'compress(:BTest)']]);
-					break;
-					
-					$t = ListsWepps::setListItem(
-						"DataTbls", 
-						55, 
-						[ 
-							'pps_path'=>'list',
-							'GUID' => "",
-							'BTest' => 'test text'
-						]
-					);
-					UtilsWepps::debugf($t,1);
-					break;
-					
-					
-				default:
-					echo "\nERROR\n";
-					exit();
-					break;
-			}
-			echo "\n$action - OK\n";
+		if ($this->parent==0) {
+			return;
 		}
+		switch ($action) {
+			/*
+			 * data operations
+			 */
+			case "feeds":
+				$obj = new BotFeedsWepps();
+				$obj->setSitemap();
+				break;
+				
+			/*
+			 * services
+			 */
+			case "addBackupIgnored":
+				$obj = new BotBackupWepps();
+				$obj->addBackupIgnoredByGit();
+				break;
+			case "addBackup":
+				$obj = new BotBackupWepps();
+				$obj->addBackup();
+				break;
+			case "addBackupDB":
+				$obj = new BotBackupWepps();
+				$obj->addBackupDB(false);
+				break;
+			case "removeFiles":
+				$obj = new BotSystemWepps();
+				$obj->removeFiles();
+				break;
+			
+			/*
+			 * tests
+			 */
+			case "hashes":
+				$obj = new BotTestWepps();
+				$obj->setHashes();
+				break;
+			case "telegramtest":
+				$obj = new BotTestWepps();
+				$obj->telegram();
+				break;
+			case "mailtest":
+				$obj = new BotTestWepps();
+				$obj->mail();
+				break;
+			case "dbtest":
+				$obj = new BotTestWepps();
+				$obj->testDB();
+				break;
+			default:
+				echo "\nERROR\n";
+				exit();
+				break;
+		}
+		$start = microtime(true)-$start;
+		echo "\n$action - OK [$start sec.]\n";
 	}
 }
 ?>

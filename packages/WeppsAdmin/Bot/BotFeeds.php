@@ -4,14 +4,14 @@ namespace WeppsAdmin\Bot;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
 
-class BotSitemapWepps extends BotWepps {
+class BotFeedsWepps extends BotWepps {
 	public $parent = 0;
 	public function __construct() {
 		parent::__construct();
 	}
 	
 	public function setSitemap() {
-		$arr = array();
+		$arr = [];
 		
 		/*
 		 * Структура
@@ -19,7 +19,7 @@ class BotSitemapWepps extends BotWepps {
 		$sql = "select Id,Name,NameMenu,if(UrlMenu!='',UrlMenu,Url) as Url from s_Directories where DisplayOff=0 and (NGroup!=1 or (Id=1))";
 		$res = ConnectWepps::$instance->fetch($sql);
 		foreach ($res as $value) {
-			$arr[$value['Url']] = "<url><loc>http://{$this->host}{$value['Url']}</loc></url>";
+			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";
 		}
 		
 		/*

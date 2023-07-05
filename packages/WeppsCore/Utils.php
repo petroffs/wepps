@@ -6,7 +6,6 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Spell\SpellWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use variant;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -147,7 +146,7 @@ class UtilsWepps {
 	/**
 	 * Компоновка SQL запроса на основе входного массива array('Row1'=>'ROW1','Row2'=>'ROW2');
 	 * @param array $row
-	 * @return string[]|mixed[]
+	 * @return array
 	 */
 	public static function getQuery($row) {
 		$strCond = $strUpdate = $strInsert1 = $strInsert2 = $strSelect = "";
@@ -191,38 +190,6 @@ class UtilsWepps {
 		) : array ();
 		return $outer;
 	}
-	
-	/**
-	 * Запись SQL-данных в указанный файл
-	 * @param string $sql
-	 * @param number $go
-	 * @param string $filenamepath
-	 * @return number|string
-	 */
-	public static function setFileRow($sql="",$go=0,$filenamepath="dump.sql") {
-		$db = ConnectWepps::$projectDB['dbname'];
-		$dir_root = ConnectWepps::$projectDev['root'];
-		
-		$filename = "{$dir_root}/packages/vendor_local/import_pps/{$filenamepath}";
-		if ($sql=="")  return file_put_contents($filename,' ');
-		$sql = "set names utf8;\n".$sql;
-		$f = fopen($filename,'a');
-		fwrite($f,$sql);
-		fclose($f);
-		$systemMessage = "file is updated";
-		if ($go==1) {
-			//sleep(3);
-			
-			$tmp="mysql --defaults-extra-file=".ConnectWepps::$projectDB['cnf']." {$db} --default-character-set=utf8 < {$filename}";
-			//echo $tmp;
-			system($tmp,$tmp_error);
-			$systemMessage = ($tmp_error==0) ? "OK":"Error";
-		}
-		if ($systemMessage=='Error')  return exit($tmp);
-		if ($systemMessage) return $systemMessage;
-		return 1;
-	}
-	
 	
 	/**
 	 * Форматирование значения, используется в self::getQuery()
@@ -337,7 +304,7 @@ class UtilsWepps {
 		}
 		
 		$i++;
-		foreach ($data as $k => $v) {
+		foreach ($data as $v) {
 			$j = 1;
 			foreach ($fields as $key => $value) {
 				$str = trim($v[$key]);
@@ -607,7 +574,7 @@ class FilesWepps {
 			 */
 			$errors[$filesfield] = "Слишком большой файл";
 			$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
-			return array('error'=>$error[$filesfield],'js'=>$outer['Out']);
+			return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
 		}
 		$filepathinfo = pathinfo($myFiles[0]['name']);
 		$filepathinfo['filename'] = strtolower(SpellWepps::getTranslit($filepathinfo['filename'],2));

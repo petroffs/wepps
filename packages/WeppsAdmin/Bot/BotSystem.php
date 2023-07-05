@@ -3,7 +3,7 @@ namespace WeppsAdmin\Bot;
 
 use WeppsCore\Connect\ConnectWepps;
 
-class BotFilesCleanerWepps extends BotWepps {
+class BotSystemWepps extends BotWepps {
 	public $parent = 0;
 	public function __construct() {
 		parent::__construct();

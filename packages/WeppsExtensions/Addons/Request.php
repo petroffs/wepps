@@ -7,6 +7,7 @@ use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Mail\MailWepps;
+use WeppsAdmin\Bot\BotTestWepps;
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
@@ -15,7 +16,8 @@ class RequestAddonsWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
-				echo "hello";
+				$obj = new BotTestWepps();
+				$obj->mail();
 				break;
 			case 'hook2':
 				exit();

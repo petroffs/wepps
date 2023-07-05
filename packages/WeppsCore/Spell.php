@@ -1,5 +1,4 @@
 <?
-
 namespace WeppsCore\Spell;
 
 class SpellWepps {

@@ -1,0 +1,13 @@
+<h2>Hello, Test</h2>
+{$text}
+<table>
+    <tr>
+        <td align="center">
+            <p>
+                <a href="#" class="button">Share the Awesomeness</a>
+            </p>
+        </td>
+    </tr>
+</table>
+<p>By the way, if you're wondering where you can find more of this fine meaty filler, visit <a href="http://baconipsum.com">Bacon Ipsum</a>.</p>
+<p><em>– Mr. Pen</em></p>
