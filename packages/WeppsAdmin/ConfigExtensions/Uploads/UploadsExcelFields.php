@@ -30,7 +30,7 @@ class UploadsExcelFieldsWepps {
 					$row1 = array(
 							"TableName"=>$value['A'],
 							"Name"=>$value['B'],
-							"Description"=>$value['F'],
+							"Description"=>(!empty($value['F']))?$value['F']:'',
 							"Field"=>$value['C'],
 							"Type"=>$value['D'],
 							"FGroup"=>$value['E'],

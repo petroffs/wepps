@@ -43,7 +43,7 @@ class ExceptionWepps {
 			if ($trace[1]['class']=='WeppsCore\Connect\ConnectWepps') {
 				$error['file'] = $trace[1]['file'];
 				$error['line'] = $trace[1]['line'];
-				$error['args'] = $trace[1]['args'];
+				$error['args'] = @$trace[1]['args'];
 			}
 			UtilsWepps::debugf($error,1);
 		} else {

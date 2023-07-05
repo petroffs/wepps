@@ -749,7 +749,7 @@ class ListsWepps {
 		switch ($type) {
 			case "area":
 				$typeReal = 'text COLLATE utf8_unicode_ci';
-				$alterDefault = "NOT NULL default ''";
+				$alterDefault = "NULL default NULL";
 				break;
 			case "digit":
 				$typeReal = 'decimal(12,2)';
@@ -757,18 +757,19 @@ class ListsWepps {
 				break;
 			case "date":
 				$typeReal = 'datetime';
-				$alterDefault = "NOT NULL default '0000-00-00 00:00:00'";
+				$alterDefault = "NULL default NULL";
 				break;
 			case "file":
 				$typeReal = 'int(11)';
+				$typeReal = 'int';
 				$alterDefault = "NOT NULL default '0'";
 				break;
 			case "int":
-				$typeReal = 'int(11)';
+				$typeReal = 'int';
 				$alterDefault = "NOT NULL default '0'";
 				break;
 			case "flag":
-				$typeReal = 'int(11)';
+				$typeReal = 'int';
 				$alterDefault = "NOT NULL default '0'";
 				break;
 			case "guid":

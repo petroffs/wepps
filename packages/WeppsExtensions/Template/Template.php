@@ -2,11 +2,9 @@
 namespace WeppsExtensions\Template;
 
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Connect\ConnectWepps;
 use WeppsExtensions\Blocks\BlocksWepps;
 use WeppsExtensions\Addons\AddonsWepps;
 
