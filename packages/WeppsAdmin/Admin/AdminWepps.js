@@ -9,11 +9,15 @@ var readyAdminWeppsInit = function() {
 	});
 	$('#logoff').on('click',function(event) {
 		event.preventDefault()
-		layoutWepps.request('action=logoff', '/packages/WeppsAdmin/Admin/Request.php');
+		let settings = {
+			url: '/packages/WeppsAdmin/Admin/Request.php',
+			data : 'action=logoff'
+		}
+		layoutWepps.request(settings);
 	});
 	$('.pps_select').find('select').select2({
 		language: "ru",
-		delay: 250
+		delay: 500
 	});
 }
 $(document).ready(readyAdminWeppsInit);

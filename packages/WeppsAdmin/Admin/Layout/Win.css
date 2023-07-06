@@ -1,0 +1,191 @@
+/*
+.pps_win_parent > :not(.pps_win_bg):not(.pps_loader) {
+    filter: blur(3px);
+}
+*/
+.pps_win_parent > header,
+.pps_win_parent > footer,
+.pps_win_parent > .mainWrapper {
+    filter: blur(3px);
+}
+.pps_win_bg {
+	width: 100%;
+	height: 100%;
+	max-height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	z-index: 9898;
+}
+.pps_win_bg2 {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    position: fixed;
+    z-index: 9897;
+    background: rgba(255,255,255,0.5);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow: auto;
+}
+.pps_win_element {
+	position: relative;
+	width: 100%;
+	max-width: 620px;
+	min-height: 200px;
+	max-height: 100%;
+	padding: 30px;
+	margin: 45px 0;
+	background: #fff;
+	display: none;
+	border-radius: 0px;
+	box-shadow:0 0 15px rgba(0,0,0,0.1);
+	overflow: auto;
+	scrollbar-width: thin;
+}
+.pps_win_element.pps_win_small {
+	max-width: 300px;
+}
+.pps_win_element.pps_win_medium {
+	max-width: 620px;
+}
+.pps_win_element.pps_win_large {
+	max-width: 100%;
+	min-height: 100%;
+}
+.pps_win_closer {
+	width: 20px;
+	height: 20px;
+	background: transparent url(files/controls-remove-gray.svg);
+	background-size: contain;
+	cursor: pointer;
+	position: absolute;
+	z-index: 2;
+	top:30px;
+	right:30px;
+}
+.pps_win_content h1,
+.pps_win_content h2 {
+	font-size: 22px;
+	text-align: left;
+	letter-spacing: 2px;
+	width: 100%;
+	max-width: calc(100% - 60px);
+	padding-bottom: 20px;
+	margin: 0 0 20px 0;
+}
+.pps_loader {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 9899;
+	width: 100% ;
+	height: 100%;
+	background: rgba(255,255,255,.5);
+}
+
+.lds-spinner {
+	width: 64px;
+	height: 64px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	z-index: 99;
+}
+
+.lds-spinner div {
+	transform-origin: 32px 32px;
+	animation: lds-spinner 1.2s linear infinite;
+}
+
+.lds-spinner div:after {
+	content: " ";
+	display: block;
+	position: absolute;
+	top: 3px;
+	left: 29px;
+	width: 5px;
+	height: 14px;
+	border-radius: 20%;
+	background: #000;
+}
+
+.lds-spinner div:nth-child(1) {
+	transform: rotate(0deg);
+	animation-delay: -1.1s;
+}
+
+.lds-spinner div:nth-child(2) {
+	transform: rotate(30deg);
+	animation-delay: -1s;
+}
+
+.lds-spinner div:nth-child(3) {
+	transform: rotate(60deg);
+	animation-delay: -0.9s;
+}
+
+.lds-spinner div:nth-child(4) {
+	transform: rotate(90deg);
+	animation-delay: -0.8s;
+}
+
+.lds-spinner div:nth-child(5) {
+	transform: rotate(120deg);
+	animation-delay: -0.7s;
+}
+
+.lds-spinner div:nth-child(6) {
+	transform: rotate(150deg);
+	animation-delay: -0.6s;
+}
+
+.lds-spinner div:nth-child(7) {
+	transform: rotate(180deg);
+	animation-delay: -0.5s;
+}
+
+.lds-spinner div:nth-child(8) {
+	transform: rotate(210deg);
+	animation-delay: -0.4s;
+}
+
+.lds-spinner div:nth-child(9) {
+	transform: rotate(240deg);
+	animation-delay: -0.3s;
+}
+
+.lds-spinner div:nth-child(10) {
+	transform: rotate(270deg);
+	animation-delay: -0.2s;
+}
+
+.lds-spinner div:nth-child(11) {
+	transform: rotate(300deg);
+	animation-delay: -0.1s;
+}
+
+.lds-spinner div:nth-child(12) {
+	transform: rotate(330deg);
+	animation-delay: 0s;
+}
+@keyframes lds-spinner {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media screen and (max-width: 1070px) {
+
+
+}

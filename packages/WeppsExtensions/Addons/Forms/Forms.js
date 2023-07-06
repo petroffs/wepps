@@ -30,7 +30,7 @@ var FormSenderWepps  = function () {
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
 		if (!layoutWepps) {
-			var layoutWepps = new Layout2Wepps();	
+			var layoutWepps = new LayoutWepps();	
 		}
 		let settings = {
 			url: url,

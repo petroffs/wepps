@@ -4,110 +4,114 @@ var readyLayoutInit = function() {
 		event.stopPropagation();
 	});
 }
-
 $(document).ready(readyLayoutInit);
-$(window).on('resize', readyLayoutInit);
+//$(window).on('resize', readyLayoutInit);
 
-
-/**
- * WindowLayer Object
- */
-var LayoutWepps = function() {
-	//this.parent = $('body').eq(0);
-	this.add = function(serialized, url) {
-		$('.winLayer').remove();
-		this.parent = $('body').eq(0);
-		this.parent.addClass('winLayerParent');
-		var el = $('<div></div>');
-		el.addClass('winLayer');
-		el.css('top', $(window).scrollTop());
-		this.parent.prepend(el);
-		el.fadeIn();
-		var self = this;
-
-		$('.winLayer').on('click', function(e) {
-			 if ( $(e.target).closest('.winLayerContent').length === 0 ) {
-				 //self.remove();
-			 }
-		});
-		$(document).keyup(function(e) {
-		     if (e.keyCode == 27) {
-		    	 self.remove();
-		    }
-		});
-		this.el = el;
-		this.lay();
-
-		/*
-		 * Вызваем аякс и результат в блок lay
-		 */
-		this.request(serialized, url, $('#winLayerContent'));
-
+class LayoutWepps {
+	constructor(settings={}) {
+		if (settings != undefined) {
+			this.settings = settings 
+		}
 	}
-
-	this.remove = function() {
-		$('.winLayer').fadeOut();
-		var self = this;
-		setTimeout(function() {
-			$('.winLayer').remove();
-			self.parent.removeClass('winLayerParent');
-		}, 50);
+	init() {
+		$('body').removeClass('pps_win_parent');
+		$('html').removeClass('pps_overflow');
+		$('.pps_win_bg2').remove();
+		$('.pps_win_bg').remove();
+		$('.pps_loader').remove();	
+		return 1;
 	}
-
-	this.lay = function() {
-		$('.winLayerLay').remove();
-		var lay = $('<div></div>');
-		lay.addClass('winLayer');
-		lay.addClass('winLayerLay');
-		this.el.append(lay);
-		lay.animate({
-			'top' : 0
-		}, 500);
-		var content = $('<div></div>');
-		content.addClass('winLayerContent');
-		lay.append(content);
-		setTimeout(function() {
-			content.fadeIn();
-			if (content.height() > (lay.height() - 45)) {
-				var footer = $('<div></div>');
-				footer.addClass('winLayerFooter');
-				lay.append(footer);
-			}
-		}, 700);
-		content.attr('id', 'winLayerContent');
-		var closer = $('<div></div>');
-		closer.addClass('winLayerCloser');
-		var self = this;
-		closer.on('click', function() {
+	remove() {
+		let self = this;	
+		$('.pps_win_element').fadeOut(300, function() {
+			self.init();		
+		});
+		return 2;
+	}
+	win(settings={}) {
+		let self = this;
+		this.init();
+		this.window = $('<div></div>');
+		this.window.addClass('pps_win_element');
+		this.window.attr('id', 'pps_win_element');
+		
+		this.closer = $('<div></div>');
+		this.closer.addClass('pps_win_closer');
+		this.window.append(this.closer);
+		
+		this.closer.on('click', function() {
 			self.remove();
 		});
-		setTimeout(function() {
-			content.prepend(closer);
-		}, 500);
+		
+		this.content = $('<div></div>');
+		this.content.addClass('pps_win_content');
+		this.window.append(this.content);
+		switch (settings.size) {
+			case 'small':
+				this.window.addClass('pps_win_small');
+				break;
+			case 'large':
+				this.window.addClass('pps_win_large');
+				break;
+			default:
+				this.window.addClass('pps_win_medium');
+				break;
+		}
+		this.back = $('<div></div>');
+		this.back.addClass('pps_win_bg');
+		this.back.append(this.window);
+		this.back2 = $('<div></div>');
+		this.back2.addClass('pps_win_bg2');
+		this.body = $('body');
+		this.body.addClass('pps_win_parent');
+		this.body.prepend(this.back2);
+		this.body.prepend(this.back);
+		$('html').addClass('pps_overflow');
+		this.window.fadeIn();
+		if (settings.content != undefined) {
+			let clone = settings.content.clone();
+			clone.removeClass('pps_hide');
+			this.content.html(clone);
+		} else if (settings.url != undefined && settings.data != undefined) {
+			settings.obj = this.content;
+			this.request(settings);
+		} 
+		$(document).off('keyup');
+		$(document).keyup(function(e) {
+		    if (e.keyCode == 27) {
+		    	self.remove();
+		    }
+		});
+		$(document).off('mouseup');
+		$(document).mouseup(function(e) {
+		    if ($('.pps_win_element').has(e.target).length === 0 && $(e.target).hasClass('pps_win_element')==false && $(e.target).hasClass('pps_loader')==false) {
+		      	self.remove();
+		    }
+		});
+		return 1;
 	}
-
-	this.request = function(serialized, url, obj) {
+	request(settings={}) {
+		let self = this;
 		$("#pps_ajax").remove();
 		$.ajax({
 			type : "POST",
-			url : url,
-			data : serialized,
+			url : settings.url,
+			data : settings.data,
 			beforeSend: function(){
+				console.log(1)
 				$('.pps_loader').remove();
 		    	let loader = $('<div class="pps_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
-		        $('body').prepend(loader)
-		        
+		        $('body').prepend(loader);
 		    }
 		}).done(function(responseText) {
+			$('.pps_loader').fadeOut()
 			setTimeout(function() {
-				$('.pps_loader').fadeOut();
+				$('.pps_loader').remove();
 			},500);
-			if (obj) {
-				// Результат в объект
-				obj.html(responseText);
+			if (settings.obj) {
+				settings.obj.html(responseText);
 				$("#pps_ajax").remove();
 			} else {
-				// Если скрытый вызов
 				var t = $("<div></div>");
 				t.attr("id", "pps_ajax");
 				t.html(responseText);
@@ -115,41 +119,20 @@ var LayoutWepps = function() {
 				t.css('display', 'none');
 				$("#pps_ajax").remove();
 			}
-		}).fail(function() {
-			$("#dialog").html('<p>При запросе произошла ошибка</p>').dialog({
-				'title':'Ошибка',
-				'modal': true,
-				'buttons' : [{
-					text : "Закрыть",
-					icon : "ui-icon-close",
-					click : function() {
-						$(this).dialog("close");
-					}
-				}]
-			});
-			setTimeout(function() {
-				$('.pps_loader').fadeOut();
-			},500);
-		 });
-	}
-	this.money = function(val) {
-		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
-	}
-	this.dialog = function(serialized, url) {
-		var obj = $('#dialog');
-		$.ajax({
-			type : "POST",
-			url : url,
-			data : serialized,
-		}).done(function(responseText) {
-			obj.html(responseText);
-			obj.dialog({
-				'modal': true,
-				'buttons':[]
-			});
+			self.call();
 		});
+		return 1;
+	}
+	call () {
+		
+	}
+}
+
+class UtilsWepps {
+	money(val) {
+		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
 	}
 }
 
 var layoutWepps = new LayoutWepps();
-// windowOver.add('action=order','/files/bg.exts.php');
+var utilsWepps = new UtilsWepps();

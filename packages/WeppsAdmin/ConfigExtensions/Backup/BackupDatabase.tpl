@@ -13,6 +13,7 @@
 <form class="list-data pps_flex pps_flex_row pps_flex_start pps_flex_row_top controls-area">
 	<div class="pps_flex_23 pps_flex_11_view_medium pps_border">
 		<div class="title">Последние бекапы</div>
+		<div class="pps_interval_small"></div>
 		<ul class="pps_list">
 			{foreach name="out" item="item" from=$backups}
 			<li class="pps_pointer" data-file="{$item}" data-restore="database-restore" data-remove="database-remove"><i class="fa fa-file-o"></i> {$item}</li>

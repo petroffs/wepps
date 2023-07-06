@@ -143,3 +143,7 @@ a:focus {
 .select2-container--default .select2-results__group {
     opacity: 0.5;
 }
+
+.pps_bg_silver {
+	background: #f7f7f7;
+}

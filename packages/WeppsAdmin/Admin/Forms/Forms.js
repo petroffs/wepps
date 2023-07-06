@@ -7,57 +7,40 @@ var FormSenderWepps  = function () {
 			data.append(key, value);
 		});
 		$.ajax({
-			url : '/packages/WeppsAdmin/Lists/Request.php?action=upload&filesfield=' 
-				+ filesfield + '&myform=' + myform,
+			url : '/ext/Addons/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
 			type : 'POST',
 			data : data,
 			cache : false,
 			processData : false,
-			contentType : false,
-			beforeSend: function(){
-				$('.pps_loader').remove();
-		    	let loader = $('<div class="pps_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
-		        $('body').prepend(loader)
-		    }
+			contentType : false
 		}).done(function(responseText) {
-			setTimeout(function() {
-				$('.pps_loader').fadeOut();
-			},500);
 			$("#pps_ajax").remove();
 			var t = $("<div></div>");
 			t.attr("id", "pps_ajax");
 			t.html(responseText);
 			$(document.body).prepend(t);
-		}).fail(function() {
-			$("#dialog").html('<p>При загрузке файла произошла ошибка</p>').dialog({
-				'title':'Ошибка',
-				'modal': true,
-				'buttons' : [{
-					text : "Закрыть",
-					icon : "ui-icon-close",
-					click : function() {
-						$(this).dialog("close");
-					}
-				}]
-			});
-			setTimeout(function() {
-				$('.pps_loader').fadeOut();
-			},500);
 		});
 	}
 	this.upload = function(event) {
-		//console.log($(this).attr('name'));
 		uploadaction(event,$(this).attr('name'),$(this).closest('form').attr('id'));
 	}
-	this.send = function (action, myform, url, lang) {
+	this.send = function (action, myform, url) {
 		$('.controlserrormess').remove();
-		var str = 'action=' + action + '&form=' + myform + '&link=' + lang + '&';
+		let link = $(location).attr('pathname');
+		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
-		if (!layoutWepps) var layoutWepps = new LayoutWepps();
-		layoutWepps.request(str + serialized, url);
+		if (!layoutWepps) {
+			var layoutWepps = new LayoutWepps();	
+		}
+		let settings = {
+			url: url,
+			data : str + serialized
+		}
+		layoutWepps.request(settings);
 	}
 }
 var formSenderWepps = new FormSenderWepps();
+
 
 var readyFormsInit = function() {
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderWepps.upload);
