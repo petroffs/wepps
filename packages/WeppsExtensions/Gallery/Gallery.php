@@ -22,11 +22,11 @@ class GalleryWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		/*
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/packages/vendor_local/fresco/css/fresco/fresco.css");
-		$this->headers->js("/packages/vendor_local/fresco/js/fresco/fresco.js");
+		$this->headers->css("/packages/vendor/dimsemenov/magnific-popup/dist/magnific-popup.css");
+		$this->headers->js("/packages/vendor/dimsemenov/magnific-popup/dist/jquery.magnific-popup.js");
 		$this->headers->css("/ext/Gallery/Gallery.{$this->rand}.css");
 		$this->headers->js("/ext/Gallery/Gallery.{$this->rand}.js");
 		

@@ -1,5 +1,5 @@
 <?
-namespace WeppsExtensions\FirstPage;
+namespace WeppsExtensions\HomePage;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\DataWepps;
@@ -10,7 +10,7 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsExtensions\Addons\AddonsUtilsWepps;
 
-class FirstPageWepps extends ExtensionWepps {
+class HomePageWepps extends ExtensionWepps {
 	public $topTpl = '';
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
@@ -38,13 +38,13 @@ class FirstPageWepps extends ExtensionWepps {
 				$obj = new DataWepps("Services");
 				$res = $obj->getMax ( "t.DisplayOff=0" );
 				$smarty->assign('services',$res);
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageServices.tpl', null, 'a' );
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageServices.tpl', null, 'a' );
 
 				/*
 				 * Галерея
 				 */
-				$this->headers->css("/packages/vendor_local/fresco/css/fresco/fresco.css");
-				$this->headers->js("/packages/vendor_local/fresco/js/fresco/fresco.js");
+				$this->headers->css("/packages/vendor/dimsemenov/magnific-popup/dist/magnific-popup.css");
+				$this->headers->js("/packages/vendor/dimsemenov/magnific-popup/dist/jquery.magnific-popup.js");
 				$this->headers->css("/ext/Gallery/Gallery.{$this->rand}.css");
 				$this->headers->js("/ext/Gallery/Gallery.{$this->rand}.js");
 				
@@ -53,14 +53,14 @@ class FirstPageWepps extends ExtensionWepps {
 				$res = $obj->getMax("t.TableName='Gallery' and fg.DirectoryId=17",500,1,'t.Priority');
 				$smarty->assign('elements',$res);
 				$smarty->assign('galleryTpl',$smarty->fetch ( 'packages/WeppsExtensions/Gallery/Gallery.tpl', null, 'a' ));
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageGallery.tpl', null, 'a' );
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageGallery.tpl', null, 'a' );
 				/*
 				 * Преимущества
 				 */
 				$obj = new DataWepps("Advantages");
 				$res = $obj->getMax ( "t.DisplayOff=0" );
 				$smarty->assign('advantages',$res);
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageAdvantages.tpl', null, 'a' );
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageAdvantages.tpl', null, 'a' );
 				/*
 				 * Контакты
 				 */
@@ -79,7 +79,7 @@ class FirstPageWepps extends ExtensionWepps {
 				$obj = new DataWepps("Contacts");
 				$res = $obj->getMax("t.DisplayOff=0",1);
 				$smarty->assign('contacts',$res);
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/FirstPage/FirstPageContacts.tpl', null, 'a' );
+				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageContacts.tpl', null, 'a' );
 				
 				break;
 			default:
@@ -92,7 +92,7 @@ class FirstPageWepps extends ExtensionWepps {
 		$smarty->assign ( 'normalHeader1', 0 );
 		$smarty->assign ( 'normalView', 0 );
 		$this->navigator->content['Text1'] = '';
-		$this->headers->css("/ext/FirstPage/FirstPage.{$this->rand}.css");
+		$this->headers->css("/ext/HomePage/HomePage.{$this->rand}.css");
 		$smarty->assign ('horizontalTopTpl', $this->topTpl);
 		return;
 	}
