@@ -3,6 +3,8 @@
 /packages/composer.lock
 /packages/WeppsAdmin/*/*/files*
 /packages/WeppsAdmin/*/files*
+/packages/WeppsAdmin/Admin/Forms/uploads*
+/packages/WeppsExtensions/Addons/Forms/uploads*
 /files/tpl/compile/*
 /files/lists/*
 /pic/*
@@ -11,10 +13,8 @@
 /debug.conf
 /sitemap.xml
 /robots.txt
-
 *.sql.gz
 *.7z
-
 #eclipse
 /.settings
 /.project
