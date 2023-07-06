@@ -761,21 +761,15 @@ class LanguageWepps {
 	 * @return array
 	 */
 	public static function getRows($data=[], $scheme=[], $lang=[]) {
-		if (!empty($lang['id']) || !isset($scheme['TableId']) || !isset($scheme['LanguageId'])) {
-			if (@$lang['id'] == 1) {
-				return $data;
-			}
+		if (empty($lang) || @$lang['id'] == 1 || !isset($scheme['TableId']) || !isset($scheme['LanguageId'])) {
+			return $data;
 		}
 		$res = UtilsWepps::getArrayId($data);
 		$resKeys = implode(",", array_keys($res));
 		if ($resKeys=="") {
 			return $data;
 		}
-		$tableName = @$scheme['TableId'][0]['TableName'];
-		if (empty($tableName)) {
-			return $data;
-		}
-		$sql = "select * from {$tableName} where TableId in ({$resKeys}) and LanguageId='".@$lang['id']."' and DisplayOff=0";
+		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId='".@$lang['id']."' and DisplayOff=0";
 		$res2 = ConnectWepps::$instance->fetch($sql);
 		if (count($res2)==0) return $data;
 		$resParall = UtilsWepps::getArrayId($res2,'TableId');
