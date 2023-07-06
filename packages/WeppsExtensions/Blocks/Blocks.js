@@ -11,7 +11,7 @@ var readyBlocksInit = function() {
 			str = str.substr(0,str.length-1);
 			//console.log(str);
 			//layoutPPS2.request('action=sortable&items='+str, '/ext/Blocks/Request.php');
-			layout2Wepps.request({
+			layoutWepps.request({
 				data:'action=sortable&items='+str,
 				url:'/ext/Blocks/Request.php'
 			})

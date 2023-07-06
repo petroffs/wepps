@@ -24,18 +24,19 @@ var FormSenderWepps  = function () {
 	this.upload = function(event) {
 		uploadaction(event,$(this).attr('name'),$(this).closest('form').attr('id'));
 	}
-	this.send = function (action, myform, url, lang) {
+	this.send = function (action, myform, url) {
 		$('.controlserrormess').remove();
-		var str = 'action=' + action + '&form=' + myform + '&link=' + lang + '&';
+		let link = $(location).attr('pathname');
+		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
-		if (!layout2Wepps) {
-			var layout2Wepps = new Layout2Wepps();	
+		if (!layoutWepps) {
+			var layoutWepps = new Layout2Wepps();	
 		}
 		let settings = {
 			url: url,
 			data : str + serialized
 		}
-		layout2Wepps.request(settings);
+		layoutWepps.request(settings);
 	}
 }
 var formSenderWepps = new FormSenderWepps();

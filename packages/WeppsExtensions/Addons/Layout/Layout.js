@@ -4,122 +4,10 @@ var readyLayoutInit = function() {
 		event.stopPropagation();
 	});
 }
-
 $(document).ready(readyLayoutInit);
 //$(window).on('resize', readyLayoutInit);
 
-
-/**
- * WindowLayer Object
- * deprecated
- */
-var LayoutWepps = function() {
-	this.add = function(serialized, url) {
-		$('.winLayer').remove();
-		this.parent = $('body').eq(0);
-		this.parent.addClass('winLayerParent');
-		var el = $('<div></div>');
-		el.addClass('winLayer');
-		el.css('top', $(window).scrollTop());
-		this.parent.prepend(el);
-		el.fadeIn();
-		var self = this;
-
-		$('.winLayer').on('click', function(e) {
-			 if ( $(e.target).closest('.winLayerContent').length === 0 ) {
-				 //self.remove();
-			 }
-		});
-		$(document).keyup(function(e) {
-		     if (e.keyCode == 27) {
-		    	 self.remove();
-		    }
-		});
-		this.el = el;
-		this.lay();
-
-		/*
-		 * Вызваем аякс и результат в блок lay
-		 */
-		this.request(serialized, url, $('#winLayerContent'));
-
-	}
-
-	this.remove = function() {
-		$('.winLayer').fadeOut();
-		var self = this;
-		setTimeout(function() {
-			$('.winLayer').remove();
-			self.parent.removeClass('winLayerParent');
-		}, 50);
-	}
-
-	this.lay = function() {
-		$('.winLayerLay').remove();
-		var lay = $('<div></div>');
-		lay.addClass('winLayer');
-		lay.addClass('winLayerLay');
-		this.el.append(lay);
-		lay.animate({
-			'top' : 0
-		}, 300);
-		var content = $('<div></div>');
-		content.addClass('winLayerContent');
-		lay.append(content);
-		setTimeout(function() {
-			content.fadeIn();
-			if (content.height() > (lay.height() - 45)) {
-				var footer = $('<div></div>');
-				footer.addClass('winLayerFooter');
-				lay.append(footer);
-			}
-		}, 300);
-
-		content.attr('id', 'winLayerContent');
-			
-		var closer = $('<div></div>');
-		closer.addClass('winLayerCloser');
-		var self = this;
-		closer.on('click', function() {
-			self.remove();
-		});
-		setTimeout(function() {
-			content.prepend(closer);
-		}, 300);
-
-	}
-
-	this.request = function(serialized, url, obj) {
-		// console.log(serialized)
-		$("#pps_ajax").remove();
-		$.ajax({
-			type : "POST",
-			url : url,
-			data : serialized,
-		}).done(function(responseText) {
-			if (obj) {
-				// Результат в объект
-				obj.html(responseText);
-				$("#pps_ajax").remove();
-				console.log(obj)
-			} else {
-				// Если скрытый вызов
-				var t = $("<div></div>");
-				t.attr("id", "pps_ajax");
-				t.html(responseText);
-				$(document.body).prepend(t);
-				t.css('display', 'none');
-				$("#pps_ajax").remove();
-			}
-		});
-		
-	}
-	this.money = function(val) {
-		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
-	}
-}
-
-class Layout2Wepps {
+class LayoutWepps {
 	constructor(settings={}) {
 		if (settings != undefined) {
 			this.settings = settings 
@@ -246,6 +134,5 @@ class UtilsWepps {
 	}
 }
 
-var layoutWepps = new LayoutWepps(); //deprecated
-var layout2Wepps = new Layout2Wepps();
+var layoutWepps = new LayoutWepps();
 var utilsWepps = new UtilsWepps();
