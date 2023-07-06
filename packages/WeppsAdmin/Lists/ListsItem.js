@@ -87,6 +87,113 @@ var readyListsItemInit = function() {
 				});
 		}
 	});
+	$('form.list-data').find('.field-file-select').off('click');
+	$('form.list-data').find('.field-file-select').on('click',function(event) {
+		event.preventDefault();
+		var status = ($(this).data('status')==0)?1:0;
+		if ($(this).data('status')==0) {
+			status = 1;
+			$(this).addClass('active');
+			$('.field-file-action').removeClass('pps_hide');
+		} else {
+			status = 0;
+			$(this).removeClass('active');
+			$('.field-file-action').addClass('pps_hide');
+		}
+		$(this).data('status',status);
+	});
+	$('form.list-data').find('.files-upload').off('click');
+	$('form.list-data').find('.files-upload').on('click',function(event) {
+		var status = $(this).closest('.item').find('.field-file-select').eq(0).data('status'); 
+		if (status==1) {
+			event.preventDefault();
+			var el =  $(this).closest('.files-item');
+			if (el.hasClass('active')) {
+				el.removeClass('active');
+			} else {
+				el.addClass('active');
+			}
+			return;	
+		}
+	});
+	$('form.list-data').find('.field-file-edit').off('click');
+	$('form.list-data').find('.field-file-edit').on('click',function(event) {
+		event.preventDefault();
+		el = $('.files-item.active');
+		var ids = '';
+		el.each(function(i,e) {
+			ids += $(e).data('id')+','
+		});
+		ids = ids.substr(0,ids.length-1)
+		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="pps pps_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
+			'title':'Сообщение',
+			'modal': true,
+			'buttons' : [
+			{
+				text : 'Сохранить',
+				icon : 'ui-icon-check',
+				click : function() {
+					let text = $('#file-input-edit').val();
+					el.each(function(i,e) {
+						let id = '.files-item[data-id="'+$(e).data('id')+'"';
+						$(id).find('div.descr').addClass('descr-fill');
+						$(id).find('div.descr > div.input + div').text(text);
+					});
+					let str = 'action=fileDescription&ids='+ids+'&text='+text;
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
+					$(this).dialog('close');
+				}
+			},{
+				text : 'Отмена',
+				click : function() {
+                    $(this).dialog('close');
+				}
+			}]
+		});
+		
+	});
+	$('form.list-data').find('.field-file-remove').off('click');
+	$('form.list-data').find('.field-file-remove').on('click',function(event) {
+		event.preventDefault();
+		el = $('.files-item.active');
+		var ids = '';
+		el.each(function(i,e) {
+			ids += $(e).data('id')+','
+		});
+		ids = ids.substr(0,ids.length-1)
+		//console.log(ids);
+		$('#dialog').html('<p>Удалить выбранные файлы?</p>').dialog({
+			'title':'Сообщение',
+			'modal': true,
+			'buttons' : [
+			{
+				text : 'Удалить',
+				icon : 'ui-icon-trash',
+				click : function() {
+					el.each(function(i,e) {
+						$(e).remove();
+					});
+					$(this).dialog("close");
+					$('form.list-data').find('.field-file-select.active').trigger('click');
+					let str = 'action=fileRemove&id='+ids;
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
+				}
+			},{
+				text : 'Отмена',
+				click : function() {
+                    $(this).dialog('close');
+				}
+			}]
+		});
+	});
 	$('form.list-data').find('a.files-item-copy-link').off('click');
 	$('form.list-data').find('a.files-item-copy-link').on('click',function(event) {
 		event.preventDefault();
@@ -115,8 +222,13 @@ var readyListsItemInit = function() {
 				text : "Удалить",
 				icon : "ui-icon-close",
 				click : function() {
-					var str = 'action=fileRemove&id='+parent1.data('id');
-					layoutWepps.request(str, '/packages/WeppsAdmin/Lists/Request.php');
+					let str = 'action=fileRemove&id='+parent1.data('id');
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
+					
 					//console.log('удаление файла, реальное (из базы, из фс)');
 					$(this).dialog("close");
 					element.closest('.files-item').remove();
@@ -136,7 +248,11 @@ var readyListsItemInit = function() {
 		let item = $(this).closest('.item');
 		let str = 'action=uploadRemove&filesfield='+item.data('id')+'&filename='+$(this).attr('rel')
 		$(this).parent().remove();
-		layoutWepps.request(str, '/packages/WeppsAdmin/Lists/Request.php');
+		let settings = {
+			data:str,
+			url:'/packages/WeppsAdmin/Lists/Request.php'
+		}
+		layoutWepps.request(settings);
 		
 	});
 	$('form.list-data').find('a.list-item-save').off('click');
@@ -163,7 +279,11 @@ var readyListsItemInit = function() {
 					let tableNameId = element.find('input[name="pps_tablename_id"]').val();
 					let path = element.find('input[name="pps_path"]').eq(0).val();
 					let str = 'action=copy&list='+tableName+'&id='+tableNameId+'&pps_path='+path;
-					layoutWepps.request(str, '/packages/WeppsAdmin/Lists/Request.php');
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
 					$(this).dialog("close");
 				}
 			},{
@@ -270,7 +390,6 @@ var readyListsItemInit = function() {
 	}
 	$('form.list-data').find('.files').sortable({
       placeholder: "sortable-active",
-      axis: "y",
       update: function( event, ui ) {
     	  let items = ui.item.parent()
     	  var str = '';
@@ -279,9 +398,12 @@ var readyListsItemInit = function() {
     		  str += $(this).data('id')+',';
     	  });
     	  str = str.substr(0,str.length - 1);
-    	  //console.log(str);
     	  str = 'action=fileSortable&id='+str;
-    	  layoutWepps.request(str, '/packages/WeppsAdmin/Lists/Request.php');
+		  let settings = {
+			  data: str,
+			  url: '/packages/WeppsAdmin/Lists/Request.php'
+		  }
+		  layoutWepps.request(settings);
       }
     });
 	$('form.list-data').find('.files').disableSelection();

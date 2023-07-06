@@ -7,7 +7,7 @@ var FormSenderWepps  = function () {
 			data.append(key, value);
 		});
 		$.ajax({
-			url : '/ext/Addons/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
+			url : '/packages/WeppsAdmin/Lists/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
 			type : 'POST',
 			data : data,
 			cache : false,

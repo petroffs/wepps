@@ -181,7 +181,9 @@ class ListsWepps {
         	$smarty->assign('listSettings',$listForm['listSettings']);
         	$smarty->assign('tabs',$listForm['tabs']);
         	$smarty->assign('controlsTpl', $smarty->fetch( ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemControls.tpl'));
-        	if (isset($_SESSION['uploads']['list-data-form'])) $smarty->assign('uploaded',$_SESSION['uploads']['list-data-form']);
+        	if (isset($_SESSION['uploads']['list-data-form'])) {
+        		$smarty->assign('uploaded',$_SESSION['uploads']['list-data-form']);
+        	}
         	$smarty->assign('listItemFormTpl',$smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemForm.tpl'));
         	$smarty->assign('listsNavTpl', $smarty->fetch( ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
         } else {

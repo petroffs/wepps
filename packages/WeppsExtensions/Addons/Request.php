@@ -118,13 +118,21 @@ class RequestAddonsWepps extends RequestWepps {
 				}
 				break;
 			case 'files':
-				if (!isset($this->get['fileUrl'])) ExceptionWepps::error404();
+				if (!isset($this->get['fileUrl'])) {
+					ExceptionWepps::error404();
+				}
 				FilesWepps::output($this->get['fileUrl']);
 				break;
 			case 'upload':
-				if (!isset($this->get['filesfield'])) ExceptionWepps::error404();
-				if (!isset($this->get['myform'])) ExceptionWepps::error404();
-				if (!isset($_FILES)) ExceptionWepps::error404();
+				if (!isset($this->get['filesfield'])) {
+					ExceptionWepps::error404();
+				}
+				if (!isset($this->get['myform'])) {
+					ExceptionWepps::error404();
+				}
+				if (!isset($_FILES)) {
+					ExceptionWepps::error404();
+				}
 				$data = FilesWepps::upload($_FILES,$this->get['filesfield'],$this->get['myform']);
 				echo $data['js'];
 				ConnectWepps::$instance->close();

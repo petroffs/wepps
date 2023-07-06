@@ -75,8 +75,10 @@ class RequestListsWepps extends RequestWepps {
 			case 'fileRemove':
 				if (!isset($this->get['id']) || (int) $this->get['id']==0) ExceptionWepps::error404();
 				$obj = new DataWepps("s_Files");
-				$res = $obj->get($this->get['id'])[0];
-				if (!isset($res['Id'])) ExceptionWepps::error404();
+				$res = $obj->get("Id in ({$this->get['id']})");
+				if (!isset($res[0]['Id'])) {
+					ExceptionWepps::error404();
+				}
 
 				/*
 				 * Проверка прав доступа
@@ -94,7 +96,19 @@ class RequestListsWepps extends RequestWepps {
 				/*
 				 * Удалить файл из базы
 				 */
-				$obj->remove($this->get['id']);
+				foreach ($res as $value) {
+					/*
+					 * Удалить файл (копии в pic удалим файлклинером)
+					 */
+					if (is_file(ConnectWepps::$projectDev['root'].$value['FileUrl'])) {
+						unlink(ConnectWepps::$projectDev['root'].$value['FileUrl']);
+					}
+					
+					/*
+					 * Удалить файл из базы
+					 */
+					$obj->remove($value['Id']);
+				}
 				break;
 			case 'fileSortable':
 				if (empty($this->get['id'])) {
@@ -117,6 +131,13 @@ class RequestListsWepps extends RequestWepps {
 				}
 				//UtilsWepps::debug($str);
 				ConnectWepps::$db->exec($str);
+				break;
+			case 'fileDescription':
+				if (empty($this->get['ids'])) {
+					ExceptionWepps::error404();
+				}
+				$sql = "update s_Files set FileDescription=? where Id in ({$this->get['ids']})";
+				ConnectWepps::$instance->query($sql,[$this->get['text']]);
 				break;
 			case "form":
 				echo 1;

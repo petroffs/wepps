@@ -295,17 +295,11 @@ class SpellWepps {
 			$str = trim($str, "-");
 			$str = strtolower(str_replace(".","",$str));
 			$str = trim(preg_replace('/--+/', '-',$str),'-');
-			
 		}
 		if ($fileName==3) {
 			$str = preg_replace('~[^-a-z-A-Z0-9_\.\/]+~u', '-', $str);
 			$str = trim($str, "-");
 		}
-		
-		
-		
-		
-		
 		return trim($str);
 	}
 }

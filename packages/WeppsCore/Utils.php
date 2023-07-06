@@ -555,9 +555,9 @@ class FilesWepps {
 	 * @return array
 	 */
 	public static function upload($myFiles,$filesfield,$myform) {
-		$root = $_SERVER['DOCUMENT_ROOT'];
+		$root = ConnectWepps::$projectDev['root'];
 		$errors = array();
-		/**
+		/*
 		 * Не все изображения имеют эту метку, возможны ошибки
 		 * Переработать таким образом, чтобы была входная информация
 		 * о типе загруженного файла и в зависимости от этого делать

@@ -13,7 +13,7 @@
 		{/foreach}
 		<div class="pps_hide"><input type="submit"/></div>
 		{$controlsTpl}
-		<div class="pps_interval"></div>
+		<div class="pps_interval_small"></div>
 		{if $tabs|@count>1 || $listSettings.ActionShowIdAddons}
 		<div class="controls-area controls-tabs pps_border pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin">
 			<div class="pps_flex_11  pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large">
@@ -26,7 +26,7 @@
 				{/foreach}
 			</div>
 		</div>
-		<div class="pps_interval"></div>
+		<div class="pps_interval_small"></div>
 		{/if}
 		{foreach name="out" item="item" key="key" from=$listScheme}
 		{if $item.0.$listMode!="hidden"}
@@ -51,12 +51,6 @@
 					<div><a href="" class="field-translit">траслит</a></div>
 					{elseif $item.0.Type=="area"}
 					<div><a href="" class="field-ve">визуальный редактор</a></div>
-					{elseif $item.0.Type=='file'}
-					<div class="field-file">
-						<a href="" class="field-file-select" data-status="0">выделить</a>
-						<a href="" class="field-file-action field-file-edit pps_hide"><i class="fa fa-edit"></i></a>
-						<a href="" class="field-file-action field-file-remove pps_hide"><i class="fa fa-remove"></i></a>
-					</div>
 					{/if}
 				</div>
 			</div>
@@ -96,28 +90,29 @@
 					<input type="datetime" name="{$k}" value="{$element.$key}"/>
 				</label>
 				{elseif $item.0.Type=="file"}
-				{if $element.$key.0}
-				<div class="files pps_animate_none pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin_small">
+				{if $element.$key}
+				<div class="files pps_animate_none">
 					{foreach name="o" item="i" key="k" from=$element.$key}
-					<div class="files-item files-item-2 pps_flex_16 pps_flex_13_view_medium pps_flex_12_view_medium" data-title="{$i.Name}" data-id="{$i.Id}">
-						<div>
+					<div class="files-item pps_flex pps_flex_row pps_flex_row_str pps_flex_margin" data-title="{$i.Name}" data-id="{$i.Id}">
+						<div class="pps_flex_13">
 						{if $i.Name|@stristr:"jpg" || $i.Name|@stristr:"jpeg" || $i.Name|@stristr:"png"}
-						<a href="/f{$i.FileUrl}" class="files-upload"><img src="/pic/lists{$i.FileUrl}" class="pps_image"/></a>
+						<a href="/f{$i.FileUrl}"><img src="/pic/lists{$i.FileUrl}" class="pps_shadow"/></a>
 						{else}
-						<a href="/f{$i.FileUrl}" class="files-upload">{$i.Name}</a>
+						<a href="/f{$i.FileUrl}">{$i.Name}</a>
 						{/if}
 						</div>
-						<div class="descr{if $i.FileDescription} descr-fill{/if}">
-							<div class="input">
+						<div class="pps_flex_12">
+							<div>
 								<label class="pps pps_input">
 									<input type="text" value="/pic/full{$i.FileUrl}"/>
 								</label>
 							</div>
-							<div>
+							<div class="descr">
 								{$i.FileDescription}
 							</div>
+							
 						</div>
-						<div>
+						<div class="pps_flex_16">
 							<div class="files-controls pps_flex pps_flex_row">
 								<a href="" class="files-item-copy-link"><i class="fa fa-copy"></i></a>
 								<a href="/_pps/lists/s_Files/{$i.Id}/"><i class="fa fa-edit"></i></a>
@@ -131,7 +126,7 @@
 				<label class="pps pps_upload">
 					<input type="file" name="{$key}" multiple="multiple"/> <span>Загрузить</span>
 				</label>
-				<div class="pps_interval"></div>
+				<div class="pps_interval_small"></div>
 				{foreach name="o" item="i" key="k" from=$uploaded[$key]}
 					<p class="fileadd pps_flex_13">
 						{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="fa fa-remove"></i></a>
@@ -194,7 +189,7 @@
 								{html_options options=$element[$key|cat:"_PropertiesOptions"][$i.Id] selected=$element[$key|cat:"_PropertiesSelected"][$i.Id] multiple="multiple"}
 								</select>
 							</label>
-							<div class="pps_interval"></div>
+							<div class="pps_interval_small"></div>
 							<div class="pps_flex pps_flex_row pps_flex_end pps_flex_margin">
 							<label class="pps pps_input pps_flex_12">
 								<input type="text" placeholder="новая опция" data-id="{$i.Id}"/> 
@@ -222,7 +217,7 @@
 		{foreach name="out" item="item" key="key" from=$listSettings.ActionShowIdAddons}
 		{$item.tpl}
 		{/foreach}
-		<div class="pps_interval"></div>
+		<div class="pps_interval_small"></div>
 		{$controlsTpl}
 	</form>
 </div>
