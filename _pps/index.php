@@ -1,5 +1,11 @@
-<?
+<?php
+
 use WeppsAdmin\Admin\AdminWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
+
+/**
+ * @var TemplateHeadersWepps $headers
+ */
 
 require_once '../config.php';
 require_once '../autoloader.php';

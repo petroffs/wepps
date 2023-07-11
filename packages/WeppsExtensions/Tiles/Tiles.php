@@ -1,11 +1,11 @@
-<?
+<?php
+
 namespace WeppsExtensions\Tiles;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 
 class TilesWepps extends ExtensionWepps {
 	public function request() {

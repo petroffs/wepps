@@ -1,14 +1,17 @@
-<?
+<?php
+
 namespace WeppsExtensions\User;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\User\UserWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsExtensions\Mail\MailWepps;
-use WeppsCore\Spell\SpellWepps;
+
+/**
+ * @var \Smarty $smarty
+ */
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -313,7 +316,7 @@ class RequestUserWepps extends RequestWepps {
 					case 'passForm' :
 						$errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
 						$errors['pass2'] = ValidatorWepps::isNotEmpty($this->get['pass2'], "Не заполнено");
-						if ($errors['pass']=="" && $error['pass2']=="") {
+						if ($errors['pass']=="" && $errors['pass2']=="") {
 							if (strlen($this->get['pass'])<5) {
 								$errors['pass'] = "Длина пароля от 6 символов";
 							} elseif ($this->get['pass']!=$this->get['pass2']) {
@@ -367,7 +370,6 @@ class RequestUserWepps extends RequestWepps {
 					$s = '{"profile":"http:\/\/vk.com\/id135368","first_name":"\u0410\u043b\u0435\u043a\u0441\u0435\u0439","email":"mail@petroffs.com","network":"vkontakte","identity":"http:\/\/vk.com\/id135368","city":"\u0421\u0430\u043d\u043a\u0442-\u041f\u0435\u0442\u0435\u0440\u0431\u0443\u0440\u0433","photo_big":"https:\/\/pp.vk.me\/c622517\/v622517368\/3ffe2\/5BDwvVXe-qw.jpg","last_name":"\u041f\u0435\u0442\u0440\u043e\u0432","bdate":"29.12.1979","uid":"135368","sex":"2","verified_email":"1"}';
 				}
 				$userJSON = json_decode($s);
-				$wholesale = (strstr($_GET ['back'],'var=1')) ? 1 : 0;
 				$user = $users->get ( "Email='{$userJSON->email}'" ) [0];
 				
 				if (isset( $user['Id'] )) {

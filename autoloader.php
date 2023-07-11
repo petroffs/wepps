@@ -1,4 +1,5 @@
-<?
+<?php
+
 function autoLoader($name)
 {
 	$namef = $name;

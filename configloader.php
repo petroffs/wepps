@@ -1,4 +1,4 @@
-<?
+<?php
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
