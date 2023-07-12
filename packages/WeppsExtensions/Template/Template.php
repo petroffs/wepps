@@ -1,8 +1,8 @@
-<?
+<?php
+
 namespace WeppsExtensions\Template;
 
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsExtensions\Blocks\BlocksWepps;

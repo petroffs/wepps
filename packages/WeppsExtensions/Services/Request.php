@@ -1,6 +1,12 @@
 <?
+
 namespace WeppsExtensions\Services;
+
 use WeppsCore\Utils\RequestWepps;
+
+/**
+ * @var \Smarty $smarty
+ */
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';

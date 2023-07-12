@@ -1,13 +1,18 @@
-<?
+<?php
+
 namespace WeppsExtensions\Reviews;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
+
+/**
+ * @var \Smarty $smarty
+ */
 
 class RequestReviewsWepps extends RequestWepps {
 	public function request($action="") {

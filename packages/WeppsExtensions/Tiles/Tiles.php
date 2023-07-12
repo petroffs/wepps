@@ -1,6 +1,7 @@
 <?php
 
 namespace WeppsExtensions\Tiles;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;

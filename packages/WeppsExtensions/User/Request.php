@@ -1,6 +1,7 @@
 <?php
 
 namespace WeppsExtensions\User;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Validator\ValidatorWepps;
@@ -9,16 +10,14 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsExtensions\Mail\MailWepps;
 
-/**
- * @var \Smarty $smarty
- */
-
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-if (! session_start ())
-	session_start ();
+/**
+ * @var \Smarty $smarty
+ */
+
 class RequestUserWepps extends RequestWepps {
 	public function request($action = "") {
 		$users = new DataWepps("s_Users");

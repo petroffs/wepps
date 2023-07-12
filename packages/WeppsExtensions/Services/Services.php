@@ -1,10 +1,11 @@
-<?
+<?php
+
 namespace WeppsExtensions\Services;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 
 class ServicesWepps extends ExtensionWepps {
 	public function request() {
