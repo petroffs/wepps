@@ -39,7 +39,6 @@ var readyBackupExtInit = function() {
 		let id = $('#lists').val();
 		let str = 'action=list&id='+id;
 		window.location.href = '/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php?' + str;
-		
 	});
 	$('#backupListData').on('click',function(e) {
 		e.preventDefault();

@@ -3,7 +3,12 @@ var readyOrdersInit = function() {
 		let id = $(this).parent().data('id');
 		let obj = $('#view'+id);
 		let str = 'action=viewOrder&id='+id;
-		layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
+		let settings = {
+			data:str,
+			url:'/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
+			obj:obj
+		}
+		layoutWepps.request(settings);
 		$('.orders').children('.item').children('.order').html('');
 		obj.removeClass('pps_hide');
 		$('.orders').children('.item').removeClass('active');
