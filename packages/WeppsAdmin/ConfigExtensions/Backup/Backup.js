@@ -11,17 +11,24 @@ var readyBackupExtInit = function() {
 				text : "Восстановить",
 				icon : "ui-icon-check",
 				click : function() {
-					var str = 'action='+fileRestore+'&id='+file+'&form=list-data-form';
-					layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php');
-					//console.log('восстановить');
+					let str = 'action='+fileRestore+'&id='+file+'&form=list-data-form';
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php'
+					}
+					layoutWepps.request(settings);
 					$(this).dialog("close");
 				}
 			},{
 				text : "Удалить",
 				icon : "ui-icon-trash",
 				click : function() {
-					var str = 'action='+fileRemove+'&id='+file+'&form=list-data-form';
-					layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php');
+					let str = 'action='+fileRemove+'&id='+file+'&form=list-data-form';
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php'
+					}
+					layoutWepps.request(settings);
 					$(this).dialog("close");
 				}
 			}]
@@ -31,7 +38,6 @@ var readyBackupExtInit = function() {
 		e.preventDefault();
 		let id = $('#lists').val();
 		let str = 'action=list&id='+id;
-		//layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php');
 		window.location.href = '/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php?' + str;
 		
 	});

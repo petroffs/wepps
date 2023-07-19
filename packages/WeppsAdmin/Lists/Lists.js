@@ -56,7 +56,13 @@ var readyListsInit = function() {
 			elem.attr('id',filter2style);
 			$('.filter2').remove();
 			$(this).after(elem);
-			layoutWepps.request('action=filter&list='+$(this).data('list')+'&field='+$(this).data('field')+'&orderby='+$(this).data('orderby'), '/packages/WeppsAdmin/Lists/Request.php',$('#'+filter2style));
+			let str = 'action=filter&list='+$(this).data('list')+'&field='+$(this).data('field')+'&orderby='+$(this).data('orderby');
+			let settings = {
+						data: str,
+						url: '/packages/WeppsAdmin/Lists/Request.php',
+						obj: $('#'+filter2style)
+					}
+			layoutWepps.request(settings);
 		} else {
 			$(this).removeClass('active');
 			$('.filter2').remove();
@@ -76,7 +82,6 @@ var readyListsInit = function() {
 		      select: function( event, ui ) {
 		    	  console.log(1);
 		    	  location.href = ui.item.Url;
-		    	  //layoutWepps.request('action=getClient&id='+ui.item.Id, '/ext/Profile/Request.php');
 		      }
 		}).autocomplete( "instance" )._renderItem = function( ul, item ) {
 		      return $( "<li>" )
@@ -89,7 +94,6 @@ var readyListsInit = function() {
 	$('a#export').on('click',function(event) {
 		event.preventDefault();
 		location.href='/packages/WeppsAdmin/Lists/Request.php?action=export&list='+$(this).data('list');
-		//layoutWepps.request('action=export&list='+$(this).data('list'), '/packages/WeppsAdmin/Lists/Request.php');
 	});
 	
 }

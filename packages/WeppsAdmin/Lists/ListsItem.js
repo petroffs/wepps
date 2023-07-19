@@ -228,7 +228,6 @@ var readyListsItemInit = function() {
 						url:'/packages/WeppsAdmin/Lists/Request.php'
 					}
 					layoutWepps.request(settings);
-					
 					//console.log('удаление файла, реальное (из базы, из фс)');
 					$(this).dialog("close");
 					element.closest('.files-item').remove();
@@ -312,7 +311,11 @@ var readyListsItemInit = function() {
 					let list = element.find('input[name="pps_tablename"]').eq(0).val();
 					let path = element.find('input[name="pps_path"]').eq(0).val();
 					let str = 'action=remove&id='+id+'&list='+list+'&pps_path='+path;
-					layoutWepps.request(str, '/packages/WeppsAdmin/Lists/Request.php');
+					let settings = {
+						data: str,
+						url: '/packages/WeppsAdmin/Lists/Request.php',
+					}
+					layoutWepps.request(settings);
 					$(this).dialog("close");
 				}
 			},{
@@ -351,7 +354,11 @@ var readyListsItemInit = function() {
 			return;
 		} else {
 			select1.append("<option value=\""+input1.val()+"\" selected=\"selected\">"+input1.val()+"</option>");
-			layoutWepps.request(str, '/packages/WeppsAdmin/Lists/Request.php');
+			let settings = {
+						data: str,
+						url: '/packages/WeppsAdmin/Lists/Request.php',
+					}
+			layoutWepps.request(settings);
 			input1.val('');
 	    }
 		$("#dialog").html('<p>Опция добавлена</p>').dialog({
