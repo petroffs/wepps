@@ -23,7 +23,7 @@ class ExceptionWepps {
 			if ($trace[1]['class']=='WeppsCore\Connect\ConnectWepps') {
 				$error['file'] = $trace[1]['file'];
 				$error['line'] = $trace[1]['line'];
-				$error['args'] = $trace[1]['args'];
+				$error['args'] = @$trace[1]['args'];
 			}
 			UtilsWepps::debug($error,1);
 		} else {
@@ -58,6 +58,10 @@ class ExceptionWepps {
 		$headers = new TemplateHeadersWepps();
 		$obj = new TemplateWepps($navigator, $headers);
 		unset($obj);
+		exit();
+	}
+	public static function error($status=404) {
+		http_response_code($status);
 		exit();
 	}
 }

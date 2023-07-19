@@ -452,7 +452,7 @@ class NavigatorWepps {
 		if (isset($res[0]['Id'])) {
 			$this->content = $res[0];
 		}
-		if (count($this->content)==0) {
+		if (empty($this->content)) {
 			ExceptionWepps::error404();
 		}
 		

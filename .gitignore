@@ -3,6 +3,7 @@
 /packages/composer.lock
 /packages/WeppsAdmin/*/*/files*
 /packages/WeppsAdmin/*/files*
+/packages/WeppsAdmin/*/.htaccess
 /packages/WeppsAdmin/Admin/Forms/uploads*
 /packages/WeppsExtensions/Addons/Forms/uploads*
 /files/tpl/compile/*

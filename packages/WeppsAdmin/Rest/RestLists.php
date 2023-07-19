@@ -1,5 +1,7 @@
-<?
+<?php
+
 namespace WeppsAdmin\Rest;
+
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Utils\UtilsWepps;
@@ -7,8 +9,8 @@ use WeppsCore\Exception\ExceptionWepps;
 
 class RestListsWepps extends RestWepps {
 	public $parent = 0;
-	public function __construct() {
-		parent::__construct();
+	public function __construct($settings=[]) {
+		parent::__construct($settings);
 	}
 	public function getLists($list='',$field='',$text='',$page=1) {
 		/*
@@ -49,6 +51,49 @@ class RestListsWepps extends RestWepps {
 				'results'=>$res
 		];
 		return $this->response = $this->getJson($output);
+	}
+	public function getTest() {
+		$output = [
+				[
+						'id'=>1,
+						'title'=>'test 1',
+						'test'=>'test get'
+				]
+		];
+		$this->status = 200;
+		$this->setResponse($output);
+	}
+	public function setTest() {
+		$output = [
+				[
+						'id'=>1,
+						'title'=>'test 1',
+						'test'=>'test set'
+				],
+				[
+						'id'=>2,
+						'title'=>'test 2',
+						'test'=>'test set'
+				],
+		];
+		$this->status = 200;
+		$this->setResponse($output);
+	}
+	public function removeTest() {
+		$output = [
+					'field'=>$this->settings['param'],
+					'value'=>$this->settings['paramValue'],
+					'removed'=>'ok',
+		];
+		$this->status = 200;
+		$this->setResponse($output);
+	}
+	public function cliTest() {
+		$output = [
+				'message'=>'ok'
+		];
+		$this->status = 200;
+		$this->setResponse($output,false);
 	}
 }
 
