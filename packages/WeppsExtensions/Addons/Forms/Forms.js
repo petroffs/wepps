@@ -38,6 +38,20 @@ var FormSenderWepps  = function () {
 		}
 		layoutWepps.request(settings);
 	}
+	this.popup = function (action, myform, url) {
+		$('.controlserrormess').remove();
+		let link = $(location).attr('pathname');
+		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
+		var serialized = $("#" + myform).serialize();
+		if (!layoutWepps) {
+			var layoutWepps = new LayoutWepps();	
+		}
+		let settings = {
+			url: url,
+			data : str + serialized
+		}
+		layoutWepps.win(settings);
+	}
 }
 var formSenderWepps = new FormSenderWepps();
 
