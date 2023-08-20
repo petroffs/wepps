@@ -50,7 +50,7 @@
 
 <div class="elements ContactsForm formWrapper pps_padding pps_shadow">
 		<form
-			action="javascript:formSenderWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
+			action="javascript:formsWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
 			id="feedbackForm" class="pps_flex_11 ">
 			<input type="hidden" name="pageurl"
 				value="{$smarty.server.REQUEST_URI}" />

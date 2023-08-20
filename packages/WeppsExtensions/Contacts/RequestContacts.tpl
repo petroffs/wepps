@@ -1,1 +1,1 @@
-{$get.jscode}
+{$jscode}

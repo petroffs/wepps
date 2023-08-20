@@ -22,7 +22,7 @@ class LayoutWepps {
 		return 1;
 	}
 	remove() {
-		let self = this;	
+		let self = this;
 		$('.pps_win_element').fadeOut(300, function() {
 			self.init();		
 		});

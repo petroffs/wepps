@@ -1,4 +1,87 @@
-var FormSenderWepps  = function () {
+class FormsWepps {
+	
+	constructor(settings={}) {
+		if (settings != undefined) {
+			this.settings = settings
+		}
+		
+	}
+	self1() {
+		return 5;	
+	}
+	
+	test1() {
+		console.log(1);
+	}
+	
+	init() {
+		return this;
+	}
+	
+	
+	
+	
+	uploadaction(event,filesfield,myform) {
+		event.stopPropagation();
+		var files = event.target.files;
+		var data = new FormData();
+		$.each(files, function(key, value) {
+			data.append(key, value);
+		});
+		$.ajax({
+			url : '/ext/Addons/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
+			type : 'POST',
+			data : data,
+			cache : false,
+			processData : false,
+			contentType : false
+		}).done(function(responseText) {
+			$("#pps_ajax").remove();
+			var t = $("<div></div>");
+			t.attr("id", "pps_ajax");
+			t.html(responseText);
+			$(document.body).prepend(t);
+		});
+	}
+	upload(event) {
+		
+		console.log(super.self1());
+		//console.log(self.test1());
+		return;
+		self.uploadaction(event,$(this).attr('name'),$(this).closest('form').attr('id'));
+	}
+	send(action, myform, url) {
+		$('.controlserrormess').remove();
+		let link = $(location).attr('pathname');
+		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
+		var serialized = $("#" + myform).serialize();
+		if (!layoutWepps) {
+			var layoutWepps = new LayoutWepps();	
+		}
+		let settings = {
+			url: url,
+			data : str + serialized
+		}
+		layoutWepps.request(settings);
+	}
+	popup(action, myform, url) {
+		$('.controlserrormess').remove();
+		let link = $(location).attr('pathname');
+		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
+		var serialized = $("#" + myform).serialize();
+		if (!layoutWepps) {
+			var layoutWepps = new LayoutWepps();	
+		}
+		let settings = {
+			url: url,
+			data : str + serialized
+		}
+		layoutWepps.win(settings);
+	}
+}
+
+
+var FormSenderWepps = function () {
 	var uploadaction = function(event,filesfield,myform) {
 		event.stopPropagation();
 		var files = event.target.files;
@@ -57,7 +140,12 @@ var formSenderWepps = new FormSenderWepps();
 
 
 var readyFormsInit = function() {
+	/* test */
+	var formsWepps = new FormsWepps();
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderWepps.upload);
+	//$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderWepps.upload);
+
+	
 	$('.pps_form_group').find('.pps_flex_14').on('click',function(event) {
 		var parent1 = $(this).parent();
 		var input1 = parent1.find('input');

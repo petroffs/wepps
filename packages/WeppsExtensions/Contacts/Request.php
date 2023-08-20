@@ -15,7 +15,7 @@ class RequestContactsWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'feedback':
-				/**
+				/*
 				 * Проверка формы
 				 */
 				$errors = array();
@@ -32,7 +32,7 @@ class RequestContactsWepps extends RequestWepps {
 				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
 				$this->assign('jscode', $outer['Out']);
 				if ($outer['Co']==0) {
-					/**
+					/*
 					 * Отправка E-mail
 					 */
 					$subject = "Сообщение с сайта";
@@ -55,7 +55,7 @@ class RequestContactsWepps extends RequestWepps {
 					//UtilsWepps::debug($attachment,1);
 					$mail->mail(ConnectWepps::$projectInfo['email'], $subject, $message);
 					
-					/**
+					/*
 					 * Добавление в список
 					 */
 					$row = array(
@@ -69,7 +69,7 @@ class RequestContactsWepps extends RequestWepps {
 					);
 					ConnectWepps::$instance->insert("FormsData", $row);
 					
-					/**
+					/*
 					 * Вывод сообщения о добавлении отзыва
 					 */
 					$arr = ValidatorWepps::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);
