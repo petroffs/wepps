@@ -152,7 +152,6 @@ class ValidatorWepps {
                     var elem = $('#{$form}').find('[name=\"{$key}[]\"]');
                 }
 				if (elem.length!=0) {
-                console.log(elem);
 				elem.closest('label').addClass('controlserror');
 				var t = $('<div>{$value}</div>').addClass('mess_{$key}').addClass('controlserrormess');
 				elem.eq(0).before(t);
