@@ -6,6 +6,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Mail\MailWepps;
+use WeppsCore\Core\NavigatorWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -13,6 +14,9 @@ require_once '../../../configloader.php';
 
 class RequestContactsWepps extends RequestWepps {
 	public function request($action="") {
+		$navigator = new NavigatorWepps(@$this->get['link']);
+		$this->assign('multilang', $navigator->multilang);
+		$this->assign('language', $navigator->lang);
 		switch ($action) {
 			case 'feedback':
 				/*

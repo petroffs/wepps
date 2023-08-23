@@ -49,63 +49,59 @@
 <p>Отправьте свой вопрос через данную форму и мы обязательно свяжемся с Вами!</p>
 
 <div class="elements ContactsForm formWrapper pps_padding pps_shadow">
-		<form
-			action="javascript:formsWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
-			id="feedbackForm" class="pps_flex_11 ">
-			<input type="hidden" name="pageurl"
-				value="{$smarty.server.REQUEST_URI}" />
-			<div class="form pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-				<div
-					class="pps_flex_23 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-					<div class="pps_flex_11">		
-						<span class="title pps_require">Ваше имя</span>
-						<label class="pps pps_input"> <input type="text" name="name"
-							placeholder="" />
-						</label>
-					</div>
-					<div class="pps_flex_11">
-						<span class="title pps_require">Адрес электронной почты</span>
-						<label class="pps pps_input"> <input type="text" name="email"
-							placeholder="" />
-						</label>
-					</div>
-					<div class="pps_flex_11">
-						<span class="title pps_require">Телефон</span>
-						<label class="pps pps_input"> <input type="text" name="phone"
-							placeholder="" />
-						</label>
-					</div>
-					<div class="pps_flex_11">
-						<span class="title pps_require">Сообщение</span>
-						<label class="pps pps_area"> <textarea form="feedbackForm"
-								name="comment" placeholder=""></textarea>
-						</label>
-					</div>
-					
-					<div class="pps_flex_11">
-						<span class="title">Вложение</span>
-						<label class="pps pps_upload"> <input type="file"
-							name="feedback-upload" /> <span>Прикрепить файл</span>
-						</label>
-					</div>
-					
-					<div class="pps_flex_11 pps_flex pps_flex_row">
-						
-						<label class="pps pps_checkbox pps_flex_23 pps_flex_11_view_small"><input type="checkbox" name="approve"/> <span>Я согласен на обработку моих персональных данных</span></label>
-						<label class="pps pps_button  pps_flex_13 pps_flex_11_view_small pps_right pps_center_view_small"> <input type="submit"
-							value="Отправить" disabled="disabled" />
-						</label>
-					</div>
+	<form action="javascript:formsWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm" class="pps_flex_11 ">
+		<div class="form pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
+			<div
+				class="pps_flex_23 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
+				<div class="pps_flex_11">		
+					<span class="title pps_require">Ваше имя</span>
+					<label class="pps pps_input"> <input type="text" name="name"
+						placeholder="" />
+					</label>
 				</div>
-				<div
-					class="pps_flex_13 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-					<div class="pps_flex_11">
-						<span class="descr pps_require">Обязательные поля</span>
-					</div>
+				<div class="pps_flex_11">
+					<span class="title pps_require">Адрес электронной почты</span>
+					<label class="pps pps_input"> <input type="text" name="email"
+						placeholder="" />
+					</label>
+				</div>
+				<div class="pps_flex_11">
+					<span class="title pps_require">Телефон</span>
+					<label class="pps pps_input"> <input type="text" name="phone"
+						placeholder="" />
+					</label>
+				</div>
+				<div class="pps_flex_11">
+					<span class="title pps_require">Сообщение</span>
+					<label class="pps pps_area"> <textarea form="feedbackForm"
+							name="comment" placeholder=""></textarea>
+					</label>
+				</div>
+				
+				<div class="pps_flex_11">
+					<span class="title">Вложение</span>
+					<label class="pps pps_upload"> <input type="file"
+						name="feedback-upload" /> <span>Прикрепить файл</span>
+					</label>
+				</div>
+				
+				<div class="pps_flex_11 pps_flex pps_flex_row">
+					
+					<label class="pps pps_checkbox pps_flex_23 pps_flex_11_view_small"><input type="checkbox" name="approve"/> <span>Я согласен на обработку моих персональных данных</span></label>
+					<label class="pps pps_button  pps_flex_13 pps_flex_11_view_small pps_right pps_center_view_small"> <input type="submit"
+						value="Отправить" disabled="disabled" />
+					</label>
 				</div>
 			</div>
-		</form>
-	</div>
+			<div
+				class="pps_flex_13 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
+				<div class="pps_flex_11">
+					<span class="descr pps_require">Обязательные поля</span>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>
 
 {*
 <div class="elements ContactsForm pps_bg_silver pps_shadow">
