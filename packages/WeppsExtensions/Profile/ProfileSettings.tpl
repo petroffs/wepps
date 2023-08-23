@@ -1,7 +1,7 @@
 <div id="message"></div>
 <div class="settings pps_flex pps_flex_row pps_flex_center">
 	<form
-		action="javascript:formSenderWepps.send('setSettings','emailForm','/ext/User/Request.php')"
+		action="javascript:formWepps.send('setSettings','emailForm','/ext/User/Request.php')"
 		id="emailForm" class="pps_flex_23">
 		<input type="hidden" name="code" value=""/>
 		<div id="setEmailContent">
@@ -27,7 +27,7 @@
 		</div>
 	</form>
 	<form
-		action="javascript:formSenderWepps.send('setSettings','phoneForm','/ext/User/Request.php')"
+		action="javascript:formWepps.send('setSettings','phoneForm','/ext/User/Request.php')"
 		id="phoneForm" class="pps_flex_23">
 		<div class="form">
 			<div class="pps_flex pps_flex_row pps_flex_row_bottom pps_flex_str pps_bg_silver">
@@ -45,7 +45,7 @@
 		</div>
 	</form>
 	<form
-		action="javascript:formSenderWepps.send('setSettings','passForm','/ext/User/Request.php')"
+		action="javascript:formWepps.send('setSettings','passForm','/ext/User/Request.php')"
 		id="passForm" class="pps_flex_23">
 		<div class="form">
 			<div class="pps_flex pps_flex_row pps_flex_row_bottom pps_flex_str pps_bg_silver">

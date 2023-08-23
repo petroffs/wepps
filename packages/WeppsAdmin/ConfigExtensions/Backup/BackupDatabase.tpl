@@ -1,5 +1,5 @@
 <form class="list-data pps_flex pps_flex_row pps_flex_start pps_flex_row_top controls-area" 
-	action="javascript:formSenderWepps.send('database','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php')"
+	action="javascript:formWepps.send('database','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php')"
 	id="list-data-form">
 	<input type="hidden" name="action" value="database">
 	<input type="hidden" name="add" value="1">

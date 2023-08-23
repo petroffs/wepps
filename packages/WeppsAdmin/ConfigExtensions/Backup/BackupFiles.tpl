@@ -1,5 +1,5 @@
 <form class="list-data pps_flex pps_flex_row pps_flex_start pps_flex_row_top controls-area" 
-	action="javascript:formSenderWepps.send('files','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php')"
+	action="javascript:formWepps.send('files','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php')"
 	id="list-data-form">
 	<input type="hidden" name="add" value="1"/>
 	<div class="pps_flex_23 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_start pps_border">
@@ -25,7 +25,7 @@
 
 {*
 <form class="list-data pps_flex pps_flex_row pps_flex_start pps_flex_row_top" 
-	action="javascript:formSenderWepps.send('files','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php')"
+	action="javascript:formWepps.send('files','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php')"
 	id="list-data-form">
 	<input type="hidden" name="add" value="1"/>
 	<div class="pps_flex_13 pps_flex_12_view_medium pps_flex_11_view_small pps_flex pps_flex_row pps_flex_start pps_flex_margin">

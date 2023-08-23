@@ -13,7 +13,7 @@
 		{if $get.user.Name}
 		<div class="personalInfo pps_flex_13 pps_flex pps_flex_row pps_flex_start">
 			<div class="pps_flex_23"><a href="/profile/">{$get.user.Name}</a></div>
-			<div class="pps_flex_13 pps_right"><a href="javascript:void(0)" onclick="formSenderWepps.send('removeAuth','removeAuthForm','/ext/User/Request.php')">Выйти</a></div>
+			<div class="pps_flex_13 pps_right"><a href="javascript:void(0)" onclick="formWepps.send('removeAuth','removeAuthForm','/ext/User/Request.php')">Выйти</a></div>
 		</div>
 		{/if}
 	</div>

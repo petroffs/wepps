@@ -2,10 +2,8 @@ var readyFormsInit = function() {
 	/* test */
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();
-		formsWepps.upload($(this),event.target.files);
+		formWepps.upload($(this),event.target.files);
 	});
-	//$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderWepps.upload);
-	
 	$('.pps_form_group').find('.pps_flex_14').on('click',function(event) {
 		var parent1 = $(this).parent();
 		var input1 = parent1.find('input');
@@ -31,7 +29,6 @@ var readyFormsInit = function() {
 		});
 	}
 	approveform();
-	
 	$('a.reset').on('click',function(event) {
 		event.preventDefault();
 		var t = $(this).closest('form');
@@ -40,7 +37,7 @@ var readyFormsInit = function() {
 }
 $(document).ready(readyFormsInit);
 
-class FormsWepps {
+class FormWepps {
 	constructor(settings={}) {
 		if (settings != undefined) {
 			this.settings = settings
@@ -97,4 +94,4 @@ class FormsWepps {
 		layoutWepps.win(settings);
 	}
 }
-var formsWepps = new FormsWepps();
+var formWepps = new FormWepps();

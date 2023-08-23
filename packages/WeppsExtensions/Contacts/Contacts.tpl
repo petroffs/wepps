@@ -49,7 +49,7 @@
 <p>Отправьте свой вопрос через данную форму и мы обязательно свяжемся с Вами!</p>
 
 <div class="elements ContactsForm formWrapper pps_padding pps_shadow">
-	<form action="javascript:formsWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm" class="pps_flex_11 ">
+	<form action="javascript:formWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm" class="pps_flex_11 ">
 		<div class="form pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
 			<div
 				class="pps_flex_23 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
@@ -102,50 +102,3 @@
 		</div>
 	</form>
 </div>
-
-{*
-<div class="elements ContactsForm pps_bg_silver pps_shadow">
-	<form
-		action="javascript:formSenderWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php','{$language.link}')"
-		id="feedbackForm" class="pps_flex_11 ">
-		<input type="hidden" name="pageurl"
-			value="{$smarty.server.REQUEST_URI}" />
-		<div class="form pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-
-			<div
-				class="pps_flex_12 pps_flex_11_view_medium ">
-				<label class="pps pps_input pps_require"> <input type="text" name="name"
-					placeholder="Имя" />
-				</label>
-				<div class="pps_interval_small"></div>
-				<label class="pps pps_input pps_require"> <input type="text" name="email"
-					placeholder="E-mail" />
-				</label>
-				<div class="pps_interval_small"></div>
-				<label class="pps pps_input pps_require"> <input type="text" name="phone"
-					placeholder="Телефон" />
-				</label>
-				<div class="pps_interval_small"></div>
-				<label class="pps pps_input"> <input type="text" name="city"
-					placeholder="Город" />
-					
-				</label>
-				<div class="pps_interval_small"></div>
-				<label class="pps pps_upload"> <input type="file"
-					name="feedback-upload" /> <span>Прикрепить файл</span>
-				</label>
-			</div>
-			<div class="pps_flex_12 pps_flex_11_view_medium">
-				<label class="pps pps_area pps_require"> <textarea form="feedbackForm"
-						name="comment" placeholder="Сообщение"></textarea>
-				</label>
-			</div>
-			<div class="pps_flex_11 pps_right">
-				<label class="pps pps_button pps_button5"> <input type="submit"
-					value="Отправить" />
-				</label>
-			</div>
-		</div>
-	</form>
-</div>
-*}

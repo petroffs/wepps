@@ -1,6 +1,6 @@
 <div class="lists-items-item pps_border pps_flex_max pps_padding">
 	<h2>{$content.Name}</h2>
-	<form class="list-data" action="javascript:formSenderWepps.send('save','list-data-form','/packages/WeppsAdmin/Lists/Request.php')"
+	<form class="list-data" action="javascript:formWepps.send('save','list-data-form','/packages/WeppsAdmin/Lists/Request.php')"
 		id="list-data-form">
 		<input type="hidden" name="pps_tablename" value="{$listSettings.TableName}"/>
 		<input type="hidden" name="pps_tablename_id" value="{$element.Id|default:'add'}"/>

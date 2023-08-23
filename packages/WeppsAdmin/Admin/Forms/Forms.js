@@ -1,49 +1,9 @@
-var FormSenderWepps  = function () {
-	var uploadaction = function(event,filesfield,myform) {
-		event.stopPropagation();
-		var files = event.target.files;
-		var data = new FormData();
-		$.each(files, function(key, value) {
-			data.append(key, value);
-		});
-		$.ajax({
-			url : '/packages/WeppsAdmin/Lists/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
-			type : 'POST',
-			data : data,
-			cache : false,
-			processData : false,
-			contentType : false
-		}).done(function(responseText) {
-			$("#pps_ajax").remove();
-			var t = $("<div></div>");
-			t.attr("id", "pps_ajax");
-			t.html(responseText);
-			$(document.body).prepend(t);
-		});
-	}
-	this.upload = function(event) {
-		uploadaction(event,$(this).attr('name'),$(this).closest('form').attr('id'));
-	}
-	this.send = function (action, myform, url) {
-		$('.controlserrormess').remove();
-		let link = $(location).attr('pathname');
-		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
-		var serialized = $("#" + myform).serialize();
-		if (!layoutWepps) {
-			var layoutWepps = new LayoutWepps();	
-		}
-		let settings = {
-			url: url,
-			data : str + serialized
-		}
-		layoutWepps.request(settings);
-	}
-}
-var formSenderWepps = new FormSenderWepps();
-
-
 var readyFormsInit = function() {
-	$('label.pps.pps_upload').find('input[type="file"]').on('change', formSenderWepps.upload);
+	/* test */
+	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
+		event.stopPropagation();
+		formWepps.upload($(this),event.target.files);
+	});
 	$('.pps_form_group').find('.pps_flex_14').on('click',function(event) {
 		var parent1 = $(this).parent();
 		var input1 = parent1.find('input');
@@ -59,6 +19,16 @@ var readyFormsInit = function() {
 		if (num2==0) num2="не важно"
 		input1.val(num2);
 	});
+	var approveform = function() {
+		$('input[name="approve"]').on('change',function() {
+			if ($(this).prop('checked')==true) {
+				$(this).closest('form').find('input[type="submit"]').eq(0).prop('disabled',false);
+			} else {
+				$(this).closest('form').find('input[type="submit"]').eq(0).prop('disabled','disabled');
+			}
+		});
+	}
+	approveform();
 	$('a.reset').on('click',function(event) {
 		event.preventDefault();
 		var t = $(this).closest('form');
@@ -66,3 +36,62 @@ var readyFormsInit = function() {
 	});
 }
 $(document).ready(readyFormsInit);
+
+class FormWepps {
+	constructor(settings={}) {
+		if (settings != undefined) {
+			this.settings = settings
+		}
+	}
+	upload(el,files) {
+		let filesfield = el.attr('name');
+		let myform = el.closest('form').attr('id');
+		let data = new FormData();
+		$.each(files, function(key, value) {
+			data.append(key, value);
+		});
+		$.ajax({
+			url : '/packages/WeppsAdmin/Lists/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
+			type : 'POST',
+			data : data,
+			cache : false,
+			processData : false,
+			contentType : false
+		}).done(function(responseText) {
+			$("#pps_ajax").remove();
+			let t = $("<div></div>");
+			t.attr("id", "pps_ajax");
+			t.html(responseText);
+			$(document.body).prepend(t);
+		});
+	}
+	send(action, myform, url) {
+		$('.controlserrormess').remove();
+		let link = $(location).attr('pathname');
+		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
+		var serialized = $("#" + myform).serialize();
+		if (!layoutWepps) {
+			var layoutWepps = new LayoutWepps();	
+		}
+		let settings = {
+			url: url,
+			data : str + serialized
+		}
+		layoutWepps.request(settings);
+	}
+	popup(action, myform, url) {
+		$('.controlserrormess').remove();
+		let link = $(location).attr('pathname');
+		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
+		var serialized = $("#" + myform).serialize();
+		if (!layoutWepps) {
+			var layoutWepps = new LayoutWepps();	
+		}
+		let settings = {
+			url: url,
+			data : str + serialized
+		}
+		layoutWepps.win(settings);
+	}
+}
+var formWepps = new FormWepps();
