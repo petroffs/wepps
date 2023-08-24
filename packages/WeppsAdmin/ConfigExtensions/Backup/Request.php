@@ -36,8 +36,10 @@ class RequestBackupWepps extends RequestWepps {
 				 */
 				$table = (!empty($this->get['list']))?$this->get['list']:'';
 				$path = $root . $backupPath;
-				$filename = $path . $host . "-" . date("Ymd-His") . ".sql";
+				
 				$type = 1;
+				$comment = (!empty($this->get['comment'])) ? "-".SpellWepps::getTranslit($this->get['comment'],2) : "";
+				$filename = $path . $host . "-" . date("Ymd-His").$comment.".sql";
 				
 				/*
 				 * Добавить исключения в бекапах

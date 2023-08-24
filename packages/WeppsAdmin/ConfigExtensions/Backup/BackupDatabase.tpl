@@ -5,6 +5,7 @@
 	<input type="hidden" name="add" value="1">
 	<div class="pps_flex_23 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_start pps_border">
 		<label class="pps pps_input"><input name="list" type="text" value="" placeholder="Название таблицы БД"/></label>
+		<label class="pps pps_input"><input name="comment" type="text" value="" placeholder="Комментарий"/></label>
 		<label class="pps pps_button"><input type="submit" value="Создать бекап"/></label>
 	</div>
 </form>

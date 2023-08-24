@@ -267,7 +267,7 @@ class SpellWepps {
 		return strtr( json_encode($inObj), $trans);
 	}
 	
-	public static function getTranslit($cyr_str,$fileName=1) {
+	public static function getTranslit($cyr_str,$rule=1) {
 		$tr = array(
 				"Ґ"=>"G","Ё"=>"YO","Є"=>"E","Ї"=>"YI","І"=>"I",
 				"і"=>"i","ґ"=>"g","ё"=>"yo","№"=>"#","є"=>"e",
@@ -286,20 +286,21 @@ class SpellWepps {
 				"ы"=>"y","ь"=>"","э"=>"e","ю"=>"u","я"=>"ya"
 		);
 		$str = strtr($cyr_str,$tr);
-		if ($fileName==1) {
-			$str = preg_replace('~[^-a-z-A-Z0-9_\.]+~u', '-', $str);
-			$str = trim($str, "-");
+		switch ($rule) {
+			case 3:
+				$str = preg_replace('~[^-a-z-A-Z0-9_\.\/]+~u', '-', $str);
+				break;
+			case 2:
+				$str = preg_replace('~[^-a-z-A-Z0-9_\.]+~u', '-', $str);
+				$str = strtolower(str_replace(".","",$str));
+				break;
+			case 1:
+			default:
+				$str = preg_replace('~[^-a-z-A-Z0-9_\.]+~u', '-', $str);
+				break;
 		}
-		if ($fileName==2) {
-			$str = preg_replace('~[^-a-z-A-Z0-9_\.]+~u', '-', $str);
-			$str = trim($str, "-");
-			$str = strtolower(str_replace(".","",$str));
-			$str = trim(preg_replace('/--+/', '-',$str),'-');
-		}
-		if ($fileName==3) {
-			$str = preg_replace('~[^-a-z-A-Z0-9_\.\/]+~u', '-', $str);
-			$str = trim($str, "-");
-		}
+		$str = trim(preg_replace('/--+/', '-',$str),'-');
+		$str = trim($str, "-");
 		return trim($str);
 	}
 }
