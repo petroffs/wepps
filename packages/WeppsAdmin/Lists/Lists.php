@@ -380,10 +380,15 @@ class ListsWepps {
 				$element[0]["{$key}_SelectOptionsSizeView"] = $optionsCounter;
 				
 			} elseif (strstr($value[0]['Type'], 'properties') && $id !='add') {
+				$condition = "";
+				$ex = explode("::", $value[0]["Type"]);
+				if (!empty($ex[1])) {
+					$condition = "and {$ex[1]}";
+				}
 				/*
 				 * Характеристики (s_Properties)
 				 */
-				$sql = "select Id,Name from s_PropertiesGroups where DisplayOff=0 order by Priority";
+				$sql = "select Id,Name from s_PropertiesGroups where DisplayOff=0 $condition order by Priority";
 				$res = ConnectWepps::$instance->fetch($sql);
 				$options = array();
 				$options[0] = "-";
