@@ -28,7 +28,7 @@
 		<label class="pps pps_button"><input type="submit" value="Далее"/></label>
 	</div>
 	<span class="pps_interval_small"></span>
-	<div class="pps_flex_23 pps_flex_11_view_small pps_border">
+	<div class="lastUploads pps_flex_23 pps_flex_11_view_small pps_border">
 		{if $files.0.Id}
 		<div class="title">Последние загрузки</div>
 		<div class="pps_interval_small"></div>
