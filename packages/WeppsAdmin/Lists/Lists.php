@@ -70,6 +70,9 @@ class ListsWepps {
         	$sql = "select * from s_Config as t where TableName in ('{$ppsUrlEx[1]}') order by t.Category";
         	$listSettings = ConnectWepps::$instance->fetch($sql)[0];
         	$listObj = new DataWepps($ppsUrlEx[1]);
+        	if (!empty($listSettings['ItemsFields'])) {
+        		$listObj->setFields($listSettings['ItemsFields']);
+        	}
         	$listScheme = $listObj->getScheme();
         	
         	/*

@@ -263,18 +263,16 @@ class DataWepps {
 	public function getScheme($renew=0) {
 		if ($this->scheme==NULL || $renew==1) {
 			$fields = $this->fields;
+			$orderBy = "t.Priority";
 			if ($fields != '') {
-				$fields = " and t.Field in ('".str_replace(",", "','", $fields)."')";
+				$ids = "'".str_replace(",", "','", $fields)."'";
+				$fields = " and t.Field in ($ids)";
+				$orderBy = "FIELD(t.Field,$ids)";
 			}
-			
-			/*
-			 * Быстрый
-			 */
 			$sql = "select
 			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.DisplayOff,t.FGroup
 			from s_ConfigFields as t
-			where t.TableName = '{$this->tableName}' $fields order by t.Priority";
-			
+			where t.TableName = '{$this->tableName}' $fields order by $orderBy";
 			$res = ConnectWepps::$instance->fetch ( $sql,NULL,'group');
 			if (count($res)==0) {
 				http_response_code(404);
