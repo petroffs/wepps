@@ -235,12 +235,14 @@ class UtilsWepps {
 	/**
 	 * Получить массив из строки
 	 */
-	public static function getArrayFromStringTabs($string) {
+	public static function getArrayFromString($string,$columns="\t",$rows="\n") {
 		$output = [];
+		$string = str_replace("\r", "", $string);
 		$string = trim($string);
-		$ex = explode("\r\n",$string);
+		
+		$ex = explode($rows,$string);
 		foreach ($ex as $i=>$value) {
-			$tabs = explode("\t", trim($value));
+			$tabs = explode($columns, trim($value));
 			foreach ($tabs as $j=>$v) {
 				$output[$i][$j] = $v;
 			}

@@ -10,24 +10,22 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Core\DataWepps;
 
 class ProcessingWepps extends RequestWepps {
-	public $tpl='';
-	public $title='';
-	public $headers;
 	public function request($action="") {
-		$smarty = SmartyWepps::getSmarty();
-		$tpl = 'Processing.tpl';
+		$this->tpl = 'Processing.tpl';
 		$this->title = $this->get['ext']['Name'];
-		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",'Name'=>$this->title));
-		$headers = new TemplateHeadersWepps();
+		$this->way = [];
+		array_push($this->way, [
+				'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",
+				'Name'=>$this->title
+		]);
+		$this->headers = new TemplateHeadersWepps();
+		if ($action=="") {
+			return;
+		}
 		switch ($action) {
 			case 'searchindex':
 				$this->title = "Построение поискового индекса";
-				$tpl = 'ProcessingSearchIndex.tpl';
-				
-				/*
-				 * Сделаем аналогичную схему, как в текущей версии
-				 */
-				
+				$this->tpl = 'ProcessingSearchIndex.tpl';
 				break;
 			default:
 				if ($action!="") {
@@ -35,9 +33,10 @@ class ProcessingWepps extends RequestWepps {
 				}
 				break;
 		}
-		$this->headers = &$headers;
-		//$this->tpl = $smarty->fetch( __DIR__ . '/' . $tpl);
-		$this->tpl = $tpl;
+		array_push($this->way, [
+				'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/{$action}.html",
+				'Name'=>$this->title
+		]);
 	}
 }
 ?>

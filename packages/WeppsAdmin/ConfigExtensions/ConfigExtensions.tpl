@@ -14,11 +14,11 @@
 	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col pps_padding centercontent">
 		<div class="pps_border pps_flex_max pps_padding">
 			<h2>{$content.Name}</h2>
-			{if $ext}
-			{$ext}
+			{if $extTpl}
+			{$extTpl}
 			{else}	
 			<div class="lists-items pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin">
-				{foreach name="out" item="item" key="key" from=$exts}
+				{foreach name="out" item="item" from=$exts}
 				<div class="pps_flex_13 pps_flex_11_view_small">
 					<div class="pps_flex pps_flex_col pps_bg_silver pps_height">
 						<div class="pps_flex_max pps_padding">
@@ -27,11 +27,10 @@
 								<div class="descr2">
 									<div class="num3">{$item.Descr}</div>
 								</div>
-								{foreach name="o" item="i" key="k" from=$item.ENav|explode:"\n"}
-								{assign var="extlink" value=$i|strarr}
+								{foreach name="o" item="i" from=$item.ENavArr}
 								<div class="descr2">
-									<div class="title3"><a href="/_pps/extensions/{$item.Alias}/{$extlink.1}.html">{$extlink.0}</a></div>
-									<div class="num3">{$extlink.1}</div>
+									<div class="title3"><a href="/_pps/extensions/{$item.Alias}/{$i.1}.html">{$i.0}</a></div>
+									<div class="num3">{$i.1}</div>
 								</div>
 								{/foreach}
 							</div>

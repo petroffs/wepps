@@ -8,9 +8,6 @@ use WeppsExtensions\Template\TemplateWepps;
 use WeppsCore\Connect\ConnectWepps;
 
 class ExceptionWepps {
-	public static function write ($message) {
-		UtilsWepps::debug($message,1);
-	}
 	/**
 	 * Выдать сообщение в браузер
 	 * @param \Exception $e
@@ -50,11 +47,9 @@ class ExceptionWepps {
 			exit();
 		}
 	}
-	
 	public static function error404() {
 		http_response_code(404);
 		$navigator = new NavigatorWepps('/error404/');
-		//$smarty = SmartyWepps::getSmarty();
 		$headers = new TemplateHeadersWepps();
 		$obj = new TemplateWepps($navigator, $headers);
 		unset($obj);
@@ -64,6 +59,7 @@ class ExceptionWepps {
 		http_response_code($status);
 		exit();
 	}
+	
 }
 
 ?>

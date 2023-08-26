@@ -1,5 +1,6 @@
 <?
 namespace WeppsAdmin\ConfigExtensions\Orders;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
@@ -13,10 +14,17 @@ class OrdersWepps extends RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Orders.tpl';
 		$this->title = $this->get['ext']['Name'];
-		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",'Name'=>$this->title));
+		$this->way = [];
+		array_push($this->way, [
+			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",
+			'Name'=>$this->title
+		]);
 		$this->headers = new TemplateHeadersWepps();
 		$this->headers->js ("/packages/WeppsAdmin/ConfigExtensions/Orders/Orders.{$this->headers::$rand}.js");
 		$this->headers->css ("/packages/WeppsAdmin/ConfigExtensions/Orders/Orders.{$this->headers::$rand}.css");
+		if ($action=="") {
+			return;
+		}
 		switch ($action) {
 			case 'orders':
 				/*
@@ -25,7 +33,7 @@ class OrdersWepps extends RequestWepps {
 				 *
 				 */
 				//UtilsWepps::debug(1,1);
-				
+				$this->tpl = 'OrdersItems.tpl';
 				$statusActive = 1;
 				if (!empty($_GET['status'])) {
 					$statusActive = (int) $_GET['status'];
@@ -63,8 +71,10 @@ class OrdersWepps extends RequestWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		
-		
+		array_push($this->way, [
+			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/{$action}.html",
+			'Name'=>$this->title
+		]);
 	}
 }
 ?>

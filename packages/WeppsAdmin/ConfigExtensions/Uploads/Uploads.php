@@ -14,11 +14,17 @@ class UploadsWepps extends RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Uploads.tpl';
 		$this->title = $this->get['ext']['Name'];
-		$this->way = array(0=>array('Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",'Name'=>$this->title));
-		$headers = new TemplateHeadersWepps();
-		$headers->js ("/packages/WeppsAdmin/ConfigExtensions/Uploads/Uploads.{$headers::$rand}.js");
-		$headers->css ("/packages/WeppsAdmin/ConfigExtensions/Uploads/Uploads.{$headers::$rand}.css");
-		
+		$this->way = [];
+		array_push($this->way, [
+			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",
+			'Name'=>$this->title
+		]);
+		$this->headers = new TemplateHeadersWepps();
+		$this->headers->js ("/packages/WeppsAdmin/ConfigExtensions/Uploads/Uploads.{$this->headers::$rand}.js");
+		$this->headers->css ("/packages/WeppsAdmin/ConfigExtensions/Uploads/Uploads.{$this->headers::$rand}.css");
+		if ($action=="") {
+			return;
+		}
 		switch ($action) {
 			case 'excel':
 				$this->title = "Загрузки из Excel";
@@ -36,12 +42,13 @@ class UploadsWepps extends RequestWepps {
 				$smarty->assign('files',$files);
 				break;
 			default:
-				if ($action!="") {
-					ExceptionWepps::error404();
-				}
+				ExceptionWepps::error404();
 				break;
 		}
-		$this->headers = &$headers;
+		array_push($this->way, [
+			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/{$action}.html",
+			'Name'=>$this->title
+		]);
 	}
 }
 ?>
