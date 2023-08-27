@@ -12,18 +12,21 @@ class RestListsWepps extends RestWepps {
 	public function __construct($settings=[]) {
 		parent::__construct($settings);
 	}
-	public function getLists($list='',$field='',$text='',$page=1) {
+	public function getLists($list='',$field='') {
+		$text = @$this->get['search'];
+		$page = @$this->get['page'];
+		if (empty($page)) {
+			$page = 1;
+		}
+		
 		/*
 		 * Условие поля извлечь из схемы
 		 */
-		$sql = "select * from s_ConfigFields where TableName='{$list}' && Id='{$field}'";
+		$sql = "select * from s_ConfigFields where TableName='{$list}' and Id='{$field}'";
 		$res = ConnectWepps::$instance->fetch($sql);
-		//UtilsPPS::debugf($sql,1);
-		
 		if (empty($res)) {
-			ExceptionWepps::error404();
+			ExceptionWepps::error(404);
 		}
-		
 		$ex = explode('::', $res[0]['Type']);
 		$list = $ex[1];
 		$field = $ex[2];
@@ -36,7 +39,7 @@ class RestListsWepps extends RestWepps {
 		$offset = ($page-1)*$limit;
 		$sql = "select t.Id id,concat(t.{$field},' (',t.Id,')') text from $list t where $condition order by t.{$field} limit $offset,$limit";
 		$res = ConnectWepps::$instance->fetch($sql);
-		
+		#UtilsWepps::debug($res,1);
 		$pagination = false;
 		if (!empty($res)) {
 			$pagination = true;
@@ -47,10 +50,8 @@ class RestListsWepps extends RestWepps {
 						'more'=> $pagination
 				]
 		];
-		$output = [
-				'results'=>$res
-		];
-		return $this->response = $this->getJson($output);
+		echo $this->getJson($output);
+		exit();
 	}
 	public function getTest() {
 		$output = [

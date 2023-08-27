@@ -33,6 +33,10 @@ class RestWepps {
 				break;
 			case 'get':
 				switch ($this->settings['method']) {
+					case 'getList':
+						$obj = new RestListsWepps();
+						$obj->getLists($this->settings['param'],$this->settings['paramValue']);
+						break;
 					case 'test':
 						$obj = new RestListsWepps();
 						$obj->getTest();

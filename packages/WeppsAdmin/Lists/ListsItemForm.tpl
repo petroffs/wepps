@@ -169,7 +169,7 @@
 				</label>
 				{/if}
 				<script>
-				$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}" })});
+				$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}/" })});
 				</script>
 				{elseif $item.0.Type|strstr:"properties"}
 				<label class="pps pps_select list-item-properties">

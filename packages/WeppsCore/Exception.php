@@ -57,6 +57,7 @@ class ExceptionWepps {
 	}
 	public static function error($status=404) {
 		http_response_code($status);
+		echo "Status: $status";
 		exit();
 	}
 	

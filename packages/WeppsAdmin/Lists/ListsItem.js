@@ -486,8 +486,8 @@ var getSelectRemote = function(obj) {
 		language: "ru",
 		ajax: {
 			headers: {
-		        "ClientApiEmail" : '',
-		        "ClientApiToken" : '',
+		        //"ClientApiEmail" : '',
+		        //"ClientApiToken" : '',
 		    },
 			url: url,
 			//delay: 500,

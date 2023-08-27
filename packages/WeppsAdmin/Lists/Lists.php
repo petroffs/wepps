@@ -1,7 +1,6 @@
 <?
 namespace WeppsAdmin\Lists;
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -199,6 +198,7 @@ class ListsWepps {
     }
 
     public static function getListItemForm(TemplateHeadersWepps &$headers,$list,$id) {
+    	$translate = AdminWepps::getTranslate();
         $perm = AdminWepps::userPerm($_SESSION['user']['UserPermissions'],array('list'=>$list));
         if ($perm['status']==0) {
             ExceptionWepps::error404();
@@ -422,11 +422,11 @@ class ListsWepps {
 								$options2[$v['Id']] = array_combine($exp, $exp);
 							}
 							if ($v['PType'] == 'select' && isset($res2[$v['Id']][0]['Id'])) {
-								foreach ($res2[$v['Id']] as $k2=>$v2) {
+								foreach ($res2[$v['Id']] as $v2) {
 									$selected2[$v['Id']][$v2['PValue']] = $v2['PValue'];
 								}
 							} elseif (isset($res2[$v['Id']][0]['Id'])) {
-								foreach ($res2[$v['Id']] as $k2=>$v2) {
+								foreach ($res2[$v['Id']] as $v2) {
 									$selected2[$v['Id']] = (!isset($selected2[$v['Id']])) ? $v2['PValue'] : $selected2[$v['Id']] ."\n".$v2['PValue'];
 								}
 							}
