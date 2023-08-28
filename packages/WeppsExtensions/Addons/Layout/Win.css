@@ -3,10 +3,14 @@
     filter: blur(3px);
 }
 */
+.pps_win_parent {
+	overflow-y: scroll;
+}
 .pps_win_parent > header,
 .pps_win_parent > footer,
-.pps_win_parent > .mainWrapper {
+.pps_win_parent > main {
     filter: blur(3px);
+    opacity: 0.5;
 }
 .pps_win_bg {
 	width: 100%;

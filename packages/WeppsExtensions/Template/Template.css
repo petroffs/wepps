@@ -3,56 +3,55 @@
 *, *::before, *::after {
 	box-sizing: border-box;
 }
-
+:root {
+  --color1: #000;
+  --color2: #fff;
+  --color3: #666;
+  --color4: #f0f0f0;
+  --color5: #f7f7f7;
+}
 html {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
+	color: var(--color3);
+	line-height: 180%;
+	background: var(--color5);
 	width: 100%;
 	min-height: 100vh;
-	background: #dedede;
-	font-family: Roboto, sans-serif;
-	color: #666;
-	font-size: 14px;
-	line-height: 130%;
-	display: -webkit-flex;
-	display: flex;
-	-webkit-flex-flow: column nowrap;
-	flex-flow: column nowrap;
 }
-
 body {
 	width: 100%;
 	min-height: 100vh;
 	margin: 0px;
 	padding: 0px;
 	display: -webkit-flex;
-	-webkit-flex-flow: column nowrap;
-	-webkit-flex: auto;
 	display: flex;
 	flex-flow: column nowrap;
 	flex: auto;
-	overflow-y: scroll;
+	align-items: center;
+	justify-content: center;
 }
-
-h1 {
-	margin: 20px 0 10px 0;
-}
-
 header {
+	width:100%; 
 	flex: 0 0 auto;
 }
 footer {
+	width:100%;
 	flex: 0 0 auto;
 }
-.mainWrapper {
+main {
+	width:100%;
 	flex: 1 1 auto;
-    background: #fff;
+    background: var(--color2);
     position: relative;
 }
-
+h1 {
+	margin: 20px 0 10px 0;
+}
 div.page {
 	width: 100%;
-	background: #fff;
+	background: var(--color2);
 }
-
 div.page div.page2 {
 	width: 100%;
 	max-width: 1400px;
@@ -61,59 +60,19 @@ div.page div.page2 {
 	padding: 0 20px;
 	margin: 0 auto;
 }
-
 div.page div.page2.page2normal {
 	padding-top: 50px;
 }
-
-div.page.header {
-	background: #fff;
-	height: auto;
-}
-
-div.page.header div.page2 {
-	border-bottom: 1px solid #f0f0f0;
-	padding-bottom: 0px;
-}
-
-div.page.header div.page2 div.logo {
-	
-}
-
-div.page.header div.page2 div.logo img {
-	max-width: 150px;
-	height: auto;
-}
-
-div.page.main {
-	background: white;
-}
-
 div.page.footer {
 	height: auto;
 	min-height: 200px;
-	background: #f7f7f7;
+	background: var(--color4);
 }
-
-div.page.footer div.page2 div.soc {
-	
-}
-
-div.page.footer div.page2 div.soc div.item {
-	
-}
-
-div.page.footer div.page2 div.soc div.item a,
-div.page.footer div.page2 div.soc div.item a:before {
-	text-decoration: none;
-	color: #666;
-}
-
-div.page.footer div.page2 div.copyrights div.item {
-	text-transform: uppercase;
-}
-
 div.page.footer div.page2 div.copyrights div.item a {
 	text-decoration: none;
-	color: #484848;
+	color: var(--color3);
+}
+div.page.footer div.page2 div.links div.item a {
+	text-decoration: none;
+	color: var(--color3);
 }

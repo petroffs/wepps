@@ -19,16 +19,9 @@
 </head>
 <body>
 	<header>
-		<div class="page header pps_flex pps_flex_col">
-			<div class="page2 pps_flex pps_flex_row">
-				<div class="logo">
-					<a href="/"><img src="/ext/Template/files/logo.jpg" /></a>
-				</div>
-				{$navTpl}
-			</div>
-		</div>
+		{$navTpl}
 	</header>
-	<div class="mainWrapper">
+	<main>
 		{$content.Url|pps:"navigator"}
 		{$blocks}
 		{$horizontalTopTpl}
@@ -43,7 +36,7 @@
 			</div>
 		</div>
 		{$horizontalBottomTpl}
-	</div>
+	</main>
 	<footer>
 		<div class="page footer pps_flex pps_flex_col pps_flex_center">
 			<div class="page2 pps_flex pps_flex_col pps_flex_center">
@@ -57,7 +50,7 @@
 					{/foreach}
 				</div>
 				<div
-					class="soc pps_flex pps_flex_row pps_flex_center">
+					class="links pps_flex pps_flex_row pps_flex_center">
 					{foreach name=out item=item from=$socials}
 					<div class="item pps_flex_fix pps_padding">
 						<a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}"

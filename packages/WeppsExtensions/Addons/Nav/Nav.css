@@ -1,3 +1,33 @@
+div.page.header {
+	background: var(--color2);
+	padding-top: var(--step6);
+	height: auto;
+}
+div.page.header div.page2 .elements {
+	border-bottom: 1px solid var(--color4);
+}
+div.page.header div.page2 div.logo img {
+	width: 100%;
+	max-width: 200px;
+	height: auto;
+}
+div.page.header div.page2 div.title {
+	font-size: 16px; 
+	font-weight: 600;
+	color: var(--color1);
+	margin-left: auto;
+}
+div.page.header div.page2 div.contacts {
+	font-size: 16px; 
+	color: var(--color1);
+}
+div.page.header div.page2 div.contacts a {
+	color: var(--color6);
+	text-decoration: none;
+}
+div.page.header div.page2 div.contacts a.phone {
+	font-weight: 600;
+}
 div.page.header div.page2 div.nav {
 	margin: 0;
 	position: relative;
@@ -7,19 +37,16 @@ div.page.header div.page2 div.navico {
 	margin: 0px;
 	cursor: pointer;
 }
-
-div.page.header div.page2 div.nav>ul.nav {
-	
-}
-
 div.page.header div.page2 div.nav>ul.nav>li {
-	background-color: transparent;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0.8px;
 	text-align: center;
+	background-color: transparent;
 	padding: 10px 10px;
 	white-space: nowrap;
 	position: relative;
 }
-
 div.page.header div.page2 div.nav>ul.nav>li>a {
 	color: black;
 	text-decoration: none;
