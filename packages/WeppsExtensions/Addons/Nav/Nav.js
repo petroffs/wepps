@@ -12,15 +12,16 @@ var readyNavInit = function() {
 		$(this).find('ul').addClass('pps_hide');
 	});
 	
-	$('div.navico').on('click', function() {
-		if ($(".hoverBox").length!=0) {
-			console.log($(".hoverBox").length);
-			$(".hoverBox").remove();
+	$('a#navicon').on('click', function(e) {
+		e.preventDefault()
+		if ($(".pps_nav").length!=0) {
+			console.log($(".pps_nav").length);
+			$(".pps_nav").remove();
 		} else {
-			$('body').addClass('hoverBoxParent');
+			$('body').addClass('pps_nav_parent');
 			var el = $('<div>');
-			el.id = 'hoverBox';
-			el.addClass('hoverBox');
+			el.id = 'pps_nav';
+			el.addClass('pps_nav');
 			$('body').prepend(el);
 			el.css('height', $( document ).height());
 			var clone = $('ul.nav').eq(0).clone();
@@ -30,7 +31,7 @@ var readyNavInit = function() {
 			clone.before("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/logo.jpg\" class=\"pps_image\"/></a></div>")
 			el.find('.close').on('click', function() {
 				$(this).parent().remove();
-				$('body').removeClass('hoverBoxParent');
+				$('body').removeClass('pps_nav_parent');
 			});
 			$('.hasChilds').children('a').on('click',function(event) {
 				event.preventDefault();

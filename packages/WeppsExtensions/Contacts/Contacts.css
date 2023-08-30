@@ -15,12 +15,7 @@ div.elements.ContactsMap #map {
 
 div.elements.ContactsForm {
 	width: 70%;
-	
 	margin-bottom: 50px;
-}
-
-div.elements.ContactsForm label.pps_area textarea {
-	height: 135px;
 }
 
 @media screen and (max-width: 768px) {

@@ -4,8 +4,8 @@
 			<div class="logo">
 				<a href="/"><img src="/ext/Template/files/logo.jpg" /></a>
 			</div>
-			<div class="navico pps_hide pps_show_view_small">
-				<i class="fa fa-navicon"></i>
+			<div class="navicon pps_hide pps_show_view_small">
+				<a href="" id="navicon"><i class="fa fa-2x fa-navicon"></i></a>
 			</div>
 		</div>
 		<div class="elements pps_flex pps_flex_row">

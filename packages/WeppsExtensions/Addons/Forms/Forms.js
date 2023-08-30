@@ -1,5 +1,4 @@
 var readyFormsInit = function() {
-	/* test */
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();
 		formWepps.upload($(this),event.target.files);
@@ -66,7 +65,7 @@ class FormWepps {
 		});
 	}
 	send(action, myform, url) {
-		$('.controlserrormess').remove();
+		$('.pps_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
@@ -80,7 +79,7 @@ class FormWepps {
 		layoutWepps.request(settings);
 	}
 	popup(action, myform, url) {
-		$('.controlserrormess').remove();
+		$('.pps_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();

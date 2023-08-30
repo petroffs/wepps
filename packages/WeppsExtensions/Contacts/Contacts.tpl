@@ -49,11 +49,11 @@
 <h1>Остались вопросы?</h1>
 <p>Отправьте свой вопрос через данную форму и мы обязательно свяжемся с Вами!</p>
 
-<div class="elements ContactsForm formWrapper pps_padding pps_shadow">
-	<form action="javascript:formWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm" class="pps_flex_11 ">
+<div class="elements ContactsForm">
+	<form action="javascript:formWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm" class="pps_form pps_flex_11">
 		<div class="form pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
 			<div
-				class="pps_flex_23 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
+				class="pps_flex_11 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
 				<div class="pps_flex_11">		
 					<span class="title pps_require">Ваше имя</span>
 					<label class="pps pps_input"> <input type="text" name="name"
@@ -86,17 +86,47 @@
 					</label>
 				</div>
 				
+				<div class="pps_flex_11">
+					<span class="title">Test Checkbox</span>
+					<label class="pps pps_checkbox">
+						<input type="checkbox"> <span>Опция 1</span>
+					</label>
+					<label class="pps pps_checkbox">
+						<input type="checkbox"> <span>Опция 2</span>
+					</label>
+				</div>
+				
+				<div class="pps_flex_11">
+					<span class="title">Test Radio</span>
+					<label class="pps pps_radio">
+						<input type="radio" name="radiotest"> <span>Опция 1</span>
+					</label>
+					<label class="pps pps_radio">
+						<input type="radio" name="radiotest"> <span>Опция 2</span>
+					</label>
+				</div>
+				
+				<div class="pps_flex_11">
+					<span class="title">Test Select</span>
+					<label class="pps pps_select">
+						<select>
+							<option>Выбор 1</option>
+							<option>Выбор 2</option>
+							<option>Выбор 3</option>
+						</select>
+					</label>
+					
+				</div>
+				
+				
+				
+				
 				<div class="pps_flex_11 pps_flex pps_flex_row">
 					
 					<label class="pps pps_checkbox pps_flex_23 pps_flex_11_view_small"><input type="checkbox" name="approve"/> <span>Я согласен на обработку моих персональных данных</span></label>
 					<label class="pps pps_button  pps_flex_13 pps_flex_11_view_small pps_right pps_center_view_small"> <input type="submit"
 						value="Отправить" disabled="disabled" />
 					</label>
-				</div>
-			</div>
-			<div
-				class="pps_flex_13 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-				<div class="pps_flex_11">
 					<span class="descr pps_require">Обязательные поля</span>
 				</div>
 			</div>

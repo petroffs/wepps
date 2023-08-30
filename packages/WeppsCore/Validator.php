@@ -152,11 +152,11 @@ class ValidatorWepps {
                     var elem = $('#{$form}').find('[name=\"{$key}[]\"]');
                 }
 				if (elem.length!=0) {
-				elem.closest('label').addClass('controlserror');
-				var t = $('<div>{$value}</div>').addClass('mess_{$key}').addClass('controlserrormess');
+				elem.closest('label').addClass('pps_error_parent');
+				var t = $('<div>{$value}</div>').addClass('mess_{$key}').addClass('pps_error');
 				elem.eq(0).before(t);
 				t.on('click',function(event) {
-					$(this).closest('label').removeClass('controlserror');
+					$(this).closest('label').removeClass('pps_error_parent');
 					$(this).remove();
 				});
 			}
@@ -169,11 +169,11 @@ class ValidatorWepps {
 	        
 	    }
 	    $str .= "
-				$('.controlserror').children().on('focus',function() {
+				$('.pps_error_parent').children().on('focus',function() {
                     var attr = $(this).attr('name').replace('[]','');
 					$('.mess_'+attr).trigger('click');
 				});
-				$('.controlserror').children('input').on('change',function() {
+				$('.pps_error_parent').children('input').on('change',function() {
                     var attr = $(this).attr('name').replace('[]','');
 					$('.mess_'+attr).trigger('click');
 				});
@@ -189,7 +189,7 @@ class ValidatorWepps {
 		$str = "
 			<script>
 			$('#{$form}').html('{$message}');
-			$('#{$form}').addClass('finalmessage');
+			$('#{$form}').addClass('pps_success');
 			$('#{$form}').fadeIn();
 			$js
 			</script>

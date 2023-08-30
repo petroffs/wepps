@@ -12,6 +12,7 @@
   --color3_light3: #f7f7f7;
   --color4: #00AC86;
   --color4_dark: #008f6f;
+  --color5: #d06666;
 }
 html {
 	font-family: 'Open Sans', sans-serif;
@@ -49,7 +50,7 @@ main {
     position: relative;
 }
 h1 {
-	margin: 20px 0 10px 0;
+	margin: var(--step4) 0 var(--step2) 0;
 }
 div.page {
 	width: 100%;
@@ -60,15 +61,15 @@ div.page div.page2 {
 	max-width: 1400px;
 	background: transparent;
 	position: relative;
-	padding: 0 20px;
+	padding: 0 var(--step4);
 	margin: 0 auto;
 }
 div.page div.page2.page2normal {
-	padding-top: 50px;
+	padding-top: calc(9 * var(--step));
 }
 div.page.footer {
 	height: auto;
-	min-height: 200px;
+	min-height: calc(40 * var(--step));
 	background: var(--color3_light3);
 }
 div.page.footer div.page2 div.copyrights div.item a {
