@@ -310,6 +310,16 @@
 .pps_center {
 	text-align: center;
 }
+.pps_center_flex {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.pps_center_flex_inline {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+}
 img.pps_image {
 	width: 100%;
 	height: auto;
@@ -865,4 +875,20 @@ ul.pps_list, ol.pps_list {
 	margin: var(--step3);
 	max-width: calc(var(--width) - var(--step6));
 	max-height: calc(var(--height) - var(--step6));
+}
+.pps_flex.pps_flex_row.pps_flex_margin.pps_padding {
+	padding: var(--step);
+	margin: 0;	
+}
+.pps_flex.pps_flex_row.pps_flex_margin_small.pps_padding {
+	padding: var(--stepHalf);
+	margin: 0;
+}
+.pps_flex.pps_flex_row.pps_flex_margin_medium.pps_padding {
+	padding: var(--step2);
+	margin: 0;
+}
+.pps_flex.pps_flex_row.pps_flex_margin_large.pps_padding {
+	padding: var(--step3);
+	margin: 0;
 }
