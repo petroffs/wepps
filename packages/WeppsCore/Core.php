@@ -678,16 +678,22 @@ abstract class ExtensionWepps {
 		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = '{$id}'" : $condition." {$prefix} binary t.Alias = '{$id}'";
 		$obj = new DataWepps($tableName);
 		$res = $obj->getMax($condition)[0];
-		if (!isset($res['Id'])) ExceptionWepps::error404();
+		if (!isset($res['Id'])) {
+			ExceptionWepps::error404();
+		}
 		$this->extensionData['element'] = 1;
 		$this->navigator->content['Name'] = $res['Name'];
-		if (isset($res['MetaTitle']) && $res['MetaTitle']!='') {
+		if (!empty($res['MetaTitle'])) {
 			$this->navigator->content['MetaTitle'] = $res['MetaTitle'];
 		} else {
 			$this->navigator->content['MetaTitle'] = $res['Name'];
 		}
-		if (isset($res['MetaKeyword']) && $res['MetaKeyword']!='') $this->navigator->content['MetaKeyword'] = $res['MetaKeyword'];
-		if (isset($res['MetaDescription']) && $res['MetaDescription']!='') $this->navigator->content['MetaDescription'] = $res['MetaDescription'];
+		if (!empty($res['MetaKeyword'])) {
+			$this->navigator->content['MetaKeyword'] = $res['MetaKeyword'];
+		}
+		if (!empty($res['MetaDescription'])) {
+			$this->navigator->content['MetaDescription'] = $res['MetaDescription'];
+		}
 		return $res;
 	}
 	
