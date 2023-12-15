@@ -1,11 +1,8 @@
-<?
+<?php
 namespace WeppsExtensions\Addons\Merchant\Sberbank;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Spell\SpellWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Mail\MailWepps;
 use WeppsCore\Connect\ConnectWepps;

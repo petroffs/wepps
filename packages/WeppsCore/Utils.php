@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsCore\Utils;
 
 use WeppsCore\Connect\ConnectWepps;

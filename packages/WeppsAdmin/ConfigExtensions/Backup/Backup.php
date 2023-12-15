@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\ConfigExtensions\Backup;
 
 use WeppsCore\Utils\RequestWepps;

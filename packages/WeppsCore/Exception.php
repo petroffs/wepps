@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsCore\Exception;
 
 use WeppsCore\Utils\UtilsWepps;

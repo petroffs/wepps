@@ -1,8 +1,7 @@
-<?
+<?php
 namespace WeppsExtensions\Cart;
 
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Spell\SpellWepps;
 

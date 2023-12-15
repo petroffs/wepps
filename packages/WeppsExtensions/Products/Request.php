@@ -1,9 +1,8 @@
-<?
+<?php
 namespace WeppsExtensions\Products;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\NavigatorWepps;
-//use WeppsExtensions\Products\ProductsWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
 
@@ -35,7 +34,7 @@ class RequestProductsWepps extends RequestWepps {
 				}
 				$filters = ProductsWepps::getProductsItemsProperties($extensionConditions);
 			
-				/**
+				/*
 				 * Для корректного UI
 				 * if $this->get['checked']=='false'
 				 * Получаем все значения текущего блока - чтобы пользователь смог выбрать еще
@@ -126,7 +125,7 @@ class RequestProductsWepps extends RequestWepps {
 				optionCount.attr('data-check','{$this->get['checked']}');
 				";
 			
-				/**
+				/*
 				 * Вывод в шаблон
 				 */
 				$this->assign('js', $js);

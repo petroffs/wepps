@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\Bot;
 use WeppsCore\Connect\ConnectWepps;
 

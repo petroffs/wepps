@@ -1,12 +1,10 @@
-<?
+<?php
 namespace WeppsExtensions\Contacts;
 
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 

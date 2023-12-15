@@ -1,5 +1,4 @@
 <?php
-
 namespace WeppsExtensions\Services;
 
 use WeppsCore\Core\NavigatorWepps;

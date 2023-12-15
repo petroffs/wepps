@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\ConfigExtensions\Processing;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;

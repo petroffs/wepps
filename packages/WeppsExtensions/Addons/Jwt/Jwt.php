@@ -1,7 +1,5 @@
 <?php
-
 namespace WeppsExtensions\Addons\Jwt;
-
 use WeppsCore\Connect\ConnectWepps;
 use Ahc\Jwt\JWT;
 

@@ -1,14 +1,11 @@
 <?
 namespace WeppsExtensions\HomePage;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Addons\AddonsUtilsWepps;
 
 class HomePageWepps extends ExtensionWepps {
 	public $topTpl = '';

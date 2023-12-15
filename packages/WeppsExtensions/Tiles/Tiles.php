@@ -1,5 +1,4 @@
 <?php
-
 namespace WeppsExtensions\Tiles;
 
 use WeppsCore\Core\NavigatorWepps;

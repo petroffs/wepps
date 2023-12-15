@@ -1,11 +1,10 @@
-<?
+<?php
 namespace WeppsExtensions\Gallery;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 
 class GalleryWepps extends ExtensionWepps {
 	public function request() {

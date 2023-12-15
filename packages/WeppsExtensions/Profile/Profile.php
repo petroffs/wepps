@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Profile;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
@@ -87,7 +87,7 @@ class ProfileWepps {
 				if (isset($user['Id'])) {
 					$obj = new DataWepps("TradeOrders");
 					$page = (isset($get['page'])) ? $get['page'] : 1;
-					$orders = $obj->getMax("t.DisplayOff=0 and t.UserId = '{$user['Id']}'",20,1,"t.Id desc");
+					$orders = $obj->getMax("t.DisplayOff=0 and t.UserId = '{$user['Id']}'",20,$page,"t.Id desc");
 					
 					if (isset($orders[0]['Id'])) {
 						$smarty->assign("orders",$orders);

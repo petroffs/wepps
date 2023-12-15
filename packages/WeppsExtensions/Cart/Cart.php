@@ -1,12 +1,11 @@
-<?
+<?php
 namespace WeppsExtensions\Cart;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Spell\SpellWepps;
 
 class CartWepps extends ExtensionWepps {

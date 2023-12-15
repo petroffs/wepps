@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Images;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;

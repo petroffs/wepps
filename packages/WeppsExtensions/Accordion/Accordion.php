@@ -1,12 +1,10 @@
-<?
+<?php
 namespace WeppsExtensions\Accordion;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 class AccordionWepps extends ExtensionWepps {
 	public function request() {

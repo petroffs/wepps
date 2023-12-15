@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Pdf;
 
 use WeppsCore\Utils\UtilsWepps;

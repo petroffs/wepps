@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\ConfigExtensions;
 
 use WeppsCore\Core\SmartyWepps;

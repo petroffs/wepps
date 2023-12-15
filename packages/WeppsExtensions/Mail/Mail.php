@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Mail;
 
 use WeppsCore\Connect\ConnectWepps;

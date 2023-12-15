@@ -1,8 +1,8 @@
-<?
+<?php
 namespace WeppsExtensions\Profile;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Core\DataWepps;
 use WeppsExtensions\Mail\MailWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
@@ -15,8 +15,8 @@ if (! session_start ())
 	session_start ();
 class RequestProfileWepps extends RequestWepps {
 	public function request($action = "") {
-		$users = new DataWepps("s_Users");
-		$dateCurr = date("Y-m-d H:i:s");
+		#$users = new DataWepps("s_Users");
+		#$dateCurr = date("Y-m-d H:i:s");
 		switch ($action) {
 			case 'setSettingsEmail':
 				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404();
@@ -33,16 +33,8 @@ class RequestProfileWepps extends RequestWepps {
 				$mess = nl2br($mess);
 				$obj = new MailWepps('html');
 				
-				/**
-				 * Временно установлен mail@petroffs.com
-				 * Потому что mail.ru не принимает почту с тестового сервера.
-				 * Потому что mail.ru не принимает почту с тестового сервера.
-				 * Потому что mail.ru не принимает почту с тестового сервера.
-				 * Потому что mail.ru не принимает почту с тестового сервера.
-				 */
-				
 				//$obj->mail($this->get['email'],"Обновление аккаунта",$mess);
-				$obj->mail('mail@petroffs.com',"Обновление аккаунта",$mess);
+				$obj->mail(ConnectWepps::$projectDev['email'],"Обновление аккаунта",$mess);
 				$this->tpl = 'ProfileSettingsEmail.tpl';
 				break;
 				break;

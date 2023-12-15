@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\ConfigExtensions\Orders;
 
 use WeppsCore\Utils\RequestWepps;

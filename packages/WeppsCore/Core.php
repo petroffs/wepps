@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsCore\Core;
 
 use WeppsCore\Utils\UtilsWepps;

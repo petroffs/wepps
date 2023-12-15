@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\ConfigExtensions\Uploads;
 
 use WeppsCore\Utils\RequestWepps;

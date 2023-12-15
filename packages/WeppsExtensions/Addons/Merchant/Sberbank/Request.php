@@ -1,6 +1,5 @@
-<?
+<?php
 use WeppsExtensions\Addons\Merchant\Sberbank\SberbankWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';

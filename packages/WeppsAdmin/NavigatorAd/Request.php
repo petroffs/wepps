@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\NavigatorAd;
 
 use WeppsCore\Utils\RequestWepps;

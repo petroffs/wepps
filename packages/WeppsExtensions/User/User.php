@@ -1,4 +1,5 @@
-<?
+<?php
+
 namespace WeppsExtensions\User;
 
 use WeppsCore\Connect\ConnectWepps;

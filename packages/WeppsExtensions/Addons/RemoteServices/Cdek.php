@@ -1,5 +1,4 @@
 <?php
-
 namespace WeppsExtensions\Addons\RemoteServices;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;

@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Alignment1;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;

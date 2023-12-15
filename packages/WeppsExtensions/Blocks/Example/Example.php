@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Blocks\Example;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\ExtensionWepps;

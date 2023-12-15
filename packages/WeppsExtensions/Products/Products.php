@@ -1,12 +1,11 @@
-<?
+<?php
 namespace WeppsExtensions\Products;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 class ProductsWepps extends ExtensionWepps {
 	public function request() {
@@ -105,7 +104,7 @@ class ProductsWepps extends ExtensionWepps {
 		order by p.Priority,pv.PValue
 		limit 500
 		";
-		return $res = ConnectWepps::$instance->fetch( $sql, null, 'group' );
+		return ConnectWepps::$instance->fetch( $sql, null, 'group' );
 	}
 	
 	/**

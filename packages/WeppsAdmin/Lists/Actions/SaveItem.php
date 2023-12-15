@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsAdmin\Lists\Actions;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;

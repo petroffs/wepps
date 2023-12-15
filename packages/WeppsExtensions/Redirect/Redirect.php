@@ -1,12 +1,10 @@
-<?
+<?php
 namespace WeppsExtensions\Redirect;
 
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 
 class RedirectWepps extends ExtensionWepps {
 	public function request() {

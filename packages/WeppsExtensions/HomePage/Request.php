@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\FirstPage;
 use WeppsCore\Utils\RequestWepps;
 

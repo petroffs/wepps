@@ -1,5 +1,4 @@
 <?php
-
 namespace WeppsExtensions\Reviews;
 
 use WeppsCore\Utils\RequestWepps;

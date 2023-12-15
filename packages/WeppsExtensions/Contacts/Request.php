@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Contacts;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;

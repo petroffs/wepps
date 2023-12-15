@@ -1,11 +1,9 @@
-<?
+<?php
 namespace WeppsExtensions\Cart;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsExtensions\Cart\CartWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsCore\Spell\SpellWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Products\ProductsWepps;

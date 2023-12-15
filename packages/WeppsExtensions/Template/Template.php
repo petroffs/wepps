@@ -1,5 +1,4 @@
 <?php
-
 namespace WeppsExtensions\Template;
 
 use WeppsCore\Core\SmartyWepps;

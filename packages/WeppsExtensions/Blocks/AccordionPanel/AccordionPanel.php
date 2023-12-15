@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\Blocks\AccordionPanel;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\ExtensionWepps;

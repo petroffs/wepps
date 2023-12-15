@@ -1,4 +1,4 @@
-<?
+<?php
 namespace WeppsExtensions\News;
 use WeppsCore\Utils\RequestWepps;
 
