@@ -8,12 +8,11 @@ use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Connect\ConnectWepps;
 
 class HomePageWepps extends ExtensionWepps {
-	public $topTpl = '';
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
 		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->topTpl = "";
+				$this->tpl = "";
 				
 				/*
 				 * Карусель на главной
@@ -22,7 +21,7 @@ class HomePageWepps extends ExtensionWepps {
 				$res = $obj->getMax ( "t.DisplayOff=0 and SPlace=1 and sm2.Id={$this->navigator->content['Id']}" );
 				if (isset( $res[0]['Id'] )) {
 					$smarty->assign ( 'carousel', $res );
-					$this->topTpl = $smarty->fetch ( 'packages/WeppsExtensions/Addons/Carousel/Carousel.tpl', null, 'a' );
+					$this->tpl = $smarty->fetch ( 'packages/WeppsExtensions/Addons/Carousel/Carousel.tpl', null, 'a' );
 					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick.css" );
 					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick-theme.css" );
 					$this->headers->js ( "/packages/vendor/kenwheeler/slick/slick/slick.min.js" );
@@ -35,7 +34,7 @@ class HomePageWepps extends ExtensionWepps {
 				$obj = new DataWepps("Services");
 				$res = $obj->getMax ( "t.DisplayOff=0" );
 				$smarty->assign('services',$res);
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageServices.tpl', null, 'a' );
+				$this->tpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageServices.tpl', null, 'a' );
 
 				/*
 				 * Галерея
@@ -50,14 +49,14 @@ class HomePageWepps extends ExtensionWepps {
 				$res = $obj->getMax("t.TableName='Gallery' and fg.DirectoryId=17",500,1,'t.Priority');
 				$smarty->assign('elements',$res);
 				$smarty->assign('galleryTpl',$smarty->fetch ( 'packages/WeppsExtensions/Gallery/Gallery.tpl', null, 'a' ));
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageGallery.tpl', null, 'a' );
+				$this->tpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageGallery.tpl', null, 'a' );
 				/*
 				 * Преимущества
 				 */
 				$obj = new DataWepps("Advantages");
 				$res = $obj->getMax ( "t.DisplayOff=0" );
 				$smarty->assign('advantages',$res);
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageAdvantages.tpl', null, 'a' );
+				$this->tpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageAdvantages.tpl', null, 'a' );
 				/*
 				 * Контакты
 				 */
@@ -76,7 +75,7 @@ class HomePageWepps extends ExtensionWepps {
 				$obj = new DataWepps("Contacts");
 				$res = $obj->getMax("t.DisplayOff=0",1);
 				$smarty->assign('contacts',$res);
-				$this->topTpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageContacts.tpl', null, 'a' );
+				$this->tpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageContacts.tpl', null, 'a' );
 				
 				break;
 			default:
@@ -86,11 +85,10 @@ class HomePageWepps extends ExtensionWepps {
 		/*
 		 * Нормальное представление
 		 */
-		$smarty->assign ( 'normalHeader1', 0 );
-		$smarty->assign ( 'normalView', 0 );
+		$smarty->assign('normalView',0);
 		$this->navigator->content['Text1'] = '';
 		$this->headers->css("/ext/HomePage/HomePage.{$this->rand}.css");
-		$smarty->assign ('horizontalTopTpl', $this->topTpl);
+		$smarty->assign($this->targetTpl,$this->tpl);
 		return;
 	}
 }

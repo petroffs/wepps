@@ -19,19 +19,19 @@ class BlocksWepps extends ExtensionWepps {
 				 */
 				$this->headers->css("/ext/Blocks/Blocks.{$this->rand}.css");
 				$this->headers->js("/ext/Blocks/Blocks.{$this->rand}.js");
-				
 				$obj = new DataWepps("s_Panels");
 				$panels = $obj->getMax("t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'");
 				if (empty($panels)) {
 					return;
 				}
-				
+
 				/*
 				 * Подключить шаблоны
 				 */
 				$obj = new DataWepps("s_Blocks");
 				$obj->setJoin("inner join s_Panels p on p.Id = t.PanelId inner join s_Directories d on d.Id = p.DirectoryId");
 				$res = $obj->getMax("t.DisplayOff=0 and d.Id='{$this->navigator->content['Id']}'");
+				
 				$blocks = [];
 				foreach($res as $value) {
 					$blocks[$value['PanelId']][] = $value;

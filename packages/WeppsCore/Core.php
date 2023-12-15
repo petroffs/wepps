@@ -190,15 +190,10 @@ class DataWepps {
 			where {$formatted['id']}
 			group by $group $having {$formatted['orderBy']} {$formatted['limit']}";
 			$this->sql = $sql;
-			if ($this->tableName=='DataTbls') {
-				//UtilsWepps::debug($this->sql,1);
-				//$res = ConnectWepps::$instance->fetch ( $this->sql );
-			}
 			$res = ConnectWepps::$instance->fetch ( $this->sql );
 			$paginator = $this->_getPaginator ( $formatted ['onPage'], $formatted ['currentPage'] );
 			$this->paginator = $paginator;
-			$res = LanguageWepps::getRows ( $res, $this->scheme, $this->lang );
-			if (count($res)==0) return array(0=>array());
+			$res = LanguageWepps::getRows($res, $this->scheme, $this->lang);
 			return $res;
 	}
 	/**
@@ -648,12 +643,7 @@ abstract class ExtensionWepps {
 	 * Содержание шаблона
 	 * @var string
 	 */
-	public $destinationOuter = '';
-	/**
-	 * Указание шаблона назначения (в него передается результат)
-	 * @var string
-	 */
-	public $destinationTpl = 'extension';
+	public $targetTpl = 'extension';
 	/**
 	 * Текущая страница в постраничном выводе
 	 * @var integer
@@ -668,7 +658,7 @@ abstract class ExtensionWepps {
 		$this->headers = &$headers;
 		$this->rand = $headers::$rand;
 		$this->page = (isset ( $_GET ['page'] )) ? ( int ) $_GET ['page'] : 1;
-		$this->destinationOuter = $this->request();
+		$this->request();
 		return;
 	}
 

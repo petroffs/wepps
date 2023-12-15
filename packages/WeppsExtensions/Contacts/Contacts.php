@@ -31,6 +31,7 @@ class ContactsWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
+		
 		/*
 		 * Для глобального шаблона
 		 */
@@ -41,7 +42,7 @@ class ContactsWepps extends ExtensionWepps {
 		$this->headers->css("/ext/Contacts/Contacts.{$this->rand}.css");
 		$this->headers->js("/ext/Contacts/Contacts.{$this->rand}.js");
 		
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

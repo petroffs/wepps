@@ -1,9 +1,9 @@
 <?php
 namespace WeppsExtensions\Addons;
+
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 
 if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 	class AddonsWepps extends ExtensionWepps {
@@ -62,8 +62,7 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			/*
 			 * Нормальное представление
 			 */
-			$smarty->assign ( 'normalView', 1 );
-			$smarty->assign ( 'normalHeader1', 1 );
+			$smarty->assign ('normalView',1);
 		}
 	}
 }

@@ -26,7 +26,7 @@ class TilesWepps extends ExtensionWepps {
 		 */
 		$this->headers->css("/ext/Tiles/Tiles.{$this->rand}.css");
 		$this->headers->js("/ext/Tiles/Tiles.{$this->rand}.js");
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

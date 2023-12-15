@@ -6,6 +6,15 @@
   --step3: 18px;
   --step4: 24px;
   --step5: 30px;
+  --step6: 36px;
+  --width: 100%;
+  --height: 100%;
+  --font_default: 16px;
+  --font_small: 14px;
+  --font_tiny: 12px;
+  --font_medium: 18px;
+  --font_large: 22px;
+  --font_extra: 30px;
 }
 
 /**flex**/

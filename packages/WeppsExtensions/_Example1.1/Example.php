@@ -12,7 +12,6 @@ class ExampleWepps extends ExtensionWepps {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Example/Example.tpl';
 				$extensionConditions = "";
-				//if ($this->navigator->content['Id']==11) $extensionConditions = "t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'";
 				$obj = new DataWepps("Example");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->getMax($extensionConditions,5,$this->page,"t.Priority");
@@ -31,13 +30,14 @@ class ExampleWepps extends ExtensionWepps {
 				$smarty->assign('elements',$res);
 				break;
 		}
+
 		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Example/Example.{$this->rand}.css");
 		$this->headers->js("/ext/Example/Example.{$this->rand}.js");
-		$this->headers->css ( "/ext/Addons/Paginator/Paginator.{$this->rand}.css" );
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$this->headers->css ("/ext/Addons/Paginator/Paginator.{$this->rand}.css");
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

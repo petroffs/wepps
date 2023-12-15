@@ -1,48 +1,20 @@
-div.elements.Childs {
+div.ext-childs {
 	width: auto;
 	overflow: hidden;
-	
 }
-
-div.elements.Childs div.items {
-	
-}
-
-div.elements.Childs div.items div.item {
-	
-}
-
-div.elements.Childs div.items div.item div.item2 {
-	background: #f8f8f8;
-	padding: 30px 30px 5px 30px;
-	cursor: pointer;
-	overflow: hidden;
-}
-
-div.elements.Childs div.items div.item div.item2:hover {
-	box-shadow:inset 0 0 5px silver;
-}
-
-div.elements.Childs div.items div.item div.item2 div.img {
-	background: #fff;
-	overflow: hidden;
-	width: auto;
-	
-}
-
-div.elements.Childs div.items div.item div.item2 div.descr-wrapper div.title {
-	font-size: 24px;
-	font-family: 'Roboto';
-	font-weight: 500;
-	background: #f8f8f8;
-	padding: 20px 0;
-}
-
-div.elements.Childs div.items div.item div.item2 div.descr-wrapper div.title a {
-	color: #333;
+div.ext-childs a {
 	text-decoration: none;
+	color: var(--color1);
+	background: var(--color3_light3);
+	padding: var(--step4);
+	display: block
 }
-
-div.elements.Childs div.items div.item div.item2 div.descr-wrapper div.descr {
+div.ext-childs div.img {
+	background: #fff;
 	
+}
+div.ext-childs div.title {
+	font-size: var(--font_medium);
+	font-weight: 500;
+	margin-top: var(--step2);
 }

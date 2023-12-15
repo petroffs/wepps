@@ -20,13 +20,13 @@ class Alignment1Wepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		
+		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Alignment1/Alignment1.{$this->rand}.css");
 		$this->headers->js("/ext/Alignment1/Alignment1.{$this->rand}.js");
-		
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

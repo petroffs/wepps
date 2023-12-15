@@ -8,7 +8,6 @@ use WeppsCore\Exception\ExceptionWepps;
 
 class ExampleWepps extends ExtensionWepps {
 	public function request() {
-		//$this->destinationTpl = 'extension'; //horizontalBottomTpl
 		$smarty = SmartyWepps::getSmarty();
 		switch (NavigatorWepps::$pathItem) {
 			case '':
@@ -21,13 +20,13 @@ class ExampleWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
+
 		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Example/Example.{$this->rand}.css");
 		$this->headers->js("/ext/Example/Example.{$this->rand}.js");
-		
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

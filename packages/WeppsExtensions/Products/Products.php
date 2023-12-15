@@ -10,7 +10,6 @@ use WeppsCore\Connect\ConnectWepps;
 class ProductsWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
-		//$headers = &$this->headers;
 		$rand = $this->rand;
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/ProductsSummary.tpl';
@@ -72,19 +71,15 @@ class ProductsWepps extends ExtensionWepps {
 			
 			
 		}
+
 		/*
 		 * Переменные для глобального шаблона
 		 */
 		$smarty->assign('normalHeader1',0);
-		
-		
 		$this->headers->css("/ext/Products/Products.{$rand}.css");
 		$this->headers->js("/ext/Products/Products.{$rand}.js");
 		$this->headers->css ( "/ext/Addons/Paginator/Paginator.{$rand}.css" );
-		
-		$smarty->assign($this->destinationTpl,$this->destinationOuter);
-		$smarty->assign('extension',$smarty->fetch($this->tpl));
-		
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 	

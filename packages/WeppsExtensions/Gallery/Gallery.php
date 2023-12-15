@@ -21,6 +21,7 @@ class GalleryWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
+
 		/*
 		 * Переменные для глобального шаблона
 		 */
@@ -28,8 +29,7 @@ class GalleryWepps extends ExtensionWepps {
 		$this->headers->js("/packages/vendor/dimsemenov/magnific-popup/dist/jquery.magnific-popup.js");
 		$this->headers->css("/ext/Gallery/Gallery.{$this->rand}.css");
 		$this->headers->js("/ext/Gallery/Gallery.{$this->rand}.js");
-		
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

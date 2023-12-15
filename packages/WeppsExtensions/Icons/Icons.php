@@ -20,12 +20,13 @@ class IconsWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		
+		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Icons/Icons.{$this->rand}.css");
 		$this->headers->js("/ext/Icons/Icons.{$this->rand}.js");
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

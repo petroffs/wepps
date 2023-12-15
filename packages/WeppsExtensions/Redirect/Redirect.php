@@ -22,13 +22,14 @@ class RedirectWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		
+		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Redirect/Redirect.{$this->rand}.css");
 		$this->headers->js("/ext/Redirect/Redirect.{$this->rand}.js");
 		
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

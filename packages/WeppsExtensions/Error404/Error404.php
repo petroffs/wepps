@@ -11,7 +11,7 @@ class Error404Wepps extends ExtensionWepps {
 		$this->headers->css("/ext/Error404/Error404.{$this->rand}.css");
 		$this->headers->js("/ext/Error404/Error404.{$this->rand}.js");
 		$this->extensionData['element'] = 1;
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));		
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));		
 		return;
 	}
 }

@@ -16,9 +16,9 @@
 }
 html {
 	font-family: 'Open Sans', sans-serif;
-	font-size: 14px;
+	font-size: var(--font_default);
 	color: var(--color3);
-	line-height: 180%;
+	line-height: 1.4;
 	background: var(--color3_light2);
 	width: 100%;
 	min-height: 100vh;
@@ -50,6 +50,7 @@ main {
     position: relative;
 }
 h1 {
+	color: var(--color1);
 	margin: var(--step4) 0 var(--step2) 0;
 }
 div.page {
@@ -94,4 +95,12 @@ body label.pps.pps_button input:active {
 	background-color: var(--color4_dark);
 	box-shadow: none;
 	cursor: default;
+}
+@media screen and (max-width: 810px) {
+
+}
+
+
+@media screen and (max-width: 480px) {
+
 }

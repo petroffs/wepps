@@ -23,25 +23,27 @@
 	</header>
 	<main>
 		{$content.Url|pps:"navigator"}
+		{$extensionTop}
 		{$blocks}
-		{$horizontalTopTpl}
+		{if $normalView==1}
 		<div class="page main pps_flex_max pps_flex pps_flex_col">
 			<div class="page2">
-				
-				{if $normalView==1} {if $normalHeader1==1}
 				<h1>{$content.Name}</h1>
-				{/if} {if $content.Text1}
+				{if $content.Text1}
 				<div class="text">{$content.Text1}</div>
-				{/if} {$extension} {else} {$extension} {/if}
+				{/if}
+				{$extension}
 			</div>
 		</div>
-		{$horizontalBottomTpl}
+		{else}
+		{$extension}
+		{/if}
+		{$extensionFooter}
 	</main>
 	<footer>
 		<div class="page footer pps_flex pps_flex_col pps_flex_center">
 			<div class="page2 pps_flex pps_flex_col pps_flex_center">
-				<div
-					class="copyrights pps_flex pps_flex_row pps_flex_center">
+				<div class="copyrights pps_flex pps_flex_row pps_flex_center">
 					<div class="item pps_flex_fix pps_padding pps_center">© {$shopInfo.Name}</div>
 					<div class="item pps_flex_fix pps_padding pps_center">{*mailto
 						address=$shopInfo.Email*}</div>
@@ -49,12 +51,10 @@
 					<div class="item pps_flex_fix pps_padding pps_center">{$item}</div>
 					{/foreach}
 				</div>
-				<div
-					class="links pps_flex pps_flex_row pps_flex_center">
+				<div class="links pps_flex pps_flex_row pps_flex_center">
 					{foreach name=out item=item from=$socials}
 					<div class="item pps_flex_fix pps_padding">
-						<a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}"
-							title="{$item.Name}"></a>
+						<a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a>
 					</div>
 					{/foreach}
 				</div>

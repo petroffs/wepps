@@ -20,12 +20,13 @@ class AccordionWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/**
+		
+		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Accordion/Accordion.css");
 		$this->headers->js("/ext/Accordion/Accordion.js");
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

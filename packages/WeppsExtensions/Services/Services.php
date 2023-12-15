@@ -13,7 +13,6 @@ class ServicesWepps extends ExtensionWepps {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Services/Services.tpl';
 				$extensionConditions = "";
-				//if ($this->navigator->content['Id']==11) $extensionConditions = "t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'";
 				$obj = new DataWepps("Services");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->getMax($extensionConditions,5,$this->page,"t.Priority");
@@ -32,13 +31,14 @@ class ServicesWepps extends ExtensionWepps {
 				$smarty->assign('elements',$res);
 				break;
 		}
+		
 		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Services/Services.{$this->rand}.css");
 		$this->headers->js("/ext/Services/Services.{$this->rand}.js");
 		$this->headers->css ( "/ext/Addons/Paginator/Paginator.css" );
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

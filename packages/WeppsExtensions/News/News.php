@@ -13,7 +13,6 @@ class NewsWepps extends ExtensionWepps {
 			case '' :
 				$this->tpl = 'packages/WeppsExtensions/News/News.tpl';
 				$extensionConditions = "";
-				// if ($this->navigator->content['Id']==11) $extensionConditions = "t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'";
 				$obj = new DataWepps ( "News" );
 				$obj->setConcat ( "concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url" );
 				$res = $obj->getMax ( $extensionConditions, 5, $this->page, "t.Priority" );
@@ -32,14 +31,14 @@ class NewsWepps extends ExtensionWepps {
 				$smarty->assign('elements',$res);
 			break;
 		}
-		/**
+		
+		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/News/News.{$this->rand}.css");
 		$this->headers->js("/ext/News/News.{$this->rand}.js");
 		$this->headers->css ( "/ext/Addons/Paginator/Paginator.{$this->rand}.css" );
-
-		$smarty->assign($this->destinationTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

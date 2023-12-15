@@ -13,16 +13,10 @@ class CartWepps extends ExtensionWepps {
 		$headers = $this->headers;
 		$smarty = SmartyWepps::getSmarty();
 		$cartSummary = CartUtilsWepps::cartSummary();
-		
-// 		UtilsWepps::debug($cartSummary['cart']);
-// 		CartUtilsWepps::addOrderPositions(0);
-// 		exit();
-		
 		switch (NavigatorWepps::$pathItem) {
 			case 'order':
 				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404 ();
 				$this->extensionData ['element'] = 1;
-				
 				if ($cartSummary ['qty'] == 0) {
 					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
 					$this->navigator->content ['Name'] = "Ваша корзина пуста";
@@ -105,15 +99,6 @@ class CartWepps extends ExtensionWepps {
 					
 					
 				}
-				
-								
-				
-				
-				
-				
-				
-				
-				
 				break;
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Cart/CartSummary.tpl';
@@ -122,12 +107,7 @@ class CartWepps extends ExtensionWepps {
 					$smarty->assign( 'profileStaffTpl' , $smarty->fetch('packages/WeppsExtensions/Profile/ProfileStaff.tpl'));
 				}
 				$smarty->assign('cartSummary',$cartSummary);
-				
 				$smarty->assign('cartAboutTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartAbout.tpl'));
-// 				$obj = new DataWepps("Cart");
-// 				$res = $obj->getMax("t.DisplayOff=0");
-// 				$smarty->assign('elements',$res);
-
 				if ($cartSummary['qty']==0) {
 					$this->navigator->content['Name'] = "Ваша корзина пуста";
 					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
@@ -138,18 +118,14 @@ class CartWepps extends ExtensionWepps {
 				break;
 		}
 		
-		
-		
-		/**
+		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Cart/Cart.{$headers::$rand}.css");
 		$this->headers->js("/ext/Cart/Cart.{$headers::$rand}.js");
 		$this->headers->css("/ext/Products/Products.{$headers::$rand}.css");
-		//UtilsWepps::debug($this->destinationOuter);
-		//$smarty->assign($this->destinationTpl,$this->destinationOuter);
 		$smarty->assign('tpl',$smarty->fetch($this->tpl));
-		$smarty->assign('extension',$smarty->fetch('packages/WeppsExtensions/Cart/Cart.tpl'));
+		$smarty->assign($this->targetTpl,$smarty->fetch('packages/WeppsExtensions/Cart/Cart.tpl'));
 		//UtilsWepps::debug(1,1);
 		return;
 	}
