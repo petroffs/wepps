@@ -1,17 +1,3 @@
-<input type="button" value="ajax popup" onclick="layoutWepps.win({ size:'small',data:'action=test1',url:'/ext/Addons/Request.php' });"/>
-<input type="button" value="plain popup" onclick="layoutWepps.win({ size:'medium',content: $('#test')});"/>
-<input type="button" value="ajaxtoobj" onclick="layoutWepps.request({ data:'action=test',url:'/ext/Addons/Request.php',obj:$('#test2') });"/>
-<input type="button" value="ajaxplain" onclick="layoutWepps.request({ data:'action=test',url:'/ext/Addons/Request.php' });"/>
-
-
-<div class="test pps_hide" id="test">
-test тестовое окно
-</div>
-
-<div class="" id="test2">
-test тестовое окно 2
-</div>
-
 <div class="elements News">
 	<div class="items pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin_large">
 		{foreach name="out" item="item" from=$elements} {assign var=images
@@ -35,5 +21,4 @@ test тестовое окно 2
 		{/foreach}
 	</div>
 </div>
-
 {$paginatorTpl}
