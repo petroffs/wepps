@@ -46,7 +46,7 @@
 		<div class="page2 pps_flex pps_flex_col pps_flex_center">
 			<div
 				class="copyrights pps_flex pps_flex_row pps_flex_center">
-				<div class="item pps_flex_fix pps_padding pps_center">© 2008–{$smarty.now|date_format:"%Y"} ООО «Петроффс»</div>
+				<div class="item pps_flex_fix pps_padding pps_center">© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
 			</div>
 		</div>
 	</div>
