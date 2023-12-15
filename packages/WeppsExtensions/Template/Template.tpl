@@ -6,7 +6,7 @@
 <meta name="description" content="{$content.MetaDescription|strip_tags}" />
 <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
 {$headers.meta}
-<!--                                   programming by:
+	<!--                                   programming by:
 	██████████████████████████████████████████████████████
 	█────█───█───█────█────█───█───█───███────█────█─███─█
 	█─██─█─████─██─██─█─██─█─███─███─█████─██─█─██─█──█──█

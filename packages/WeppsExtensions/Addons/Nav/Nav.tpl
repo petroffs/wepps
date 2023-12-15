@@ -2,7 +2,7 @@
 	<div class="page2">
 		<div class="elements pps_flex pps_flex_row">
 			<div class="logo">
-				<a href="/"><img src="/ext/Template/files/logo.jpg" /></a>
+				<a href="/"><img src="/ext/Template/files/wepps-logo.svg" /></a>
 			</div>
 			<div class="navicon pps_hide pps_show_view_small">
 				<a href="" id="navicon"><i class="fa fa-2x fa-navicon"></i></a>

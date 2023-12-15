@@ -1,0 +1,16 @@
+<svg id="squares" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="67" height="31" viewBox="0 0 67 31">
+  <defs>
+    <style>
+      .cls-1 {
+        filter: url(#filter);
+      }
+    </style>
+    <filter id="filter" x="36" y="0" width="31" height="31" filterUnits="userSpaceOnUse">
+      <feFlood result="flood" flood-color="#505050"/>
+      <feComposite result="composite" operator="in" in2="SourceGraphic"/>
+      <feBlend result="blend" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <rect id="square_default" data-name="square default" width="31" height="31"/>
+  <rect id="square_dynamic" data-name="square dynamic" class="cls-1" x="36" width="31" height="31"/>
+</svg>
