@@ -347,8 +347,6 @@ class UtilsWepps {
 
 /**
  * Запросы AJAX
- * @author Petroffscom
- *
  */
 abstract class RequestWepps {
 	/**
@@ -386,8 +384,8 @@ abstract class RequestWepps {
 	public $noclose = 0;
 	
 	
-	public function __construct($myPost) {
-		$this->get = UtilsWepps::getStringFormatted ( $myPost );
+	public function __construct($settings) {
+		$this->get = UtilsWepps::getStringFormatted ($settings);
 		$action = (isset($this->get['action'])) ? $this->get['action'] : '';
 		$this->request($action);
 		if ($this->noclose==0) {
@@ -443,8 +441,6 @@ abstract class RequestWepps {
 /**
  * Генерация html-кода ссылок на css-таблицы и js-библиотеки для применения в шаблоне сайта
  * Генерация html-кода meta-тегов
- * @author Petroffscom
- *
  */
 class TemplateHeadersWepps {
 	public static $rand;
@@ -498,12 +494,8 @@ class TemplateHeadersWepps {
 
 /**
  * Работа с файлами
- * @author Petroffscom
- *
  */
-
 class FilesWepps {
-
 	/**
 	 * Вывод указанного файла в браузер на сохранение или открытие на стороне клиента
 	 * @param string $file
@@ -511,7 +503,6 @@ class FilesWepps {
 	public static function output($file) {
 		$root = $_SERVER['DOCUMENT_ROOT'];
 		$filename = $root . $file;
-		//UtilsWepps::debug($filename,1);
 		if (!is_file($filename)) ExceptionWepps::error404();
 		$sql = "select * from s_Files where FileUrl='$file' limit 1";
 		$res = ConnectWepps::$instance->fetch($sql);
@@ -520,7 +511,6 @@ class FilesWepps {
 		$filetitle = $row['Name'];
 
 		header("Content-type: application/octet-stream");
-		//header("Content-Disposition: attachment; filename=\"".iconv('utf-8','windows-1251',$filetitle)."\"");
 		header("Content-Disposition: attachment; filename=\"$filetitle\"");
 		header("Content-Length: ".filesize($filename));
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s",mktime (0,0,0,1,1,2000)) . " GMT"); // Дата в прошлом
@@ -551,9 +541,9 @@ class FilesWepps {
 	 * в дальнешем проработать возможность мультизагрузки (или вызывать этот
 	 * метод необходимое кол-во раз при таком случае.
 	 * 
-	 * @param array $myFiles - $_FILES
-	 * @param string $filesfield - Наименование поля type="file"
-	 * @param string $myform - Идентификатор формы
+	 * @param array $myFiles Массив с загруженными файлами ($_FILES)
+	 * @param string $filesfield Наименование html-элемента input[type="file"]
+	 * @param string $myform Идентификатор формы
 	 * @return array
 	 */
 	public static function upload($myFiles,$filesfield,$myform) {
