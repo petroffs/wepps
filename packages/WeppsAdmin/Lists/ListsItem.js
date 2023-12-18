@@ -1,4 +1,34 @@
+
 var readyListsItemInit = function() {
+	$('form.list-data').find('a.list-item-save').off('click');
+	$('form.list-data').find('a.list-item-save').on('click',function(event) {
+		event.preventDefault();
+		$('.minitable').each(function(i,e){
+			let rows = $(e).find('.minitable-body');
+			var str = '';
+			rows.each(function(k,v) {
+				let cells = $(v).find('[contenteditable]');
+				cells.each(function(k2,v2) {	
+					str += $(v2).html()+':::';
+				});
+				str = str.substring(0,str.length-3);
+				str += "\n";
+			});
+			str = str.substring(0,str.length-1);
+			//console.log(str);
+			$('#formArea'+$(e).data('field')).val(str);
+		});
+		//return;
+		let element = $(this).closest('form');
+		element.submit();
+	});
+	$(document).keydown(function (event) {
+	    if (event.ctrlKey && event.which === 83) {
+  			$('form.list-data').find('a.list-item-save').eq(0).trigger('click');
+	        event.preventDefault();
+	    }
+	});
+	
 	$('form.list-data').find('.field-translit').off('click');
 	$('form.list-data').find('.field-translit').on('click',function(event) {
 		event.preventDefault();
@@ -9,258 +39,6 @@ var readyListsItemInit = function() {
 	$('form.list-data').find('.list-item-date').find('input').datepicker({
 		dateFormat: "yy-mm-dd"
 	},$.datepicker.regional[ "ru" ]);
-	
-	$('form.list-data').find('.field-ve').off('click');
-	$('form.list-data').find('.field-ve').on('click',function(event) {
-		event.preventDefault();
-		var dest = $(this).closest('.item').find('textarea').eq(0).attr('id');
-		var tinymceOpen = 1;
-		if (tinymce.editors.length) {
-			for (i=0; i < tinyMCE.editors.length; i++){
-				if (tinymce.editors[i].id == dest) {
-					tinymce.remove('#'+tinymce.editors[i].id);
-					tinymceOpen = 0;
-				}
-			}
-		}
-		if (tinymceOpen == 1) {
-			tinymce.init({
-				  selector: '#'+dest,
-				  language: 'ru',
-				  language_url : '/packages/vendor_local/tinymce_pps/languages/ru.js',
-				  height: 500,
-				  menubar: 'insert',
-				  convert_urls: false,
-				  entity_encoding : "raw",
-				  fontsize_formats: "12px 13px 15px 18px 20px 24px 36px",			  
-				  plugins: 
-				    ' autolink lists link image charmap print preview anchor textcolor ' +
-				    'searchreplace visualblocks code fullscreen ' +
-				    'insertdatetime media table contextmenu paste code help'
-				  ,
-				  contextmenu: "cut copy paste | link image table",
-				  content_css: [
-						'/packages/vendor_local/tinymce_pps/styles.css'
-					  ],
-				  style_formats: [
-						{title: "Headers", items: [
-						{title: "Header 1", format: "h1"},
-						{title: "Header 2", format: "h2"},
-						{title: "Header 3", format: "h3"},
-						{title: "Header 4", format: "h4"},
-						{title: "Header 5", format: "h5"},
-						{title: "Header 6", format: "h6"}
-					]},
-						{title: "Inline", items: [
-						{title: "Bold", icon: "bold", format: "bold"},
-						{title: "Italic", icon: "italic", format: "italic"},
-						{title: "Underline", icon: "underline", format: "underline"},
-						{title: "Strikethrough", icon: "strikethrough", format: "strikethrough"},
-						{title: "Superscript", icon: "superscript", format: "superscript"},
-						{title: "Subscript", icon: "subscript", format: "subscript"},
-						{title: "Code", icon: "code", format: "code"}
-					]},
-						{title: "Blocks", items: [
-						{title: "Paragraph", format: "p"},
-						{title: "Blockquote", format: "blockquote"},
-						{title: "Div", format: "div"},
-						{title: "Pre", format: "pre"}
-					]},
-						{title: "Alignment", items: [
-						{title: "Left", icon: "alignleft", format: "alignleft"},
-						{title: "Center", icon: "aligncenter", format: "aligncenter"},
-						{title: "Right", icon: "alignright", format: "alignright"},
-						{title: "Justify", icon: "alignjustify", format: "alignjustify"}
-					]},
-						{title: "Мой стиль", items: [
-						{title: "Видео блок", selector:'p', classes:'video'},
-						{title: "Желтая плашка", selector:'p', classes:'mkcite1'},
-						{title: "Стиль 1: Заголовок", selector:'p', classes:'style1header'},
-						{title: "Стиль 1: Текст", selector:'p', classes:'style1text'},
-						{title: "Цитата серая плашка", selector:'p', classes:'style2cite'},
-						{title: "Кнопка-ссылка", selector:'a', classes:'hrefbutton'}
-					]},
-					],
-					menubar: 'edit insert format table tc help',
-				    toolbar: 'styleselect alignleft aligncenter alignright alignjustify bullist numlist outdent indent',
-					//toolbar: []
-				});
-		}
-	});
-	$('form.list-data').find('.field-file-select').off('click');
-	$('form.list-data').find('.field-file-select').on('click',function(event) {
-		event.preventDefault();
-		var status = ($(this).data('status')==0)?1:0;
-		if ($(this).data('status')==0) {
-			status = 1;
-			$(this).addClass('active');
-			$('.field-file-action').removeClass('pps_hide');
-		} else {
-			status = 0;
-			$(this).removeClass('active');
-			$('.field-file-action').addClass('pps_hide');
-		}
-		$(this).data('status',status);
-	});
-	$('form.list-data').find('.files-upload').off('click');
-	$('form.list-data').find('.files-upload').on('click',function(event) {
-		var status = $(this).closest('.item').find('.field-file-select').eq(0).data('status'); 
-		if (status==1) {
-			event.preventDefault();
-			var el =  $(this).closest('.files-item');
-			if (el.hasClass('active')) {
-				el.removeClass('active');
-			} else {
-				el.addClass('active');
-			}
-			return;	
-		}
-	});
-	$('form.list-data').find('.field-file-edit').off('click');
-	$('form.list-data').find('.field-file-edit').on('click',function(event) {
-		event.preventDefault();
-		el = $('.files-item.active');
-		var ids = '';
-		el.each(function(i,e) {
-			ids += $(e).data('id')+','
-		});
-		ids = ids.substr(0,ids.length-1)
-		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="pps pps_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
-			'title':'Сообщение',
-			'modal': true,
-			'buttons' : [
-			{
-				text : 'Сохранить',
-				icon : 'ui-icon-check',
-				click : function() {
-					let text = $('#file-input-edit').val();
-					el.each(function(i,e) {
-						let id = '.files-item[data-id="'+$(e).data('id')+'"';
-						$(id).find('div.descr').addClass('descr-fill');
-						$(id).find('div.descr > div.input + div').text(text);
-					});
-					let str = 'action=fileDescription&ids='+ids+'&text='+text;
-					let settings = {
-						data:str,
-						url:'/packages/WeppsAdmin/Lists/Request.php'
-					}
-					layoutWepps.request(settings);
-					$(this).dialog('close');
-				}
-			},{
-				text : 'Отмена',
-				click : function() {
-                    $(this).dialog('close');
-				}
-			}]
-		});
-		
-	});
-	$('form.list-data').find('.field-file-remove').off('click');
-	$('form.list-data').find('.field-file-remove').on('click',function(event) {
-		event.preventDefault();
-		el = $('.files-item.active');
-		var ids = '';
-		el.each(function(i,e) {
-			ids += $(e).data('id')+','
-		});
-		ids = ids.substr(0,ids.length-1)
-		//console.log(ids);
-		$('#dialog').html('<p>Удалить выбранные файлы?</p>').dialog({
-			'title':'Сообщение',
-			'modal': true,
-			'buttons' : [
-			{
-				text : 'Удалить',
-				icon : 'ui-icon-trash',
-				click : function() {
-					el.each(function(i,e) {
-						$(e).remove();
-					});
-					$(this).dialog("close");
-					$('form.list-data').find('.field-file-select.active').trigger('click');
-					let str = 'action=fileRemove&id='+ids;
-					let settings = {
-						data:str,
-						url:'/packages/WeppsAdmin/Lists/Request.php'
-					}
-					layoutWepps.request(settings);
-				}
-			},{
-				text : 'Отмена',
-				click : function() {
-                    $(this).dialog('close');
-				}
-			}]
-		});
-	});
-	$('form.list-data').find('a.files-item-copy-link').off('click');
-	$('form.list-data').find('a.files-item-copy-link').on('click',function(event) {
-		event.preventDefault();
-		var element = $(this).closest('.files-item').find('input').eq(0);
-		element.select();
-		document.execCommand("copy");
-		$("#dialog").html('<p>Ссылка на файл скопирована</p>').dialog({
-			'title':'Сообщение',
-			'modal': true,
-			'buttons':[]
-		});
-		setTimeout(function() {
-			$("#dialog").dialog('close');
-		},1500);
-	});
-	$('form.list-data').find('a.files-item-remove-link').off('click');
-	$('form.list-data').find('a.files-item-remove-link').on('click',function(event) {
-		event.preventDefault();
-		var parent1 = $(this).closest('.files-item');
-		var element = parent1.find('input').eq(0);
-		element.select();
-		$("#dialog").html('<p>Вы действительно желаете удалить файл: '+parent1.data('title')+'?</p>').dialog({
-			'title':'Внимание!',
-			'modal': true,
-			'buttons' : [{
-				text : "Удалить",
-				icon : "ui-icon-close",
-				click : function() {
-					let str = 'action=fileRemove&id='+parent1.data('id');
-					let settings = {
-						data:str,
-						url:'/packages/WeppsAdmin/Lists/Request.php'
-					}
-					layoutWepps.request(settings);
-					//console.log('удаление файла, реальное (из базы, из фс)');
-					$(this).dialog("close");
-					element.closest('.files-item').remove();
-					
-				}
-			},{
-				text : "Отмена",
-				click : function() {
-					$(this).dialog("close");
-				}
-			}]
-		});
-	});
-	$('form.list-data').find('a.file-remove').off('click');
-	$('form.list-data').find('a.file-remove').on('click',function(event) {
-		event.preventDefault();
-		let item = $(this).closest('.item');
-		let str = 'action=uploadRemove&filesfield='+item.data('id')+'&filename='+$(this).attr('rel')
-		$(this).parent().remove();
-		let settings = {
-			data:str,
-			url:'/packages/WeppsAdmin/Lists/Request.php'
-		}
-		layoutWepps.request(settings);
-		
-	});
-	$('form.list-data').find('a.list-item-save').off('click');
-	$('form.list-data').find('a.list-item-save').on('click',function(event) {
-		event.preventDefault();
-		let element = $(this).closest('form');
-		element.submit();
-	});
-	
 	$('form.list-data').find('a.list-item-copy').off('click');
 	$('form.list-data').find('a.list-item-copy').on('click',function(event) {
 		event.preventDefault();
@@ -292,9 +70,6 @@ var readyListsItemInit = function() {
 				}
 			}]
 		});
-		
-		
-		
 	});
 	$('form.list-data').find('a.list-item-remove').off('click');
 	$('form.list-data').find('a.list-item-remove').on('click',function(event) {
@@ -392,6 +167,252 @@ var readyListsItemInit = function() {
 			fields1.removeClass('pps_hide');
 		}
 	});
+}
+var readyListsItemVEInit = function() {
+	$('form.list-data').find('.field-ve').off('click');
+	$('form.list-data').find('.field-ve').on('click',function(event) {
+		event.preventDefault();
+		var dest = $(this).closest('.item').find('textarea').eq(0).attr('id');
+		var tinymceOpen = 1;
+		if (tinymce.editors.length) {
+			for (i=0; i < tinyMCE.editors.length; i++){
+				if (tinymce.editors[i].id == dest) {
+					tinymce.remove('#'+tinymce.editors[i].id);
+					tinymceOpen = 0;
+				}
+			}
+		}
+		if (tinymceOpen == 1) {
+			tinymce.init({
+				  selector: '#'+dest,
+				  language: 'ru',
+				  language_url : '/packages/vendor_local/tinymce_pps/languages/ru.js',
+				  height: 500,
+				  menubar: 'insert',
+				  convert_urls: false,
+				  entity_encoding : "raw",
+				  fontsize_formats: "12px 13px 15px 18px 20px 24px 36px",			  
+				  plugins: 
+				    ' autolink lists link image charmap print preview anchor textcolor ' +
+				    'searchreplace visualblocks code fullscreen ' +
+				    'insertdatetime media table contextmenu paste code help'
+				  ,
+				  contextmenu: "cut copy paste | link image table",
+				  content_css: [
+						'/packages/vendor_local/tinymce_pps/styles.css'
+					  ],
+				  style_formats: [
+						{title: "Headers", items: [
+						{title: "Header 1", format: "h1"},
+						{title: "Header 2", format: "h2"},
+						{title: "Header 3", format: "h3"},
+						{title: "Header 4", format: "h4"},
+						{title: "Header 5", format: "h5"},
+						{title: "Header 6", format: "h6"}
+					]},
+						{title: "Inline", items: [
+						{title: "Bold", icon: "bold", format: "bold"},
+						{title: "Italic", icon: "italic", format: "italic"},
+						{title: "Underline", icon: "underline", format: "underline"},
+						{title: "Strikethrough", icon: "strikethrough", format: "strikethrough"},
+						{title: "Superscript", icon: "superscript", format: "superscript"},
+						{title: "Subscript", icon: "subscript", format: "subscript"},
+						{title: "Code", icon: "code", format: "code"}
+					]},
+						{title: "Blocks", items: [
+						{title: "Paragraph", format: "p"},
+						{title: "Blockquote", format: "blockquote"},
+						{title: "Div", format: "div"},
+						{title: "Pre", format: "pre"}
+					]},
+						{title: "Alignment", items: [
+						{title: "Left", icon: "alignleft", format: "alignleft"},
+						{title: "Center", icon: "aligncenter", format: "aligncenter"},
+						{title: "Right", icon: "alignright", format: "alignright"},
+						{title: "Justify", icon: "alignjustify", format: "alignjustify"}
+					]},
+						{title: "Мой стиль", items: [
+						{title: "Видео блок", selector:'p', classes:'video'},
+						{title: "Желтая плашка", selector:'p', classes:'mkcite1'},
+						{title: "Стиль 1: Заголовок", selector:'p', classes:'style1header'},
+						{title: "Стиль 1: Текст", selector:'p', classes:'style1text'},
+						{title: "Цитата серая плашка", selector:'p', classes:'style2cite'},
+						{title: "Кнопка-ссылка", selector:'a', classes:'hrefbutton'}
+					]},
+					],
+					menubar: 'edit insert format table tc help',
+				    toolbar: 'styleselect alignleft aligncenter alignright alignjustify bullist numlist outdent indent',
+					//toolbar: []
+				});
+		}
+	});
+}
+var readyListsItemFilesInit = function() {
+	$('form.list-data').find('.field-file-select').off('click');
+	$('form.list-data').find('.field-file-select').on('click',function(event) {
+		event.preventDefault();
+		var status = ($(this).data('status')==0)?1:0;
+		if ($(this).data('status')==0) {
+			status = 1;
+			$(this).addClass('active');
+			$('.field-file-action').removeClass('pps_hide');
+		} else {
+			status = 0;
+			$(this).removeClass('active');
+			$('.field-file-action').addClass('pps_hide');
+		}
+		$(this).data('status',status);
+	});
+	$('form.list-data').find('.files-upload').off('click');
+	$('form.list-data').find('.files-upload').on('click',function(event) {
+		var status = $(this).closest('.item').find('.field-file-select').eq(0).data('status'); 
+		if (status==1) {
+			event.preventDefault();
+			var el =  $(this).closest('.files-item');
+			if (el.hasClass('active')) {
+				el.removeClass('active');
+			} else {
+				el.addClass('active');
+			}
+			return;	
+		}
+	});
+	$('form.list-data').find('.field-file-edit').off('click');
+	$('form.list-data').find('.field-file-edit').on('click',function(event) {
+		event.preventDefault();
+		el = $('.files-item.active');
+		var ids = '';
+		el.each(function(i,e) {
+			ids += $(e).data('id')+','
+		});
+		ids = ids.substr(0,ids.length-1)
+		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="pps pps_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
+			'title':'Сообщение',
+			'modal': true,
+			'buttons' : [
+			{
+				text : 'Сохранить',
+				icon : 'ui-icon-check',
+				click : function() {
+					let text = $('#file-input-edit').val();
+					el.each(function(i,e) {
+						let id = '.files-item[data-id="'+$(e).data('id')+'"';
+						$(id).find('div.descr').addClass('descr-fill');
+						$(id).find('div.descr > div.input + div').text(text);
+					});
+					let str = 'action=fileDescription&ids='+ids+'&text='+text;
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
+					$(this).dialog('close');
+				}
+			},{
+				text : 'Отмена',
+				click : function() {
+                    $(this).dialog('close');
+				}
+			}]
+		});
+	});
+	$('form.list-data').find('.field-file-remove').off('click');
+	$('form.list-data').find('.field-file-remove').on('click',function(event) {
+		event.preventDefault();
+		el = $('.files-item.active');
+		var ids = '';
+		el.each(function(i,e) {
+			ids += $(e).data('id')+','
+		});
+		ids = ids.substr(0,ids.length-1)
+		//console.log(ids);
+		$('#dialog').html('<p>Удалить выбранные файлы?</p>').dialog({
+			'title':'Сообщение',
+			'modal': true,
+			'buttons' : [
+			{
+				text : 'Удалить',
+				icon : 'ui-icon-trash',
+				click : function() {
+					el.each(function(i,e) {
+						$(e).remove();
+					});
+					$(this).dialog("close");
+					$('form.list-data').find('.field-file-select.active').trigger('click');
+					let str = 'action=fileRemove&id='+ids;
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
+				}
+			},{
+				text : 'Отмена',
+				click : function() {
+                    $(this).dialog('close');
+				}
+			}]
+		});
+	});
+	$('form.list-data').find('a.files-item-copy-link').off('click');
+	$('form.list-data').find('a.files-item-copy-link').on('click',function(event) {
+		event.preventDefault();
+		var element = $(this).closest('.files-item').find('input').eq(0);
+		element.select();
+		document.execCommand("copy");
+		$("#dialog").html('<p>Ссылка на файл скопирована</p>').dialog({
+			'title':'Сообщение',
+			'modal': true,
+			'buttons':[]
+		});
+		setTimeout(function() {
+			$("#dialog").dialog('close');
+		},1500);
+	});
+	$('form.list-data').find('a.files-item-remove-link').off('click');
+	$('form.list-data').find('a.files-item-remove-link').on('click',function(event) {
+		event.preventDefault();
+		var parent1 = $(this).closest('.files-item');
+		var element = parent1.find('input').eq(0);
+		element.select();
+		$("#dialog").html('<p>Вы действительно желаете удалить файл: '+parent1.data('title')+'?</p>').dialog({
+			'title':'Внимание!',
+			'modal': true,
+			'buttons' : [{
+				text : "Удалить",
+				icon : "ui-icon-close",
+				click : function() {
+					let str = 'action=fileRemove&id='+parent1.data('id');
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
+					//console.log('удаление файла, реальное (из базы, из фс)');
+					$(this).dialog("close");
+					element.closest('.files-item').remove();
+					
+				}
+			},{
+				text : "Отмена",
+				click : function() {
+					$(this).dialog("close");
+				}
+			}]
+		});
+	});
+	$('form.list-data').find('a.file-remove').off('click');
+	$('form.list-data').find('a.file-remove').on('click',function(event) {
+		event.preventDefault();
+		let item = $(this).closest('.item');
+		let str = 'action=uploadRemove&filesfield='+item.data('id')+'&filename='+$(this).attr('rel')
+		$(this).parent().remove();
+		let settings = {
+			data:str,
+			url:'/packages/WeppsAdmin/Lists/Request.php'
+		}
+		layoutWepps.request(settings);
+	});
 	if ($('form.list-data').find('.controls-tabs').find('a').eq(1)) {
 		$('form.list-data').find('.controls-tabs').find('a').eq(1).trigger('click');
 	}
@@ -414,15 +435,28 @@ var readyListsItemInit = function() {
       }
     });
 	$('form.list-data').find('.files').disableSelection();
-	$(document).keydown(function (event) {
-	    if (event.ctrlKey && event.which === 83) {
-  			$('#list-data-form').submit();
-	        event.preventDefault();
-	    }
+}
+var readyListsItemMinitableInit = function() {
+	$('form.list-data').find('a.minitable-remove').off('click');
+	$('form.list-data').find('a.minitable-remove').on('click',function(event) {
+		event.preventDefault();
+		console.log('remove');
+		$(this).closest('.minitable-body').remove();
+	});
+	$('form.list-data').find('a.minitable-add').off('click');
+	$('form.list-data').find('a.minitable-add').on('click',function(event) {
+		event.preventDefault();
+		console.log('add');
+		let el = $(this).closest('.minitable-headers').siblings('.minitable-body-tpl').eq(0).clone();
+		el.removeClass('minitable-body-tpl').addClass('minitable-body');
+		$(this).closest('.minitable').append(el);
+		readyListsItemMinitableInit();
 	});
 }
-
 $(document).ready(readyListsItemInit);
+$(document).ready(readyListsItemVEInit);
+$(document).ready(readyListsItemFilesInit);
+$(document).ready(readyListsItemMinitableInit);
 
 function urlRusLat(str) {
 	str = str.toLowerCase();

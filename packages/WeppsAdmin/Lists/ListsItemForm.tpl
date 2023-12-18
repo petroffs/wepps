@@ -171,6 +171,36 @@
 				<script>
 				$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}/" })});
 				</script>
+				{elseif $item.0.Type|strstr:"minitable"}
+				<div class="minitable" data-field="{$key}">
+					<div class="minitable-headers minitable-row pps_flex pps_flex_row pps_flex_start">
+						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
+						<div class="minitable-cell pps_flex_16 pps_flex_14_view_small">{$i}</div>
+						{/foreach}
+						<div class="minitable-cell pps_flex_fix">
+							<a class="minitable-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
+						</div>
+					</div>
+					<div class="minitable-body-tpl minitable-row pps_flex pps_flex_row pps_flex_row_str pps_flex_start">
+						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
+						<div class="minitable-cell pps_flex_16 pps_flex_14_view_small" contenteditable="true"></div>
+						{/foreach}
+						<div class="minitable-min minitable-cell pps_flex_fix">
+							<a class="minitable-remove" href="" title="Удалить"><i class="fa fa-remove"></i></a>
+						</div>
+					</div>
+				</div>
+				<div class="pps_interval"></div>
+				<label class="pps pps_area">
+					<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
+				</label>
+				
+				
+				{*
+				<label class="pps pps_input{if $item.0.Required==1} pps_require{/if} list-item-text">
+					<input type="text" name="{$key}" value="{$element.$key|escape:'html'}"/>
+				</label>
+				*}
 				{elseif $item.0.Type|strstr:"properties"}
 				<label class="pps pps_select list-item-properties">
 					<select name="{$key}">

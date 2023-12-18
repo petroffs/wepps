@@ -443,6 +443,11 @@ class ListsWepps {
 				$element[0]["{$key}_Properties"] = $properties;
 				$element[0]["{$key}_PropertiesOptions"] = $options2;
 				$element[0]["{$key}_PropertiesSelected"] = $selected2;
+			} elseif (strstr($value[0]['Type'], 'minitable')) {
+				$ex = explode("::", $value[0]["Type"]);
+				$element[0]["{$key}_Headers"] = explode(';', $ex[1]);
+				$element[0]["{$key}_Rows"] = [];
+				#UtilsWepps::debugf($element,1);
 			}
 		}
 		//UtilsWepps::debug($element);
