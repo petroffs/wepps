@@ -257,6 +257,11 @@ var readyListsItemInit = function() {
 	$('form.list-data').find('a.list-item-save').off('click');
 	$('form.list-data').find('a.list-item-save').on('click',function(event) {
 		event.preventDefault();
+		
+		
+		console.log('test');
+		return;
+		
 		let element = $(this).closest('form');
 		element.submit();
 	});

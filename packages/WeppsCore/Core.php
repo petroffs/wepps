@@ -152,7 +152,6 @@ class DataWepps {
 						$fields .= "
 						t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},
 						";
-							
 						$joins .= "
 						left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id
                             and sk{$f}.DisplayOff=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
@@ -256,19 +255,19 @@ class DataWepps {
 	 * @return array
 	 */
 	public function getScheme($renew=0) {
-		if ($this->scheme==NULL || $renew==1) {
+		if ($this->scheme==null || $renew==1) {
 			$fields = $this->fields;
 			$orderBy = "t.Priority";
-			if ($fields != '') {
+			if (!empty($fields)) {
 				$ids = "'".str_replace(",", "','", $fields)."'";
 				$fields = " and t.Field in ($ids)";
-				$orderBy = "FIELD(t.Field,$ids)";
+				$orderBy = "field(t.Field,$ids)";
 			}
 			$sql = "select
 			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.DisplayOff,t.FGroup
 			from s_ConfigFields as t
 			where t.TableName = '{$this->tableName}' $fields order by $orderBy";
-			$res = ConnectWepps::$instance->fetch ( $sql,NULL,'group');
+			$res = ConnectWepps::$instance->fetch($sql,null,'group');
 			if (count($res)==0) {
 				http_response_code(404);
 				ExceptionWepps::write("Указанной таблицы {$this->tableName} не существует");

@@ -111,8 +111,15 @@ form.list-data .item .field .properties .title2 {
 form.list-data .item .field .properties .title2 span {
 	font-weight: 300;
 }
-form.list-data .item .field .properties .descr2{
+form.list-data .item .field .properties .descr2 {
 	font-weight: 300;
+}
+form.list-data .item .field .mintable-cell {
+	outline: 1px solid #c4c4c4;
+	min-height: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 form.list-data .item.item-controls {
 	background: transparent;
