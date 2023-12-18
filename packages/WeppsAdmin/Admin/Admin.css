@@ -3,8 +3,8 @@
 	width: max-content;
 	border-radius: var(--step2);
 	position: absolute;
-	right: 5px;
-	top: 5px;
+	right: var(--step);
+	top: var(--step);
 	z-index: 10;
 	box-shadow: 0px 0px 5px rgba(var(--color1_rgb),0.2);
 	display: flex;
@@ -34,6 +34,9 @@
 	opacity: 1;
 }
 .pps_admin_list.pps_admin_panels {
+	right: inherit;
+	left: var(--step5);
+	
 	margin-top: var(--step);
 	margin-right: var(--step4);
 }
@@ -43,8 +46,8 @@
 	width: max-content;
 	border-radius: var(--step);
 	position: fixed;
-	bottom: 10px;
-	right: 10px;
+	bottom: var(--step2);
+	right: var(--step5);
 	z-index: 10;
 	box-shadow: 0px 0px 5px rgba(var(--color1_rgb),0.2);
 	display: flex;
@@ -72,12 +75,4 @@
 }
 .pps_admin_navigator>a:hover:before {
 	opacity: 1;
-}
-@media screen and (max-width: 480px) {
-	.pps_admin_list {
-		
-	}
-	.pps_admin_navigator {
-		
-	}
 }

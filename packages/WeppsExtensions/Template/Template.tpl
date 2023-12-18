@@ -24,7 +24,6 @@
 	<main>
 		{$content.Url|pps:"navigator"}
 		{$extensionTop}
-		{$blocks}
 		{if $normalView==1}
 		<div class="page main pps_flex_max pps_flex pps_flex_col">
 			<div class="page2">
@@ -38,6 +37,7 @@
 		{else}
 		{$extension}
 		{/if}
+		{$blocks}
 		{$extensionFooter}
 	</main>
 	<footer>

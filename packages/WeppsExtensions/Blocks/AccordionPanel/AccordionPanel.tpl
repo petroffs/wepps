@@ -1,7 +1,6 @@
-<div class="pps_panel panel-accordion" id="pps_panel_{$panel.Id}">
-	{$content.Id|pps:"panels":$panel.Id}
-	<div class="header">
-		
+<div class="page pps_panel panel-accordion" id="pps_panel_{$panel.Id}">
+	<div class="page2 panel-accordion-header">
+		{$content.Id|pps:"panels":$panel.Id}
 		<div class="title">{$panel.Name}</div>
 		<div class="text">{$panel.Descr}</div>
 		{if $panel.Images_FileUrl}
@@ -12,7 +11,7 @@
 		</div>
 		{/if}
 	</div>
-	<div class="wrapper">
+	<div class="page2 panel-accordion-wrapper">
 		<div class="pps_blocks{if $user.ShowAdmin} pps_sortable{/if} {$panel.LayoutCSS}">
 			{foreach name="blocks" item="block" from=$blocks}
 			<div class="pps_block block-accordion {$block.LayoutCSS}" id="pps_block_{$panel.Id}_{$block.Id}" data-id="{$block.Id}">
@@ -25,4 +24,3 @@
 		</div>
 	</div>
 </div>
-<div class="pps_interval"></div>

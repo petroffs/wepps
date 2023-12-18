@@ -1,44 +1,47 @@
-.panel-accordion {
+.page.panel-accordion {
+	background-color: antiquewhite;
 	margin-top: 20px;
+	padding-top: var(--step4);
+	padding-bottom: var(--step4);
 }
-.panel-accordion>.header {
+.panel-accordion-header {
 	position: relative;
 	padding: 0 25px;
 }
-.panel-accordion>.header>.title {
+.panel-accordion-header>.title {
 	font-size: 36px;
 	max-width: 900px;
 	line-height: 120%;
 }
-.panel-accordion>.header>.text {
+.panel-accordion-header>.text {
 	font-size: 24px;
 	max-width: 900px;
 }
-.panel-accordion>.header>.img {
+.panel-accordion-wrapper>.img {
 	background: #666;
 	padding: 50px 20px 0 20px;
 }
-.panel-accordion>.header>.img>.img {
+.panel-accordion-wrapper>.img>.img {
 	max-width: max-content;
 	display: block;
 	margin: 0 auto;
 }
-.panel-accordion>.header>.img>.img>img {
+.panel-accordion-wrapper>.img>.img>img {
 	max-width: 100%;
 	height: auto;
 }
-.panel-accordion>.wrapper>.pps_blocks>.pps_block {
+.panel-accordion-wrapper>.pps_blocks>.pps_block {
 	background: #E5E5E5;
 	margin-top: 20px;
 	padding: 20px;
 	position: relative;
 }
-.panel-accordion>.wrapper>.pps_blocks>.pps_block>div.title {
+.panel-accordion-wrapper>.pps_blocks>.pps_block>div.title {
 	font-size: 24px;
 	position: relative;
 	cursor: pointer;
 }
-.panel-accordion>.wrapper>.pps_blocks>.pps_block>div.title:after {
+.panel-accordion-wrapper>.pps_blocks>.pps_block>div.title:after {
 	content: '';
 	background: #fff url(/ext/Blocks/AccordionPanel/files/ico-plus.svg) center center no-repeat;
 	width: 32px;
@@ -49,13 +52,13 @@
 	top: 0;
 	right: 0px;
 }
-.panel-accordion>.wrapper>.pps_blocks>.pps_block.active>div.title:after {
+.panel-accordion-wrapper>.pps_blocks>.pps_block.active>div.title:after {
 	background-image: url(/ext/Blocks/AccordionPanel/files/ico-minus.svg);
 }
-.panel-accordion>.wrapper>.pps_blocks>.pps_block>div.text {
+.panel-accordion-wrapper>.pps_blocks>.pps_block>div.text {
 	padding-top: 30px;
 }
-.panel-accordion>.wrapper>.pps_blocks>.pps_block>div.text p {
+.panel-accordion-wrapper>.pps_blocks>.pps_block>div.text p {
 	max-width: 900px;
 }
 /*
@@ -64,7 +67,7 @@
 }
 */
 @media screen and (max-width: 480px) {
-	.panel-accordion>.wrapper>.pps_blocks>.pps_block>div.title {
+	.panel-accordion-wrapper>.pps_blocks>.pps_block>div.title {
 		font-size: 18px;
 	}	
 }
