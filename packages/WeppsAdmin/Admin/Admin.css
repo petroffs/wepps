@@ -35,6 +35,7 @@
 }
 .pps_admin_list.pps_admin_panels {
 	margin-top: var(--step);
+	margin-right: var(--step4);
 }
 
 .pps_admin_navigator {
