@@ -5,6 +5,7 @@
 }
 :root {
   --color1: #000;
+  --color1_rgb: 0,0,0;
   --color2: #fff;
   --color3: #666;
   --color3_light: #CECECE;
