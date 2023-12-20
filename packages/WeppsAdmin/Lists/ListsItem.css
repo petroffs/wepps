@@ -114,27 +114,27 @@ form.list-data .item .field .properties .title2 span {
 form.list-data .item .field .properties .descr2 {
 	font-weight: 300;
 }
-form.list-data .item .field .minitalbe {
+form.list-data .item .field .minitable {
 	outline: 1px solid #9a9a9a;
 	border-radius: 3px;
 	overflow: hidden;
 }
-form.list-data .item .field .minitalbe-row:not(:last-child) {
+form.list-data .item .field .minitable-row:not(:last-child) {
 	border-bottom: 1px solid #f0f0f0;
 }
-form.list-data .item .field .minitalbe-cell {
+form.list-data .item .field .minitable-cell {
 	padding: var(--step);
 	overflow-wrap: break-word;
 }
-form.list-data .item .field .minitalbe-body-tpl {
+form.list-data .item .field .minitable-body-tpl {
 	display: none;
 }
-form.list-data .item .field .minitalbe-body .minitalbe-cell {
+form.list-data .item .field .minitable-body .minitable-cell {
 	font-weight: 300;
 	color: #000;
 	padding: var(--step);
 }
-form.list-data .item .field .minitalbe-body .minitalbe-cell:focus {
+form.list-data .item .field .minitable-body .minitable-cell:focus {
 	background: #f0f0f0;
 }
 form.list-data .item .field .minitable-remove {

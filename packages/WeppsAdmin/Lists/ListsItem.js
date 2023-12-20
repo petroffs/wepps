@@ -1,4 +1,34 @@
+
 var readyListsItemInit = function() {
+	$('form.list-data').find('a.list-item-save').off('click');
+	$('form.list-data').find('a.list-item-save').on('click',function(event) {
+		event.preventDefault();
+		$('.minitable').each(function(i,e){
+			let rows = $(e).find('.minitable-body');
+			var str = '';
+			rows.each(function(k,v) {
+				let cells = $(v).find('[contenteditable]');
+				cells.each(function(k2,v2) {	
+					str += $(v2).html()+':::';
+				});
+				str = str.substring(0,str.length-3);
+				str += "\n";
+			});
+			str = str.substring(0,str.length-1);
+			//console.log(str);
+			$('#formArea'+$(e).data('field')).val(str);
+		});
+		//return;
+		let element = $(this).closest('form');
+		element.submit();
+	});
+	$(document).keydown(function (event) {
+	    if (event.ctrlKey && event.which === 83) {
+  			$('form.list-data').find('a.list-item-save').eq(0).trigger('click');
+	        event.preventDefault();
+	    }
+	});
+	
 	$('form.list-data').find('.field-translit').off('click');
 	$('form.list-data').find('.field-translit').on('click',function(event) {
 		event.preventDefault();
@@ -9,16 +39,6 @@ var readyListsItemInit = function() {
 	$('form.list-data').find('.list-item-date').find('input').datepicker({
 		dateFormat: "yy-mm-dd"
 	},$.datepicker.regional[ "ru" ]);
-	
-	$('form.list-data').find('a.list-item-save').off('click');
-	$('form.list-data').find('a.list-item-save').on('click',function(event) {
-		event.preventDefault();
-		console.log('test');
-		return;
-		let element = $(this).closest('form');
-		element.submit();
-	});
-	
 	$('form.list-data').find('a.list-item-copy').off('click');
 	$('form.list-data').find('a.list-item-copy').on('click',function(event) {
 		event.preventDefault();
@@ -146,34 +166,6 @@ var readyListsItemInit = function() {
 			var fields1 = $('form.list-data').find('.item[data-group="'+group1+'"]');
 			fields1.removeClass('pps_hide');
 		}
-	});
-	if ($('form.list-data').find('.controls-tabs').find('a').eq(1)) {
-		$('form.list-data').find('.controls-tabs').find('a').eq(1).trigger('click');
-	}
-	$('form.list-data').find('.files').sortable({
-      placeholder: "sortable-active",
-      update: function( event, ui ) {
-    	  let items = ui.item.parent()
-    	  var str = '';
-    	  items.children().each(function(index) {
-    		  //console.log($(this).data('id'));
-    		  str += $(this).data('id')+',';
-    	  });
-    	  str = str.substr(0,str.length - 1);
-    	  str = 'action=fileSortable&id='+str;
-		  let settings = {
-			  data: str,
-			  url: '/packages/WeppsAdmin/Lists/Request.php'
-		  }
-		  layoutWepps.request(settings);
-      }
-    });
-	$('form.list-data').find('.files').disableSelection();
-	$(document).keydown(function (event) {
-	    if (event.ctrlKey && event.which === 83) {
-  			$('#list-data-form').submit();
-	        event.preventDefault();
-	    }
 	});
 }
 var readyListsItemVEInit = function() {
@@ -323,7 +315,6 @@ var readyListsItemFilesInit = function() {
 				}
 			}]
 		});
-		
 	});
 	$('form.list-data').find('.field-file-remove').off('click');
 	$('form.list-data').find('.field-file-remove').on('click',function(event) {
@@ -421,23 +412,44 @@ var readyListsItemFilesInit = function() {
 			url:'/packages/WeppsAdmin/Lists/Request.php'
 		}
 		layoutWepps.request(settings);
-		
 	});
+	if ($('form.list-data').find('.controls-tabs').find('a').eq(1)) {
+		$('form.list-data').find('.controls-tabs').find('a').eq(1).trigger('click');
+	}
+	$('form.list-data').find('.files').sortable({
+      placeholder: "sortable-active",
+      update: function( event, ui ) {
+    	  let items = ui.item.parent()
+    	  var str = '';
+    	  items.children().each(function(index) {
+    		  //console.log($(this).data('id'));
+    		  str += $(this).data('id')+',';
+    	  });
+    	  str = str.substr(0,str.length - 1);
+    	  str = 'action=fileSortable&id='+str;
+		  let settings = {
+			  data: str,
+			  url: '/packages/WeppsAdmin/Lists/Request.php'
+		  }
+		  layoutWepps.request(settings);
+      }
+    });
+	$('form.list-data').find('.files').disableSelection();
 }
 var readyListsItemMinitableInit = function() {
 	$('form.list-data').find('a.minitable-remove').off('click');
 	$('form.list-data').find('a.minitable-remove').on('click',function(event) {
 		event.preventDefault();
 		console.log('remove');
-		$(this).closest('.minitalbe-body').remove();
+		$(this).closest('.minitable-body').remove();
 	});
 	$('form.list-data').find('a.minitable-add').off('click');
 	$('form.list-data').find('a.minitable-add').on('click',function(event) {
 		event.preventDefault();
 		console.log('add');
-		let el = $(this).closest('.minitalbe-headers').siblings('.minitalbe-body-tpl').eq(0).clone();
-		el.removeClass('minitalbe-body-tpl').addClass('minitalbe-body');
-		$(this).closest('.minitalbe').append(el);
+		let el = $(this).closest('.minitable-headers').siblings('.minitable-body-tpl').eq(0).clone();
+		el.removeClass('minitable-body-tpl').addClass('minitable-body');
+		$(this).closest('.minitable').append(el);
 		readyListsItemMinitableInit();
 	});
 }

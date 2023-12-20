@@ -172,20 +172,20 @@
 				$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}/" })});
 				</script>
 				{elseif $item.0.Type|strstr:"minitable"}
-				<div class="minitalbe" id="minitalbe_{$key}">
-					<div class="minitalbe-headers minitalbe-row pps_flex pps_flex_row pps_flex_start">
+				<div class="minitable" data-field="{$key}">
+					<div class="minitable-headers minitable-row pps_flex pps_flex_row pps_flex_start">
 						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
-						<div class="minitalbe-cell pps_flex_16 pps_flex_14_view_small">{$i}</div>
+						<div class="minitable-cell pps_flex_16 pps_flex_14_view_small">{$i}</div>
 						{/foreach}
-						<div class="minitalbe-cell pps_flex_fix">
+						<div class="minitable-cell pps_flex_fix">
 							<a class="minitable-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
 						</div>
 					</div>
-					<div class="minitalbe-body-tpl minitalbe-row pps_flex pps_flex_row pps_flex_row_str pps_flex_start">
+					<div class="minitable-body-tpl minitable-row pps_flex pps_flex_row pps_flex_row_str pps_flex_start">
 						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
-						<div class="minitalbe-cell pps_flex_16 pps_flex_14_view_small" contenteditable="true"></div>
+						<div class="minitable-cell pps_flex_16 pps_flex_14_view_small" contenteditable="true"></div>
 						{/foreach}
-						<div class="minitalbe-min minitalbe-cell pps_flex_fix">
+						<div class="minitable-min minitable-cell pps_flex_fix">
 							<a class="minitable-remove" href="" title="Удалить"><i class="fa fa-remove"></i></a>
 						</div>
 					</div>
