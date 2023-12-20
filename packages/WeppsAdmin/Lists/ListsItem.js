@@ -10,6 +10,173 @@ var readyListsItemInit = function() {
 		dateFormat: "yy-mm-dd"
 	},$.datepicker.regional[ "ru" ]);
 	
+	$('form.list-data').find('a.list-item-save').off('click');
+	$('form.list-data').find('a.list-item-save').on('click',function(event) {
+		event.preventDefault();
+		console.log('test');
+		return;
+		let element = $(this).closest('form');
+		element.submit();
+	});
+	
+	$('form.list-data').find('a.list-item-copy').off('click');
+	$('form.list-data').find('a.list-item-copy').on('click',function(event) {
+		event.preventDefault();
+		
+		let element = $(this).closest('form');
+		
+		$("#dialog").html('<p>Копировать этот элемент?</p>').dialog({
+			'title':'Внимание!',
+			'modal': true,
+			'buttons' : [{
+				text : "Копировать",
+				icon : "ui-icon-check",
+				click : function() {
+					let tableName = element.find('input[name="pps_tablename"]').val();  
+					let tableNameId = element.find('input[name="pps_tablename_id"]').val();
+					let path = element.find('input[name="pps_path"]').eq(0).val();
+					let str = 'action=copy&list='+tableName+'&id='+tableNameId+'&pps_path='+path;
+					let settings = {
+						data:str,
+						url:'/packages/WeppsAdmin/Lists/Request.php'
+					}
+					layoutWepps.request(settings);
+					$(this).dialog("close");
+				}
+			},{
+				text : "Отмена",
+				click : function() {
+					$(this).dialog("close");
+				}
+			}]
+		});
+	});
+	$('form.list-data').find('a.list-item-remove').off('click');
+	$('form.list-data').find('a.list-item-remove').on('click',function(event) {
+		event.preventDefault();
+		var element = $(this).closest('form').eq(0);
+		$("#dialog").html('<p>Вы действительно желаете удалить этот элемент?</p>').dialog({
+			'title':'Внимание!',
+			'modal': true,
+			'buttons' : [{
+				text : "Удалить",
+				icon : "ui-icon-close",
+				click : function() {
+					let id = element.find('input[name="pps_tablename_id"]').eq(0).val();
+					let list = element.find('input[name="pps_tablename"]').eq(0).val();
+					let path = element.find('input[name="pps_path"]').eq(0).val();
+					let str = 'action=remove&id='+id+'&list='+list+'&pps_path='+path;
+					let settings = {
+						data: str,
+						url: '/packages/WeppsAdmin/Lists/Request.php',
+					}
+					layoutWepps.request(settings);
+					$(this).dialog("close");
+				}
+			},{
+				text : "Отмена",
+				click : function() {
+					$(this).dialog("close");
+				}
+			}]
+		});
+	});
+	$('form.list-data').find('.list-item-properties').off('change');
+	$('form.list-data').find('.list-item-properties').on('change',function(event) {
+		$('form.list-data').find('a.list-item-save').trigger('click');
+	});
+	$('form.list-data').find('.properties-item-option-add').on('click',function(event) {
+		event.preventDefault();
+		var select1 = $(this).closest('.labels2').find('label.pps_select').find('select').eq(0);
+		var input1 = $(this).closest('.labels2').find('label.pps_input').find('input').eq(0);
+		
+		var id = input1.data('id');
+		if (input1.val()=='') {
+			$("#dialog").html('<p>Введите значение опции</p>').dialog({
+				'title':'Ошибка',
+				'modal': true,
+				'buttons':[]
+			});
+			return;
+		}
+		var str = 'action=propOptionAdd&id='+id+'&value='+input1.val();
+		if (select1.find("option[value='" + input1.val() + "']").length) {
+			$("#dialog").html('<p>Опция уже существует</p>').dialog({
+				'title':'Ошибка',
+				'modal': true,
+				'buttons':[]
+			});
+			return;
+		} else {
+			select1.append("<option value=\""+input1.val()+"\" selected=\"selected\">"+input1.val()+"</option>");
+			let settings = {
+						data: str,
+						url: '/packages/WeppsAdmin/Lists/Request.php',
+					}
+			layoutWepps.request(settings);
+			input1.val('');
+	    }
+		$("#dialog").html('<p>Опция добавлена</p>').dialog({
+			'title':'Сообщение',
+			'modal': true,
+			'buttons':[]
+		});
+		setTimeout(function() {
+			$("#dialog").dialog('close');
+			input1.focus();
+		},1500);
+	});
+	$('form.list-data').find('.controls-tabs').find('a').on('click',function(event) {
+		event.preventDefault();
+		var group1 = $(this).data('id');
+		var siblings1 = $(this).siblings('a'); 
+		siblings1.removeClass('active');
+		siblings1.find('i.fa-caret-down').addClass('fa-caret-right');
+		siblings1.find('i.fa-caret-down').removeClass('fa-caret-down');
+		$(this).find('i').addClass('fa-caret-down');
+		$(this).find('i').removeClass('fa-caret-right');
+		$(this).addClass('active');
+		
+		if (group1=='FieldAll') {
+			var fields1 = $('form.list-data').find('.item[data-group]');
+			fields1.removeClass('pps_hide');
+		} else {
+			var fields1 = $('form.list-data').find('.item[data-group]');
+			fields1.addClass('pps_hide');
+			var fields1 = $('form.list-data').find('.item[data-group="'+group1+'"]');
+			fields1.removeClass('pps_hide');
+		}
+	});
+	if ($('form.list-data').find('.controls-tabs').find('a').eq(1)) {
+		$('form.list-data').find('.controls-tabs').find('a').eq(1).trigger('click');
+	}
+	$('form.list-data').find('.files').sortable({
+      placeholder: "sortable-active",
+      update: function( event, ui ) {
+    	  let items = ui.item.parent()
+    	  var str = '';
+    	  items.children().each(function(index) {
+    		  //console.log($(this).data('id'));
+    		  str += $(this).data('id')+',';
+    	  });
+    	  str = str.substr(0,str.length - 1);
+    	  str = 'action=fileSortable&id='+str;
+		  let settings = {
+			  data: str,
+			  url: '/packages/WeppsAdmin/Lists/Request.php'
+		  }
+		  layoutWepps.request(settings);
+      }
+    });
+	$('form.list-data').find('.files').disableSelection();
+	$(document).keydown(function (event) {
+	    if (event.ctrlKey && event.which === 83) {
+  			$('#list-data-form').submit();
+	        event.preventDefault();
+	    }
+	});
+}
+var readyListsItemVEInit = function() {
 	$('form.list-data').find('.field-ve').off('click');
 	$('form.list-data').find('.field-ve').on('click',function(event) {
 		event.preventDefault();
@@ -87,6 +254,8 @@ var readyListsItemInit = function() {
 				});
 		}
 	});
+}
+var readyListsItemFilesInit = function() {
 	$('form.list-data').find('.field-file-select').off('click');
 	$('form.list-data').find('.field-file-select').on('click',function(event) {
 		event.preventDefault();
@@ -254,180 +423,28 @@ var readyListsItemInit = function() {
 		layoutWepps.request(settings);
 		
 	});
-	$('form.list-data').find('a.list-item-save').off('click');
-	$('form.list-data').find('a.list-item-save').on('click',function(event) {
+}
+var readyListsItemMinitableInit = function() {
+	$('form.list-data').find('a.minitable-remove').off('click');
+	$('form.list-data').find('a.minitable-remove').on('click',function(event) {
 		event.preventDefault();
-		
-		
-		console.log('test');
-		return;
-		
-		let element = $(this).closest('form');
-		element.submit();
+		console.log('remove');
+		$(this).closest('.minitalbe-body').remove();
 	});
-	
-	$('form.list-data').find('a.list-item-copy').off('click');
-	$('form.list-data').find('a.list-item-copy').on('click',function(event) {
+	$('form.list-data').find('a.minitable-add').off('click');
+	$('form.list-data').find('a.minitable-add').on('click',function(event) {
 		event.preventDefault();
-		
-		let element = $(this).closest('form');
-		
-		$("#dialog").html('<p>Копировать этот элемент?</p>').dialog({
-			'title':'Внимание!',
-			'modal': true,
-			'buttons' : [{
-				text : "Копировать",
-				icon : "ui-icon-check",
-				click : function() {
-					let tableName = element.find('input[name="pps_tablename"]').val();  
-					let tableNameId = element.find('input[name="pps_tablename_id"]').val();
-					let path = element.find('input[name="pps_path"]').eq(0).val();
-					let str = 'action=copy&list='+tableName+'&id='+tableNameId+'&pps_path='+path;
-					let settings = {
-						data:str,
-						url:'/packages/WeppsAdmin/Lists/Request.php'
-					}
-					layoutWepps.request(settings);
-					$(this).dialog("close");
-				}
-			},{
-				text : "Отмена",
-				click : function() {
-					$(this).dialog("close");
-				}
-			}]
-		});
-		
-		
-		
-	});
-	$('form.list-data').find('a.list-item-remove').off('click');
-	$('form.list-data').find('a.list-item-remove').on('click',function(event) {
-		event.preventDefault();
-		var element = $(this).closest('form').eq(0);
-		$("#dialog").html('<p>Вы действительно желаете удалить этот элемент?</p>').dialog({
-			'title':'Внимание!',
-			'modal': true,
-			'buttons' : [{
-				text : "Удалить",
-				icon : "ui-icon-close",
-				click : function() {
-					let id = element.find('input[name="pps_tablename_id"]').eq(0).val();
-					let list = element.find('input[name="pps_tablename"]').eq(0).val();
-					let path = element.find('input[name="pps_path"]').eq(0).val();
-					let str = 'action=remove&id='+id+'&list='+list+'&pps_path='+path;
-					let settings = {
-						data: str,
-						url: '/packages/WeppsAdmin/Lists/Request.php',
-					}
-					layoutWepps.request(settings);
-					$(this).dialog("close");
-				}
-			},{
-				text : "Отмена",
-				click : function() {
-					$(this).dialog("close");
-				}
-			}]
-		});
-	});
-	$('form.list-data').find('.list-item-properties').off('change');
-	$('form.list-data').find('.list-item-properties').on('change',function(event) {
-		$('form.list-data').find('a.list-item-save').trigger('click');
-	});
-	$('form.list-data').find('.properties-item-option-add').on('click',function(event) {
-		event.preventDefault();
-		var select1 = $(this).closest('.labels2').find('label.pps_select').find('select').eq(0);
-		var input1 = $(this).closest('.labels2').find('label.pps_input').find('input').eq(0);
-		
-		var id = input1.data('id');
-		if (input1.val()=='') {
-			$("#dialog").html('<p>Введите значение опции</p>').dialog({
-				'title':'Ошибка',
-				'modal': true,
-				'buttons':[]
-			});
-			return;
-		}
-		var str = 'action=propOptionAdd&id='+id+'&value='+input1.val();
-		if (select1.find("option[value='" + input1.val() + "']").length) {
-			$("#dialog").html('<p>Опция уже существует</p>').dialog({
-				'title':'Ошибка',
-				'modal': true,
-				'buttons':[]
-			});
-			return;
-		} else {
-			select1.append("<option value=\""+input1.val()+"\" selected=\"selected\">"+input1.val()+"</option>");
-			let settings = {
-						data: str,
-						url: '/packages/WeppsAdmin/Lists/Request.php',
-					}
-			layoutWepps.request(settings);
-			input1.val('');
-	    }
-		$("#dialog").html('<p>Опция добавлена</p>').dialog({
-			'title':'Сообщение',
-			'modal': true,
-			'buttons':[]
-		});
-		setTimeout(function() {
-			$("#dialog").dialog('close');
-			input1.focus();
-		},1500);
-	});
-	$('form.list-data').find('.controls-tabs').find('a').on('click',function(event) {
-		event.preventDefault();
-		var group1 = $(this).data('id');
-		var siblings1 = $(this).siblings('a'); 
-		siblings1.removeClass('active');
-		siblings1.find('i.fa-caret-down').addClass('fa-caret-right');
-		siblings1.find('i.fa-caret-down').removeClass('fa-caret-down');
-		$(this).find('i').addClass('fa-caret-down');
-		$(this).find('i').removeClass('fa-caret-right');
-		$(this).addClass('active');
-		
-		if (group1=='FieldAll') {
-			var fields1 = $('form.list-data').find('.item[data-group]');
-			fields1.removeClass('pps_hide');
-		} else {
-			var fields1 = $('form.list-data').find('.item[data-group]');
-			fields1.addClass('pps_hide');
-			var fields1 = $('form.list-data').find('.item[data-group="'+group1+'"]');
-			fields1.removeClass('pps_hide');
-		}
-	});
-	if ($('form.list-data').find('.controls-tabs').find('a').eq(1)) {
-		$('form.list-data').find('.controls-tabs').find('a').eq(1).trigger('click');
-	}
-	$('form.list-data').find('.files').sortable({
-      placeholder: "sortable-active",
-      update: function( event, ui ) {
-    	  let items = ui.item.parent()
-    	  var str = '';
-    	  items.children().each(function(index) {
-    		  //console.log($(this).data('id'));
-    		  str += $(this).data('id')+',';
-    	  });
-    	  str = str.substr(0,str.length - 1);
-    	  str = 'action=fileSortable&id='+str;
-		  let settings = {
-			  data: str,
-			  url: '/packages/WeppsAdmin/Lists/Request.php'
-		  }
-		  layoutWepps.request(settings);
-      }
-    });
-	$('form.list-data').find('.files').disableSelection();
-	$(document).keydown(function (event) {
-	    if (event.ctrlKey && event.which === 83) {
-  			$('#list-data-form').submit();
-	        event.preventDefault();
-	    }
+		console.log('add');
+		let el = $(this).closest('.minitalbe-headers').siblings('.minitalbe-body-tpl').eq(0).clone();
+		el.removeClass('minitalbe-body-tpl').addClass('minitalbe-body');
+		$(this).closest('.minitalbe').append(el);
+		readyListsItemMinitableInit();
 	});
 }
-
 $(document).ready(readyListsItemInit);
+$(document).ready(readyListsItemVEInit);
+$(document).ready(readyListsItemFilesInit);
+$(document).ready(readyListsItemMinitableInit);
 
 function urlRusLat(str) {
 	str = str.toLowerCase();

@@ -117,22 +117,28 @@ form.list-data .item .field .properties .descr2 {
 form.list-data .item .field .minitalbe {
 	outline: 1px solid #9a9a9a;
 	border-radius: 3px;
+	overflow: hidden;
 }
 form.list-data .item .field .minitalbe-row:not(:last-child) {
 	border-bottom: 1px solid #f0f0f0;
 }
 form.list-data .item .field .minitalbe-cell {
 	padding: var(--step);
+	overflow-wrap: break-word;
 }
-form.list-data .item .field .minitable-remove {
-	color: red;
+form.list-data .item .field .minitalbe-body-tpl {
+	display: none;
 }
-
-
 form.list-data .item .field .minitalbe-body .minitalbe-cell {
 	font-weight: 300;
 	color: #000;
 	padding: var(--step);
+}
+form.list-data .item .field .minitalbe-body .minitalbe-cell:focus {
+	background: #f0f0f0;
+}
+form.list-data .item .field .minitable-remove {
+	color: red;
 }
 form.list-data .item.item-controls {
 	background: transparent;
