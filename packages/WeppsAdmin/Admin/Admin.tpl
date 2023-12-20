@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>{$content.MetaTitle|default:$contenttop.Name|strip_tags} — Wepps</title>
+<title>{$content.MetaTitle|default:$contenttop.Name|strip_tags}</title>
 <meta name="keywords" content="{$contenttop.MetaKeyword|strip_tags}" />
 <meta name="description" content="{$contenttop.MetaDescription|strip_tags}" />
 <meta name="author" content="Aleksey Petrov" />
