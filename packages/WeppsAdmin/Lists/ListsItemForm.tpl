@@ -57,6 +57,10 @@
 						<a href="" class="field-file-action field-file-edit pps_hide"><i class="fa fa-edit"></i></a>
 						<a href="" class="field-file-action field-file-remove pps_hide"><i class="fa fa-remove"></i></a>
 					</div>
+					{elseif $item.0.Type|strstr:"minitable"}
+					<div class="field-file">
+						<a href="" class="field-minitable-select">добавить строку</a>
+					</div>
 					{/if}
 				</div>
 			</div>
@@ -172,23 +176,34 @@
 				$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}/" })});
 				</script>
 				{elseif $item.0.Type|strstr:"minitable"}
-				<table>
-				<tr>
-				{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
-				<td>{$i}</td>
-				{/foreach}
-				</tr>
-				<tr>
-				{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
-				<td><div class="mintable-cell" contenteditable="true">1</div></td>
-				{/foreach}
-				</tr>
-				</table>
-				
-				
+				<div class="minitalbe" id="minitalbe_{$key}">
+					<div class="minitalbe-headers minitalbe-row pps_flex pps_flex_row pps_flex_start">
+						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
+						<div class="minitalbe-cell pps_flex_16">{$i}</div>
+						{/foreach}
+					</div>
+					<div class="minitalbe-body minitalbe-row pps_flex pps_flex_row pps_flex_row_str pps_flex_start">
+						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
+						<div class="minitalbe-cell pps_flex_16" contenteditable="true">ww</div>
+						{/foreach}
+						<div class="minitalbe-min minitalbe-cell pps_flex_fix">
+							<a class="minitable-remove" href="" title="Удалить"><i class="fa fa-remove"></i></a>
+						</div>
+					</div>
+					<div class="minitalbe-body minitalbe-row pps_flex pps_flex_row pps_flex_row_str pps_flex_start">
+						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
+						<div class="minitalbe-cell pps_flex_16" contenteditable="true">ww</div>
+						{/foreach}
+						<div class="minitalbe-min minitalbe-cell pps_flex_fix">
+							<a class="minitable-remove" href="" title="Удалить"><i class="fa fa-remove"></i></a>
+						</div>
+					</div>
+				</div>
+				{*
 				<label class="pps pps_area">
 					<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
 				</label>
+				*}
 				
 				{*
 				<label class="pps pps_input{if $item.0.Required==1} pps_require{/if} list-item-text">
