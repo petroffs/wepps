@@ -24,7 +24,7 @@ class AdminWepps {
 		$this->nav = array (
 				'home' => array (
 						'Alias' => 'home',
-						'Name' => "CMS.PSS",
+						'Name' => "Wepps",
 						'Extension' => 'Home'
 				),
 				'navigator' => array (

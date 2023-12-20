@@ -25,7 +25,7 @@ class HomeWepps {
 			 * logic
 			 */
 			$content = array();
-			$content['MetaTitle'] = "Добро пожаловать — Wepps";
+			$content['MetaTitle'] = "Wepps";
 			$content['Name'] = "Главная";
 			$content['NameNavItem'] = "Wepps";
 			
