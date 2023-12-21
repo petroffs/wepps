@@ -15,8 +15,8 @@
 		{$controlsTpl}
 		<div class="pps_interval"></div>
 		{if $tabs|@count>1 || $listSettings.ActionShowIdAddons}
-		<div class="controls-area controls-tabs pps_border pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin">
-			<div class="pps_flex_11  pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large">
+		<div class="controls-area controls-tabs pps_border">
+			<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_padding">
 				<a href="" data-id="FieldAll"><i class="fa fa-caret-down"></i> Все</a>
 				{foreach name="out" item="item" key="key" from=$tabs}
 				<a href="" data-id="{$key}"><i class="fa fa-caret-right"></i> {$translate.$item|default:$item}</a>
@@ -24,7 +24,7 @@
 				{foreach name="out" item="item" key="key" from=$listSettings.ActionShowIdAddons}
 				<a href="" data-id="{$item.group}"><i class="fa fa-caret-right"></i> {$item.title}</a>
 				{/foreach}
-			</div>
+			</div>	
 		</div>
 		<div class="pps_interval"></div>
 		{/if}

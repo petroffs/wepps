@@ -10,8 +10,8 @@
 	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col pps_padding centercontent">
 		<div class="pps_border pps_flex_max pps_padding">
 			<h2>{$content.Name}</h2>
-			<div class="controls-area pps_flex pps_flex_row pps_flex_margin pps_border">
-				<div class="pps_flex_12 pps_flex_11_view_small pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large">
+			<div class="controls-area pps_flex pps_flex_row pps_border">
+				<div class="pps_flex_12 pps_flex_11_view_small pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_padding">
 					<a href="/_pps/lists/{$listSettings.TableName}/add/" title="Добавить"><i class="fa fa-2x fa-plus"></i></a>
 					{if $permConfig==1}
 					<a href="/_pps/lists/s_Config/{$listSettings.Id}/" title="Конфигурация"><i class="fa fa-2x fa-gear"></i></a>
@@ -20,7 +20,7 @@
 					
 					{/if}
 				</div>
-				<div class="pps_flex_12 pps_flex_11_view_small pps_right">
+				<div class="controls-area-form pps_flex_12 pps_flex_11_view_small pps_right">
 					<form class="pps_flex pps_flex_row pps_flex_margin_small"
 						action="javascript:function ret() { return false }">
 						<label class="pps pps_select pps_flex_13"> <select>

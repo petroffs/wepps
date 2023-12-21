@@ -690,7 +690,6 @@ ul.pps_list, ol.pps_list {
 .pps_flex.pps_flex_col.pps_flex_margin {
 	width: calc(100% + var(--step));
 	margin: calc(var(--step) * -1) 0 0 calc(var(--step) * -1);
-	display: inline-flex;
 }
 .pps_flex.pps_flex_row.pps_flex_margin>*,
 .pps_flex.pps_flex_col.pps_flex_margin>* {
@@ -702,7 +701,6 @@ ul.pps_list, ol.pps_list {
 .pps_flex.pps_flex_col.pps_flex_margin_small {
 	width: calc(100% + var(--stepHalf));
 	margin: calc(var(--stepHalf) * -1) 0 0 calc(var(--stepHalf) * -1);
-	display: inline-flex;
 }
 .pps_flex.pps_flex_row.pps_flex_margin_small>*,
 .pps_flex.pps_flex_col.pps_flex_margin_small>* {
@@ -714,7 +712,6 @@ ul.pps_list, ol.pps_list {
 .pps_flex.pps_flex_col.pps_flex_margin_medium {
 	width: calc(100% + var(--step2));
 	margin: calc(var(--step2) * -1) 0 0 calc(var(--step2) * -1);
-	display: inline-flex;
 }
 .pps_flex.pps_flex_row.pps_flex_margin_medium>*,
 .pps_flex.pps_flex_col.pps_flex_margin_medium>* {
@@ -726,7 +723,6 @@ ul.pps_list, ol.pps_list {
 .pps_flex.pps_flex_col.pps_flex_margin_large {
 	width: calc(100% + var(--step3));
 	margin: calc(var(--step3) * -1) 0 0 calc(var(--step3) * -1);
-	display: inline-flex;
 }
 .pps_flex.pps_flex_row.pps_flex_margin_large>*,
 .pps_flex.pps_flex_col.pps_flex_margin_large>* {

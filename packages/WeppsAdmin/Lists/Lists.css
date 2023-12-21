@@ -33,9 +33,6 @@
 }
 .controls-area {
 	background: transparent;
-	padding: 8px 10px !important;
-	margin: 0 2px !important;
-	width: auto !important;
 }
 .controls-area label {
 	opacity: 0.6;
@@ -48,6 +45,10 @@
 }
 .controls-area a i {
 	min-width: 10px;
+}
+.controls-area-form {
+	display: block;
+	padding: var(--step2);
 }
 .lists-items-list {
 	overflow-x: auto;
