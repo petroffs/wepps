@@ -266,18 +266,16 @@ class ListsWepps {
 		 */
 		$sql = "select TableNameField,Id,Name,FileDescription,Priority,TableNameId,InnerName,TableName,FileDate,FileSize,FileExt,FileType,FileUrl
 				from s_Files where TableName = '{$obj->tableName}' and TableNameId = '{$id}'
-				order by Priority
-				";
+				order by Priority";
 		$files = ConnectWepps::$instance->fetch($sql,null,'group');
 		if (count($files)!=0) {
 			$element[0] = array_merge($element[0], $files);
 		}
+		
 		/*
 		 * Select|Select-multi
 		 */
-		
 		foreach ($listScheme as $key=>$value) {
-		    
 			if (strstr($value[0]['Type'], 'remote')) {
 				$ex = explode("::", $value[0]["Type"]);
 				$ex[2] = (strstr($ex[2], ",")) ? substr($ex[2], 0, strpos($ex[2], ",")) : $ex[2];
@@ -447,10 +445,11 @@ class ListsWepps {
 				$ex = explode("::", $value[0]["Type"]);
 				$element[0]["{$key}_Headers"] = explode(';', $ex[1]);
 				$element[0]["{$key}_Rows"] = [];
-				#UtilsWepps::debugf($element,1);
+				if (!empty($element[0][$key])) {
+					$element[0]["{$key}_Rows"] = UtilsWepps::getArrayFromString($element[0][$key],':::');
+				}
 			}
 		}
-		//UtilsWepps::debug($element);
 		return $element;
 	}
 	
