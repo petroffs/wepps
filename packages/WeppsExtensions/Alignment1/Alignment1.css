@@ -1,21 +1,19 @@
 div.elements.Alignment1 {
 	width: auto;
 	overflow: hidden;
-	margin: 0 -10px;
 }
-
-div.elements.Alignment1 div.items {
-	
+div.pps_test {
+	color: #fff;
+	background-color: fuchsia;
+	max-width: 100%;
 }
-
-div.elements.Alignment1 div.items div.item {
-	
+div.pps_test2 {
+	color: #fff;
+	background-color: blueviolet;
+	max-width: 100%;
 }
-
-div.elements.Alignment1 div.items div.item div.img {
-	
-}
-
-div.elements.Alignment1 div.items div.item div.descr {
-	
+div.test {
+	color: #fff;
+	background-color: tomato;
+	height: 50px;
 }
