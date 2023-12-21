@@ -4,7 +4,7 @@
 			<div class="logo">
 				<a href="/"><img src="/ext/Template/files/wepps-logo.svg" /></a>
 			</div>
-			<div class="navicon pps_hide pps_show_view_small">
+			<div class="navicon pps_hide pps_flex_view_small">
 				<a href="" id="navicon"><i class="fa fa-2x fa-navicon"></i></a>
 			</div>
 		</div>

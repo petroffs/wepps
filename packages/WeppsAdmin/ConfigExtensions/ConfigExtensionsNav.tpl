@@ -1,4 +1,4 @@
-<div class="pps_flex_14 pps_flex_11_view_medium pps_padding leftmenu pps_flex pps_flex_col pps_hide pps_show_view_medium">
+<div class="pps_flex_14 pps_flex_11_view_medium pps_padding leftmenu pps_flex pps_flex_col pps_hide pps_flex_view_medium">
 	<ul class="pps_list pps_border pps_flex_max">
 		<li>
 			<div class="title">
@@ -8,8 +8,7 @@
 	</ul>
 </div>
 <div class="pps_flex_15 pps_flex_11_view_medium pps_padding leftmenu pps_flex pps_flex_col pps_hide_view_medium">
-	<ul
-		class="pps_list pps_border pps_flex_max">
+	<ul class="pps_list pps_border pps_flex_max">
 		{foreach name="out" item="item" from=$exts}
 		<li>
 			<div class="title">{$item.Name}</div>
