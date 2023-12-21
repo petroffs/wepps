@@ -20,7 +20,10 @@
 							<li class="{if $dirWay[2].Id==$i.Id}active{/if}"><a
 								href="{$i.UrlMenu|default:$i.Url}">{$i.NameMenu|default:$i.Name}</a></li>
 							{/foreach}
-						</ul> {/if}</li> {/foreach}
+						</ul>
+						{/if}
+					</li>
+					{/foreach}
 				</ul>
 			</div>
 		</div>
