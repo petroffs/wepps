@@ -16,16 +16,26 @@
   --font_large: 22px;
   --font_extra: 30px;
 }
+.pps_block {
+	display: block;
+}
+.pps_inline_block {
+	display: inline-block;
+}
 .pps_flex {
 	display: -webkit-flex;
 	display: flex;
 	box-sizing: border-box;
 }
-
+.pps_inline_flex {
+	display: inline-flex;
+}
+.pps_hide {
+	display: none;
+}
 .pps_flex * {
 	box-sizing: border-box;
 }
-
 .pps_flex.pps_flex_row {
 	width: 100%;
 	margin: 0;
@@ -220,21 +230,6 @@
 }
 .pps_order_6 {
 	order: 6;
-}
-.pps_flex {
-	display:flex;
-}
-.pps_inline_flex {
-	display: inline-flex;
-}
-.pps_block {
-	display: block;
-}
-.pps_inline_block {
-	display: inline-block;
-}
-.pps_hide {
-	display: none;
 }
 .pps_relative {
 	position: relative;

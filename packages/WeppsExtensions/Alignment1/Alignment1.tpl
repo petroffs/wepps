@@ -97,7 +97,7 @@
 		</div>
 	</div>
 	<div class="pps_test2 pps_flex_12">
-		<div class="pps_flex pps_flex_row pps_flex_margin_large pps_flex_start pps_padding">
+		<div class="pps_flex pps_inline_flex pps_flex_row pps_flex_margin_large pps_flex_start pps_padding">
 			<div class="pps_flex_14 test">test</div>
 			<div class="pps_flex_14 test">test</div>
 			<div class="pps_flex_12 test">test</div>
@@ -107,9 +107,6 @@
 		</div>
 	</div>
 </div>
-
-
-
 
 <div class="elements Alignment1">
 	<div class="items">

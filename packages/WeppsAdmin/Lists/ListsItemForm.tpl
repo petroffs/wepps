@@ -30,7 +30,7 @@
 		{/if}
 		{foreach name="out" item="item" key="key" from=$listScheme}
 		{if $item.0.$listMode!="hidden"}
-		<div class="item pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin" data-id="{$key}" data-group="{$item.0.FGroup}">
+		<div class="item pps_flex pps_flex_row pps_flex_start pps_flex_row_str" data-id="{$key}" data-group="{$item.0.FGroup}">
 			<div class="title pps_flex_13">
 				<div class="title2">
 				{if $permFields==1}

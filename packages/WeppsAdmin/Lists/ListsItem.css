@@ -1,5 +1,6 @@
-form.list-data .item.pps_flex_margin {
-	padding: var(--step2) 0 var(--step) 0;
+form.list-data .item {
+	padding-bottom: var(--step);
+	margin-bottom: var(--step);
 	border-bottom: 1px solid #f7f7f7;
 }
 form.list-data .item .title .title2 {

@@ -37,12 +37,12 @@
 				
 			</div>
 			{if $paginatorTpl}
-			<div class="pps_interval_small"></div>
-				<div class="controls-area pps_flex pps_flex_row pps_flex_margin pps_border">
-				<div class="pps_flex_11">{$paginatorTpl}</div>
+			<div class="pps_interval_medium"></div>
+			<div class="controls-area pps_border">
+				{$paginatorTpl}
 			</div>
 			{/if}
-			<div class="pps_interval_small"></div>
+			<div class="pps_interval_medium"></div>
 			<div class="lists-items-list draggable">
 
 				<table class="">
@@ -102,9 +102,9 @@
 
 			</div>
 			{if $paginatorTpl}
-			<div class="pps_interval_small"></div>
-			<div class="controls-area pps_flex pps_flex_row pps_border">
-				<div class="pps_flex_11_view_small">{$paginatorTpl}</div>
+			<div class="pps_interval_medium"></div>
+			<div class="controls-area pps_border">
+				{$paginatorTpl}
 			</div>
 			{/if}
 		</div>
