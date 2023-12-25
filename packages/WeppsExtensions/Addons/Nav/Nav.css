@@ -6,6 +6,9 @@ div.page.header {
 div.page.header div.page2 .elements {
 	border-bottom: 1px solid var(--color3_light2);
 }
+div.page.header div.page2 div.logo {
+	padding-bottom: var(--stepHalf);
+}
 div.page.header div.page2 div.logo img {
 	width: 100%;
 	max-width: 200px;
