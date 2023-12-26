@@ -3,7 +3,7 @@
 	outline: none;
 }
 html {
-	background: #fff;
+	background: #cecece;
 	min-height: 100%;
 	font-family: Roboto, sans-serif;
 	color: #666;
@@ -16,7 +16,7 @@ html {
 }
 body {
 	margin: 0px 0 0 0;
-	padding: 10px 0 0 0;
+	padding: 0 0 0 0;
 	display: -webkit-flex;
 	-webkit-flex-flow: column nowrap;
 	-webkit-flex: auto;
@@ -35,13 +35,15 @@ a:focus {
 	text-decoration: underline;
 }
 .page {
-	max-width: 1920px;
+	background: darkkhaki;
+	max-width: 1280px;
 	margin: 0 auto;
 }
 .page.main {
 	padding: 0 0px;
 }
 .page.main .page2 {
+	background: tomato;
 	padding: 0 0px;
 }
 .page.main .page2 h1 {
