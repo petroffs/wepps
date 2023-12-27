@@ -1,5 +1,11 @@
+<div class="way">
+	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
+		<li><a href="/_pps/">Главная</a></li>
+		<li>Wepps</li>
+	</ul>
+</div>
 <div class="pps_flex pps_flex_row pps_flex_row_str">
-	<div class="pps_flex_11 pps_flex_11_view_medium pps_flex pps_flex_col centercontent">
+	<div class="pps_flex_11 pps_flex pps_flex_col centercontent">
 		<div class="pps_border pps_flex_max pps_padding">
 			<h2>{$content.Name}</h2>
 			<div class="pps_overflow_auto">

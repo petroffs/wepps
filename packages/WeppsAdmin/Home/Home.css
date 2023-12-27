@@ -1,9 +1,4 @@
-form.list-data {
-	border-top: 1px solid #ededed;
-	padding-top: 20px !important;
-}
-
 .lists-items .title {
     font-weight: 900;
-    margin: 20px 0 10px 0;
+    margin: var(--step4) 0 var(--step2) 0;
 }

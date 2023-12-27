@@ -1,12 +1,12 @@
-<div class="pps_flex_11 pps_flex pps_flex_row pps_flex_row_str">
-	<div class="pps_flex_11 way">
-		<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
-			<li><a href="/_pps/">Главная</a></li>
-			<li>Авторизация</li>
-		</ul>
-	</div>
-	<div class="pps_flex_11 pps_flex pps_flex_col pps_padding centercontent">
-		<div class="pps_shadow pps_flex_max pps_padding">
+<div class="pps_flex_11 way">
+	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
+		<li><a href="/_pps/">Главная</a></li>
+		<li>Авторизация</li>
+	</ul>
+</div>
+<div class="pps_flex pps_flex_row pps_flex_row_str">
+	<div class="pps_flex_11 pps_flex pps_flex_col centercontent">
+		<div class="pps_border pps_flex_max pps_padding">
 			<h2>{$content.Name}</h2>
 			<form class="list-data pps_flex pps_flex_row pps_flex_center" action="javascript:formWepps.send('auth','auth-form','/packages/WeppsAdmin/Admin/Request.php')"
 				id="auth-form">

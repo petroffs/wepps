@@ -1,57 +1,57 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>{$content.MetaTitle|default:$contenttop.Name|strip_tags}</title>
-<meta name="keywords" content="{$contenttop.MetaKeyword|strip_tags}" />
-<meta name="description" content="{$contenttop.MetaDescription|strip_tags}" />
-<meta name="author" content="Aleksey Petrov" />
-<meta name="viewport" content="initial-scale=1, maximum-scale=1" />
-{$headers.meta}
-{$headers.cssjs}
-</head>
-<body>
-	<div class="page header pps_flex pps_flex_col">
-		<div class="page2">
-			<div class="nav pps_flex pps_flex_row">
-				<div>
-					<div class="pps_flex pps_flex_row pps_flex_start">
+	<head>
+		<title>{$content.MetaTitle|default:$contenttop.Name|strip_tags}</title>
+		<meta name="keywords" content="{$contenttop.MetaKeyword|strip_tags}" />
+		<meta name="description" content="{$contenttop.MetaDescription|strip_tags}" />
+		<meta name="author" content="Aleksey Petrov" />
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+		{$headers.meta}
+		{$headers.cssjs}
+	</head>
+	<body>
+		<div class="page header pps_flex pps_flex_col">
+			<div class="page2">
+				<div class="nav pps_flex pps_flex_row">
+					<div>
+						<div class="pps_flex pps_flex_row pps_flex_start">
+							<div class="item">
+								<a href="/">Сайт</a>
+							</div>
+							{foreach name="out" item="item" key="key" from=$navtop}
+							<div class="item{if $contenttop.Alias==$item.Alias} active{/if}">
+								<a href="/_pps/{$item.Alias}/">{$item.Name}</a>
+							</div>
+							{/foreach}
+						</div>
+					</div>
+					{if $smarty.session.user.Id}
+					<div>
 						<div class="item">
-							<a href="/">Сайт</a>
+							<a href="#" id="logoff">Выйти</a>
 						</div>
-						{foreach name="out" item="item" key="key" from=$navtop}
-						<div class="item{if $contenttop.Alias==$item.Alias} active{/if}">
-							<a href="/_pps/{$item.Alias}/">{$item.Name}</a>
-						</div>
-						{/foreach}
 					</div>
+					{/if}
 				</div>
-				{if $smarty.session.user.Id}
-				<div>
-					<div class="item">
-						<a href="#" id="logoff">Выйти</a>
-					</div>
-				</div>
-				{/if}
 			</div>
 		</div>
-	</div>
-	<div class="page main pps_flex_max pps_flex pps_flex_col">
-		<div class="page2">
-			<h1 class="">{$content.NameNavItem|default:$contenttop.Name}</h1>
-			{$extension}
-		</div>
-	</div>
-	{$horizontalBottomTpl}
-	<div class="page footer pps_flex pps_flex_col pps_flex_center">
-		<div class="page2 pps_flex pps_flex_col pps_flex_center">
-			<div
-				class="copyrights pps_flex pps_flex_row pps_flex_center">
-				<div class="item pps_flex_fix pps_padding pps_center">© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
+		<div class="page main pps_flex_max pps_flex pps_flex_col">
+			<div class="page2">
+				<h1 class="">{$content.NameNavItem|default:$contenttop.Name}</h1>
+				{$extension}
 			</div>
 		</div>
-	</div>
-	<div id="dialog" title="dialog title" class="pps_hide">
-		<p>dialog text</p>
-	</div>
-</body>
+		{$horizontalBottomTpl}
+		<div class="page footer pps_flex pps_flex_col pps_flex_center">
+			<div class="page2 pps_flex pps_flex_col pps_flex_center">
+				<div
+					class="copyrights pps_flex pps_flex_row pps_flex_center">
+					<div class="item pps_flex_fix pps_padding pps_center">© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
+				</div>
+			</div>
+		</div>
+		<div id="dialog" title="dialog title" class="pps_hide">
+			<p>dialog text</p>
+		</div>
+	</body>
 </html>

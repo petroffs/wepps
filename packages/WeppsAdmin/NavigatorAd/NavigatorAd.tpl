@@ -1,14 +1,14 @@
-<div class="pps_flex_11 pps_flex pps_flex_row pps_flex_row_str">
-	<div class="pps_flex_11 way">
-		<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
-			<li><a href="/_pps/">Главная</a></li>
-			<li><a href="/_pps/navigator/">Навигатор</a></li>
-			{foreach name="out" item="item" key="key" from=$way}
-			<li><a href="/_pps/navigator{$item.Url}">{$item.Name}</a></li>
-			{/foreach}
-		</ul>
-	</div>
-	<div class="pps_flex_15 pps_flex_11_view_medium pps_padding leftmenu pps_flex pps_flex_col pps_hide pps_flex_view_medium">
+<div class="way">
+	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
+		<li><a href="/_pps/">Главная</a></li>
+		<li><a href="/_pps/navigator/">Навигатор</a></li>
+		{foreach name="out" item="item" key="key" from=$way}
+		<li><a href="/_pps/navigator{$item.Url}">{$item.Name}</a></li>
+		{/foreach}
+	</ul>
+</div>
+<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
+	<div class="pps_flex_15 pps_flex_11_view_medium leftmenu pps_flex pps_flex_col pps_hide pps_flex_view_medium">
 		<ul class="pps_list pps_border pps_flex_max">
 			<li>
 				<div class="title">
@@ -18,7 +18,7 @@
 		</ul>
 	</div>
 	<div
-		class="pps_flex_15 pps_flex_11_view_medium pps_padding leftmenu pps_flex pps_flex_col pps_hide_view_medium">
+		class="pps_flex_15 pps_flex_11_view_medium leftmenu pps_flex pps_flex_col pps_hide_view_medium">
 		<ul class="pps_list pps_border pps_flex_max">
 			<li>
 				<div class="title">
@@ -48,7 +48,7 @@
 			{/foreach}
 		</ul>
 	</div>
-	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col pps_padding centercontent">
+	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col centercontent">
 		{$listItemFormTpl}
 	</div>
 </div>

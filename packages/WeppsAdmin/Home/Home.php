@@ -14,7 +14,7 @@ class HomeWepps {
 		$tpl2 = "Home.tpl";
 		
 		if (!isset($_SESSION['user']) || !isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin'] != 1) {
-			$tpl2 = "Welcome.tpl";
+			$tpl2 = "Auth.tpl";
 			$content = array();
 			$content['MetaTitle'] = "Вход в систему — Wepps";
 			$content['Name'] = "Введите логин и пароль";
@@ -28,14 +28,8 @@ class HomeWepps {
 			$content['MetaTitle'] = "Wepps";
 			$content['Name'] = "Главная";
 			$content['NameNavItem'] = "Wepps";
-			
-			//UtilsWepps::debug($nav);
 			unset($nav['home']);
 			$smarty->assign('navhome',$nav);
-			
-			$sql = "select ";
-			//$items = ConnectWepps::$instance->fetch($sql);
-			
 		}
 		
 		$smarty->assign('content', $content);

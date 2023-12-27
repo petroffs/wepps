@@ -1,68 +1,92 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,500,700,900&subset=cyrillic-ext');
-* {
+*, *::before, *::after {
+	box-sizing: border-box;
 	outline: none;
 }
+:root {
+  --color000: #000;
+  --color000_rgb: 0,0,0;
+  --color000_98: #050505;
+  --color000_90: #1a1a1a;
+  --color000_95: #0d0d0d;
+  --color000_80: #333333;
+  --color000_70: #4d4d4d;
+  --color000_60: #666666;
+  --color000_50: #808080;
+  --color000_40: #999999;
+  --color000_30: #b3b3b3;
+  --color000_20: #cccccc;
+  --color000_10: #e5e5e5;
+  --color000_05: #f2f2f2;
+  --color000_02: #f9f9f9;
+  --color000_00: #ffffff;
+  
+  --color_primary: var(--color000_95);
+  --color_slave: var(--color000_70);
+  --color_attention: #cf4343;
+  --color_highlight: #fffed3;
+  --color_focus: #0000ff;
+  --color_links: #0080C0;
+}
+
 html {
-	background: #cecece;
-	min-height: 100%;
 	font-family: Roboto, sans-serif;
-	color: #666;
-	font-size: 14px;
-	line-height: 130%;
-	display: -webkit-flex;
+	font-size: var(--font_small);
+	line-height: 1.3;
+	color: var(--color000_60);
+	background: var(--color000_00);
+	min-height: 100%;
 	display: flex;
-	-webkit-flex-flow: column nowrap;
 	flex-flow: column nowrap;
 }
 body {
-	margin: 0px 0 0 0;
-	padding: 0 0 0 0;
-	display: -webkit-flex;
-	-webkit-flex-flow: column nowrap;
-	-webkit-flex: auto;
+	padding: var(--step2);
+	margin: 0;
 	display: flex;
 	flex-flow: column nowrap;
 	flex: auto;
 }
 a {
-	color: #0080C0;
 	text-decoration: none;
+	color: var(--color_links);
 }
 a:hover,
 a:active,
 a:focus {
-	color: #0000ff;
+	color: var(--color_focus);
 	text-decoration: underline;
 }
+.pps_border {
+	border-color: var(--color000_10);
+}
 .page {
-	background: darkkhaki;
-	max-width: 1280px;
+	background: var(--color000_00);
+	max-width: 1920px;
 	margin: 0 auto;
 }
 .page.main {
-	padding: 0 0px;
+	padding: 0;
 }
 .page.main .page2 {
-	background: tomato;
-	padding: 0 0px;
+	background: var(--color000_00);
+	padding: 0;
 }
 .page.main .page2 h1 {
-	background: #ededed;
-	margin: 0 10px;
-	padding: 60px 10px 20px 10px;
-	font-size: 2.4rem;
+	font-size: var(--font_extra);
 	font-weight: 500;
 	text-transform: none;
-	line-height: 100%;
+	line-height: 1;
+	color: var(--color_primary);
+	background: var(--color000_05);
+	padding: var(--step6) var(--step2) var(--step4) var(--step3);
+	margin: 0;
 }
 .nav {
-	background: #555555;
-	margin: 0 10px !important;
-	width: auto !important;
+	background: var(--color000_70);
 }
 .nav>div div.item>a {
 	display: block;
-	padding: 10px 20px;
+	padding: var(--step2) var(--step3);
 	text-decoration: none;
 	color: #fff;
 	font-weight: 700;
@@ -72,11 +96,11 @@ a:focus {
 	color: #555;
 }
 .nav>div div.item.active>a {
-	background: #ededed;
-	color: #555;
+	background: var(--color000_05);
+	color: var(--color_primary);
 }
 .way {
-	padding: 10px 20px 0px 20px;
+	padding: var(--step2) var(--step3);
 }
 .way>ul>li {
 	margin: 0 20px 0 0;
@@ -84,7 +108,7 @@ a:focus {
 	font-weight: 500;
 }
 .way>ul>li a {
-	color: #666;
+	color: var(--color000_60);
 	text-decoration: none;
 }
 .way>ul>li:after {
@@ -107,15 +131,15 @@ a:focus {
 	font-size: 18px;
 }
 .leftmenu ul.dir {
-	margin-left: 10px;
-	margin-right: 10px;
+	margin-left: var(--step2);
+	margin-right: var(--step2);
 }
 .leftmenu ul.dir li {
 	padding-top: 10px;
 }
 .leftmenu ul.dir li.active a {
 	font-weight: 700;
-	color: #666;
+	color: var(--color000_60);
 }
 .leftmenu ul.dir li.hidden a {
 	opacity: 0.5;
@@ -124,14 +148,20 @@ a:focus {
 	padding-bottom: 10px;
 }
 .centercontent>div h2 {
-	margin: 30px 0 20px 0;
 	font-size: 1.8rem;
 	font-weight: 500;
-	line-height: 100%;
+	line-height: 1;
+	color: var(--color_primary);
+	padding-bottom: var(--step2);
+	margin: var(--step4) 0 var(--step3) 0;
+	border-bottom: 1px solid var(--color000_10);
+}
+.pps_bg_silver {
+	background: var(--color000_02);
 }
 .bg1 {
-	background: #e5e5e5;
-	padding: 10px;
+	background: var(--color000_02);
+	padding: var(--step2);
 }
 .bg1>.title {
 	font-weight: 700;
@@ -144,8 +174,4 @@ a:focus {
 }
 .select2-container--default .select2-results__group {
     opacity: 0.5;
-}
-
-.pps_bg_silver {
-	background: #f7f7f7;
 }
