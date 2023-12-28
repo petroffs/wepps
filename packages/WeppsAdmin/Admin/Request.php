@@ -82,7 +82,7 @@ class RequestAdminWepps extends RequestWepps {
 			case "git":
 				$json = file_get_contents('php://input');
 				$token = ConnectWepps::$projectServices['git']['token'];
-				echo "{$token} / {$_SERVER['HTTP_CLIENTTOKEN']}";
+				#echo "{$token} / {$_SERVER['HTTP_CLIENTTOKEN']}";
 				if ($token!=$_SERVER['HTTP_CLIENTTOKEN']) {
 					exit();
 				}
