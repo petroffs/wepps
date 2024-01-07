@@ -16,7 +16,3 @@
 /robots.txt
 *.sql.gz
 *.7z
-#eclipse
-/.settings
-/.project
-/.buildpath
