@@ -190,6 +190,7 @@ var readyListsItemVEInit = function() {
 				  height: 500,
 				  menubar: 'insert',
 				  convert_urls: false,
+				  allow_script_urls: true,
 				  entity_encoding : "raw",
 				  fontsize_formats: "12px 13px 15px 18px 20px 24px 36px",			  
 				  plugins: 
