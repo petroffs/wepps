@@ -16,12 +16,12 @@
 	--color-98: #fafafa;
 	--color-100: #ffffff;
   
-  --color-green: #00AC86;
-  --color-green-dark: #008f6f;
-  --color-red: #d06666;
+	--color-green: #00AC86;
+ 	--color-green-dark: #008f6f;
+	--color-red: #d06666;
 }
 html {
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'PT Sans', sans-serif;
 	font-size: var(--font-default);
 	color: var(--color-25);
 	line-height: 1.4;
@@ -56,6 +56,7 @@ main {
     position: relative;
 }
 h1 {
+	font-size: var(--font-large);
 	color: var(--color-00);
 	margin: var(--step4) 0 var(--step2) 0;
 }
