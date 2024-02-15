@@ -262,7 +262,7 @@ label.pps.pps_button input {
 	height: var(--step6);
 	border-radius: 5px;
 	letter-spacing: 0.1px;
-	display: inline-block;
+	display: inline-flex;
 	outline: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -291,6 +291,8 @@ label.pps.pps_button input:disabled {
 a.pps_button {
 	text-decoration: none;
 	height: inherit;
+	align-items: center;
+	justify-content: center;
 }
 form {
 	width: auto;
