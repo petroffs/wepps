@@ -28,23 +28,10 @@ var readyListsItemInit = function() {
 	        event.preventDefault();
 	    }
 	});
-	
-	$('form.list-data').find('.field-translit').off('click');
-	$('form.list-data').find('.field-translit').on('click',function(event) {
-		event.preventDefault();
-		var source = $(this).closest('.item').siblings('.item[data-id="Name"]').find('input').eq(0);
-		var dest = $(this).closest('.item').find('input').eq(0);
-		if (dest.val()=='') dest.val(urlRusLat(source.val()));
-	});
-	$('form.list-data').find('.list-item-date').find('input').datepicker({
-		dateFormat: "yy-mm-dd"
-	},$.datepicker.regional[ "ru" ]);
 	$('form.list-data').find('a.list-item-copy').off('click');
 	$('form.list-data').find('a.list-item-copy').on('click',function(event) {
 		event.preventDefault();
-		
 		let element = $(this).closest('form');
-		
 		$("#dialog").html('<p>Копировать этот элемент?</p>').dialog({
 			'title':'Внимание!',
 			'modal': true,
@@ -101,6 +88,21 @@ var readyListsItemInit = function() {
 			}]
 		});
 	});
+	$('form.list-data').find('.field-translit').off('click');
+	$('form.list-data').find('.field-translit').on('click',function(event) {
+		event.preventDefault();
+		var source = $(this).closest('.item').siblings('.item[data-id="Name"]').find('input').eq(0);
+		var dest = $(this).closest('.item').find('input').eq(0);
+		if (dest.val()=='') dest.val(urlRusLat(source.val()));
+	});
+	$('form.list-data').find('select[name="list-item-language"]').off('select2:select');
+	$('form.list-data').find('select[name="list-item-language"]').on('select2:select',function(event) {
+		$(this).trigger('change');
+		console.log($(this).val())
+	});
+	$('form.list-data').find('.list-item-date').find('input').datepicker({
+		dateFormat: "yy-mm-dd"
+	},$.datepicker.regional[ "ru" ]);
 	$('form.list-data').find('.list-item-properties').off('change');
 	$('form.list-data').find('.list-item-properties').on('change',function(event) {
 		$('form.list-data').find('a.list-item-save').trigger('click');

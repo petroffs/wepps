@@ -46,6 +46,9 @@
 .controls-area a i {
 	min-width: 10px;
 }
+label.pps.pps_select.list-item-language {
+	margin-left: auto;
+}
 .controls-area-form {
 	display: block;
 	padding: var(--step2);

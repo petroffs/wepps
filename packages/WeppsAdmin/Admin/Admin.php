@@ -48,7 +48,7 @@ class AdminWepps {
 		$smarty->display( __DIR__ . '/Admin.tpl');
 		ConnectWepps::$instance->close();
 	}
-	function request () {
+	public function request () {
 		
 		if (! isset($_SESSION['user']['Id']) && isset($_COOKIE['authEmail']) && isset($_COOKIE['authKey'])) {
 			$user = ConnectWepps::$instance->fetch("
@@ -92,6 +92,17 @@ class AdminWepps {
 		$smarty->assign('navtop',$this->nav);
 		$smarty->assign('contenttop',$navItem);
 		//$smarty->assign('navTpl',$smarty->fetch( __DIR__ . '/AdminNav.tpl'));
+		
+		if (ConnectWepps::$projectDev['multilang']==1) {
+			$sql = "select * from s_NGroupsLang where DisplayOff=0 order by Priority";
+			$language = ConnectWepps::$instance->fetch($sql);
+			$smarty->assign('language',$language);
+			$sql = "select * from s_Lang where Category='back' order by Priority";
+			$multilang = ConnectWepps::$instance->fetch($sql);
+			$smarty->assign('multilang',$multilang);
+		}
+		
+		
 		$smarty->assign('headers',$this->headers->get());
 		$className = "WeppsAdmin\\{$navItem['Extension']}\\{$navItem['Extension']}Wepps";
 		if(class_exists($className)) {
@@ -140,7 +151,7 @@ class AdminWepps {
 		self::$path = explode("/", substr($url, 0,-1));
 	}
 	
-	static function userPerm($permId=0,$check=[]) {
+	public static function userPerm($permId=0,$check=[]) {
 		if ($permId==0 || (int) $permId==0) return array('status'=>0);
 		$obj = new DataWepps("s_Permissions");
 		$res = $obj->getMax($permId)[0];
@@ -168,7 +179,7 @@ class AdminWepps {
 		return array('status'=>1,'lists'=>$lists,'extensions'=>$extensions);
 	}
 	
-	static function getTranslate() {
+	public static function getTranslate() {
 		$sql = "select Name,LangRu,LangEn from s_Lang where Category='back'";
 		$res = ConnectWepps::$instance->fetch($sql,null,'group');
 		$translate = array();

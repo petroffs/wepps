@@ -13,5 +13,14 @@
 		<a class="list-item-refresh" href="" title="Обновить страницу"><i class="fa fa-2x fa-refresh"></i></a>
 		<a class="list-item-remove" href="" data-path="{$ppsPath}" title="Удалить"><i class="fa fa-2x fa-remove"></i></a>
 		{/if}
+		{if $language && $element.TableId|isset && $element.LanguageId|isset}
+		<label class="pps pps_select list-item-language">
+			<select name="list-item-language" data-minimum-results-for-search="Infinity">
+				{foreach name="out" item="item" from=$language}
+				<option value="{$item.Id}">{$item.Name}</option>
+				{/foreach}
+			</select>
+		</label>
+		{/if}
 	</div>
 </div>
