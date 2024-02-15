@@ -4,23 +4,28 @@
 	box-sizing: border-box;
 }
 :root {
-  --color1: #000;
-  --color1_rgb: 0,0,0;
-  --color2: #fff;
-  --color3: #666;
-  --color3_light: #CECECE;
-  --color3_light2: #f0f0f0;
-  --color3_light3: #f7f7f7;
-  --color4: #00AC86;
-  --color4_dark: #008f6f;
-  --color5: #d06666;
+	--color-00: #000000;
+	--color-02: #050505;
+	--color-05: #0d0d0d;
+	--color-20: #333333;
+	--color-25: #404040;
+	--color-50: #808080;
+	--color-75: #bfbfbf;
+	--color-85: #d9d9d9;
+	--color-95: #f2f2f2;
+	--color-98: #fafafa;
+	--color-100: #ffffff;
+  
+  --color-green: #00AC86;
+  --color-green-dark: #008f6f;
+  --color-red: #d06666;
 }
 html {
 	font-family: 'Open Sans', sans-serif;
-	font-size: var(--font_default);
-	color: var(--color3);
+	font-size: var(--font-default);
+	color: var(--color-25);
 	line-height: 1.4;
-	background: var(--color3_light2);
+	background: var(--color-95);
 	width: 100%;
 	min-height: 100vh;
 }
@@ -47,16 +52,16 @@ footer {
 main {
 	width:100%;
 	flex: 1 1 auto;
-    background: var(--color2);
+    background: var(--color-100);
     position: relative;
 }
 h1 {
-	color: var(--color1);
+	color: var(--color-00);
 	margin: var(--step4) 0 var(--step2) 0;
 }
 div.page {
 	width: 100%;
-	background: var(--color2);
+	background: var(--color-100);
 }
 div.page div.page2 {
 	width: 100%;
@@ -72,28 +77,28 @@ div.page div.page2.page2normal {
 div.page.footer {
 	height: auto;
 	min-height: calc(40 * var(--step));
-	background: var(--color3_light3);
+	background: var(--color-98);
 }
 div.page.footer div.page2 div.copyrights div.item a {
 	text-decoration: none;
-	color: var(--color3_light2);
+	color: var(--color-95);
 }
 div.page.footer div.page2 div.links div.item a {
 	text-decoration: none;
-	color: var(--color3);
+	color: var(--color-25);
 }
 body a.pps_button,
 body label.pps.pps_button input {
-	background: var(--color4);
-	border: 1px solid var(--color4);
+	background: var(--color-green);
+	border: 1px solid var(--color-green);
 }
 body a.pps_button:hover,
 body label.pps.pps_button input:hover {
-	background-color: var(--color4_dark);
+	background-color: var(--color-green-dark);
 }
 body a.pps_button:active,
 body label.pps.pps_button input:active {
-	background-color: var(--color4_dark);
+	background-color: var(--color-green-dark);
 	box-shadow: none;
 	cursor: default;
 }

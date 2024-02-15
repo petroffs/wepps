@@ -1,10 +1,10 @@
 div.page.header {
-	background: var(--color2);
+	background: var(color-100);
 	padding-top: var(--step6);
 	height: auto;
 }
 div.page.header div.page2 .elements {
-	border-bottom: 1px solid var(--color3_light2);
+	border-bottom: 1px solid var(--color-95);
 }
 div.page.header div.page2 div.logo {
 	padding-bottom: var(--stepHalf);
@@ -17,15 +17,15 @@ div.page.header div.page2 div.logo img {
 div.page.header div.page2 div.title {
 	font-size: 16px; 
 	font-weight: 600;
-	color: var(--color1);
+	color: var(color-00);
 	margin-left: auto;
 }
 div.page.header div.page2 div.contacts {
 	font-size: 16px; 
-	color: var(--color1);
+	color: var(color-00);
 }
 div.page.header div.page2 div.contacts a {
-	color: var(--color3_light2);
+	color: var(--color-95);
 	text-decoration: none;
 }
 div.page.header div.page2 div.contacts a.phone {
@@ -57,7 +57,7 @@ div.page.header div.page2 div.nav>ul.nav>li>a {
 div.page.header div.page2 div.nav>ul.nav>li>ul {
 	list-style-type: none;
 	position: absolute;
-	background: var(--color3_light3);
+	background: var(--color-95);
 	padding: 0;
 	margin: var(--step2) 0 0 calc(-1 * var(--step2));
 	z-index: 1
@@ -78,7 +78,7 @@ div.page.header div.page2 div.nav>ul.nav>li>ul>li:first-child {
 }
 
 div.page.header div.page2 div.nav>ul.nav>li.hover {
-	background: var(--color3_light3);
+	background: var(--color-95);
 }
 
 div.pps_nav_parent {
