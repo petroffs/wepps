@@ -586,5 +586,98 @@ class FilesWepps {
 		return $data;
 	}
 }
-
+/**
+ * Командная строка
+ */
+class CliWepps {
+	private $display = 0;
+	public function __construct() {}
+	
+	private function getColor($str, $type = 'i'){
+		switch ($type) {
+			case 'e': //error
+				echo "\033[31m$str \033[0m\n";
+				break;
+			case 's': //success
+				echo "\033[32m$str \033[0m\n";
+				break;
+			case 'w': //warning
+				echo "\033[33m$str \033[0m\n";
+				break;
+			case 'i': //info
+			default:
+				echo "\033[36m$str \033[0m\n";
+				break;
+		}
+	}
+	public function display($display = true) {
+		$this->display = $display;
+	}
+	public function error($text="") {
+		return self::outer(self::getColor($text,'e'));
+	}
+	public function success($text="") {
+		return self::outer(self::getColor($text,'s'));
+	}
+	public function warning($text="") {
+		return self::outer(self::getColor($text,'w'));
+	}
+	public function text($text="") {
+		return self::outer(self::getColor($text,'i'));
+	}
+	public function progress($done, $total, $info="", $width=50) {
+		$perc = round(($done * 100) / $total);
+		$bar = round(($width * $perc) / 100);
+		$t = sprintf("%s%%[%s>%s]%s\r", $perc, str_repeat("=", $bar), str_repeat(" ", $width-$bar), $info);
+		return self::outer($t);
+	}
+	public function copy(string $source,string $destination,bool $overwrite=true) {
+		if ($overwrite===false && file_exists($destination)) {
+			return false;
+		}
+		$path = pathinfo($destination);
+		if (!file_exists($path['dirname'])) {
+			mkdir($path['dirname'], 0750, true);
+		}
+		if (!copy($source, $destination)) {
+			return false;
+		}
+		return true;
+	}
+	public function put($content,$destination) {
+		$path = pathinfo($destination);
+		if (!file_exists($path['dirname'])) {
+			mkdir($path['dirname'], 0750, true);
+		}
+		if (!file_put_contents($destination,$content)) {
+			return false;
+		}
+		return true;
+	}
+	public function rmdir(string $dir) {
+		$dir = str_replace('\\', '/', $dir);
+		if (!is_dir($dir)) {
+			$this->warning('no dir');
+			return false;
+		} elseif (!stristr($dir, ConnectWepps::$projectDev['root'])) {
+			$this->warning('no project path');
+			return false;
+		}
+		exec("rm $dir -rf");
+		return true;
+	}
+	public function rmfile(string $file) {
+		if (!file_exists($file)) {
+			return false;
+		}
+		unlink($file);
+		return true;
+	}
+	private function outer($text='') {
+		if ($this->display == true) {
+			echo $text;
+		}
+		return $text;
+	}
+}
 ?>
