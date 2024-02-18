@@ -190,7 +190,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$cmd = "7z a -tzip {$archive} {$pathDiff}/*";
 		$this->command($cmd);
 		
-		UtilsWepps::debugf($diff,1);
 		/*
 		 * Реальный апдейт из updates
 		 * После него только откат вернет файлы
@@ -202,9 +201,9 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		/*
 		 * delete path* forlders, keep zip only
 		 */
-		//$this->cli->rmdir($pathRollback);
-		//$this->cli->rmdir($pathDiff);
-		//$this->cli->rmdir($pathUpdates);
+		$this->cli->rmdir($pathRollback);
+		$this->cli->rmdir($pathDiff);
+		$this->cli->rmdir($pathUpdates);
 
 		return [
 				'output' => 'Updates is complete succsessfull!'
