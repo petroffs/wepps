@@ -2,8 +2,6 @@
 namespace WeppsAdmin\ConfigExtensions\Example;
 
 use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Exception\ExceptionWepps;
