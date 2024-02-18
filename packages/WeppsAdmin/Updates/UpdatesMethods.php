@@ -128,21 +128,25 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$modified = explode("\n",$modifiedSelf['output']);
 		$diff = array_diff(explode("\n",$modifiedRelease['output']),$modified);
 		
-		/* 
+		/*
 		 * Если в текущем релизе нет файла, но он появился.
 		 * Если в апдейт-релизе появился файл, а в текущем не было.
 		 * Если и там и там появился файл (в игнор NOTALLOWED ствить)
+		 * 
+		 * В итоге, перезаписываем такой файл из релиза. При необходимости, нужный файл можно взять из rollback
 		 */
+		
+		/*
 		$allowed = $this->getDiffUpdate($fileMD5,$diff);
 		$diff = $allowed['allow'];
-		/*
-		if (!empty($allowed['allow'])) {
-			$diff = $allowed['allow'];
-		}
-		*/
+		 if (!empty($allowed['allow'])) {
+		 $diff = $allowed['allow'];
+		 }
+
 		if (!empty($allowed['disallow'])) {
 			$modified = array_merge($modified,$allowed['disallow']);
 		}
+		 */
 		$this->cli->error("\nDisallowed files:\n".implode("\n", $modified));
 		$this->cli->success("\nAllowed files:\n".implode("\n", $diff));
 		$this->cli->put(json_encode([
@@ -204,7 +208,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$this->cli->rmdir($pathRollback);
 		$this->cli->rmdir($pathDiff);
 		$this->cli->rmdir($pathUpdates);
-
+		
 		return [
 				'output' => 'Updates is complete succsessfull!'
 		];
@@ -270,6 +274,9 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 				'files'=>$files
 		];
 	}
+	/**
+	 * Экспериментальное
+	 */
 	private function getDiffUpdate(string $fileMD5,array $diff) {
 		/*
 		 * Поиск файлов. которых ранее не было
@@ -282,9 +289,9 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			$key = array_search($value['file'],$diff);
 			if (!is_numeric($key)) {
 				unset($diff[$key]);
-			} 
+			}
 		}
-		#UtilsWepps::debugf($allow,1);
+		UtilsWepps::debugf($allow,1);
 		if (empty($diff)) {
 			$disallow = $allow;
 		}
