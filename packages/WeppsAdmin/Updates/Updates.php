@@ -21,6 +21,9 @@ class UpdatesWepps {
 			case 'modified':
 				$obj = new UpdatesMethodsWepps();
 				$output = $obj->getReleaseCurrentModified()['output'];
+				if (empty($output)) {
+					$output = "The project has no modified files";
+				}
 				break;
 			case 'list':
 				$obj = new UpdatesMethodsWepps();
@@ -38,7 +41,7 @@ class UpdatesWepps {
 				}
 				$output = $obj->setUpdates($this->settings[2])['output'];
 				break;
-			
+				
 			case 'test':
 				$obj = new UpdatesMethodsWepps();
 				$obj->getCliProgress(10, 100,"копирование 1");
