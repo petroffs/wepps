@@ -27,7 +27,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		return true;
 	}
 	public function getReleaseCurrentModified() : array {
-		return $this->getDiff($this->filename);
+		return $this->getDiff($this->filename,false);
 	}
 	public function getReleasesList() : array {
 		$filename = @ConnectWepps::$projectServices['weppsupdates']['weppsurl']."/releases.json";
@@ -95,15 +95,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		
 		$this->cli->put($response->response, $fileDst);
 		$path = pathinfo($fileDst);
-		/*
-		
-		if (!file_exists($path['dirname'])) {
-			mkdir($path['dirname'], 0750, true);
-		}
-		if (!file_exists($fileDst)) {
-			file_put_contents($fileDst,$response->response);
-		}
-		*/
 		
 		/*
 		 * Распаковать в папку $tag
@@ -116,38 +107,55 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					'output' => 'zip error'
 			];
 		}
-		$zip ->extractTo($zipPath);
-		$zip ->close();
-		
+		$zip->extractTo($zipPath);
+		$zip->close();
+
 		$fileMD5 = $zipPath."/packages/WeppsAdmin/Updates/files/md5.conf";
 		
-		
 		/*
-		 * Это нельзя перезаписывать из релиз-архива
+		 * Измененные файлы релиза
 		 */
 		$modifiedSelf = $this->getReleaseCurrentModified();
 		
 		/*
-		 * Это нужно перезаписать
+		 * Это нужно перезаписать в текущий релиз
 		 */
-		$modifiedRelease = $this->getDiff($fileMD5);
+		$modifiedRelease = $this->getDiff($fileMD5,true);
 		
 		/*
-		 * Расхождение diff между $modifiedSelf и $modifiedRelease
-		 * Нужно записать как обновление
-		 * 
-		 * Перед записью diff необходимо записать backup
+		 * Расхождение между $modifiedSelf и $modifiedRelease
 		 */
-		$diff = array_diff(explode("\n",$modifiedRelease['output']),explode("\n",$modifiedSelf['output']));
+		$modified = explode("\n",$modifiedSelf['output']);
+		$diff = array_diff(explode("\n",$modifiedRelease['output']),$modified);
+		
+		/* 
+		 * Если в текущем релизе нет файла, но он появился.
+		 * Если в апдейт-релизе появился файл, а в текущем не было.
+		 * Если и там и там появился файл (в игнор NOTALLOWED ствить)
+		 */
+		$allowed = $this->getDiffUpdate($fileMD5,$diff);
+		$diff = $allowed['allow'];
+		/*
+		if (!empty($allowed['allow'])) {
+			$diff = $allowed['allow'];
+		}
+		*/
+		if (!empty($allowed['disallow'])) {
+			$modified = array_merge($modified,$allowed['disallow']);
+		}
+		$this->cli->error("\nDisallowed files:\n".implode("\n", $modified));
+		$this->cli->success("\nAllowed files:\n".implode("\n", $diff));
+		$this->cli->put(json_encode([
+				'disallowed'=>$modified,
+				'allowed'=>$diff
+		],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT), $path['dirname']."/log.conf");
 		
 		if (empty($diff)) {
+			$this->cli->rmdir($zipPath);
 			return [
 					'output' => "no data for update"
 			];
 		}
-		
-		$this->cli->error("\nDisallowed files:\n{$modifiedSelf['output']}");
-		$this->cli->success("\nAllowed files:\n".implode("\n", $diff));
 		$this->cli->warning("\nType 'yes' to continue: ");
 		$handle = fopen ("php://stdin","r");
 		$line = fgets($handle);
@@ -159,7 +167,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		return self::setUpdatesInstall($diff,$path['dirname']);
 	}
 	private function setUpdatesInstall(array $diff = [],string $path) {
-		
 		if (empty($diff)) {
 			return [
 					'output' => 'no files for update'
@@ -169,6 +176,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$pathRollback = $path . "/rollback";
 		$pathDiff = $path . "/diff";
 		$pathUpdates = $path . "/updates";
+		
 		foreach ($diff as $value) {
 			$this->cli->copy(ConnectWepps::$projectDev['root']."/".$value, $pathRollback."/".$value);
 			$this->cli->copy($path."/updates/".$value, $pathDiff."/".$value);
@@ -181,8 +189,8 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$archive = "{$path}/wepps.platform-diff.zip";
 		$cmd = "7z a -tzip {$archive} {$pathDiff}/*";
 		$this->command($cmd);
-		//UtilsWepps::debugf($cmd,1);
 		
+		UtilsWepps::debugf($diff,1);
 		/*
 		 * Реальный апдейт из updates
 		 * После него только откат вернет файлы
@@ -194,21 +202,23 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		/*
 		 * delete path* forlders, keep zip only
 		 */
-		sleep(3);
-		$this->cli->rmdir($pathRollback);
-		$this->cli->rmdir($pathDiff);
-		$this->cli->rmdir($pathUpdates);
+		//$this->cli->rmdir($pathRollback);
+		//$this->cli->rmdir($pathDiff);
+		//$this->cli->rmdir($pathUpdates);
 
 		return [
 				'output' => 'Updates is complete succsessfull!'
 		];
 	}
 	private function getFilesum($filename) {
+		if (!file_exists($filename)) {
+			return '';
+		}
 		$str = file_get_contents($filename);
 		$str = str_replace("\r\n", "\n", $str);
 		return md5($str);
 	}
-	private function getDiff($fileMD5) {
+	private function getDiff(string $fileMD5,bool $includeRemoved=false) {
 		if (!is_file($fileMD5)) {
 			return [];
 		}
@@ -228,13 +238,15 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			 */
 			$status = 3;
 			$filename = ConnectWepps::$projectDev['root'].'/'.$value['file'];
-			
 			if (!is_file($filename)) {
 				$files[] = [
 						'file' => $value['file'],
 						'md5' => "",
 						'status'=> $status
 				];
+				if ($includeRemoved===true) {
+					$output .= "{$value['file']}\n";
+				}
 				continue;
 			}
 			
@@ -254,8 +266,36 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		}
 		$output = trim($output);
 		return [
+				'filename'=>$fileMD5,
 				'output'=>$output,
 				'files'=>$files
+		];
+	}
+	private function getDiffUpdate(string $fileMD5,array $diff) {
+		/*
+		 * Поиск файлов. которых ранее не было
+		 * $diff - если найдутся новые файлы на сервер и они есть в $diff, то исключить их из $diff
+		 * Добавить их в notallowed
+		 */
+		$allow = $diff;
+		$jdata = json_decode(file_get_contents($fileMD5),true);
+		foreach ($jdata['files'] as $value) {
+			$key = array_search($value['file'],$diff);
+			if (!is_numeric($key)) {
+				unset($diff[$key]);
+			} 
+		}
+		#UtilsWepps::debugf($allow,1);
+		if (empty($diff)) {
+			$disallow = $allow;
+		}
+		$disallow = array_diff($allow, $diff);
+		
+		#UtilsWepps::debugt($diff,1);
+		
+		return [
+				'allow' => $diff,
+				'disallow' => $disallow
 		];
 	}
 	private function command(string $cmd) : bool {
