@@ -6,7 +6,6 @@ use WeppsCore\Utils\FilesWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsAdmin\Bot\BotTestWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
