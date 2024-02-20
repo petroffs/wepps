@@ -53,7 +53,7 @@ class BotFeedsWepps extends BotWepps {
 		$this->data->preserveWhiteSpace = false;
 		$this->data->formatOutput = true;
 		$this->data->loadXML($str);
-		$this->data->save(dirname(__FILE__) .'/../../../sitemap.xml');
+		$this->data->save(dirname(__FILE__) .'/../../../../sitemap.xml');
 	}
 }
 ?>
