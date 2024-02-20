@@ -1,5 +1,5 @@
 <?php
-namespace WeppsAdmin\Rest;
+namespace WeppsExtensions\Addons\Rest;
 
 /**
  * @var array $argv

@@ -1,6 +1,5 @@
 <?php
-
-namespace WeppsAdmin\Rest;
+namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;

@@ -1,5 +1,5 @@
 <?php
-namespace WeppsAdmin\Bot;
+namespace WeppsExtensions\Addons\Bot;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;

@@ -1,5 +1,5 @@
 <?php
-namespace WeppsAdmin\Bot;
+namespace WeppsExtensions\Addons\Bot;
 
 require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../../autoloader.php';

@@ -1,5 +1,6 @@
 <?php
-namespace WeppsAdmin\Bot;
+namespace WeppsExtensions\Addons\Bot;
+
 use WeppsCore\Connect\ConnectWepps;
 
 class BotBackupWepps {

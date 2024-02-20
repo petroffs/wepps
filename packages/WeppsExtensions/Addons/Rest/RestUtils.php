@@ -1,9 +1,5 @@
 <?php 
-namespace WeppsAdmin\Rest;
-
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Utils\UtilsWepps;
+namespace WeppsExtensions\Addons\Rest;
 
 class RestUtilsWepps {
     public static function _json_validate($string)
