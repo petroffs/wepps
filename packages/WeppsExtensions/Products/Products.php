@@ -32,13 +32,13 @@ class ProductsWepps extends ExtensionWepps {
 			$orderBySel = (!isset($_COOKIE['optionsSort']) || !isset($res[$_COOKIE['optionsSort']])) ? 0 : $_COOKIE['optionsSort'];
 			$smarty->assign('orderBy', $res);
 			$smarty->assign('orderBySel', $orderBySel);
-			$this->headers->js( "/plugins/jquery-cookie/jquery.cookie.js" );
+			$this->headers->js( "/packages/vendor_local/jquery-cookie/jquery.cookie.js" );
 
 			/*
 			 * Пагинация
 			 */
 			$smarty->assign('paginator',$obj->paginator);
-			$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Addons/Paginator/Paginator.tpl'));
+			$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
 			
 			/*
 			 * Основной шаблон
@@ -54,9 +54,9 @@ class ProductsWepps extends ExtensionWepps {
 			$this->headers->css("/ext/Products/ProductsItem.{$rand}.css");
 			$this->headers->js("/ext/Products/ProductsItem.{$rand}.js");
 			
-			$this->headers->css ( "/plugins/slick/slick.css" );
-			$this->headers->css ( "/plugins/slick/slick-theme.css" );
-			$this->headers->js ( "/plugins/slick/slick.min.js" );
+			$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick.css" );
+			$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick-theme.css" );
+			$this->headers->js ( "/packages/vendor/kenwheeler/slick/slick.min.js" );
 			$this->headers->css ( "/ext/Addons/Carousel/Carousel.{$rand}.css" );
 			
 			$this->navigator->content['Text1'] = '';
@@ -78,7 +78,7 @@ class ProductsWepps extends ExtensionWepps {
 		$smarty->assign('normalHeader1',0);
 		$this->headers->css("/ext/Products/Products.{$rand}.css");
 		$this->headers->js("/ext/Products/Products.{$rand}.js");
-		$this->headers->css ( "/ext/Addons/Paginator/Paginator.{$rand}.css" );
+		$this->headers->css ( "/ext/Template/Paginator/Paginator.{$rand}.css" );
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

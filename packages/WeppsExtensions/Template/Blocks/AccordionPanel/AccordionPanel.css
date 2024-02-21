@@ -43,7 +43,7 @@
 }
 .panel-accordion-wrapper>.pps_blocks>.pps_block>div.title:after {
 	content: '';
-	background: #fff url(/ext/Blocks/AccordionPanel/files/ico-plus.svg) center center no-repeat;
+	background: #fff url(files/ico-plus.svg) center center no-repeat;
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
@@ -53,7 +53,7 @@
 	right: 0px;
 }
 .panel-accordion-wrapper>.pps_blocks>.pps_block.active>div.title:after {
-	background-image: url(/ext/Blocks/AccordionPanel/files/ico-minus.svg);
+	background-image: url(files/ico-minus.svg);
 }
 .panel-accordion-wrapper>.pps_blocks>.pps_block>div.text {
 	padding-top: 30px;

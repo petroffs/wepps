@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Mail;
+namespace WeppsExtensions\Addons\Mail;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
@@ -45,7 +45,7 @@ class MailWepps {
 			case "html":
 				$smarty->assign('subject',$subject);
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Mail/MailHtml.tpl');
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailHtml.tpl');
 				$this->contentAll .= "Content-Type: text/html; charset=\"utf-8\"\n";
 				$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
 				$this->contentAll .= $this->content."\r\n";
@@ -54,7 +54,7 @@ class MailWepps {
 				break;
 			default:
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Mail/MailPlain.tpl');
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailPlain.tpl');
 				$this->contentAll .= "Content-Type: text/plain; charset=\"utf-8\"\n";
 				$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
 				#$this->contentAll = self::getImagesHtml($this->contentAll);

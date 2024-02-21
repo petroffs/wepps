@@ -108,7 +108,7 @@ class RequestProductsWepps extends RequestWepps {
 			
 				$this->assign('orderBy', $res);
 				$this->assign('orderBySel', $orderBySel);
-				$this->fetch2('paginatorTpl', "../packages/WeppsExtensions/Addons/Paginator/Paginator.tpl");
+				$this->fetch2('paginatorTpl', "../packages/WeppsExtensions/Template/Paginator/Paginator.tpl");
 				$this->fetch ('productsItemsTpl', '../packages/WeppsExtensions/Products/ProductsItems.tpl');
 			
 				$js .= "

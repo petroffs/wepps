@@ -1,5 +1,6 @@
 <?php
-namespace WeppsExtensions\Images;
+namespace WeppsExtensions\Addons\Images;
+
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;

@@ -1,6 +1,10 @@
 <div class="header">
 	<div class="img">
+		{if $shopInfo.Logo_FileUrl}
 		<img src="{$shopInfo.Logo_FileUrl}" width="120"/>
+		{else}
+		<img src="{$projectInfo.logo}" width="120"/>
+		{/if}
 	</div>
 	<div class="descr">
 		<div>{$shopInfo.Name2}</div>

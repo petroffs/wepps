@@ -591,7 +591,9 @@ class FilesWepps {
  */
 class CliWepps {
 	private $display = 0;
-	public function __construct() {}
+	public function __construct() {
+		$this->display();
+	}
 	
 	private function getColor($str, $type = 'i'){
 		switch ($type) {

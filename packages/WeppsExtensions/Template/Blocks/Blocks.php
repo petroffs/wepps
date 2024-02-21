@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Blocks;
+namespace WeppsExtensions\Template\Blocks;
 
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
@@ -17,8 +17,8 @@ class BlocksWepps extends ExtensionWepps {
 				/*
 				 * Переменные для глобального шаблона
 				 */
-				$this->headers->css("/ext/Blocks/Blocks.{$this->rand}.css");
-				$this->headers->js("/ext/Blocks/Blocks.{$this->rand}.js");
+				$this->headers->css("/ext/Template/Blocks/Blocks.{$this->rand}.css");
+				$this->headers->js("/ext/Template/Blocks/Blocks.{$this->rand}.js");
 				$obj = new DataWepps("s_Panels");
 				$panels = $obj->getMax("t.DisplayOff=0 and t.DirectoryId='{$this->navigator->content['Id']}'");
 				if (empty($panels)) {
@@ -41,9 +41,9 @@ class BlocksWepps extends ExtensionWepps {
 					$smarty->assign('blocks',$b);
 					$smarty->assign('panel',$value);
 					if (empty($value['Template'])) {
-						$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Blocks/Blocks.tpl');
+						$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Template/Blocks/Blocks.tpl');
 					}  else {
-						$extensionClass = "\WeppsExtensions\\Blocks\\{$value['Template']}\\{$value['Template']}Wepps";
+						$extensionClass = "\WeppsExtensions\\Template\\Blocks\\{$value['Template']}\\{$value['Template']}Wepps";
 						$extension = new $extensionClass($this->navigator,$this->headers);
 						$this->tpl .= $extension->tpl;
 					}

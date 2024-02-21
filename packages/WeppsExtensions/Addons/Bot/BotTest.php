@@ -3,9 +3,10 @@ namespace WeppsExtensions\Addons\Bot;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Mail\MailWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
+use WeppsExtensions\Addons\Mail\MailWepps;
+use WeppsCore\Utils\CliWepps;
 
 class BotTestWepps extends BotWepps {
 	public $parent = 0;
@@ -44,9 +45,9 @@ class BotTestWepps extends BotWepps {
 	}
 	public function mail() {
 		$mail = new MailWepps("html");
-		$mail->mail(ConnectWepps::$projectInfo['email'], "Ваш новый пароль", "Test text");
+		$mail->mail(ConnectWepps::$projectInfo['email'], "Test subject", "Test text");
 		$output = $mail->getContent(false);
-		file_put_contents(__DIR__ . '/files/mail.html', $output);
+		$this->cli->put($output, __DIR__ . '/files/mail.html');
 		echo $output;
 	}
 	public function testDB() {
@@ -82,6 +83,12 @@ class BotTestWepps extends BotWepps {
 				]
 				);
 		UtilsWepps::debugf($t,1);
+	}
+	public function cli() {
+		$this->cli->text("test test");
+		$this->cli->success("success test");
+		$this->cli->warning("warning test");
+		$this->cli->error("error test");
 	}
 }
 ?>

@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Pdf;
+namespace WeppsExtensions\Addons\Pdf;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -7,6 +7,7 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Spell\SpellWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Connect\ConnectWepps;
 
 class PdfWepps {
 	private $get;
@@ -24,6 +25,7 @@ class PdfWepps {
 		$obj = new DataWepps("TradeShops");
 		$shop = $obj->getMax(1)[0];
 		$smarty->assign('shopInfo',$shop);
+		$smarty->assign('projectInfo',ConnectWepps::$projectInfo);
 		$this->css = $smarty->fetch('Pdf.css');
 		$this->header = $smarty->fetch('PdfHeader.tpl');
 		$this->footer = $smarty->fetch('PdfFooter.tpl');

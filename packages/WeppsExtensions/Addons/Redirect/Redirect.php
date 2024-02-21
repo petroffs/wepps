@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Redirect;
+namespace WeppsExtensions\Addons\Redirect;
 
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
@@ -11,7 +11,7 @@ class RedirectWepps extends ExtensionWepps {
 		$smarty = SmartyWepps::getSmarty();
 		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/WeppsExtensions/Redirect/Redirect.tpl';
+				$this->tpl = 'packages/WeppsExtensions/Addons/Redirect/Redirect.tpl';
 				if (isset($this->navigator->child[0])) {
 					header("HTTP/1.1 301 Moved Permanently");
 					header("Location: {$this->navigator->child[0]['Url']}");

@@ -1,12 +1,12 @@
 <?php
-namespace WeppsExtensions\Addons;
+namespace WeppsExtensions\Template;
 
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\SmartyWepps;
 
-if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
-	class AddonsWepps extends ExtensionWepps {
+if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
+	class TemplateAddonsWepps extends ExtensionWepps {
 		public function request() {
 			$smarty = SmartyWepps::getSmarty();
 			$this->headers->js ( "/packages/vendor/components/jquery/jquery.min.js" );
@@ -24,24 +24,24 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			/*
 			 * Проект
 			 */
-			$this->headers->js ( "/ext/Addons/Layout/Layout.{$this->rand}.js" );
-			$this->headers->css ( "/ext/Addons/Layout/Layout.{$this->rand}.css" );		
-			//$this->headers->css ( "/ext/Addons/Layout/WinLayer.{$this->rand}.css" );		
-			$this->headers->css ( "/ext/Addons/Layout/Win.{$this->rand}.css" );		
+			$this->headers->js ( "/ext/Template/Layout/Layout.{$this->rand}.js" );
+			$this->headers->css ( "/ext/Template/Layout/Layout.{$this->rand}.css" );		
+			//$this->headers->css ( "/ext/Template/Layout/WinLayer.{$this->rand}.css" );		
+			$this->headers->css ( "/ext/Template/Layout/Win.{$this->rand}.css" );		
 			
 			/*
 			 * Навигация
 			 */
-			$this->headers->js ("/ext/Addons/Nav/Nav.{$this->rand}.js");
-			$this->headers->css ("/ext/Addons/Nav/Nav.{$this->rand}.css");
+			$this->headers->js ("/ext/Template/Nav/Nav.{$this->rand}.js");
+			$this->headers->css ("/ext/Template/Nav/Nav.{$this->rand}.css");
 			$smarty->assign('nav',$this->navigator->nav);
 			$smarty->assign('navTpl',$smarty->fetch( __DIR__ .'/Nav/Nav.tpl'));
 	
 			/*
 			 * Формы
 			 */
-			$this->headers->js ("/ext/Addons/Forms/Forms.{$this->rand}.js");
-			$this->headers->css ("/ext/Addons/Forms/Forms.{$this->rand}.css");
+			$this->headers->js ("/ext/Template/Forms/Forms.{$this->rand}.js");
+			$this->headers->css ("/ext/Template/Forms/Forms.{$this->rand}.css");
 	
 			/*
 			 * Информация организации
@@ -49,7 +49,7 @@ if (!class_exists('WeppsExtensions\Addons\AddonsWepps')) {
 			$obj = new DataWepps ( "TradeShops" );
 			$res = $obj->get () [0];
 			$smarty->assign ( 'shopInfo', $res );
-			unset ( $obj );
+			unset ($obj);
 	
 			/*
 			 * Соцсети

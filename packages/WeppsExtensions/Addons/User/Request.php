@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\User;
+namespace WeppsExtensions\Addons\User;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
@@ -7,7 +7,7 @@ use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsExtensions\Mail\MailWepps;
+use WeppsExtensions\Addons\Mail\MailWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';

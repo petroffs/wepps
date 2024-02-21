@@ -21,11 +21,11 @@ class HomePageWepps extends ExtensionWepps {
 				$res = $obj->getMax ( "t.DisplayOff=0 and SPlace=1 and sm2.Id={$this->navigator->content['Id']}" );
 				if (isset( $res[0]['Id'] )) {
 					$smarty->assign ( 'carousel', $res );
-					$this->tpl = $smarty->fetch ( 'packages/WeppsExtensions/Addons/Carousel/Carousel.tpl', null, 'a' );
+					$this->tpl = $smarty->fetch ( 'packages/WeppsExtensions/Template/Carousel/Carousel.tpl', null, 'a' );
 					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick.css" );
 					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick-theme.css" );
 					$this->headers->js ( "/packages/vendor/kenwheeler/slick/slick/slick.min.js" );
-					$this->headers->css ( "/ext/Addons/Carousel/Carousel.{$this->rand}.css" );
+					$this->headers->css ( "/ext/Template/Carousel/Carousel.{$this->rand}.css" );
 				}
 				
 				/*

@@ -4,15 +4,18 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
+use WeppsCore\Utils\CliWepps;
 
 class BotWepps {
 	public $parent = 1;
 	protected $host;
 	protected $root;
+	protected $cli;
 
 	public function __construct($myPost=[]) {
 		$this->host = ConnectWepps::$projectDev['host'];
 		$this->root = ConnectWepps::$projectDev['root'];
+		$this->cli = new CliWepps();
 		$start = microtime(true);
 		$action = (!isset($myPost[1])) ? "" : $myPost[1];
 		if ($this->parent==0) {
@@ -65,6 +68,9 @@ class BotWepps {
 			case "dbtest":
 				$obj = new BotTestWepps();
 				$obj->testDB();
+				break;
+			case "clitest":
+				$obj = new BotTestWepps();
 				break;
 			default:
 				echo "\nERROR\n";

@@ -18,7 +18,7 @@ class NewsWepps extends ExtensionWepps {
 				$res = $obj->getMax ( $extensionConditions, 5, $this->page, "t.Priority" );
 				$smarty->assign ( 'elements', $res );
 				$smarty->assign ( 'paginator', $obj->paginator );
-				$smarty->assign ( 'paginatorTpl', $smarty->fetch ( 'packages/WeppsExtensions/Addons/Paginator/Paginator.tpl' ) );
+				$smarty->assign ( 'paginatorTpl', $smarty->fetch ( 'packages/WeppsExtensions/Template/Paginator/Paginator.tpl' ) );
 			break;
 			default :
 				$this->tpl = 'packages/WeppsExtensions/News/NewsItem.tpl';
@@ -37,7 +37,7 @@ class NewsWepps extends ExtensionWepps {
 		 */
 		$this->headers->css("/ext/News/News.{$this->rand}.css");
 		$this->headers->js("/ext/News/News.{$this->rand}.js");
-		$this->headers->css ( "/ext/Addons/Paginator/Paginator.{$this->rand}.css" );
+		$this->headers->css ( "/ext/Template/Paginator/Paginator.{$this->rand}.css" );
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

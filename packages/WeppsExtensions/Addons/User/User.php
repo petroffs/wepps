@@ -1,6 +1,5 @@
 <?php
-
-namespace WeppsExtensions\User;
+namespace WeppsExtensions\Addons\User;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;

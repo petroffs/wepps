@@ -17,7 +17,7 @@ class ExampleWepps extends ExtensionWepps {
 				$res = $obj->getMax($extensionConditions,5,$this->page,"t.Priority");
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
-				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Addons/Paginator/Paginator.tpl'));
+				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
 				break;
 			default:
 				$this->tpl = 'packages/WeppsExtensions/Example/ExampleItem.tpl';
@@ -36,7 +36,7 @@ class ExampleWepps extends ExtensionWepps {
 		 */
 		$this->headers->css("/ext/Example/Example.{$this->rand}.css");
 		$this->headers->js("/ext/Example/Example.{$this->rand}.js");
-		$this->headers->css ("/ext/Addons/Paginator/Paginator.{$this->rand}.css");
+		$this->headers->css ("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

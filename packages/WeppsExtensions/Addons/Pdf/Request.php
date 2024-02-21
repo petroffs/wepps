@@ -1,10 +1,11 @@
 <?php
-namespace WeppsExtensions\Pdf;
+namespace WeppsExtensions\Addons\Pdf;
 
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
-require_once '../../../configloader.php';
+require_once __DIR__ . '/../../../../config.php';
+require_once __DIR__ . '/../../../../autoloader.php';
+require_once __DIR__ . '/../../../../configloader.php';
+
 $obj = new PdfWepps($_REQUEST);
-$obj->output(true);
+$obj->output(false);
 unset($obj);
 ?>

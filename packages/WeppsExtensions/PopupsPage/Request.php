@@ -3,7 +3,7 @@ namespace WeppsExtensions\PopupsPage;
 
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\RequestWepps;
-use WeppsAdmin\Bot\BotTestWepps;
+use WeppsExtensions\Addons\Bot\BotTestWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';

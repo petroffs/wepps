@@ -4,8 +4,7 @@ namespace WeppsExtensions\Template;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\ExtensionWepps;
-use WeppsExtensions\Blocks\BlocksWepps;
-use WeppsExtensions\Addons\AddonsWepps;
+use WeppsExtensions\Template\Blocks\BlocksWepps;
 
 class TemplateWepps extends ExtensionWepps {
 	
@@ -23,7 +22,7 @@ class TemplateWepps extends ExtensionWepps {
 		/*
 		 * Дополнительный глобальный функционал
 		 */
-		new AddonsWepps($this->navigator,$this->headers);
+		new TemplateAddonsWepps($this->navigator,$this->headers);
 		
 		/*
 		 * Раширение
@@ -51,7 +50,7 @@ class TemplateWepps extends ExtensionWepps {
 			$this->headers->css("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.css");
 			$this->headers->js("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.js");
 		}
-		
+
 		/*
 		 * Передача данных в шаблон
 		 */
