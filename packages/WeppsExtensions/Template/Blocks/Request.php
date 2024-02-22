@@ -2,14 +2,17 @@
 namespace WeppsExtensions\Blocks;
 
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\FilesWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Mail\MailWepps;
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
-require_once '../../../configloader.php';
+
+require_once __DIR__ . '/../../../../config.php';
+require_once __DIR__ . '/../../../../autoloader.php';
+require_once __DIR__ . '/../../../../configloader.php';
+
+/**
+ * @var \Smarty $smarty
+ */
+
 
 class RequestBlocksWepps extends RequestWepps {
 	public function request($action="") {
@@ -34,19 +37,6 @@ class RequestBlocksWepps extends RequestWepps {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 $request = new RequestBlocksWepps ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
