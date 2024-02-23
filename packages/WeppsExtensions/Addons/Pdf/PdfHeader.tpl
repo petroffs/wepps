@@ -1,9 +1,9 @@
 <div class="header">
 	<div class="img">
 		{if $shopInfo.Logo_FileUrl}
-		<img src="{$shopInfo.Logo_FileUrl}" width="120"/>
+		<img src="{$projectDev.protocol}{$projectDev.host}{$shopInfo.Logo_FileUrl}" width="120"/>
 		{else}
-		<img src="{$projectInfo.logo}" width="120"/>
+		<img src="{$projectDev.protocol}{$projectDev.host}{$projectInfo.logo}" width="120"/>
 		{/if}
 	</div>
 	<div class="descr">

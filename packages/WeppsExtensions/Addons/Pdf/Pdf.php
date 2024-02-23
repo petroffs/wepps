@@ -26,6 +26,7 @@ class PdfWepps {
 		$shop = $obj->getMax(1)[0];
 		$smarty->assign('shopInfo',$shop);
 		$smarty->assign('projectInfo',ConnectWepps::$projectInfo);
+		$smarty->assign('projectDev',ConnectWepps::$projectDev);
 		$this->css = $smarty->fetch('Pdf.css');
 		$this->header = $smarty->fetch('PdfHeader.tpl');
 		$this->footer = $smarty->fetch('PdfFooter.tpl');
@@ -105,7 +106,9 @@ class PdfWepps {
 	}
 	function output($download = false) {
 		$mpdf = new \Mpdf\Mpdf();
+		$mpdf->showImageErrors = true;
 		$mpdf->curlAllowUnsafeSslRequests = true;
+		
 		$mpdf->SetMargins(3, 3, 25);
 		$mpdf->WriteHTML($this->css,1);
 		$mpdf->SetHTMLHeader($this->header);
