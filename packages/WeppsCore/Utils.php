@@ -589,49 +589,40 @@ class FilesWepps {
 /**
  * Командная строка
  */
-class CliWepps {
+class CliPPS {
 	private $display = 0;
 	public function __construct() {
 		$this->display();
-	}
-	
-	private function getColor($str, $type = 'i'){
-		switch ($type) {
-			case 'e': //error
-				echo "\033[31m$str \033[0m\n";
-				break;
-			case 's': //success
-				echo "\033[32m$str \033[0m\n";
-				break;
-			case 'w': //warning
-				echo "\033[33m$str \033[0m\n";
-				break;
-			case 'i': //info
-			default:
-				echo "\033[36m$str \033[0m\n";
-				break;
-		}
 	}
 	public function display($display = true) {
 		$this->display = $display;
 	}
 	public function error($text="") {
-		return self::outer(self::getColor($text,'e'));
+		return self::outer(self::getColor("error: $text",'e'));
 	}
 	public function success($text="") {
-		return self::outer(self::getColor($text,'s'));
+		return self::outer(self::getColor("success: $text",'s'));
 	}
 	public function warning($text="") {
-		return self::outer(self::getColor($text,'w'));
+		return self::outer(self::getColor("warning: $text",'w'));
+	}
+	public function info($text="") {
+		return self::outer(self::getColor("info: $text",'i'));
 	}
 	public function text($text="") {
-		return self::outer(self::getColor($text,'i'));
+		return self::outer(self::getColor($text));
 	}
-	public function progress($done, $total, $info="", $width=50) {
-		$perc = round(($done * 100) / $total);
-		$bar = round(($width * $perc) / 100);
-		$t = sprintf("%s%%[%s>%s]%s\r", $perc, str_repeat("=", $bar), str_repeat(" ", $width-$bar), $info);
-		return self::outer($t);
+	public function br() {
+		return self::outer("\n");
+	}
+	public function progress($done, $total) {
+		$perc = floor(($done / $total) * 100);
+		$left = 100 - $perc;
+		$rate = 0.5;
+		$perc2 = floor($perc * $rate);
+		$left2 = ceil($left * $rate);
+		$write = sprintf("\033[0G\033[2K[%'#{$perc2}s#%-{$left2}s] $done/$total [$perc%%]", "", "");
+		echo $write;
 	}
 	public function copy(string $source,string $destination,bool $overwrite=true) {
 		if ($overwrite===false && file_exists($destination)) {
@@ -674,6 +665,38 @@ class CliWepps {
 		}
 		unlink($file);
 		return true;
+	}
+	public function cmd(string $cmd, bool $silent = false) {
+		/**
+		 * @var array $o
+		 */
+		if (empty($cmd)) {
+			$this->warning("cmd is empty");
+		}
+		exec("$cmd 2>&1",$o);
+		if ($silent == false) {
+			$this->info(implode("\n",$o));
+		}
+		return $o;
+	}
+	private function getColor($str, $type = ''){
+		switch ($type) {
+			case 'e': //error
+				echo "\033[0;31;47m","$str\033[0m\n";
+				break;
+			case 's': //success
+				echo "\033[32m$str\033[0m\n";
+				break;
+			case 'w': //warning
+				echo "\033[33m$str\033[0m\n";
+				break;
+			case 'i': //info
+				echo "\033[36m$str\033[0m\n";
+				break;
+			default:
+				echo "$str\n";
+				break;
+		}
 	}
 	private function outer($text='') {
 		if ($this->display == true) {
