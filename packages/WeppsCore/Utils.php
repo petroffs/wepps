@@ -674,7 +674,7 @@ class CliPPS {
 			$this->warning("cmd is empty");
 		}
 		exec("$cmd 2>&1",$o);
-		if ($silent == false) {
+		if ($silent == false && !empty($o)) {
 			$this->info(implode("\n",$o));
 		}
 		return $o;
