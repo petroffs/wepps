@@ -598,16 +598,16 @@ class CliWepps {
 		$this->display = $display;
 	}
 	public function error($text="") {
-		return self::outer(self::getColor("error: $text",'e'));
+		return self::outer(self::getColor("[error] $text",'e'));
 	}
 	public function success($text="") {
-		return self::outer(self::getColor("success: $text",'s'));
+		return self::outer(self::getColor("[success] $text",'s'));
 	}
 	public function warning($text="") {
-		return self::outer(self::getColor("warning: $text",'w'));
+		return self::outer(self::getColor("[warning] $text",'w'));
 	}
 	public function info($text="") {
-		return self::outer(self::getColor("info: $text",'i'));
+		return self::outer(self::getColor("[info] $text",'i'));
 	}
 	public function text($text="") {
 		return self::outer(self::getColor($text));
