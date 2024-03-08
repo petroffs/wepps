@@ -589,7 +589,7 @@ class FilesWepps {
 /**
  * Командная строка
  */
-class CliPPS {
+class CliWepps {
 	private $display = 0;
 	public function __construct() {
 		$this->display();
