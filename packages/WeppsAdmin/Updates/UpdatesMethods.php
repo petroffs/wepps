@@ -158,6 +158,9 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$pathDiff = $path . "/diff";
 		
 		foreach ($diff as $value) {
+			if (empty($value)) {
+				continue;
+			}
 			if (file_exists(ConnectWepps::$projectDev['root']."/".$value)) {
 				$this->cli->copy(ConnectWepps::$projectDev['root']."/".$value, $pathRollback."/".$value);
 			}
@@ -173,6 +176,9 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		 * После него только откат вернет файлы
 		 */
 		foreach ($diff as $value) {
+			if (empty($value)) {
+				continue;
+			}
 			$this->cli->copy($path."/updates/".$value, ConnectWepps::$projectDev['root']."/".$value);
 		}
 		
