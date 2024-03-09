@@ -3,12 +3,15 @@
 namespace WeppsAdmin\Updates;
 
 use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Utils\CliWepps;
 
 class UpdatesWepps {
 	public $parent = 1;
 	public $settings;
+	public $cli;
 	public function __construct($settings=[]) {
 		$this->settings = $settings;
+		$this->cli = new CliWepps();
 		if ($this->parent==0) {
 			return;
 		}
@@ -41,7 +44,7 @@ class UpdatesWepps {
 				}
 				$output = $obj->setUpdates($this->settings[2])['output'];
 				break;
-				
+			
 			case 'test':
 				$obj = new UpdatesMethodsWepps();
 				$obj->getCliProgress(10, 100,"копирование 1");
@@ -56,7 +59,8 @@ class UpdatesWepps {
 				echo 2;
 				break;
 		}
-		echo "\n===============\n{$output}\n===============";
+		$this->cli->br();
+		$this->cli->info($output);
 		return true;
 	}
 	

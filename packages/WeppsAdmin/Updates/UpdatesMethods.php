@@ -5,18 +5,15 @@ namespace WeppsAdmin\Updates;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
-use WeppsCore\Utils\CliWepps;
 
 class UpdatesMethodsWepps extends UpdatesWepps {
 	public $parent = 0;
 	public $settings;
 	private $filename;
-	private $cli;
+	
 	public function __construct($settings=[]) {
 		parent::__construct();
 		$this->filename = __DIR__.'/files/md5.conf';
-		$this->cli = new CliWepps();
-		$this->cli->display();
 	}
 	public function getReleaseCurrentVersion() : string {
 		if (!is_file($this->filename)) {
@@ -33,7 +30,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$filename = @ConnectWepps::$projectServices['weppsupdates']['weppsurl']."/releases.json";
 		if (empty($filename)) {
 			return [
-					'output' => 'wrong settings'
+					'output' => 'Wrong settings'
 			];
 		}
 		$arrContextOptions = [
@@ -45,14 +42,14 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$json = @file_get_contents($filename,false,stream_context_create($arrContextOptions));
 		if (empty($json)) {
 			return [
-					'output' => 'wrong settings weppsurl'
+					'output' => 'Wrong settings weppsurl'
 			];
 		}
 		$current = $this->getReleaseCurrentVersion();
 		$jdata = $jdata2 = json_decode($json,true);
 		if (empty($jdata)) {
 			return [
-					'output' => 'wrong settings url: '.$filename
+					'output' => 'Wrong settings url: '.$filename
 			];
 		}
 		
@@ -76,7 +73,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$releases = $this->getReleasesList();
 		if (!in_array($tag, $releases['releases']) || $releases['version']==$tag) {
 			return [
-					'output'=>"wrong tag"
+					'output'=>"Wrong tag"
 			];
 		}
 		$file = ConnectWepps::$projectServices['weppsupdates']['weppsfile'];
@@ -104,9 +101,13 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$zipPath = $path['dirname'].'/updates';
 		if ($result === false) {
 			return [
-					'output' => 'zip error'
+					'output' => 'Zip error'
 			];
 		}
+		
+		/*
+		 * При отладке скрыть
+		 */
 		$zip->extractTo($zipPath);
 		$zip->close();
 
@@ -127,40 +128,20 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		 */
 		$modified = explode("\n",$modifiedSelf['output']);
 		$diff = array_diff(explode("\n",$modifiedRelease['output']),$modified);
+		$diff = array_values($diff);
 		
-		/*
-		 * Если в текущем релизе нет файла, но он появился.
-		 * Если в апдейт-релизе появился файл, а в текущем не было.
-		 * Если и там и там появился файл (в игнор NOTALLOWED ствить)
-		 * 
-		 * В итоге, перезаписываем такой файл из релиза. При необходимости, нужный файл можно взять из rollback
-		 */
+		$this->cli->br();
+		$this->cli->error("Disallowed files:\n".implode("\n", $modified));
+		$this->cli->br();
+		$this->cli->success("Allowed files:\n".implode("\n", $diff));
 		
-		/*
-		$allowed = $this->getDiffUpdate($fileMD5,$diff);
-		$diff = $allowed['allow'];
-		 if (!empty($allowed['allow'])) {
-		 $diff = $allowed['allow'];
-		 }
-
-		if (!empty($allowed['disallow'])) {
-			$modified = array_merge($modified,$allowed['disallow']);
-		}
-		 */
-		$this->cli->error("\nDisallowed files:\n".implode("\n", $modified));
-		$this->cli->success("\nAllowed files:\n".implode("\n", $diff));
 		$this->cli->put(json_encode([
 				'disallowed'=>$modified,
 				'allowed'=>$diff
 		],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT), $path['dirname']."/log.conf");
 		
-		if (empty($diff)) {
-			$this->cli->rmdir($zipPath);
-			return [
-					'output' => "no data for update"
-			];
-		}
-		$this->cli->warning("\nType 'yes' to continue: ");
+		$this->cli->br();
+		$this->cli->warning("Type 'yes' to continue: ");
 		$handle = fopen ("php://stdin","r");
 		$line = fgets($handle);
 		if(trim($line) != 'yes'){
@@ -171,29 +152,22 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		return self::setUpdatesInstall($diff,$path['dirname']);
 	}
 	private function setUpdatesInstall(array $diff = [],string $path) {
-		if (empty($diff)) {
-			return [
-					'output' => 'no files for update'
-			];
-		}
 		$diff[] = 'packages/WeppsAdmin/Updates/files/md5.conf';
+
 		$pathRollback = $path . "/rollback";
 		$pathDiff = $path . "/diff";
-		$pathUpdates = $path . "/updates";
 		
 		foreach ($diff as $value) {
-			$this->cli->copy(ConnectWepps::$projectDev['root']."/".$value, $pathRollback."/".$value);
-			$this->cli->copy($path."/updates/".$value, $pathDiff."/".$value);
+			if (file_exists(ConnectWepps::$projectDev['root']."/".$value)) {
+				$this->cli->copy(ConnectWepps::$projectDev['root']."/".$value, $pathRollback."/".$value);
+			}
+			if (file_exists($path."/updates/".$value)) {
+				$this->cli->copy($path."/updates/".$value, $pathDiff."/".$value);
+			}
 		}
-		
-		$archive = "{$path}/wepps.platform-rollback.zip";
-		$cmd = "7z a -tzip {$archive} {$pathRollback}/*";
-		$this->command($cmd);
-		
-		$archive = "{$path}/wepps.platform-diff.zip";
-		$cmd = "7z a -tzip {$archive} {$pathDiff}/*";
-		$this->command($cmd);
-		
+		$this->zip("{$path}/wepps.platform-rollback.zip", "{$pathRollback}/*");
+		$this->zip("{$path}/wepps.platform-diff.zip", "{$pathDiff}/*");
+
 		/*
 		 * Реальный апдейт из updates
 		 * После него только откат вернет файлы
@@ -202,13 +176,14 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			$this->cli->copy($path."/updates/".$value, ConnectWepps::$projectDev['root']."/".$value);
 		}
 		
-		/*
-		 * delete path* forlders, keep zip only
-		 */
 		$this->cli->rmdir($pathRollback);
 		$this->cli->rmdir($pathDiff);
-		$this->cli->rmdir($pathUpdates);
 		
+		/*
+		 * При отладке скрыть
+		 */
+		$this->cli->rmdir($path . "/updates");
+
 		return [
 				'output' => 'Updates is complete succsessfull!'
 		];
@@ -274,42 +249,19 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 				'files'=>$files
 		];
 	}
-	/**
-	 * Экспериментальное
-	 */
-	private function getDiffUpdate(string $fileMD5,array $diff) {
-		/*
-		 * Поиск файлов. которых ранее не было
-		 * $diff - если найдутся новые файлы на сервер и они есть в $diff, то исключить их из $diff
-		 * Добавить их в notallowed
-		 */
-		$allow = $diff;
-		$jdata = json_decode(file_get_contents($fileMD5),true);
-		foreach ($jdata['files'] as $value) {
-			$key = array_search($value['file'],$diff);
-			if (!is_numeric($key)) {
-				unset($diff[$key]);
-			}
+	private function zip (string $archive,string $path) : bool {
+		if (file_exists($archive)) {
+			$this->cli->rmfile($archive);
 		}
-		UtilsWepps::debugf($allow,1);
-		if (empty($diff)) {
-			$disallow = $allow;
-		}
-		$disallow = array_diff($allow, $diff);
-		
-		#UtilsWepps::debugt($diff,1);
-		
-		return [
-				'allow' => $diff,
-				'disallow' => $disallow
-		];
+		$cmd = "7z a -tzip {$archive} {$path}";
+		$this->cli->cmd($cmd,true);
+		return true;
 	}
-	private function command(string $cmd) : bool {
+	private function command(string $cmd) : array {
 		if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
 			$cmd = str_replace("\\", "/", $cmd);
 		}
-		exec($cmd);
-		return true;
+		return $this->cli->cmd($cmd,true);
 	}
 }
 ?>
