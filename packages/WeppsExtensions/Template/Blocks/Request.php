@@ -2,8 +2,8 @@
 namespace WeppsExtensions\Blocks;
 
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\RequestWepps;
 
 require_once __DIR__ . '/../../../../config.php';
 require_once __DIR__ . '/../../../../autoloader.php';

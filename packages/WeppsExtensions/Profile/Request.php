@@ -3,9 +3,9 @@ namespace WeppsExtensions\Profile;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsExtensions\Mail\MailWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
+use WeppsExtensions\Addons\Mail\MailWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';

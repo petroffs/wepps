@@ -4,8 +4,8 @@ namespace WeppsExtensions\Addons\Merchant\Sberbank;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Mail\MailWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsExtensions\Addons\Mail\MailWepps;
 
 class SberbankWepps {
     private $login;
@@ -154,7 +154,7 @@ class SberbankWepps {
 		if (isset ( $res ['error'] ) && $res['error']!=0 ) {
 			$t = UtilsWepps::debug( $res, 0, false );
 			$t .= UtilsWepps::debug ( $this->get, 0, false );
-			$obj = new MailWepps ( 'html' );
+			$obj = new MailWepps('html');
 			$obj->mail ( ConnectWepps::$projectDev['email'], "Платежи Сбербанк", $t );
 		}
 	}

@@ -1,13 +1,14 @@
 <?php
 namespace WeppsExtensions\Profile;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsExtensions\User\UserWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Mail\MailWepps;
+use WeppsExtensions\Addons\User\UserWepps;
+use WeppsExtensions\Addons\Mail\MailWepps;
 
 class ProfileWepps {
 	public $get;

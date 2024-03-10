@@ -1,12 +1,13 @@
 <?php
 namespace WeppsExtensions\Contacts;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Mail\MailWepps;
 use WeppsCore\Core\NavigatorWepps;
+use WeppsExtensions\Addons\Mail\MailWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
