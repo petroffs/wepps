@@ -300,7 +300,7 @@ class UtilsWepps {
 		foreach ($fields as $key=>$value) {
 			$str = trim($key);
 			$spreadsheet->setActiveSheetIndex(0)
-			->setCellValueExplicitByColumnAndRow($j, $i, $str,'s')
+			->setCellValueExplicit([$j, $i], $str,'s')
 			->getColumnDimensionByColumn($j)->setWidth(12);
 			$j++;
 		}
@@ -311,7 +311,7 @@ class UtilsWepps {
 			foreach ($fields as $key => $value) {
 				$str = trim($v[$key]);
 				$spreadsheet->setActiveSheetIndex(0)
-				->setCellValueExplicitByColumnAndRow($j, $i, $str,'s');
+				->setCellValueExplicit([$j, $i], $str,'s');
 				$j++;
 			}
 			$i++;
