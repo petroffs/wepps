@@ -423,18 +423,16 @@ abstract class RequestWepps {
 			if ($css == 1) $this->get['cssjs']  = "<style>{$smarty->fetch($this->tpl.'.css')}</style>";
 			if ($js == 1)  $this->get['cssjs'] .= "<script type=\"text/javascript\">{$smarty->fetch($this->tpl.'.js')}</script>";
 		}
-		if (count($this->fetch)!=0) {
-			foreach ($this->fetch as $key=>$value) {
-				$smarty->assign($key,$smarty->fetch($value));
-			}
-		}
 	}
 	public function assign($key,$value) {
 		$this->assign[$key] = $value;
 	}
-	
 	public function fetch($key,$value) {
-		$this->fetch[$key] = $value;
+		$smarty = SmartyWepps::getSmarty();
+		foreach ($this->assign as $k=>$v) {
+			$smarty->assign($k,$v);
+		}
+		$smarty->assign($key,$smarty->fetch($value));
 	}
 }
 
