@@ -209,7 +209,7 @@ label.pps.pps_upload span {
 	padding: 0 12px 0 12px;
 	width: auto;
 	max-width: max-content;
-	height: var(--step6);
+	min-height: var(--step6);
 	line-height: inherit;
 	border-radius: 3px;
 	overflow: hidden;
