@@ -60,7 +60,7 @@ form.list-data .item .field .files>.files-item {
 }
 form.list-data .item .field .files .descr {
 	position: absolute;
-	top: 5px;
+	bottom: 5px;
 	left: 8px;
 	width: 1px;
 	height: 1px;

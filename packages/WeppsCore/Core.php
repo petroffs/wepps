@@ -708,6 +708,10 @@ class LanguageWepps {
 		$langLink = ($langLink != '/') ? "LinkDirectory='" . $langLink . "' or" : "";
 		$sql = "select * from s_NGroupsLang where DisplayOff='0' and {$langLink} LinkDirectory='/' order by Priority desc limit 2";
 		$langData = ConnectWepps::$instance->fetch ( $sql );
+		$url = "";
+		if (!empty($_SERVER['REQUEST_URI'])) {
+			$url = $_SERVER['REQUEST_URI'];
+		}
 		if (count ( $langData ) == 1) {
 			return array (
 					'id' => $langData [0] ['Id'],
@@ -715,7 +719,8 @@ class LanguageWepps {
 					'default' => 1,
 					'interface' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
 					'interfaceDefault' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
-					'link' => ""
+					'link' => "",
+					'url'=>$url
 			);
 		} else {
 			return array (
@@ -724,7 +729,8 @@ class LanguageWepps {
 					'default' => 0,
 					'interface' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
 					'interfaceDefault' => "Lang" . substr ( $langData [1] ['Name'], 0, 2 ),
-					'link' => substr ( $langData [0] ['LinkDirectory'], 0, - 1 )
+					'link' => substr ( $langData [0] ['LinkDirectory'], 0, - 1 ),
+					'url'=>$url
 			);
 		}
 	}
