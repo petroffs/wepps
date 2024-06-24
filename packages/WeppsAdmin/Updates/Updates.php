@@ -40,6 +40,9 @@ class UpdatesWepps {
 				$obj = new UpdatesMethodsWepps();
 				if (empty($this->settings[2])) {
 					$output = "release tag is empty, see list";
+					$this->cli->br();
+					$this->cli->warning($output);
+					return true;
 					break;
 				}
 				$output = $obj->setUpdates($this->settings[2])['output'];
@@ -56,7 +59,10 @@ class UpdatesWepps {
 				#$output = "Test";
 				break;
 			default:
-				echo 2;
+				$output = "wrong params";
+				$this->cli->br();
+				$this->cli->error($output);
+				return true;
 				break;
 		}
 		$this->cli->br();
