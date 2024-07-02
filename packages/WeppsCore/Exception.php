@@ -24,6 +24,7 @@ class ExceptionWepps {
 			}
 			UtilsWepps::debug($error,1);
 		} else {
+			echo $e->getMessage();
 			exit();
 		}
 	}

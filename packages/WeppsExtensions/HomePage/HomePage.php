@@ -1,4 +1,5 @@
-<?
+<?php
+
 namespace WeppsExtensions\HomePage;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\DataWepps;

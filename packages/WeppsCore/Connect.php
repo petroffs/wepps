@@ -15,19 +15,18 @@ class ConnectWepps {
 	public $count;
 	private $sth;
 	private function __construct($projectSettings = array()) {
+		self::$projectInfo = $projectSettings['Info'];
+		self::$projectDev = $projectSettings['Dev'];
+		self::$projectDB = $projectSettings['DB'];
+		self::$projectServices = $projectSettings['Services'];
 		try {
-			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
-			$db = new PDO ( $connectionString, $projectSettings ['DB'] ['user'], $projectSettings ['DB'] ['password'] , array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''));
+			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']}:{$projectSettings['DB']['port']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
+			#UtilsWepps::debug($connectionString,1);
+			$db = new PDO ( $connectionString, $projectSettings ['DB'] ['user'], $projectSettings ['DB'] ['password']);
 			if ($projectSettings ['Dev'] ['debug'] == 1)
 				$db->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 			self::$db = &$db;
-			self::$projectInfo = $projectSettings['Info'];
-			self::$projectDev = $projectSettings['Dev'];
-			self::$projectDB = $projectSettings['DB'];
-			self::$projectServices = $projectSettings['Services'];
 		} catch ( \Exception $e ) {
-			echo "sql connect error.";
-			exit();
 			ExceptionWepps::writeMessage ( $e );
 		}
 	}
