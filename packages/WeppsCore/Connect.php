@@ -23,8 +23,9 @@ class ConnectWepps {
 			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']}:{$projectSettings['DB']['port']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
 			#UtilsWepps::debug($connectionString,1);
 			$db = new PDO ( $connectionString, $projectSettings ['DB'] ['user'], $projectSettings ['DB'] ['password']);
-			if ($projectSettings ['Dev'] ['debug'] == 1)
+			if ($projectSettings ['Dev'] ['debug'] == 1) {
 				$db->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+			}
 			self::$db = &$db;
 		} catch ( \Exception $e ) {
 			ExceptionWepps::writeMessage ( $e );
