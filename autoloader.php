@@ -1,7 +1,6 @@
 <?php
 
-function autoLoader($name)
-{
+function autoLoader($name) {
 	$namef = $name;
 	if (strstr($name, 'WeppsCore')) {
 		$name = str_replace('\\', '/', $name);
