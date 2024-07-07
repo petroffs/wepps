@@ -101,13 +101,9 @@ class AdminWepps {
 			$multilang = ConnectWepps::$instance->fetch($sql);
 			$smarty->assign('multilang',$multilang);
 		}
-		
-		
 		$smarty->assign('headers',$this->headers->get());
 		$className = "WeppsAdmin\\{$navItem['Extension']}\\{$navItem['Extension']}Wepps";
 		if(class_exists($className)) {
-			//UtilsWepps::debug($className);
-			//exit();
 			return new $className($this->headers,$this->nav);
 		} else {
 			echo "Класс $className не найден.";

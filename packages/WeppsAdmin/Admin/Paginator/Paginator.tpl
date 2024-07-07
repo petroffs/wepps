@@ -1,4 +1,4 @@
-{if $paginator.pages|@count>1}
+{if $paginator.pages}
 <div class="paginator pps_flex pps_flex_row pps_flex_start pps_flex_margin pps_padding">
 	{if $paginator.prev}
 	<div class="item next pps_flex_fix">

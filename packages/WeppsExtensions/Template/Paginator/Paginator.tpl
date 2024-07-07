@@ -2,8 +2,7 @@
 <div class="paginator">
 	{if $paginator.prev}
 	<div class="item next">
-		<a href="{$paginatorUrl}?page={$paginator.prev}" data-page="{$paginator.prev}">&lt;
-			Пердыдущая</a>
+		<a href="{$paginatorUrl}?page={$paginator.prev}" data-page="{$paginator.prev}">&lt;</a>
 	</div>
 	{/if}
 	{if $paginator.current>10}
@@ -27,8 +26,7 @@
 	</div>
 	{/if} {if $paginator.next}
 	<div class="item next">
-		<a href="{$paginatorUrl}?page={$paginator.next}" data-page="{$paginator.next}">Следующая
-			&gt;</a>
+		<a href="{$paginatorUrl}?page={$paginator.next}" data-page="{$paginator.next}">&gt;</a>
 	</div>
 	{/if}
 </div>
