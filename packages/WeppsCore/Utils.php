@@ -635,6 +635,21 @@ class CliWepps {
 		}
 		return true;
 	}
+	public function move(string $source,string $destination,bool $overwrite=true) {
+		if ($overwrite===false && file_exists($destination)) {
+			return false;
+		} elseif (!file_exists($source)) {
+			return false;
+		}
+		$path = pathinfo($destination);
+		if (!file_exists($path['dirname'])) {
+			mkdir($path['dirname'], 0750, true);
+		}
+		if (!rename($source, $destination)) {
+			return false;
+		}
+		return true;
+	}
 	public function put($content,$destination) {
 		$path = pathinfo($destination);
 		if (!file_exists($path['dirname'])) {
