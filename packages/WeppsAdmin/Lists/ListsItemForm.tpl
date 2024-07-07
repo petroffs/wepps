@@ -16,7 +16,7 @@
 		<div class="pps_interval"></div>
 		{if $tabs|@count>1 || $listSettings.ActionShowIdAddons}
 		<div class="controls-area controls-tabs pps_border">
-			<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_padding">
+			<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_medium pps_padding">
 				<a href="" data-id="FieldAll"><i class="fa fa-caret-down"></i> Все</a>
 				{foreach name="out" item="item" key="key" from=$tabs}
 				<a href="" data-id="{$key}"><i class="fa fa-caret-right"></i> {$translate.$item|default:$item}</a>
@@ -64,19 +64,19 @@
 				{if $item.0.$listMode=="disabled"}
 				{$element.$key}
 				{elseif $item.0.Type=="digit"}
-				<label class="pps pps_input list-item-int">
+				<label class="pps pps_input list-item-int{if $item.0.Required==1} pps_require{/if}">
 					<input type="text" name="{$key}" value="{$element.$key}"/>
 				</label>
 				{elseif $item.0.Type=="int"}
-				<label class="pps pps_input list-item-int">
+				<label class="pps pps_input list-item-int{if $item.0.Required==1} pps_require{/if}">
 					<input type="number" name="{$key}" value="{$element.$key}"/>
 				</label>
 				{elseif $item.0.Type=="date"}
-				<label class="pps pps_input list-item-date">
+				<label class="pps pps_input list-item-date{if $item.0.Required==1} pps_require{/if}">
 					<input type="datetime" name="{$key}" value="{$element.$key|escape:'html'}"/>
 				</label>
 				{elseif $item.0.Type=="password"}
-				<label class="pps pps_input">
+				<label class="pps pps_input{if $item.0.Required==1} pps_require{/if}">
 					<input type="text" name="{$key}" value="{$element.$key|escape:'html'}"/>
 				</label>
 				{elseif $item.0.Type=="flag"}
@@ -84,7 +84,7 @@
 					<input type="checkbox" name="{$key}" value="1"{if $element.$key==1} checked="true"{/if}/> <span>{$item.0.Name}</span>
 				</label>
 				{elseif $item.0.Type=="area"}
-				<label class="pps pps_area">
+				<label class="pps pps_area{if $item.0.Required==1} pps_require{/if}">
 					<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
 				</label>
 				{elseif $item.0.Type=="blob"}
@@ -131,7 +131,6 @@
 				<label class="pps pps_upload">
 					<input type="file" name="{$key}" multiple="multiple"/> <span>Загрузить</span>
 				</label>
-				<div class="pps_interval"></div>
 				{foreach name="o" item="i" key="k" from=$uploaded[$key]}
 					<p class="fileadd pps_flex_13">
 						{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="fa fa-remove"></i></a>
@@ -152,7 +151,7 @@
 				</label>
 				{elseif $item.0.Type|strstr:"remote"}
 				{if $item.0.Type|strstr:"remote_multi"}
-				<label class="pps pps_select">
+				<label class="pps pps_select{if $item.0.Required==1} pps_require{/if}">
 					<select name="{$key}[]" id="remote_{$key}" multiple="multiple">
 					{foreach name="o" item="i" key="k" from=$element[$key|cat:"_SelectChecked"]}
 					<option value="{$k}" selected="selected">{$i}</option>
@@ -209,7 +208,7 @@
 					</label>
 				</div>
 				{elseif $item.0.Type|strstr:"properties"}
-				<label class="pps pps_select list-item-properties">
+				<label class="pps pps_select list-item-properties{if $item.0.Required==1} pps_require{/if}">
 					<select name="{$key}">
 					{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 					</select>
@@ -225,7 +224,7 @@
 						{/if}
 						<div class="labels2">
 							{if $i.PType=='select'}
-							<label class="pps pps_select pps_select_multi">
+							<label class="pps pps_select pps_select_multi{if $item.0.Required==1} pps_require{/if}">
 								<select multiple="multiple" name="pps_property_{$key}_{$i.Id}[]">
 								<option>-</option>
 								{html_options options=$element[$key|cat:"_PropertiesOptions"][$i.Id] selected=$element[$key|cat:"_PropertiesSelected"][$i.Id] multiple="multiple"}

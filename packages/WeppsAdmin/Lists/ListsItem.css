@@ -1,7 +1,9 @@
 form.list-data .item {
-	padding-bottom: var(--step);
-	margin-bottom: var(--step);
-	border-bottom: 1px solid #f7f7f7;
+	padding: var(--step) 0;
+	
+}
+form.list-data .item:hover {
+	background-color: var(--color-98);
 }
 form.list-data .item .title .title2 {
 	width: auto;
@@ -19,7 +21,7 @@ form.list-data .item .title .descr .field-file .field-file-action.pps_hide {
 	display: none;
 }
 form.list-data .item .title .descr .field-file-select.active {
-	color: red;
+	color: var(--color-attention);
 }
 form.list-data .item .field label.pps.pps_input,
 form.list-data .item .field label.pps.pps_area {
@@ -96,10 +98,10 @@ form.list-data .item .field .files .files-item .files-controls {
 	padding: 6px 6px;
 }
 form.list-data .item .field .files .files-item .files-controls a i.fa-remove {
-	color: red;
+	color: var(--color-attention);
 }
 form.list-data .item .field .fileadd a.file-remove {
-	color: red;
+	color: var(--color-attention);
 }
 form.list-data .item .field .properties {
 	padding: 10px 10px;
@@ -139,7 +141,7 @@ form.list-data .item .field .minitable-body .minitable-cell:focus {
 	background: #f0f0f0;
 }
 form.list-data .item .field .minitable-remove {
-	color: red;
+	color: var(--color-attention);
 }
 form.list-data .item.item-controls {
 	background: transparent;

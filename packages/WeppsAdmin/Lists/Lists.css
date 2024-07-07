@@ -29,10 +29,7 @@
 	font-size: 0.9rem;
 }
 .lists-items .descr .descr2:hover {
-	background: white;
-}
-.controls-area {
-	background: #f9f9f9;
+	background: var(--color-100);
 }
 .controls-area label {
 	opacity: 0.6;

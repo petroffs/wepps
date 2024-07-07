@@ -1,5 +1,5 @@
 <div class="controls-area pps_border">
-	<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_padding">
+	<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_medium pps_padding">
 		{if $element}
 		{if $ppsUrl}
 		{if !$ppsUrl|@strstr:"addNavigator"}

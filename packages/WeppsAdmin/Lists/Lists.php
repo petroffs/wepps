@@ -656,7 +656,7 @@ class ListsWepps {
 		}
 		$js = "	<script>
 					{$js}
-					$('label.{$filesfield}').siblings('.controlserrormess').trigger('click');
+					$('label.{$filesfield}').siblings('.pps_error').trigger('click');
 					$(document).ready(readyListsItemInit);
 				</script>";
 		$data = array('success' => 'Form was submitted','js'=>$js);
