@@ -31,24 +31,32 @@
 .lists-items .descr .descr2:hover {
 	background: var(--color-100);
 }
+.controls-area {
+	border-top: 1px solid var(--color-85);
+	padding-top: var(--step3);
+	padding-bottom: var(--step3);
+}
 .controls-area label {
 	opacity: 0.6;
 }
 .controls-area a {
-	text-decoration: none;
+	margin-bottom: var(--stepHalf);
 }
 .controls-area a.active {
-	color: #666;
+	color: var(--color-focus);
+	border-color: var(--color-focus);
 }
-.controls-area a i {
-	min-width: 10px;
+.controls-area a i.fa {
+	padding-right: var(--step);
+}
+.controls-tabs {
+	border-bottom: 1px solid var(--color-85);
 }
 label.pps.pps_select.list-item-language {
 	margin-left: auto;
 }
 .controls-area-form {
 	display: block;
-	padding: var(--step2);
 }
 .lists-items-list {
 	overflow-x: auto;

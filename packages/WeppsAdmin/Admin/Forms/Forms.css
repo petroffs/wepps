@@ -221,6 +221,9 @@ label.pps.pps_button {
 a.pps_button,
 span.pps_button,
 label.pps.pps_button input {
+	font-weight: 300;
+	font-size: var(--font-default);
+	color: var(--color-20);
 	background: var(--color-100);
 	border: 1px solid var(--color-50);
 	border-radius: var(--stepHalf);
@@ -238,6 +241,7 @@ label.pps.pps_button input {
 a.pps_button:hover,
 span.pps_button:hover,
 label.pps.pps_button input:hover {
+	color: var(--color-focus);
 	background-color: var(--color-98);
 }
 
@@ -258,8 +262,8 @@ label.pps.pps_button input:disabled:hover {
 	cursor: default;
 }
 
-a.pps_button,
-span.pps_button {
+body a.pps_button,
+body span.pps_button {
 	text-decoration: none;
 	min-height: var(--step6);
 	align-items: center;

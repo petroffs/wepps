@@ -10,13 +10,13 @@
 	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col centercontent">
 		<div class="pps_border pps_flex_max pps_padding">
 			<h2>{$content.Name}</h2>
-			<div class="controls-area pps_flex pps_flex_row pps_border">
-				<div class="pps_flex_12 pps_flex_11_view_small pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_padding">
-					<a href="/_pps/lists/{$listSettings.TableName}/add/" title="Добавить"><i class="fa fa-2x fa-plus"></i></a>
+			<div class="controls-area pps_flex pps_flex_row pps_flex_row_top">
+				<div class="pps_flex_12 pps_flex_11_view_small">
+					<a href="/_pps/lists/{$listSettings.TableName}/add/" class="pps_button" title="Добавить"><i class="fa fa-plus"></i> Добавить</a>
 					{if $permConfig==1}
-					<a href="/_pps/lists/s_Config/{$listSettings.Id}/" title="Конфигурация"><i class="fa fa-2x fa-gear"></i></a>
-					<a href="/_pps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" title="Настройки полей"><i class="fa fa-2x fa-gears"></i></a>
-					<a title="Экспорт данных" href="#" id="export"  data-list="{$listSettings.TableName}"><i class="fa fa-2x fa-download"></i></a>
+					<a href="/_pps/lists/s_Config/{$listSettings.Id}/" class="pps_button" title="Конфигурация"><i class="fa fa-gear"></i> Конфигурация</a>
+					<a href="/_pps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="pps_button" title="Настройки полей"><i class="fa fa-gears"></i> Настройки полей</a>
+					<a title="Экспорт данных" href="#" class="pps_button" id="export" data-list="{$listSettings.TableName}"><i class="fa fa-download"></i> Экспорт</a>
 					
 					{/if}
 				</div>

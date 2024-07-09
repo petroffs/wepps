@@ -13,20 +13,17 @@
 		{/foreach}
 		<div class="pps_hide"><input type="submit"/></div>
 		{$controlsTpl}
-		<div class="pps_interval"></div>
 		{if $tabs|@count>1 || $listSettings.ActionShowIdAddons}
-		<div class="controls-area controls-tabs pps_border">
-			<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_medium pps_padding">
-				<a href="" data-id="FieldAll"><i class="fa fa-caret-down"></i> Все</a>
+		<div class="controls-area controls-tabs">
+				<a href="" class="pps_button" data-id="FieldAll"><i class="fa fa-caret-down"></i> Все</a>
 				{foreach name="out" item="item" key="key" from=$tabs}
-				<a href="" data-id="{$key}"><i class="fa fa-caret-right"></i> {$translate.$item|default:$item}</a>
+				<a href="" class="pps_button" data-id="{$key}"><i class="fa fa-caret-right"></i> {$translate.$item|default:$item}</a>
 				{/foreach}
 				{foreach name="out" item="item" key="key" from=$listSettings.ActionShowIdAddons}
-				<a href="" data-id="{$item.group}"><i class="fa fa-caret-right"></i> {$item.title}</a>
+				<a href="" class="pps_button" data-id="{$item.group}"><i class="fa fa-caret-right"></i> {$item.title}</a>
 				{/foreach}
-			</div>	
+				
 		</div>
-		<div class="pps_interval"></div>
 		{/if}
 		{foreach name="out" item="item" key="key" from=$listScheme}
 		{if $item.0.$listMode!="hidden"}
