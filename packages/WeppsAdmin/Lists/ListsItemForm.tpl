@@ -1,4 +1,4 @@
-<div class="lists-items-item pps_flex_max pps_padding">
+<div class="lists-items-item pps_flex_max">
 	<h2>{$content.Name}</h2>
 	<form class="list-data" action="javascript:formWepps.send('save','list-data-form','/packages/WeppsAdmin/Lists/Request.php')"
 		id="list-data-form">

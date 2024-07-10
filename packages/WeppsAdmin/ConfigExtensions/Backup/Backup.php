@@ -57,10 +57,10 @@ class BackupWepps extends RequestWepps {
 				$res = ConnectWepps::$instance->fetch($sql);
 				$str = "";
 				foreach ($res as $value) {
-					$str .= "union (select '{$value['TableName']}' as TableName,count(*) as Rows,  (select count(*) from s_ConfigFields as cf where cf.TableName='{$value['TableName']}') as Fields from {$value['TableName']} as t)\n";
+					$str .= "union (select '{$value['TableName']}' as TableName,count(*) as `Rows`,  (select count(*) from s_ConfigFields as cf where cf.TableName='{$value['TableName']}') as Fields from {$value['TableName']} as t)\n";
 				}
 				$str = trim($str,"union ");
-				$stat = ConnectWepps::$instance->fetch($str,array(),'group');
+				$stat = ConnectWepps::$instance->fetch($str,null,'group');
 				$arr = array();
 				foreach ($res as $value) {
 					$value['RowsCount'] = $stat[$value['TableName']][0]['Rows'];

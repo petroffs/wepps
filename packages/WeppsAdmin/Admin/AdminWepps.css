@@ -91,6 +91,15 @@ a:focus {
 	padding: var(--step6) var(--step2) var(--step4) var(--step3);
 	margin: 0;
 }
+.page.main .page2 h2 {
+	font-size: var(--font-medium);
+	font-weight: 500;
+	text-transform: none;
+	line-height: 1.2;
+	color: var(--color-primary);
+	padding: var(--step6) 0 var(--step4) 0;
+	margin: 0;
+}
 
 .nav {
 	background: var(--color-25);
@@ -140,31 +149,36 @@ a:focus {
 	content: '';
 }
 
-.leftmenu .title {
-	font-weight: 500;
-	padding: var(--step6) var(--step2) var(--step) var(--step2);
+.sidebar .title {
 	font-size: var(--font-medium);
+	font-weight: 500;
+	line-height: 1.2;
+	padding: var(--step6) 0 var(--step) 0;
 }
 
-.leftmenu ul.dir {
+.sidebar .title.title-search {
+	padding-top: var(--step5);
+}
+
+.sidebar ul.dir>ul.dir {
 	margin-left: var(--step2);
-	margin-right: var(--step2);
 }
 
-.leftmenu ul.dir li {
+.sidebar ul.dir li {
+	line-height: 1.2;
 	padding-top: var(--step2);
 }
 
-.leftmenu ul.dir li.active a {
+.sidebar ul.dir li.active a {
 	font-weight: 700;
 	color: var(--color-50);
 }
 
-.leftmenu ul.dir li.hidden a {
+.sidebar ul.dir li.hidden a {
 	opacity: 0.5;
 }
 
-.leftmenu>ul {
+.sidebar>ul {
 	padding-bottom: var(--step2);
 }
 

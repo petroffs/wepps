@@ -2,7 +2,7 @@ form.list-data .item {
 	padding: var(--step) 0;	
 }
 form.list-data .item-before {
-	border-top: 1px solid var(--color-98);
+	border-top: 1px solid var(--color-85);
 	height: var(--step);
 }
 form.list-data .item:hover {

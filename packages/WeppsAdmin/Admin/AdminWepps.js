@@ -1,10 +1,10 @@
 var readyAdminWeppsInit = function() {
-	$('#showleftmenu').on('click',function(event) {
+	$('#sidebar-show').on('click',function(event) {
 		event.preventDefault();
-		if ($('.leftmenu').hasClass('pps_hide_view_medium')) {
-			$('.leftmenu').removeClass('pps_hide_view_medium');
+		if ($('.sidebar').hasClass('pps_hide_view_medium')) {
+			$('.sidebar').removeClass('pps_hide_view_medium');
 		} else {
-			$('.leftmenu').eq(1).addClass('pps_hide_view_medium');
+			$('.sidebar').eq(1).addClass('pps_hide_view_medium');
 		}
 	});
 	$('#logoff').on('click',function(event) {

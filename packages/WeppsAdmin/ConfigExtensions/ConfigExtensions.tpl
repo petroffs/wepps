@@ -11,8 +11,8 @@
 </div>
 <div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
 	{$extsNavTpl}
-	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col centercontent">
-		<div class="pps_border pps_flex_max pps_padding">
+	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col">
+		<div class="pps_flex_max">
 			<h2>{$content.Name}</h2>
 			{if $extTpl}
 			{$extTpl}

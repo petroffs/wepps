@@ -10,6 +10,7 @@ optiongroup {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	padding: 5px;
+	max-width: max-content;
 }
 
 .list-data ul.pps_list li:hover {

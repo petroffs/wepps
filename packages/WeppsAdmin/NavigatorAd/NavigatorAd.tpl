@@ -8,20 +8,19 @@
 	</ul>
 </div>
 <div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-	<div class="pps_flex_15 pps_flex_11_view_medium leftmenu pps_flex pps_flex_col pps_hide pps_flex_view_medium">
-		<ul class="pps_list pps_border pps_flex_max">
+	<div class="sidebar pps_flex_15 pps_flex_11_view_medium pps_flex pps_flex_col pps_hide pps_flex_view_medium">
+		<ul class="pps_list pps_flex_max">
 			<li>
 				<div class="title">
-					<a href="" id="showleftmenu"><i class="fa fa-reorder"></i></a>
+					<a href="" id="sidebar-show"><i class="fa fa-reorder"></i></a>
 				</div>
 			</li>
 		</ul>
 	</div>
-	<div
-		class="pps_flex_15 pps_flex_11_view_medium leftmenu pps_flex pps_flex_col pps_hide_view_medium">
-		<ul class="pps_list pps_border pps_flex_max">
+	<div class="sidebar pps_flex_15 pps_flex_11_view_medium pps_flex pps_flex_col pps_hide_view_medium">
+		<ul class="pps_list pps_flex_max">
 			<li>
-				<div class="title">
+				<div class="title title-search">
 					<label class="pps pps_input list-search">
 						<input type="text" placeholder="Поиск раздела" id="navigator-search"/>
 					</label>

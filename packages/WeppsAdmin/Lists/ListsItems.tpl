@@ -7,8 +7,8 @@
 </div>
 <div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
 	{$listsNavTpl}
-	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col centercontent">
-		<div class="pps_flex_max pps_padding">
+	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col">
+		<div class="pps_flex_max">
 			<h2>{$content.Name}</h2>
 			<div class="controls-area pps_flex pps_flex_row pps_flex_row_top">
 				<div class="pps_flex_12 pps_flex_11_view_small">
@@ -17,7 +17,6 @@
 					<a href="/_pps/lists/s_Config/{$listSettings.Id}/" class="pps_button" title="Конфигурация"><i class="fa fa-gear"></i> Конфигурация</a>
 					<a href="/_pps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="pps_button" title="Настройки полей"><i class="fa fa-gears"></i> Настройки полей</a>
 					<a title="Экспорт данных" href="#" class="pps_button" id="export" data-list="{$listSettings.TableName}"><i class="fa fa-download"></i> Экспорт</a>
-					
 					{/if}
 				</div>
 				<div class="controls-area-form pps_flex_12 pps_flex_11_view_small pps_right">

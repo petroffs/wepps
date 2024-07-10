@@ -8,7 +8,7 @@
 </div>
 <div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
 	{$listsNavTpl}
-	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col centercontent">
+	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col">
 		{$listItemFormTpl}
 	</div>
 </div>

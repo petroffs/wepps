@@ -49,9 +49,6 @@
 .controls-area a i.fa {
 	padding-right: var(--step);
 }
-.controls-tabs {
-	border-bottom: 1px solid var(--color-85);
-}
 label.pps.pps_select.list-item-language {
 	margin-left: auto;
 }
