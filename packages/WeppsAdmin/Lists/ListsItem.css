@@ -1,6 +1,9 @@
 form.list-data .item {
-	padding: var(--step) 0;
-	
+	padding: var(--step) 0;	
+}
+form.list-data .item-before {
+	border-top: 1px solid var(--color-98);
+	height: var(--step);
 }
 form.list-data .item:hover {
 	background-color: var(--color-98);
@@ -11,10 +14,9 @@ form.list-data .item .title .title2 {
 }
 form.list-data .item .title .descr {
 	font-weight: 300;
-	font-size: 0.9rem;
 }
 form.list-data .item .title .descr .field-file a {
-	margin-right: 10px;
+	margin-right: var(--step2);
 	display: inline-block;
 }
 form.list-data .item .title .descr .field-file .field-file-action.pps_hide {
@@ -36,11 +38,13 @@ form.list-data .item .field .pps_area textarea {
 
 form.list-data .item .field .descr {
 	font-weight: 300;
-	font-size: 0.9rem;
 }
 
 form.list-data .item .field .list-item-int {
-	max-width: 150px;
+	max-width: 250px;
+}
+form.list-data .item .field .list-item-date {
+	max-width: 250px;
 }
 
 form.list-data .item .field .files {
@@ -104,8 +108,8 @@ form.list-data .item .field .fileadd a.file-remove {
 	color: var(--color-attention);
 }
 form.list-data .item .field .properties {
-	padding: 10px 10px;
-	margin: 10px 0;
+	padding: var(--step4);
+	margin: var(--step2) 0;
 }
 form.list-data .item .field .properties .title2 {
 	margin-bottom: 5px;

@@ -1,4 +1,4 @@
-<div class="lists-items-item pps_border pps_flex_max pps_padding">
+<div class="lists-items-item pps_flex_max pps_padding">
 	<h2>{$content.Name}</h2>
 	<form class="list-data" action="javascript:formWepps.send('save','list-data-form','/packages/WeppsAdmin/Lists/Request.php')"
 		id="list-data-form">
@@ -25,6 +25,7 @@
 				
 		</div>
 		{/if}
+		<div class="item-before"></div>
 		{foreach name="out" item="item" key="key" from=$listScheme}
 		{if $item.0.$listMode!="hidden"}
 		<div class="item pps_flex pps_flex_row pps_flex_start pps_flex_row_str" data-id="{$key}" data-group="{$item.0.FGroup}">
@@ -126,7 +127,7 @@
 				</div>
 				{/if}
 				<label class="pps pps_upload">
-					<input type="file" name="{$key}" multiple="multiple"/> <span>Загрузить</span>
+					<input type="file" name="{$key}" multiple="multiple"/> <span><i class="fa fa-cloud-download"></i> Загрузить</span>
 				</label>
 				{foreach name="o" item="i" key="k" from=$uploaded[$key]}
 					<p class="fileadd pps_flex_13">
@@ -210,7 +211,7 @@
 					{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 					</select>
 				</label>
-				<div class="properties pps_shadow">
+				<div class="properties pps_border">
 					{foreach name="o" item="i" key="k" from=$element[$key|cat:"_Properties"]}
 					<div>
 						<div class="title2">
@@ -228,11 +229,11 @@
 								</select>
 							</label>
 							<div class="pps_interval"></div>
-							<div class="pps_flex pps_flex_row pps_flex_end pps_flex_margin">
+							<div class="pps_flex pps_flex_row pps_flex_end">
 							<label class="pps pps_input pps_flex_12">
 								<input type="text" placeholder="новая опция" data-id="{$i.Id}"/> 
 							</label>
-							<div class="pps_flex_fix"><a href="" class="properties-item-option-add"><i class="fa fa-plus"></i></a></div>
+							<div class="pps_flex_fix"><a href="" class="pps_button properties-item-option-add"><i class="fa fa-plus"></i></a></div>
 							</div>
 							{elseif $i.PType=='text-multi'}
 							<label class="pps pps_area">

@@ -62,7 +62,7 @@ label.pps.pps_require:after {
 	font-family: 'FontAwesome';
 	font-size: var(--step);
 	position: absolute;
-	right: var(--step2);
+	left: calc(-1 * var(--step2));
 	top: var(--step2);
 	color: var(--color-attention);
 }
@@ -169,25 +169,31 @@ label.pps.pps_upload input[type="file"] {
 }
 
 label.pps.pps_upload span {
+	font-weight: 300;
 	line-height: inherit;
+	color: var(--color-20);
 	background: transparent;
 	border: 1px solid var(--color-50);
+	border-radius: var(--stepHalf);
 	margin: 0;
 	padding: 0 var(--step2);
 	width: auto;
 	max-width: max-content;
 	min-height: var(--step6);
-	border-radius: var(--stepHalf);
 	overflow: hidden;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	justify-content: center;
+	align-items: center;
+	align-content: center;
 }
-
 label.pps.pps_upload span:hover {
+	color: var(--color-focus);
 	background-color: var(--color-98);
 }
-
+label.pps.pps_upload i {
+	margin-right: var(--step);
+}
 label.pps.pps_input input {
 	width: 100%;
 	border: var(--border);

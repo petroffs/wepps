@@ -69,7 +69,7 @@ label.pps.pps_select.list-item-language {
 }
 .lists-items-list > table {
 	width: 100%;
-	background: #f7f7f7;
+	background: var(--color-98);
 }
 .lists-items-list > table > thead > tr.titles > th {
 	background: #555555;
