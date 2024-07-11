@@ -24,16 +24,14 @@
 						<div class="pps_flex_max pps_padding">
 							<div class="title">{$item.Name}</div>
 							<div class="descr">
-								<div class="descr2">
-									<div class="num3">{$item.Descr}</div>
-								</div>
-								{foreach name="o" item="i" from=$item.ENavArr}
-								<div class="descr2">
-									<div class="title3"><a href="/_pps/extensions/{$item.Alias}/{$i.1}.html">{$i.0}</a></div>
-									<div class="num3">{$i.1}</div>
-								</div>
-								{/foreach}
+								{$item.Descr}
 							</div>
+							{foreach name="o" item="i" from=$item.ENavArr}
+							<div class="container">
+								<div class="container-title"><a href="/_pps/extensions/{$item.Alias}/{$i.1}.html">{$i.0}</a></div>
+								<div class="container-descr">{$i.1}</div>
+							</div>
+							{/foreach}
 						</div>
 					</div>
 				</div>

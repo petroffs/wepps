@@ -1,46 +1,48 @@
 hr {
 	border: 0;
-	border-top: 1px solid #a39790;
+	border-top: 1px solid var(--color-98);
 	display: block;
 	clear: both;
 }
 
-div.paginator {
-	
-}
-
 div.paginator div.item {
-	width: 30px;
-	height: 30px;
+	width: var(--step6);
+	height: var(--step6);
 	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
 }
-
 
 div.paginator div.item span,
 div.paginator div.item a {
-	display: block;
+	font-weight: 600;
 	text-align: center;
 	text-decoration: none;
-	line-height: 200%;
-	margin: 0;
-	font-weight: 700;
-	font-size: 100%;
-	color: #666;
+	color: var(--color-25);
 	cursor: pointer;
+	width: max-content;
+	margin: 0;
+	display: black;
 }
+
 div.paginator div.item:hover {
-	border-color: #666666; 
+	background-color: var(--color-focus);
+	border-radius: var(--step);
 }
+
 div.paginator div.item:hover a {
 	text-decoration: none;
+	color: var(--color-100);
 }
 
 div.paginator div.item.active {
-	background: #666666;
-	border-color: #666666;	
+	background: var(--color-25);
+	border-color: var(--color-25);
+	border-radius: var(--step);
 }
 
 div.paginator div.item.active a {
-	color: white;	
+	color: var(--color-100);
 }
-

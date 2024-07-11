@@ -1,78 +1,82 @@
 .pps_admin_list {
-	background: var(--color2);
-	width: max-content;
-	border-radius: var(--step2);
-	position: absolute;
-	right: var(--step);
-	top: var(--step);
-	z-index: 10;
-	box-shadow: 0px 0px 5px rgba(var(--color1_rgb),0.2);
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-}
-.pps_admin_list>a {
-	display: block;
-	text-decoration: none;
-	width: 40px;
-	height: 20px;
-}
-.pps_admin_list>a:before {
-	content: '';
-	background: url(/ext/Template/files/wepps-logo-squares.svg) center center no-repeat;
-	background-size: auto 10px;
-	padding: 0 var(--step2);
-	width: 40px;
-	height: 20px;
-	opacity: 0.5;
-	transition: all 0.3s ease;
-	display: block;
-	position: relative;
-}
-.pps_admin_list>a:hover:before {
-	opacity: 1;
-}
-.pps_admin_list.pps_admin_panels {
-	right: inherit;
-	left: var(--step5);
-	
-	margin-top: var(--step);
-	margin-right: var(--step4);
-}
-
-.pps_admin_navigator {
-	background: var(--color2);
+	background: rgba(0, 0, 0, 0.1);
 	width: max-content;
 	border-radius: var(--step);
 	position: fixed;
 	bottom: var(--step2);
 	right: var(--step5);
 	z-index: 10;
-	box-shadow: 0px 0px 5px rgba(var(--color1_rgb),0.2);
-	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	position: absolute;
 }
-.pps_admin_navigator>a {
+
+.pps_admin_list>a {
 	display: block;
 	text-decoration: none;
-	width: 40px;
-	height: 20px;
+	width: var(--step6);
+	height: var(--step4);
 }
-.pps_admin_navigator>a:before {
+
+.pps_admin_list>a:before {
 	content: '';
 	background: url(/ext/Template/files/wepps-logo-squares.svg) center center no-repeat;
-	background-size: auto 10px;
+	background-size: auto var(--step2);
 	padding: 0 var(--step2);
-	width: 40px;
-	height: 20px;
+	width: var(--step6);
+	height: var(--step4);
 	opacity: 0.5;
 	transition: all 0.3s ease;
 	display: block;
 	position: relative;
 }
+
+.pps_admin_list>a:hover:before {
+	opacity: 1;
+}
+
+.pps_admin_list.pps_admin_panels {
+	right: inherit;
+	left: var(--step5);
+	margin-top: var(--step);
+	margin-right: var(--step4);
+}
+
+.pps_admin_navigator {
+	background: rgba(0, 0, 0, 0.1);
+	width: max-content;
+	border-radius: var(--step);
+	position: fixed;
+	bottom: var(--step2);
+	right: var(--step5);
+	z-index: 10;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	display: flex;
+}
+
+.pps_admin_navigator>a {
+	display: block;
+	text-decoration: none;
+	width: var(--step6);
+	height: var(--step4);
+}
+
+.pps_admin_navigator>a:before {
+	content: '';
+	background: url(/ext/Template/files/wepps-logo-squares.svg) center center no-repeat;
+	background-size: auto var(--step2);
+	padding: 0 var(--step2);
+	width: var(--step6);
+	height: var(--step4);
+	opacity: 0.5;
+	transition: all 0.3s ease;
+	display: block;
+	position: relative;
+}
+
 .pps_admin_navigator>a:hover:before {
 	opacity: 1;
 }

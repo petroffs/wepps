@@ -1,5 +1,5 @@
 {if $paginator.pages}
-<div class="paginator pps_flex pps_flex_row pps_flex_start pps_flex_margin pps_padding">
+<div class="paginator pps_flex pps_flex_row pps_flex_start pps_flex_margin">
 	{if $paginator.prev}
 	<div class="item next pps_flex_fix">
 		<a href="{$paginatorUrl}?{if $smarty.get.orderby}orderby={$smarty.get.orderby}&{/if}{if $smarty.get.field}field={$smarty.get.field}&filter={$smarty.get.filter}&{/if}page={$paginator.prev}" data-page="{$paginator.prev}">&lt;</a>

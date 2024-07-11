@@ -139,7 +139,7 @@ class ListsWepps {
         		$smarty->assign('paginatorUrl',"/_pps/lists/{$ppsUrlEx[1]}/");
         		$smarty->assign('paginatorTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Admin/Paginator/Paginator.tpl'));
         		$smarty->assign('orderField',$orderField);
-        		$headers->css ('/packages/WeppsAdmin/Admin/Paginator/Paginator.css');
+        		$headers->css ("/packages/WeppsAdmin/Admin/Paginator/Paginator.{$headers::$rand}.css");
         	}
         	$smarty->assign('listsNavTpl', $smarty->fetch( ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
         } elseif (count($ppsUrlEx)==3) {

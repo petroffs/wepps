@@ -36,8 +36,7 @@
 				
 			</div>
 			{if $paginatorTpl}
-			<div class="pps_interval_medium"></div>
-			<div class="controls-area pps_border">
+			<div class="controls-area">
 				{$paginatorTpl}
 			</div>
 			{/if}
@@ -101,8 +100,8 @@
 
 			</div>
 			{if $paginatorTpl}
-			<div class="pps_interval_medium"></div>
-			<div class="controls-area pps_border">
+			<div class="pps_interval"></div>
+			<div class="controls-area">
 				{$paginatorTpl}
 			</div>
 			{/if}
