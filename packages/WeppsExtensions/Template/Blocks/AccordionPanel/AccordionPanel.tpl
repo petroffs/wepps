@@ -1,6 +1,6 @@
 <div class="page pps_panel panel-accordion" id="pps_panel_{$panel.Id}">
+	{$content.Id|pps:"panels":$panel.Id}
 	<div class="page2 panel-accordion-header">
-		{$content.Id|pps:"panels":$panel.Id}
 		<div class="title">{$panel.Name}</div>
 		<div class="text">{$panel.Descr}</div>
 		{if $panel.Images_FileUrl}
