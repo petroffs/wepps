@@ -1,3 +1,5 @@
+<div class="pps_border pps_padding">
+
 <div class="statuses pps_flex pps_flex_row pps_flex_start pps_flex_margin_large1">
 	{foreach name="out" item="item" from=$statuses}
 	<div class="item pps_flex_14 pps_flex_12_view_medium pps_flex_11_view_small{if $item.Id==$statusesActive} active{/if}">
@@ -15,4 +17,5 @@
 			<div class="order pps_hide pps_flex_11" id="view{$item.Id}"></div>
 	</div>
 	{/foreach}
+</div>
 </div>

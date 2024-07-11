@@ -11,25 +11,29 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
 	public $scheme = [];
 	public $listSettings = [];
 	public $element = [];
-	
-	
 	public function request($action="") {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
 	    $root = ConnectWepps::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='s_ConfigExtensions') {
-	    	
     		$this->copyExts($this->element['Alias'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
     		$this->copyExts($this->element['Alias'], ".tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
+    		$this->copyExts($this->element['Alias'], "Test.tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
     		$this->copyExts($this->element['Alias'], ".css", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
     		$this->copyExts($this->element['Alias'], ".js",  "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
     		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    	
+	    }
+	    $perm = AdminWepps::userPerm(1,array('list'=>'s_ConfigExtensions'));
+	    if ($perm['status']==1) {
+	    	$sql = "update s_Permissions set SystemExt = concat(SystemExt,',','{$this->element['Id']}') where Id = 1";
+	    	ConnectWepps::$instance->query($sql);
 	    }
 	    
-	    
-	    exit();
+	    /*
+	     * При тестировании
+	     */
+	    #exit();
 	}
 	
 	private function copyExts($ext, $fileend, $dirstart, $stamp) {
@@ -44,15 +48,12 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
 			$filename = "{$dir}/{$fileend}";
 			$filesource = $fileend;
 		}
-		if (! is_file($filename)) {
-			// echo "{$dirstart}/_Example{$stamp}/{$filesource} //// $filename<br>";
+		if (!is_file($filename)) {
 			copy("{$dirstart}/_Example{$stamp}/{$filesource}", $filename);
 			$fileData = file_get_contents($filename);
 			$fileData = str_replace("Example", $ext, $fileData);
 			file_put_contents($filename, $fileData);
 		}
 	}
-	
-	
 }
 ?>
