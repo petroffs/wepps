@@ -29,7 +29,7 @@ class RequestContactsWepps extends RequestWepps {
 				$errors['phone'] = ValidatorWepps::isNotEmpty($this->get['phone'], "Не заполнено");
 				$errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
 				if ($this->get['phone']!='') {
-					$phone = UtilsWepps::getPhoneFormatted($this->get['phone']);
+					$phone = UtilsWepps::phone($this->get['phone']);
 					if (!isset($phone['view2'])) {
 						$errors['phone'] = "Неверный формат";
 					}

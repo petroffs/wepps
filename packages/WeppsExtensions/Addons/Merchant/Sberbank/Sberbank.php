@@ -88,7 +88,7 @@ class SberbankWepps {
 		        	);
 		        }
 		        
-		        $phone = UtilsWepps::getPhoneFormatted($orderContent['Phone']);
+		        $phone = UtilsWepps::phone($orderContent['Phone']);
 		        
 		        $orderBundle = array(
 		        		'customerDetails'=>array('phone'=>"{$phone['view2']}",'email'=>$orderContent['Email']),

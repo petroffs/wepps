@@ -57,7 +57,7 @@ class RequestUserWepps extends RequestWepps {
 					$res = $users->get("Email='{$this->get['email']}'")[0];
 					if (count($res)!=0) $errors['email'] = "E-mail уже существует";
 				}
-				$phone = UtilsWepps::getPhoneFormatted($this->get['phone']);
+				$phone = UtilsWepps::phone($this->get['phone']);
 				if ($errors['phone']=='' && !isset($phone['view2'])) {
 					$errors['phone'] = "Неверный формат";
 				}
@@ -299,7 +299,7 @@ class RequestUserWepps extends RequestWepps {
 						}
 						break;
 					case 'phoneForm' :
-						$phone = UtilsWepps::getPhoneFormatted($this->get['phone']);
+						$phone = UtilsWepps::phone($this->get['phone']);
 						$errors['phone'] = '';
 						if ($errors['phone']=='' && !isset($phone['view2'])) {
 							$errors['phone'] = "Неверный формат";
@@ -409,7 +409,7 @@ class RequestUserWepps extends RequestWepps {
 				} else {
 					// Регистрируем
 					if (isset ( $userJSON->phone )) {
-						$phone = UtilsWepps::getPhoneFormatted($userJSON->phone);
+						$phone = UtilsWepps::phone($userJSON->phone);
 						if (isset($phone['view2'])) {
 						}
 					}

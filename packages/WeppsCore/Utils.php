@@ -109,29 +109,31 @@ class UtilsWepps {
 	 * @param string|array $value
 	 * @return array
 	 */
-	public static function getPhoneFormatted($string='') {
-		if ($string=='') return array();
-		$tmp = $string;
-		$t = preg_replace("/[^0-9]/","",$tmp);
-		$t = preg_replace("/^8(.+)/","7$1",$t);
-	
-		if (strlen($t)==11) {
-			//РФ
-			$part1 = substr($t,0,4);
-			$part2 = substr($t,4,3);
-			$part3 = substr($t,7,2);
-			$part4 = substr($t,9,2);
-			return array('num'=>$t,'view'=>"+".$part1." ".$part2."-".$part3."-".$part4,'viewpref'=>substr($part1,1),'viewnum'=>$part2."-".$part3."-".$part4,'view2'=>$part1.$part2.$part3.$part4);
-		} elseif (strlen($t)==12) {
-			//Белоруссия
-			if (substr($t,0,3)!="375") return array();
-			$part1 = substr($t,0,5);
-			$part2 = substr($t,5,3);
-			$part3 = substr($t,8,2);
-			$part4 = substr($t,10,2);
-			return array('num'=>$t,'view'=>"+".$part1." ".$part2."-".$part3."-".$part4,'viewpref'=>substr($part1,1),'viewnum'=>$part2."-".$part3."-".$part4,'view2'=>$part1.$part2.$part3.$part4);
+	public static function phone($string='') {
+		$num = preg_replace("/[^0-9]/","",$string);
+		$num = preg_replace("/^8(.+)/","7$1",$num);
+		if (strlen($num)==11 && substr($num,0,2)=='79') {
+			#РФ
+			$part1 = substr($num,0,4);
+			$part2 = substr($num,4,3);
+			$part3 = substr($num,7,2);
+			$part4 = substr($num,9,2);
+			return [
+					'num'=>(int)$num,
+					'view'=>"+".$part1." ".$part2."-".$part3."-".$part4
+			];
+		} elseif (strlen($num)==12 && substr($num,0,3)=='375') {
+			#РБ
+			$part1 = substr($num,0,5);
+			$part2 = substr($num,5,3);
+			$part3 = substr($num,8,2);
+			$part4 = substr($num,10,2);
+			return [
+					'num'=>(int)$num,
+					'view'=>"+".$part1." ".$part2."-".$part3."-".$part4
+			];
 		}
-		return array();
+		return [];
 	}
 	
 	/**
@@ -145,7 +147,7 @@ class UtilsWepps {
 			return [];
 		}
 		foreach ($row as $key => $value ) {
-			$value = trim ( self::_getQueryFormatted ( $value ) );
+			$value = trim(self::_getQueryFormatted(str_replace(["&gt;","&lt;","&quot;"],[">","<","\""],$value)));
 			$value1 = (empty($value)) ? "null" : "'{$value}'";
 			if (strstr($key,'@')) {
 				$key = str_replace('@', '', $key);
@@ -157,49 +159,30 @@ class UtilsWepps {
 				$strUpdate .= "{$key}=uuid(), ";
 				$strInsert2 .= "uuid(),";
 			} else {
-				$strUpdate .= "{$key}=". ConnectWepps::$db->quote ( $value ) .", ";
-				$strInsert2 .= "" . ConnectWepps::$db->quote ( $value ) . ",";
+				$strUpdate .= "{$key}=".ConnectWepps::$db->quote($value).", ";
+				$strInsert2 .= "".ConnectWepps::$db->quote($value).",";
 			}
 			$strInsert1 .= "$key,";
 			$strCond .= "{$key}={$value1} and ";
 			$strSelect .= "{$value1} {$key}, ";
 		}
-		$strCond = ($strCond != "") ? trim ( $strCond, " and " ) : "";
-		$strCond = str_replace ( "\n", "\\n", $strCond );
-		$strUpdate = ($strCond != "") ? trim ( $strUpdate, ", " ) : "";
-		$strUpdate = str_replace ( "\r\n", "\\n", $strUpdate );
-		$strInsert = ($strCond != "") ? "(" . trim ( $strInsert1, "," ) . ") values (" . trim ( $strInsert2, "," ) . ")" : "";
-		$strInsert = str_replace ( "\n", "\\n", $strInsert ) . ";";
-		$strSelect= ($strCond != "") ? trim ( $strSelect, ", " ) : "";
-		$strSelect = str_replace ( "\r\n", "\\n", $strSelect );
-		$outer = ($strCond != "") ? array (
+		$strCond = ($strCond != "")?trim($strCond," and "):"";
+		$strCond = str_replace("\n","\\n",$strCond);
+		$strUpdate = ($strCond != "")?trim($strUpdate, ", "):"";
+		$strUpdate = str_replace ("\r\n", "\\n",$strUpdate);
+		$strInsert = ($strCond != "")?"(".trim($strInsert1,",").") values (".trim($strInsert2,",").")":"";
+		$strInsert = str_replace("\n","\\n",$strInsert).";";
+		$strSelect= ($strCond != "")?trim($strSelect,", "):"";
+		$strSelect = str_replace("\r\n","\\n",$strSelect);
+		$outer = ($strCond != "") ? [
 				"insert" => $strInsert,
 				"update" => $strUpdate,
 				"condition" => $strCond,
 				"select" => $strSelect
-		) : array ();
+		] : [];
 		return $outer;
 	}
-	
-	/**
-	 * Форматирование значения, используется в self::getQuery()
-	 * @param array $value
-	 * @return mixed
-	 */
-	private static function _getQueryFormatted($value) {
-		return str_replace ( array (
-				"&gt;",
-				"&lt;",
-				"&quot;",
-				//"'"
-		), array (
-				">",
-				"<",
-				"\"",
-				//"\'"
-		), $value );
-	}
-	
+
 	/**
 	 * Установка массиву ключей по произвольному полю
 	 * @param array $value
@@ -266,7 +249,7 @@ class UtilsWepps {
 		echo $js;
 		ConnectWepps::$instance->close();
 	}
-	public static function getGUID($string='') {
+	public static function guid($string='') {
 		$charid = ($string=='') ? strtolower(md5(uniqid(rand(), true))) : strtolower(md5($string));
 		$guid = substr($charid,  0, 8) . '-' .
 				substr($charid,  8, 4) . '-' .
