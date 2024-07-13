@@ -18,7 +18,7 @@ class UtilsWepps {
 	/**
 	 * Debug
 	 */
-	public static function debug($var,$rule=0,$filename='') {
+	public static function debug($var,int $rule=0,string $filename='') {
 		$filename = (empty($filename)) ? __DIR__ . "/../../debug.conf":$filename;
 		$separator = "\n===================\n";
 		$header = "";
@@ -84,7 +84,7 @@ class UtilsWepps {
 	 * @param (string|array) $value
 	 * @return string
 	 */
-	public static function trim($value,$chr='') {
+	public static function trim($value,string $chr='') {
 		if (is_array($value)) {
 			foreach ($value as $k => $v) {
 				if (is_array($v)) {
@@ -109,7 +109,7 @@ class UtilsWepps {
 	 * @param string|array $value
 	 * @return array
 	 */
-	public static function phone($string='') {
+	public static function phone(string $string='') : array {
 		$num = preg_replace("/[^0-9]/","",$string);
 		$num = preg_replace("/^8(.+)/","7$1",$num);
 		if (strlen($num)==11 && substr($num,0,2)=='79') {
@@ -141,7 +141,7 @@ class UtilsWepps {
 	 * @param array $row
 	 * @return array
 	 */
-	public static function getQuery(array $row) : array {
+	public static function query(array $row) : array {
 		$strCond = $strUpdate = $strInsert1 = $strInsert2 = $strSelect = "";
 		if (empty($row)) {
 			return [];
@@ -189,11 +189,11 @@ class UtilsWepps {
 	 * @param string $index
 	 * @return array
 	 */
-	public static function getArrayId($value,$index='Id',$output=null) {
-		$arr = array();
+	public static function array(array $value,string $index='Id',string $output='') : array {
+		$arr = [];
 		if (!is_array($value)) return array();
 		
-		if ($output==null) {
+		if ($output=='') {
 			foreach ($value as $v) {
 				$arr[$v[$index]] = $v;
 			}
@@ -208,7 +208,7 @@ class UtilsWepps {
 	/**
 	 * Получить массив из строки
 	 */
-	public static function getArrayFromString($string,$columns="\t",$rows="\n") {
+	public static function arrayFromString(string $string,string $columns="\t",string $rows="\n") : array {
 		$output = [];
 		$string = str_replace("\r", "", $string);
 		$string = trim($string);
@@ -223,7 +223,7 @@ class UtilsWepps {
 		return $output;
 	}
 	
-	public static function getModal($message) {
+	public static function modal(string $message='') {
 		$js = "
                     <script>
                     $('#dialog').html('<p>{$message}</p>').dialog({
@@ -249,7 +249,7 @@ class UtilsWepps {
 		echo $js;
 		ConnectWepps::$instance->close();
 	}
-	public static function guid($string='') {
+	public static function guid(string $string='') : string {
 		$charid = ($string=='') ? strtolower(md5(uniqid(rand(), true))) : strtolower(md5($string));
 		$guid = substr($charid,  0, 8) . '-' .
 				substr($charid,  8, 4) . '-' .
@@ -258,7 +258,7 @@ class UtilsWepps {
 				substr($charid, 20, 12);
 				return $guid;
 	}
-	public static function setExcel($data,$filename='') {
+	public static function setExcel(array $data,string $filename='') {
 		$spreadsheet = new Spreadsheet();
 		$spreadsheet->getProperties()->setCreator('Wepps')
 		->setLastModifiedBy('Wepps')
@@ -316,7 +316,7 @@ class UtilsWepps {
 		$content = ob_get_clean();
 		return $content;
 	}
-	public static function getExcel($fiename) {
+	public static function getExcel(string $filename) {
 		
 	}
 }
@@ -360,7 +360,7 @@ abstract class RequestWepps {
 	public $noclose = 0;
 	
 	
-	public function __construct($settings) {
+	public function __construct(array $settings=[]) {
 		$this->get = UtilsWepps::trim ($settings);
 		$action = (isset($this->get['action'])) ? $this->get['action'] : '';
 		$this->request($action);
@@ -427,16 +427,16 @@ class TemplateHeadersWepps {
 			'css' => array()
 	);
 	
-	public function js($filename) {
+	public function js(string $filename) {
 		return $this->cssjs['js'][] = "\n".'<script type="text/javascript" src="'.$filename.'"></script>';
 	}
-	public function css($filename) {
+	public function css(string $filename) {
 		return $this->cssjs['css'][] .= "\n".'<link rel="stylesheet" type="text/css" href="'.$filename.'"/>';
 	}
-	public function meta($meta) {
+	public function meta(string $meta) {
 		return $this->output['meta'] .= "\n".$meta;
 	}
-	private function join_old($str) {
+	private function join_old(string $str) {
 		$ex = explode("\n",$str);
 		if ($ex[0]=='') unset($ex[0]);
 		$match = [];
@@ -474,11 +474,13 @@ class FilesWepps {
 	 * Вывод указанного файла в браузер на сохранение или открытие на стороне клиента
 	 * @param string $file
 	 */
-	public static function output($file) {
-		$root = $_SERVER['DOCUMENT_ROOT'];
-		$filename = $root . $file;
-		if (!is_file($filename)) ExceptionWepps::error404();
-		$sql = "select * from s_Files where FileUrl='$file' limit 1";
+	public static function output(string $filename) {
+		$filenameFull = ConnectWepps::$projectDev['root'] . $filename;
+		if (!is_file($filenameFull)) {
+			http_response_code(404);
+			ConnectWepps::$instance->close();
+		}
+		$sql = "select * from s_Files where FileUrl='$filename' limit 1";
 		$res = ConnectWepps::$instance->fetch($sql);
 		if (count($res) == 0) ExceptionWepps::error404();
 		$row = $res[0];
@@ -486,13 +488,13 @@ class FilesWepps {
 
 		header("Content-type: application/octet-stream");
 		header("Content-Disposition: attachment; filename=\"$filetitle\"");
-		header("Content-Length: ".filesize($filename));
+		header("Content-Length: ".filesize($filenameFull));
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s",mktime (0,0,0,1,1,2000)) . " GMT"); // Дата в прошлом
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate');
 		header('Pragma: public');
-		readfile($filename);
+		readfile($filenameFull);
 		exit();
 	}
 
@@ -520,9 +522,9 @@ class FilesWepps {
 	 * @param string $myform Идентификатор формы
 	 * @return array
 	 */
-	public static function upload($myFiles,$filesfield,$myform) {
+	public static function upload(array $myFiles,string $filesfield,string $myform) : array {
 		$root = ConnectWepps::$projectDev['root'];
-		$errors = array();
+		$errors = [];
 		/*
 		 * Не все изображения имеют эту метку, возможны ошибки
 		 * Переработать таким образом, чтобы была входная информация
@@ -532,15 +534,13 @@ class FilesWepps {
 		if (!strstr($myFiles[0]['type'],"image/")) {
 			$errors[$filesfield] = "Неверный тип файла";
 			$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
-			return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
+			return ['error'=>$errors[$filesfield],'js'=>$outer['Out']];
 		}
 		if ((int)$myFiles[0]['size']>3000000) {
-			/**
-			 * 1 мегабайт = 1 000 000 байт
-			 */
+			#1 мегабайт = 1 000 000 байт
 			$errors[$filesfield] = "Слишком большой файл";
 			$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
-			return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
+			return ['error'=>$errors[$filesfield],'js'=>$outer['Out']];
 		}
 		$filepathinfo = pathinfo($myFiles[0]['name']);
 		$filepathinfo['filename'] = strtolower(SpellWepps::getTranslit($filepathinfo['filename'],2));
@@ -553,10 +553,10 @@ class FilesWepps {
 		$_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
 		$js = "	<script>
 		$('.fileadd').remove();
-		$('input[name=\"{$filesfield}\"]').parent().append($('<p class=\"fileadd\">Загружен файл &laquo;{$myFiles[0]['name']}&raquo;</p>'));
-		$('label.{$filesfield}').siblings('.controlserrormess').trigger('click');
+		$('input[name=\"{$filesfield}\"]').parent().append($('<p class=\"pps_fileadd\">Загружен файл &laquo;{$myFiles[0]['name']}&raquo;</p>'));
+		$('label.{$filesfield}').siblings('.pps_error').trigger('click');
 		</script>";
-		$data = array('success' => 'Form was submitted','js'=>$js);
+		$data = ['success' => 'Form was submitted','js'=>$js];
 		return $data;
 	}
 }
@@ -568,23 +568,23 @@ class CliWepps {
 	public function __construct() {
 		$this->display();
 	}
-	public function display($display = true) {
+	public function display(bool $display = true) {
 		$this->display = $display;
 	}
-	public function error($text="") {
-		return self::outer(self::getColor("[error] $text",'e'));
+	public function error(string $text='') {
+		return self::outer(self::color("[error] $text",'e'));
 	}
-	public function success($text="") {
-		return self::outer(self::getColor("[success] $text",'s'));
+	public function success(string $text='') {
+		return self::outer(self::color("[success] $text",'s'));
 	}
-	public function warning($text="") {
-		return self::outer(self::getColor("[warning] $text",'w'));
+	public function warning(string $text='') {
+		return self::outer(self::color("[warning] $text",'w'));
 	}
-	public function info($text="") {
-		return self::outer(self::getColor("[info] $text",'i'));
+	public function info(string $text='') {
+		return self::outer(self::color("[info] $text",'i'));
 	}
-	public function text($text="") {
-		return self::outer(self::getColor($text));
+	public function text(string $text='') {
+		return self::outer(self::color($text));
 	}
 	public function br() {
 		return self::outer("\n");
@@ -598,7 +598,7 @@ class CliWepps {
 		$write = sprintf("\033[0G\033[2K[%'#{$perc2}s#%-{$left2}s] $done/$total [$perc%%]", "", "");
 		echo $write;
 	}
-	public function copy(string $source,string $destination,bool $overwrite=true) {
+	public function copy(string $source,string $destination,bool $overwrite=true) : bool {
 		if ($overwrite===false && file_exists($destination)) {
 			return false;
 		}
@@ -668,26 +668,28 @@ class CliWepps {
 		}
 		return $o;
 	}
-	private function getColor($str, $type = ''){
+	private function color(string $str='', string $type='') : string {
+		$output = '';
 		switch ($type) {
 			case 'e': //error
-				echo "\033[0;31;47m","$str\033[0m\n";
+				$output = "\033[0;31;47m$str\033[0m\n";
 				break;
 			case 's': //success
-				echo "\033[32m$str\033[0m\n";
+				$output = "\033[32m$str\033[0m\n";
 				break;
 			case 'w': //warning
-				echo "\033[33m$str\033[0m\n";
+				$output = "\033[33m$str\033[0m\n";
 				break;
 			case 'i': //info
-				echo "\033[36m$str\033[0m\n";
+				$output = "\033[36m$str\033[0m\n";
 				break;
 			default:
-				echo "$str\n";
+				$output = "$str\n";
 				break;
 		}
+		return $output;
 	}
-	private function outer($text='') {
+	private function outer(string $text='') : string {
 		if ($this->display == true) {
 			echo $text;
 		}

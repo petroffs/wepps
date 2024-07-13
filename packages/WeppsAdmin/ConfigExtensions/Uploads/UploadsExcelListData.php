@@ -40,7 +40,7 @@ class UploadsExcelListDataWepps {
 						}
 						
 					}
-					$arr = UtilsWepps::getQuery($row);
+					$arr = UtilsWepps::query($row);
 					$str .= "insert ignore into {$this->tableName} (Id) values ('{$row['Id']}');\n";
 					$str .= "update {$this->tableName} set {$arr['update']} where Id='{$row['Id']}';\n";
 				}

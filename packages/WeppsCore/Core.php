@@ -530,7 +530,7 @@ class NavigatorDataWepps extends DataWepps {
 			return array ('groups'=>$arr,'subs'=>$sub);
 		} else {
 			$res = $this->nav[$this->navLevel-1];
-			$res2 = UtilsWepps::getArrayId($res);
+			$res2 = UtilsWepps::array($res);
 			unset($res2[1]);
 			$res2Keys = implode(",", array_keys($res2));
 			if ($res2Keys=="") {
@@ -763,7 +763,7 @@ class LanguageWepps {
 		if (empty($lang) || @$lang['id'] == 1 || !isset($scheme['TableId']) || !isset($scheme['LanguageId'])) {
 			return $data;
 		}
-		$res = UtilsWepps::getArrayId($data);
+		$res = UtilsWepps::array($data);
 		$resKeys = implode(",", array_keys($res));
 		if ($resKeys=="") {
 			return $data;
@@ -771,7 +771,7 @@ class LanguageWepps {
 		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId='".@$lang['id']."' and DisplayOff=0";
 		$res2 = ConnectWepps::$instance->fetch($sql);
 		if (count($res2)==0) return $data;
-		$resParall = UtilsWepps::getArrayId($res2,'TableId');
+		$resParall = UtilsWepps::array($res2,'TableId');
 		$resParall2 = array();
 		foreach ($res as $key=>$value) {
 			if (!empty($resParall[$key]['Id'])) {

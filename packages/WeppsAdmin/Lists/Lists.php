@@ -446,7 +446,7 @@ class ListsWepps {
 				$element[0]["{$key}_Headers"] = explode(';', $ex[1]);
 				$element[0]["{$key}_Rows"] = [];
 				if (!empty($element[0][$key])) {
-					$element[0]["{$key}_Rows"] = UtilsWepps::getArrayFromString($element[0][$key],':::');
+					$element[0]["{$key}_Rows"] = UtilsWepps::arrayFromString($element[0][$key],':::');
 				}
 			}
 		}
@@ -690,7 +690,7 @@ class ListsWepps {
 				'TableNameId'=>$id,
 				'TableNameField'=>$field,
 		);
-		$arr = UtilsWepps::getQuery($row);
+		$arr = UtilsWepps::query($row);
 		$str = "update s_PropertiesValues set DisplayOff2=1 where {$arr['condition']};\n";
 		$ex = explode(":::", $value);
 		foreach ($ex as $v) {
@@ -705,7 +705,7 @@ class ListsWepps {
 					'PValue'=>$v,
 					'DisplayOff2'=>0,
 			);
-			$arr2 = UtilsWepps::getQuery($row);
+			$arr2 = UtilsWepps::query($row);
 			$str .= "update s_PropertiesValues set {$arr2['update']} where HashValue = '{$hash}';\n";
 		}
 		return $str;
@@ -725,7 +725,7 @@ class ListsWepps {
 	            $row['Field2'] = "";
 	            $row['Field3'] = "List::$list::{$field}";
 	            $row['DisplayOff2'] = 0;
-	            $arr2 = UtilsWepps::getQuery($row);
+	            $arr2 = UtilsWepps::query($row);
 	            $md5 = md5($row['Name']."::".$row['Field1']."::".$row['Field2']."::".$row['Field3']);
 	            $str2 .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
 	            $str2 .= "update s_SearchKeys set ".$arr2['update']." where Alias = '$md5';\n";
@@ -992,7 +992,7 @@ class ListsWepps {
 					$rowData['Field2'] = "";
 					$rowData['Field3'] = "List::$tableName::$fieldName";
 					$rowData['DisplayOff2'] = 0;
-					$arr = UtilsWepps::getQuery($rowData);
+					$arr = UtilsWepps::query($rowData);
 					$md5 = md5($rowData['Name'] . "::" . $rowData['Field1'] . "::" . $rowData['Field2'] . "::" . $rowData['Field3']);
 					$str .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
 					$str .= "update s_SearchKeys set " . $arr['update'] . " where Alias = '$md5';\n";

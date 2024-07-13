@@ -155,7 +155,7 @@ class RestWepps {
 				'SResponse'=>$this->status,
 				'IP'=> (!empty($_SERVER['REMOTE_ADDR']))?$_SERVER['REMOTE_ADDR']:'localhost',
 		);
-		$arr = UtilsWepps::getQuery($row);
+		$arr = UtilsWepps::query($row);
 		$sql = "insert ignore into s_LocalServicesLog {$arr['insert']}";
 		ConnectWepps::$instance->query($sql);
 		$id = ConnectWepps::$db->lastInsertId ();
@@ -176,7 +176,7 @@ class RestWepps {
 				'BRequest'=> $this->request,
 				'BResponse'=> $this->response,
 		);
-		$arr = UtilsWepps::getQuery($row);
+		$arr = UtilsWepps::query($row);
 		$sql = "insert ignore into s_RemoteServicesLog {$arr['insert']}";
 		ConnectWepps::$instance->query($sql);
 		$out = 1;

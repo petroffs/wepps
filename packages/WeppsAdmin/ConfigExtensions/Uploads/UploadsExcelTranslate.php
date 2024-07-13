@@ -39,7 +39,7 @@ class UploadsExcelTranslateWepps {
 							"Priority"=>1000,
 					);
 					
-					$arr = UtilsWepps::getQuery($row1);
+					$arr = UtilsWepps::query($row1);
 					$str .= "insert ignore into {$this->tableName} (Name) values ('{$row1['Name']}');\n";
 					$str .= "update {$this->tableName} set {$arr['update']} where Name='{$row1['Name']}';\n";
 				}

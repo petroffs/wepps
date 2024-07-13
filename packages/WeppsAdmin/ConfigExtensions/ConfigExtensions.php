@@ -75,7 +75,7 @@ class ConfigExtensionsWepps {
 		$extensions = $objExt->getMax("t.DisplayOff=0 and t.Id in ($fcond)",2000);
 		$this->extensions = [];
 		foreach ($extensions as $value) {
-			$value['ENavArr'] = UtilsWepps::getArrayFromString($value['ENav'],":::");
+			$value['ENavArr'] = UtilsWepps::arrayFromString($value['ENav'],":::");
 			$this->extensions[$value['Alias']] = $value;
 		}
 	}

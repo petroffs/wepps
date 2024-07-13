@@ -64,13 +64,13 @@ class BotTestWepps extends BotWepps {
 		];
 		$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
 		UtilsWepps::debugf($t,1);
-		
-		
 		$obj = new DataWepps("DataTbls");
 		$t = $obj->add([
 				'Name'=>'TEST1',
 				'BTest'=>'test text',
-		],['BTest'=>['fn'=>'compress(:BTest)']]);
+		],[
+				'BTest'=>['fn'=>'compress(:BTest)']
+		]);
 		
 		
 		$t = ListsWepps::setListItem(
@@ -85,10 +85,10 @@ class BotTestWepps extends BotWepps {
 		UtilsWepps::debugf($t,1);
 	}
 	public function cli() {
-		$this->cli->text("test test");
-		$this->cli->success("success test");
-		$this->cli->warning("warning test");
-		$this->cli->error("error test");
+		$this->cli->text("simle text");
+		$this->cli->success("success text");
+		$this->cli->warning("warning text");
+		$this->cli->error("error text");
 	}
 }
 ?>

@@ -21,7 +21,7 @@ class RequestProcessingWepps extends RequestWepps {
 			case "searchindex":
 				$str = ListsWepps::setSearchIndex();
 				ConnectWepps::$db->exec($str);
-				UtilsWepps::getModal('Поисковый индекс построен');
+				UtilsWepps::modal('Поисковый индекс построен');
 				break;
 			default:
 				UtilsWepps::debug('def1',1);

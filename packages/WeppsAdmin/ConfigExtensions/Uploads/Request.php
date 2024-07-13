@@ -58,13 +58,13 @@ class RequestUploadsWepps extends RequestWepps {
 				$source = $obj->get($id)[0];
 				
 				if (!isset($source['Id']) || $id == 0) {
-					UtilsWepps::getModal('Ошибка : Укажите источник');
+					UtilsWepps::modal('Ошибка : Укажите источник');
 				}
 				
 				$obj = new DataWepps("s_Files");
 				$files = $obj->getMax("TableName='{$list}' and t.FileDescription!='' and JSON_EXTRACT(t.FileDescription, '$.source') = {$id}",1,1,"t.Id desc");
 				if (!isset($files[0]['Id'])) {
-					UtilsWepps::getModal('Ошибка : Файл не найден');
+					UtilsWepps::modal('Ошибка : Файл не найден');
 				}
 				
 				/*
@@ -88,7 +88,7 @@ class RequestUploadsWepps extends RequestWepps {
 							'message'=>'Шаблон для источника не задан'
 					];
 				}
-				UtilsWepps::getModal($response['message']);
+				UtilsWepps::modal($response['message']);
 				break;
 			default:
 				ExceptionWepps::error404();

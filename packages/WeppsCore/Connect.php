@@ -70,7 +70,7 @@ class ConnectWepps {
 		}
 	}
 	public function insert($tableName,$row,$settings=[]) {
-		$arr = UtilsWepps::getQuery($row);
+		$arr = UtilsWepps::query($row);
 		$arr = self::prepare($row);
 		$sql = "insert ignore into $tableName (Priority) select round((max(Priority)+5)/5)*5 from $tableName on duplicate key update Id=last_insert_id(`Id`)";	
 		self::$instance->query($sql);

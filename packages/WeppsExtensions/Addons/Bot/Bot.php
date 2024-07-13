@@ -71,6 +71,7 @@ class BotWepps {
 				break;
 			case "clitest":
 				$obj = new BotTestWepps();
+				$obj->cli();
 				break;
 			default:
 				echo "\nERROR\n";

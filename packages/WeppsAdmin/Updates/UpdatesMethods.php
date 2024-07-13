@@ -378,7 +378,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$sql = "select * from s_Config where TableName = '$table'";
 		$res = ConnectWepps::$instance->fetch($sql);
 		unset($res[0]['Id']);
-		$arr = UtilsWepps::getQuery($res[0]);
+		$arr = UtilsWepps::query($res[0]);
 		$str .= "insert ignore into s_Config {$arr['insert']}\n\n";
 		
 		/*
@@ -387,7 +387,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$sql = "select * from s_ConfigFields where TableName = '$table'";
 		$res = ConnectWepps::$instance->fetch($sql);
 		foreach ($res as $value) {
-			$arr = UtilsWepps::getQuery($value);
+			$arr = UtilsWepps::query($value);
 			$str .= "insert ignore into s_ConfigFields {$arr['insert']}\n";
 		}
 		$str = preg_replace("/values \('(\d+)'/", 'values (null', $str);

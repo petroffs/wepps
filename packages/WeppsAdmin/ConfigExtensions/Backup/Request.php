@@ -56,9 +56,9 @@ class RequestBackupWepps extends RequestWepps {
 				 * Вывод финального сообщения
 				 */
 				if ($cmd=="ОК") {
-					UtilsWepps::getModal("<p>Бекап базы данных: {$cmd}</p>");
+					UtilsWepps::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
-					UtilsWepps::getModal("<p>Ошибка запроса: {$str}</p>");
+					UtilsWepps::modal("<p>Ошибка запроса: {$str}</p>");
 				}
 				break;
 			case "database-restore":
@@ -82,10 +82,10 @@ class RequestBackupWepps extends RequestWepps {
 				 * Вывод финального сообщения
 				 */
 				if ($cmd=="ОК") {
-					UtilsWepps::getModal("<p>Бекап базы данных: {$cmd}</p>");
+					UtilsWepps::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
 					echo $str;
-					UtilsWepps::getModal("<p>Бекап базы данных: {$str}</p>");
+					UtilsWepps::modal("<p>Бекап базы данных: {$str}</p>");
 				}
 				break;
 			case "database-remove":
@@ -101,7 +101,7 @@ class RequestBackupWepps extends RequestWepps {
 				if (is_file($filename)) {
 					unlink($filename);
 				}
-				UtilsWepps::getModal('<p>Бекап базы данных: удален</p>');
+				UtilsWepps::modal('<p>Бекап базы данных: удален</p>');
 				break;
 			case "files":
 				if (isset($this->get['add']) && (int) $this->get['add']==1) {
@@ -202,7 +202,7 @@ class RequestBackupWepps extends RequestWepps {
 				/*
 				 * Вывод финального сообщения
 				 */
-				UtilsWepps::getModal('<p>Бекап файлов: удален</p>');
+				UtilsWepps::modal('<p>Бекап файлов: удален</p>');
 				break;
 			case "list":
 				/*
@@ -225,7 +225,7 @@ class RequestBackupWepps extends RequestWepps {
 				$res = ConnectWepps::$instance->fetch($sql);
 				
 				unset($res[0]['Id']);
-				$arr = UtilsWepps::getQuery($res[0]);
+				$arr = UtilsWepps::query($res[0]);
 				$str .= "insert ignore into s_Config {$arr['insert']}\n\n";
 				
 				/*
@@ -235,7 +235,7 @@ class RequestBackupWepps extends RequestWepps {
 				$res = ConnectWepps::$instance->fetch($sql);
 				
 				foreach ($res as $value) {
-					$arr = UtilsWepps::getQuery($value);
+					$arr = UtilsWepps::query($value);
 					$str .= "insert ignore into s_ConfigFields {$arr['insert']}\n";
 				}
 				
