@@ -8,8 +8,8 @@ use Curl\Curl;
 
 class UserWepps {
 	public static function getAuth($login='',$password='') {
-		$login = UtilsWepps::getStringFormatted($login);
-		$password = UtilsWepps::getStringFormatted($password);
+		$login = UtilsWepps::trim($login);
+		$password = UtilsWepps::trim($password);
 		$obj = new DataWepps( "s_Users" );
 		if ($login=='' && $password=='' && isset($_COOKIE['authLogin']) && isset($_COOKIE['authKey'])) {
 			$sql = "Login='".addslashes($_COOKIE['authLogin'])."' and AuthKey regexp '".ConnectWepps::$instance->selectRegx(addslashes($_COOKIE['authKey']))."' and AuthKey!=0 and UserBlock!=1";

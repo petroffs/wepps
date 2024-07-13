@@ -18,7 +18,7 @@ class ProfileWepps {
 	function __construct(NavigatorWepps $navigator, $ppsUrl,$get = array()) {
 		if (count($get)) {
 			foreach ( $get as $key => $value ) {
-				$this->get [$key] = UtilsWepps::getStringFormatted ( $value );
+				$this->get [$key] = UtilsWepps::trim ( $value );
 			}
 		}
 		$smarty = SmartyWepps::getSmarty ();
@@ -47,8 +47,8 @@ class ProfileWepps {
 				$this->get['title'] = 'Обновление аккаунта';
 				//if (!isset($user['Id'])) {
 					if (isset($get['key1']) && isset($get['key2'])) {
-						$login = UtilsWepps::getStringFormatted($get['key1']);
-						$loginKey = UtilsWepps::getStringFormatted($get['key2']);
+						$login = UtilsWepps::trim($get['key1']);
+						$loginKey = UtilsWepps::trim($get['key2']);
 						$user = $users->getMax("binary t.Login = '{$login}' and t.FieldChangeKey='{$loginKey}'")[0];
 						if (isset($user['Id'])) {
 							$this->get['title'] = 'Личный кабинет';

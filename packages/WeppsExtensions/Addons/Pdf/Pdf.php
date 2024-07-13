@@ -18,8 +18,8 @@ class PdfWepps {
 	private $filename = 'pdf.pdf';
 	function __construct($get) {
 		$this->get = $get;
-		$action = UtilsWepps::getStringFormatted($this->get['action']);
-		$id = UtilsWepps::getStringFormatted($this->get['id']);
+		$action = UtilsWepps::trim($this->get['action']);
+		$id = UtilsWepps::trim($this->get['id']);
 		if ($action == '' || $id == '') ExceptionWepps::error404();
 		$smarty = SmartyWepps::getSmarty();
 		$obj = new DataWepps("TradeShops");

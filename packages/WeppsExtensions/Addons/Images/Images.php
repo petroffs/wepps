@@ -12,7 +12,7 @@ class ImagesWepps {
 	private $mime;
 	public $get;
 	function __construct($get) {
-		$this->get = UtilsWepps::getStringFormatted($get);
+		$this->get = UtilsWepps::trim($get);
 		$filename = (isset($this->get['fileUrl'])) ? $this->get['fileUrl'] : '';
 		$action = (isset($this->get['pref'])) ? $this->get['pref'] : '';
 		$root = substr(getcwd(),0,strpos(getcwd(), "packages"));

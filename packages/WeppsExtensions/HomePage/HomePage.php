@@ -7,6 +7,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class HomePageWepps extends ExtensionWepps {
 	public function request() {
@@ -28,7 +29,7 @@ class HomePageWepps extends ExtensionWepps {
 					$this->headers->js ( "/packages/vendor/kenwheeler/slick/slick/slick.min.js" );
 					$this->headers->css ( "/ext/Template/Carousel/Carousel.{$this->rand}.css" );
 				}
-				
+
 				/*
 				 * Услуги
 				 */

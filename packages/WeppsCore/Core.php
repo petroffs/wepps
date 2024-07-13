@@ -74,7 +74,7 @@ class DataWepps {
 	public function __construct($tableName='') {
 		if ($tableName == "")
 			exit ();
-			return $this->tableName = UtilsWepps::getStringFormatted ( $tableName );
+			return $this->tableName = UtilsWepps::trim ( $tableName );
 	}
 	/**
 	 * Получить набор строк таблицы
@@ -205,21 +205,21 @@ class DataWepps {
 	 * @return array
 	 */
 	private function _getFormatted($id, $onPage, $currentPage, $orderBy) {
-		$onPage = UtilsWepps::getStringFormatted ( $onPage );
+		$onPage = UtilsWepps::trim ( $onPage );
 		if ($onPage=='') $onPage = 100; 
-		$currentPage = UtilsWepps::getStringFormatted ( $currentPage );
-		$orderBy = UtilsWepps::getStringFormatted ( $orderBy );
+		$currentPage = UtilsWepps::trim ( $currentPage );
+		$orderBy = UtilsWepps::trim ( $orderBy );
 		if ($orderBy!='') $orderBy = "order by $orderBy";
 		$currentPage = (( int ) $currentPage <= 0) ? 1 : ( int ) $currentPage;
 		$limit = ($currentPage - 1) * $onPage;
 		$id = (is_numeric ( $id )) ? "Id='{$id}'" : $id;
-		return array (
+		return [
 				'id' => $id,
 				'onPage' => $onPage,
 				'currentPage' => $currentPage,
 				'orderBy' => $orderBy,
 				'limit' => "limit {$limit},{$onPage}" 
-		);
+		];
 	}
 	/**
 	 * Пагинация для организации постраничного вывода
@@ -484,7 +484,7 @@ class NavigatorWepps {
 		} elseif (isset($match[1])) {
 			self::$pathItem = $match[1];
 		}
-		$navigateUrl = (empty ( $url )) ? '/' : UtilsWepps::getStringFormatted ( $url );
+		$navigateUrl = (empty ( $url )) ? '/' : UtilsWepps::trim($url);
 		$navigateUrl = substr ( $navigateUrl, 0, strrpos ( $navigateUrl, "/", - 1 ) + 1 );
 		$langLink = '/' . substr ( $navigateUrl, 1, strpos ( $navigateUrl, '/', 1 ) );
 		$langData = LanguageWepps::getLanguage ( $langLink );
@@ -652,7 +652,7 @@ abstract class ExtensionWepps {
 	public $rand;
 	
 	function __construct(NavigatorWepps $navigator, TemplateHeadersWepps $headers, $get = array()) {
-		$this->get = UtilsWepps::getStringFormatted ( $get );
+		$this->get = UtilsWepps::trim ( $get );
 		$this->navigator = &$navigator;
 		$this->headers = &$headers;
 		$this->rand = $headers::$rand;

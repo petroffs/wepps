@@ -16,72 +16,67 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
  */
 class UtilsWepps {
 	/**
-	 * Вывод информации о переменной в браузер или в переменную
-	 *
-	 * @param number|array|string $var - переменная, которую нужно вывести
-	 * @param number $exit        	
-	 * @param bool $print
-	 * @return string
+	 * Debug
 	 */
-	public static function debug($var, $exit = 0, $print = true) {
-		$backtrace = debug_backtrace();
-		$debuginfo = date('Y-m-d H:i:s') . "\n";
-		$debuginfo.= "{$backtrace[0]['file']}:{$backtrace[0]['line']}\n";
-		$debuginfo.= "===================\n";
-		if (ConnectWepps::$projectDev['debug']==0) {
-			$debuginfo = "";
+	public static function debug($var,$rule=0,$filename='') {
+		$filename = (empty($filename)) ? __DIR__ . "/../../debug.conf":$filename;
+		$separator = "\n===================\n";
+		$header = "";
+		if (ConnectWepps::$projectDev['debug']==1) {
+			$backtrace = debug_backtrace();
+			$header = "".date('Y-m-d H:i:s')."\n";
+			$header .= "{$backtrace[0]['file']}:{$backtrace[0]['line']}\n";
+			if (!empty($backtrace[1]['file'])) {
+				$header .= "{$backtrace[1]['file']}:{$backtrace[1]['line']}\n";
+			}
+			if (!empty($backtrace[2]['file'])) {
+				$header .= "{$backtrace[2]['file']}:{$backtrace[2]['line']}\n";
+			}
+			$header = trim($header).$separator;
 		}
-		if (empty ( $var ) && $var != 0) {
-			$var = "[" . date ( "d/m/Y" ) . "] Variable is empty.";
+		$val = print_r($var,true);
+		switch ($rule) {
+			case 2:
+				$output = $header.$val;
+				file_put_contents ($filename,$output);
+				break;
+			case 21:
+				$output = $header.$val;
+				file_put_contents($filename,$output);
+				ConnectWepps::$instance->close();
+				break;
+			case 22:
+				$output = $header.$val."\n\n";
+				$fp = fopen($filename, 'a+');
+				fwrite($fp, $output);
+				fclose($fp);
+				break;
+			case 3:
+				$output = $header.$val;
+				echo $output;
+				break;
+			case 31:
+				$output = $header.$val;
+				echo $output;
+				ConnectWepps::$instance->close();
+				break;
+			case 1:
+				$val = htmlspecialchars($val);
+				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;position:relative;z-index:999;'>\n";
+				$output .= $header.$val;
+				$output .= "\n</pre>\n";
+				echo $output;
+				ConnectWepps::$instance->close();
+				break;
+			default:
+				$val = htmlspecialchars($val);
+				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;position:relative;z-index:999;'>\n";
+				$output .= $header.$val;
+				$output .= "\n</pre>\n";
+				echo $output;
+				break;
 		}
-			
-		$tmp = "\n<pre style='text-align:left;color:black;font:11px trebuchet ms;border:0px;background: #80FF80;'>\n";
-		$tmp .= $debuginfo . htmlspecialchars ( print_r ( $var, true ) ) . "\n";
-		$tmp .= "</pre>";
-		$val = "";
-		foreach ( explode ( "\n", $tmp ) as $value ) {
-			$val .= "{$value}\n";
-		}
-		$tmp = "<div style='overflow:scroll;width:98%;height:200px;border:1px solid gray;background: #80FF80;position:relative;left:1%;z-index:999;'>{$val}</div>\n";
-		if ($print == true) {
-			echo $tmp;
-			$tmp = 1;
-		}
-		if ($exit == 1) {
-			ConnectWepps::$instance->close();
-		}
-		return $tmp;
-	}
-	
-	/**
-	 * 
-	 * @param $var - Переменная для вывода
-	 * @param number $exit
-	 * @param number $trace
-	 * @param string $filename
-	 */
-	public static function debugf($var, $exit = 0, $trace=0, $filename='debug.conf') {
-		$t = print_r($var,true);
-		$filename = dirname(__FILE__)."/../../{$filename}";
-		if (!is_file($filename)) {
-			echo "\n$filename\n";
-			echo dirname(__FILE__)."\n";
-			return ;
-		}
-		$backtrace = debug_backtrace();
-		$backtrace2 = print_r($backtrace,true);
-		
-		$debuginfo = date('Y-m-d H:i:s') . "\n";
-		$debuginfo.= "{$backtrace[0]['file']}:{$backtrace[0]['line']}\n";
-		$debuginfo.= "===================\n";
-		if ($trace==1) {
-			$debuginfo.= $backtrace2."\n===================\n";
-		}
-		$debuginfo.= $t;
-		file_put_contents ($filename,$debuginfo);
-		if ($exit == 1) {
-			exit ();
-		}
+		return true;
 	}
 	
 	/**
@@ -89,27 +84,23 @@ class UtilsWepps {
 	 * @param (string|array) $value
 	 * @return string
 	 */
-	public static function getStringFormatted($value) {
+	public static function trim($value,$chr='') {
 		if (is_array($value)) {
-			//UtilsWepps::debug($value,1);
-			foreach ( $value as $k => $v ) {
+			foreach ($value as $k => $v) {
 				if (is_array($v)) {
 					foreach ($v as $k1=>$v1) {
-						$value[$k][$k1] = UtilsWepps::getStringFormatted ( $v1 );
+						$value[$k][$k1] = self::trim($v1,$chr);
 					}
 				} else {
-					//$v = trim ( $v );
-					//$v = htmlspecialchars ( $v );
-					$value[$k] = UtilsWepps::getStringFormatted ( $v );
+					$value[$k] = self::trim($v,$chr);
 				}
 			}
 			return $value;
 		}
 		if (is_string($value)) {
-			$value = trim ( $value );
+			$value = trim($value,$chr);
 		}
-		
-		//$value = htmlspecialchars ( $value );
+		#$value = htmlspecialchars ( $value );
 		return $value;
 	}
 	
@@ -148,13 +139,12 @@ class UtilsWepps {
 	 * @param array $row
 	 * @return array
 	 */
-	public static function getQuery($row) {
+	public static function getQuery(array $row) : array {
 		$strCond = $strUpdate = $strInsert1 = $strInsert2 = $strSelect = "";
-		if (count ( $row ) == 0) {
-			return array ();
+		if (empty($row)) {
+			return [];
 		}
-			
-		foreach ( $row as $key => $value ) {
+		foreach ($row as $key => $value ) {
 			$value = trim ( self::_getQueryFormatted ( $value ) );
 			$value1 = (empty($value)) ? "null" : "'{$value}'";
 			if (strstr($key,'@')) {
@@ -285,7 +275,7 @@ class UtilsWepps {
 				substr($charid, 20, 12);
 				return $guid;
 	}
-	public static function setExcel($data,$test=0) {
+	public static function setExcel($data,$filename='') {
 		$spreadsheet = new Spreadsheet();
 		$spreadsheet->getProperties()->setCreator('Wepps')
 		->setLastModifiedBy('Wepps')
@@ -331,17 +321,20 @@ class UtilsWepps {
 		$spreadsheet->getActiveSheet()->setTitle("Data");
 		$spreadsheet->setActiveSheetIndex(0);
 		$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-		if ($test==1) {
+		if (!empty($filename)) {
 			/*
 			 * Записать в файл для проверки
 			 */
-			$writer->save(__DIR__ . '/../WeppsAdmin/Bot/files/file.xlsx');
+			$writer->save($filename);
 			return;
 		}
 		ob_start();
 		$writer->save('php://output');
 		$content = ob_get_clean();
 		return $content;
+	}
+	public static function getExcel($fiename) {
+		
 	}
 }
 
@@ -385,7 +378,7 @@ abstract class RequestWepps {
 	
 	
 	public function __construct($settings) {
-		$this->get = UtilsWepps::getStringFormatted ($settings);
+		$this->get = UtilsWepps::trim ($settings);
 		$action = (isset($this->get['action'])) ? $this->get['action'] : '';
 		$this->request($action);
 		if ($this->noclose==0) {

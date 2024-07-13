@@ -135,7 +135,7 @@ class AdminWepps {
 		} elseif (isset($match[1])) {
 			self::$pathItem = $match[1];
 		}
-		$url = (empty ( $url )) ? '/' : UtilsWepps::getStringFormatted ( $url );
+		$url = (empty ( $url )) ? '/' : UtilsWepps::trim ( $url );
 		$url = substr ( $url, 0, strrpos ( $url, "/", - 1 ) + 1 );
 		
 		if (preg_match("/(\/{2,10})/",  $_SERVER['REQUEST_URI'])) {

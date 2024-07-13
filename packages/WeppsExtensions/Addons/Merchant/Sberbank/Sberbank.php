@@ -36,7 +36,7 @@ class SberbankWepps {
     	    $this->url = "https://securepayments.sberbank.ru/payment/rest/";
 		}
 		
-	    $action = UtilsWepps::getStringFormatted ( $this->get ['action'] );
+	    $action = UtilsWepps::trim ( $this->get ['action'] );
 		if ($action == '')
 			ExceptionWepps::error404 ();
 		

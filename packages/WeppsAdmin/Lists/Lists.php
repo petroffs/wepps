@@ -18,7 +18,7 @@ class ListsWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$headers->js ("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.js");
 		$headers->css ("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.css");
-		$this->get = UtilsWepps::getStringFormatted($_GET);
+		$this->get = UtilsWepps::trim($_GET);
 		$ppsUrl = "/".$_GET['ppsUrl'];
 		$ppsUrlEx = explode("/", trim($ppsUrl,'/'));
 		$tpl2 = "../Admin/AdminError.tpl";
