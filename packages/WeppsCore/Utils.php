@@ -319,6 +319,15 @@ class UtilsWepps {
 	public static function getExcel(string $filename) {
 		
 	}
+	public static function getAllHeaders() : array {
+		$headers = getallheaders();
+		#array_map('strtolower', $haystack);
+		foreach ($headers as $key=>$value) {
+			unset($headers[$key]);
+			$headers[strtolower($key)] = $value;
+		}
+		return $headers;
+	}
 }
 
 /**

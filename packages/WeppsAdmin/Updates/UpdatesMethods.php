@@ -107,10 +107,10 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		}
 		
 		/*
-		 * При отладке скрыть
+		 * При отладке скрыть (после распаковки первого архива)
 		 */
-		#$zip->extractTo($zipPath);
-		#$zip->close();
+		$zip->extractTo($zipPath);
+		$zip->close();
 
 		$fileMD5 = $zipPath."/packages/WeppsAdmin/Updates/files/md5.conf";
 		
@@ -262,19 +262,19 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 				'files'=>$files,
 		];
 	}
-	private function getTablesUpdates($fileMD5) {
+	private function getTablesUpdates(string $fileMD5) : string {
 		if (!is_file($fileMD5)) {
-			return [];
+			return '';
 		}
 		$files = [];
 		$jdata = json_decode(file_get_contents($this->filename),true);
 		$jrelease = json_decode(file_get_contents($fileMD5),true);
 		if (empty($jdata['db']) || empty($jrelease['db'])) {
-			return [];
+			return '';
 		}
 		$files = $this->getTablesDiff($jrelease['db'], $jdata['db'])['diff'];
 		if (empty($files)) {
-			return [];
+			return '';
 		}
 		
 		/*
