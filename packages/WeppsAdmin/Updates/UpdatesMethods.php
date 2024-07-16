@@ -85,7 +85,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$curl->setOpt(CURLOPT_SSL_VERIFYPEER, 0);
 		$response = $curl->get($fileSrc);
 		
-		if (!in_array('Content-Type: application/zip',$response->response_headers)) {
+		if (!in_array('content-type: application/zip',$response->response_headers)) {
 			return [
 					'output' => 'wrong update file\'s url : '.$fileSrc
 			];
