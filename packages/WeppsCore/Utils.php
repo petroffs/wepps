@@ -613,7 +613,7 @@ class CliWepps {
 		}
 		$path = pathinfo($destination);
 		if (!file_exists($path['dirname'])) {
-			mkdir($path['dirname'], 0750, true);
+			mkdir($path['dirname'], 0755, true);
 		}
 		if (!copy($source, $destination)) {
 			return false;
@@ -628,7 +628,7 @@ class CliWepps {
 		}
 		$path = pathinfo($destination);
 		if (!file_exists($path['dirname'])) {
-			mkdir($path['dirname'], 0750, true);
+			mkdir($path['dirname'], 0755, true);
 		}
 		if (!rename($source, $destination)) {
 			return false;
@@ -638,10 +638,21 @@ class CliWepps {
 	public function put($content,$destination) {
 		$path = pathinfo($destination);
 		if (!file_exists($path['dirname'])) {
-			mkdir($path['dirname'], 0750, true);
+			mkdir($path['dirname'], 0755, true);
 		}
 		if (!file_put_contents($destination,$content)) {
 			return false;
+		}
+		return true;
+	}
+	public function mkdir(string $dir) : bool {
+		$dir = str_replace('\\', '/', $dir);
+		if (!stristr($dir, ConnectWepps::$projectDev['root'])) {
+			$this->warning('no project path');
+			return false;
+		}
+		if (!is_dir($dir)) {
+			mkdir($dir,0755,true);
 		}
 		return true;
 	}
