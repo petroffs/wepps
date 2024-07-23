@@ -676,13 +676,16 @@ class CliWepps {
 		return true;
 	}
 	public function cmd(string $cmd, bool $silent = false) {
-		/**
-		 * @var array $o
-		 */
 		if (empty($cmd)) {
 			$this->warning("cmd is empty");
 		}
-		exec("$cmd 2>&1",$o);
+		$o = [];
+		$v = 100;
+		exec("$cmd 2>&1", $o ,$v);
+		if ($v!=0) {
+			$this->error('cmd');
+			exit();
+		}
 		if ($silent == false && !empty($o)) {
 			$this->info(implode("\n",$o));
 		}
