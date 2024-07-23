@@ -675,7 +675,7 @@ class CliWepps {
 		unlink($file);
 		return true;
 	}
-	public function cmd(string $cmd, bool $silent = false) {
+	public function cmd(string $cmd, bool $silent = false) : array {
 		if (empty($cmd)) {
 			$this->warning("cmd is empty");
 		}
@@ -683,7 +683,11 @@ class CliWepps {
 		$v = 100;
 		exec("$cmd 2>&1", $o ,$v);
 		if ($v!=0) {
-			$this->error('cmd');
+			if (!empty($o[0])) {
+				$this->error($o[0]);
+			} else {
+				$this->error('cmd');
+			}
 			exit();
 		}
 		if ($silent == false && !empty($o)) {
