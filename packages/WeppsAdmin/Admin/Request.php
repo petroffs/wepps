@@ -58,31 +58,31 @@ class RequestAdminWepps extends RequestWepps {
 				}
 				break;
 			case "hook":
-				$token = $_SERVER['HTTP_X_GITLAB_TOKEN'];
-				if ($token!='X-pps-601-master') {
-					ExceptionWepps::error404();
+				if (ConnectWepps::$projectServices['git']['token'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {
+					http_response_code(200);
+					echo "FAIL";
+					exit();
 				}
 				$dir = ConnectWepps::$projectDev['root'];
 				$git = "{$dir}/.git";
 				$json = file_get_contents('php://input');
 				$body = json_decode($json, true);
-				$branch = str_replace("X-pps-601-","",$token);
-				if ("refs/heads/{$branch}" == $body["ref"] && strstr($body['commits'][0]['message'], 'master')) {
-					$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
-					exec($cmd);
-					//system($cmd.' 2>&1', $cmd_error);
-					$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
-					exec($cmd);
-					//system($cmd.' 2>&1', $cmd_error);
-					//$str = UtilsWepps::debug($_SERVER,0,false);
-					//$mail = new MailWepps();
-					//$mail->mail("mail@petroffs.com", "git - ".$body['project']['name'], "git message - {$body['commits'][0]['message']}\n{$str}");
+				$message = trim($body['commits'][0]['message']);
+				$branch = "master";
+				if (strstr($message, "dev:")) {
+					$branch = "dev";
 				}
+				if (preg_match('/prod:|dev:|chore:|fix:|feat:|refact:|test:/i', $message)) {
+					$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch} && git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
+					#$cmd = "cd {$dir} && git pull origin {$branch}";
+					exec($cmd);
+				}
+				echo "OK";
+				exit();
 				break;
 			case "git":
 				$json = file_get_contents('php://input');
 				$token = ConnectWepps::$projectServices['git']['token'];
-				#echo "{$token} / {$_SERVER['HTTP_CLIENTTOKEN']}";
 				if ($token!=$_SERVER['HTTP_CLIENTTOKEN']) {
 					exit();
 				}
@@ -90,9 +90,7 @@ class RequestAdminWepps extends RequestWepps {
 				$git = "{$dir}/.git";
 				$branch = 'master';
 				echo "git start\n";
-				$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch}";
-				exec($cmd);
-				$cmd = "git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
+				$cmd = "git --work-tree={$dir} --git-dir={$git} fetch origin {$branch} && git --work-tree={$dir} --git-dir={$git} reset --hard origin/{$branch}";
 				exec($cmd);
 				echo "\n";
 				break;
