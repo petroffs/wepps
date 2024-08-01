@@ -62,7 +62,7 @@ class UtilsWepps {
 				break;
 			case 1:
 				$val = htmlspecialchars($val);
-				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;position:relative;z-index:999;'>\n";
+				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;overflow:auto;position:relative;z-index:999;'>\n";
 				$output .= $header.$val;
 				$output .= "\n</pre>\n";
 				echo $output;
@@ -70,7 +70,7 @@ class UtilsWepps {
 				break;
 			default:
 				$val = htmlspecialchars($val);
-				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;position:relative;z-index:999;'>\n";
+				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;overflow:auto;position:relative;z-index:999;'>\n";
 				$output .= $header.$val;
 				$output .= "\n</pre>\n";
 				echo $output;
