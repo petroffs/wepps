@@ -5,12 +5,13 @@ use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class NewsWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
 		switch (NavigatorWepps::$pathItem) {
-			case '' :
+			case '':
 				$this->tpl = 'packages/WeppsExtensions/News/News.tpl';
 				$extensionConditions = "";
 				$obj = new DataWepps ( "News" );
@@ -20,7 +21,7 @@ class NewsWepps extends ExtensionWepps {
 				$smarty->assign ( 'paginator', $obj->paginator );
 				$smarty->assign ( 'paginatorTpl', $smarty->fetch ( 'packages/WeppsExtensions/Template/Paginator/Paginator.tpl' ) );
 			break;
-			default :
+			default:
 				$this->tpl = 'packages/WeppsExtensions/News/NewsItem.tpl';
 				$res = $this->getItem ( "News" );
 				$smarty->assign ( 'element', $res );
