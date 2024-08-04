@@ -838,11 +838,7 @@ class ListsWepps {
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Скрыть','','DisplayOff',4,0,'flag','','','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Приоритет','','Priority',5,0,'int','hidden','','FieldDefault');\n";
 		#$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','GUID',6,0,'guid','','','FieldIntegration');\n";
-		//UtilsWepps::debugf($sql);
 		return $sql;
-		
-		
-		
 	}
 	public static function copyListItem($list="",$id=0,$path="lists") {
 		if ($list=="" || (int) $id == 0) {

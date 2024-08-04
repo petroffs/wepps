@@ -49,7 +49,6 @@ class ConfigExtensionsWepps {
 			$request = array_merge($request,$_REQUEST,array('ext'=>$ext));
 			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['Alias']}\\{$ext['Alias']}Wepps";
 			$extResult = new $extClass ($request);
-			#UtilsWepps::debugf($ext,1);
 			$smarty->assign('ext',$ext);
 			$smarty->assign('extNavSubTpl',$smarty->fetch( __DIR__ . '/' . 'ConfigExtensionsNavSub.tpl'));
 			$smarty->assign('extTpl',$smarty->fetch( __DIR__ . '/' . $ext['Alias'] . '/' . $extResult->tpl));

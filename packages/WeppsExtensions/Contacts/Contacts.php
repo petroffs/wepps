@@ -23,9 +23,6 @@ class ContactsWepps extends ExtensionWepps {
 				}
 				if (isset($tmp['main'])) $smarty->assign('elementsMain',$tmp['main']);
 				if (isset($tmp['second'])) $smarty->assign('elements',$tmp['second']);
-				
-				//UtilsWepps::debugf($tmp,0);
-				
 				break;
 			default:
 				ExceptionWepps::error404();

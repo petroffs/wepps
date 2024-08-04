@@ -17,7 +17,6 @@ class SaveItemConfigFieldsWepps extends RequestWepps {
 	    $this->element = $this->get['element'];
 	    if ($this->listSettings['TableName']=='s_ConfigFields') {
 	        $str = ListsWepps::addListField($this->element['Id'],$this->element['Type']);
-	        //UtilsWepps::debugf($str,1);
 	        if ($str!="") {
 	            ConnectWepps::$instance->query($str);
 	        }

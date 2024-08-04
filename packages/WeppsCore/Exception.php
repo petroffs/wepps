@@ -43,7 +43,7 @@ class ExceptionWepps {
 				$error['line'] = $trace[1]['line'];
 				$error['args'] = @$trace[1]['args'];
 			}
-			UtilsWepps::debugf($error,1);
+			UtilsWepps::debug($error,21);
 		} else {
 			exit();
 		}

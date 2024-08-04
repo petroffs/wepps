@@ -26,7 +26,7 @@ class BotTestWepps extends BotWepps {
 			$hash = md5($list . $field . $id . $prop . $v);
 			$str .= "update s_PropertiesValues set HashValue='{$hash}' where Id='{$value['Id']}';\n";
 		}
-		UtilsWepps::debugf($str);
+		UtilsWepps::debug($str,2);
 	}
 	public function telegram() {
 		/*
@@ -41,7 +41,7 @@ class BotTestWepps extends BotWepps {
 				'text' => 'Hello from Bot (MailWepps)'
 		];
 		$tg = $mail->telegram("sendMessage",$data);
-		UtilsWepps::debugf($tg);
+		UtilsWepps::debug($tg,2);
 	}
 	public function mail() {
 		$mail = new MailWepps("html");
@@ -63,7 +63,7 @@ class BotTestWepps extends BotWepps {
 				]
 		];
 		$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
-		UtilsWepps::debugf($t,1);
+		UtilsWepps::debug($t,21);
 		$obj = new DataWepps("DataTbls");
 		$t = $obj->add([
 				'Name'=>'TEST1',
@@ -82,7 +82,7 @@ class BotTestWepps extends BotWepps {
 						'BTest' => 'test text'
 				]
 				);
-		UtilsWepps::debugf($t,1);
+		UtilsWepps::debug($t,21);
 	}
 	public function cli() {
 		$this->cli->text("simle text");

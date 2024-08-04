@@ -83,7 +83,6 @@ class CdekWepps extends RemoteServicesWepps {
 	    $url = "https://integration.cdek.ru/pvzlist/v1/json?cityid=$city";
 	    $this->cache = 1;
 	    $response = $this->getResponse($url);
-	    //UtilsWepps::debugf($response);
 	    return $response;
 	}
 }
