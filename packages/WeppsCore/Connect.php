@@ -12,6 +12,7 @@ class ConnectWepps {
 	public static $projectDev;
 	public static $projectDB;
 	public static $projectServices;
+	public static $projectData;
 	public $count;
 	private $sth;
 	private function __construct($projectSettings = array()) {
@@ -19,6 +20,7 @@ class ConnectWepps {
 		self::$projectDev = $projectSettings['Dev'];
 		self::$projectDB = $projectSettings['DB'];
 		self::$projectServices = $projectSettings['Services'];
+		self::$projectData = [];
 		try {
 			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']}:{$projectSettings['DB']['port']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
 			#UtilsWepps::debug($connectionString,1);
