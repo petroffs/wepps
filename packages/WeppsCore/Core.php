@@ -31,6 +31,7 @@ class DataWepps {
 	 * Запрос БД, сформированный в get, getMax
 	 */
 	public $sql;
+	private $sqlCounter;
 	/**
 	 * Для полей area обрезать возвращаемые значения в getMax()
 	 * @var integer
@@ -79,7 +80,7 @@ class DataWepps {
 	/**
 	 * Получить набор строк таблицы
 	 */
-	function get($id = NULL, $onPage = "20", $currentPage = "1", $orderBy = "Priority") {
+	function get($id = NULL, $onPage = 20, $currentPage = 1, $orderBy = "Priority") {
 		if ($id == NULL)
 			$id = "Id!=0";
 		$fields = $this->fields;
@@ -89,12 +90,17 @@ class DataWepps {
 			$concat = "," . $concat;
 		}
 		$formatted = $this->_getFormatted ( $id, $onPage, $currentPage, $orderBy );
-		$this->sql = "select SQL_CALC_FOUND_ROWS $fields $concat from {$this->tableName} where {$formatted['id']} {$formatted['orderBy']} {$formatted['limit']}";
+		$this->sql = "select $fields $concat from {$this->tableName} where {$formatted['id']} {$formatted['orderBy']} {$formatted['limit']}";
+		$this->sqlCounter = "select count(*) Co from {$this->tableName} where {$formatted['id']}";
 		$res = ConnectWepps::$instance->fetch ( $this->sql );
-		$paginator = $this->_getPaginator ( $formatted ['onPage'], $formatted ['currentPage'] );
-		$this->paginator = $paginator;
-		$res = LanguageWepps::getRows ( $res, $this->scheme, $this->lang );
-		if (count($res)==0) return array(0=>array());
+		if ($currentPage > 0) {
+			$paginator = $this->_getPaginator($formatted['onPage'], $formatted['currentPage']);
+			$this->paginator = $paginator;
+		}
+		$res = LanguageWepps::getRows($res, $this->scheme, $this->lang);
+		if (count($res)==0) {
+			return [];
+		}
 		return $res;
 	}
 	/**
@@ -105,95 +111,77 @@ class DataWepps {
 	 * @param string $orderBy
 	 * @return array
 	 */
-	public function getMax($id = NULL, $onPage = "20", $currentPage = "1", $orderBy = "t.Priority") {
-		if ($id == NULL)
+	public function getMax($id = NULL, $onPage = 20, $currentPage = 0, $orderBy = "t.Priority") {
+		if ($id == NULL) {
 			$id = "t.Id!=0";
-			$formatted = $this->_getFormatted ( $id, $onPage, $currentPage, $orderBy );
-			if (substr($formatted['id'], 0,2)=='Id') $formatted['id'] = "t.".$formatted['id'];
-			$settings = $this->getScheme ();
-			$fields = $joins = "";
-			$joinCustom = $this->join;
-			$f = 1;
-				
-			foreach ( $settings as $key=>$value ) {
-				$ex = explode ( "::", $value[0] ['Type'], 4 );
-				switch ($ex [0]) {
-					case "file":
-						$fields .= "
-						'f{$f}' as {$key}_Coordinate,
-						group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$key}_FileUrl,
-						";
-						//$joins .= "
-						//left join s_Files as f{$f} on cast(f{$f}.TableNameId as signed) = t.Id and binary f{$f}.TableNameField = '{$key}' and binary f{$f}.TableName = '{$this->tableName}'
-						//";
-						
-						$joins .= "
-						left join s_Files as f{$f} on f{$f}.TableNameId = t.Id and f{$f}.TableNameField = '{$key}' and f{$f}.TableName = '{$this->tableName}'
-						";
-						$f ++;
-						break;
-					case "select":
-					case "remote":
-						$str = "";
-						foreach ( explode ( ",", $ex [2] ) as $v ) {
-							$str .= "s{$f}.{$v} as {$key}_{$v},";
-						}
-						$str = trim ( $str, "," );
-						$fields .= "
-						t.{$key},'s{$f}' as {$key}_Coordinate,$str,
-						";
-						$joins .= "
-						left join {$ex[1]} as s{$f} on s{$f}.Id = t.{$key}
-						";
-						$f ++;
-						break;
-					case "select_multi":
-					case "remote_multi":
-						$fields .= "
-						t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},
-						";
-						$joins .= "
-						left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id
-                            and sk{$f}.DisplayOff=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}'
-						left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1
-						";
-						$formatted['id'] .= "";
-						$f ++;
-						break;
-					case "area":
-						if ($this->truncate!=0) {
-							$fields .= "substr(t.{$key},1,{$this->truncate}) as {$key},";
-						} else {
-							$fields .= "t.{$key},";
-						}
-						break;
-					case "blob":
-						$fields .= "uncompress (t.{$key}) {$key},";
-						break;
-					default :
+		}
+			
+		$formatted = $this->_getFormatted($id,$onPage,$currentPage,$orderBy);
+		if (substr($formatted['id'], 0,2)=='Id') {
+			$formatted['id'] = "t.".$formatted['id'];
+		}
+		$settings = $this->getScheme ();
+		$fields = $joins = "";
+		$joinCustom = $this->join;
+		$f = 1;
+			
+		foreach ($settings as $key=>$value) {
+			$ex = explode ("::", $value[0]['Type'],4);
+			switch ($ex [0]) {
+				case "file":
+					$fields .= "'f{$f}' as {$key}_Coordinate,group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$key}_FileUrl,\n";
+					$joins .= "left join s_Files as f{$f} on f{$f}.TableNameId = t.Id and f{$f}.TableNameField = '{$key}' and f{$f}.TableName = '{$this->tableName}'\n";
+					$f ++;
+					break;
+				case "select":
+				case "remote":
+					$str = "";
+					foreach ( explode ( ",", $ex [2] ) as $v ) {
+						$str .= "s{$f}.{$v} as {$key}_{$v},";
+					}
+					$str = trim ( $str, "," );
+					$fields .= "t.{$key},'s{$f}' as {$key}_Coordinate,$str,\n";
+					$joins .= "left join {$ex[1]} as s{$f} on s{$f}.Id = t.{$key}\n";
+					$f ++;
+					break;
+				case "select_multi":
+				case "remote_multi":
+					$fields .= "t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},\n";
+					$joins .= "left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id and sk{$f}.DisplayOff=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}' left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1\n";
+					$formatted['id'] .= "";
+					$f ++;
+					break;
+				case "area":
+					if ($this->truncate!=0) {
+						$fields .= "substr(t.{$key},1,{$this->truncate}) as {$key},";
+					} else {
 						$fields .= "t.{$key},";
-						break;
-				}
+					}
+					break;
+				case "blob":
+					$fields .= "uncompress (t.{$key}) {$key},";
+					break;
+				default :
+					$fields .= "t.{$key},";
+					break;
 			}
-			$fields = trim ( trim($fields), "," );
-			$concat = $this->concat;
-			if ($concat != '') {
-				$concat = "," . $concat;
-			}
-			$group = ($this->group=='') ? 't.Id' : $this->group;
-			$having = (!empty($this->having)) ? "having {$this->having}" : '';
-			$sql = "select SQL_CALC_FOUND_ROWS
-			$fields $concat
-			from {$this->tableName} as t
-			$joins $joinCustom
-			where {$formatted['id']}
-			group by $group $having {$formatted['orderBy']} {$formatted['limit']}";
-			$this->sql = $sql;
-			$res = ConnectWepps::$instance->fetch ( $this->sql );
-			$paginator = $this->_getPaginator ( $formatted ['onPage'], $formatted ['currentPage'] );
+		}
+		$fields = trim ( trim($fields), "," );
+		$concat = $this->concat;
+		if ($concat != '') {
+			$concat = "," . $concat;
+		}
+		$group = ($this->group=='') ? 't.Id' : $this->group;
+		$having = (!empty($this->having)) ? "having {$this->having}" : '';
+		$this->sql = "select $fields $concat from {$this->tableName} as t $joins $joinCustom where {$formatted['id']} group by $group $having {$formatted['orderBy']} {$formatted['limit']}";
+		$this->sqlCounter = "select count(z.Id) Co from (select t.Id from {$this->tableName} as t $joins $joinCustom where {$formatted['id']} group by $group) z";
+		$res = ConnectWepps::$instance->fetch ( $this->sql );
+		if ($currentPage > 0) {
+			$paginator = $this->_getPaginator($formatted['onPage'],$formatted['currentPage']);
 			$this->paginator = $paginator;
-			$res = LanguageWepps::getRows($res, $this->scheme, $this->lang);
-			return $res;
+		}
+		$res = LanguageWepps::getRows($res, $this->scheme, $this->lang);
+		return $res;
 	}
 	/**
 	 * Вспомогательная функция для обработки исходных переменных
@@ -230,23 +218,39 @@ class DataWepps {
 	 */
 	private function _getPaginator($onPage, $currentPage) {
 		$currentPage = ($currentPage <= 0) ? 1 : $currentPage;
-		$res = ConnectWepps::$instance->fetch ( "SELECT FOUND_ROWS() as Co" );
-		$dataPages = ceil ( $res [0] ['Co'] / $onPage );
-		$this->count = $res [0] ['Co'];
+		$this->count = 0;
+		$dataPages = 1;
+		if (!empty($this->sqlCounter)) {
+			$res = ConnectWepps::$instance->fetch ($this->sqlCounter);
+		} else {
+			return [];
+			$res = ConnectWepps::$instance->fetch ( "SELECT FOUND_ROWS() as Co" );
+		}
+		#UtilsWepps::debug($this->sqlCounter,1);
+		if (!empty($res[0]['Co'])) {
+			$dataPages = ceil($res[0]['Co'] / $onPage );
+			$this->count = $res[0]['Co'];
+		}
 		$arr = array ();
-		$arr ['current'] = $currentPage;
-		for($i = 1; $i <= $dataPages; $i ++)
-			$arr ['pages'] [$i] = $i;
-		if ($currentPage < $dataPages)
-			$arr ['next'] = $currentPage + 1;
-		if ($currentPage > 1)
-			$arr ['prev'] = $currentPage - 1;
-		if (isset($arr ['next']) && $dataPages < $arr ['next'])
-			unset ( $arr ['next'] );
-		if (isset($arr ['prev']) && $dataPages < $arr ['prev'])
-			$arr ['prev'] = $dataPages;
-		if ($dataPages == 1)
-			return array ();
+		$arr['current']=$currentPage;
+		for($i=1;$i<=$dataPages;$i++) {
+			$arr['pages'][$i]=$i;
+		}
+		if ($currentPage < $dataPages) {
+			$arr['next'] = $currentPage + 1;
+		}
+		if ($currentPage > 1) {
+			$arr['prev'] = $currentPage - 1;
+		}
+		if (isset($arr['next']) && $dataPages < $arr['next']) {
+			unset($arr['next']);
+		}
+		if (isset($arr['prev']) && $dataPages < $arr['prev']) {
+				$arr['prev'] = $dataPages;
+		}
+		if ($dataPages == 1) {
+			return [];
+		}
 		return $arr;
 	}
 	/**
