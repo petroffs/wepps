@@ -65,7 +65,9 @@ class DataWepps {
 	/**
 	 * Включить having в sql
 	 */
-	private $having='';
+	private $having = '';
+
+	private $params = [];
 	
 	/**
 	 * 
@@ -115,7 +117,6 @@ class DataWepps {
 		if ($id == NULL) {
 			$id = "t.Id!=0";
 		}
-			
 		$formatted = $this->_getFormatted($id,$onPage,$currentPage,$orderBy);
 		if (substr($formatted['id'], 0,2)=='Id') {
 			$formatted['id'] = "t.".$formatted['id'];
@@ -124,7 +125,6 @@ class DataWepps {
 		$fields = $joins = "";
 		$joinCustom = $this->join;
 		$f = 1;
-			
 		foreach ($settings as $key=>$value) {
 			$ex = explode ("::", $value[0]['Type'],4);
 			switch ($ex [0]) {
@@ -175,7 +175,7 @@ class DataWepps {
 		$having = (!empty($this->having)) ? "having {$this->having}" : '';
 		$this->sql = "select $fields $concat from {$this->tableName} as t $joins $joinCustom where {$formatted['id']} group by $group $having {$formatted['orderBy']} {$formatted['limit']}";
 		$this->sqlCounter = "select count(z.Id) Co from (select t.Id from {$this->tableName} as t $joins $joinCustom where {$formatted['id']} group by $group) z";
-		$res = ConnectWepps::$instance->fetch ( $this->sql );
+		$res = ConnectWepps::$instance->fetch($this->sql,$this->params);
 		if ($currentPage > 0) {
 			$paginator = $this->_getPaginator($formatted['onPage'],$formatted['currentPage']);
 			$this->paginator = $paginator;
@@ -221,7 +221,7 @@ class DataWepps {
 		$this->count = 0;
 		$dataPages = 1;
 		if (!empty($this->sqlCounter)) {
-			$res = ConnectWepps::$instance->fetch ($this->sqlCounter);
+			$res = ConnectWepps::$instance->fetch($this->sqlCounter,$this->params);
 		} else {
 			return [];
 			$res = ConnectWepps::$instance->fetch ( "SELECT FOUND_ROWS() as Co" );
@@ -305,6 +305,11 @@ class DataWepps {
 	 */
 	public function setJoin($value) {
 		$this->join = $value;
+	}
+	
+	public function setParams(array $params) : bool {
+		$this->params = $params;
+		return true;
 	}
 	
 	/**

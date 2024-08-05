@@ -52,8 +52,11 @@ class BotTestWepps extends BotWepps {
 	}
 	public function testDB() {
 		$obj = new DataWepps("Products");
-		$res = $obj->get("DisplayOff=0",5,2);
-		UtilsWepps::debug($obj->paginator,21);
+		$obj->setParams([
+				'Брюки Armani Junior'
+		]);
+		$res = $obj->getMax("t.DisplayOff=0 and t.Name = ?",5,1);
+		UtilsWepps::debug($res,21);
 		exit();
 		$row = [
 				'Name' => 'TEST1',
