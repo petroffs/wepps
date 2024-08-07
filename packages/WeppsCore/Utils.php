@@ -356,18 +356,20 @@ abstract class RequestWepps {
 	 * Инициализация $smarty
 	 * @var \Smarty
 	 */
-	private $smarty;
+	#private $smarty;
+	
 	/**
 	 * Подключение шаблона, который передается в общий шаблон self::$tpl
 	 * @var array
 	 */
-	private $fetch = array();
+	private $fetch = [];
 	
 	/**
 	 * Закрытие соединения с БД
 	 */
 	public $noclose = 0;
 	
+	public $errors = [];
 	
 	public function __construct(array $settings=[]) {
 		$this->get = UtilsWepps::trim ($settings);
