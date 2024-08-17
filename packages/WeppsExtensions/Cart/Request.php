@@ -272,10 +272,10 @@ class RequestCartWepps extends RequestWepps {
 				/**
 				 * Проверка данных, индикация ошибок
 				 */
-				$errors = array ();
-				$errors ['address'] = ValidatorWepps::isNotEmpty ( $this->get ['address'], "Не заполнено" );
-				$errors ['addressIndex'] = ValidatorWepps::isNotEmpty ( $this->get ['addressIndex'], "Не заполнено" );
-				$outer = ValidatorWepps::setFormErrorsIndicate ( $errors, $this->get ['form'] );
+				$this->errors = array ();
+				$this->errors ['address'] = ValidatorWepps::isNotEmpty ( $this->get ['address'], "Не заполнено" );
+				$this->errors ['addressIndex'] = ValidatorWepps::isNotEmpty ( $this->get ['addressIndex'], "Не заполнено" );
+				$outer = ValidatorWepps::setFormErrorsIndicate ( $this->errors, $this->get ['form'] );
 				echo $outer ['Out'];
 				if ($outer ['Co'] == 0) {
 					/**

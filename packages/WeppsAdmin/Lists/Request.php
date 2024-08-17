@@ -151,11 +151,11 @@ class RequestListsWepps extends RequestWepps {
 				 */
 				$obj = new DataWepps($this->get['pps_tablename']);
 				$listScheme = $obj->getScheme();
-				$errors = array();
+				$this->errors = [];
 				foreach ($listScheme as $key=>$value) {
 					if ($value[0][$this->get['pps_tablename_mode']]!='disabled' && $value[0][$this->get['pps_tablename_mode']]!='hidden') {
 						if ($value[0]['Required']==1) {
-							$errors[$key] = ValidatorWepps::isNotEmpty($this->get[$key], "Не заполнено");
+							$this->errors[$key] = ValidatorWepps::isNotEmpty($this->get[$key], "Не заполнено");
 						}
 					}
 				}
@@ -170,13 +170,13 @@ class RequestListsWepps extends RequestWepps {
 			                ";
 					$lisetSchemeReal = ConnectWepps::$instance->fetch($sql);
 					if (isset($listSchemeReal[0]['Col']) && $listSchemeReal[0]['Col']==$this->get['Field']) {
-						$errors['Field'] = "Уже используется";
+						$this->errors['Field'] = "Уже используется";
 					}
 				}
 				/*
 				 * Индикация ошибок
 				 */
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					/*

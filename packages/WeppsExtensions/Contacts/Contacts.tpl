@@ -56,8 +56,7 @@
 				class="pps_flex_11 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
 				<div class="pps_flex_11">		
 					<span class="title pps_require">Ваше имя</span>
-					<label class="pps pps_input"> <input type="text" name="name"
-						placeholder="" />
+					<label class="pps pps_input"><input type="text" name="name" placeholder="" />
 					</label>
 				</div>
 				<div class="pps_flex_11">

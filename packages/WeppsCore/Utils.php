@@ -369,6 +369,9 @@ abstract class RequestWepps {
 	 */
 	public $noclose = 0;
 	
+	/**
+	 * Ошибки входных данных
+	 */
 	public $errors = [];
 	
 	public function __construct(array $settings=[]) {

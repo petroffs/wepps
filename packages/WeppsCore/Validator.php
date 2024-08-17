@@ -13,7 +13,7 @@ class ValidatorWepps {
 	public static function isNotEmpty($variable,$errorMessage) {
 		$tmp = '';
 		if (is_array($variable)) {
-			foreach ($variable as $key =>$value) {
+			foreach ($variable as $value) {
 				$value = trim($value);
 				if (!empty($value)) return $tmp;
 			}
@@ -147,35 +147,31 @@ class ValidatorWepps {
 	        if ($value!="") {
 	            $errorCount++;
 	            $str .= "
-                var elem = $('#{$form}').find('[name=\"{$key}\"]');
+				var elem = $('#{$form}').find('[name=\"{$key}\"]');
                 if (elem.length==0) {
                     var elem = $('#{$form}').find('[name=\"{$key}[]\"]');
                 }
 				if (elem.length!=0) {
-				elem.closest('label').addClass('pps_error_parent');
-				var t = $('<div>{$value}</div>').addClass('mess_{$key}').addClass('pps_error');
-				elem.eq(0).before(t);
-				t.on('click',function(event) {
-					$(this).closest('label').removeClass('pps_error_parent');
-					$(this).remove();
-				});
-			}
-			";
+					elem.closest('label').addClass('pps_error_parent');
+					var t = $('<div>{$value}</div>').addClass('pps_error_{$key}').addClass('pps_error');
+					elem.eq(0).before(t);
+					t.on('click',function(event) {
+						$(this).closest('label').removeClass('pps_error_parent');
+						$(this).remove();
+					});
+				}\n";
 	        } else {
-	            $str .= "
-				$('#mess_{$key}').trigger('click');
-				";
+	            $str .= "$('.pps_error_{$key}').trigger('click');";
 	        }
-	        
 	    }
 	    $str .= "
 				$('.pps_error_parent').children().on('focus',function() {
                     var attr = $(this).attr('name').replace('[]','');
-					$('.mess_'+attr).trigger('click');
+					$('.pps_error_'+attr).trigger('click');
 				});
 				$('.pps_error_parent').children('input').on('change',function() {
                     var attr = $(this).attr('name').replace('[]','');
-					$('.mess_'+attr).trigger('click');
+					$('.pps_error_'+attr).trigger('click');
 				});
 		";
 	    $str .= "</script>";

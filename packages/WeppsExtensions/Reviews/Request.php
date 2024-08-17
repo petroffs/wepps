@@ -18,21 +18,17 @@ class RequestReviewsWepps extends RequestWepps {
 		
 		switch ($action) {
 			case 'add':
-				
-				/**
+				/*
 				 * Проверка формы
 				 */
-				$errors = array();
-				$errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
-				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверно заполнено");
-				$errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
-				
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$this->errors = array();
+				$this->errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
+				$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверно заполнено");
+				$this->errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				$this->assign('jscode', $outer['Out']);
-				
 				if ($outer['Co']==0) {
-					
-					/**
+					/*
 					 * Добавление отзыва
 					 */
 					$row = array();
@@ -45,15 +41,12 @@ class RequestReviewsWepps extends RequestWepps {
 					$row['RRating'] = $this->get['rate'];
 					$row['RDate'] = date("Y-m-d H:i:s");
 					ConnectWepps::$instance->insert("Reviews", $row);
-					
-					/**
+					/*
 					 * Вывод сообщения о добавлении отзыва
 					 */
 					$arr = ValidatorWepps::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);
 					$this->assign('jscode', $arr['Out']);
 				}
-				
-				
 				$this->tpl = "RequestReviewsAdd.tpl";
 				break;
 			default:

@@ -23,17 +23,17 @@ class RequestUserWepps extends RequestWepps {
 		$dateCurr = date("Y-m-d H:i:s");
 		switch ($action) {
 			case 'getAuth' :
-				$errors = array();
-				$errors['email'] = ValidatorWepps::isNotEmpty($this->get['email'], "Не заполнено");
-				$errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$this->errors = array();
+				$this->errors['email'] = ValidatorWepps::isNotEmpty($this->get['email'], "Не заполнено");
+				$this->errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					$user = UserWepps::getAuth($this->get['email'],$this->get['pass']);
 					if (count($user)==0) {
-						$errors = array();
-						$errors['email'] = "Ошибка входа";
-						$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+						$this->errors = array();
+						$this->errors['email'] = "Ошибка входа";
+						$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 						echo $outer['Out'];
 						ConnectWepps::$instance->close();
 					}
@@ -47,19 +47,19 @@ class RequestUserWepps extends RequestWepps {
 				ConnectWepps::$instance->close();				
 				break;
 			case 'addUser' :
-				$errors = array();
-				$errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
-				$errors['surname'] = ValidatorWepps::isNotEmpty($this->get['surname'], "Не заполнено");
-				//$errors['patronymic'] = ValidatorWepps::isNotEmpty($this->get['patronymic'], "Не заполнено");
-				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Не заполнено");
-				$errors['phone'] = ValidatorWepps::isNotEmpty($this->get['phone'], "Не заполнено");
-				if ($errors['email']=='') {
+				$this->errors = array();
+				$this->errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
+				$this->errors['surname'] = ValidatorWepps::isNotEmpty($this->get['surname'], "Не заполнено");
+				//$this->errors['patronymic'] = ValidatorWepps::isNotEmpty($this->get['patronymic'], "Не заполнено");
+				$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Не заполнено");
+				$this->errors['phone'] = ValidatorWepps::isNotEmpty($this->get['phone'], "Не заполнено");
+				if ($this->errors['email']=='') {
 					$res = $users->get("Email='{$this->get['email']}'")[0];
-					if (count($res)!=0) $errors['email'] = "E-mail уже существует";
+					if (count($res)!=0) $this->errors['email'] = "E-mail уже существует";
 				}
 				$phone = UtilsWepps::phone($this->get['phone']);
-				if ($errors['phone']=='' && !isset($phone['view2'])) {
-					$errors['phone'] = "Неверный формат";
+				if ($this->errors['phone']=='' && !isset($phone['view2'])) {
+					$this->errors['phone'] = "Неверный формат";
 				}
 				
 				if (isset($phone['view2'])) {
@@ -68,7 +68,7 @@ class RequestUserWepps extends RequestWepps {
 					 */
 					$res = ConnectWepps::$instance->fetch("select count(*) as Co from s_Users where Phone='".$phone['view2']."'");
 					if ($res[0]['Co']!=0) {
-						$errors['phone'] = "Уже используется";
+						$this->errors['phone'] = "Уже используется";
 					}
 				}
 				
@@ -77,18 +77,18 @@ class RequestUserWepps extends RequestWepps {
 					/**
 					 * Проверка введенного пароля
 					 */
-					$errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
-					$errors['pass2'] = ValidatorWepps::isNotEmpty($this->get['pass2'], "Не заполнено");
-					if ($errors['pass']=="" && $errors['pass2']=="") {
+					$this->errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
+					$this->errors['pass2'] = ValidatorWepps::isNotEmpty($this->get['pass2'], "Не заполнено");
+					if ($this->errors['pass']=="" && $this->errors['pass2']=="") {
 						if (strlen($this->get['pass'])<5) {
-							$errors['pass'] = "Длина пароля от 6 символов";
+							$this->errors['pass'] = "Длина пароля от 6 символов";
 						} elseif ($this->get['pass']!=$this->get['pass2']) {
-							$errors['pass2'] = "Пароли не совпадают";
+							$this->errors['pass2'] = "Пароли не совпадают";
 						}
 					}
 					$password = $this->get['pass'];
 				}
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					
@@ -159,18 +159,18 @@ class RequestUserWepps extends RequestWepps {
 				ConnectWepps::$instance->close();
 				break;
 			case "setPassback":
-				$errors = array();
-				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
-				if ($errors['email']=='') {
+				$this->errors = array();
+				$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
+				if ($this->errors['email']=='') {
 					$user = $users->get("Email='{$this->get['email']}'")[0];
-					if (!isset($user['Id'])) $errors['email'] = "E-mail не найден";
+					if (!isset($user['Id'])) $this->errors['email'] = "E-mail не найден";
 				}
 				
 				$recapcha = UserWepps::getRecapcha($this->get['g-recaptcha-response']);
 				if ($recapcha->success!=1) {
-					$errors['capchadub'] = 'Код неверный, обновите страницу';
+					$this->errors['capchadub'] = 'Код неверный, обновите страницу';
 				}
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					/**
@@ -207,15 +207,15 @@ class RequestUserWepps extends RequestWepps {
 				break;
 			case 'setUser':
 				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404();
-				$errors = array();
-				$errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Неверное значение");
-				$errors['surname'] = ValidatorWepps::isNotEmpty($this->get['surname'], "Неверное значение");
+				$this->errors = array();
+				$this->errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Неверное значение");
+				$this->errors['surname'] = ValidatorWepps::isNotEmpty($this->get['surname'], "Неверное значение");
 				$obj = new DataWepps("GeoCities");
 				$city = $obj->get("Name='{$this->get['city']}'")[0];
 				if (!isset($city['Id'])) {
-					$errors['city'] = 'Неверное значение';
+					$this->errors['city'] = 'Неверное значение';
 				}
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					$row = array();
@@ -240,16 +240,16 @@ class RequestUserWepps extends RequestWepps {
 				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404();
 				$user = $users->get($_SESSION['user']['Id'])[0];
 				if (!isset($user['Id'])) ExceptionWepps::error404();
-				$errors = array();
+				$this->errors = array();
 				switch ($this->get ['form']) {
 					case 'emailForm' :
-						$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
-						if ($errors['email']=='' && $this->get['email'] == $user['Email']) {
-							//$errors['email'] = 'E-mail не изменен';
-						} elseif ($errors['email']=='') {
+						$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
+						if ($this->errors['email']=='' && $this->get['email'] == $user['Email']) {
+							//$this->errors['email'] = 'E-mail не изменен';
+						} elseif ($this->errors['email']=='') {
 							$usertest = $users->get("Email='{$this->get['email']}'")[0];
 							if (isset($usertest['Id'])) {
-								$errors['email'] = "E-mail занят";
+								$this->errors['email'] = "E-mail занят";
 							}
 						}
 						
@@ -257,7 +257,7 @@ class RequestUserWepps extends RequestWepps {
 						
 						//UtilsWepps::debug($this->get,1);
 						
-						if ($errors['email']=='' && $this->get['code']=='') {
+						if ($this->errors['email']=='' && $this->get['code']=='') {
 							
 							$_SESSION['userAddons']['EmailCode'] = rand(10000,99909);
 							$mess = "";
@@ -287,11 +287,11 @@ class RequestUserWepps extends RequestWepps {
 						}
 						
 						if (isset($this->get['code']) && $_SESSION['userAddons']['EmailCode']!=$this->get['code']) {
-							$errors['code'] = 'Ошибка';
-							$errors['email'] = 'Ошибка';
+							$this->errors['code'] = 'Ошибка';
+							$this->errors['email'] = 'Ошибка';
 						}
 						
-						if ($errors['email']=='') {
+						if ($this->errors['email']=='') {
 							$row = array();
 							$row['FieldChange'] = "Email:".$this->get['email'];
 							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserWepps::addPassword());
@@ -300,11 +300,11 @@ class RequestUserWepps extends RequestWepps {
 						break;
 					case 'phoneForm' :
 						$phone = UtilsWepps::phone($this->get['phone']);
-						$errors['phone'] = '';
-						if ($errors['phone']=='' && !isset($phone['view2'])) {
-							$errors['phone'] = "Неверный формат";
+						$this->errors['phone'] = '';
+						if ($this->errors['phone']=='' && !isset($phone['view2'])) {
+							$this->errors['phone'] = "Неверный формат";
 						}
-						if ($errors['phone']=='') {
+						if ($this->errors['phone']=='') {
 							$row = array();
 							$row['FieldChange'] = "Phone:".$phone['view2'];
 							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserWepps::addPassword());
@@ -312,17 +312,17 @@ class RequestUserWepps extends RequestWepps {
 						}
 						break;
 					case 'passForm' :
-						$errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
-						$errors['pass2'] = ValidatorWepps::isNotEmpty($this->get['pass2'], "Не заполнено");
-						if ($errors['pass']=="" && $errors['pass2']=="") {
+						$this->errors['pass'] = ValidatorWepps::isNotEmpty($this->get['pass'], "Не заполнено");
+						$this->errors['pass2'] = ValidatorWepps::isNotEmpty($this->get['pass2'], "Не заполнено");
+						if ($this->errors['pass']=="" && $this->errors['pass2']=="") {
 							if (strlen($this->get['pass'])<5) {
-								$errors['pass'] = "Длина пароля от 6 символов";
+								$this->errors['pass'] = "Длина пароля от 6 символов";
 							} elseif ($this->get['pass']!=$this->get['pass2']) {
-								$errors['pass2'] = "Пароли не совпадают";
+								$this->errors['pass2'] = "Пароли не совпадают";
 							}
 						}
 						
-						if ($errors['pass']=='') {
+						if ($this->errors['pass']=='') {
 							$row = array();
 							$row['FieldChange'] = "Password:".$this->get['pass'];
 							$row['FieldChangeKey'] = strtoupper(rand(10000,99999) . UserWepps::addPassword());
@@ -335,7 +335,7 @@ class RequestUserWepps extends RequestWepps {
 						break;
 				}
 				
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['Out'];
 				if ($outer['Co']==0) {
 					$mess = "";

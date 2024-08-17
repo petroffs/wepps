@@ -23,18 +23,18 @@ class RequestContactsWepps extends RequestWepps {
 				/*
 				 * Проверка формы
 				 */
-				$errors = array();
-				$errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
-				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверно заполнено");
-				$errors['phone'] = ValidatorWepps::isNotEmpty($this->get['phone'], "Не заполнено");
-				$errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
+				$this->errors = [];
+				$this->errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
+				$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверно заполнено");
+				$this->errors['phone'] = ValidatorWepps::isNotEmpty($this->get['phone'], "Не заполнено");
+				$this->errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
 				if ($this->get['phone']!='') {
 					$phone = UtilsWepps::phone($this->get['phone']);
 					if (!isset($phone['view2'])) {
-						$errors['phone'] = "Неверный формат";
+						$this->errors['phone'] = "Неверный формат";
 					}
 				}
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $this->get['form']);
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
 				$this->assign('jscode', $outer['Out']);
 				if ($outer['Co']==0) {
 					/*
@@ -57,7 +57,6 @@ class RequestContactsWepps extends RequestWepps {
 					}
 					$mail = new MailWepps();
 					$mail->setAttach($attachment);
-					//UtilsWepps::debug($attachment,1);
 					$mail->mail(ConnectWepps::$projectInfo['email'], $subject, $message);
 					
 					/*

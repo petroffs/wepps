@@ -620,36 +620,33 @@ class ListsWepps {
 		
 		$sql = "delete from s_Files where InnerName=''";
 		ConnectWepps::$instance->query($sql);
-		
 		//self::uploadRemove($filesfield);
-		foreach ($myFiles as $key=>$value) {
-			// 			if (!stristr($value['name'],"jpg") && !stristr($value['name'],"jpeg") && !stristr($value['name'],"png")) {
-			// 				$errors[$filesfield] = "Неверный тип файла ".$value['name'];
-			// 				$outer = $this->setFormErrorsIndicate($errors,$myform);
-			// 				return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
-			// 			}
+		foreach ($myFiles as $value) {
+			/*if (!stristr($value['name'],"jpg") && !stristr($value['name'],"jpeg") && !stristr($value['name'],"png")) {
+				$errors[$filesfield] = "Неверный тип файла ".$value['name'];
+				$outer = $this->setFormErrorsIndicate($errors,$myform);
+				return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
+			} */
 			if ((int)$value['size']>50000000) {
 				/**
 				 * 1 мегабайт = 1 000 000 байт
 				 */
 				$errors[$filesfield] = "Слишком большой файл";
 				$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
-				return array('error'=>$error[$filesfield],'js'=>$outer['Out']);
+				return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
 			}
-			
 			
 			$filepathinfo = pathinfo($value['name']);
 			$filepathinfo['filename'] = strtolower(SpellWepps::getTranslit($filepathinfo['filename'],2));
 			$fileurl = "/packages/WeppsAdmin/Admin/Forms/uploads/{$filepathinfo['filename']}-".date("U").".{$filepathinfo['extension']}";
 			$filedest = "{$root}{$fileurl}";
 			move_uploaded_file($value['tmp_name'],$filedest);
-			
 			if (!isset($_SESSION['uploads'][$myform][$filesfield])) {
 				$_SESSION['uploads'][$myform][$filesfield] = array();
 			}
 			$_SESSION['uploads'][$myform][$filesfield][] = array('path'=>$filedest,'title'=>$value['name'],'url'=>$fileurl,'type'=>$value['type'],'size'=>$value['size']);
-			//$_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
-			//$co = count($_SESSION['uploads'][$myform][$filesfield])-1;
+			/* $_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
+			$co = count($_SESSION['uploads'][$myform][$filesfield])-1; */
 			$js .= "
 					$('input[name=\"{$filesfield}\"]').parent().parent().append($('<p class=\"fileadd pps_flex_13\">{$value['name']} <a href=\"\" class=\"file-remove\" rel=\"{$fileurl}\"><i class=\"fa fa-remove\"></i></a></p>'));
 			";

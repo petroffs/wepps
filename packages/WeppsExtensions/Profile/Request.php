@@ -20,9 +20,9 @@ class RequestProfileWepps extends RequestWepps {
 		switch ($action) {
 			case 'setSettingsEmail':
 				if (!isset($_SESSION['user']['Id'])) ExceptionWepps::error404();
-				$errors = array();
-				$errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
-				if ($errors['email']!='')  ExceptionWepps::error404();
+				$this->errors = array();
+				$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверное значение");
+				if ($this->errors['email']!='')  ExceptionWepps::error404();
 				$_SESSION['userAddons']['EmailCode'] = rand(10000,99909);
 				$mess = "";
 				$mess .= "дата: ".date("d.m.Y")." время: ".date("H:i")."\n\n";
