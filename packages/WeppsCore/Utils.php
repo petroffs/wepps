@@ -147,7 +147,7 @@ class UtilsWepps {
 			return [];
 		}
 		foreach ($row as $key => $value ) {
-			$value = trim(self::_getQueryFormatted(str_replace(["&gt;","&lt;","&quot;"],[">","<","\""],$value)));
+			$value = self::trim(str_replace(["&gt;","&lt;","&quot;"],[">","<","\""],$value));
 			$value1 = (empty($value)) ? "null" : "'{$value}'";
 			if (strstr($key,'@')) {
 				$key = str_replace('@', '', $key);
