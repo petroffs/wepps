@@ -73,6 +73,10 @@ class BotWepps {
 				$obj = new BotTestWepps();
 				$obj->cli();
 				break;
+			case "passtest":
+				$obj = new BotTestWepps();
+				$obj->password();
+				break;
 			default:
 				echo "\nERROR\n";
 				exit();

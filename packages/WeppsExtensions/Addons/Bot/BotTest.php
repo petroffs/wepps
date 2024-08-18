@@ -96,5 +96,21 @@ class BotTestWepps extends BotWepps {
 		$this->cli->warning("warning text");
 		$this->cli->error("error text");
 	}
+	public function password() {
+		$password = "1541";
+		$hash = password_hash($password,PASSWORD_BCRYPT);
+		$this->cli->info($hash);
+		exit();
+		#$password2 = "556";
+		#$hash = password_hash($password2,PASSWORD_BCRYPT);
+		if (password_verify($password,$hash)) {
+			#UtilsWepps::debug('ok',31);
+			$this->cli->success('ok');
+			exit();
+		}
+		#UtilsWepps::debug('fail',31);
+		$this->cli->error('fail');
+		exit();
+	}
 }
 ?>

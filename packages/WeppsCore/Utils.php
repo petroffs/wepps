@@ -8,6 +8,7 @@ use WeppsCore\Spell\SpellWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use WeppsExtensions\Addons\Jwt\JwtWepps;
 
 /**
  * Утилиты
@@ -225,27 +226,30 @@ class UtilsWepps {
 	
 	public static function modal(string $message='') {
 		$js = "
-                    <script>
-                    $('#dialog').html('<p>{$message}</p>').dialog({
-        				'title':'Сообщение',
-        				'modal': true,
-        				'buttons' : [
+			<script>
+				let dialogWidth = (window.screen.width<400) ? '90%' : 400;
+				$('#dialog').html('<p>{$message}</p>').dialog({
+					title:'Сообщение',
+					modal: true,
+					resizable: false,
+      				width: dialogWidth,
+   					buttons : [
 						{
-        					text : 'ОК',
-        					icon : 'ui-icon-check',
-        					click : function() {
-        						$(this).dialog('close');
-        					}
-        				},{
-        					text : 'Обновить',
-        					icon : 'ui-icon-refresh',
-        					click : function() {
-                                location.reload();
-        					}
+							text : 'ОК',
+							icon : 'ui-icon-check',
+							click : function() {
+								$(this).dialog('close');
+							}
+						},{
+							text : 'Обновить',
+							icon : 'ui-icon-refresh',
+							click : function() {
+								location.reload();
+							}
 						}]
-        			});
-                    </script>
-                    ";
+				});
+			</script>
+		";
 		echo $js;
 		ConnectWepps::$instance->close();
 	}
@@ -728,4 +732,98 @@ class CliWepps {
 		return $text;
 	}
 }
-?>
+
+class UsersWepps {
+	private $token = '';
+	private $get = [];
+	private $errors = [];
+	public function __construct(array $settings = []) {
+		$this->get = $settings;
+	}
+	public function signIn() : bool {
+		$sql = "select * from s_Users where Login=? and ShowAdmin=1 and UserBlock=0";
+		$res = ConnectWepps::$instance->fetch($sql,[$this->get['login']]);
+		$this->errors = [];
+		if (empty($res[0]['Id'])) {
+			$this->errors['login'] = 'Неверный логин';
+		} elseif (!password_verify($this->get['password'],$res[0]['Password'])) {
+			$this->errors['password'] = 'Неверный пароль';
+		}
+		if (!empty($this->errors)) {
+			return false;
+		}
+		$lifetime = 3600*24*180;
+		$jwt = new JwtWepps();
+		$token = $jwt->token_encode([
+				'typ'=>'auth',
+				'id'=>$res[0]['Id']
+		],$lifetime);
+		#setcookie('wepps_token', $token, time() + $lifetime,'/',ConnectWepps::$projectDev['host'],true,true);
+		setcookie('wepps_token', $token, [
+				'expires' => time() + $lifetime,
+				'path' => '/',
+				'domain' => ConnectWepps::$projectDev['host'],
+				'secure' => true,
+				'httponly' => true,
+				'samesite' => 'Strict',
+		]);
+		ConnectWepps::$instance->query("update s_Users set AuthDate=?,MyIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
+		return true;
+	}
+	public function errors() {
+		return $this->errors;
+	}
+	public function getAuth() : bool {
+		$allheaders = UtilsWepps::getAllheaders();
+		$token = '';
+		if (!empty($allheaders['authorization'])) {
+			$token = str_replace('Bearer ', '', $allheaders['authorization']);
+		}
+		$token = (empty($token) && !empty($_COOKIE['wepps_token'])) ? @$_COOKIE['wepps_token'] : $token;
+		if (empty($token)) {
+			return false;
+		}
+		$jwt = new JwtWepps();
+		$data = $jwt->token_decode($token);
+		if (@$data['payload']['typ']!='auth' || empty($data['payload']['id'])) {
+			setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
+			return false;
+		}
+		$sql = "select * from s_Users where Id=? and UserBlock=0";
+		$res = ConnectWepps::$instance->fetch($sql,[$data['payload']['id']]);
+		ConnectWepps::$projectData['user'] = $res[0];
+		return true;
+	}
+	public function removeAuth() : bool {
+		if (empty(ConnectWepps::$projectData['user'])) {
+			return false;
+		}
+		setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
+		return true;
+	}
+	public function password() : string {
+		$letters = ['a','o','u','i','e','y','A','U','I','E','Y','w','r','t','k','m','n','b','h','d','s','W','R','T','K','M','N','B','H','D','S'];
+		$symbols = ['.','$','-','!'];
+		$arr = [];
+		for ($i=1;$i<=8;$i++) {
+			$arr[] = $letters[rand(0,count($letters)-1)];
+		}
+		$arr[] = rand(1,9);
+		$arr[] = rand(1,9);
+		$arr[] = $symbols[rand(0,count($symbols)-1)];
+		shuffle($arr);
+		return implode('', $arr);
+	}
+}
+
+if (!function_exists('getallheaders')) {
+	function getallheaders() {
+		$headers = [];
+		foreach ($_SERVER as $name => $value) {
+			if (substr($name, 0, 5) == 'HTTP_') {
+				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+			}
+		}
+		return $headers;
+	}
+}

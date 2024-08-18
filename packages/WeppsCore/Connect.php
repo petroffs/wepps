@@ -56,15 +56,15 @@ class ConnectWepps {
 			ExceptionWepps::logMessage( $e );
 		}
 	}
-	public function query($sql,$params=[]) {
+	public function query(string $sql,array $params=[]) {
 		$this->count++;
 		try {
 			if (empty($params)) {
-				$state = self::$db->query ( $sql );
+				$state = self::$db->query($sql);
 				return $state->rowCount();
 			} else {
-				$this->sth = self::$db->prepare ( $sql );
-				$this->sth->execute( $params );
+				$this->sth = self::$db->prepare($sql);
+				$this->sth->execute($params);
 				return $this->sth->rowCount();
 			}
 		} catch ( \Exception $e ) {

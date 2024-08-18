@@ -13,13 +13,6 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 			$this->headers->js ( "/packages/vendor/components/jqueryui/jquery-ui.min.js" );
 			$this->headers->css ( "/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css" );
 			$this->headers->css ( "/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css" );
-			
-			/*
-			 * Авторизация
-			 */
-			if (isset($_SESSION['user']['Id'])) {
-				$smarty->assign('user',$_SESSION['user']);
-			}
 	
 			/*
 			 * Проект

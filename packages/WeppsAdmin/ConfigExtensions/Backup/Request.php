@@ -16,7 +16,9 @@ require_once '../../../../configloader.php';
 class RequestBackupWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) ExceptionWepps::error404();
+		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
+			ExceptionWepps::error404();
+		}
 		$cnf = ConnectWepps::$projectDB['cnf'];
 		$db = ConnectWepps::$projectDB['dbname'];
 		$root = ConnectWepps::$projectDev['root'];

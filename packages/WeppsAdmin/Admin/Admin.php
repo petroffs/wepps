@@ -15,11 +15,10 @@ class AdminWepps {
 	public static $path;
 	function __construct($ppsUrl,&$headers) {
 		/*
-		 * Если не залогинен - вывести форму авторизации WELCOME
+		 * Если не залогинен - вывести форму авторизации
 		 */
-		//if (!isset($_SESSION['user']['Id'])) exit();
 		self::getNavigateUrl($ppsUrl);
-		$this->page = (isset ( $_GET ['page'] )) ? ( int ) $_GET ['page'] : 1;
+		$this->page = (isset($_GET['page']))?(int)$_GET['page']:1;
 		$this->headers = &$headers;
 		$this->nav = array (
 				'home' => array (
@@ -48,25 +47,10 @@ class AdminWepps {
 		$smarty->display( __DIR__ . '/Admin.tpl');
 		ConnectWepps::$instance->close();
 	}
-	public function request () {
-		
-		if (! isset($_SESSION['user']['Id']) && isset($_COOKIE['authEmail']) && isset($_COOKIE['authKey'])) {
-			$user = ConnectWepps::$instance->fetch("
-					select * from s_Users 
-					where Login='" . addslashes($_COOKIE['authEmail']) . "'
-					and AuthKey regexp '" . ConnectWepps::$instance->selectRegx(addslashes($_COOKIE['authKey'])) . "' 
-					and AuthKey!=0 and UserBlock!=1");
-			if (isset($user[0]['Id'])) {
-				$_SESSION['user'] = $user[0];
-				ConnectWepps::$instance->query("
-					update s_Users set AuthDate = '" . date("Y-m-d H:i:s") . "',
-					MyIP = '{$_SERVER['REMOTE_ADDR']}' where Id = {$user[0]['Id']}");
-			}
-		}
-		
+	public function request() {
 		$headers = &$this->headers;
 		$path = (self::$path[0]=='') ? 'home' : self::$path[0];
-		if (!isset($_SESSION['user']) || !isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin'] != 1) {
+		if (@ConnectWepps::$projectData['user']['ShowAdmin'] != 1) {
         	$path = 'home';
 		}
 		
@@ -147,7 +131,7 @@ class AdminWepps {
 		self::$path = explode("/", substr($url, 0,-1));
 	}
 	
-	public static function userPerm($permId=0,$check=[]) {
+	public static function getPermissions($permId=0,$check=[]) {
 		if ($permId==0 || (int) $permId==0) return array('status'=>0);
 		$obj = new DataWepps("s_Permissions");
 		$res = $obj->getMax($permId)[0];

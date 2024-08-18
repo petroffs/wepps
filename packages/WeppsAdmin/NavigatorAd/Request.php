@@ -14,7 +14,9 @@ require_once '../../../configloader.php';
 class RequestNavigatorAdWepps extends RequestWepps {
     public function request($action="") {
         $this->tpl = '';
-        if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) ExceptionWepps::error404();
+        if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
+        	ExceptionWepps::error404();
+        }
         switch ($action) {
             case "search":
                 if (!isset($this->get['term'])) {
@@ -43,4 +45,3 @@ class RequestNavigatorAdWepps extends RequestWepps {
 $request = new RequestNavigatorAdWepps ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

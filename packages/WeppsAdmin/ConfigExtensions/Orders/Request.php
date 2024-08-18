@@ -20,7 +20,9 @@ require_once '../../../../configloader.php';
 class RequestOrdersWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) ExceptionWepps::error404();
+		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
+			ExceptionWepps::error404();
+		}
 		switch ($action) {
 			case "test":
 				UtilsWepps::debug('test1',1);
@@ -184,7 +186,7 @@ class RequestOrdersWepps extends RequestWepps {
     				$obj = new DataWepps("TradeMessages");
     				$obj->add(array(
     				    'Name'=>"Заказ",
-    				    'MessFrom'=>$_SESSION['user']['Id'],
+    					'MessFrom'=>ConnectWepps::$projectData['user']['Id'],
     				    'MessBody'=>$message,
     				    'MessType'=>1,
     				    'MessDate'=>date('Y-m-d H:i:s'),

@@ -3,11 +3,13 @@ var readyBackupExtInit = function() {
 		var file = $(this).data('file');
 		var fileRestore = $(this).data('restore');
 		var fileRemove = $(this).data('remove');
-		
+		let dialogWidth = (window.screen.width<400) ? '90%' : 400;
 		$("#dialog").html('<p>Выберите действие с файлом бекапа:<br/>'+file+'?</p>').dialog({
-			'title':'Внимание!',
-			'modal': true,
-			'buttons' : [{
+			title:'Внимание!',
+			modal: true,
+			resizable: false,
+			width: dialogWidth,
+			buttons : [{
 				text : "Восстановить",
 				icon : "ui-icon-check",
 				click : function() {

@@ -4,7 +4,7 @@
 		<title>{$content.MetaTitle|default:$contenttop.Name|strip_tags}</title>
 		<meta name="keywords" content="{$contenttop.MetaKeyword|strip_tags}" />
 		<meta name="description" content="{$contenttop.MetaDescription|strip_tags}" />
-		<meta name="author" content="Aleksey Petrov" />
+		<meta name="author" content="Aleksei Petrov" />
 		<meta name="viewport" content="initial-scale=1, maximum-scale=1" />
 		{$headers.meta}
 		{$headers.cssjs}
@@ -25,10 +25,10 @@
 							{/foreach}
 						</div>
 					</div>
-					{if $smarty.session.user.Id}
+					{if $user.Id}
 					<div>
 						<div class="item">
-							<a href="#" id="logoff">Выйти</a>
+							<a href="#" id="sign-out">Выйти</a>
 						</div>
 					</div>
 					{/if}
@@ -51,7 +51,7 @@
 			</div>
 		</div>
 		<div id="dialog" title="dialog title" class="pps_hide">
-			<p>dialog text</p>
+			<p></p>
 		</div>
 	</body>
 </html>

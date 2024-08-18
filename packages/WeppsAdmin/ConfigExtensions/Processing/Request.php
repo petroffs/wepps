@@ -16,7 +16,9 @@ require_once '../../../../configloader.php';
 class RequestProcessingWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) ExceptionWepps::error404();
+		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
+			ExceptionWepps::error404();
+		}
 		switch ($action) {
 			case "searchindex":
 				$str = ListsWepps::setSearchIndex();
@@ -33,4 +35,3 @@ class RequestProcessingWepps extends RequestWepps {
 $request = new RequestProcessingWepps ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

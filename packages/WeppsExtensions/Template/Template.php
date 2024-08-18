@@ -5,6 +5,7 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsExtensions\Template\Blocks\BlocksWepps;
+use WeppsCore\Connect\ConnectWepps;
 
 class TemplateWepps extends ExtensionWepps {
 	
@@ -46,7 +47,7 @@ class TemplateWepps extends ExtensionWepps {
 		/*
 		 * Управление
 		 */
-		if (isset($_SESSION['user']['ShowAdmin']) && $_SESSION['user']['ShowAdmin']==1) {
+		if (@ConnectWepps::$projectData['user']['ShowAdmin']==1) {
 			$this->headers->css("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.css");
 			$this->headers->js("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.js");
 		}

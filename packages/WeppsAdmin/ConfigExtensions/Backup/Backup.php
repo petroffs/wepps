@@ -46,7 +46,7 @@ class BackupWepps extends RequestWepps {
 				$this->title = "Резервирование списков";
 				$this->tpl = 'BackupLists.tpl';
 				
-				$perm = AdminWepps::userPerm($_SESSION['user']['UserPermissions']);
+				$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions']);
 				$translate = AdminWepps::getTranslate();
 				$smarty->assign('translate',$translate);
 				/*

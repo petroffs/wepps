@@ -4,6 +4,9 @@ namespace WeppsAdmin\Admin;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Validator\ValidatorWepps;
+use WeppsCore\Utils\UsersWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -12,43 +15,36 @@ require_once '../../../configloader.php';
 class RequestAdminWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		$translate = AdminWepps::getTranslate();
-		//if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) ExceptionWepps::error404();
+		#$translate = AdminWepps::getTranslate();
 		switch ($action) {
-			case "auth":
-				$sql = "select * from s_Users where Login = '{$this->get['email']}' 
-						and Password = '" . md5($this->get['passw']) . "' and UserBlock = '0' 
-						and ShowAdmin = '1'";
-				$currUser = ConnectWepps::$instance->fetch($sql);
-				$js = "";
-				if (! isset($currUser[0]['Id'])) {
-					$ppsmess = $translate['mess_denied'];
-				} else {
-					$ppsmess = $translate['mess_welcome'];
-					$authKey = rand(10101, 999999999);
-					ConnectWepps::$instance->query("update s_Users set AuthKey=" . $authKey . " where Id=" . $currUser[0]['Id']);
-					setcookie('authKey', $authKey, time() + 3600 * 24 * 360, '/');
-					setcookie('authEmail', $currUser[0]['Login'], time() + 3600 * 24 * 360, '/');
-					$_SESSION['user'] = $currUser[0];
-					ConnectWepps::$instance->query("update s_Users set AuthDate = '" . date("Y-m-d H:i:s") . "', 
-						MyIP = '" . $_SERVER['REMOTE_ADDR'] . "' 
-						where Id = " . $_SESSION['user']['Id']);
+			case "sign-in":
+				$users = new UsersWepps($this->get);
+				$users->signIn();
+				$this->errors = $users->errors();
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
+				echo $outer['Out'];
+				if ($outer['Co']==0) {
 					$js = "
 						<script>
-						location.reload()
+						location.reload();
 						</script>
 					";
+					echo $js;
 				}
+				break;
+			case "sign-out":
+				$users = new UsersWepps();
+				$users->removeAuth();
+				$js = "
+						<script>
+						location.reload();
+						</script>
+					";
 				echo $js;
 				break;
 			case "logoff":
-				if (isset($_SESSION['user']['Id'])) {
-					ConnectWepps::$instance->query("update s_Users set AuthKey='' 
-					where Id ='{$_SESSION['user']['Id']}'");
-					$_SESSION['user'] = array();
-					unset($_SESSION);
-					setcookie('authKey', '');
-					setcookie('authEmail', '');
+				if (isset(ConnectWepps::$projectData['user']['Id'])) {
+					UtilsWepps::debug('remove auth');
 					$js = "
 						<script>
 						location.reload()
@@ -58,8 +54,8 @@ class RequestAdminWepps extends RequestWepps {
 				}
 				break;
 			case "hook":
-				if (ConnectWepps::$projectServices['git']['token'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {
-					http_response_code(200);
+				if (empty(ConnectWepps::$projectServices['git']['token']) || ConnectWepps::$projectServices['git']['token'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {
+					http_response_code(401);
 					echo "FAIL";
 					exit();
 				}
@@ -83,7 +79,9 @@ class RequestAdminWepps extends RequestWepps {
 			case "git":
 				$json = file_get_contents('php://input');
 				$token = ConnectWepps::$projectServices['git']['token'];
-				if ($token!=$_SERVER['HTTP_CLIENTTOKEN']) {
+				if (empty($token) || $token!=$_SERVER['HTTP_CLIENTTOKEN']) {
+					http_response_code(401);
+					echo "FAIL";
 					exit();
 				}
 				$dir = ConnectWepps::$projectDev['root'];

@@ -1,15 +1,17 @@
 <?php
+use WeppsCore\Connect\ConnectWepps;
+
 /**
  * Smarty plugin
  * @package Smarty
  * @subpackage plugins
  */
 
-function smarty_modifier_pps($id,$tablename,$panel=0)
-{
-    if (!isset($_SESSION['user']['ShowAdmin'])) return "";
-    if ($_SESSION['user']['ShowAdmin']!=1) return "";
-    
+function smarty_modifier_pps($id,$tablename,$panel=0) {
+	$user = @ConnectWepps::$projectData['user']['ShowAdmin'];
+	if ($user!=1) {
+		return '';
+	}
     switch ($tablename) {
     	case 'navigator':
     		$str = "

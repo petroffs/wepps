@@ -1,7 +1,6 @@
 <?php
 namespace WeppsAdmin\Home;
 
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
@@ -11,31 +10,26 @@ class HomeWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$headers->js ("/packages/WeppsAdmin/Home/Home.{$headers::$rand}.js");
 		$headers->css ("/packages/WeppsAdmin/Home/Home.{$headers::$rand}.css");
-		$tpl2 = "Home.tpl";
-		
-		if (!isset($_SESSION['user']) || !isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin'] != 1) {
-			$tpl2 = "Auth.tpl";
-			$content = array();
-			$content['MetaTitle'] = "Вход в систему — Wepps";
-			$content['Name'] = "Введите логин и пароль";
-			$content['NameNavItem'] = "Вход в систему Wepps";
-		} else {
-			
-			/*
-			 * logic
-			 */
-			$content = array();
-			$content['MetaTitle'] = "Wepps";
-			$content['Name'] = "Главная";
-			$content['NameNavItem'] = "Wepps";
+		$tpl = "Home.tpl";
+		if (!empty(ConnectWepps::$projectData['user']) && ConnectWepps::$projectData['user']['ShowAdmin']==1) {
+			$content = [
+					'MetaTitle' => 'Wepps',
+					'Name' => 'Главная',
+					'NameNavItem' => 'Wepps',
+			];
 			unset($nav['home']);
 			$smarty->assign('navhome',$nav);
+		} else {
+			$tpl = "SignIn.tpl";
+			$content = [
+					'MetaTitle' => 'Вход в систему — Wepps',
+					'Name' => 'Введите логин и пароль',
+					'NameNavItem' => 'Вход в систему Wepps',
+			];
 		}
-		
 		$smarty->assign('content', $content);
 		$smarty->assign('headers', $headers->get());
-		$tpl = $smarty->fetch(__DIR__ . '/' . $tpl2);
+		$tpl = $smarty->fetch(__DIR__ . '/' . $tpl);
 		$smarty->assign('extension', $tpl);
 	}
 }
-?>

@@ -68,7 +68,7 @@ class ConfigExtensionsWepps {
 		$smarty->assign('extension', $tpl);
 	}
 	private function getExtensionsEnv() {
-		$perm = AdminWepps::userPerm($_SESSION['user']['UserPermissions']);
+		$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions']);
 		$fcond = "'".implode("','", $perm['extensions'])."'";
 		$objExt = new DataWepps("s_ConfigExtensions");
 		$extensions = $objExt->getMax("t.DisplayOff=0 and t.Id in ($fcond)",2000);
@@ -79,4 +79,3 @@ class ConfigExtensionsWepps {
 		}
 	}
 }
-?>

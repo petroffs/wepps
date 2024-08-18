@@ -7,11 +7,11 @@ var readyAdminWeppsInit = function() {
 			$('.sidebar').eq(1).addClass('pps_hide_view_medium');
 		}
 	});
-	$('#logoff').on('click',function(event) {
+	$('#sign-out').on('click',function(event) {
 		event.preventDefault()
 		let settings = {
 			url: '/packages/WeppsAdmin/Admin/Request.php',
-			data : 'action=logoff'
+			data : 'action=sign-out'
 		}
 		layoutWepps.request(settings);
 	});

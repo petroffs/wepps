@@ -24,7 +24,7 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
     		$this->copyExts($this->element['Alias'], ".js",  "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
     		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
 	    }
-	    $perm = AdminWepps::userPerm(1,array('list'=>'s_ConfigExtensions'));
+	    $perm = AdminWepps::getPermissions(1,array('list'=>'s_ConfigExtensions'));
 	    if ($perm['status']==1) {
 	    	$sql = "update s_Permissions set SystemExt = concat(SystemExt,',','{$this->element['Id']}') where Id = 1";
 	    	ConnectWepps::$instance->query($sql);

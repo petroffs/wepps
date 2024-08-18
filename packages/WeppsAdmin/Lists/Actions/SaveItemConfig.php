@@ -20,7 +20,7 @@ class SaveItemConfigWepps extends RequestWepps {
 	        $str = ListsWepps::addList($this->element['TableName']);
 	        if ($str!="") {
 	            ConnectWepps::$db->exec($str);
-	            $perm = AdminWepps::userPerm(1,array('list'=>'s_Config'));
+	            $perm = AdminWepps::getPermissions(1,array('list'=>'s_Config'));
 	            if ($perm['status']==1) {
 	                $sql = "update s_Permissions set TableName = concat(TableName,',','{$this->element['TableName']}') where Id = 1";
 	                ConnectWepps::$instance->query($sql);

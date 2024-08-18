@@ -22,7 +22,7 @@ class ListsWepps {
 		$ppsUrl = "/".$_GET['ppsUrl'];
 		$ppsUrlEx = explode("/", trim($ppsUrl,'/'));
 		$tpl2 = "../Admin/AdminError.tpl";
-		$perm = AdminWepps::userPerm($_SESSION['user']['UserPermissions']);
+		$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions']);
 		$translate = AdminWepps::getTranslate();
 		$smarty->assign('translate',$translate);
 		//UtilsWepps::debug($translate);
@@ -61,7 +61,7 @@ class ListsWepps {
 		  	/*
 		  	 * Элементы списка
 		  	 */
-        	$permConfig = AdminWepps::userPerm($_SESSION['user']['UserPermissions'],array('list'=>"s_Config"));
+        	$permConfig = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'],array('list'=>"s_Config"));
         	$smarty->assign('permConfig',$permConfig['status']);
         	/*
         	 * Свойства списка (Конфигурация и поля)
@@ -199,11 +199,11 @@ class ListsWepps {
 
     public static function getListItemForm(TemplateHeadersWepps &$headers,$list,$id) {
     	$translate = AdminWepps::getTranslate();
-        $perm = AdminWepps::userPerm($_SESSION['user']['UserPermissions'],array('list'=>$list));
+    	$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'],array('list'=>$list));
         if ($perm['status']==0) {
             ExceptionWepps::error404();
         }
-        $permFields = AdminWepps::userPerm($_SESSION['user']['UserPermissions'],array('list'=>"s_ConfigFields"));
+        $permFields = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'],array('list'=>"s_ConfigFields"));
         
         /*
          * Свойства списка (Конфигурация и поля)

@@ -1,7 +1,5 @@
 if (readyListsItemInit==undefined) {
-	var readyListsItemInit = function() {
-		
-	}
+	var readyListsItemInit = function() {}
 }
 var readyUploadInit = function() {
 	$('form.list-data').find('a.file-remove').off('click');

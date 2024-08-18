@@ -2,6 +2,7 @@
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Utils\UsersWepps;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 setlocale(LC_NUMERIC, 'en_EN');
@@ -23,6 +24,11 @@ ConnectWepps::getInstance($projectSettings);
  */
 /** @var \Smarty $smarty */
 $smarty = SmartyWepps::getSmarty();
+
+$users = new UsersWepps();
+$users->getAuth();
+#UtilsWepps::debug(ConnectWepps::$projectData,1);
+$smarty->assign('user',@ConnectWepps::$projectData['user']);
 
 /*
  * Подключение файлов js,css и meta

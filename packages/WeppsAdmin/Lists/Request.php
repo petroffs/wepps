@@ -18,7 +18,7 @@ require_once '../../../configloader.php';
 class RequestListsWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) {
+		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
 			ExceptionWepps::error404();
 		}
 		switch ($action) {
@@ -79,7 +79,7 @@ class RequestListsWepps extends RequestWepps {
 				/*
 				 * Проверка прав доступа
 				 */
-				$perm = AdminWepps::userPerm($_SESSION['user']['UserPermissions'],array('list'=>$res['TableName']));
+				$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'],array('list'=>$res['TableName']));
 				if ($perm['status']==0) ExceptionWepps::error404();
 				
 				/*
@@ -111,7 +111,7 @@ class RequestListsWepps extends RequestWepps {
 					ExceptionWepps::error404();
 				}
 				$tableName = 's_Files';
-				$perm = AdminWepps::userPerm($_SESSION['user']['UserPermissions'],array('list'=>$tableName));
+				$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'],array('list'=>$tableName));
 				if ($perm['status']==0) {
 					ExceptionWepps::error404();
 				}
@@ -334,4 +334,3 @@ class RequestListsWepps extends RequestWepps {
 $request = new RequestListsWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

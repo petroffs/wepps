@@ -2,15 +2,19 @@
 namespace WeppsExtensions\Addons\Jwt;
 use WeppsCore\Connect\ConnectWepps;
 use Ahc\Jwt\JWT;
+use WeppsCore\Utils\UtilsWepps;
 
 class JwtWepps {
 	private $secret;
-		
+	
 	public function __construct($settings=[]) {
 		$this->secret = ConnectWepps::$projectServices['jwt']['secret'];
 	}
-	
-	public function getTokenPayload($token='') {
+	public function token_encode(array $payload=[],int $lifetime = 86200) : string {
+		$jwt = new JWT($this->secret,'HS256',$lifetime);
+		return $jwt->encode($payload);
+	}
+	public function token_decode(string $token='') : array {
 		$jwt = new JWT($this->secret);
 		try {
 			$output = [
@@ -30,20 +34,17 @@ class JwtWepps {
 		return $output;
 	}
 	
-	public function getTokenBearer() {
-		$headers = getallheaders();
-		foreach ($headers as $key=>$value) {
-			$headers[strtolower($key)] = $value;
-		}
+	public function bearer() : array {
+		$headers = UtilsWepps::getAllHeaders();
 		$bearer = 'Bearer ';
 		if (!empty($headers['authorization']) && strstr($headers['authorization'], $bearer)) {
 			$token = str_replace($bearer, '', $headers['authorization']);
-			$output = $this->getTokenPayload($token);
+			$output = $this->token_decode($token);
 			return $output;
 		}
 		$output = [
 				'type'=>'jwt',
-				'status'=>500,
+				'status'=>403,
 				'message'=>'no token'
 		];
 		return $output;

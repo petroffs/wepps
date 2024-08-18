@@ -18,7 +18,7 @@ require_once '../../../../configloader.php';
 class RequestUploadsWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		if (!isset($_SESSION['user']['ShowAdmin']) || $_SESSION['user']['ShowAdmin']!=1) {
+		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
 			ExceptionWepps::error404();
 		}
 		switch ($action) {
@@ -99,4 +99,3 @@ class RequestUploadsWepps extends RequestWepps {
 $request = new RequestUploadsWepps ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>
