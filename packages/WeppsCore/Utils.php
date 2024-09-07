@@ -765,7 +765,7 @@ class UsersWepps {
 				'domain' => ConnectWepps::$projectDev['host'],
 				'secure' => true,
 				'httponly' => true,
-				'samesite' => 'none',
+				'samesite' => 'strict',
 		]);
 		ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
 		return true;
@@ -788,9 +788,11 @@ class UsersWepps {
 		if (@$data['payload']['typ']!='auth' || empty($data['payload']['id'])) {
 			#setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
 			setcookie('wepps_token', '', [
+					'path' => '/',
+					'domain' => ConnectWepps::$projectDev['host'],
 					'secure' => true,
 					'httponly' => true,
-					'samesite' => 'none',
+					'samesite' => 'strict',
 			]);
 			return false;
 		}
@@ -805,9 +807,11 @@ class UsersWepps {
 		}
 		#setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
 		setcookie('wepps_token', '', [
+				'path' => '/',
+				'domain' => ConnectWepps::$projectDev['host'],
 				'secure' => true,
 				'httponly' => true,
-				'samesite' => 'none',
+				'samesite' => 'strict',
 		]);
 		return true;
 	}
