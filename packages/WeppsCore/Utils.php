@@ -758,15 +758,15 @@ class UsersWepps {
 				'typ'=>'auth',
 				'id'=>$res[0]['Id']
 		],$lifetime);
-		#setcookie('wepps_token', $token, time() + $lifetime,'/',ConnectWepps::$projectDev['host'],true,true);
-		setcookie('wepps_token', $token, [
+		setcookie('wepps_token', $token, time() + $lifetime,'/',ConnectWepps::$projectDev['host'],true,true);
+		/* setcookie('wepps_token', $token, [
 				'expires' => time() + $lifetime,
 				'path' => '/',
 				'domain' => ConnectWepps::$projectDev['host'],
 				'secure' => true,
 				'httponly' => true,
-				'samesite' => 'Strict',
-		]);
+				'samesite' => 'none',
+		]); */
 		ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
 		return true;
 	}
