@@ -767,7 +767,6 @@ class UsersWepps {
 				'httponly' => true,
 				'samesite' => 'none',
 		]);
-		exit();
 		ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
 		return true;
 	}
