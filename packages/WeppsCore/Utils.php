@@ -776,7 +776,7 @@ class UsersWepps {
 	public function getAuth() : bool {
 		$allheaders = UtilsWepps::getAllheaders();
 		$token = '';
-		if (!empty($allheaders['authorization'])) {
+		if (!empty($allheaders['authorization']) && strstr($allheaders['authorization'], 'Bearer ')) {
 			$token = str_replace('Bearer ', '', $allheaders['authorization']);
 		}
 		$token = (empty($token) && !empty($_COOKIE['wepps_token'])) ? @$_COOKIE['wepps_token'] : $token;
