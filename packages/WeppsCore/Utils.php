@@ -758,15 +758,16 @@ class UsersWepps {
 				'typ'=>'auth',
 				'id'=>$res[0]['Id']
 		],$lifetime);
-		setcookie('wepps_token', $token, time() + $lifetime,'/',ConnectWepps::$projectDev['host'],true,true);
-		/* setcookie('wepps_token', $token, [
+		#setcookie('wepps_token', $token, time() + $lifetime,'/',ConnectWepps::$projectDev['host'],true,true);
+		setcookie('wepps_token', $token, [
 				'expires' => time() + $lifetime,
 				'path' => '/',
 				'domain' => ConnectWepps::$projectDev['host'],
 				'secure' => true,
 				'httponly' => true,
 				'samesite' => 'none',
-		]); */
+		]);
+		exit();
 		ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
 		return true;
 	}
@@ -786,7 +787,12 @@ class UsersWepps {
 		$jwt = new JwtWepps();
 		$data = $jwt->token_decode($token);
 		if (@$data['payload']['typ']!='auth' || empty($data['payload']['id'])) {
-			setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
+			#setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
+			setcookie('wepps_token', '', [
+					'secure' => true,
+					'httponly' => true,
+					'samesite' => 'none',
+			]);
 			return false;
 		}
 		$sql = "select * from s_Users where Id=? and DisplayOff=0";
@@ -798,7 +804,12 @@ class UsersWepps {
 		if (empty(ConnectWepps::$projectData['user'])) {
 			return false;
 		}
-		setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
+		#setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
+		setcookie('wepps_token', '', [
+				'secure' => true,
+				'httponly' => true,
+				'samesite' => 'none',
+		]);
 		return true;
 	}
 	public function password() : string {

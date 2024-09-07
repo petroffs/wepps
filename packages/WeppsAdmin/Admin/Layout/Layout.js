@@ -98,7 +98,6 @@ class LayoutWepps {
 			url : settings.url,
 			data : settings.data,
 			beforeSend: function(){
-				console.log(1)
 				$('.pps_loader').remove();
 		    	let loader = $('<div class="pps_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
 		        $('body').prepend(loader);
