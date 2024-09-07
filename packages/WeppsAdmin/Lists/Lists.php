@@ -464,8 +464,8 @@ class ListsWepps {
 				if ($key==$k) {
 					if (is_array($value)) {
 						$value = implode(",",$value);
-					} elseif ($v[0]['Type']=='password' && strlen($value)!=32) {
-					    $value = md5($value);
+					} elseif ($v[0]['Type']=='password' && strlen($value)<60) {
+					    $value = password_hash(trim($value), PASSWORD_BCRYPT);
 					} elseif ($v[0]['Type']=='blob') {
 						$settings[$key]['fn'] = "compress(:$key)";
 					} elseif ($v[0]['Type']=='guid' && empty($value)) {

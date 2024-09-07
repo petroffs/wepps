@@ -741,7 +741,7 @@ class UsersWepps {
 		$this->get = $settings;
 	}
 	public function signIn() : bool {
-		$sql = "select * from s_Users where Login=? and ShowAdmin=1 and UserBlock=0";
+		$sql = "select * from s_Users where Login=? and ShowAdmin=1 and DisplayOff=0";
 		$res = ConnectWepps::$instance->fetch($sql,[$this->get['login']]);
 		$this->errors = [];
 		if (empty($res[0]['Id'])) {
@@ -767,7 +767,7 @@ class UsersWepps {
 				'httponly' => true,
 				'samesite' => 'Strict',
 		]);
-		ConnectWepps::$instance->query("update s_Users set AuthDate=?,MyIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
+		ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
 		return true;
 	}
 	public function errors() {
@@ -789,7 +789,7 @@ class UsersWepps {
 			setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
 			return false;
 		}
-		$sql = "select * from s_Users where Id=? and UserBlock=0";
+		$sql = "select * from s_Users where Id=? and DisplayOff=0";
 		$res = ConnectWepps::$instance->fetch($sql,[$data['payload']['id']]);
 		ConnectWepps::$projectData['user'] = $res[0];
 		return true;
