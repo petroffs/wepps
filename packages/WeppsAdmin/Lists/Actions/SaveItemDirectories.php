@@ -19,10 +19,10 @@ class SaveItemDirectoriesWepps extends RequestWepps {
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
 	    $root = ConnectWepps::$projectDev['root'];
-	    if ($this->listSettings['TableName']=='s_Directories') {
+	    if ($this->listSettings['TableName']=='s_Navigator') {
 	    	if ($this->element['Url']=='') {
 	    		$url = "/".SpellWepps::getTranslit($this->element['Name'],2)."/";
-	    		$sql = "update s_Directories set Url='{$url}' where Id='{$this->element['Id']}'";
+	    		$sql = "update s_Navigator set Url='{$url}' where Id='{$this->element['Id']}'";
 	    		ConnectWepps::$instance->query($sql);
 	    		$this->element['Url'] = $url;
 	    		//UtilsWepps::debug($this->element);

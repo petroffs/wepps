@@ -45,7 +45,7 @@ class RequestCartWepps extends RequestWepps {
 				 */
 				//unset($_SESSION['cart']);
 				
-				$data->setFields("Id,Name,Price,PriceOpt,PriceOld,PriceOptOld,Brand,Code,Articul,ArticulInner,DirectoryId,ProductType,ProductSex,QtyMin");
+				$data->setFields("Id,Name,Price,PriceOpt,PriceOld,PriceOptOld,Brand,Code,Articul,ArticulInner,NavigatorId,ProductType,ProductSex,QtyMin");
 				$data->setConcat("concat('/product/',if(t.Alias!='',t.Alias,t.Id),'.html') as Url,s3.NameOsn as ProductType_NameOsn");
 				$product = $data->getMax($this->get['id'])[0];
 				$productId = $product['Id']."_".SpellWepps::getTranslit($this->get['color'],2).$this->get['add'];

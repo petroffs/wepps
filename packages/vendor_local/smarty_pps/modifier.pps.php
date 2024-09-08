@@ -24,7 +24,7 @@ function smarty_modifier_pps($id,$tablename,$panel=0) {
     		$str = "
 				<div class=\"pps_admin_list pps_admin_panels\">
 					<a href=\"/_pps/lists/s_Panels/{$panel}/\" target=\"_blank\" title=\"Редактировать панель\"></a>
-					<a href=\"/_pps/lists/s_Panels/add/?DirectoryId=$id\" target=\"_blank\" title=\"Добавить панель\"></a>
+					<a href=\"/_pps/lists/s_Panels/add/?NavigatorId=$id\" target=\"_blank\" title=\"Добавить панель\"></a>
 					<a href=\"/_pps/lists/s_Blocks/add/?PanelId=$panel\" target=\"_blank\" title=\"Добавить блок\"></a>
 				</div>
 			";

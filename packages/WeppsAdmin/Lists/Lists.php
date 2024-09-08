@@ -934,7 +934,7 @@ class ListsWepps {
 		
 		$href = "'/_pps/lists/{$list}/'";
 		if ($path=='navigator') {
-			$sql = "select d1.Id,d1.Url,d1.ParentDir,(select d2.Url from s_Directories as d2 where d2.Id = d1.ParentDir) as ParentUrl from s_Directories as d1 where d1.Id = '{$id}'";
+			$sql = "select d1.Id,d1.Url,d1.ParentDir,(select d2.Url from s_Navigator as d2 where d2.Id = d1.ParentDir) as ParentUrl from s_Navigator as d1 where d1.Id = '{$id}'";
 			$res = ConnectWepps::$instance->fetch($sql);
 			$href = "'/_pps/navigator/{$res[0]['ParentUrl']}/'";
 		}

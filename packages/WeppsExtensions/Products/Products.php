@@ -110,7 +110,7 @@ class ProductsWepps extends ExtensionWepps {
 	 * @return array
 	 */
 	public static function setExtensionConditions(NavigatorWepps $navigator) {
-		$extensionConditions = "t.DisplayOff=0 and t.DirectoryId='{$navigator->content['Id']}'";
+		$extensionConditions = "t.DisplayOff=0 and t.NavigatorId='{$navigator->content['Id']}'";
 		return array('condition'=>$extensionConditions);
 	}
 	

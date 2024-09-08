@@ -21,7 +21,7 @@ class NavigatorAdWepps {
 		$ppsUrl = substr($_GET['ppsUrl'], 9);
 		$navigator = new NavigatorWepps($ppsUrl,1);
 		$navsub = array();
-		$nav2 = new NavigatorDataWepps("s_Directories");
+		$nav2 = new NavigatorDataWepps("s_Navigator");
 
 		$translate = AdminWepps::getTranslate();
 		$smarty->assign('translate',$translate);
@@ -35,7 +35,7 @@ class NavigatorAdWepps {
 		/*
 		 * Элемент списка
 		 */
-		$listForm = ListsWepps::getListItemForm($headers,"s_Directories", $navigator->content['Id']);
+		$listForm = ListsWepps::getListItemForm($headers,"s_Navigator", $navigator->content['Id']);
 		$navigator->content = $listForm['element'];
 				
 		$listSettings = $listForm['listSettings'];

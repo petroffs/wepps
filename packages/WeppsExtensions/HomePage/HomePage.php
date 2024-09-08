@@ -48,7 +48,7 @@ class HomePageWepps extends ExtensionWepps {
 				
 				$obj = new DataWepps("s_Files");
 				$obj->setJoin("inner join Gallery as fg on fg.Id=t.TableNameId and t.TableName='Gallery'");
-				$res = $obj->getMax("t.TableName='Gallery' and fg.DirectoryId=17",500,1,'t.Priority');
+				$res = $obj->getMax("t.TableName='Gallery' and fg.NavigatorId=17",500,1,'t.Priority');
 				$smarty->assign('elements',$res);
 				$smarty->assign('galleryTpl',$smarty->fetch ( 'packages/WeppsExtensions/Gallery/Gallery.tpl', null, 'a' ));
 				$this->tpl .= $smarty->fetch ( 'packages/WeppsExtensions/HomePage/HomePageGallery.tpl', null, 'a' );

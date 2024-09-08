@@ -16,7 +16,7 @@ class BotFeedsWepps extends BotWepps {
 		/*
 		 * Структура
 		 */
-		$sql = "select Id,Name,NameMenu,if(UrlMenu!='',UrlMenu,Url) as Url from s_Directories where DisplayOff=0 and (NGroup!=1 or (Id=1))";
+		$sql = "select Id,Name,NameMenu,if(UrlMenu!='',UrlMenu,Url) as Url from s_Navigator where DisplayOff=0 and (NGroup!=1 or (Id=1))";
 		$res = ConnectWepps::$instance->fetch($sql);
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";

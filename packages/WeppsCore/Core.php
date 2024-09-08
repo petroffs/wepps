@@ -445,7 +445,7 @@ class NavigatorWepps {
 		$this->lang = $navigate ['lang'];
 		$this->multilang = $navigate ['multilanguage'];
 		
-		$this->data = new NavigatorDataWepps ( "s_Directories" );
+		$this->data = new NavigatorDataWepps ( "s_Navigator" );
 		$this->data->backOffice = $backOffice;
 		$this->data->lang = $this->lang;
 		$res = $this->data->getMax ( "binary t.Url='{$this->path}'" );
@@ -598,7 +598,7 @@ class NavigatorDataWepps extends DataWepps {
 	public function getChildTree($res=array(), $parent=1) {
 	    if ($parent==1) {
 	        $sql = "select if(ParentDir=0,1,ParentDir) as ParentDir,Id,Name,NameMenu,Url,NGroup,DisplayOff 
-                    from s_Directories
+                    from s_Navigator
                     order by ParentDir,Priority";
 	        $res = ConnectWepps::$instance->fetch($sql,array(),"group");
 	    }
