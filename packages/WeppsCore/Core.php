@@ -317,18 +317,16 @@ class DataWepps {
 	 * Указание стобца для группировки
 	 * @param string $value
 	 */
-	public function setGroup($value) {
+	public function setGroup($value) : bool {
 		$this->group = $value;
+		return true;
 	}
 	/**
 	 * Обвновить строку
 	 * @param integer $id - Id строки
 	 * @param array $row - Массив столбцов и новых значений
 	 */
-	public function set($id, $row,$settings=[]) {
-		if (!is_numeric($id)) {
-			return null;
-		}
+	public function set(int $id,array $row,array $settings=[]) {
 		$arr = ConnectWepps::$instance->prepare($row,$settings);
 		$this->sql = "update {$this->tableName} set {$arr['update']} where Id = '{$id}'";
 		return ConnectWepps::$instance->query($this->sql,$arr['row']);
@@ -339,15 +337,51 @@ class DataWepps {
 	 * @param array $settings
 	 * @return number
 	 */
-	public function add($row=[],$settings=[]) {
-		return ConnectWepps::$instance->insert($this->tableName, $row, $settings);
+	public function add(array $row=[],int $insertOnly=0) : int {
+		$scheme = $this->getScheme();
+		$insert = [];
+		$update = [];
+		foreach ($scheme as $key => $value) {
+			if ($value[0]['Required']==1) {
+				if (empty($row[$key])) {
+					throw new \RuntimeException("Field \"$key\" is empty");
+					return 0;
+				}
+				$insert[$key] = $row[$key];
+			}
+			if (isset($row[$key])) {
+				$update[$key] = $row[$key];
+			}
+		}
+		$insert['Priority'] = 0;
+		$settings = [
+				'Priority' => ['fn'=>"(select round((max(Priority)+5)/5)*5 from {$this->tableName} as tb)"]
+				];
+		$prepare = ConnectWepps::$instance->prepare($insert,$settings);
+		unset($prepare['row']['Priority']);
+		$sql = "insert ignore into {$this->tableName} {$prepare['insert']}";
+		ConnectWepps::$instance->query($sql,$prepare['row']);
+		$id = ConnectWepps::$db->lastInsertId();
+		if ($insertOnly == 1) {
+			return $id;
+		}
+		if ((int)$id!=0) {
+			unset($update['Id']);
+			if (empty($update['Priority']))  {
+				unset($update['Priority']);
+			}
+			$prepare = ConnectWepps::$instance->prepare($update);
+			$sql = "update {$this->tableName} set {$prepare['update']} where Id='{$id}'";
+			ConnectWepps::$instance->query($sql,$prepare['row']);
+		}
+		return $id;
 	}
 	
 	/**
 	 * Удаление строки
 	 * @param integer $id
 	 */
-	public function remove($id) {
+	public function remove(int $id) : bool {
 		$sql = "delete from {$this->tableName} where Id = '{$id}'";
 		ConnectWepps::$instance->query ( $sql );
 		$sql = "delete from s_Files where TableName='{$this->tableName}' and TableNameId='{$id}'";
@@ -832,5 +866,3 @@ class SmartyWepps {
 		return self::$instance;
 	}
 }
-
-?>

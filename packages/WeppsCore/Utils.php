@@ -58,7 +58,7 @@ class UtilsWepps {
 				break;
 			case 31:
 				$output = $header.$val;
-				echo $output;
+				echo $output."\n";
 				ConnectWepps::$instance->close();
 				break;
 			case 1:

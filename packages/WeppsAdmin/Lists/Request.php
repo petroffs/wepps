@@ -155,7 +155,7 @@ class RequestListsWepps extends RequestWepps {
 				foreach ($listScheme as $key=>$value) {
 					if ($value[0][$this->get['pps_tablename_mode']]!='disabled' && $value[0][$this->get['pps_tablename_mode']]!='hidden') {
 						if ($value[0]['Required']==1) {
-							$this->errors[$key] = ValidatorWepps::isNotEmpty($this->get[$key], "Не заполнено");
+							$this->errors[$key] = ValidatorWepps::isNotEmpty(@$this->get[$key], "Не заполнено");
 						}
 					}
 				}
@@ -168,7 +168,7 @@ class RequestListsWepps extends RequestWepps {
 			                WHERE TABLE_SCHEMA = '".ConnectWepps::$projectDB['dbname']."' and TABLE_NAME = '{$this->get['pps_tablename']}'
 			                and COLUMN_NAME = '{$this->get['Field']}'
 			                ";
-					$lisetSchemeReal = ConnectWepps::$instance->fetch($sql);
+					$listSchemeReal = ConnectWepps::$instance->fetch($sql);
 					if (isset($listSchemeReal[0]['Col']) && $listSchemeReal[0]['Col']==$this->get['Field']) {
 						$this->errors['Field'] = "Уже используется";
 					}
@@ -184,7 +184,7 @@ class RequestListsWepps extends RequestWepps {
 					 */
 					if ($this->get['pps_tablename_id']=='add') {
 						$obj = new DataWepps($this->get['pps_tablename']);
-						$id = $obj->add(array('Name'=>$this->get['Name']));
+						$id = $obj->add($this->get,1);
 						$this->get['Id'] = $id;
 						unset($this->get['Priority']);
 						$outer = ListsWepps::setListItem($this->get['pps_tablename'],$id,$this->get);

@@ -23,7 +23,6 @@ class ConnectWepps {
 		self::$projectData = [];
 		try {
 			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']}:{$projectSettings['DB']['port']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
-			#UtilsWepps::debug($connectionString,1);
 			$db = new PDO ( $connectionString, $projectSettings ['DB'] ['user'], $projectSettings ['DB'] ['password']);
 			if ($projectSettings ['Dev'] ['debug'] == 1) {
 				$db->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
@@ -86,7 +85,7 @@ class ConnectWepps {
 		self::$instance->query($sql,$arr['row']);
 		return $id;
 	}
-	public function selectRegx ($id) {
+	public function selectRegx($id) {
 		return "(,+|^)".$id."(,+|$)";
 	}
 	public function close($exit=1) {
@@ -96,7 +95,6 @@ class ConnectWepps {
 	public function prepare($row=[],$settings=[]) {
 		$insert = $insert2 = $update = $select = "";
 		$keys = array_keys($row);
-		
 		$insert = '('.implode(',', $keys).') values ';
 		foreach ($keys as $value) {
 			if (!empty($settings[$value]['fn'])) {

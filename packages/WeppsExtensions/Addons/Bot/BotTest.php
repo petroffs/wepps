@@ -51,6 +51,18 @@ class BotTestWepps extends BotWepps {
 		echo $output;
 	}
 	public function testDB() {
+		$obj = new DataWepps("DataTbls");
+		$row = [
+				'Name' => 'Add Test2',
+				'Text' => 'Text Test',
+				'DDate' => '2024-09-08 00:00:01',
+				'MyProperties' => '1',
+				'RemoteTest' => '3',
+				'Alias' => 'AliasTest',
+		];
+		$id = $obj->add($row,1);
+		UtilsWepps::debug($id,31);
+		
 		$obj = new DataWepps("Products");
 		$obj->setParams([
 				'Брюки Armani Junior'
