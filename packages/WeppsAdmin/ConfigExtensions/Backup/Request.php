@@ -11,7 +11,9 @@ require_once '../../../../config.php';
 require_once '../../../../autoloader.php';
 require_once '../../../../configloader.php';
 
-//http://pps.lubluweb.ru/packages/WeppsAdmin/ConfigExtensions/Processing/Request.php?id=5
+/**
+ * @var \Smarty $smarty
+ */
 
 class RequestBackupWepps extends RequestWepps {
 	public function request($action="") {
@@ -256,4 +258,3 @@ class RequestBackupWepps extends RequestWepps {
 $request = new RequestBackupWepps ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>
