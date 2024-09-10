@@ -15,6 +15,10 @@ require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
+/**
+ * @var \Smarty $smarty
+ */
+
 class RequestListsWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';

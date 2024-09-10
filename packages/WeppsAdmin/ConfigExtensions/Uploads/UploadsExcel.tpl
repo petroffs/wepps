@@ -15,10 +15,9 @@
 				<input type="file" name="upload" multiple="multiple"/> <span>Загрузить</span>
 			</label>
 		</div>
-		
 		<div class="pps_interval_small"></div>
 		{foreach name="o" item="i" key="k" from=$uploaded.upload}
-			<p class="fileadd pps_flex_13">
+			<p class="fileadd pps_flex_11">
 				{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="fa fa-remove"></i></a>
 			</p>
 		{/foreach}
