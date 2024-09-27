@@ -3,6 +3,10 @@ var readyLayoutInit = function() {
 	$('.pps_admin').find('a').on('click',function(event) {
 		event.stopPropagation();
 	});
+	$('.pps_select').find('select').select2({
+		language: "ru",
+		delay: 500
+	});
 }
 $(document).ready(readyLayoutInit);
 //$(window).on('resize', readyLayoutInit);

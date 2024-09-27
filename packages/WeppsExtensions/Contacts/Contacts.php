@@ -38,7 +38,6 @@ class ContactsWepps extends ExtensionWepps {
 		$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
 		$this->headers->css("/ext/Contacts/Contacts.{$this->rand}.css");
 		$this->headers->js("/ext/Contacts/Contacts.{$this->rand}.js");
-		
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

@@ -9,18 +9,21 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 	class TemplateAddonsWepps extends ExtensionWepps {
 		public function request() {
 			$smarty = SmartyWepps::getSmarty();
-			$this->headers->js ( "/packages/vendor/components/jquery/jquery.min.js" );
-			$this->headers->js ( "/packages/vendor/components/jqueryui/jquery-ui.min.js" );
-			$this->headers->css ( "/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css" );
-			$this->headers->css ( "/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css" );
+			$this->headers->js("/packages/vendor/components/jquery/jquery.min.js");
+			$this->headers->js("/packages/vendor/components/jqueryui/jquery-ui.min.js");
+			$this->headers->css("/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css");
+			$this->headers->css("/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css");
+			$this->headers->js("/packages/vendor/select2/select2/dist/js/select2.min.js");
+			$this->headers->js("/packages/vendor/select2/select2/dist/js/i18n/ru.js");
+			$this->headers->css("/packages/vendor/select2/select2/dist/css/select2.min.css");
 	
 			/*
 			 * Проект
 			 */
-			$this->headers->js ( "/ext/Template/Layout/Layout.{$this->rand}.js" );
-			$this->headers->css ( "/ext/Template/Layout/Layout.{$this->rand}.css" );		
-			//$this->headers->css ( "/ext/Template/Layout/WinLayer.{$this->rand}.css" );		
-			$this->headers->css ( "/ext/Template/Layout/Win.{$this->rand}.css" );		
+			$this->headers->css("/ext/Template/Layout/Settings.{$this->rand}.css");
+			$this->headers->js("/ext/Template/Layout/Layout.{$this->rand}.js");
+			$this->headers->css("/ext/Template/Layout/Layout.{$this->rand}.css");
+			$this->headers->css("/ext/Template/Layout/Win.{$this->rand}.css");
 			
 			/*
 			 * Навигация

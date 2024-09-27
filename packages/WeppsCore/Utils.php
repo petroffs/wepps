@@ -746,6 +746,10 @@ class UsersWepps {
 		$this->errors = [];
 		if (empty($res[0]['Id'])) {
 			$this->errors['login'] = 'Неверный логин';
+		} elseif (strlen($res[0]['Password'])==32) {
+			if (md5($this->get['password'])!=$res[0]['Password']) {
+				$this->errors['password'] = 'Неверный пароль';
+			}
 		} elseif (!password_verify($this->get['password'],$res[0]['Password'])) {
 			$this->errors['password'] = 'Неверный пароль';
 		}

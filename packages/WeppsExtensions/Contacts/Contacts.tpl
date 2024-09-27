@@ -51,40 +51,37 @@
 
 <div class="elements ContactsForm">
 	<form action="javascript:formWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm" class="pps_form pps_flex_11">
-		<div class="form pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-			<div
-				class="pps_flex_11 pps_flex_11_view_medium pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
+		<div class="form">
+			<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_padding">
 				<div class="pps_flex_11">		
-					<span class="title pps_require">Ваше имя</span>
-					<label class="pps pps_input"><input type="text" name="name" placeholder="" />
+					<span class="title">Ваше имя</span>
+					<label class="pps pps_input pps_require"><input type="text" name="name" placeholder="" />
 					</label>
 				</div>
 				<div class="pps_flex_11">
-					<span class="title pps_require">Адрес электронной почты</span>
-					<label class="pps pps_input"> <input type="text" name="email"
+					<span class="title">Адрес электронной почты</span>
+					<label class="pps pps_input pps_require"> <input type="text" name="email"
 						placeholder="" />
 					</label>
 				</div>
 				<div class="pps_flex_11">
-					<span class="title pps_require">Телефон</span>
-					<label class="pps pps_input"> <input type="text" name="phone"
+					<span class="title">Телефон</span>
+					<label class="pps pps_input pps_require"> <input type="text" name="phone"
 						placeholder="" />
 					</label>
 				</div>
 				<div class="pps_flex_11">
-					<span class="title pps_require">Сообщение</span>
-					<label class="pps pps_area"> <textarea form="feedbackForm"
+					<span class="title">Сообщение</span>
+					<label class="pps pps_area pps_require"> <textarea form="feedbackForm"
 							name="comment" placeholder=""></textarea>
 					</label>
 				</div>
-				
 				<div class="pps_flex_11">
 					<span class="title">Вложение</span>
 					<label class="pps pps_upload"> <input type="file"
 						name="feedback-upload" /> <span>Прикрепить файл</span>
 					</label>
 				</div>
-				
 				<div class="pps_flex_11">
 					<span class="title">Test Checkbox</span>
 					<label class="pps pps_checkbox">
@@ -94,7 +91,6 @@
 						<input type="checkbox"> <span>Опция 2</span>
 					</label>
 				</div>
-				
 				<div class="pps_flex_11">
 					<span class="title">Test Radio</span>
 					<label class="pps pps_radio">
@@ -104,7 +100,6 @@
 						<input type="radio" name="radiotest"> <span>Опция 2</span>
 					</label>
 				</div>
-				
 				<div class="pps_flex_11">
 					<span class="title">Test Select</span>
 					<label class="pps pps_select">
@@ -114,19 +109,13 @@
 							<option>Выбор 3</option>
 						</select>
 					</label>
-					
 				</div>
-				
-				
-				
-				
 				<div class="pps_flex_11 pps_flex pps_flex_row">
-					
 					<label class="pps pps_checkbox pps_flex_23 pps_flex_11_view_small"><input type="checkbox" name="approve"/> <span>Я согласен на обработку моих персональных данных</span></label>
 					<label class="pps pps_button  pps_flex_13 pps_flex_11_view_small pps_right pps_center_view_small"> <input type="submit"
 						value="Отправить" disabled="disabled" />
 					</label>
-					<span class="descr pps_require">Обязательные поля</span>
+					<label class="pps pps_require pps_title">Обязательные поля</label>
 				</div>
 			</div>
 		</div>

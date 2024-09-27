@@ -15,10 +15,8 @@
 	--color-95: #f2f2f2;
 	--color-98: #fafafa;
 	--color-100: #ffffff;
-	
 	--color-attention: #d06666;
 	--color-success: #00AC86;
-  
 	--color-green: #00AC86;
  	--color-green-dark: #008f6f;
 	--color-red: #d06666;
@@ -91,17 +89,23 @@ div.page.footer div.page2 div.links div.item a {
 	text-decoration: none;
 	color: var(--color-25);
 }
+body form.pps_form {
+	background: var(--color-95);
+}
 body a.pps_button,
 body label.pps.pps_button input {
+	color: var(--color-100);
 	background: var(--color-green);
 	border: 1px solid var(--color-green);
 }
 body a.pps_button:hover,
 body label.pps.pps_button input:hover {
+	color: var(--color-100);
 	background-color: var(--color-green-dark);
 }
 body a.pps_button:active,
 body label.pps.pps_button input:active {
+	color: var(--color-100);
 	background-color: var(--color-green-dark);
 	box-shadow: none;
 	cursor: default;

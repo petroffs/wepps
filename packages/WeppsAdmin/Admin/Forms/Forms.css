@@ -19,20 +19,20 @@ div.pps_error {
 div.pps_error:after {
 	content: '\f057';
 	font-family: 'FontAwesome';
-	font-size: 18px;
+	font-size: var(--font-default);
 	position: absolute;
 	top: 50%;
-	right: 10px;
+	right: var(--step2);
 	transform: translate(0, -50%);
 }
 
 div.pps_error:before {
 	content: '';
 	position: absolute;
-	border: 5px solid transparent;
-	border-right: 5px solid var(--color-attention);
+	border: var(--step) solid transparent;
+	border-right: var(--step) solid var(--color-attention);
 	top: 50%;
-	left: -10px;
+	left: calc(-1 * var(--step2) + 1px);
 	transform: translate(0, -50%);
 }
 
@@ -86,6 +86,7 @@ label.pps select {
 
 label.pps.pps_checkbox {
 	width: max-content;
+	max-width: 100%;
 }
 
 label.pps.pps_checkbox input[type="checkbox"] {
@@ -161,6 +162,7 @@ label.pps.pps_select>select {
 
 label.pps.pps_upload {
 	width: max-content;
+	max-width: 100%;
 }
 
 label.pps.pps_upload input[type="file"] {

@@ -15,6 +15,7 @@
 	--font-medium: 22px;
 	--font-large: 28px;
 	--font-extra: 50px;
+	--border: 1px solid var(--color-85);
 }
 
 .pps_flex * {
