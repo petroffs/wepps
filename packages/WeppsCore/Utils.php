@@ -262,6 +262,15 @@ class UtilsWepps {
 				substr($charid, 20, 12);
 				return $guid;
 	}
+	public static function round($number,$scale=2,$type='float') {
+		for($i=8;$i>1;$i=$i-2) {
+			$number = round($number,$i);
+		}
+		if ($type=='str') {
+			return number_format($number,$scale,".","");
+		}
+		return doubleval(number_format($number,$scale,".",""));
+	}
 	public static function setExcel(array $data,string $filename='') {
 		$spreadsheet = new Spreadsheet();
 		$spreadsheet->getProperties()->setCreator('Wepps')
