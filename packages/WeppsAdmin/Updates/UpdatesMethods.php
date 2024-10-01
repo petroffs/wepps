@@ -318,7 +318,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			foreach ($res as $v) {
 				$md5 = md5(json_encode($v,JSON_UNESCAPED_UNICODE));
 				$col = @$value['columns'][$v['Field']];
-				$alterNull = ($col['column']['Null']=='NO')?'not null':'';
+				$alterNull = (@$col['column']['Null']=='NO')?'not null':'';
 				$alterDefault = (!empty($col['column']['Default']))? "default '{$col['column']['Default']}'":'';
 				$alterExtra = (!empty($col['column']['Extra']))? $col['column']['Extra'] : '';
 				if (!empty($col)) {
@@ -334,6 +334,9 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					/*
 					 * Добавить
 					 */
+					if (empty($col['column']['Field'])) {
+						continue;
+					}
 					$columns['add'][] = "{$value['table']}.{$col['column']['Field']}";
 					$str = "alter table {$value['table']} add {$col['column']['Field']} {$col['column']['Type']} {$alterNull} {$alterDefault} {$alterExtra};\n";
 				}
