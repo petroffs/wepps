@@ -53,7 +53,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					'output' => 'Wrong settings url: '.$filename
 			];
 		}
-		
+		$index = 0;
 		foreach ($jdata as $key=>$value) {
 			if ($value == $current) {
 				$jdata2[$key] = $value." (current)";
