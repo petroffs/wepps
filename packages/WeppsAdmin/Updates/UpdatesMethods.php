@@ -89,7 +89,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					'output' => 'wrong update file\'s url : '.$fileSrc
 			];
 		}
-		
 		$this->cli->put($response->response, $fileDst);
 		$this->path = pathinfo($fileDst);
 		
@@ -105,11 +104,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					'output' => 'Zip error'
 			];
 		}
-		
-		/*
-		 * Отладка бд
-		 */
-		
 		
 		/*
 		 * При отладке скрыть
@@ -133,12 +127,10 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$modified = explode("\n",$modifiedSelf['output']);
 		$diff = array_diff(explode("\n",$modifiedRelease['output']),$modified);
 		$diff = array_values($diff);
-		
 		$this->cli->br();
 		$this->cli->warning("Disallowed files:\n".implode("\n", $modified));
 		$this->cli->br();
 		$this->cli->success("Allowed files:\n".implode("\n", $diff));
-		
 		$this->cli->put(json_encode([
 				'disallowed'=>$modified,
 				'allowed'=>$diff
@@ -148,7 +140,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		 * БД
 		 */
 		$sql = $this->getTablesUpdates($fileMD5);
-		
 		$this->cli->br();
 		$this->cli->warning("Type 'yes' to continue: ");
 		$handle = fopen ("php://stdin","r");
@@ -158,7 +149,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					'output'=>"Aborting!"
 			];
 		}
-		
 		return self::setUpdatesInstall($diff,$sql);
 	}
 	private function setUpdatesInstall(array $diff = [], string $sql = '') {
