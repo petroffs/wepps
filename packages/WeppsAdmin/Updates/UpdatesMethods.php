@@ -117,8 +117,6 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$zip->extractTo($zipPath);
 		$zip->close();
 		
-		$sql = $this->getTablesUpdates($fileMD5);
-		
 		/*
 		 * Измененные файлы релиза
 		 */
