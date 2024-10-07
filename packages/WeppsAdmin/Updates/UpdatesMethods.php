@@ -89,6 +89,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					'output' => 'wrong update file\'s url : '.$fileSrc
 			];
 		}
+		
 		$this->cli->put($response->response, $fileDst);
 		$this->path = pathinfo($fileDst);
 		
@@ -98,6 +99,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		$zip = new \ZipArchive();
 		$result = $zip->open($fileDst);
 		$zipPath = $this->path['dirname'].'/updates';
+		$fileMD5 = $zipPath."/packages/WeppsAdmin/Updates/files/md5.conf";
 		if ($result === false) {
 			return [
 					'output' => 'Zip error'
@@ -105,12 +107,17 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		}
 		
 		/*
-		 * При отладке скрыть (после распаковки первого архива)
+		 * Отладка бд
+		 */
+		
+		
+		/*
+		 * При отладке скрыть
 		 */
 		$zip->extractTo($zipPath);
 		$zip->close();
-
-		$fileMD5 = $zipPath."/packages/WeppsAdmin/Updates/files/md5.conf";
+		
+		$sql = $this->getTablesUpdates($fileMD5);
 		
 		/*
 		 * Измененные файлы релиза
@@ -158,7 +165,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 	}
 	private function setUpdatesInstall(array $diff = [], string $sql = '') {
 		$diff[] = 'packages/WeppsAdmin/Updates/files/md5.conf';
-
+		
 		$pathRollback = $this->path['dirname'] . "/rollback";
 		$pathDiff = $this->path['dirname'] . "/diff";
 		
@@ -175,7 +182,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		}
 		$this->zip("{$this->path['dirname']}/wepps.platform-rollback.zip", "{$pathRollback}/*");
 		$this->zip("{$this->path['dirname']}/wepps.platform-diff.zip", "{$pathDiff}/*");
-
+		
 		/*
 		 * Реальный апдейт из updates
 		 * После него только откат вернет файлы
@@ -260,19 +267,20 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 				'files'=>$files,
 		];
 	}
-	private function getTablesUpdates(string $fileMD5) : string {
+	private function getTablesUpdates($fileMD5) {
 		if (!is_file($fileMD5)) {
-			return '';
+			return [];
 		}
 		$files = [];
 		$jdata = json_decode(file_get_contents($this->filename),true);
 		$jrelease = json_decode(file_get_contents($fileMD5),true);
 		if (empty($jdata['db']) || empty($jrelease['db'])) {
-			return '';
+			return [];
 		}
+		
 		$files = $this->getTablesDiff($jrelease['db'], $jdata['db'])['diff'];
 		if (empty($files)) {
-			return '';
+			return [];
 		}
 		
 		/*
@@ -282,10 +290,15 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		 * Если схождение - находим расхождение с jrelease - и уже его в обновление
 		 */
 		$jcurrent = [];
+		$new = [];
 		foreach ($files as $value) {
-			$table = $this->getTablesStructure($value['table']);
-			$value['md5']=$table['md5'];
-			$jcurrent[] = $value;
+			if ($value['status']==2) {
+				$table = $this->getTablesStructure($value['table']);
+				$value['md5']=$table['md5'];
+				$jcurrent[] = $value;
+			} elseif ($value['status'] == 3) {
+				$new[] = $value['table'];
+			}
 		}
 		
 		/*
@@ -303,11 +316,33 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			$this->cli->br();
 			$this->cli->warning("Disallowed db-tables:\n".implode("\n", $disallowed));
 		}
+		if ($new) {
+			$this->cli->br();
+			$this->cli->success("New db-tables:\n".implode("\n", $new));
+		}
 		if ($allowed) {
 			$this->cli->br();
 			$this->cli->success("Allowed db-tables:\n".implode("\n", $allowed));
 		}
 		$str = '';
+		if (!empty($new)) {
+			foreach ($new as $value) {
+				$filename = $this->path['dirname'].'/updates/packages/WeppsAdmin/Updates/files/db/'.$value.'-table.sql';
+				if (!file_exists($filename)) {
+					$this->cli->br();
+					$this->cli->error("no sql-file for new table {$value}");
+					exit();
+				}
+				$str .=  str_replace("\\\'","'",file_get_contents($filename))."\n";
+			}
+			if (!empty($str)) {
+				$str .= "alter table s_Config auto_increment = 0;\nalter table s_ConfigFields auto_increment = 0;\n\n";
+			}
+		}
+		
+		/*
+		 * Столбцы в таблицах
+		 */
 		foreach ($files as $value) {
 			if (!in_array($value['table'], $allowed)) {
 				continue;
@@ -315,38 +350,78 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			$table = $this->getTablesStructure($value['table']);
 			$sql = "show columns from {$value['table']}";
 			$res = ConnectWepps::$instance->fetch($sql);
-			foreach ($res as $v) {
-				$md5 = md5(json_encode($v,JSON_UNESCAPED_UNICODE));
-				$col = @$value['columns'][$v['Field']];
-				$alterNull = (@$col['column']['Null']=='NO')?'not null':'';
-				$alterDefault = (!empty($col['column']['Default']))? "default '{$col['column']['Default']}'":'';
-				$alterExtra = (!empty($col['column']['Extra']))? $col['column']['Extra'] : '';
-				if (!empty($col)) {
-					/*
-					 * Обновить
-					 */
-					if ($md5!=$col['md5']) {
-						$columns['update'][] = "{$value['table']}.{$col['column']['Field']}";
-						$this->cli->success("[upd] {$value['table']}.{$col['column']['Field']}");
-						$str .= "alter table {$value['table']} change {$col['column']['Field']} {$col['column']['Field']} {$col['column']['Type']} {$alterNull} {$alterDefault} {$alterExtra};\n";
+			$columnsRelease = array_keys($value['columns']);
+			$columnsCurrent = array_column($res, 'Field');
+			
+			/*
+			 * Новый столбец
+			 */
+			$arr = array_diff($columnsRelease,$columnsCurrent);
+			if (!empty($arr)) {
+				$filedata = '';
+				foreach ($arr as $v) {
+					$col = $value['columns'][$v];
+					$alterTable = self::getTableAlter($col);
+					$columns['add'][] = "{$value['table']}.{$v}";
+					$s = "alter table {$value['table']} add {$col['column']['Field']} {$col['column']['Type']} {$alterTable['null']} {$alterTable['default']} {$alterTable['extra']}";
+					$str .= trim($s).";\n";
+					$filename = $this->path['dirname'].'/updates/packages/WeppsAdmin/Updates/files/db/'.$value['table'].'-table.sql';
+					if (!file_exists($filename)) {
+						$this->cli->br();
+						$this->cli->error("no sql-file for new column {$value['table']}");
+						exit();
 					}
-				} else {
-					/*
-					 * Добавить
-					 */
-					if (empty($col['column']['Field'])) {
-						continue;
+					if (empty($filedata)) {
+						$filedata =  str_replace("\\\'","'",file_get_contents($filename));
 					}
-					$columns['add'][] = "{$value['table']}.{$col['column']['Field']}";
-					$str = "alter table {$value['table']} add {$col['column']['Field']} {$col['column']['Type']} {$alterNull} {$alterDefault} {$alterExtra};\n";
+					$matches = [];
+					preg_match("/(.+)into s_ConfigFields(.+),'$v',(.+)/",$filedata,$matches);
+					$str .= $matches[0]."\n";
+				}
+			}
+			
+			/*
+			 * Обновить
+			 */
+			$arr = array_intersect($columnsRelease,$columnsCurrent);
+			if (!empty($arr)) {
+				foreach ($arr as $v) {
+					$col = $value['columns'][$v];
+					foreach ($res as $v2) {
+						if ($v2['Field']==$v) {
+							$md5 = md5(json_encode($v2,JSON_UNESCAPED_UNICODE));
+							if ($md5==$col['md5']) {
+								continue;
+							}
+							$alterTable = self::getTableAlter($col);
+							$columns['update'][] = "{$value['table']}.{$v}";
+							$s = "alter table {$value['table']} change {$col['column']['Field']} {$col['column']['Field']} {$col['column']['Type']} {$alterTable['null']} {$alterTable['default']} {$alterTable['extra']}";
+							$str .= trim($s).";\n";
+						}
+					}
+				}
+			}
+			
+			/*
+			 * Удалить
+			 * Пока не будем использовать
+			 * Возможно при определенном флаге можно
+			 */
+			$arr = array_diff($columnsCurrent,$columnsRelease);
+			if (!empty($arr)) {
+				foreach ($arr as $v) {
+					$columns['delete'][] = "{$value['table']}.{$v}";
+					#$str .= "alter table {$value['table']} drop {$v};\n";
 				}
 			}
 		}
 		$this->cli->put(json_encode([
 				'disallowed'=>$disallowed,
+				'new'=>$new,
 				'allowed'=>$allowed,
 				'allowed-add'=>$columns['add'],
 				'allowed-update'=>$columns['update'],
+				'need-delete'=>$columns['delete'],
 		],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT), $this->path['dirname']."/log-db.conf");
 		return $str;
 	}
@@ -437,8 +512,16 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		}
 		return [
 				'diff' => $files,
-				'match'=> $files2
+				'match'=> $files2,
+				'new' => []
 		];
+	}
+	private function getTableAlter(array $col) : array {
+		return [
+				'null' => ($col['column']['Null']=='NO')?'not null':'',
+				'default' => (!empty($col['column']['Default']))? "default '{$col['column']['Default']}'":'',
+				'extra' => (!empty($col['column']['Extra']))? $col['column']['Extra'] : ''
+						];
 	}
 }
 ?>
