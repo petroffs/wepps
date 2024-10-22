@@ -29,7 +29,7 @@ class ConnectWepps {
 			}
 			self::$db = &$db;
 		} catch ( \Exception $e ) {
-			ExceptionWepps::writeMessage ( $e );
+			ExceptionWepps::display ( $e );
 		}
 	}
 	function __destruct() {
@@ -67,7 +67,7 @@ class ConnectWepps {
 				return $this->sth->rowCount();
 			}
 		} catch ( \Exception $e ) {
-			ExceptionWepps::writeMessage ( $e );
+			ExceptionWepps::display ( $e );
 		}
 	}
 	public function insert($tableName,$row,$settings=[]) {

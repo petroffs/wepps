@@ -12,7 +12,7 @@ class ExceptionWepps {
 	 * Выдать сообщение в браузер
 	 * @param \Exception $e
 	 */
-	public static function writeMessage (\Exception $e) {
+	public static function display (\Exception $e) {
 		if (ConnectWepps::$projectDev['debug']==1) {
 			$error = [];
 			$error['message'] = $e->getMessage();
@@ -25,26 +25,6 @@ class ExceptionWepps {
 			UtilsWepps::debug($error,1);
 		} else {
 			echo $e->getMessage();
-			exit();
-		}
-	}
-	/**
-	 * Записать сообщение в базу данных
-	 * 
-	 * @param \Exception $e        	
-	 */
-	public static function logMessage(\Exception $e) {
-		if (ConnectWepps::$projectDev['debug']==1) {
-			$error = [];
-			$error['message'] = $e->getMessage();
-			$trace = $e->getTrace();
-			if ($trace[1]['class']=='WeppsCore\Connect\ConnectWepps') {
-				$error['file'] = $trace[1]['file'];
-				$error['line'] = $trace[1]['line'];
-				$error['args'] = @$trace[1]['args'];
-			}
-			UtilsWepps::debug($error,21);
-		} else {
 			exit();
 		}
 	}
