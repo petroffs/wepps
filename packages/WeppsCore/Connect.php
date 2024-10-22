@@ -23,13 +23,22 @@ class ConnectWepps {
 		self::$projectData = [];
 		try {
 			$connectionString = "{$projectSettings['DB']['driver']}:host={$projectSettings['DB']['host']}:{$projectSettings['DB']['port']};dbname={$projectSettings['DB']['dbname']};charset={$projectSettings['DB']['charset']}";
-			$db = new PDO ( $connectionString, $projectSettings ['DB'] ['user'], $projectSettings ['DB'] ['password']);
-			if ($projectSettings ['Dev'] ['debug'] == 1) {
-				$db->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+			$db = new PDO ( $connectionString, $projectSettings['DB']['user'],$projectSettings['DB']['password']);
+			if ($projectSettings['Dev']['debug']==1) {
+				$db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 			}
 			self::$db = &$db;
-		} catch ( \Exception $e ) {
-			ExceptionWepps::display ( $e );
+		} catch (\Exception $e) {
+			$s = 0;
+			if (php_sapi_name()=='cli') {
+				$s = 3;	
+			}
+			if (ConnectWepps::$projectDev['debug']==1) {
+				UtilsWepps::debug($e->getMessage(),$s);
+			} else {
+				UtilsWepps::debug("connect error",$s);
+			}
+			exit();
 		}
 	}
 	function __destruct() {
@@ -89,7 +98,9 @@ class ConnectWepps {
 	}
 	public function close($exit=1) {
 		self::$db = null;
-		if ($exit==1) exit();
+		if ($exit==1) {
+			exit();
+		}
 	}
 	public function prepare($row=[],$settings=[]) {
 		$insert = $insert2 = $update = $select = "";
