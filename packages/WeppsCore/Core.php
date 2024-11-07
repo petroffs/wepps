@@ -274,7 +274,7 @@ class DataWepps {
 			$res = ConnectWepps::$instance->fetch($sql,null,'group');
 			if (count($res)==0) {
 				http_response_code(404);
-				ExceptionWepps::write("Указанной таблицы {$this->tableName} не существует");
+				UtilsWepps::debug("Указанной таблицы {$this->tableName} не существует",1);
 			}
 			$this->scheme = $res;
 		}
