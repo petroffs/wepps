@@ -708,31 +708,6 @@ class ListsWepps {
 		return $str;
 	}
 	
-	public static function addListIndex($list="",$id=0,$field="",$value=null) {
-	    if ($list=="" || $id==0 || $field=="" || $value==null) {
-	        return "";
-	    }
-	    $str2 = "update s_SearchKeys set DisplayOff2=1 where Name='{$id}' and 
-                    Field3='List::{$list}::{$field}';\n";
-	    if (is_array($value)) {
-	        foreach ($value as $v2) {
-	            $row = array();
-	            $row['Name'] =   $id;
-	            $row['Field1'] = $v2;
-	            $row['Field2'] = "";
-	            $row['Field3'] = "List::$list::{$field}";
-	            $row['DisplayOff2'] = 0;
-	            $arr2 = UtilsWepps::query($row);
-	            $md5 = md5($row['Name']."::".$row['Field1']."::".$row['Field2']."::".$row['Field3']);
-	            $str2 .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
-	            $str2 .= "update s_SearchKeys set ".$arr2['update']." where Alias = '$md5';\n";
-	        }
-	    }
-	    $str2 .= "delete from s_SearchKeys where DisplayOff2=1 and Name='{$id}' 
-                        and Field3='List::{$list}::{$field}';\n";
-	    return $str2;
-	}
-	
 	public static function addListField($id=0,$type="text") {
 		if ((int)$id==0) {
 			return "";
