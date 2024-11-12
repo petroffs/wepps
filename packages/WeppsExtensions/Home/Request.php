@@ -1,12 +1,12 @@
 <?php
-namespace WeppsExtensions\FirstPage;
+namespace WeppsExtensions\Home;
 use WeppsCore\Utils\RequestWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestCustomWepps extends RequestWepps {
+class RequestHomeWepps extends RequestWepps {
 	public function request($get) {
 		$action = (isset($get['action'])) ? $get['action'] : '';
 
@@ -21,7 +21,6 @@ class RequestCustomWepps extends RequestWepps {
 	}
 }
 
-$request = new RequestCustomWepps($_REQUEST);
+$request = new RequestHomeWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

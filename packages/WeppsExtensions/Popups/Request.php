@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\PopupsPage;
+namespace WeppsExtensions\Popups;
 
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\RequestWepps;
@@ -13,7 +13,7 @@ require_once '../../../configloader.php';
  * @var Smarty $smarty
  */
 
-class RequestPopupsPageWepps extends RequestWepps {
+class RequestPopupsWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
@@ -27,7 +27,6 @@ class RequestPopupsPageWepps extends RequestWepps {
 	}
 }
 
-$request = new RequestPopupsPageWepps ($_REQUEST);
+$request = new RequestPopupsWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

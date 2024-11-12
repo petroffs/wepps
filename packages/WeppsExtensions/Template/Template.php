@@ -18,7 +18,7 @@ class TemplateWepps extends ExtensionWepps {
 		$smarty->assign('multilang',$this->navigator->multilang);
 		$smarty->assign('content',$this->navigator->content);
 		$tpl = str_replace(".tpl", "", $this->navigator->tpl['tpl']);
-		$this->headers->css ( "/ext/Template/{$tpl}.{$this->rand}.css" );
+		$this->headers->css("/ext/Template/{$tpl}.{$this->rand}.css");
 		
 		/*
 		 * Дополнительный глобальный функционал
