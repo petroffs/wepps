@@ -1,9 +1,43 @@
+.page.home {
+	overflow: auto;	
+}
+.page.home .text {
+	column-count: 3;
+	padding-bottom: var(--step4);	
+}
+
+.page.home .text p:first-child {
+	margin-top: 0;
+}
+
 .page.services {
-	background: #955ab4;
+	color: var(--color-25);
+	background: var(--color-95);
+}
+
+.page.services div.services-wrapper {
+	padding-top: var(--step5);
+	padding-bottom: var(--step5);
+}
+
+.page.services section {
+	background-color: var(--color-75);
+	border-radius: var(--step2);
+	overflow: hidden;
+}
+
+.page.services section:hover {
+	box-shadow: var(--shadow);
+}
+
+.services-title {
+	font-weight: 900;
+	font-size: var(--font-medium);
+	padding: var(--step4);
 }
 
 .page.gallery {
-	background: #5a9bb4;
+	background: var(--color-85);
 }
 
 .page.advantages {

@@ -60,8 +60,8 @@ class ConnectWepps {
 			} else {
 				return $sth->fetchAll ( PDO::FETCH_ASSOC );
 			}
-		} catch ( \Exception $e ) {
-			ExceptionWepps::logMessage( $e );
+		} catch (\Exception $e) {
+			ExceptionWepps::display($e);
 		}
 	}
 	public function query(string $sql,array $params=[]) {
@@ -75,8 +75,8 @@ class ConnectWepps {
 				$this->sth->execute($params);
 				return $this->sth->rowCount();
 			}
-		} catch ( \Exception $e ) {
-			ExceptionWepps::display ( $e );
+		} catch (\Exception $e) {
+			ExceptionWepps::display($e);
 		}
 	}
 	public function insert($tableName,$row,$settings=[]) {

@@ -27,8 +27,8 @@ class RequestUploadsWepps extends RequestWepps {
 				$id = (int) $this->get['source'];
 				$objFile = new DataWepps("s_Files");
 				if (isset($_SESSION['uploads']['list-data-form'])) {
-					foreach ($_SESSION['uploads']['list-data-form'] as $key=>$value) {
-						foreach ($value as $k=>$v) {
+					foreach ($_SESSION['uploads']['list-data-form'] as $value) {
+						foreach ($value as $v) {
 							$file = ListsWepps::getUploadFileName($v, $list, "Files", $id);
 							$rowFile = array(
 									'Name'=>$file['title'],
@@ -43,7 +43,7 @@ class RequestUploadsWepps extends RequestWepps {
 									'FileUrl'=>$file['url'],
 									'FileDescription'=>json_encode(['source'=>$id],JSON_UNESCAPED_UNICODE),
 							);
-							$objFile->add($rowFile,'ignore');
+							$objFile->add($rowFile);
 							ListsWepps::removeUpload("upload",$v['url']);
 							break;
 						}

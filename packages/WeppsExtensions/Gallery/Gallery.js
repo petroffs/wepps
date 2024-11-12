@@ -5,7 +5,7 @@ var readyGalleryInit = function() {
 			enabled: true,
 			tPrev: '',
 			tNext: '',
-			tCounter: '<span class="mfp-counter">%curr% / %total%</span>'
+			tCounter: '%curr% / %total%'
 		},
 		image: {
 			titleSrc: 'title',

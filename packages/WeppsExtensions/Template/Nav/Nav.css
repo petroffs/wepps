@@ -1,5 +1,10 @@
+header {
+	background: var(--color-100);
+	position: sticky;
+	top: 0;
+	z-index: 2;
+}
 div.page.header {
-	background: var(color-100);
 	padding-top: var(--step6);
 	height: auto;
 }

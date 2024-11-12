@@ -6,6 +6,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class HomeWepps extends ExtensionWepps {
 	public function request() {
@@ -18,24 +19,26 @@ class HomeWepps extends ExtensionWepps {
 				 * Карусель на главной
 				 */
 				$obj = new DataWepps("Sliders");
-				$res = $obj->getMax ( "t.DisplayOff=0 and SPlace=1 and sm2.Id={$this->navigator->content['Id']}" );
-				if (isset( $res[0]['Id'] )) {
-					$smarty->assign ( 'carousel', $res );
-					$this->tpl = $smarty->fetch ( 'packages/WeppsExtensions/Template/Carousel/Carousel.tpl');
-					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick.css" );
-					$this->headers->css ( "/packages/vendor/kenwheeler/slick/slick/slick-theme.css" );
-					$this->headers->js ( "/packages/vendor/kenwheeler/slick/slick/slick.min.js" );
-					$this->headers->css ( "/ext/Template/Carousel/Carousel.{$this->rand}.css" );
+				$res = $obj->getMax("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
+				#$res = $obj->getMax("t.DisplayOff=0 and t.SPlace=1");
+				#UtilsWepps::debug($obj->sql,1);
+				if (!empty($res[0]['Id'])) {
+					$smarty->assign('carousel',$res);
+					$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Carousel/Carousel.tpl');
+					$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick.css");
+					$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick-theme.css");
+					$this->headers->js("/packages/vendor/kenwheeler/slick/slick/slick.min.js");
+					$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css");
 				}
-
+				
 				/*
 				 * Услуги
 				 */
 				$obj = new DataWepps("Services");
-				$res = $obj->getMax ( "t.DisplayOff=0" );
+				$res = $obj->getMax("t.DisplayOff=0");
 				$smarty->assign('services',$res);
-				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/HomeServices.tpl');
 
+				
 				/*
 				 * Галерея
 				 */
@@ -47,9 +50,13 @@ class HomeWepps extends ExtensionWepps {
 				$obj = new DataWepps("s_Files");
 				$obj->setJoin("inner join Gallery as fg on fg.Id=t.TableNameId and t.TableName='Gallery'");
 				$res = $obj->getMax("t.TableName='Gallery' and fg.NavigatorId=17",500,1,'t.Priority');
-				$smarty->assign('elements',$res);
-				$smarty->assign('galleryTpl',$smarty->fetch('packages/WeppsExtensions/Gallery/Gallery.tpl'));
-				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/HomeGallery.tpl');
+				$smarty->assign('gallery',$res);
+				
+
+				
+				
+				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/Home.tpl');
+
 				
 				/*
 				 * Преимущества

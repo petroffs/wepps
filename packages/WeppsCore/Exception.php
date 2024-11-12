@@ -12,7 +12,7 @@ class ExceptionWepps {
 	 * Выдать сообщение в браузер
 	 * @param \Exception $e
 	 */
-	public static function display (\Exception $e) {
+	public static function display(\Exception $e) {
 		if (ConnectWepps::$projectDev['debug']==1) {
 			$error = [];
 			$error['message'] = $e->getMessage();
@@ -22,7 +22,8 @@ class ExceptionWepps {
 				$error['line'] = $trace[1]['line'];
 				$error['args'] = @$trace[1]['args'];
 			}
-			UtilsWepps::debug($error,1);
+			UtilsWepps::debug($error,0);
+			UtilsWepps::debug($trace,1);
 		} else {
 			echo $e->getMessage();
 			exit();

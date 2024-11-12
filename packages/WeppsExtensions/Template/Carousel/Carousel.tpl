@@ -1,11 +1,15 @@
-<div class="carouselContainer">
-	<div class="carousel">
+<div class="carousel-wrapper">
+	<div class="carousel carousel-desktop">
 		{foreach name=out item=item key=key from=$carousel}
-		<div class="item" style="background-image:url(/pic/slider{$item.Image_FileUrl});"></div>
+		<img src="/pic/slider{$item.Image_FileUrl}">
+		{/foreach}
+	</div>
+	<div class="carousel carousel-mobile">
+		{foreach name=out item=item key=key from=$carousel}
+		<img src="/pic/slider{$item.ImageMobile_FileUrl}">
 		{/foreach}
 	</div>
 </div>
-
 
 <script>
 $(document).ready(function(){
@@ -17,7 +21,8 @@ $(document).ready(function(){
 		fade:true,
 		infinite: true
 	}
-	$('.carousel').slick(slickOptions);
+	let carousel = ($(window).width()>480) ? '.carousel' : '.carousel-mobile';
+	$(carousel).slick(slickOptions);
 	$(window).resize(function() {
 		//	$('.carousel').slick('unslick');
 		//	$('.carousel').slick(slickOptions);
