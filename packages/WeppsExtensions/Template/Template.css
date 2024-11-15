@@ -72,7 +72,6 @@ div.page>section {
 div.page.footer {
 	height: auto;
 	background: var(--color-95);
-	
 }
 
 div.page.footer a {
@@ -81,6 +80,7 @@ div.page.footer a {
 }
 div.page.footer .footer-wrapper {
 	border-radius: var(--step2) var(--step2) 0 0;
+	margin-top: var(--step4);
 }
 div.page.footer .footer-wrapper>div {
 	background: var(--color-100);

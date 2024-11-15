@@ -89,7 +89,7 @@ div.page.map {
 
 section#map {
 	background: var(--color-95);
-	margin: var(--step4) auto;
+	margin: var(--step4) auto 0 auto;
 	border-radius: var(--step2);
 	overflow: hidden;
 	width: 100%;
