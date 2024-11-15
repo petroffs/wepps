@@ -8,6 +8,11 @@ div.page.header {
 	padding-top: var(--step6);
 	height: auto;
 }
+
+div.page.header a {
+	display: block;
+}
+
 div.page.header div.page2 .elements {
 	border-bottom: 1px solid var(--color-95);
 }
@@ -106,25 +111,14 @@ div.pps_nav {
 	
 }
 div.pps_nav .close {
+	background: url(/ext/Template/Layout/files/controls-remove-gray.svg) 0 0 no-repeat;
+	background-size: contain;
+	width: var(--step6);
+	height: var(--step6);
 	position: absolute;
-	width: auto;
-	height: auto;
-	top: 25px;
-	right: 25px;
-	background: fuchsia;
-}
-
-div.pps_nav .close:before {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	top: 0px;
-	left: 0px;
-	content: " \f00d";
-	font: 100% 'FontAwesome';
-	color: white;
+	top: var(--step6);
+	right: var(--step4);
 	cursor: pointer;
-	z-index: 1;
 }
 
 div.pps_nav .logo {

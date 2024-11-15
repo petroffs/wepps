@@ -36,17 +36,17 @@
 			<section>
 				<div class="footer-wrapper pps_overflow_auto">
 					<div class="pps_flex pps_flex_row pps_flex_end pps_flex_margin pps_padding">
-						<div class="footer-logo pps_flex_fix">
+						<div class="footer-logo pps_flex_fix pps_flex_12_view_small">
 							<a href="/"><img src="/ext/Template/files/wepps-logo.svg" alt="logo"/></a>
 						</div>
-						<div class="text pps_flex_fix">
+						<div class="text pps_flex_fix pps_flex_12_view_small">
 							<ul class="footer-company pps_list">
 								<li>©  {$org.Name}</li>
 								<li>{mailto address=$org.Email}</li>
 								<li>{$org.Phone}</li>
 							</ul>
 						</div>
-						<div class="text">
+						<div class="text pps_flex_fix pps_flex_11_view_small">
 							<ul class="footer-socials pps_list pps_flex pps_flex_row pps_flex_center">
 								{foreach name=out item=item from=$socials}
 								<li><a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a></li>

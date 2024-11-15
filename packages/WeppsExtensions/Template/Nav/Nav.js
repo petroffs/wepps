@@ -28,7 +28,7 @@ var readyNavInit = function() {
 			clone.id = 'menuInnClone';
 			el.append(clone);
 			clone.before("<div class=\"close\"></div>")
-			clone.before("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/logo.jpg\" class=\"pps_image\"/></a></div>")
+			clone.before("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-paddings-i.svg\" class=\"pps_image\"/></a></div>")
 			el.find('.close').on('click', function() {
 				$(this).parent().remove();
 				$('body').removeClass('pps_nav_parent');
