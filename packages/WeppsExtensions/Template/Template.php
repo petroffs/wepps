@@ -63,7 +63,7 @@ class TemplateWepps extends ExtensionWepps {
 		/*
 		 * Вывод в шаблон
 		 */
-		$smarty->display( __DIR__ . '/' . $this->navigator->tpl['tpl'],null,'f');
+		$smarty->display(__DIR__.'/'.$this->navigator->tpl['tpl']);
 	}
 }
 

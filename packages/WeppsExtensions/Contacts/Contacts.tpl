@@ -6,7 +6,7 @@
 		<div class="item pps_flex_12 pps_flex_11_view_small ">
 			<div class="title">{$item.Name}</div>
 			{if $item.Street}
-			<div class="param mapData" data-coord="{$item.AdGoogle}">{$item.Street}</div>
+			<div class="param mapData" data-coord="{$item.LatLng}">{$item.Street}</div>
 			{/if} {if $item.Email}
 			<div class="param">{$item.Email}</div>
 			{/if} {if $item.Phone}

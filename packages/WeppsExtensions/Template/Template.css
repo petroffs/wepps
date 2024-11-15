@@ -17,6 +17,8 @@ html {
 }
 
 body {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
 	width: 100%;
 	min-height: 100vh;
 	margin: 0px;
@@ -57,7 +59,8 @@ div.page {
 	background: var(--color-98);
 }
 
-div.page div.page2 {
+div.page div.page2,
+div.page>section {
 	width: 100%;
 	max-width: 1400px;
 	background: transparent;
@@ -66,24 +69,35 @@ div.page div.page2 {
 	margin: 0 auto;
 }
 
-div.page div.page2.page2normal {
-	padding-top: calc(9 * var(--step));
-}
-
 div.page.footer {
 	height: auto;
-	min-height: calc(40 * var(--step));
-	background: var(--color-98);
+	background: var(--color-95);
+	
 }
 
-div.page.footer div.page2 div.copyrights div.item a {
-	text-decoration: none;
-	color: var(--color-95);
-}
-
-div.page.footer div.page2 div.links div.item a {
+div.page.footer a {
 	text-decoration: none;
 	color: var(--color-25);
+}
+div.page.footer .footer-wrapper {
+	border-radius: var(--step2) var(--step2) 0 0;
+}
+div.page.footer .footer-wrapper>div {
+	background: var(--color-100);
+}
+div.page.footer .footer-logo img {
+	width: 120px;
+	height: auto;
+	display: block;
+	opacity: 0.5;
+}
+
+div.page.footer .footer-company {
+	opacity: 0.5;
+}
+
+div.page.footer .footer-socials {
+	opacity: 0.5;
 }
 
 body form.pps_form {
@@ -112,7 +126,8 @@ body label.pps.pps_button input:active {
 }
 
 @media screen and (max-width: 1440px) {
-	div.page div.page2 {
+	div.page div.page2,
+	div.page>section {
 		padding: 0 var(--step4);
 	}
 }

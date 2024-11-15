@@ -7,7 +7,7 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
-
+	
 class HomeWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
@@ -30,42 +30,32 @@ class HomeWepps extends ExtensionWepps {
 					$this->headers->js("/packages/vendor/kenwheeler/slick/slick/slick.min.js");
 					$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css");
 				}
-				
+
 				/*
 				 * Услуги
 				 */
 				$obj = new DataWepps("Services");
 				$res = $obj->getMax("t.DisplayOff=0");
 				$smarty->assign('services',$res);
-
 				
 				/*
 				 * Галерея
 				 */
 				$this->headers->css("/packages/vendor/dimsemenov/magnific-popup/dist/magnific-popup.css");
 				$this->headers->js("/packages/vendor/dimsemenov/magnific-popup/dist/jquery.magnific-popup.js");
-				$this->headers->css("/ext/Gallery/Gallery.{$this->rand}.css");
-				$this->headers->js("/ext/Gallery/Gallery.{$this->rand}.js");
 				
 				$obj = new DataWepps("s_Files");
 				$obj->setJoin("inner join Gallery as fg on fg.Id=t.TableNameId and t.TableName='Gallery'");
 				$res = $obj->getMax("t.TableName='Gallery' and fg.NavigatorId=17",500,1,'t.Priority');
 				$smarty->assign('gallery',$res);
-				
 
-				
-				
-				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/Home.tpl');
-
-				
 				/*
 				 * Преимущества
 				 */
 				$obj = new DataWepps("Advantages");
-				$res = $obj->getMax ( "t.DisplayOff=0" );
+				$res = $obj->getMax ("t.DisplayOff=0");
 				$smarty->assign('advantages',$res);
-				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/HomeAdvantages.tpl');
-				
+
 				/*
 				 * Контакты
 				 */
@@ -73,14 +63,11 @@ class HomeWepps extends ExtensionWepps {
 				$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.css");
 				$apikey = ConnectWepps::$projectServices['yandexmaps']['apikey'];
 				$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
-				$this->headers->css("/ext/Contacts/Contacts.{$this->rand}.css");
-				$this->headers->js("/ext/Contacts/Contacts.{$this->rand}.js");
-				
 				$obj = new DataWepps("Contacts");
 				$res = $obj->getMax("t.DisplayOff=0",1);
 				$smarty->assign('contacts',$res);
-				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/HomeContacts.tpl');
-				
+				#UtilsWepps::debug($res,1);
+				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/Home.tpl');
 				break;
 			default:
 				ExceptionWepps::error404();
@@ -92,6 +79,7 @@ class HomeWepps extends ExtensionWepps {
 		$smarty->assign('normalView',0);
 		$this->navigator->content['Text1'] = '';
 		$this->headers->css("/ext/Home/Home.{$this->rand}.css");
+		$this->headers->js("/ext/Home/Home.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$this->tpl);
 		return;
 	}

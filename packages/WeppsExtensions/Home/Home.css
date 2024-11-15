@@ -1,55 +1,117 @@
-.page.home {
-	overflow: auto;	
+div.page.home {
+	overflow: auto;
 }
-.page.home .text {
+
+div.page.home .text {
 	column-count: 3;
-	padding-bottom: var(--step4);	
+	padding-bottom: var(--step4);
 }
 
-.page.home .text p:first-child {
+div.page.home .text p {
 	margin-top: 0;
+	margin-bottom: var(--step4);
 }
 
-.page.services {
+div.page.home .text p:last-child {
+	margin-bottom: 0;
+}
+
+div.page.services {
 	color: var(--color-25);
 	background: var(--color-95);
 }
 
-.page.services div.services-wrapper {
+section.services-wrapper {
 	padding-top: var(--step5);
 	padding-bottom: var(--step5);
 }
 
-.page.services section {
+section.services-wrapper section {
 	background-color: var(--color-75);
 	border-radius: var(--step2);
 	overflow: hidden;
 }
 
-.page.services section:hover {
+section.services-wrapper section:hover {
 	box-shadow: var(--shadow);
 }
 
-.services-title {
+section.services-wrapper .title {
 	font-weight: 900;
 	font-size: var(--font-medium);
 	padding: var(--step4);
 }
 
-.page.gallery {
+div.page.gallery {
 	background: var(--color-85);
 }
 
-.page.advantages {
-	background: #b45a60;
+section.gallery-wrapper section {
+	overflow: hidden;
+	border-radius: var(--step2);
 }
 
-
-.page.contacts {
-	background: #5ab49e;
+section.gallery-wrapper section:hover {
+	box-shadow: var(--shadow);
 }
 
-.page.contacts #map {
+div.page.advantages {
+	background: var(--color-95);
+}
+
+section.advantages-wrapper section:not(:first-child) {
+	margin-top: var(--step4);
+}
+
+section.advantages-wrapper section img {
+	border-radius: var(--step2);
+	display: block;
+}
+
+section.advantages-wrapper section:nth-child(even) .text {
+	order: 1;
+}
+
+section.advantages-wrapper section:nth-child(even) .img {
+	order: 2;
+}
+
+section.advantages-wrapper .title {
+	font-size: var(--font-large);
+	font-weight: 600;
+	line-height: 1.2;
+	margin-bottom: var(--step2);
+}
+
+div.page.map {
+	background: var(--color-95);
+}
+
+section#map {
+	background: var(--color-95);
+	margin: var(--step4) auto;
+	border-radius: var(--step2);
+	overflow: hidden;
 	width: 100%;
 	height: 600px;
+}
+
+@media screen and (max-width: 810px) {
+	div.page.home .text {
+		column-count: 2;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	div.page.home .text {
+		column-count: 1;
+	}
+
+	section.advantages-wrapper section:nth-child(even) .text {
+		order: 3;
+	}
+
+	section#map {
+		height: 400px;
+	}
 }

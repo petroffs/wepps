@@ -6,15 +6,6 @@
 <meta name="description" content="{$content.MetaDescription|strip_tags}" />
 <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
 {$headers.meta}
-	<!--                                   programming by:
-	██████████████████████████████████████████████████████
-	█────█───█───█────█────█───█───█───███────█────█─███─█
-	█─██─█─████─██─██─█─██─█─███─███─█████─██─█─██─█──█──█
-	█────█───██─██────█─██─█───█───█───███─████─██─█─█─█─█
-	█─████─████─██─█─██─██─█─███─█████─███─██─█─██─█─███─█
-	█─████───██─██─█─██────█─███─███───█─█────█────█─███─█
-	██████████████████████████████████████████████████████
-	-->
 {$headers.cssjs}
 </head>
 <body>
@@ -26,13 +17,13 @@
 		{$extensionTop}
 		{if $normalView==1}
 		<div class="page main pps_flex_max pps_flex pps_flex_col">
-			<div class="page2">
+			<section>
 				<h1>{$content.Name}</h1>
 				{if $content.Text1}
 				<div class="text">{$content.Text1}</div>
 				{/if}
 				{$extension}
-			</div>
+			</section>
 		</div>
 		{else}
 		{$extension}
@@ -42,23 +33,29 @@
 	</main>
 	<footer>
 		<div class="page footer pps_flex pps_flex_col pps_flex_center">
-			<div class="page2 pps_flex pps_flex_col pps_flex_center">
-				<div class="copyrights pps_flex pps_flex_row pps_flex_center">
-					<div class="item pps_flex_fix pps_padding pps_center">© {$shopInfo.Name}</div>
-					<div class="item pps_flex_fix pps_padding pps_center">{*mailto
-						address=$shopInfo.Email*}</div>
-					{foreach name=out item=item from=$shopInfo.Phone|explode}
-					<div class="item pps_flex_fix pps_padding pps_center">{$item}</div>
-					{/foreach}
-				</div>
-				<div class="links pps_flex pps_flex_row pps_flex_center">
-					{foreach name=out item=item from=$socials}
-					<div class="item pps_flex_fix pps_padding">
-						<a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a>
+			<section>
+				<div class="footer-wrapper pps_overflow_auto">
+					<div class="pps_flex pps_flex_row pps_flex_end pps_flex_margin pps_padding">
+						<div class="footer-logo pps_flex_fix">
+							<a href="/"><img src="/ext/Template/files/wepps-logo.svg" alt="logo"/></a>
+						</div>
+						<div class="text pps_flex_fix">
+							<ul class="footer-company pps_list">
+								<li>©  {$org.Name}</li>
+								<li>{mailto address=$org.Email}</li>
+								<li>{$org.Phone}</li>
+							</ul>
+						</div>
+						<div class="text">
+							<ul class="footer-socials pps_list pps_flex pps_flex_row pps_flex_center">
+								{foreach name=out item=item from=$socials}
+								<li><a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a></li>
+								{/foreach}
+							</ul>
+						</div>
 					</div>
-					{/foreach}
 				</div>
-			</div>
+			</section>
 		</div>
 	</footer>
 </body>

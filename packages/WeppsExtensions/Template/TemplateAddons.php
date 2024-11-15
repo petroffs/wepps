@@ -4,6 +4,7 @@ namespace WeppsExtensions\Template;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 	class TemplateAddonsWepps extends ExtensionWepps {
@@ -42,18 +43,18 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 			/*
 			 * Информация организации
 			 */
-			$obj = new DataWepps ( "TradeShops" );
-			$res = $obj->get () [0];
-			$smarty->assign ( 'shopInfo', $res );
+			$obj = new DataWepps("Organizations");
+			#UtilsWepps::debug($obj->get()[0],1);
+			$smarty->assign('org',$obj->get()[0]);
 			unset ($obj);
 	
 			/*
 			 * Соцсети
 			 */
-			$obj = new DataWepps ( "ServList" );
-			$res = $obj->getMax ( "t.Categories='Соцсети' and t.DisplayOff=0" );
-			$smarty->assign ('socials', $res );
-			unset ( $obj );
+			$obj = new DataWepps("ServList");
+			$res = $obj->getMax("t.Categories='Соцсети' and t.DisplayOff=0");
+			$smarty->assign('socials',$res);
+			unset($obj);
 	
 			/*
 			 * Нормальное представление

@@ -21,11 +21,12 @@ $(document).ready(function(){
 		fade:true,
 		infinite: true
 	}
-	let carousel = ($(window).width()>480) ? '.carousel' : '.carousel-mobile';
+	var carousel = ($(window).width()>480) ? '.carousel' : '.carousel-mobile';
 	$(carousel).slick(slickOptions);
 	$(window).resize(function() {
-		//	$('.carousel').slick('unslick');
-		//	$('.carousel').slick(slickOptions);
+		carousel = ($(window).width()>480) ? '.carousel' : '.carousel-mobile';
+		$(carousel).slick('unslick');
+		$(carousel).slick(slickOptions);
 	});
 });
 </script>
