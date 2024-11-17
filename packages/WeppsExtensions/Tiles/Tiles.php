@@ -30,4 +30,3 @@ class TilesWepps extends ExtensionWepps {
 		return;
 	}
 }
-?>

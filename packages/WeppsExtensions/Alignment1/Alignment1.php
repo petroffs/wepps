@@ -30,4 +30,3 @@ class Alignment1Wepps extends ExtensionWepps {
 		return;
 	}
 }
-?>
