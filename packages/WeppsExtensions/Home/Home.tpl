@@ -1,13 +1,13 @@
 <div class="page home">
-	<div class="page2">
+	<section>
 		<h1>{$content.Name}</h1>
 		<div class="text">
 			{$content.Text1}
 		</div>
-	</div>
+	</section>
 </div>
 <div class="page services">
-	<div class="page2">
+	<section>
 		<section class="services-wrapper pps_overflow_auto_1 pps_animate">
 			<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin_large">
 			{foreach name="out" key="key" item="item" from=$services}
@@ -20,7 +20,7 @@
 			{/foreach}
 			</div>
 		</section>
-	</div>
+	</section>
 </div>
 <div class="page gallery">
 	<section>

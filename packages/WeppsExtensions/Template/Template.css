@@ -125,6 +125,15 @@ body label.pps.pps_button input:active {
 	cursor: default;
 }
 
+body div.tezt p {
+	margin-top: 0;
+	margin-bottom: var(--step2);
+}
+
+body div.tezt p:not(:last-child) {
+	margin-bottom: 0;
+}
+
 @media screen and (max-width: 1440px) {
 	div.page div.page2,
 	div.page>section {

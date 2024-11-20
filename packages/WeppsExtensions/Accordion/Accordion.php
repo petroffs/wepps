@@ -24,8 +24,8 @@ class AccordionWepps extends ExtensionWepps {
 		/*
 		 * Переменные для глобального шаблона
 		 */
-		$this->headers->css("/ext/Accordion/Accordion.css");
-		$this->headers->js("/ext/Accordion/Accordion.js");
+		$this->headers->css("/ext/Accordion/Accordion.{$this->rand}.css");
+		$this->headers->js("/ext/Accordion/Accordion.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

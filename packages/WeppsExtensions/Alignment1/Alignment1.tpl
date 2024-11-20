@@ -1,9 +1,3 @@
-<div class="pps_interval"></div>
-<div class="pps_interval"></div>
-<div class="pps_interval"></div>
-
-
-
 <div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_top">
 	<div class="pps_test2 pps_flex_12">
 		<div class="pps_flex pps_flex_row pps_flex_margin_small pps_flex_start">
@@ -108,20 +102,19 @@
 	</div>
 </div>
 
-<div class="elements Alignment1">
-	<div class="items">
+<div class="aligment1-wrapper">
+	<div class="aligment1-items">
 		{assign var=images value=$element.Images_FileUrl|strarr}
-		<div
-			class="item pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
-			<div
-				class="img pps_flex_13 pps_flex_12_view_medium pps_flex_11_view_small ">
-				<img
-					src="/pic/catbig{$images.0|default:'/files/lists/DataTbls/6_Image_1337064015_BS16032.jpg'}"
-					class="pps_image" />
+		<section class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
+			<div class="img pps_flex_13 pps_flex_12_view_medium pps_flex_11_view_small ">
+				{if $images.0}
+				<img src="/pic/catdir{$images.0}" class="pps_image"/>
+				{else}
+				<img src="/ext/Template/files/noimage.png" class="pps_image"/>
+				{/if}
 			</div>
-			<div
-				class="descr pps_flex_23 pps_flex_12_view_medium pps_flex_11_view_small">{$element.Text2}</div>
-			<div class="descr">{$element.Text1}</div>
-		</div>
+			<div class="text pps_flex_23 pps_flex_12_view_medium pps_flex_11_view_small">{$element.Text2}</div>
+			<div class="text text-13 pps_flex_11">{$element.Text1}</div>
+		</section>
 	</div>
 </div>

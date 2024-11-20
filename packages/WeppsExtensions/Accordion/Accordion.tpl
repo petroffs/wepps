@@ -1,11 +1,11 @@
-<div class="elements Accordion">
-	<div class="items">
-		{foreach name="out" item="item" key="key" from=$elements} {assign var=images
-		value=$item.Images_FileUrl|strarr}
-		<div class="item{if $key==0} active{/if}" data-key="{$key}">
-			<div class="title">{$item.Name}</div>
-			<div class="descr">{$item.Descr}</div>
-		</div>
+<div class="accordion-wrapper">
+	<div class="accordion-items pps_animate">
+		{foreach name="out" item="item" key="key" from=$elements}
+		{assign var="images" value=$item.Images_FileUrl|strarr}
+		<section>
+			<h2>{$item.Name}</h2>
+			<div class="text">{$item.Descr}</div>
+		</section>
 		{/foreach}
 	</div>
 </div>

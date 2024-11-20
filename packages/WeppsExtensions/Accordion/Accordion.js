@@ -1,14 +1,16 @@
 var readyAccordionInit = function() {
-	$('.Accordion').find('.title').on('click',function(event) {
-		var parent = $(this).parent();
-		$('.Accordion').find('.active').removeClass('active');
-		$('.Accordion').find('.descr').slideUp();
-		setTimeout(function() {
-			parent.find('.descr').slideDown();
-			parent.addClass('active');
-		},500);
-		
-		
+	$('.accordion-items').find('h2').on('click',function(event) {
+		let parent = $(this).parent();
+		let active = $('.accordion-items').find('.active');
+		if (parent.hasClass('active')) {
+			parent.removeClass('active');
+			parent.find('.text').slideUp();	
+		} else {
+			setTimeout(function() {
+				parent.addClass('active');
+				parent.find('.text').slideDown();
+			},100);
+		}
 	});
 }
 $(document).ready(readyAccordionInit);
