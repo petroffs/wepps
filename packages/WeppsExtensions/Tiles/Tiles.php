@@ -21,9 +21,6 @@ class TilesWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		/*
-		 * Переменные для глобального шаблона
-		 */
 		$this->headers->css("/ext/Tiles/Tiles.{$this->rand}.css");
 		$this->headers->js("/ext/Tiles/Tiles.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));

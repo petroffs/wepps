@@ -1,8 +1,8 @@
-
 div.accordion-items {
 	border-radius: var(--step2);
 	overflow: hidden;
 }
+
 div.accordion-items h2 {
 	font-size: var(--font-default);
 	letter-spacing: 2px;
@@ -17,6 +17,7 @@ div.accordion-items h2 {
 div.accordion-items>section h2 {
 	margin: 0 0 var(--stepHalf) 0;
 }
+
 div.accordion-items>section:last-child h2 {
 	margin-bottom: 0;
 }
@@ -29,7 +30,7 @@ div.accordion-items>section h2:after {
 	position: absolute;
 	top: 50%;
 	right: var(--step4);
-	transform: translate(0,-50%);
+	transform: translate(0, -50%);
 }
 
 div.accordion-items>section.active h2:after {

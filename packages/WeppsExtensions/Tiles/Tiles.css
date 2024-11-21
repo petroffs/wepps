@@ -1,56 +1,33 @@
-div.elements.Tiles {
-
+div.page.advantages {
+	background: var(--color-95);
 }
-div.elements.Tiles div.items div.item div.img.img2 {
+
+section.tiles-wrapper>section:not(:first-child) {
+	margin-top: var(--step4);
+}
+
+section.tiles-wrapper>section img {
+	border-radius: var(--step2);
+	display: block;
+}
+
+section.tiles-wrapper>section:nth-child(even) .text {
 	order: 1;
 }
 
-div.elements.Tiles div.items div.item div.descr {
-	padding: 0 20px;
-	font-size: 120%;
+section.tiles-wrapper>section:nth-child(even) .img {
+	order: 2;
 }
 
-div.elements.Tiles div.items div.item div.descr div.title2 {
-	font-size: 120%;
-	color: #666666;
-	text-transform: uppercase;
-	padding-bottom: 20px;
-	
-}
-
-div.elements.Tiles div.items div.item div.descr div.descr2 {
-	
-}
-
-div.elements.Tiles div.items div.item div.descr {
-	
-}
-
-div.elements.Tiles div.items div.item div.descr {
-	
-}
-
-@media screen and (max-width: 768px) {
-	div.elements.Tiles div.items div.item div.descr {
-		padding: 0 10px;
-		font-size: 100%;
-	}
-	div.elements.Tiles div.items div.item div.descr div.title2 {
-		font-size: 100%;
-		
-	}
+section.tiles-wrapper .title {
+	font-size: var(--font-large);
+	font-weight: 600;
+	line-height: 1.2;
+	margin-bottom: var(--step2);
 }
 
 @media screen and (max-width: 480px) {
-	div.elements.Tiles div.items div.item div.img.img2 {
-		order: inherit;
+	section.tiles-wrapper>section:nth-child(even) .text {
+		order: 3;
 	}
-	div.elements.Tiles div.items div.item div.descr>div {
-		margin-bottom: 20px;
-	}
-	div.elements.Tiles div.items div.item div.descr div.title2 {
-
-	padding-bottom: 5px;
-	
-}
 }

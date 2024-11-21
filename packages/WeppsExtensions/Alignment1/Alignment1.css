@@ -17,19 +17,19 @@ div.test {
 	background-color: tomato;
 	height: 50px;
 }
-div.aligment1-wrapper div.text-13 {
+section.aligment1-wrapper div.text-13 {
 	columns: 3;
 	margin-bottom: var(--step2);
 }
-div.aligment1-wrapper div.text-13 p {
+section.aligment1-wrapper div.text-13 p {
 	margin-top: 0;
 }
-div.aligment1-wrapper div.text-13 p:not(:last-of-type) {
+section.aligment1-wrapper div.text-13 p:not(:last-of-type) {
 	margin-bottom: var(--step2);
 }
 
 @media screen and (max-width: 480px) {
-	div.aligment1-wrapper div.text-13 {
+	section.aligment1-wrapper div.text-13 {
 		columns: 2;
 	}	
 }

@@ -1,11 +1,10 @@
 <?php
 namespace WeppsExtensions\Alignment1;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 
 class Alignment1Wepps extends ExtensionWepps {
 	public function request() {
@@ -20,10 +19,6 @@ class Alignment1Wepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		
-		/*
-		 * Переменные для глобального шаблона
-		 */
 		$this->headers->css("/ext/Alignment1/Alignment1.{$this->rand}.css");
 		$this->headers->js("/ext/Alignment1/Alignment1.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));

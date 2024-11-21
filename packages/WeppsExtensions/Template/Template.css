@@ -125,12 +125,12 @@ body label.pps.pps_button input:active {
 	cursor: default;
 }
 
-body div.tezt p {
+body div.text p {
 	margin-top: 0;
 	margin-bottom: var(--step2);
 }
 
-body div.tezt p:not(:last-child) {
+body div.text p:last-child {
 	margin-bottom: 0;
 }
 

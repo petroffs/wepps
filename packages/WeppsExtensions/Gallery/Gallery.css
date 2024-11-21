@@ -1,7 +1,7 @@
-div.gallery-wrapper section {
+section.gallery-wrapper>section {
 	overflow: hidden;
 	border-radius: var(--step2);
 }
-div.gallery-wrapper section:hover {
+section.gallery-wrapper>section:hover {
 	box-shadow: var(--shadow);
 }

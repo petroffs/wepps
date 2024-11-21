@@ -8,7 +8,6 @@ use WeppsExtensions\Template\Blocks\BlocksWepps;
 use WeppsCore\Connect\ConnectWepps;
 
 class TemplateWepps extends ExtensionWepps {
-	
 	function request() {
 		$smarty = SmartyWepps::getSmarty();
 		$smarty->assign('parent',$this->navigator->parent);
@@ -66,5 +65,3 @@ class TemplateWepps extends ExtensionWepps {
 		$smarty->display(__DIR__.'/'.$this->navigator->tpl['tpl']);
 	}
 }
-
-?>

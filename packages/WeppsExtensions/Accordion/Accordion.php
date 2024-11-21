@@ -1,5 +1,6 @@
 <?php
 namespace WeppsExtensions\Accordion;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
@@ -20,10 +21,6 @@ class AccordionWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-		
-		/*
-		 * Переменные для глобального шаблона
-		 */
 		$this->headers->css("/ext/Accordion/Accordion.{$this->rand}.css");
 		$this->headers->js("/ext/Accordion/Accordion.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));

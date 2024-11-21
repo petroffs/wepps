@@ -7,9 +7,8 @@
 	</section>
 </div>
 <div class="page services">
-	<section>
-		<section class="services-wrapper pps_overflow_auto_1 pps_animate">
-			<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin_large">
+	<section class="pps_overflow_auto">
+		<section class="services-wrapper pps_flex pps_flex_row pps_flex_row_str pps_flex_margin_large">
 			{foreach name="out" key="key" item="item" from=$services}
 				<section class="pps_flex_14 pps_flex_12_view_medium">
 					<div class="services-img">
@@ -18,7 +17,6 @@
 					<div class="title">{$item.Name}</div>
 				</section>
 			{/foreach}
-			</div>
 		</section>
 	</section>
 </div>

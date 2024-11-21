@@ -1,5 +1,6 @@
 <?php
 namespace WeppsExtensions\Gallery;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
@@ -21,10 +22,6 @@ class GalleryWepps extends ExtensionWepps {
 				ExceptionWepps::error404();
 				break;
 		}
-
-		/*
-		 * Переменные для глобального шаблона
-		 */
 		$this->headers->css("/packages/vendor/dimsemenov/magnific-popup/dist/magnific-popup.css");
 		$this->headers->js("/packages/vendor/dimsemenov/magnific-popup/dist/jquery.magnific-popup.js");
 		$this->headers->css("/ext/Gallery/Gallery.{$this->rand}.css");
@@ -33,4 +30,3 @@ class GalleryWepps extends ExtensionWepps {
 		return;
 	}
 }
-?>

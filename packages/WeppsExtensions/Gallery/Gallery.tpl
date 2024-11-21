@@ -1,5 +1,4 @@
-<div class="pps_interval_large"></div>
-<div class="gallery-wrapper pps_flex pps_flex_row pps_flex_center pps_flex_row_str pps_flex_margin_large pps_animate">
+<section class="gallery-wrapper pps_flex pps_flex_row pps_flex_center pps_flex_row_str pps_flex_margin_large pps_animate">
 	{foreach name=out item=item from=$elements}
 	<section class="pps_flex_14 pps_flex_12_view_medium pps_flex_11_view_small">
 		<div class="gallery-img pps_overflow">
@@ -7,5 +6,5 @@
 		</div>
 	</section>
 	{/foreach}
-</div>
-<div class="pps_interval_large"></div>
+</section>
+<div class="pps_interval_medium"></div>
