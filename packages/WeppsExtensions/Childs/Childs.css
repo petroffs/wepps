@@ -1,20 +1,27 @@
-div.ext-childs {
+section.childs-wrapper {
 	width: auto;
 	overflow: hidden;
 }
-div.ext-childs a {
+section.childs-wrapper>section {
+	overflow: hidden;
+	border-radius: var(--step2);
+}
+section.childs-wrapper a {
 	text-decoration: none;
-	color: var(--color1);
-	background: var(--color3_light3);
-	padding: var(--step4);
-	display: block
+	color: var(--color-05);
+	background: var(--color-95);
+	display: block;
 }
-div.ext-childs div.img {
-	background: #fff;
-	
+div.childs-img {
+	background: var(--color-100);
 }
-div.ext-childs div.title {
-	font-size: var(--font_medium);
-	font-weight: 500;
-	margin-top: var(--step2);
+div.childs-img img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+div.childs-title {
+	font-weight: 600;
+	background-color: var(--color-95);
+	padding: var(--step2);
 }

@@ -15,7 +15,7 @@ class ServicesWepps extends ExtensionWepps {
 				$extensionConditions = "";
 				$obj = new DataWepps("Services");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,5,$this->page,"t.Priority");
+				$res = $obj->getMax($extensionConditions,2,$this->page,"t.Priority");
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
@@ -32,14 +32,10 @@ class ServicesWepps extends ExtensionWepps {
 				break;
 		}
 		
-		/*
-		 * Переменные для глобального шаблона
-		 */
 		$this->headers->css("/ext/Services/Services.{$this->rand}.css");
 		$this->headers->js("/ext/Services/Services.{$this->rand}.js");
-		$this->headers->css ( "/ext/Template/Paginator/Paginator.css" );
+		$this->headers->css ( "/ext/Template/Paginator/Paginator.{$this->rand}.css" );
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }
-?>

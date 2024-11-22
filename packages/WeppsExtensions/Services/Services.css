@@ -1,55 +1,24 @@
-.elements.Services {
+div.services-wrapper {
+	border-radius: var(--step2);
+	overflow: hidden;
+}
+section.services-wrapper {
+	background: var(--color-95);
+	margin-bottom: var(--step4);
+}
+
+section.services-wrapper>section {
+	background-color: var(--color-100);
+	border-radius: var(--step2);
 	overflow: hidden;
 }
 
-.elements.Services .items {
-	background: transparent;
-	width: auto;
-	margin: 0 -10px;
-}
-
-.elements.Services .items .item {
-	cursor: pointer;
-}
-
-.elements.Services .items .item .title {
-	font-size: 160%;
-}
-
-.elements.Services .items .item .title a {
-	color: black;
+section.services-wrapper a {
+	font-size: var(--font-medium);
 	text-decoration: none;
+	color: var(--color-05);
 }
 
-.elements.Services .items .item .descr {
-	
-}
-
-.elements.Services .items .item .date {
-	font-size: 80%;
-}
-
-.element-wrapper.Services {
-	
-}
-
-.element-wrapper.Services .element {
-	padding: 10px;
-}
-
-.element-wrapper.Services .element .img {
-	
-}
-
-.element-wrapper.Services .element .date {
-	font-size: 80%;
-	margin-top: 10px;
-}
-
-.element-wrapper.Services .element .descr {
-	
-}
-
-.element-wrapper.Services .element .img {
-	
+div.services-title {
+	padding: var(--step2);
 }

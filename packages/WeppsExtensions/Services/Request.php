@@ -26,4 +26,3 @@ class RequestServicesWepps extends RequestWepps {
 $request = new RequestServicesWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>
