@@ -1,6 +1,9 @@
 .exampletest-wrapper>.pps_blocks>.pps_block {
 	min-height: 100px;
-	text-align: center;
-	background: tomato;
+	background: var(--color-warning);
 	position: relative;
+	border-radius: var(--step2);
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

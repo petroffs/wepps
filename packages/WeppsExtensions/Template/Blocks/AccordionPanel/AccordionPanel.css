@@ -1,73 +1,87 @@
 .page.panel-accordion {
-	background-color: antiquewhite;
+	background-color: var(--color-95);
 	margin-top: 20px;
 	padding-top: var(--step4);
 	padding-bottom: var(--step4);
 }
+
 .panel-accordion-header {
 	position: relative;
-	padding: 0 25px;
+	padding: 0 var(--step4);
 }
+
 .panel-accordion-header>.title {
-	font-size: 36px;
-	max-width: 900px;
-	line-height: 120%;
+	font-size: var(--font-large);
 }
+
 .panel-accordion-header>.text {
-	font-size: 24px;
-	max-width: 900px;
+	font-size: var(--font-medium);
 }
+
 .panel-accordion-wrapper>.img {
-	background: #666;
-	padding: 50px 20px 0 20px;
+	padding: var(--step6) var(--step2) 0 var(--step2);
 }
+
 .panel-accordion-wrapper>.img>.img {
 	max-width: max-content;
 	display: block;
 	margin: 0 auto;
 }
+
 .panel-accordion-wrapper>.img>.img>img {
 	max-width: 100%;
 	height: auto;
 }
+
+.panel-accordion-wrapper>.pps_blocks {
+	margin-top: var(--step2);
+	border-radius: var(--step2);
+	overflow: hidden;
+}
+
 .panel-accordion-wrapper>.pps_blocks>.pps_block {
-	background: #E5E5E5;
-	margin-top: 20px;
-	padding: 20px;
+	background: var(--color-85);
+	margin-top: var(--stepHalf);
+	padding: var(--step4);
 	position: relative;
 }
+
+.panel-accordion-wrapper>.pps_blocks>.pps_block:first-child {
+	margin-top: 0;
+}
+
 .panel-accordion-wrapper>.pps_blocks>.pps_block>div.title {
-	font-size: 24px;
+	font-size: var(--font-medium);
 	position: relative;
 	cursor: pointer;
 }
+
 .panel-accordion-wrapper>.pps_blocks>.pps_block>div.title:after {
 	content: '';
-	background: #fff url(files/ico-plus.svg) center center no-repeat;
-	width: 32px;
-	height: 32px;
+	background: var(--color-95) url(files/ico-plus.svg) center center no-repeat;
+	width: var(--step6);
+	height: var(--step6);
 	border-radius: 50%;
 	display: block;
 	position: absolute;
 	top: 0;
 	right: 0px;
 }
+
 .panel-accordion-wrapper>.pps_blocks>.pps_block.active>div.title:after {
 	background-image: url(files/ico-minus.svg);
 }
+
 .panel-accordion-wrapper>.pps_blocks>.pps_block>div.text {
-	padding-top: 30px;
+	padding-top: var(--step4);
 }
+
 .panel-accordion-wrapper>.pps_blocks>.pps_block>div.text p {
-	max-width: 900px;
+	columns: 2;
 }
-/*
-.panel-accordion .pps_admin_list {
-	right: 80px;
-}
-*/
+
 @media screen and (max-width: 480px) {
-	.panel-accordion-wrapper>.pps_blocks>.pps_block>div.title {
-		font-size: 18px;
-	}	
+	.panel-accordion-wrapper>.pps_blocks>.pps_block>div.text p {
+		columns: 1;
+	}
 }

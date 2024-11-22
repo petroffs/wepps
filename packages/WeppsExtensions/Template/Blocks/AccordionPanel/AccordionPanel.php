@@ -1,6 +1,6 @@
 <?php
 namespace WeppsExtensions\Template\Blocks\AccordionPanel;
-use WeppsCore\Core\NavigatorWepps;
+
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\SmartyWepps;
 
@@ -12,4 +12,3 @@ class AccordionPanelWepps extends ExtensionWepps {
 		$this->headers->js("/ext/Template/Blocks/AccordionPanel/AccordionPanel.{$this->rand}.js");
 	}
 }
-?>

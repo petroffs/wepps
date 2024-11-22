@@ -1,6 +1,6 @@
 <?php
 namespace WeppsExtensions\Template\Blocks\Example;
-use WeppsCore\Core\NavigatorWepps;
+
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\SmartyWepps;
 
@@ -12,4 +12,3 @@ class ExampleWepps extends ExtensionWepps {
 		$this->headers->js("/ext/Template/Blocks/Example/Example.{$this->rand}.js");
 	}
 }
-?>
