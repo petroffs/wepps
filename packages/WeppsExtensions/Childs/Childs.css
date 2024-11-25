@@ -1,25 +1,34 @@
 section.childs-wrapper {
 	width: auto;
-	overflow: hidden;
+	
 }
+
 section.childs-wrapper>section {
-	overflow: hidden;
+	
 	border-radius: var(--step2);
 }
+
+section.childs-wrapper>section:hover {
+	box-shadow: var(--shadow);
+}
+
 section.childs-wrapper a {
 	text-decoration: none;
 	color: var(--color-05);
 	background: var(--color-95);
 	display: block;
 }
+
 div.childs-img {
 	background: var(--color-100);
 }
+
 div.childs-img img {
 	width: 100%;
 	height: auto;
 	display: block;
 }
+
 div.childs-title {
 	font-weight: 600;
 	background-color: var(--color-95);
