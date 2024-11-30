@@ -1,55 +1,40 @@
-.elements.News {
+section.news-wrapper.pps_flex {
+	margin-bottom: var(--step4);
+	width: auto;
+}
+
+section.news-wrapper>section {
+	border-radius: var(--step2);
 	overflow: hidden;
 }
 
-.elements.News .items {
-	background: transparent;
-	width: auto;
-	margin: 0 -10px;
+section.news-wrapper>section:hover {
+	box-shadow: var(--shadow);
 }
 
-.elements.News .items .item {
-	cursor: pointer;
-}
-
-.elements.News .items .item .title {
-	font-size: 160%;
-}
-
-.elements.News .items .item .title a {
-	color: black;
+section.news-wrapper a {
 	text-decoration: none;
+	color: var(--color-05);
+	background: var(--color-95);
+	height: 100%;
+	display: block;
 }
 
-.elements.News .items .item .descr {
-	
+div.news-img {
+	background: var(--color-100);
 }
 
-.elements.News .items .item .date {
-	font-size: 80%;
+div.news-img img {
+	width: 100%;
+	height: auto;
+	display: block;
 }
 
-.element-wrapper.News {
-	
+div.news-text {
+	background-color: var(--color-95);
+	padding: var(--step2);
+	height: 100%;
 }
-
-.element-wrapper.News .element {
-	padding: 10px;
-}
-
-.element-wrapper.News .element .img {
-	
-}
-
-.element-wrapper.News .element .date {
-	font-size: 80%;
-	margin-top: 10px;
-}
-
-.element-wrapper.News .element .descr {
-	
-}
-
-.element-wrapper.News .element .img {
-	
+div.news-text>.title {
+	font-weight: 600;
 }
