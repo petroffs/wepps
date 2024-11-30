@@ -5,7 +5,6 @@ use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 class NewsWepps extends ExtensionWepps {
 	public function request() {
@@ -16,7 +15,7 @@ class NewsWepps extends ExtensionWepps {
 				$extensionConditions = "";
 				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions, 2, $this->page, "t.Priority");
+				$res = $obj->getMax($extensionConditions,12,$this->page,"t.NDate desc");
 				$smarty->assign('elements', $res);
 				$smarty->assign('paginator', $obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl' ));
@@ -28,7 +27,7 @@ class NewsWepps extends ExtensionWepps {
 				$extensionConditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
 				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,3,1,"t.Priority");
+				$res = $obj->getMax($extensionConditions,3,1,"t.NDate");
 				$smarty->assign('elements',$res);
 			break;
 		}
@@ -43,4 +42,3 @@ class NewsWepps extends ExtensionWepps {
 		return;
 	}
 }
-?>

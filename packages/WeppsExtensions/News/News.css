@@ -6,6 +6,7 @@ section.news-wrapper.pps_flex {
 section.news-wrapper>section {
 	border-radius: var(--step2);
 	overflow: hidden;
+	position: relative;
 }
 
 section.news-wrapper>section:hover {
