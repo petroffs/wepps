@@ -1,11 +1,10 @@
 section.childs-wrapper {
 	width: auto;
-	
 }
 
 section.childs-wrapper>section {
-	
 	border-radius: var(--step2);
+	overflow: hidden;
 }
 
 section.childs-wrapper>section:hover {
