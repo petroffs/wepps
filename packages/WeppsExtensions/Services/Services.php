@@ -12,10 +12,10 @@ class ServicesWepps extends ExtensionWepps {
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Services/Services.tpl';
-				$extensionConditions = "";
+				$conditions = "";
 				$obj = new DataWepps("Services");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,20,$this->page,"t.Priority");
+				$res = $obj->getMax($conditions,20,$this->page,"t.Priority");
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
@@ -24,11 +24,12 @@ class ServicesWepps extends ExtensionWepps {
 				$this->tpl = 'packages/WeppsExtensions/Services/ServicesItem.tpl';
 				$res = $this->getItem("Services");
 				$smarty->assign('element',$res);
-				$extensionConditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
+				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
 				$obj = new DataWepps("Services");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,3,1,"t.Priority");
+				$res = $obj->getMax($conditions,3,1,"t.Priority");
 				$smarty->assign('elements',$res);
+				$smarty->assign('normalView',0);
 				break;
 		}
 		$this->headers->css("/ext/Services/Services.{$this->rand}.css");

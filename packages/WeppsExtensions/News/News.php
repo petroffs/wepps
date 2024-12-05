@@ -12,10 +12,10 @@ class NewsWepps extends ExtensionWepps {
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/News/News.tpl';
-				$extensionConditions = "";
+				$conditions = "";
 				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,12,$this->page,"t.NDate desc");
+				$res = $obj->getMax($conditions,12,$this->page,"t.NDate desc");
 				$smarty->assign('elements', $res);
 				$smarty->assign('paginator', $obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl' ));
@@ -23,19 +23,15 @@ class NewsWepps extends ExtensionWepps {
 			default:
 				$this->tpl = 'packages/WeppsExtensions/News/NewsItem.tpl';
 				$res = $this->getItem("News");
-				$smarty->assign('element', $res);
-				$extensionConditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
+				$smarty->assign('element',$res);
+				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
 				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,3,1,"t.NDate");
+				$res = $obj->getMax($conditions,3,1,"t.NDate");
 				$smarty->assign('elements',$res);
 				$smarty->assign('normalView',0);
 			break;
 		}
-		
-		/*
-		 * Переменные для глобального шаблона
-		 */
 		$this->headers->css("/ext/News/News.{$this->rand}.css");
 		$this->headers->js("/ext/News/News.{$this->rand}.js");
 		$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");

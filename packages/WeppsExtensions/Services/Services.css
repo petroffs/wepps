@@ -22,3 +22,29 @@ section.services-wrapper a {
 div.services-title {
 	padding: var(--step2);
 }
+
+div.page.services-item {
+	padding-top: var(--step6);
+	position: relative;
+}
+
+div.page.services-item h1 {
+	margin-top: var(--step2);
+}
+
+section.services-item-wrapper>div {
+	background-color: var(--color-100);
+	border-radius: var(--step2);
+	position: relative;
+	overflow: hidden;
+}
+
+div.services-item-img img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+div.services-item-date {
+	color: var(--color-50);
+}
