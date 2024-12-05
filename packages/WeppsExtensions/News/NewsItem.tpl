@@ -6,7 +6,7 @@
 				{$element.Id|pps:"News"}
 				{if $images.0}
 				<div class="pps_flex_12 pps_flex_11_view_medium">
-					<div class="news-item-img"><img src="/pic/full{$images.0}"/></div>
+					<div class="news-item-img"><img src="/pic/catbigv{$images.0}"/></div>
 				</div>
 				{/if}
 				<div class="pps_flex_12 pps_flex_11_view_medium">
