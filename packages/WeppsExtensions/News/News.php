@@ -29,6 +29,7 @@ class NewsWepps extends ExtensionWepps {
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->getMax($extensionConditions,3,1,"t.NDate");
 				$smarty->assign('elements',$res);
+				$smarty->assign('normalView',0);
 			break;
 		}
 		

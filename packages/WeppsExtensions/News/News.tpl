@@ -6,9 +6,9 @@
 		<a href="{$item.Url}">
 			<div class="news-img">
 				{if $images.0}
-				<img src="/pic/catbig{$images.0}" class="pps_image"/>
+				<img src="/pic/catbig{$images.0}"/>
 				{else}
-				<img src="/ext/Template/files/noimage640.png" class="pps_image"/>
+				<img src="/ext/Template/files/noimage640.png"/>
 				{/if}
 			</div>
 			<div class="news-text">

@@ -15,5 +15,8 @@
 		{/foreach}
 	</section>
 </div>
+{if $paginatorTpl}
+<div class="pps_interval"></div>
 {$paginatorTpl}
+{/if}
 <div class="pps_interval_medium"></div>
