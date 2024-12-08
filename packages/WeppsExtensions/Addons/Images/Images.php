@@ -335,4 +335,3 @@ class ImagesWepps {
 		ConnectWepps::$instance->close();
 	}
 }
-?>
