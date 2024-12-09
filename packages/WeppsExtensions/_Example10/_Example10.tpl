@@ -1,4 +1,4 @@
-<div class="elements Example">
+<div class="elements _Example1.0">
 	<div class="items">
 		{foreach name="out" item="item" from=$elements} {assign var=images
 		value=$item.Images_FileUrl|strarr}

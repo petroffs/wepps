@@ -1,11 +1,12 @@
 <?php
-namespace WeppsExtensions\Example;
+namespace WeppsExtensions\Example11;
+
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 
-class ExampleWepps extends ExtensionWepps {
+class Example11Wepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
 		switch (NavigatorWepps::$pathItem) {
@@ -41,4 +42,3 @@ class ExampleWepps extends ExtensionWepps {
 		return;
 	}
 }
-?>
