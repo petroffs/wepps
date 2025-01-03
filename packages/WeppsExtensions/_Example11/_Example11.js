@@ -1,8 +1,8 @@
-var readyExample11Init = function() {
+var ready_Example11Init = function() {
 	$('a#ajax-test').on('click',function(e) {
 		e.preventDefault();
 		let id = $(this).data('id');
 		layoutWepps.win({ size:'medium',data:'action=test&id='+id,url:'/ext/_Example11/Request.php' });
 	})
 }
-$(document).ready(readyExample11Init);
+$(document).ready(ready_Example11Init);

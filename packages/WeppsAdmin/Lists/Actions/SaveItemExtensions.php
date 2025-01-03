@@ -3,6 +3,7 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class SaveItemExtensionsWepps extends RequestWepps {
 	public $noclose = 1;
@@ -38,16 +39,19 @@ class SaveItemExtensionsWepps extends RequestWepps {
 			mkdir($dir, 0755, true);
 		}
 		$filename = "{$dir}/{$ext}" . $fileend;
-		$filesource = "Example{$fileend}";
+		$filesource = "_Example{$stamp}{$fileend}";
 		if ($fileend == "Request.php" || $fileend == "RequestExample.tpl") {
 			$filename = "{$dir}/{$fileend}";
 			$filesource = $fileend;
 		}
 		if (!is_file($filename)) {
 			copy("{$dirstart}/_Example{$stamp}/{$filesource}", $filename);
-			$fileData = file_get_contents($filename);
-			$fileData = str_replace("Example", $ext, $fileData);
-			file_put_contents($filename, $fileData);
+			$filedata = file_get_contents($filename);
+			if (strstr($filename, '.tpl') || strstr($filename, '.css')) {
+				$ext = strtolower($ext);
+			} 
+			$filedata = str_replace("_Example{$stamp}", $ext, $filedata);
+			file_put_contents($filename, $filedata);
 		}
 	}
 }
