@@ -12,13 +12,14 @@ class NewsWepps extends ExtensionWepps {
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/News/News.tpl';
-				$conditions = "";
+				$conditions = 't.DisplayOff=0';
 				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->getMax($conditions,12,$this->page,"t.NDate desc");
 				$smarty->assign('elements', $res);
 				$smarty->assign('paginator', $obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl' ));
+				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 			break;
 			default:
 				$this->tpl = 'packages/WeppsExtensions/News/NewsItem.tpl';
@@ -34,7 +35,6 @@ class NewsWepps extends ExtensionWepps {
 		}
 		$this->headers->css("/ext/News/News.{$this->rand}.css");
 		$this->headers->js("/ext/News/News.{$this->rand}.js");
-		$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

@@ -36,5 +36,7 @@ $smarty->assign('user',@ConnectWepps::$projectData['user']);
  */
 $headers = new TemplateHeadersWepps();
 $headers::$rand = "dev-1";
-$headers::$rand .= "-".rand(100,10000000);
+if (ConnectWepps::$projectDev['debug']==1) {
+	$headers::$rand .= "-".rand(100,10000000);
+}
 ?>

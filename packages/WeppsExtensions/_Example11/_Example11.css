@@ -1,0 +1,68 @@
+section._Example11-wrapper.pps_flex {
+	margin-bottom: var(--step4);
+	width: auto;
+}
+
+section._Example11-wrapper>section {
+	border-radius: var(--step2);
+	overflow: hidden;
+	position: relative;
+}
+
+section._Example11-wrapper>section:hover {
+	box-shadow: var(--shadow);
+}
+
+section._Example11-wrapper a {
+	text-decoration: none;
+	color: var(--color-05);
+	background: var(--color-95);
+	height: 100%;
+	display: block;
+}
+
+div._Example11-img {
+	background: var(--color-100);
+}
+
+div._Example11-img img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+div._Example11-text {
+	background-color: var(--color-95);
+	padding: var(--step2);
+	height: 100%;
+}
+
+div._Example11-text>.title {
+	font-weight: 600;
+}
+
+div.page._Example11-item {
+	padding-top: var(--step6);
+	position: relative;
+}
+
+div.page._Example11-item h1 {
+	margin-top: var(--step2);
+}
+
+section._Example11-item-wrapper>div {
+	background-color: var(--color-100);
+	border-radius: var(--step2);
+	position: relative;
+	overflow: hidden;
+}
+
+div._Example11-item-img img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+div._Example11-item-date {
+	color: var(--color-50);
+}

@@ -189,9 +189,9 @@ class ImagesWepps {
 	}
 	public function output() {
 		header('Content-type: '.$this->mime);
-		header("Last-Modified: " . gmdate("D, d M Y H:i:s",mktime (0,0,0,1,1,2000)) . " GMT");
-		header("Expires: Mon, 26 Jul 2000 05:00:00 GMT");
-		header("Cache-Control: max-age=10000000, s-maxage=1000000, proxy-revalidate, must-revalidate");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Expires: ".gmdate("D, d M Y H:i:s",strtotime('+1 years'))." GMT");
+		header("Cache-Control: max-age=31536000, s-maxage=31536000, must-revalidate");
 		switch ($this->mime) {
 			case "image/png" :
 				imagepng($this->target,null,5);

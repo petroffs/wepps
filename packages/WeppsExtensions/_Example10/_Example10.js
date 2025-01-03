@@ -1,4 +1,4 @@
-var ready_Example1.0Init = function() {
+var ready_Example10Init = function() {
 	
 }
-$(document).ready(ready_Example1.0Init);
+$(document).ready(ready_Example10Init);

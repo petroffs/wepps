@@ -1,43 +1,40 @@
 <?php
-namespace WeppsExtensions\Example11;
+namespace WeppsExtensions\_Example11;
 
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 
-class Example11Wepps extends ExtensionWepps {
+class _Example11Wepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
 		switch (NavigatorWepps::$pathItem) {
 			case '':
-				$this->tpl = 'packages/WeppsExtensions/Example/Example.tpl';
-				$extensionConditions = "";
-				$obj = new DataWepps("Example");
+				$this->tpl = 'packages/WeppsExtensions/_Example11/_Example11.tpl';
+				$conditions = "t.DisplayOff=0";
+				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,5,$this->page,"t.Priority");
+				$res = $obj->getMax($conditions,6,$this->page,"t.Priority desc");
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
+				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 				break;
 			default:
-				$this->tpl = 'packages/WeppsExtensions/Example/ExampleItem.tpl';
-				$res = $this->getItem("Example");
+				$this->tpl = 'packages/WeppsExtensions/_Example11/_Example11Item.tpl';
+				$res = $this->getItem("News");
 				$smarty->assign('element',$res);
-				$extensionConditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
-				$obj = new DataWepps("Example");
+				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
+				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($extensionConditions,3,1,"t.Priority");
+				$res = $obj->getMax($conditions,3,1,"t.Priority desc");
 				$smarty->assign('elements',$res);
+				$smarty->assign('normalView',0);
 				break;
 		}
-
-		/*
-		 * Переменные для глобального шаблона
-		 */
-		$this->headers->css("/ext/Example/Example.{$this->rand}.css");
-		$this->headers->js("/ext/Example/Example.{$this->rand}.js");
-		$this->headers->css ("/ext/Template/Paginator/Paginator.{$this->rand}.css");
+		$this->headers->css("/ext/_Example11/_Example11.{$this->rand}.css");
+		$this->headers->js("/ext/_Example11/_Example11.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

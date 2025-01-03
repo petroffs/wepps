@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\News;
 use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Exception\ExceptionWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -13,12 +14,14 @@ class RequestNewsWepps extends RequestWepps {
 				exit();
 				break;
 			default:
-				$this->tpl = "RequestNews.tpl";
+				ExceptionWepps::error(404);
+				exit();
 				break;
 		}
 	}
 }
 $request = new RequestNewsWepps($_REQUEST);
+/** @var \Smarty $smarty */
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
 ?>
