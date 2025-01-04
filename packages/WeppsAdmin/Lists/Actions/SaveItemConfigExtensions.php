@@ -17,12 +17,14 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
 	    $this->element = $this->get['element'];
 	    $root = ConnectWepps::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='s_ConfigExtensions') {
-    		$this->copyExts($this->element['Alias'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['Alias'], ".tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['Alias'], "Test.tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['Alias'], ".css", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['Alias'], ".js",  "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
-    		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '1.0');
+	    	if ($this->element['CopyFiles'] == '1.0') {
+	    		$this->copyExts($this->element['Alias'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
+	    		$this->copyExts($this->element['Alias'], ".tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
+	    		$this->copyExts($this->element['Alias'], "Test.tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
+	    		$this->copyExts($this->element['Alias'], ".css", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
+	    		$this->copyExts($this->element['Alias'], ".js",  "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
+	    		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
+	    	}
 	    }
 	    $perm = AdminWepps::getPermissions(1,array('list'=>'s_ConfigExtensions'));
 	    if ($perm['status']==1) {
@@ -35,25 +37,26 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
 	     */
 	    #exit();
 	}
-	
 	private function copyExts($ext, $fileend, $dirstart, $stamp) {
 		$ext = ucfirst($ext);
 		$dir = "{$dirstart}/{$ext}";
-		if (! is_dir($dir)) {
+		if (!is_dir($dir)) {
 			mkdir($dir, 0755, true);
 		}
 		$filename = "{$dir}/{$ext}" . $fileend;
-		$filesource = "Example{$fileend}";
+		$filesource = "_Example{$stamp}{$fileend}";
 		if ($fileend == "Request.php") {
 			$filename = "{$dir}/{$fileend}";
 			$filesource = $fileend;
 		}
 		if (!is_file($filename)) {
 			copy("{$dirstart}/_Example{$stamp}/{$filesource}", $filename);
-			$fileData = file_get_contents($filename);
-			$fileData = str_replace("Example", $ext, $fileData);
-			file_put_contents($filename, $fileData);
+			$filedata = file_get_contents($filename);
+			if (strstr($filename, '.tpl') || strstr($filename, '.css')) {
+				$ext = strtolower($ext);
+			}
+			$filedata = str_replace("_Example{$stamp}", $ext, $filedata);
+			file_put_contents($filename, $filedata);
 		}
 	}
 }
-?>

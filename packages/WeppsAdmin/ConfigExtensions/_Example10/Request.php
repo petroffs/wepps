@@ -10,11 +10,7 @@ require_once '../../../../config.php';
 require_once '../../../../autoloader.php';
 require_once '../../../../configloader.php';
 
-/**
- * @var \Smarty $smarty
- */
-
-class RequestExampleWepps extends RequestWepps {
+class Request_Example10Wepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
 		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
@@ -22,14 +18,15 @@ class RequestExampleWepps extends RequestWepps {
 		}
 		switch ($action) {
 			case "test":
-				UtilsWepps::debug('test1',1);
+				UtilsWepps::modal('Тест ОК1');
 				break;
 			default:
-				ExceptionWepps::error404();
+				ExceptionWepps::error(404);
 				break;
 		}
 	}
 }
-$request = new RequestExampleWepps($_REQUEST);
+$request = new Request_Example10Wepps($_REQUEST);
+/** @var \Smarty $smarty */
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

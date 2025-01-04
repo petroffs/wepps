@@ -2,12 +2,9 @@
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
 use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Core\DataWepps;
 
 class ProcessingWepps extends RequestWepps {
 	public function request($action="") {
@@ -19,6 +16,8 @@ class ProcessingWepps extends RequestWepps {
 				'Name'=>$this->title
 		]);
 		$this->headers = new TemplateHeadersWepps();
+		$smarty = SmartyWepps::getSmarty();
+		$smarty->assign('url','/packages/WeppsAdmin/ConfigExtensions/Processing/Request.php');
 		if ($action=="") {
 			return;
 		}
@@ -39,4 +38,3 @@ class ProcessingWepps extends RequestWepps {
 		]);
 	}
 }
-?>
