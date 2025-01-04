@@ -21,7 +21,7 @@ class RequestOrdersWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
 		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
-			ExceptionWepps::error404();
+			ExceptionWepps::error(404);
 		}
 		switch ($action) {
 			case "test":
@@ -30,14 +30,14 @@ class RequestOrdersWepps extends RequestWepps {
 			case "viewOrder":
 			    $this->tpl = "RequestViewOrder.tpl";
 			    if (empty($this->get['id'])) {
-			    	ExceptionWepps::error404();
+			    	ExceptionWepps::error(404);
 			    }
 			    $id = addslashes($this->get['id']);
 			    $order = $this->getOrder($id);
 			    break;
 			case "setPositionQty":
 				if (empty($this->get['order']) || empty($this->get['price']) || empty($this->get['qty']) || empty($this->get['id'])) {
-					ExceptionWepps::error404();
+					ExceptionWepps::error(404);
 				}
 				$orderId = addslashes($this->get['order']);
 				$qty = addslashes($this->get['qty']);
@@ -267,7 +267,7 @@ class RequestOrdersWepps extends RequestWepps {
 		
 		$obj = new DataWepps("TradeMessages");
 		$messages = $obj->getMax("t.DisplayOff=0 and OrderId='{$id}'",2000,1,"t.Priority");
-		
+		UtilsWepps::debug(3,1);
 		$this->assign('order', $order);
 		$this->assign('positions', $positions);
 		$this->assign('statuses',$statuses);
@@ -298,7 +298,7 @@ class RequestOrdersWepps extends RequestWepps {
 				</td>
 			</tr>
 			";
-	    foreach ($order['positions'] as $key =>$value) {
+	    foreach ($order['positions'] as $value) {
 	        
 	        $options = json_decode($value['Options'],true);
 	        $optionsText = "";
@@ -333,6 +333,6 @@ class RequestOrdersWepps extends RequestWepps {
 	}
 }
 $request = new RequestOrdersWepps ($_REQUEST);
+/** @var \Smarty $smarty */
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>
