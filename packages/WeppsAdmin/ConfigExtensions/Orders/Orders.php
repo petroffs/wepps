@@ -44,8 +44,8 @@ class OrdersWepps extends RequestWepps {
 				 * Статусы
 				 */
 				$sql = "select ts.Id,ts.Name,count(o.Id) as Co
-                        from TradeStatus ts
-                        left join TradeOrders o on o.TStatus = ts.Id
+                        from OrdersStatuses ts
+                        left join Orders o on o.OStatus = ts.Id
                         where ts.DisplayOff=0
                         group by ts.Id
                         order by ts.Priority";
@@ -58,17 +58,17 @@ class OrdersWepps extends RequestWepps {
 				 */
 				$condition = "";
 				if ($statusActive!=7) {
-					$condition = "t.TStatus = '$statusActive'";
+					$condition = "t.OStatus = '$statusActive'";
 				}
 				$page = (empty($_GET['page'])) ? 1 : (int) $_GET['page'];
-				$obj = new DataWepps("TradeOrders");
+				$obj = new DataWepps("Orders");
 				$orders = $obj->getMax($condition,20,$page,"t.Id desc");
 				if (!empty($orders[0]['Id'])) {
 					$smarty->assign('orders',$orders);
 				}
 				break;
 			default:
-				ExceptionWepps::error404();
+				ExceptionWepps::error(404);
 				break;
 		}
 		array_push($this->way, [
