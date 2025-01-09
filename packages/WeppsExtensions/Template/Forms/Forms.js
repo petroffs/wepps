@@ -1,3 +1,7 @@
+function autoResizeTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+}
 var readyFormsInit = function() {
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();
@@ -33,6 +37,10 @@ var readyFormsInit = function() {
 		var t = $(this).closest('form');
 		document.getElementById(t.attr('id')).reset();
 	});
+	$('.pps.pps_area').find('textarea').on('input', function () {
+		autoResizeTextarea(this);
+		
+	}).trigger('input');
 }
 $(document).ready(readyFormsInit);
 

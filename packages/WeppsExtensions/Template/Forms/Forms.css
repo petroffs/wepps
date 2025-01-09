@@ -217,6 +217,8 @@ label.pps.pps_area textarea {
 	border-radius: var(--stepHalf);
 	padding: 4px 5px;
 	margin: 0 !important;
+	resize: none;
+	overflow: hidden;
 	display: block;
 }
 

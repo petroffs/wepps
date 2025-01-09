@@ -1,54 +1,35 @@
 <a href="" class="pps_button pps_animate">Тест</a>
-<div class="elements ContactsMain">
-	<div
-		class="items pps_flex pps_flex_row pps_flex_row_top pps_animate">
-		{foreach name="out" item="item" from=$elementsMain}
-		<div class="item pps_flex_12 pps_flex_11_view_small ">
-			<div class="title">{$item.Name}</div>
-			{if $item.Street}
-			<div class="param mapData" data-coord="{$item.LatLng}">{$item.Street}</div>
-			{/if} {if $item.Email}
-			<div class="param">{$item.Email}</div>
-			{/if} {if $item.Phone}
-			<div class="param">Телефон: {$item.Phone}</div>
-			{/if} {if $item.Fax}
-			<div class="param">Факс: {$item.Fax}</div>
-			{/if} {if $item.PhoneMob}
-			<div class="param">Моб. телефон: {$item.PhoneMob}</div>
-			{/if}
-		</div>
-		{/foreach}
-		<div class="item pps_flex_12 pps_flex_11_view_small">
-			<div
-				class="items pps_flex pps_flex_row pps_flex_row_top pps_animate">
-				{foreach name="out" item="item" from=$elements}
-				<div
-					class="item pps_flex_12 pps_flex_11_view_medium pps_flex_11_view_small ">
-					<div class="title">{$item.Name}</div>
-					{if $item.Email}
-					<div class="param">{$item.Email}</div>
-					{/if} {if $item.Phone}
-					<div class="param">{$item.Phone}</div>
-					{/if} {if $item.Fax}
-					<div class="param">{$item.Fax}</div>
-					{/if} {if $item.PhoneMob}
-					<div class="param">{$item.PhoneMob}</div>
-					{/if}
-					<div class="pps_interval"></div>
-				</div>
-				{/foreach}
-			</div>
-		</div>
+<div class="pps_interval"></div>
+<section class="contacts-wrapper">
+	{foreach name="out" item="item" from=$elements}
+	<div class="item">
+		<div class="title">{$item.Name}</div>
+		{if $item.Email}
+		<div class="param">{$item.Email}</div>
+		{/if}
+		{if $item.Phone}
+		<div class="param">{$item.Phone}</div>
+		{/if}
+		{if $item.Fax}
+		<div class="param">{$item.Fax}</div>
+		{/if}
+		{if $item.PhoneMob}
+		<div class="param">{$item.PhoneMob}</div>
+		{/if}
+		
+		{if $item.LatLng && $item.Address}
+		<div class="pps_interval"></div>
+		<div class="param mapData pps_hide" data-coord="{$item.LatLng}">{$item.Address}</div>
+		<div id="map" class="map"></div>
+		{/if}
+		<div class="pps_interval"></div>
 	</div>
+	{/foreach}
+</section>
 
-</div>
-<div class="elements ContactsMap">
-	<div id="map"></div>
-</div>
 
-<h1>Остались вопросы?</h1>
-<p>Отправьте свой вопрос через данную форму и мы обязательно свяжемся с Вами!</p>
-
+<h1>Напишите сообщение</h1>
+<div class="pps_interval"></div>
 <div class="elements ContactsForm">
 	<form action="javascript:formWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm" class="pps_form pps_flex_11">
 		<div class="form">

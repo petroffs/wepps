@@ -7,6 +7,7 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class ContactsWepps extends ExtensionWepps {
 	public function request() {
@@ -16,13 +17,8 @@ class ContactsWepps extends ExtensionWepps {
 				$this->tpl = 'packages/WeppsExtensions/Contacts/Contacts.tpl';
 				$obj = new DataWepps("Contacts");
 				$res = $obj->getMax("t.DisplayOff=0");
-				$tmp = array();
-				foreach ($res as $value) {
-					$keyurl = ($value['Alias']=='') ? 'second' : 'main';
-					$tmp[$keyurl][] = $value;
-				}
-				if (isset($tmp['main'])) $smarty->assign('elementsMain',$tmp['main']);
-				if (isset($tmp['second'])) $smarty->assign('elements',$tmp['second']);
+				#UtilsWepps::debug($res,1);
+				$smarty->assign('elements',$res);
 				break;
 			default:
 				ExceptionWepps::error404();
