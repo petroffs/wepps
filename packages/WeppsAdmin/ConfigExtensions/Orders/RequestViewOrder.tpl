@@ -9,27 +9,27 @@
 				<div class="price sum pps_flex_16">Сумма</div>
 				<div class="options pps_flex_16">Действия</div>
 			</div>
-			{foreach name="out" item="item" from=$get.positions}
+			{foreach name="out" item="item" from=$positions}
 			{assign var="options" value=$item.Options|json_decode:true}
-			<div class="item pps_flex pps_flex_row" data-position="{$item.Id}" data-order="{$item.OrderId}">
-				<div class="title2 pps_flex_13">{$item.Name}
+			<div class="item pps_flex pps_flex_row" data-position="{$item.id}" data-order="{$item.OrderId}">
+				<div class="title2 pps_flex_13">{$item.name}
 				<div class="options">{if $options.Title}{$options.Title} : {$options.Value}{/if}</div>
 				</div>
 				<div class="price pps_flex_16">
 					<label class="pps pps_input">
-						<input type="text" value="{$item.Price}"/>
+						<input type="text" value="{$item.price}"/>
 					</label>
 				
 				</div>
 				<div class="qty pps_flex_16">
 					<label class="pps pps_select"> <select class="qtyselect"
 						data-id="{$item.Data.Id}" data-option="{$item.Data.Options.Id}"> {for $qty=1 to 100}
-							<option value="{$qty}" {if $item.ItemQty==$qty} selected="selected"{/if}>{$qty}</option>
+							<option value="{$qty}" {if $item.quantity==$qty} selected="selected"{/if}>{$qty}</option>
 							{/for}
 					</select>
 					</label>
 				</div>
-				<div class="price sum pps_flex_16">{$item.Summ|money:1}</div>
+				<div class="price sum pps_flex_16">{$item.sum|money:1}</div>
 				<div class="options pps_flex_16">
 					<a class="list-item-save pps_hide" href="" title="Сохранить изменения"><i class="fa fa-2x fa-save"></i></a>
 					<a class="list-item-remove" href="" data-path="position" title="Удалить"><i class="fa fa-2x fa-remove"></i></a>

@@ -32,8 +32,7 @@ class RequestOrdersWepps extends RequestWepps {
 			    if (empty($this->get['id'])) {
 			    	ExceptionWepps::error(404);
 			    }
-			    $id = addslashes($this->get['id']);
-			    $order = $this->getOrder($id);
+			    $order = $this->getOrder($this->get['id']);
 			    break;
 			case "setPositionQty":
 				if (empty($this->get['order']) || empty($this->get['price']) || empty($this->get['qty']) || empty($this->get['id'])) {
@@ -255,23 +254,24 @@ class RequestOrdersWepps extends RequestWepps {
 	}
 	
 	private function getOrder($id) {
-		$obj = new DataWepps("TradeOrders");
-		$order = $obj->getMax($id)[0];
+		$sql = "select * from Orders where Id=?";
+		$order = @ConnectWepps::$instance->fetch($sql,[$id])[0];
+		if (empty($order)) {
+			ExceptionWepps::error(404);
+		}
 		$sql = "select ts.Id,ts.Name
-                        from TradeStatus ts
+                        from OrdersStatuses ts
                         group by ts.Id
                         order by ts.Priority";
 		$statuses = ConnectWepps::$instance->fetch($sql);
 		$obj = new DataWepps("TradeClientsHistory");
-		$positions = $obj->getMax("t.DisplayOff=0 and OrderId='{$id}'",2000,1,"t.Priority");
-		
-		$obj = new DataWepps("TradeMessages");
-		$messages = $obj->getMax("t.DisplayOff=0 and OrderId='{$id}'",2000,1,"t.Priority");
-		UtilsWepps::debug(3,1);
+		$positions = json_decode($order['JPositions'],true);
+		$obj = new DataWepps("OrdersEvents");
+		$messages = $obj->getMax("t.DisplayOff=0 and t.OrderId='{$id}'",2000,1,"t.Priority");
 		$this->assign('order', $order);
 		$this->assign('positions', $positions);
 		$this->assign('statuses',$statuses);
-		$this->assign('statusesActive',$order['TStatus']);
+		$this->assign('statusesActive',$order['OStatus']);
 		if (isset($messages[0]['Id'])) {
 		    $this->assign('messages',$messages);
 		}

@@ -1,5 +1,5 @@
-.statuses {
-	
+.orders .price span::after {
+	content: ' ₽';
 }
 
 .statuses>.item {
