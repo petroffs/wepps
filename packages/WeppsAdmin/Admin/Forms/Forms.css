@@ -82,6 +82,8 @@ label.pps select {
 	font-family: 'Roboto';
 	font-weight: 300;
 	letter-spacing: 0.03em;
+	resize: none;
+	overflow: hidden;
 }
 
 label.pps.pps_checkbox {
@@ -282,4 +284,10 @@ form {
 	width: auto;
 	margin: 0px;
 	padding: 0px;
+}
+
+.pps.pps_hide,
+.pps_flex.pps_hide,
+.pps_button.pps_hide {
+	display: none;
 }

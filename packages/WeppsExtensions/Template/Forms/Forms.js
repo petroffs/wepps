@@ -39,7 +39,6 @@ var readyFormsInit = function() {
 	});
 	$('.pps.pps_area').find('textarea').on('input', function () {
 		autoResizeTextarea(this);
-		
 	}).trigger('input');
 }
 $(document).ready(readyFormsInit);

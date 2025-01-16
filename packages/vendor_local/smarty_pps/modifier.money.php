@@ -10,7 +10,7 @@
  * Smarty plugin
  *
  */
-function smarty_modifier_money($string)
+function smarty_modifier_money($string,$float = 0)
 {
 	if (!is_numeric($string)) return 0;
 	$tmp = "";
@@ -18,7 +18,7 @@ function smarty_modifier_money($string)
 		$tmp = "от ";
 		$string = str_replace("от ","",$string);
 	}
-    return $tmp.number_format($string,0,","," ");
+	return $tmp.number_format($string,$float,"."," ");
 }
 
 ?>

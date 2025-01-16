@@ -264,13 +264,14 @@ class RequestOrdersWepps extends RequestWepps {
                         group by ts.Id
                         order by ts.Priority";
 		$statuses = ConnectWepps::$instance->fetch($sql);
-		$obj = new DataWepps("TradeClientsHistory");
+		$this->assign('statuses',$statuses);
+		
 		$positions = json_decode($order['JPositions'],true);
 		$obj = new DataWepps("OrdersEvents");
 		$messages = $obj->getMax("t.DisplayOff=0 and t.OrderId='{$id}'",2000,1,"t.Priority");
 		$this->assign('order', $order);
 		$this->assign('positions', $positions);
-		$this->assign('statuses',$statuses);
+		
 		$this->assign('statusesActive',$order['OStatus']);
 		if (isset($messages[0]['Id'])) {
 		    $this->assign('messages',$messages);

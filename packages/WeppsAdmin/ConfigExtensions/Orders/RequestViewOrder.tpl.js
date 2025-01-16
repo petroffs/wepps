@@ -1,7 +1,16 @@
 var readyViewOrderInit = function() {
-	let order = $('.orders').children('.item[data-id="'+orderId+'"]');
-	order.children('.itm.price').find('span').text(layoutWepps.money(orderSumm));
+	if ($('.pps_select').find('select').data('select2')) {
+		$('.pps_select').find('select').select2('destroy');		
+	}
 	
+	$('.pps_select').find('select').select2({
+		language: "ru",
+		delay: 500
+	});
+	readyFormsInit();
+		
+	let order = $('.orders').children('.item[data-id="'+orderId+'"]');
+	order.children('.itm.price').find('span').text(utilsWepps.money(orderSumm));
 	$('select.qtyselect,.price>label>input').on('focus',function(event) {
 		event.stopPropagation();
 		$(this).closest('.item').find('a.list-item-save').removeClass('pps_hide');

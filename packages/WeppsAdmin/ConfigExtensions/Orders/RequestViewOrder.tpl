@@ -19,20 +19,20 @@
 					<label class="pps pps_input">
 						<input type="text" value="{$item.price}"/>
 					</label>
-				
 				</div>
 				<div class="qty pps_flex_16">
-					<label class="pps pps_select"> <select class="qtyselect"
-						data-id="{$item.Data.Id}" data-option="{$item.Data.Options.Id}"> {for $qty=1 to 100}
+					<label class="pps pps_select">
+						<select class="qtyselect" data-id="{$item.Data.Id}" data-option="{$item.Data.Options.Id}">
+							{for $qty=1 to 100}
 							<option value="{$qty}" {if $item.quantity==$qty} selected="selected"{/if}>{$qty}</option>
 							{/for}
-					</select>
+						</select>
 					</label>
 				</div>
-				<div class="price sum pps_flex_16">{$item.sum|money:1}</div>
+				<div class="price sum pps_flex_16"><span>{$item.sum|money:2}</span></div>
 				<div class="options pps_flex_16">
-					<a class="list-item-save pps_hide" href="" title="Сохранить изменения"><i class="fa fa-2x fa-save"></i></a>
-					<a class="list-item-remove" href="" data-path="position" title="Удалить"><i class="fa fa-2x fa-remove"></i></a>
+					<a class="pps_button list-item-save pps_hide" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
+					<a class="pps_button list-item-remove" href="" data-path="position" title="Удалить"><i class="fa fa-remove"></i></a>
 				</div>
 			</div>
 			{/foreach}
@@ -58,7 +58,7 @@
 				</div>
 				<div class="price sum pps_flex_16"></div>
 				<div class="options pps_flex_16">
-					<a class="list-item-add" href="" title="Добавить"><i class="fa fa-2x fa-plus"></i></a>
+					<a class="pps_button list-item-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
 				</div>
 			</div>
 		</div>
@@ -71,14 +71,14 @@
 					<div class="dd pps_flex_13">
 						<label class="pps pps_select"> <select class="statusselect"
 						data-order="{$get.order.Id}"> 
-						{foreach name="out" item="item" from=$get.statuses}
-							<option value="{$item.Id}" {if $item.Id==$get.order.TStatus} selected="selected"{/if}>{$item.Name}</option>
+						{foreach name="out" item="item" from=$statuses}
+							<option value="{$item.Id}" {if $item.Id==$order.OStatus} selected="selected"{/if}>{$item.Name}</option>
 						{/foreach}
 						</select>
 						</label>
 					</div>
 					<div class="dd pps_flex_13 pps_center">
-						<a class="list-item-save" href="" title="Сохранить изменения"><i class="fa fa-2x fa-save"></i></a>
+						<a class="pps_button list-item-save" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
 					</div>
 				</div>
 				
@@ -99,7 +99,7 @@
 						{/if}
 					</div>
 					<div class="dd pps_flex_13 pps_center">
-						<a class="list-item-save" href="" title="Сохранить изменения"><i class="fa fa-2x fa-save"></i></a>
+						<a class="pps_button list-item-save" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
 					</div>
 				</div>
 				
@@ -132,7 +132,7 @@
 					</div>
 					<div class="dt pps_flex_23"></div>
 					<div class="dd pps_flex_13 pps_center">
-						<a class="list-item-add" href="" title="Добавить"><i class="fa fa-2x fa-plus"></i></a>
+						<a class="pps_button list-item-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
 					</div>
 				</div>
 			</div>

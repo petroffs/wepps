@@ -12,7 +12,7 @@
 			<div class="itm id pps_flex_16">{$item.Id}</div>
 			<div class="itm title pps_flex_13">{$item.Name}</div>
 			<div class="itm date pps_flex_14">{$item.ODate|date_format:"%d.%m.%Y"}</div>
-			<div class="itm price pps_flex_14 pps_right"><span>{$item.OSum}</span></div>
+			<div class="itm price pps_flex_14 pps_right"><span>{$item.OSum|money:2}</span></div>
 			<div class="order pps_hide pps_flex_11" id="view{$item.Id}"></div>
 		</div>
 		{/foreach}
