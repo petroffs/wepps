@@ -2,19 +2,27 @@ var readyViewOrderInit = function() {
 	if ($('.pps_select').find('select').data('select2')) {
 		$('.pps_select').find('select').select2('destroy');		
 	}
-	
 	$('.pps_select').find('select').select2({
 		language: "ru",
 		delay: 500
 	});
 	readyFormsInit();
-		
 	let order = $('.orders').children('.item[data-id="'+orderId+'"]');
-	order.children('.itm.price').find('span').text(utilsWepps.money(orderSumm));
-	$('select.qtyselect,.price>label>input').on('focus',function(event) {
+	order.children('.itm.price').find('span').text(utilsWepps.money(orderSum));
+	$('select.quantity,.price>label>input').on('focus',function(event) {
 		event.stopPropagation();
 		$(this).closest('.item').find('a.list-item-save').removeClass('pps_hide');
 	});
+	$('select.quantity').off('change');
+	$('select.quantity').on('change',function(event) {
+		let el = $(this).closest('.item');
+		let price = parseFloat(el.find('input[name="price"]').val());
+		let sum = (price*$(this).val()).toFixed(2);
+		el.find('div.price.sum').find('span').text(utilsWepps.money(sum));
+	});
+	
+	
+	
 	$('div.positions').find('a.list-item-save').off('click');
 	$('div.positions').find('a.list-item-save').on('click',function(event) {
 		event.preventDefault();
@@ -23,7 +31,7 @@ var readyViewOrderInit = function() {
 		let order = element.data('order');
 		let obj = $('#view'+order);
 		let price = element.find('.price').find('input').val();
-		let qty = element.find('select.qtyselect').val();
+		let qty = element.find('select.quantity').val();
 		let str = 'action=setPositionQty&order='+order+'&id='+id+'&price='+price+'&qty='+qty;
 		layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
 	});
@@ -60,7 +68,7 @@ var readyViewOrderInit = function() {
 		var element = $(this).closest('.item').eq(0);
 		let order = element.data('order');
 		let obj = $('#view'+order);
-		let qty = element.find('select.qtyselect').val();
+		let qty = element.find('select.quantity').val();
 		let title = $('#addPosition').val();
 		let price = $('#addPositionPrice').val();
 		let option = $('#addPositionOptions').attr('data-option-id');

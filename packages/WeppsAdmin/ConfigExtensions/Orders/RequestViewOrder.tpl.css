@@ -1,36 +1,36 @@
 .orders>.item.active>.order .positions>.item {
-	padding: 10px 10px;
-	border-bottom: 1px solid #e5e5e5;
+	padding: var(--step);
+	border-bottom: var(--border);
 }
 
 .orders>.item.active>.order .positions>.item:hover {
-	background: #fff;
+	background: var(--color-100);
 }
 
 .orders>.item.active>.order .positions>.item:first-child {
-	color: #e5e5e5;
+	color: var(--color-75);
 	background: transparent;
 }
 
-.orders>.item.active>.order .positions>.item>.qty>label.pps {
+.orders>.item.active>.order .positions>.item>.quantity>label.pps {
 	max-width: 65px;
 }
 
 .orders>.item.active>.order .positions>.item>.options>a {
-	margin-right: 10px;
+	margin-right: var(--step2);
 }
 
 .orders>.item.active>.order .positions>.item label.pps.pps_input {
-	padding-right: 20px;
+	padding-right: var(--step3);
 }
 
 .orders>.item.active>.order .actions>.item {
-	padding:10px;
-	border-bottom: 1px solid #e5e5e5;
+	padding: var(--step);
+	border-bottom: var(--border);
 }
 
 .orders>.item.active>.order .actions>.item>.dt {
-	color: #e5e5e5;
+	color: var(--color-75);
 }
 
 .orders>.item.active>.order .actions>.item.payment>.dd>label+div {
@@ -38,7 +38,7 @@
 }
 
 .orders>.item.active>.order .actions>.item.messages>.dd>.items>.item {
-	margin-bottom: 20px;
+	margin-bottom: var(--step2);
 }
 
 .orders>.item.active>.order .actions>.item.messages>.dd>.items>.item>.item-date {
@@ -46,5 +46,5 @@
 }
 
 .orders>.item.active>.order .actions>.item.messages>.dd>.items>.item>.item-date>i {
-	margin-left: 10px;
+	margin-left: var(--step2);
 }

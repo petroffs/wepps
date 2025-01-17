@@ -256,23 +256,37 @@ class RequestOrdersWepps extends RequestWepps {
 	private function getOrder($id) {
 		$sql = "select * from Orders where Id=?";
 		$order = @ConnectWepps::$instance->fetch($sql,[$id])[0];
+		
 		if (empty($order)) {
 			ExceptionWepps::error(404);
 		}
-		$sql = "select ts.Id,ts.Name
-                        from OrdersStatuses ts
-                        group by ts.Id
-                        order by ts.Priority";
+		$sql = "select ts.Id,ts.Name from OrdersStatuses ts group by ts.Id order by ts.Priority";
 		$statuses = ConnectWepps::$instance->fetch($sql);
 		$this->assign('statuses',$statuses);
+		$this->assign('statusesActive',$order['OStatus']);
 		
 		$positions = json_decode($order['JPositions'],true);
-		$obj = new DataWepps("OrdersEvents");
-		$messages = $obj->getMax("t.DisplayOff=0 and t.OrderId='{$id}'",2000,1,"t.Priority");
-		$this->assign('order', $order);
+		$sql = '';
+		$sum = 0;
+		foreach ($positions as $value) {
+			$sum += $value['sum'];
+			$sql .= "\n(select '{$value['id']}' `id`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`) union";
+		}
+		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
+		
+		$ids = implode(',', array_column($positions, 'id'));
+		$sql = "select x.id,t.Name name,x.quantity,x.price,x.sum from Products t inner join $sql x on x.id=t.Id where t.Id in ($ids)";
+		$positions = ConnectWepps::$instance->fetch($sql);
 		$this->assign('positions', $positions);
 		
-		$this->assign('statusesActive',$order['OStatus']);
+		$order['OSum'] = $sum;
+		$sql = "update Orders set OSum=? where Id=?";
+		ConnectWepps::$instance->query($sql,[$sum,$id]);
+		$this->assign('order', $order);
+		$obj = new DataWepps("OrdersEvents");
+		$messages = $obj->getMax("t.DisplayOff=0 and t.OrderId='{$id}'",2000,1,"t.Priority");
+		
+		
 		if (isset($messages[0]['Id'])) {
 		    $this->assign('messages',$messages);
 		}

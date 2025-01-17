@@ -43,12 +43,7 @@ class OrdersWepps extends RequestWepps {
 				/*
 				 * Статусы
 				 */
-				$sql = "select ts.Id,ts.Name,count(o.Id) as Co
-                        from OrdersStatuses ts
-                        left join Orders o on o.OStatus = ts.Id
-                        where ts.DisplayOff=0
-                        group by ts.Id
-                        order by ts.Priority";
+				$sql = "select ts.Id,ts.Name,count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.DisplayOff=0 group by ts.Id order by ts.Priority";
 				$statuses = ConnectWepps::$instance->fetch($sql);
 				$smarty->assign('statuses',$statuses);
 				$smarty->assign('statusesActive',$statusActive);
@@ -58,10 +53,11 @@ class OrdersWepps extends RequestWepps {
 				 */
 				$condition = "";
 				if ($statusActive!=7) {
-					$condition = "t.OStatus = '$statusActive'";
+					$condition = "t.OStatus=?";
 				}
 				$page = (empty($_GET['page'])) ? 1 : (int) $_GET['page'];
 				$obj = new DataWepps("Orders");
+				$obj->setParams([$statusActive]);
 				$orders = $obj->getMax($condition,20,$page,"t.Id desc");
 				if (!empty($orders[0]['Id'])) {
 					$smarty->assign('orders',$orders);
