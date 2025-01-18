@@ -1,7 +1,7 @@
 <div class="pps_flex pps_flex_row pps_flex_margin_large1">
 	<div class="pps_flex_11">
-		<div class="title">Позиции</div>
-		<div class="positions">
+		<div class="title">Товары</div>
+		<div class="goods">
 			<div class="item pps_flex pps_flex_row">
 				<div class="title2 pps_flex_13">Наименование</div>
 				<div class="price pps_flex_16">Цена</div>
@@ -9,9 +9,9 @@
 				<div class="price sum pps_flex_16">Сумма</div>
 				<div class="options pps_flex_16">Действия</div>
 			</div>
-			{foreach name="out" item="item" from=$positions}
+			{foreach name="out" key="key" item="item" from=$goods}
 			{assign var="options" value=$item.options|json_decode:true}
-			<div class="item pps_flex pps_flex_row" data-position="{$item.id}" data-order="{$order.Id}">
+			<div class="item pps_flex pps_flex_row" data-index="{$key}" data-goods="{$item.id}" data-order="{$order.Id}">
 				<div class="title2 pps_flex_13">{$item.name}
 				<div class="options">{if $options.name}{$options.name} : {$options.value}{/if}</div>
 				</div>

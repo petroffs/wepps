@@ -1,50 +1,50 @@
-.orders>.item.active>.order .positions>.item {
+.orders>.item.active>.order-wrapper .goods>.item {
 	padding: var(--step);
 	border-bottom: var(--border);
 }
 
-.orders>.item.active>.order .positions>.item:hover {
+.orders>.item.active>.order-wrapper .goods>.item:hover {
 	background: var(--color-100);
 }
 
-.orders>.item.active>.order .positions>.item:first-child {
+.orders>.item.active>.order-wrapper .goods>.item:first-child {
 	color: var(--color-75);
 	background: transparent;
 }
 
-.orders>.item.active>.order .positions>.item>.quantity>label.pps {
+.orders>.item.active>.order-wrapper .goods>.item>.quantity>label.pps {
 	max-width: 65px;
 }
 
-.orders>.item.active>.order .positions>.item>.options>a {
+.orders>.item.active>.order-wrapper .goods>.item>.options>a {
 	margin-right: var(--step2);
 }
 
-.orders>.item.active>.order .positions>.item label.pps.pps_input {
+.orders>.item.active>.order-wrapper .goods>.item label.pps.pps_input {
 	padding-right: var(--step3);
 }
 
-.orders>.item.active>.order .actions>.item {
+.orders>.item.active>.order-wrapper .actions>.item {
 	padding: var(--step);
 	border-bottom: var(--border);
 }
 
-.orders>.item.active>.order .actions>.item>.dt {
+.orders>.item.active>.order-wrapper .actions>.item>.dt {
 	color: var(--color-75);
 }
 
-.orders>.item.active>.order .actions>.item.payment>.dd>label+div {
+.orders>.item.active>.order-wrapper .actions>.item.payment>.dd>label+div {
 	font-weight: 300;
 }
 
-.orders>.item.active>.order .actions>.item.messages>.dd>.items>.item {
+.orders>.item.active>.order-wrapper .actions>.item.messages>.dd>.items>.item {
 	margin-bottom: var(--step2);
 }
 
-.orders>.item.active>.order .actions>.item.messages>.dd>.items>.item>.item-date {
+.orders>.item.active>.order-wrapper .actions>.item.messages>.dd>.items>.item>.item-date {
 	font-weight: 300;
 }
 
-.orders>.item.active>.order .actions>.item.messages>.dd>.items>.item>.item-date>i {
+.orders>.item.active>.order-wrapper .actions>.item.messages>.dd>.items>.item>.item-date>i {
 	margin-left: var(--step2);
 }

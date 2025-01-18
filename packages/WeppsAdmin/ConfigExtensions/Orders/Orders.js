@@ -9,7 +9,7 @@ var readyOrdersInit = function() {
 			obj:obj
 		}
 		layoutWepps.request(settings);
-		$('.orders').children('.item').children('.order').html('');
+		$('.orders').children('.item').children('.order-wrapper').html('');
 		obj.removeClass('pps_hide');
 		$('.orders').children('.item').removeClass('active');
 		$(this).parent().addClass('active');
