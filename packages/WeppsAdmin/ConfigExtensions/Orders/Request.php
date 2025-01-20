@@ -30,61 +30,43 @@ class RequestOrdersWepps extends RequestWepps {
 			case 'viewOrder':
 			    $this->tpl = "RequestViewOrder.tpl";
 			    if (empty($this->get['id'])) {
-			    	ExceptionWepps::error(404);
+			    	ExceptionWepps::error(400);
 			    }
 			    $order = $this->getOrder($this->get['id']);
 			    break;
-			case 'setGoodsQuantity':
+			case 'setGoods':
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id'])) {
 					ExceptionWepps::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
+				$jdata = json_decode($order['order']['JPositions'],true);
+				if (empty($jdata[$this->get['index']])) {
+					ExceptionWepps::error(400);
+				}
+				$jdata[$this->get['index']]['quantity'] = (int) $this->get['quantity'];
+				$jdata[$this->get['index']]['price'] = (float) $this->get['price'];
+				$jdata[$this->get['index']]['sum'] = UtilsWepps::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'],2);
+				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				$sql = "update Orders set JPositions=? where Id=?";
+				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
+				$order = $this->getOrder($this->get['id']);
 				break;
-			case "setPositionQty":
-				if (empty($this->get['order']) || empty($this->get['price']) || empty($this->get['qty']) || empty($this->get['id'])) {
+			case "removeGoods":
+				$this->tpl = "RequestViewOrder.tpl";
+				if (empty($this->get['id'])) {
 					ExceptionWepps::error(404);
 				}
-				$orderId = addslashes($this->get['order']);
-				$qty = addslashes($this->get['qty']);
-				$price = addslashes($this->get['price']);
-				$positionId = addslashes($this->get['id']);
-				$obj = new DataWepps("TradeClientsHistory");
-// 				$position = $obj->getMax($positionId)[0];
-				$obj->set($positionId, array(
-						'ItemQty'=>$qty,
-						'Price'=>$price,
-						'Summ'=>$price * $qty,
-				));
-
-				/*
-				 * Обновить стоимость заказа
-				 */
-				$sql = "update TradeOrders o set o.Summ = (select sum(h.Summ) from TradeClientsHistory h where h.DisplayOff=0 and h.OrderId='{$orderId}') where o.Id='{$orderId}';";
-				ConnectWepps::$instance->query($sql);
-				
-				$order = $this->getOrder($orderId);
-				$this->tpl = "RequestViewOrder.tpl";
-				
-				break;
-			case "removePosition":
-				if (empty($this->get['order']) || empty($this->get['id'])) {
-					ExceptionWepps::error404();
+				$order = $this->getOrder($this->get['id']);
+				$jdata = json_decode($order['order']['JPositions'],true);
+				if (empty($jdata[$this->get['index']])) {
+					ExceptionWepps::error(400);
 				}
-				$orderId = addslashes($this->get['order']);
-				$positionId = addslashes($this->get['id']);
-				
-				$obj = new DataWepps("TradeClientsHistory");
-				$obj->remove($positionId);
-				
-				/*
-				 * Обновить стоимость заказа
-				 */
-				$sql = "update TradeOrders o set o.Summ = (select sum(h.Summ) from TradeClientsHistory h where h.DisplayOff=0 and h.OrderId='{$orderId}') where o.Id='{$orderId}';";
-				ConnectWepps::$instance->query($sql);
-				
-				$order = $this->getOrder($orderId);
-				$this->tpl = "RequestViewOrder.tpl";
+				unset($jdata[$this->get['index']]);
+				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				$sql = "update Orders set JPositions=? where Id=?";
+				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
+				$order = $this->getOrder($this->get['id']);
 				break;
 			case "searchPosition":
 				$term = $this->get['term'];

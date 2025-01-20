@@ -26,32 +26,36 @@ var readyViewOrderInit = function() {
 	$('div.goods').find('a.list-item-save').on('click',function(event) {
 		event.preventDefault();
 		let el = $(this).closest('.item');
-		console.log('#view'+el.data('order'));
 		let obj = $('#view'+el.data('order'));
 		let settings = {
-			data: 'action=setGoodsQuantity&id='+el.data('order')+'&index='+el.data('index')+'&goods='+el.data('goods')+'&price='+el.find('.price').find('input').val()+'&quantity='+el.find('select.quantity').val(),
+			data: 'action=setGoods&id='+el.data('order')+'&index='+el.data('index')+'&goods='+el.data('goods')+'&price='+el.find('.price').find('input').val()+'&quantity='+el.find('select.quantity').val(),
 			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
 			obj: obj
 		}
 		layoutWepps.request(settings);
-		
 	});
 	$('div.goods').find('a.list-item-remove').off('click');
 	$('div.goods').find('a.list-item-remove').on('click',function(event) {
 		event.preventDefault();
-		var element = $(this).closest('.item').eq(0);
-		$("#dialog").html('<p>Вы действительно желаете удалить позицию?</p>').dialog({
+		var el = $(this).closest('.item').eq(0);
+		$("#dialog").html('<p>Подтвердите удаление</p>').dialog({
 			'title':'Внимание!',
 			'modal': true,
 			'buttons' : [{
 				text : "Удалить",
 				icon : "ui-icon-close",
 				click : function() {
-					let id = element.data('position');
-					let order = element.data('order');
-					let obj = $('#view'+order);
-					let str = 'action=removePosition&order='+order+'&id='+id;
-					layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
+					let obj = $('#view'+el.data('order'));
+					let settings = {
+						data: 'action=removeGoods&id='+el.data('order')+'&index='+el.data('index'),
+						url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
+						obj: obj
+					}
+					var layoutWeppsCustom = new LayoutWepps();
+					layoutWeppsCustom.call = function() {
+						$("#dialog").dialog('close');
+					}
+					layoutWeppsCustom.request(settings);
 					$(this).dialog("close");
 				}
 			},{
