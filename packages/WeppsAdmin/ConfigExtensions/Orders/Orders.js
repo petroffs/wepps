@@ -1,5 +1,5 @@
 var readyOrdersInit = function() {
-	$('.orders').children('.item').children('.itm').on('click',function() {
+	$('.orders').children('.item').children('.item-field').on('click',function() {
 		let id = $(this).parent().data('id');
 		let obj = $('#view'+id);
 		let str = 'action=viewOrder&id='+id;

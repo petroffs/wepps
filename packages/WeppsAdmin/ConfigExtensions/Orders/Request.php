@@ -68,7 +68,7 @@ class RequestOrdersWepps extends RequestWepps {
 				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
-			case "searchPosition":
+			case "searchGoods":
 				$term = $this->get['term'];
 				$sql = "select t.Name value,t.Id,t.Name,t.Articul,t.Price,pv.PValue OptionsTitle,pv.Id OptionsId 		
                 		from Products t
@@ -79,7 +79,11 @@ class RequestOrdersWepps extends RequestWepps {
 				$json = SpellWepps::getJsonCyr ( $res );
 				header ( 'Content-type:application/json;charset=utf-8' );
 				echo $json;
-				ConnectWepps::$instance->close ();
+				ConnectWepps::$instance->close();
+				break;
+			case "addGoods":
+				echo 1;
+				ConnectWepps::$instance->close();
 				break;
 			case "addPosition":
 				if (empty($this->get['order']) || empty($this->get['title']) || empty($this->get['price']) || empty($this->get['qty'])) {

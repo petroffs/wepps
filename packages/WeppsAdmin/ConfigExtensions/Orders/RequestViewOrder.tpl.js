@@ -74,22 +74,22 @@ var readyViewOrderInit = function() {
 		let order = element.data('order');
 		let obj = $('#view'+order);
 		let qty = element.find('select.quantity').val();
-		let title = $('#addPosition').val();
-		let price = $('#addPositionPrice').val();
-		let option = $('#addPositionOptions').attr('data-option-id');
-		let id = $('#addPositionOptions').attr('data-position-id');
-		let str = 'action=addPosition&order='+order+'&title='+title+'&price='+price+'&qty='+qty+'&id='+id+'&option='+option;
+		let title = $('#add-goods').val();
+		let price = $('#add-goods-price').val();
+		let option = $('#add-goods-options').attr('data-option-id');
+		let id = $('#add-goods-options').attr('data-position-id');
+		let str = 'action=addGoods&order='+order+'&title='+title+'&price='+price+'&qty='+qty+'&id='+id+'&option='+option;
 		layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
 	});
 	
-	if ($( "#addPosition" ).length) {
-		$( "#addPosition" ).autocomplete({
-		      source: "/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchPosition",
+	if ($( "#add-goods" ).length) {
+		$( "#add-goods" ).autocomplete({
+		      source: "/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchGoods",
 		      minLength: 2,
 		      open: function( event, ui ) {
-		    	  $('.itemAdd').children('div.price').text('');
-		    	  $('#addPositionOptions').addClass('pps_hide');
-		    	  $('#addPositionOptions').text('');
+		    	  $('.item-add').children('div.price').text('');
+		    	  $('#add-goods-options').addClass('pps_hide');
+		    	  $('#add-goods-options').text('');
 		    	  //$('#addPositionOptions').attr('data-option-id','');
 		    	  //$('#addPositionOptions').attr('data-position-id','');
 		    	  $('#addPositionPrice').val('');
@@ -99,11 +99,11 @@ var readyViewOrderInit = function() {
 		    	   * Дейсвие при выборе
 		    	   */
 		    	  $('.itemAdd').children('div.price').text(layoutWepps.money(ui.item.Price));
-		    	  $('#addPositionOptions').removeClass('pps_hide');
-		    	  $('#addPositionOptions').text(ui.item.OptionsTitle);
-		    	  $('#addPositionOptions').attr('data-option-id',ui.item.OptionsId);
-		    	  $('#addPositionOptions').attr('data-position-id',ui.item.Id);
-		    	  $('#addPositionPrice').val(ui.item.Price);
+		    	  $('#add-goods-options').removeClass('pps_hide');
+		    	  $('#add-goods-options').text(ui.item.OptionsTitle);
+		    	  $('#add-goods-options').attr('data-option-id',ui.item.OptionsId);
+		    	  $('#add-goods-options').attr('data-position-id',ui.item.Id);
+		    	  $('#add-goods-price').val(ui.item.Price);
 		      }
 		}).autocomplete( "instance" )._renderItem = function( ul, item ) {
 		      return $( "<li>" )

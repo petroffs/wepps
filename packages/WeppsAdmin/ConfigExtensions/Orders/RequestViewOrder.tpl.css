@@ -29,27 +29,32 @@
 	padding-right: var(--step3);
 }
 
-.orders>.item.active>.order-wrapper .actions>.item {
+.orders>.item.active>.order-wrapper .settings>.item {
 	padding: var(--step);
 	border-bottom: var(--border);
 }
 
-.orders>.item.active>.order-wrapper .actions>.item>.dt {
+.orders>.item.active>.order-wrapper .settings>.item:last-child {
+	border-bottom: 0;
+	padding-bottom: var(--step4);
+}
+
+.orders>.item.active>.order-wrapper .settings>.item>.dt {
 	color: var(--color-75);
 }
 
-.orders>.item.active>.order-wrapper .actions>.item.payment>.dd>label+div {
+.orders>.item.active>.order-wrapper .settings>.item.payment>.dd>label+div {
 	font-weight: 300;
 }
 
-.orders>.item.active>.order-wrapper .actions>.item.messages>.dd>.items>.item {
+.orders>.item.active>.order-wrapper .settings>.item.messages>.dd>.items>.item {
 	margin-bottom: var(--step2);
 }
 
-.orders>.item.active>.order-wrapper .actions>.item.messages>.dd>.items>.item>.item-date {
+.orders>.item.active>.order-wrapper .settings>.item.messages>.dd>.items>.item>.item-date {
 	font-weight: 300;
 }
 
-.orders>.item.active>.order-wrapper .actions>.item.messages>.dd>.items>.item>.item-date>i {
+.orders>.item.active>.order-wrapper .settings>.item.messages>.dd>.items>.item>.item-date>i {
 	margin-left: var(--step2);
 }

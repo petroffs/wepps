@@ -9,10 +9,10 @@
 	<div class="orders">
 		{foreach name="out" item="item" from=$orders}
 		<div class="item pps_flex pps_flex_row pps_flex_start pps_flex_margin_large1" data-id="{$item.Id}">
-			<div class="itm id pps_flex_16">{$item.Id}</div>
-			<div class="itm title pps_flex_13">{$item.Name}</div>
-			<div class="itm date pps_flex_14">{$item.ODate|date_format:"%d.%m.%Y"}</div>
-			<div class="itm price pps_flex_14 pps_right"><span>{$item.OSum|money:2}</span></div>
+			<div class="item-field id pps_flex_16">{$item.Id}</div>
+			<div class="item-field title pps_flex_13">{$item.Name}</div>
+			<div class="item-field date pps_flex_14">{$item.ODate|date_format:"%d.%m.%Y"}</div>
+			<div class="item-field price pps_flex_14 pps_right"><span>{$item.OSum|money:2}</span></div>
 			<div class="order-wrapper pps_hide pps_flex_11" id="view{$item.Id}"></div>
 		</div>
 		{/foreach}

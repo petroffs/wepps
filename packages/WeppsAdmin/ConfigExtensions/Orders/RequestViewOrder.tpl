@@ -36,21 +36,21 @@
 				</div>
 			</div>
 			{/foreach}
-			<div class="item itemAdd pps_flex pps_flex_row pps_flex_row_str pps_flex_start" data-order="{$order.Id}">
+			<div class="item item-add pps_flex pps_flex_row pps_flex_row_str pps_flex_start" data-order="{$order.Id}">
 				<div class="pps_flex_13">
 					<label class="pps pps_input">
-						<input type="text" id="addPosition"/>
+						<input type="text" id="add-goods"/>
 					</label>
-					<div id="addPositionOptions" class="options pps_hide"></div>
+					<div id="add-goods-options" class="options pps_hide"></div>
 				</div>
 				<div class="pps_flex_16">
 					<label class="pps pps_input">
-						<input type="text" id="addPositionPrice" value=""/>
+						<input type="text" id="add-goods-price" value=""/>
 					</label>
 				</div>
 				<div class="quantity pps_flex_16">
 					<label class="pps pps_select">
-						<select class="quantity" data-id="{$item.Data.Id}" data-option="{$item.Data.Options.Id}">
+						<select class="quantity" data-id="" data-option="">
 							{for $qty=1 to 10}
 							<option value="{$qty}">{$qty}</option>
 							{/for}
@@ -63,9 +63,9 @@
 				</div>
 			</div>
 		</div>
-		<div class="settings pps_overflow">
+		<div class="settings-wrapper pps_overflow">
 			<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large">
-				<div class="actions pps_flex_12">
+				<div class="settings pps_flex_12">
 					<div class="title">Опции</div>
 					<div class="status item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Статус</div>
@@ -137,7 +137,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="actions client pps_flex_12">
+				<div class="settings client pps_flex_12">
 					<div class="title">Клиент</div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Имя</div>

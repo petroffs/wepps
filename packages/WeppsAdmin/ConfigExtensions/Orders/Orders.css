@@ -3,40 +3,31 @@
 }
 
 .statuses>.item {
-	padding: 10px 0;
+	padding: var(--step2) 0;
 }
 
 .statuses>.item.active>a {
 	font-weight: 700;
-	color: #666;
+	color: var(--color-50);
 }
 
 .orders {
 	overflow: hidden;
-	padding: 10px 0;
+	padding: var(--step2) 0;
 }
 
 .orders>.item {
-	border-top: 1px solid #e5e5e5;
-	
+	border-top: var(--border);
 }
 
-.orders>.item>.itm {
+.orders>.item>.item-field {
+	background-color: var(--color-98);
+	padding: var(--step2);
 	cursor: pointer;
-	padding: 10px;
 }
 
-.orders>.item.active>.itm {
-	background: #e5e5e5;
-}
-.orders>.item.active>.order {
-	background: #f9f9f9;
-	padding-bottom: 100px;
-}
-
-.orders>.item.active>.order .title {
+.orders>.item.active>.item-field {
 	font-weight: 900;
-	color: #000;
-	letter-spacing: 1px;
-	padding: 40px 10px 0 10px;
+	color: var(--color-05);
+	background: var(--color-85);
 }
