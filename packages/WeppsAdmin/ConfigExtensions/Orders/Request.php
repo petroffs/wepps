@@ -34,7 +34,7 @@ class RequestOrdersWepps extends RequestWepps {
 			    }
 			    $order = $this->getOrder($this->get['id']);
 			    break;
-			case 'setGoods':
+			case 'setProducts':
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id'])) {
 					ExceptionWepps::error(404);
@@ -52,7 +52,7 @@ class RequestOrdersWepps extends RequestWepps {
 				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
-			case "removeGoods":
+			case "removeProducts":
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id'])) {
 					ExceptionWepps::error(404);
@@ -68,7 +68,7 @@ class RequestOrdersWepps extends RequestWepps {
 				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
-			case "searchGoods":
+			case "searchProducts":
 				$term = $this->get['term'];
 				$sql = "select t.Name value,t.Id,t.Name,t.Articul,t.Price,pv.PValue OptionsTitle,pv.Id OptionsId 		
                 		from Products t
@@ -81,11 +81,11 @@ class RequestOrdersWepps extends RequestWepps {
 				echo $json;
 				ConnectWepps::$instance->close();
 				break;
-			case "addGoods":
+			case "addProducts":
 				echo 1;
 				ConnectWepps::$instance->close();
 				break;
-			case "addPosition":
+			case "addPosition--":
 				if (empty($this->get['order']) || empty($this->get['title']) || empty($this->get['price']) || empty($this->get['qty'])) {
 					ExceptionWepps::error404();
 				}
@@ -241,7 +241,7 @@ class RequestOrdersWepps extends RequestWepps {
 				$this->tpl = "RequestViewOrder.tpl";
 				break;
 			default:
-				ExceptionWepps::error404();
+				ExceptionWepps::error(404);
 				break;
 		}
 	}
@@ -257,18 +257,18 @@ class RequestOrdersWepps extends RequestWepps {
 		$this->assign('statuses',$statuses);
 		$this->assign('statusesActive',$order['OStatus']);
 		
-		$goods = json_decode($order['JPositions'],true);
+		$products = json_decode($order['JPositions'],true);
 		$sql = '';
 		$sum = 0;
-		foreach ($goods as $value) {
+		foreach ($products as $value) {
 			$sum += $value['sum'];
 			$sql .= "\n(select '{$value['id']}' `id`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`) union";
 		}
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
-		$ids = implode(',', array_column($goods, 'id'));
+		$ids = implode(',', array_column($products, 'id'));
 		$sql = "select x.id,t.Name name,x.quantity,x.price,x.sum from Products t inner join $sql x on x.id=t.Id where t.Id in ($ids)";
-		$goods = ConnectWepps::$instance->fetch($sql);
-		$this->assign('goods', $goods);
+		$products = ConnectWepps::$instance->fetch($sql);
+		$this->assign('products', $products);
 		$order['OSum'] = $sum;
 		$sql = "update Orders set OSum=? where Id=?";
 		ConnectWepps::$instance->query($sql,[$sum,$id]);
@@ -278,7 +278,7 @@ class RequestOrdersWepps extends RequestWepps {
 		if (isset($messages[0]['Id'])) {
 		    $this->assign('messages',$messages);
 		}
-		return array('order'=>$order,'goods'=>$goods,'statuses'=>$statuses,'messages'=>$messages);
+		return array('order'=>$order,'products'=>$products,'statuses'=>$statuses,'messages'=>$messages);
 	}
 	
 	private function getOrderPositionsText($order) {

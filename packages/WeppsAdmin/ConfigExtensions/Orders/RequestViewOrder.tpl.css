@@ -3,29 +3,29 @@
 	margin-bottom: var(--step2);
 	padding: 0 var(--step);
 }
-.orders>.item.active>.order-wrapper .goods>.item {
+.orders>.item.active>.order-wrapper .products>.item {
 	padding: var(--step);
 	border-bottom: var(--border);
 }
 
-.orders>.item.active>.order-wrapper .goods>.item:hover {
+.orders>.item.active>.order-wrapper .products>.item:hover {
 	background: var(--color-100);
 }
 
-.orders>.item.active>.order-wrapper .goods>.item:first-child {
+.orders>.item.active>.order-wrapper .products>.item:first-child {
 	color: var(--color-75);
 	background: transparent;
 }
 
-.orders>.item.active>.order-wrapper .goods>.item>.quantity>label.pps {
+.orders>.item.active>.order-wrapper .products>.item>.quantity>label.pps {
 	max-width: 65px;
 }
 
-.orders>.item.active>.order-wrapper .goods>.item>.options>a {
+.orders>.item.active>.order-wrapper .products>.item>.options>a {
 	margin-right: var(--step2);
 }
 
-.orders>.item.active>.order-wrapper .goods>.item label.pps.pps_input {
+.orders>.item.active>.order-wrapper .products>.item label.pps.pps_input {
 	padding-right: var(--step3);
 }
 

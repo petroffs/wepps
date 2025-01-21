@@ -1,4 +1,3 @@
-console.log('abs');
 var readyViewOrderInit = function() {
 	if ($('.pps_select').find('select').data('select2')) {
 		$('.pps_select').find('select').select2('destroy');		
@@ -9,7 +8,7 @@ var readyViewOrderInit = function() {
 	});*/
 	readyFormsInit();
 	let order = $('.orders').children('.item[data-id="'+orderId+'"]');
-	order.children('.itm.price').find('span').text(utilsWepps.money(orderSum));
+	order.children('.item-field.price').find('span').text(utilsWepps.money(orderSum));
 	$('select.quantity,.price>label>input').on('focus',function(event) {
 		event.stopPropagation();
 		$(this).closest('.item').find('a.list-item-save').removeClass('pps_hide');
@@ -22,20 +21,20 @@ var readyViewOrderInit = function() {
 		let sum = (price*$(this).val()).toFixed(2);
 		el.find('div.price.sum').find('span').text(utilsWepps.money(sum));
 	});
-	$('div.goods').find('a.list-item-save').off('click');
-	$('div.goods').find('a.list-item-save').on('click',function(event) {
+	$('div.products').find('a.list-item-save').off('click');
+	$('div.products').find('a.list-item-save').on('click',function(event) {
 		event.preventDefault();
 		let el = $(this).closest('.item');
 		let obj = $('#view'+el.data('order'));
 		let settings = {
-			data: 'action=setGoods&id='+el.data('order')+'&index='+el.data('index')+'&goods='+el.data('goods')+'&price='+el.find('.price').find('input').val()+'&quantity='+el.find('select.quantity').val(),
+			data: 'action=setProducts&id='+el.data('order')+'&index='+el.data('index')+'&products='+el.data('products')+'&price='+el.find('.price').find('input').val()+'&quantity='+el.find('select.quantity').val(),
 			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
 			obj: obj
 		}
 		layoutWepps.request(settings);
 	});
-	$('div.goods').find('a.list-item-remove').off('click');
-	$('div.goods').find('a.list-item-remove').on('click',function(event) {
+	$('div.products').find('a.list-item-remove').off('click');
+	$('div.products').find('a.list-item-remove').on('click',function(event) {
 		event.preventDefault();
 		var el = $(this).closest('.item').eq(0);
 		$("#dialog").html('<p>Подтвердите удаление</p>').dialog({
@@ -47,7 +46,7 @@ var readyViewOrderInit = function() {
 				click : function() {
 					let obj = $('#view'+el.data('order'));
 					let settings = {
-						data: 'action=removeGoods&id='+el.data('order')+'&index='+el.data('index'),
+						data: 'action=removeProducts&id='+el.data('order')+'&index='+el.data('index'),
 						url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
 						obj: obj
 					}
@@ -67,29 +66,29 @@ var readyViewOrderInit = function() {
 		});
 	});
 	
-	$('div.goods').find('a.list-item-add').off('click');
-	$('div.goods').find('a.list-item-add').on('click',function(event) {
+	$('div.products').find('a.list-item-add').off('click');
+	$('div.products').find('a.list-item-add').on('click',function(event) {
 		event.preventDefault();
 		var element = $(this).closest('.item').eq(0);
 		let order = element.data('order');
 		let obj = $('#view'+order);
 		let qty = element.find('select.quantity').val();
-		let title = $('#add-goods').val();
-		let price = $('#add-goods-price').val();
-		let option = $('#add-goods-options').attr('data-option-id');
-		let id = $('#add-goods-options').attr('data-position-id');
-		let str = 'action=addGoods&order='+order+'&title='+title+'&price='+price+'&qty='+qty+'&id='+id+'&option='+option;
+		let title = $('#add-products').val();
+		let price = $('#add-products-price').val();
+		let option = $('#add-products-options').attr('data-option-id');
+		let id = $('#add-products-options').attr('data-position-id');
+		let str = 'action=addProducts&order='+order+'&title='+title+'&price='+price+'&qty='+qty+'&id='+id+'&option='+option;
 		layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
 	});
 	
-	if ($( "#add-goods" ).length) {
-		$( "#add-goods" ).autocomplete({
-		      source: "/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchGoods",
+	if ($( "#add-products" ).length) {
+		$( "#add-products" ).autocomplete({
+		      source: "/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchProducts",
 		      minLength: 2,
 		      open: function( event, ui ) {
 		    	  $('.item-add').children('div.price').text('');
-		    	  $('#add-goods-options').addClass('pps_hide');
-		    	  $('#add-goods-options').text('');
+		    	  $('#add-products-options').addClass('pps_hide');
+		    	  $('#add-products-options').text('');
 		    	  //$('#addPositionOptions').attr('data-option-id','');
 		    	  //$('#addPositionOptions').attr('data-position-id','');
 		    	  $('#addPositionPrice').val('');
@@ -99,11 +98,11 @@ var readyViewOrderInit = function() {
 		    	   * Дейсвие при выборе
 		    	   */
 		    	  $('.itemAdd').children('div.price').text(layoutWepps.money(ui.item.Price));
-		    	  $('#add-goods-options').removeClass('pps_hide');
-		    	  $('#add-goods-options').text(ui.item.OptionsTitle);
-		    	  $('#add-goods-options').attr('data-option-id',ui.item.OptionsId);
-		    	  $('#add-goods-options').attr('data-position-id',ui.item.Id);
-		    	  $('#add-goods-price').val(ui.item.Price);
+		    	  $('#add-products-options').removeClass('pps_hide');
+		    	  $('#add-products-options').text(ui.item.OptionsTitle);
+		    	  $('#add-products-options').attr('data-option-id',ui.item.OptionsId);
+		    	  $('#add-products-options').attr('data-position-id',ui.item.Id);
+		    	  $('#add-products-price').val(ui.item.Price);
 		      }
 		}).autocomplete( "instance" )._renderItem = function( ul, item ) {
 		      return $( "<li>" )
