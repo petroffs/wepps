@@ -1,6 +1,6 @@
 var readyViewOrderInit = function() {
 	if ($('.pps_select').find('select').data('select2')) {
-		$('.pps_select').find('select').select2('destroy');		
+		//$('.pps_select').find('select').select2('destroy');		
 	}
 	/*$('.pps_select').find('select').select2({
 		language: "ru",
@@ -69,20 +69,19 @@ var readyViewOrderInit = function() {
 	$('div.products').find('a.list-item-add').off('click');
 	$('div.products').find('a.list-item-add').on('click',function(event) {
 		event.preventDefault();
-		var element = $(this).closest('.item').eq(0);
-		let order = element.data('order');
-		let obj = $('#view'+order);
-		let qty = element.find('select.quantity').val();
-		let title = $('#add-products').val();
-		let price = $('#add-products-price').val();
-		let option = $('#add-products-options').attr('data-option-id');
-		let id = $('#add-products-options').attr('data-position-id');
-		let str = 'action=addProducts&order='+order+'&title='+title+'&price='+price+'&qty='+qty+'&id='+id+'&option='+option;
-		layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
+		let el = $(this).closest('.item');
+		let obj = $('#view'+el.data('order'));
+		let settings = {
+			data: 'action=addProducts&id='+el.data('order')+'&products='+$('#add-products').val()+'&price='+$('#add-products-price').val()+'&quantity='+$('#add-products-quantity').val(),
+			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
+			obj: obj
+		}
+		layoutWepps.request(settings);
+		return;					
 	});
 	
-	if ($( "#add-products" ).length) {
-		$( "#add-products" ).autocomplete({
+	if ($( "#add-products-deprecated" ).length) {
+		$( "#add-products-deprecated" ).autocomplete({
 		      source: "/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchProducts",
 		      minLength: 2,
 		      open: function( event, ui ) {
@@ -149,5 +148,13 @@ var readyViewOrderInit = function() {
 }
 
 readyViewOrderInit()
-//$(document).ready(readyViewOrderInit);
 readyAdminWeppsInit();
+if ($( "#add-products" ).length) {
+	getSelect2Ajax({
+		id : '#add-products',
+		url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchProducts',
+	},function(event) {
+		let params = event.params.data;
+		$('#add-products-price').val(params.price);
+	});
+}

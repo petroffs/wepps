@@ -1,6 +1,29 @@
-function autoResizeTextarea(textarea) {
+var resizeTextareaAuto = function(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
+}
+var getSelect2Ajax = function(obj,fn) {
+	let id = obj.id
+	let url = obj.url
+	$(id).select2({
+		multiple: true,
+		language: "ru",
+		maximumSelectionLength: 1,
+		ajax: {
+			url: url,
+			delay: 500,
+			dataType: 'json',
+			data: function(params) {
+				var query = {
+					search: params.term,
+					page: params.page || 1
+				}
+				return query;
+			},
+		}
+	}).on('select2:select', function(event) {
+		fn(event);
+	});
 }
 var readyFormsInit = function() {
 	/* test */
@@ -39,7 +62,7 @@ var readyFormsInit = function() {
 		document.getElementById(t.attr('id')).reset();
 	});
 	$('.pps.pps_area').find('textarea').on('input', function () {
-		autoResizeTextarea(this);
+		resizeTextareaAuto(this);
 	}).trigger('input');
 }
 $(document).ready(readyFormsInit);

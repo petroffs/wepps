@@ -44,9 +44,35 @@ class RequestOrdersWepps extends RequestWepps {
 				if (empty($jdata[$this->get['index']])) {
 					ExceptionWepps::error(400);
 				}
+				
 				$jdata[$this->get['index']]['quantity'] = (int) $this->get['quantity'];
 				$jdata[$this->get['index']]['price'] = (float) $this->get['price'];
 				$jdata[$this->get['index']]['sum'] = UtilsWepps::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'],2);
+				
+				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				$sql = "update Orders set JPositions=? where Id=?";
+				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
+				$order = $this->getOrder($this->get['id']);
+				break;
+			case 'addProducts':
+				$this->tpl = "RequestViewOrder.tpl";
+				if (empty($this->get['id']) || empty($this->get['products']) || empty($this->get['quantity']) || empty($this->get['price'])) {
+					ExceptionWepps::error(404);
+				}
+				$order = $this->getOrder($this->get['id']);
+				$jdata = json_decode($order['order']['JPositions'],true);
+				
+				/* $jdata[$this->get['index']]['quantity'] = (int) $this->get['quantity'];
+				$jdata[$this->get['index']]['price'] = (float) $this->get['price'];
+				$jdata[$this->get['index']]['sum'] = UtilsWepps::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'],2); */
+				
+				$jdata[] = [
+						'id' => (int) $this->get['products'],
+						'quantity' => (int) $this->get['quantity'],
+						'price' => (float) $this->get['price'],
+						'sum' => UtilsWepps::round((float) $this->get['price'] * (int) $this->get['quantity'],2),
+				];
+				
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
 				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
@@ -69,73 +95,11 @@ class RequestOrdersWepps extends RequestWepps {
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "searchProducts":
-				$term = $this->get['term'];
-				$sql = "select t.Name value,t.Id,t.Name,t.Articul,t.Price,pv.PValue OptionsTitle,pv.Id OptionsId 		
-                		from Products t
-                        left join s_PropertiesValues pv on pv.TableNameId = t.Id and pv.Property = 'size'
-                		where t.DisplayOff=0 and (t.Name like '%{$term}%' or t.Articul like '%{$term}%') 
-                        group by t.Id order by t.Name asc limit 10";
-				$res = ConnectWepps::$instance->fetch($sql);
-				$json = SpellWepps::getJsonCyr ( $res );
+				$jdata = self::searchProducts(@$this->get['search'],$this->get['page']);
+				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				header ( 'Content-type:application/json;charset=utf-8' );
 				echo $json;
 				ConnectWepps::$instance->close();
-				break;
-			case "addProducts":
-				echo 1;
-				ConnectWepps::$instance->close();
-				break;
-			case "addPosition--":
-				if (empty($this->get['order']) || empty($this->get['title']) || empty($this->get['price']) || empty($this->get['qty'])) {
-					ExceptionWepps::error404();
-				}
-				$orderId = addslashes($this->get['order']);
-				$title = addslashes($this->get['title']);
-				$price = addslashes($this->get['price']);
-				$qty = addslashes($this->get['qty']);
-				
-				$option = (!empty($this->get['option'])) ? addslashes($this->get['option']) : '';
-				$id =  (!empty($this->get['id'])) ? addslashes($this->get['id']) : '';
-				
-				/*
-				 * Добавить позицию в заказ
-				 * Добавить позицию в заказ
-				 * Добавить позицию в заказ
-				 * Добавить позицию в заказ
-				 */
-				exit();
-				
-				
-				if ($option!='undefined' && $option!='') {
-					$product = CartUtilsWepps::getProduct("Courses",[
-							'id'=>$id,
-							'option'=>$option,
-							'qty'=> $qty
-					]);
-					$productArr = $product["Product"]["Courses_{$id}_{$option}"]['Data'];
-				}
-
-				$obj = new DataWepps("TradeClientsHistory");
-				$obj->add(array(
-						'Name'=>$title,
-						'ItemQty'=>$qty,
-						'Price'=>$price,
-						'Summ'=>$price * $qty,
-						'ClDate'=>date('Y-m-d H:i:s'),
-						'TStatus'=>1,
-						'OrderId'=>$orderId,
-						'Options'=>(!empty($productArr['Options'])) ? json_encode($productArr['Options'],JSON_UNESCAPED_UNICODE) : '',
-						'OptionsPrice'=>(!empty($productArr['OptionsPrice'])) ? json_encode($productArr['OptionsPrice'],JSON_UNESCAPED_UNICODE) : '',
-				));
-				
-				/*
-				 * Обновить стоимость заказа
-				 */
-				$sql = "update TradeOrders o set o.Summ = (select sum(h.Summ) from TradeClientsHistory h where h.DisplayOff=0 and h.OrderId='{$orderId}') where o.Id='{$orderId}';";
-				ConnectWepps::$instance->query($sql);
-				
-				$order = $this->getOrder($orderId);
-				$this->tpl = "RequestViewOrder.tpl";
 				break;
 			case "setOrderStatus":
 				if (empty($this->get['order']) || empty($this->get['id'])) {
@@ -333,6 +297,26 @@ class RequestOrdersWepps extends RequestWepps {
 		";
 	    $text .= "</table>\n";
 	    return $text;
+	}
+	private function searchProducts($text='',$page=1) {
+		$term = $text;
+		$limit = 10;
+		$offset = ($page-1)*$limit;
+		$sql = "select t.Id `id`,t.Name `text`,t.Price `price` from Products t
+                		where t.DisplayOff=0 and (t.Name like '%{$term}%' or t.Articul like '%{$term}%')
+                        group by t.Id order by t.Name asc limit $offset,$limit";
+		$res = ConnectWepps::$instance->fetch($sql);
+		$pagination = false;
+		if (!empty($res)) {
+			$pagination = true;
+		}
+		$output = [
+				'results'=>$res,
+				'pagination' => [
+						'more'=> $pagination
+				]
+		];
+		return $output;
 	}
 }
 $request = new RequestOrdersWepps ($_REQUEST);

@@ -25,7 +25,8 @@
 	margin-right: var(--step2);
 }
 
-.orders>.item.active>.order-wrapper .products>.item label.pps.pps_input {
+.orders>.item.active>.order-wrapper .products>.item label.pps.pps_input,
+.orders>.item.active>.order-wrapper .products>.item label.pps.pps_select {
 	padding-right: var(--step3);
 }
 

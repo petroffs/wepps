@@ -38,8 +38,8 @@
 			{/foreach}
 			<div class="item item-add pps_flex pps_flex_row pps_flex_row_str pps_flex_start" data-order="{$order.Id}">
 				<div class="pps_flex_13">
-					<label class="pps pps_input">
-						<input type="text" id="add-products"/>
+					<label class="pps pps_select">
+						<select id="add-products"></select>
 					</label>
 					<div id="add-products-options" class="options pps_hide"></div>
 				</div>
@@ -50,9 +50,9 @@
 				</div>
 				<div class="quantity pps_flex_16">
 					<label class="pps pps_select">
-						<select class="quantity" data-id="" data-option="">
-							{for $qty=1 to 10}
-							<option value="{$qty}">{$qty}</option>
+						<select class="quantity" id="add-products-quantity">
+							{for $quantity=1 to 100}
+							<option value="{$quantity}">{$quantity}</option>
 							{/for}
 						</select>
 					</label>
