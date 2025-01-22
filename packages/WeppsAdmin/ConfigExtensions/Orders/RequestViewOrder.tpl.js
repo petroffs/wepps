@@ -80,52 +80,21 @@ var readyViewOrderInit = function() {
 		return;					
 	});
 	
-	if ($( "#add-products-deprecated" ).length) {
-		$( "#add-products-deprecated" ).autocomplete({
-		      source: "/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchProducts",
-		      minLength: 2,
-		      open: function( event, ui ) {
-		    	  $('.item-add').children('div.price').text('');
-		    	  $('#add-products-options').addClass('pps_hide');
-		    	  $('#add-products-options').text('');
-		    	  //$('#addPositionOptions').attr('data-option-id','');
-		    	  //$('#addPositionOptions').attr('data-position-id','');
-		    	  $('#addPositionPrice').val('');
-		      },
-		      select: function( event, ui ) {
-		    	  /*
-		    	   * Дейсвие при выборе
-		    	   */
-		    	  $('.itemAdd').children('div.price').text(layoutWepps.money(ui.item.Price));
-		    	  $('#add-products-options').removeClass('pps_hide');
-		    	  $('#add-products-options').text(ui.item.OptionsTitle);
-		    	  $('#add-products-options').attr('data-option-id',ui.item.OptionsId);
-		    	  $('#add-products-options').attr('data-position-id',ui.item.Id);
-		    	  $('#add-products-price').val(ui.item.Price);
-		      }
-		}).autocomplete( "instance" )._renderItem = function( ul, item ) {
-		      return $( "<li>" )
-		      //ampoules DirectoryUrl
-		        .append( "<div class='result pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_row_nowrap'>" +
-		        		 "	<div class='pps_flex_23 val'><div class\"search-value\">" + item.Name + "<br/>"+item.Articul+"</div></div>" +
-		        		 "	<div class='pps_flex_16 val'><span>" + item.OptionsTitle + "</span></div>" +
-		        		 "	<div class='pps_flex_16 val'><span>" + layoutWepps.money(item.Price) + "</span></div>" +
-		        		 "</div>")
-		        .appendTo( ul );
-		 };
-	}
-	$('div.actions').find('div.status').find('a.list-item-save').off('click');
-	$('div.actions').find('div.status').find('a.list-item-save').on('click',function(event) {
+	$('div.settings-wrapper').find('div.status').find('a.list-item-save').off('click');
+	$('div.settings-wrapper').find('div.status').find('a.list-item-save').on('click',function(event) {
 		event.preventDefault();
-		let element = $(this).closest('.status').find('select.statusselect');
-		let order = element.data('order');
-		let obj = $('#view'+order);
-		let id = element.val();
-		let str = 'action=setOrderStatus&order='+order+'&id='+id;
-		layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
+		let el = $(this).closest('.settings-wrapper');
+		let obj = $('#view'+el.data('order'));
+		let settings = {
+			data: 'action=setStatus&id='+el.data('order')+'&status='+el.find('select.status-select').val(),
+			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
+			obj: obj
+		}
+		layoutWepps.request(settings);
+		return;
 	});
-	$('div.actions').find('div.payment').find('a.list-item-save').off('click');
-	$('div.actions').find('div.payment').find('a.list-item-save').on('click',function(event) {
+	$('div.settings-wrapper').find('div.payment').find('a.list-item-save').off('click');
+	$('div.settings-wrapper').find('div.payment').find('a.list-item-save').on('click',function(event) {
 		event.preventDefault();
 		let element = $('#addPaymentValue');
 		let order = element.data('order');
@@ -134,8 +103,8 @@ var readyViewOrderInit = function() {
 		let str = 'action=setOrderPayment&order='+order+'&value='+paymentValue;
 		layoutWepps.request(str, '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',obj);
 	});
-	$('div.actions').find('div.messages').find('a.list-item-add').off('click');
-	$('div.actions').find('div.messages').find('a.list-item-add').on('click',function(event) {
+	$('div.settings-wrapper').find('div.messages').find('a.list-item-add').off('click');
+	$('div.settings-wrapper').find('div.messages').find('a.list-item-add').on('click',function(event) {
 		event.preventDefault();
 		let element = $('#addCommentValue');
 		let order = element.data('order');

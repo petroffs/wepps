@@ -101,16 +101,14 @@ class RequestOrdersWepps extends RequestWepps {
 				echo $json;
 				ConnectWepps::$instance->close();
 				break;
-			case "setOrderStatus":
-				if (empty($this->get['order']) || empty($this->get['id'])) {
-					ExceptionWepps::error404();
-				}
-				$orderId = addslashes($this->get['order']);
-				$id = addslashes($this->get['id']);
-				$obj = new DataWepps("TradeOrders");
-				$obj->set($this->get['order'],array('TStatus'=>$this->get['id']));
-				$order = $this->getOrder($orderId);
+			case "setStatus":
 				$this->tpl = "RequestViewOrder.tpl";
+				if (empty($this->get['id']) || empty($this->get['status'])) {
+					ExceptionWepps::error(404);
+				}
+				$sql = "update Orders set OStatus=? where Id=?";
+				ConnectWepps::$instance->query($sql,[$this->get['status'],$this->get['id']]);
+				$order = $this->getOrder($this->get['id']);
 				break;
 			case "setOrderPayment":
 				if (empty($this->get['order'])) {

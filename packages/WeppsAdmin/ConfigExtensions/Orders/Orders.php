@@ -34,33 +34,48 @@ class OrdersWepps extends RequestWepps {
 				 */
 				//UtilsWepps::debug(1,1);
 				$this->tpl = 'OrdersItems.tpl';
-				$statusActive = 1;
+				$statusesActive = 1;
 				if (!empty($_GET['status'])) {
-					$statusActive = (int) $_GET['status'];
+					$statusesActive = (int) $_GET['status'];
 				}
-				$statusActive = ($statusActive==0) ? 1 : $statusActive;
-				
+				$statusesActive = ($statusesActive==0) ? 1 : $statusesActive;
+
 				/*
 				 * Статусы
 				 */
 				$sql = "select ts.Id,ts.Name,count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.DisplayOff=0 group by ts.Id order by ts.Priority";
 				$statuses = ConnectWepps::$instance->fetch($sql);
+				
+				$sql = "select count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.DisplayOff=0 order by ts.Priority";
+				$statusesCo = ConnectWepps::$instance->fetch($sql);
+				
+				array_push($statuses, [
+						'Id' => -1,
+						'Name' => 'Все заказы',
+						'Co' => $statusesCo[0]['Co']
+				]);
+				#UtilsWepps::debug($statuses,1);
 				$smarty->assign('statuses',$statuses);
-				$smarty->assign('statusesActive',$statusActive);
+				$smarty->assign('statusesActive',$statusesActive);
 				
 				/*
 				 * Заказы
 				 */
-				$condition = "";
-				if ($statusActive!=7) {
+				$condition = "t.OStatus!=-1 * ?";
+				if ($statusesActive!=-1) {
 					$condition = "t.OStatus=?";
 				}
 				$page = (empty($_GET['page'])) ? 1 : (int) $_GET['page'];
 				$obj = new DataWepps("Orders");
-				$obj->setParams([$statusActive]);
-				$orders = $obj->getMax($condition,20,$page,"t.Id desc");
+				$obj->setParams([$statusesActive]);
+				$orders = $obj->getMax($condition,50,$page,"t.Id desc");
 				if (!empty($orders[0]['Id'])) {
 					$smarty->assign('orders',$orders);
+					$smarty->assign('paginator',$obj->paginator);
+					#UtilsWepps::debug($obj->paginator,21);
+					$smarty->assign('paginatorUrl',"/_pps/extensions/Orders/orders.html?status=$statusesActive");
+					$smarty->assign('paginatorTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/Orders/Paginator.tpl'));
+					$this->headers->css("/packages/WeppsAdmin/Admin/Paginator/Paginator.{$this->headers::$rand}.css");
 				}
 				break;
 			default:

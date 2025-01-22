@@ -63,19 +63,19 @@
 				</div>
 			</div>
 		</div>
-		<div class="settings-wrapper pps_overflow">
+		<div class="settings-wrapper pps_overflow" data-order="{$order.Id}">
 			<div class="pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large">
 				<div class="settings pps_flex_12">
 					<div class="title">Опции</div>
 					<div class="status item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Статус</div>
 						<div class="dd pps_flex_13">
-							<label class="pps pps_select"> <select class="statusselect"
-							data-order="{$get.order.Id}"> 
-							{foreach name="out" item="item" from=$statuses}
+							<label class="pps pps_select">
+								<select class="status-select"> 
+								{foreach name="out" item="item" from=$statuses}
 								<option value="{$item.Id}" {if $item.Id==$order.OStatus} selected="selected"{/if}>{$item.Name}</option>
-							{/foreach}
-							</select>
+								{/foreach}
+								</select>
 							</label>
 						</div>
 						<div class="dd pps_flex_13 pps_center">

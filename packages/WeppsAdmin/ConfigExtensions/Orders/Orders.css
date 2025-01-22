@@ -1,3 +1,9 @@
+.paginator-wrapper {
+  border-top: 1px solid var(--color-85);
+  padding-top: var(--step3);
+  padding-bottom: var(--step3);
+}
+
 .orders .price span::after {
 	content: ' ₽';
 }

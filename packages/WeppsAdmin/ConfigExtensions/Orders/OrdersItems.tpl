@@ -17,4 +17,9 @@
 		</div>
 		{/foreach}
 	</div>
+	{if $paginatorTpl}
+	<div class="paginator-wrapper">
+		{$paginatorTpl}
+	</div>
+	{/if}
 </div>
