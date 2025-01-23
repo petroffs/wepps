@@ -14,5 +14,8 @@ var readyOrdersInit = function() {
 		$('.orders').children('.item').removeClass('active');
 		$(this).parent().addClass('active');
 	});
+	if ($('.orders').children('.item').length==1) {
+		$('.orders').children('.item').children('.item-field').trigger('click');	
+	}
 }
 $(document).ready(readyOrdersInit);

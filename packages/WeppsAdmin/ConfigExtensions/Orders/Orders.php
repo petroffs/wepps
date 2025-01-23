@@ -35,8 +35,8 @@ class OrdersWepps extends RequestWepps {
 				//UtilsWepps::debug(1,1);
 				$this->tpl = 'OrdersItems.tpl';
 				$statusesActive = 1;
-				if (!empty($_GET['status'])) {
-					$statusesActive = (int) $_GET['status'];
+				if (!empty($this->get['status'])) {
+					$statusesActive = (int) $this->get['status'];
 				}
 				$statusesActive = ($statusesActive==0) ? 1 : $statusesActive;
 
@@ -62,13 +62,22 @@ class OrdersWepps extends RequestWepps {
 				/*
 				 * Заказы
 				 */
+				$obj = new DataWepps("Orders");
+				
 				$condition = "t.OStatus!=-1 * ?";
 				if ($statusesActive!=-1) {
 					$condition = "t.OStatus=?";
 				}
-				$page = (empty($_GET['page'])) ? 1 : (int) $_GET['page'];
-				$obj = new DataWepps("Orders");
 				$obj->setParams([$statusesActive]);
+				
+				if (!empty($this->get['search'])) {
+					#UtilsWepps::debug($this->get,1)
+					$condition .= " and t.Id=? or t.Name like concat('%',?,'%')";
+					$obj->setParams([$statusesActive,$this->get['search'],$this->get['search']]);
+					
+				}
+				
+				$page = (empty($_GET['page'])) ? 1 : (int) $_GET['page'];
 				$orders = $obj->getMax($condition,50,$page,"t.Id desc");
 				if (!empty($orders[0]['Id'])) {
 					$smarty->assign('orders',$orders);
