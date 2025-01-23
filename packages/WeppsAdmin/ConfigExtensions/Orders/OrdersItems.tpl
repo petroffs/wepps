@@ -5,6 +5,17 @@
 			<a href="/_pps/extensions/Orders/orders.html?status={$item.Id}">{$item.Name}</a> ({$item.Co})
 		</div>
 		{/foreach}
+		<div class="item item-search pps_flex_14 pps_flex_12_view_medium pps_flex_11_view_small">
+			<form action="{$url}">
+			<input type="hidden" name="status" value="-1">
+			<label class="pps pps_input">
+				<input type="text" name="search" placeholder="Поиск" value="{$smarty.get.search|escape}">
+			</label>
+			<div class="pps_hide">
+				<input type="submit">
+			</div>
+			</form>
+		</div>
 	</div>
 	<div class="orders">
 		{foreach name="out" item="item" from=$orders}

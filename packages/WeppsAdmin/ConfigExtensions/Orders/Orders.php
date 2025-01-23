@@ -57,6 +57,7 @@ class OrdersWepps extends RequestWepps {
 				#UtilsWepps::debug($statuses,1);
 				$smarty->assign('statuses',$statuses);
 				$smarty->assign('statusesActive',$statusesActive);
+				$smarty->assign('url','https://platform.wepps.ubu/_pps/extensions/Orders/orders.html');
 				
 				/*
 				 * Заказы
