@@ -22,7 +22,7 @@
 }
 
 .orders>.item.active>.order-wrapper .products>.item>.options>a {
-	margin-right: var(--step2);
+	margin-left: var(--step2);
 }
 
 .orders>.item.active>.order-wrapper .products>.item label.pps.pps_input,

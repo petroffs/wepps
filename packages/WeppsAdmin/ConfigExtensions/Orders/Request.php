@@ -209,8 +209,9 @@ class RequestOrdersWepps extends RequestWepps {
 	}
 	
 	private function getOrder($id) {
-		$sql = "select * from Orders where Id=?";
-		$order = @ConnectWepps::$instance->fetch($sql,[$id])[0];
+		$obj = new DataWepps("Orders");
+		$obj->setParams([$id]);
+		$order = @$obj->getMax("t.Id=?")[0];
 		if (empty($order)) {
 			ExceptionWepps::error(404);
 		}

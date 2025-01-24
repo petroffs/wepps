@@ -26,8 +26,15 @@
 	border-top: var(--border);
 }
 
-.orders>.item>.item-field {
+.orders>.item {
 	background-color: var(--color-98);
+}
+
+.orders>.item.active {
+	background: var(--color-85);
+}
+
+.orders>.item>.item-field {
 	padding: var(--step2);
 	cursor: pointer;
 }
@@ -35,5 +42,8 @@
 .orders>.item.active>.item-field {
 	font-weight: 900;
 	color: var(--color-05);
-	background: var(--color-85);
+}
+
+.orders>.item>.order-wrapper {
+	background-color: var(--color-100);
 }

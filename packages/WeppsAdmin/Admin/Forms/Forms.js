@@ -3,14 +3,13 @@ var resizeTextareaAuto = function(textarea) {
     textarea.style.height = `${textarea.scrollHeight}px`;
 }
 var getSelect2Ajax = function(obj,fn) {
-	let id = obj.id
-	let url = obj.url
-	$(id).select2({
+	$(obj.id).select2({
 		multiple: true,
 		language: "ru",
 		maximumSelectionLength: 1,
+		placeholder : obj.placeholder,
 		ajax: {
-			url: url,
+			url: obj.url,
 			delay: 500,
 			dataType: 'json',
 			data: function(params) {

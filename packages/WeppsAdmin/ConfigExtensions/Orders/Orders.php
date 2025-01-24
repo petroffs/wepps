@@ -45,16 +45,13 @@ class OrdersWepps extends RequestWepps {
 				 */
 				$sql = "select ts.Id,ts.Name,count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.DisplayOff=0 group by ts.Id order by ts.Priority";
 				$statuses = ConnectWepps::$instance->fetch($sql);
-				
 				$sql = "select count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.DisplayOff=0 order by ts.Priority";
 				$statusesCo = ConnectWepps::$instance->fetch($sql);
-				
 				array_push($statuses, [
 						'Id' => -1,
 						'Name' => 'Все заказы',
 						'Co' => $statusesCo[0]['Co']
 				]);
-				#UtilsWepps::debug($statuses,1);
 				$smarty->assign('statuses',$statuses);
 				$smarty->assign('statusesActive',$statusesActive);
 				$smarty->assign('url','https://platform.wepps.ubu/_pps/extensions/Orders/orders.html');
@@ -63,20 +60,16 @@ class OrdersWepps extends RequestWepps {
 				 * Заказы
 				 */
 				$obj = new DataWepps("Orders");
-				
 				$condition = "t.OStatus!=-1 * ?";
 				if ($statusesActive!=-1) {
 					$condition = "t.OStatus=?";
 				}
 				$obj->setParams([$statusesActive]);
-				
 				if (!empty($this->get['search'])) {
 					#UtilsWepps::debug($this->get,1)
 					$condition .= " and t.Id=? or t.Name like concat('%',?,'%')";
 					$obj->setParams([$statusesActive,$this->get['search'],$this->get['search']]);
-					
 				}
-				
 				$page = (empty($_GET['page'])) ? 1 : (int) $_GET['page'];
 				$orders = $obj->getMax($condition,50,$page,"t.Id desc");
 				if (!empty($orders[0]['Id'])) {

@@ -122,6 +122,7 @@ if ($( "#add-products" ).length) {
 	getSelect2Ajax({
 		id : '#add-products',
 		url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchProducts',
+		placeholder: 'Новый товар'
 	},function(event) {
 		let params = event.params.data;
 		$('#add-products-price').val(params.price);
