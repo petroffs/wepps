@@ -15,7 +15,7 @@ var readyOrdersInit = function() {
 		$(this).parent().addClass('active');
 	});
 	if ($('.orders').children('.item').length==1) {
-		$('.orders').children('.item').children('.item-field').trigger('click');	
+		$('.orders').children('.item').children('.item-field').eq(0).trigger('click');	
 	}
 }
 $(document).ready(readyOrdersInit);

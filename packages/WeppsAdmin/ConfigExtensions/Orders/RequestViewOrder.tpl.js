@@ -96,10 +96,10 @@ var readyViewOrderInit = function() {
 	$('div.settings-wrapper').find('div.payment').find('a.list-list-item-add').off('click');
 	$('div.settings-wrapper').find('div.payment').find('a.list-item-add').on('click',function(event) {
 		event.preventDefault();
-		let el = $('#add-payments');
+		let el = $(this).closest('.settings-wrapper');
 		let obj = $('#view'+el.data('order'));
 		let settings = {
-			data: 'action=addPayments&id='+$(this).data('order')+'&payments='+el.val(),
+			data: 'action=addPayments&id='+el.data('order')+'&payments='+$('#add-payments').val(),
 			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
 			obj: obj
 		}

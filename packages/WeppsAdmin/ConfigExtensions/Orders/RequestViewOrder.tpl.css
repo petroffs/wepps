@@ -61,3 +61,7 @@
 .orders>.item.active>.order-wrapper .settings>.item.messages>.dd>.items>.item>.item-date>i {
 	margin-left: var(--step2);
 }
+
+.pay:nth-of-type(even) {
+	background: var(--color-98);
+}

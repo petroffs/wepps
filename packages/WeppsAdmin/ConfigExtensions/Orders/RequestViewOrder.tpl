@@ -86,11 +86,12 @@
 						<div class="dt pps_flex_14">Оплата</div>
 						{if $order.Payments}
 						<div class="dd pps_flex_34">
-							{assign var="payments" value=$order.Payments|explode:","}
+							{assign var="payments" value=$order.Payments|explode:";;;"}
 							{foreach name="out" item="item" from=$payments}
-							
-								<div class="sd">
-								{$item}
+							{assign var="pay" value=$item|strarr}
+								<div class="pay pps_flex pps_flex_row pps_flex_row_str">
+									<div class="pps_flex_12"><a href="/_pps/lists/Payments/{$pay.0}/" target="_blank">{$pay.1}</a><br/><small>{$pay.3}</small></div>
+									<div class="price pps_right pps_flex_12"><span>{$pay.2|money:2}</span></div> 
 								</div>
 							{/foreach}
 						</div>

@@ -34,6 +34,7 @@ class RequestOrdersWepps extends RequestWepps {
 			    }
 			    $order = $this->getOrder($this->get['id']);
 			    break;
+			    
 			case 'setProducts':
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id'])) {
@@ -224,9 +225,10 @@ class RequestOrdersWepps extends RequestWepps {
 	private function getOrder($id) {
 		$obj = new DataWepps("Orders");
 		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
-		$obj->setConcat('sum(p.PriceTotal) PricePaid,(t.OSum-sum(p.PriceTotal)) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\') Payments');
+		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
 		$obj->setParams([$id]);
 		$order = @$obj->getMax("t.Id=?")[0];
+		#UtilsWepps::debug($obj->sql,2);
 		if (empty($order)) {
 			ExceptionWepps::error(404);
 		}
@@ -234,7 +236,6 @@ class RequestOrdersWepps extends RequestWepps {
 		$statuses = ConnectWepps::$instance->fetch($sql);
 		$this->assign('statuses',$statuses);
 		$this->assign('statusesActive',$order['OStatus']);
-		
 		$products = json_decode($order['JPositions'],true);
 		$sql = '';
 		$sum = 0;
@@ -248,6 +249,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$products = ConnectWepps::$instance->fetch($sql);
 		$this->assign('products', $products);
 		$order['OSum'] = $sum;
+		#$order['OSumPay'] = $sum - $order['PricePaid'];
 		$sql = "update Orders set OSum=? where Id=?";
 		ConnectWepps::$instance->query($sql,[$sum,$id]);
 		$this->assign('order', $order);
