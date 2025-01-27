@@ -18,7 +18,7 @@
 }
 
 .orders>.item.active>.order-wrapper .products>.item>.quantity>label.pps {
-	max-width: 65px;
+	
 }
 
 .orders>.item.active>.order-wrapper .products>.item>.options>a {
@@ -42,6 +42,8 @@
 
 .orders>.item.active>.order-wrapper .settings>.item>.dt {
 	color: var(--color-75);
+	word-break: break-all;
+	white-space: normal;
 }
 
 .orders>.item.active>.order-wrapper .settings>.item.payment>.dd>label+div {

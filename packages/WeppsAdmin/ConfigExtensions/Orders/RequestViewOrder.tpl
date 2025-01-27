@@ -12,15 +12,15 @@
 			{foreach name="out" key="key" item="item" from=$products}
 			{assign var="options" value=$item.options|json_decode:true}
 			<div class="item pps_flex pps_flex_row" data-index="{$key}" data-products="{$item.id}" data-order="{$order.Id}">
-				<div class="title2 pps_flex_13 pps_flex_12_view_small pps_order_1_view_small">{$item.name}
+				<div class="title2 pps_flex_13 pps_flex_45_view_small pps_order_1_view_small">{$item.name}
 					<div class="options">{if $options.name}{$options.name} : {$options.value}{/if}</div>
 				</div>
-				<div class="price pps_flex_16 pps_flex_14_view_small pps_order_3_view_small">
+				<div class="price pps_flex_16 pps_flex_13_view_small pps_order_3_view_small">
 					<label class="pps pps_input">
 						<input type="text" name="price" value="{$item.price}"/>
 					</label>
 				</div>
-				<div class="quantity pps_flex_16 pps_flex_16 pps_flex_14_view_small pps_order_4_view_small">
+				<div class="quantity pps_flex_16 pps_flex_16 pps_flex_13_view_small pps_order_4_view_small">
 					<label class="pps pps_select">
 						<select class="quantity" data-id="{$item.id}" data-option="">
 							{for $qty=1 to 100}
@@ -29,8 +29,8 @@
 						</select>
 					</label>
 				</div>
-				<div class="price sum pps_flex_16 pps_flex_16 pps_flex_14_view_small pps_order_5_view_small pps_right_view_small"><span>{$item.sum|money:2}</span></div>
-				<div class="options pps_right pps_flex_16 pps_flex_12_view_small pps_order_2_view_small">
+				<div class="price sum pps_flex_16 pps_flex_16 pps_flex_13_view_small pps_order_5_view_small pps_right_view_small"><span>{$item.sum|money:2}</span></div>
+				<div class="options pps_right pps_flex_16 pps_flex_15_view_small pps_order_2_view_small">
 					<a class="pps_button list-item-save pps_hide" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
 					<a class="pps_button list-item-remove" href="" data-path="position" title="Удалить"><i class="fa fa-remove"></i></a>
 				</div>
@@ -43,12 +43,12 @@
 					</label>
 					<div id="add-products-options" class="options pps_hide"></div>
 				</div>
-				<div class="pps_flex_16 pps_flex_14_view_small pps_order_3_view_small">
+				<div class="pps_flex_16 pps_flex_13_view_small pps_order_3_view_small">
 					<label class="pps pps_input">
 						<input type="text" id="add-products-price" value=""/>
 					</label>
 				</div>
-				<div class="quantity pps_flex_16 pps_flex_14_view_small pps_order_4_view_small">
+				<div class="quantity pps_flex_16 pps_flex_13_view_small pps_order_4_view_small">
 					<label class="pps pps_select">
 						<select class="quantity" id="add-products-quantity">
 							{for $quantity=1 to 100}
@@ -57,7 +57,7 @@
 						</select>
 					</label>
 				</div>
-				<div class="price sum pps_flex_16 pps_flex_16 pps_flex_14_view_small pps_order_5_view_small pps_right_view_small"></div>
+				<div class="price sum pps_flex_16 pps_flex_16 pps_flex_13_view_small pps_order_5_view_small pps_right_view_small"></div>
 				<div class="options pps_right pps_flex_16 pps_flex_15_view_small pps_order_2_view_small">
 					<a class="pps_button list-item-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
 				</div>
@@ -68,8 +68,8 @@
 				<div class="settings pps_flex_12 pps_flex_11_view_small">
 					<div class="title">Опции</div>
 					<div class="status item pps_flex pps_flex_row pps_flex_start">
-						<div class="dt pps_flex_13">Статус</div>
-						<div class="dd pps_flex_13">
+						<div class="dt pps_flex_14">Статус</div>
+						<div class="dd pps_flex_12">
 							<label class="pps pps_select">
 								<select class="status-select"> 
 								{foreach name="out" item="item" from=$statuses}
@@ -78,34 +78,36 @@
 								</select>
 							</label>
 						</div>
-						<div class="dd pps_flex_13 pps_center pps_right_view_small">
+						<div class="dd pps_flex_14 pps_right">
 							<a class="pps_button list-item-save" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
 						</div>
 					</div>
 					<div class="payment item pps_flex pps_flex_row pps_flex_start">
-						<div class="dt pps_flex_13">Оплата</div>
-						<div class="dd pps_flex_13">
-							{*
-							<label class="pps pps_checkbox">
-								<input type="checkbox" value="1" id="addPayment"/>
-								<span>оплачено</span>
-							</label>
-							*}
-							<label class="pps pps_input">
-								<input type="number" id="addPaymentValue" data-order="{$get.order.Id}" placeholder="Сумма оплаты" value="{$get.order.OBuySumm}"/>
-							</label>
-							{if $get.order.OBuySumm}
-							<div>{$get.order.OBuyDate}</div>
-							{/if}
+						<div class="dt pps_flex_14">Оплата</div>
+						{if $order.Payments}
+						<div class="dd pps_flex_34">
+							{assign var="payments" value=$order.Payments|explode:","}
+							{foreach name="out" item="item" from=$payments}
+							
+								<div class="sd">
+								{$item}
+								</div>
+							{/foreach}
 						</div>
-						<div class="dd pps_flex_13 pps_center pps_right_view_small">
-							<a class="pps_button list-item-save" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
+						<div class="dt pps_flex_14"></div>
+						{/if}
+						<div class="dd pps_flex_12">
+							<label class="pps pps_input">
+								<input type="text" id="add-payments" placeholder="Сумма оплаты" value="{$order.OSumPay}"/>
+							</label>
+						</div>
+						<div class="dd pps_flex_14 pps_right">
+							<a class="pps_button list-item-add" href="" title="Добавить платеж"  data-order="{$order.Id}"><i class="fa fa-plus"></i></a>
 						</div>
 					</div>
-					
 					<div class="messages item pps_flex pps_flex_row pps_flex_row_top pps_flex_start" id="messages">
-						<div class="dt pps_flex_13">Комментарий</div>
-						<div class="dd pps_flex_23">
+						<div class="dt pps_flex_14">Комментарий</div>
+						<div class="dd pps_flex_12">
 							<div class="items">
 								{foreach name="out" item="item" from=$get.messages}
 								<div class="item">
@@ -130,8 +132,7 @@
 							</label>
 							*}
 						</div>
-						<div class="dt pps_flex_23"></div>
-						<div class="dd pps_flex_13 pps_center pps_right_view_small">
+						<div class="dd pps_flex_14 pps_right">
 							<a class="pps_button list-item-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
 						</div>
 					</div>

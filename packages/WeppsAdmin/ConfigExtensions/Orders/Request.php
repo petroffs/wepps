@@ -110,17 +110,30 @@ class RequestOrdersWepps extends RequestWepps {
 				ConnectWepps::$instance->query($sql,[$this->get['status'],$this->get['id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
-			case "setOrderPayment":
-				if (empty($this->get['order'])) {
+			case "addPayments":
+				$this->tpl = "RequestViewOrder.tpl";
+				if (empty($this->get['id']) || empty($this->get['payments'])) {
+					ExceptionWepps::error(404);
+				}
+				$obj = new DataWepps('Orders');
+				$obj->setParams([$this->get['id']]);
+				$order = @$obj->getMax("t.Id=?")[0];
+				if (empty($order)) {
 					ExceptionWepps::error404();
 				}
-				$orderId = addslashes($this->get['order']);
-				$paymentValue = addslashes($this->get['value']);
-				
-				$obj = new DataWepps("TradeOrders");
-				$obj->set($this->get['order'],array('OBuySumm'=>$this->get['value'],'OBuyDate'=>date('Y-m-d H:i:s')));
-				$order = $this->getOrder($orderId);
-				$this->tpl = "RequestViewOrder.tpl";
+				$arr = ConnectWepps::$instance->prepare([
+						'Name' => 'Оплата Сайт',
+						'PriceTotal' => (float) $this->get['payments'],
+						'IsPaid' => 1,
+						'IsProcessed' => 1,
+						'TableName' => 'Orders',
+						'TableNameId' => $order['Id'],
+						'MerchantDate' => date('Y-m-d H:i:s'),
+						'Priority' => 0
+				]);
+				$sql = "insert into Payments {$arr['insert']}";
+				ConnectWepps::$instance->query($sql,$arr['row']);
+				$order = $this->getOrder($this->get['id']);
 				break;
 			case "addOrderMessage":
 				if (empty($this->get['order'])) {
@@ -210,6 +223,8 @@ class RequestOrdersWepps extends RequestWepps {
 	
 	private function getOrder($id) {
 		$obj = new DataWepps("Orders");
+		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
+		$obj->setConcat('sum(p.PriceTotal) PricePaid,(t.OSum-sum(p.PriceTotal)) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\') Payments');
 		$obj->setParams([$id]);
 		$order = @$obj->getMax("t.Id=?")[0];
 		if (empty($order)) {
