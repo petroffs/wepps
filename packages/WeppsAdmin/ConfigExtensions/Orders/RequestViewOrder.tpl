@@ -82,15 +82,18 @@
 							<a class="pps_button list-item-save" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
 						</div>
 					</div>
-					<div class="payment item pps_flex pps_flex_row pps_flex_start">
+					<div class="payments item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_14">Оплата</div>
 						{if $order.Payments}
 						<div class="dd pps_flex_34">
 							{assign var="payments" value=$order.Payments|explode:";;;"}
-							{foreach name="out" item="item" from=$payments}
+							{foreach item="item" from=$payments}
 							{assign var="pay" value=$item|strarr}
-								<div class="pay pps_flex pps_flex_row pps_flex_row_str">
-									<div class="pps_flex_12"><a href="/_pps/lists/Payments/{$pay.0}/" target="_blank">{$pay.1}</a><br/><small>{$pay.3}</small></div>
+								<div class="even pps_flex pps_flex_row pps_flex_row_str">
+									<div class="pps_flex_12">
+										{$pay.1} <a href="/_pps/lists/Payments/{$pay.0}/" target="_blank"><i class="fa fa-link"></i></a>
+										<div class="date">{$pay.3}</div>
+									</div>
 									<div class="price pps_right pps_flex_12"><span>{$pay.2|money:2}</span></div> 
 								</div>
 							{/foreach}
@@ -106,27 +109,29 @@
 							<a class="pps_button list-item-add" href="" title="Добавить платеж"  data-order="{$order.Id}"><i class="fa fa-plus"></i></a>
 						</div>
 					</div>
-					<div class="messages item pps_flex pps_flex_row pps_flex_row_top pps_flex_start" id="messages">
+					<div class="messages item pps_flex pps_flex_row pps_flex_row_top pps_flex_start">
 						<div class="dt pps_flex_14">Комментарий</div>
+						{if $order.Messages}
+						<div class="dd pps_flex_34">
+							{foreach item="item" from=$order.Messages} 
+							<div class="even">
+								<div class="text">{$item.text|@nl2br}</div>
+								<div class="date">{$item.date} {$item.user}</div>
+							</div> 
+							{/foreach}
+							 
+						</div>
+						<div class="dt pps_flex_14"></div>
+						{/if}
 						<div class="dd pps_flex_12">
-							<div class="items">
-								{foreach name="out" item="item" from=$get.messages}
-								<div class="item">
-									<div class="item-date">{$item.MessDate}{if $item.OrderInfo==1} <i class="fa fa-file-text-o" title="Состав заказа прикреплен"></i>{/if}</div>
-									<div class="item-descr">{$item.MessBody|@nl2br}</div>
-									{if $item.PaymentAdd}<div class="item-descr"><a href="/ext/MerchantSberbank/Request.php?action=form&id={$get.order.Id}">Ссылка на оплату</a></div>{/if}
-									
-								</div>
-								{/foreach}
-							</div>
 							<label class="pps pps_area">
-								<textarea id="addCommentValue" name="message" data-order="{$get.order.Id}"></textarea>
-							</label>
-							<label class="pps pps_checkbox">
-								<input type="checkbox" value="1" id="addOrderPositionsToMessage"/>
-								<span>прикрепить состав заказа</span>
+								<textarea id="add-messages"></textarea>
 							</label>
 							{*
+							<label class="pps pps_checkbox">
+								<input type="checkbox" value="1" id="add-messages-products"/>
+								<span>прикрепить состав заказа</span>
+							</label>
 							<label class="pps pps_checkbox">
 								<input type="checkbox" value="1" id="addPaymentLink"/>
 								<span>прикрепить ссылку на оплату</span>
@@ -139,10 +144,10 @@
 					</div>
 				</div>
 				<div class="settings client pps_flex_12 pps_flex_11_view_small">
-					<div class="title">Заказ</div>
+					<div class="title">Заказ <a href="/_pps/lists/Orders/{$order.Id}/" target="_blank"><i class="fa fa-link"></i></a></div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Номер</div>
-						<div class="dd pps_flex_23"><a href="/_pps/lists/Orders/{$order.Id}/" target="_blank">{$order.Id}</a></div>
+						<div class="dd pps_flex_23">{$order.Id}</div>
 					</div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Дата</div>
@@ -157,10 +162,10 @@
 						<div class="dd pps_flex_23">{$order.OPayment_Name}</div>
 					</div>
 					<div class="pps_interval"></div>
-					<div class="title">Клиент</div>
+					<div class="title">Клиент <a href="/_pps/lists/s_Users/{$order.UserId}/" target="_blank"><i class="fa fa-link"></i></a></div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Номер</div>
-						<div class="dd pps_flex_23"><a href="/_pps/lists/s_Users/{$order.UserId}/" target="_blank">{$order.UserId}</a></div>
+						<div class="dd pps_flex_23">{$order.UserId}</div>
 					</div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Имя</div>

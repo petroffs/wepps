@@ -116,19 +116,13 @@ class RequestOrdersWepps extends RequestWepps {
 				if (empty($this->get['id']) || empty($this->get['payments'])) {
 					ExceptionWepps::error(404);
 				}
-				$obj = new DataWepps('Orders');
-				$obj->setParams([$this->get['id']]);
-				$order = @$obj->getMax("t.Id=?")[0];
-				if (empty($order)) {
-					ExceptionWepps::error404();
-				}
 				$arr = ConnectWepps::$instance->prepare([
 						'Name' => 'Оплата Сайт',
 						'PriceTotal' => (float) $this->get['payments'],
 						'IsPaid' => 1,
 						'IsProcessed' => 1,
 						'TableName' => 'Orders',
-						'TableNameId' => $order['Id'],
+						'TableNameId' => $this->get['id'],
 						'MerchantDate' => date('Y-m-d H:i:s'),
 						'Priority' => 0
 				]);
@@ -136,35 +130,34 @@ class RequestOrdersWepps extends RequestWepps {
 				ConnectWepps::$instance->query($sql,$arr['row']);
 				$order = $this->getOrder($this->get['id']);
 				break;
-			case "addOrderMessage":
-				if (empty($this->get['order'])) {
-					ExceptionWepps::error404();
+			case "addMessages":
+				$this->tpl = "RequestViewOrder.tpl";
+				if (empty($this->get['id']) || empty($this->get['messages'])) {
+					ExceptionWepps::error(404);
 				}
-				$orderId = addslashes($this->get['order']);
-				$message = addslashes($this->get['value']);
-				$attach = addslashes($this->get['attach']);
-				$payment = addslashes($this->get['payment']);
+				$jdata = [
+						'date' => date('Y-m-d H:i:s'),
+						'text' => $this->get['messages']
+						
+				];
+				$arr = ConnectWepps::$instance->prepare([
+						'Name' => 'Message',
+						'OrderId' => $this->get['id'],
+						'UserId' => ConnectWepps::$projectData['user']['Id'],
+						'EType' => 'messages',
+						'JData' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
+				]);
+				$sql = "insert into OrdersEvents {$arr['insert']}";
+				ConnectWepps::$instance->query($sql,$arr['row']);
 				
-				$errors = array();
-				$errors['message'] = ValidatorWepps::isNotEmpty($message, "Не заполнено");
+				/*
+				 * Уведомление клиенту
+				 */
 				
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, 'messages');
-				echo $outer['Out'];
-				if ($outer['Co']==0) {
-    				$obj = new DataWepps("TradeMessages");
-    				$obj->add(array(
-    				    'Name'=>"Заказ",
-    					'MessFrom'=>ConnectWepps::$projectData['user']['Id'],
-    				    'MessBody'=>$message,
-    				    'MessType'=>1,
-    				    'MessDate'=>date('Y-m-d H:i:s'),
-    				    'OrderId'=>$orderId,
-    				    'OrderInfo'=>($attach=='true')?1:0,
-    				    'PaymentAdd'=>($payment=='true')?1:0,
-    				));
-    			}
 				
-    			$order = $this->getOrder($orderId);
+				
+				$order = $this->getOrder($this->get['id']);
+				break;
     			
     			/*
     			 * MailWepps
@@ -252,67 +245,21 @@ class RequestOrdersWepps extends RequestWepps {
 		#$order['OSumPay'] = $sum - $order['PricePaid'];
 		$sql = "update Orders set OSum=? where Id=?";
 		ConnectWepps::$instance->query($sql,[$sum,$id]);
-		$this->assign('order', $order);
 		$obj = new DataWepps("OrdersEvents");
-		$messages = $obj->getMax("t.DisplayOff=0 and t.OrderId='{$id}'",2000,1,"t.Priority");
-		if (isset($messages[0]['Id'])) {
-		    $this->assign('messages',$messages);
+		$obj->setParams([$id]);
+		$obj->setJoin("join s_Users u on u.Id=t.UserId");
+		$obj->setConcat("u.Name UsersName");
+		$res = $obj->getMax("t.DisplayOff=0 and t.OrderId=?",2000,1,"t.Priority");
+		if (!empty($res)) {
+			$order['Messages'] = [];
+			foreach ($res as $value) {
+				$jdata = json_decode($value['JData'],true);
+				$jdata['user'] = $value['UsersName'];
+				array_push($order['Messages'], $jdata);
+			}
 		}
-		return array('order'=>$order,'products'=>$products,'statuses'=>$statuses,'messages'=>$messages);
-	}
-	
-	private function getOrderPositionsText($order) {
-	    $text = "";
-	    $text.= "<h4>ТОВАРЫ ЗАКАЗА</h4>\n";
-	    $text .= "<table border=\"0\" cellspacing=\"0\" cellpadding=\"10\">\n";
-	    $text .= "
-			<tr style=\"color:gray;font-size:12px;\">
-				<td width=\"50%\" style=\"border-bottom: 1px solid #ddd;\">
-					Наименование
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					Цена
-				</td>
-				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					Кол.
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					Сумма
-				</td>
-			</tr>
-			";
-	    foreach ($order['positions'] as $value) {
-	        
-	        $options = json_decode($value['Options'],true);
-	        $optionsText = "";
-	        if (is_array($options)) {
-	            $optionsText = "<br/>{$options['ProductCity']}<br/>{$options['ProductDateText']}";
-	        }
-	        $text .= "
-			<tr>
-				<td width=\"50%\" style=\"border-bottom: 1px solid #ddd;\">
-					<strong>{$value['Name']}</strong>{$optionsText}
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".SpellWepps::money($value['Price'])." Р.
-				</td>
-				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					{$value['ItemQty']}
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".SpellWepps::money($value['Summ'])." Р.
-				</td>
-			</tr>
-			";
-	    }
-	    $text .= "
-		<tr>
-			<td colspan=\"3\" align=\"right\"><strong>ИТОГО: </strong></td>
-			<td align=\"right\">".SpellWepps::money($order['order']['Summ'])." Р.</td>
-		</tr>
-		";
-	    $text .= "</table>\n";
-	    return $text;
+		$this->assign('order', $order);
+		return ['order'=>$order,'products'=>$products,'statuses'=>$statuses];
 	}
 	private function searchProducts($text='',$page=1) {
 		$term = $text;
@@ -333,6 +280,63 @@ class RequestOrdersWepps extends RequestWepps {
 				]
 		];
 		return $output;
+	}
+
+	/**
+	 * @deprecated
+	 */
+	private function getOrderPositionsText($order) {
+		$text = "";
+		$text.= "<h4>ТОВАРЫ ЗАКАЗА</h4>\n";
+		$text .= "<table border=\"0\" cellspacing=\"0\" cellpadding=\"10\">\n";
+		$text .= "
+			<tr style=\"color:gray;font-size:12px;\">
+				<td width=\"50%\" style=\"border-bottom: 1px solid #ddd;\">
+					Наименование
+				</td>
+				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
+					Цена
+				</td>
+				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
+					Кол.
+				</td>
+				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
+					Сумма
+				</td>
+			</tr>
+			";
+		foreach ($order['positions'] as $value) {
+			
+			$options = json_decode($value['Options'],true);
+			$optionsText = "";
+			if (is_array($options)) {
+				$optionsText = "<br/>{$options['ProductCity']}<br/>{$options['ProductDateText']}";
+			}
+			$text .= "
+			<tr>
+				<td width=\"50%\" style=\"border-bottom: 1px solid #ddd;\">
+					<strong>{$value['Name']}</strong>{$optionsText}
+				</td>
+				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
+					".SpellWepps::money($value['Price'])." Р.
+				</td>
+				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
+					{$value['ItemQty']}
+				</td>
+				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
+					".SpellWepps::money($value['Summ'])." Р.
+				</td>
+			</tr>
+			";
+		}
+		$text .= "
+		<tr>
+			<td colspan=\"3\" align=\"right\"><strong>ИТОГО: </strong></td>
+			<td align=\"right\">".SpellWepps::money($order['order']['Summ'])." Р.</td>
+		</tr>
+		";
+		$text .= "</table>\n";
+		return $text;
 	}
 }
 $request = new RequestOrdersWepps ($_REQUEST);

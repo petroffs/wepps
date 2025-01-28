@@ -46,22 +46,14 @@
 	white-space: normal;
 }
 
-.orders>.item.active>.order-wrapper .settings>.item.payment>.dd>label+div {
+.orders>.item.active>.order-wrapper .settings>.item>.dd .date {
+	font-size: var(--font-small);
 	font-weight: 300;
 }
 
-.orders>.item.active>.order-wrapper .settings>.item.messages>.dd>.items>.item {
-	margin-bottom: var(--step2);
-}
 
-.orders>.item.active>.order-wrapper .settings>.item.messages>.dd>.items>.item>.item-date {
-	font-weight: 300;
-}
-
-.orders>.item.active>.order-wrapper .settings>.item.messages>.dd>.items>.item>.item-date>i {
-	margin-left: var(--step2);
-}
-
-.pay:nth-of-type(even) {
+.even:nth-of-type(even) {
 	background: var(--color-98);
+	border-radius: var(--step);
 }
+
