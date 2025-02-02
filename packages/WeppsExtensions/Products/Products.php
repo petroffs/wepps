@@ -12,7 +12,7 @@ class ProductsWepps extends ExtensionWepps {
 		$smarty = SmartyWepps::getSmarty ();
 		$rand = $this->rand;
 		if (NavigatorWepps::$pathItem == '') {
-			$this->tpl = 'packages/WeppsExtensions/Products/ProductsSummary.tpl';
+			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$extensionConditions = self::setExtensionConditions($this->navigator)['condition'];
 			
 			/*
