@@ -1,11 +1,10 @@
 <div class="products-wrapper">
 	<div class="options pps_flex pps_flex_row pps_flex_row_str">
-		<div class="optionsCount">{$elementsCount} товаров</div>
+		<div class="optionsCount">{$productsCount} товаров</div>
 		<div class="optionsSort">
 			<label class="pps pps_select"><select>
-					<option value="0">Сортировать по:</option> {foreach name="out"
-					key="key" item="item" from=$orderBy}
-					<option value="{$key}" {if $orderBySel==$key} selected="selected"{/if}>{$item.0.Name}</option>
+					{foreach name="out" key="key" item="item" from=$productsSorting}
+					<option value="{$key}" {if $productsSortingActive==$key} selected="selected"{/if}>{$item}</option>
 					{/foreach}
 			</select> </label>
 		</div>
@@ -13,7 +12,7 @@
 	<div class="products-container">
 		<div
 			class="items products pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin">
-			{foreach name="out" item="item" from=$elements} {assign var=images
+			{foreach name="out" item="item" from=$products} {assign var=images
 			value=$item.Images_FileUrl|strarr}
 			<div
 				class="item pps_flex_13 pps_flex_12_view_medium pps_flex_11_view_small pps_border">

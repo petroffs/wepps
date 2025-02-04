@@ -113,15 +113,15 @@ class DataWepps {
 	 * @param string $orderBy
 	 * @return array
 	 */
-	public function getMax($id = NULL, $onPage = 20, $currentPage = 0, $orderBy = "t.Priority") {
-		if ($id == NULL) {
+	public function getMax($id = null, $onPage = 20, $currentPage = 0, $orderBy = "t.Priority") {
+		if ($id == null) {
 			$id = "t.Id!=0";
 		}
 		$formatted = $this->_getFormatted($id,$onPage,$currentPage,$orderBy);
 		if (substr($formatted['id'], 0,2)=='Id') {
 			$formatted['id'] = "t.".$formatted['id'];
 		}
-		$settings = $this->getScheme ();
+		$settings = $this->getScheme();
 		$fields = $joins = "";
 		$joinCustom = $this->join;
 		$f = 1;
