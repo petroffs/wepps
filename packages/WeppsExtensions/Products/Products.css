@@ -1,23 +1,10 @@
-@import url('ProductsItems.css') screen;
-@import url('ProductsItem.css') screen;
-
-
-div.price:after {
-	content: "\f158";
-	font: 90% 'FontAwesome';
-	margin-left: 5px;
+div.page.products {
+	background-color: tomato;
+	overflow: auto;
 }
 
-div.priceOld {
-	text-decoration: line-through;
-}
-div.priceOld:after {
-	content: "\f158";
-	font:90% 'FontAwesome';
-	margin-left: 5px;
-	
-	display: inline-block;
-}
+
+
 
 div.status {
 	width: 50px;

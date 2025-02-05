@@ -80,13 +80,16 @@ div.page.footer a {
 	text-decoration: none;
 	color: var(--color-25);
 }
+
 div.page.footer .footer-wrapper {
 	border-radius: var(--step2) var(--step2) 0 0;
 	margin-top: var(--step4);
 }
+
 div.page.footer .footer-wrapper>div {
 	background: var(--color-100);
 }
+
 div.page.footer .footer-logo img {
 	width: 120px;
 	height: auto;
@@ -136,7 +139,18 @@ body div.text p:last-child {
 	margin-bottom: 0;
 }
 
+body div.price:after {
+	content: "\f158";
+	font: 90% 'FontAwesome';
+	margin-left: 5px;
+}
+
+body div.price.price-before {
+	text-decoration: line-through;
+}
+
 @media screen and (max-width: 1440px) {
+
 	div.page div.page2,
 	div.page>section {
 		padding: 0 var(--step4);
