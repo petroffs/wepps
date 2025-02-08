@@ -149,6 +149,25 @@ body div.price.price-before {
 	text-decoration: line-through;
 }
 
+body section.sidebar {
+	background: var(--color-98);
+}
+
+body section.sidebar div.nav {
+	margin-top: var(--step5);
+	border: var(--border);
+}
+body section.sidebar div.nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	background-color: mistyrose;
+}
+
+body section.content {
+	background: var(--color-98);
+}
+
 @media screen and (max-width: 1440px) {
 
 	div.page div.page2,
