@@ -149,23 +149,52 @@ body div.price.price-before {
 	text-decoration: line-through;
 }
 
-body section.sidebar {
-	background: var(--color-98);
+body section.sidebar div.nav {
+	border-radius: var(--step2);
+	overflow: hidden;
 }
 
-body section.sidebar div.nav {
-	margin-top: var(--step5);
-	border: var(--border);
-}
 body section.sidebar div.nav ul {
 	list-style: none;
 	margin: 0;
 	padding: 0;
-	background-color: mistyrose;
 }
 
-body section.content {
+body section.sidebar div.nav ul>li>a {
+	text-decoration: none;
+	color: var(--color-02);
+	background: var(--color-100);
+	padding: var(--step2);
+	margin-bottom: var(--stepHalf);
+	display: block;
+}
+
+body section.sidebar div.nav ul>li:last-child>a {
+	margin-bottom: 0;
+}
+
+body section.sidebar div.nav ul>li:hover>a {
 	background: var(--color-98);
+}
+
+body section.sidebar div.nav ul>li.active>a {
+	font-weight: 600;
+	background: var(--color-95);
+}
+
+body div.content-block {
+	background: var(--color-100);
+	padding: var(--step2);
+	border-radius: var(--step2);
+	overflow: hidden;
+}
+
+body div.content-block h1 {
+	margin-top: 0;
+}
+
+body div.content-block section.paginator-wrapper {
+	margin-bottom: 0
 }
 
 @media screen and (max-width: 1440px) {

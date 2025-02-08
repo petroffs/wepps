@@ -2,10 +2,10 @@
 	<section>
 		<section class="pps_flex pps_flex_row pps_flex_row_top pps_flex_margin">
 			<section class="sidebar pps_flex_14">
-				<div class="nav">
+				<div class="nav pps_animate">
 					<ul>
 						{foreach name="out" item="item" from=$extensionNav}
-						<li class="{if $contentId==$item.Id}active{/if}">
+						<li class="{if $content.Id==$item.Id}active{/if}">
 							<a href="{$item.Url}">{$item.Name}</a>
 						</li>
 						{/foreach}
@@ -33,10 +33,12 @@
 				{/foreach}
 			</section>
 			<section class="content pps_flex_34">
-				<h1>{$content.Name}</h1>
-				{if $content.Text1}
-				<div class="text">{$content.Text1}</div>
-				{/if}
+				<div class="content-block">
+					<h1>{$content.Name}</h1>
+					{if $content.Text1}
+					<div class="text">{$content.Text1}</div>
+					{/if}
+				</div>
 				<div class="products-items">{$elementsTpl}</div>
 			</section>
 		</section>

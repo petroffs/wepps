@@ -21,7 +21,7 @@ class ProductsUtilsWepps {
 				'priceasc' => 'Сначала дешевле',
 				'pricedesc' => 'Сначала дороже',
 				'nameasc' => 'Наименование',
-				'default' => 'Без сорртировки',
+				'default' => 'Без сортировки',
 		];
 		$active = (!isset($_COOKIE['pps_sort'])) ? 'default' : $_COOKIE['pps_sort'];
 		switch ($active) {

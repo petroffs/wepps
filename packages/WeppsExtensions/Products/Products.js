@@ -1,15 +1,5 @@
-var readyProductsInit = function() {
-	$('.brand').find('a').on('click', function(event) {
-		event.stopPropagation();
-		var str = $(this).attr('href');
-		location.href = str;
-	});
-
-	$('.items.products').find('div.item').on('click', function(event) {
-		event.preventDefault();
-		var str = $(this).find('div.title').find('a').attr('href');
-		location.href = str;
-	});
+var productsInit = function() {
+	
 	
 	$('.optionsSort').find('select').on('change',function() {
 		var sel = $(this).val();
@@ -24,29 +14,29 @@ var readyProductsInit = function() {
 	});
 }
 
-$(document).ready(readyProductsInit);
+$(document).ready(productsInit);
 
 $(document).ready(function() {
-	$('li.more').find('a').on('click', function(event) {
+	$('li.pps_expand').find('a').on('click', function(event) {
 		event.preventDefault();
 		var items = $(this).closest('ul').find('li')
-		if (items.filter('.hide').length != 0) {
-			items.removeClass('hide');
+		if (items.filter('.pps_hide').length != 0) {
+			items.removeClass('pps_hide');
 			$(this).text('Скрыть');
 		} else {
 			$('html, body').animate({
 				scrollTop : items.parent().offset().top - 35
-			}, 1000);
+			}, 500);
 
 			var href = $(this);
 			setTimeout(function() {
 				items.filter(function(index) {
 					if (index >= 10)
-						$(this).addClass('hide');
+						$(this).addClass('pps_hide');
 				});
-				href.parent().removeClass('hide');
+				href.parent().removeClass('pps_hide');
 				href.text('Еще');
-			}, 1000);
+			}, 500);
 		}
 	});
 
