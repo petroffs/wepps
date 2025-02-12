@@ -17,6 +17,8 @@ class ProductsWepps extends ExtensionWepps {
 		
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
+			$this->headers->css("/ext/Products/ProductsItems.{$rand}.css");
+			#$this->headers->js("/ext/Products/ProductsItems.{$rand}.js");
 			#$conditions = self::setExtensionConditions($this->navigator)['condition'];
 			$conditions = $productsUtils->getConditions();
 			$sorting = $productsUtils->getSorting();
@@ -34,7 +36,7 @@ class ProductsWepps extends ExtensionWepps {
 			$smarty->assign('productsSortingActive', $sorting['active']);
 			$smarty->assign('paginator',$products['paginator']);
 			$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
-			$smarty->assign('elementsTpl', $smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
+			$smarty->assign('productsTpl', $smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
 			$smarty->assign('extensionNav',$this->navigator->nav ['subs'][3]);
 			$smarty->assign ('filtersNav', self::getProductsItemsProperties($conditions));
 			$smarty->assign('normalView',0);

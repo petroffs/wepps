@@ -39,7 +39,21 @@
 					<div class="text">{$content.Text1}</div>
 					{/if}
 				</div>
-				<div class="products-items">{$elementsTpl}</div>
+				<div class="products-wrapper">
+					<div class="products-options content-block pps_flex pps_flex_row">
+						<div class="count">{$productsCount} товаров</div>
+						<div class="sort">
+							<label class="pps pps_select">
+								<select data-minimum-results-for-search="Infinity">
+									{foreach name="out" key="key" item="item" from=$productsSorting}
+									<option value="{$key}" {if $productsSortingActive==$key} selected="selected"{/if}>{$item}</option>
+									{/foreach}
+								</select>
+							</label>
+						</div>
+					</div>
+					{$productsTpl}
+				</div>
 			</section>
 		</section>
 	</section>
