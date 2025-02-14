@@ -1,7 +1,7 @@
 <div class="page products">
 	<section>
 		<section class="pps_flex pps_flex_row pps_flex_row_top pps_flex_margin">
-			<section class="sidebar pps_flex_14">
+			<section class="sidebar pps_flex_14" data-url="/ext/Products/Request.php" data-search="{$search}">
 				<div class="nav pps_animate">
 					<ul>
 						{foreach name="out" item="item" from=$extensionNav}
@@ -31,6 +31,11 @@
 					</ul>
 				</div>
 				{/foreach}
+				<div class="nav-filters-reset">
+					<div class="title">
+						<label class="pps pps_button"><input type="button" value="Очистить"/></label>
+					</div>
+				</div>
 			</section>
 			<section class="content pps_flex_34">
 				<div class="content-block">
@@ -41,8 +46,8 @@
 				</div>
 				<div class="products-wrapper">
 					<div class="products-options content-block pps_flex pps_flex_row">
-						<div class="count">{$productsCount} товаров</div>
-						<div class="sort">
+						<div class="products-options-count">{$productsCount} товаров</div>
+						<div class="products-options-sort">
 							<label class="pps pps_select">
 								<select data-minimum-results-for-search="Infinity">
 									{foreach name="out" key="key" item="item" from=$productsSorting}

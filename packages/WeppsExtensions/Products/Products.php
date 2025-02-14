@@ -18,6 +18,8 @@ class ProductsWepps extends ExtensionWepps {
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$rand}.css");
+			$this->headers->css("/ext/Template/Filters/Filters.{$rand}.css");
+			$this->headers->js("/ext/Template/Filters/Filters.{$rand}.js");
 			#$this->headers->js("/ext/Products/ProductsItems.{$rand}.js");
 			#$conditions = self::setExtensionConditions($this->navigator)['condition'];
 			$conditions = $productsUtils->getConditions();
@@ -80,7 +82,7 @@ class ProductsWepps extends ExtensionWepps {
 	 * @return array
 	 */
 	public static function getProductsItemsProperties($conditions) {
-		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
+		$sql = "select distinct p.Alias as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
 		p.Name as PropertyName,count(*) as Co
 		from Products as t
 		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id
@@ -88,9 +90,8 @@ class ProductsWepps extends ExtensionWepps {
 		where $conditions
 		group by pv.Alias
 		order by p.Priority,pv.PValue
-		limit 500
-		";
-		return ConnectWepps::$instance->fetch( $sql, null, 'group' );
+		limit 500";
+		return ConnectWepps::$instance->fetch($sql,[],'group');
 	}
 	
 	/**

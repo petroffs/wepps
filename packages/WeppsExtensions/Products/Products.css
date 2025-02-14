@@ -1,38 +1,3 @@
-body section.sidebar div.nav-filters {
-	background: var(--color-100);
-	margin-top: var(--step4);
-	border-radius: var(--step2);
-	overflow: hidden;
-}
-
-body section.sidebar div.nav-filters>.title {
-	font-weight: 600;
-	color: var(--color-50);
-	padding: var(--step2);
-}
-
-body section.sidebar div.nav-filters ul {
-	list-style: none;
-	margin: 0;
-	padding: 0 0 var(--step2) 0;
-}
-
-body section.sidebar div.nav-filters ul>li {
-	padding: 0 var(--step2);
-}
-
-body section.sidebar div.nav-filters ul>li label.pps.pps_checkbox input[type="checkbox"] + span::before {
-	color: var(--color-50);
-}
-
-body section.sidebar div.nav-filters ul>li label.pps.pps_checkbox input[type="checkbox"] + span>span {
-	color: var(--color-75);
-}
-
-body section.sidebar div.nav-filters li.pps_expand a {
-	color: var(--color-02);
-}
-
 div.page.products {
 	overflow: auto;
 	padding-bottom: var(--step4);

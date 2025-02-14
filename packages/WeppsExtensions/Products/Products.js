@@ -1,45 +1,13 @@
 var productsInit = function() {
-	
-	
-	$('.optionsSort').find('select').on('change',function() {
-		var sel = $(this).val();
-		$.cookie("optionsSort", sel, { expires: 7, path: '/' });
-		displayFilteredProducts(1);
+	$filtersWepps = new FiltersWepps({
+		filters : 'nav-filters'
 	});
-	$('div.paginator').find('a[data-page]').on('click',function(event) {
-		event.preventDefault();
-		var page = parseInt($(this).data('page'));
-		displayFilteredProducts(page);
-		
-	});
+	$filtersWepps.init();
 }
 
 $(document).ready(productsInit);
 
 $(document).ready(function() {
-	$('li.pps_expand').find('a').on('click', function(event) {
-		event.preventDefault();
-		var items = $(this).closest('ul').find('li')
-		if (items.filter('.pps_hide').length != 0) {
-			items.removeClass('pps_hide');
-			$(this).text('Скрыть');
-		} else {
-			$('html, body').animate({
-				scrollTop : items.parent().offset().top - 35
-			}, 500);
-
-			var href = $(this);
-			setTimeout(function() {
-				items.filter(function(index) {
-					if (index >= 10)
-						$(this).addClass('pps_hide');
-				});
-				href.parent().removeClass('pps_hide');
-				href.text('Еще');
-			}, 500);
-		}
-	});
-
 	/*
 	$('.imgs-big').slick({
 		slidesToShow : 1,
@@ -58,15 +26,6 @@ $(document).ready(function() {
 		focusOnSelect : true
 	});
 	*/
-	$('.pps.pps_checkbox').find('input[type="checkbox"]').on('change', function() {
-		console.log(501)
-		var last = $(this).closest('div.extFilters').data('id');
-		var page = 1;
-		var optionCount = $('.optionsCount').eq(0);
-		optionCount.attr('data-last',last);
-		optionCount.attr('data-check',$(this).prop('checked'));
-		displayFilteredProducts(page);
-	});
 });
 
 var displayFilteredProducts = function(page) {

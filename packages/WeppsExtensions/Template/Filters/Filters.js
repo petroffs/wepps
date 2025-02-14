@@ -1,0 +1,93 @@
+class FiltersWepps {
+	constructor(settings={}) {
+		this.settings = settings
+	}
+	init() {
+		let self = this;
+		$('.products-options-sort').find('select').on('change',function(e) {
+			event.stopPropagation();
+			event.preventDefault();
+			var sel = $(this).val();
+			$.cookie("wepps_products-sort", sel, { expires: 365, path: '/' });
+			self.response(1);
+		});
+		$('div.paginator').find('a[data-page]').on('click',function(e) {
+			event.stopPropagation();
+			event.preventDefault();
+			var page = parseInt($(this).data('page'));
+			self.response(page);
+		});
+		$('.pps.pps_checkbox').find('input[type="checkbox"]').on('change', function(e) {
+			event.stopPropagation();
+			event.preventDefault();
+			var last = $(this).closest('div.nav-filters').data('id');
+			var page = 1;
+			var sidebar = $(this).closest('.sidebar');
+			sidebar.attr('data-last',last);
+			sidebar.attr('data-check',$(this).prop('checked'));
+			self.response(page);
+		});
+		$('.nav-filters-reset').find('input').on('click',function(e) {
+			event.stopPropagation();
+			event.preventDefault();
+			let el = $('.sidebar').find('input[type="checkbox"]');
+			el.prop('disabled',false);
+			el.prop('checked',false);
+			/*if ($('#products-sidebar').hasClass('pps_hide_view_small')==false) {
+				$('.products-sidebar-nav>a').trigger('click');
+			}*/
+			self.response(1,'top');
+		});
+		$('li.pps_expand').find('a').on('click', function(event) {
+			event.stopPropagation();
+			event.preventDefault();
+			var items = $(this).closest('ul').find('li')
+			if (items.filter('.pps_hide').length!=0) {
+				items.removeClass('pps_hide');
+				$(this).text('Скрыть');
+			} else {
+				$('html, body').animate({
+					scrollTop : items.parent().offset().top-35
+				},500);
+				var href = $(this);
+				setTimeout(function() {
+					items.filter(function(index) {
+						if (index >= 10)
+							$(this).addClass('pps_hide');
+					});
+					href.parent().removeClass('pps_hide');
+					href.text('Еще');
+				}, 500);
+			}
+		});
+		return true;
+	}
+	response(page=1,gotop,state) {
+		let sidebar = $('.sidebar').eq(0);
+		let last = sidebar.attr('data-last');
+		let checked = sidebar.attr('data-check');
+		let search = sidebar.attr('data-search');
+		var state = (state) ? state : '';
+		let serialized = 'action=filters&link='+location.pathname+'&last='+last+'&checked='+checked+'&page='+page+'&state='+state+'&text='+search;
+		let filters = $('.'+this.settings.filters);
+		let url = sidebar.attr('data-url');
+		$.each(filters,function(key,value) {
+			var labels =  $(value).find('.pps.pps_checkbox').find('input:checked');
+			if (labels.length) {
+				var str = '';
+				$.each(labels, function(k, v) {
+					str += $(v).attr('name')+',';
+				});
+				str = str.slice(0,-1);
+				serialized += '&f_' + $(value).data('id') + '=' + str;
+				var mytitle = $(this).find('.title') 
+			}
+		});
+		layoutWepps.request({data:serialized,url:url,obj:$('#catalog-goods')});
+		if (gotop=='top') {
+			var gotop = $('.products-wrapper').eq(0);
+			$("html, body").animate({ scrollTop: gotop.offset().top-100 }, 600);
+			//$('label.pps.tooltipstered').tooltipster('destroy');
+		}
+	}
+}

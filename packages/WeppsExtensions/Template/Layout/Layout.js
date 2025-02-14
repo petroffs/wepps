@@ -1,4 +1,4 @@
-var readyLayoutInit = function() {
+var layoutInit = function() {
 	$('.pps_radius').height($('.pps_radius').width());
 	$('.pps_admin').find('a').on('click',function(event) {
 		event.stopPropagation();
@@ -8,7 +8,7 @@ var readyLayoutInit = function() {
 		delay: 500
 	});
 }
-$(document).ready(readyLayoutInit);
+$(document).ready(layoutInit);
 //$(window).on('resize', readyLayoutInit);
 
 class LayoutWepps {
@@ -133,7 +133,7 @@ class LayoutWepps {
 }
 
 class UtilsWepps {
-	money(val) {
+	digit(val) {
 		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
 	}
 }
