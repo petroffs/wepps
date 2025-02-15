@@ -5,26 +5,42 @@ use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
 class RequestProductsWepps extends RequestWepps {
+	private $navigator;
 	public function request($action="") {
+		
 		switch ($action) {
 			case 'test':
 				exit();
 				break;
 			case 'filters':
-			
-				/*
-				 * Формируем навигацию в фильтрах
-				 */
-				$ppsUrl = (isset($this->get['url'])) ? $this->get['url'] : "/catalog/";
-				$navigatorAjax = new NavigatorWepps($ppsUrl);
+				$ppsUrl = (isset($this->get['link'])) ? $this->get['link'] : "/catalog/";
+				$this->navigator = new NavigatorWepps($ppsUrl);
+				$productsUtils = new ProductsUtilsWepps();
+				$productsUtils->setNavigator($this->navigator);
+				$productsUtils->setParams($this->get);
+				$conditions = $productsUtils->getConditions();
+				$sorting = $productsUtils->getSorting();
+				$settings = [
+						'pages'=>$productsUtils->getPages(),
+						'page'=>$this->get['page'],
+						'sorting'=>$sorting['conditions'],
+						'conditions'=>$conditions
+				];
 				
-				//UtilsWepps::debug($navigatorAjax,1);
+				
+				
+				
+				$products = $productsUtils->getProducts($settings);
+				
+				#UtilsWepps::debug($settings,21);
+				UtilsWepps::debug($products,21);
 				
 				$extensionConditions = ProductsWepps::setExtensionConditions ( $navigatorAjax )['condition'];
 				foreach ($this->get as $key=>$value) {
@@ -99,7 +115,7 @@ class RequestProductsWepps extends RequestWepps {
 				$this->assign('paginator', $data->paginator);
 				$this->assign('elementsCount', $data->count);
 			
-				/**
+				/*
 				 * Опции сортировки
 				 */
 				$sql = "select Id,Name from s_Vars where VarsGroup='ПродукцияСортировка' and DisplayOff=0 order by Priority";

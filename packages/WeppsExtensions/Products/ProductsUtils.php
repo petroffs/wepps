@@ -2,19 +2,22 @@
 namespace WeppsExtensions\Products;
 
 use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 
 class ProductsUtilsWepps {
 	private $navigator;
+	private $params;
+	private $filters;
 	public function __construct() {
 		
 	}
 	public function setNavigator(NavigatorWepps $navigator) {
 		$this->navigator = &$navigator;
+	}
+	public function setParams(array $params) {
+		$this->params = &$params;
 	}
 	public function getSorting() : array {
 		$rows = [
@@ -45,8 +48,23 @@ class ProductsUtilsWepps {
 		];
 	}
 	public function getConditions() : string {
-		return "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
+		$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
+		if (empty($this->params)) {
+			return $conditions;
+		}
+		foreach ($this->params as $key => $value) {
+			if (substr($key,0,2)=='f_') {
+				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where DisplayOff=0 and TableName='Goods' and Name ='" . str_replace ( 'f_', '', $key ) . "' and Alias in ('" . str_replace ( ",", "','", $value ) . "'))";
+			}
+		}
+		UtilsWepps::debug($conditions);
+		return $conditions;
 		
+		
+		
+	}
+	public function getPages() {
+		return 12;
 	}
 	public function getProducts(array $settings) : array {
 		$obj = new DataWepps("Products");
@@ -64,5 +82,17 @@ class ProductsUtilsWepps {
 				'paginator'=>$obj->paginator,
 				
 		];
+	}
+	public function getFilters($conditions) {
+		$sql = "select distinct p.Alias as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
+		p.Name as PropertyName,count(*) as Co
+		from Products as t
+		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id
+		left outer join s_Properties as p on p.Id = pv.Name
+		where $conditions
+		group by pv.Alias
+		order by p.Priority,pv.PValue
+		limit 500";
+		return ConnectWepps::$instance->fetch($sql,[],'group');
 	}
 }
