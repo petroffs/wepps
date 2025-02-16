@@ -5,13 +5,16 @@ use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
+use WeppsExtensions\Template\Filters\FiltersWepps;
 
 class ProductsWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
 		$rand = $this->rand;
 		$productsUtils = new ProductsUtilsWepps();
-		$productsUtils->setNavigator($this->navigator);
+		$productsUtils->setNavigator($this->navigator,'Products');
+		$filters = new FiltersWepps($this->get);
+		
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$rand}.css");
@@ -27,13 +30,13 @@ class ProductsWepps extends ExtensionWepps {
 			$products = $productsUtils->getProducts($settings);
 			$smarty->assign('products',$products['rows']);
 			$smarty->assign('productsCount',$products['count']);
-			$smarty->assign('productsSorting', $sorting['rows']);
-			$smarty->assign('productsSortingActive', $sorting['active']);
+			$smarty->assign('productsSorting',$sorting['rows']);
+			$smarty->assign('productsSortingActive',$sorting['active']);
 			$smarty->assign('paginator',$products['paginator']);
-			$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
-			$smarty->assign('productsTpl', $smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
-			$smarty->assign('extensionNav',$this->navigator->nav ['subs'][3]);
-			$smarty->assign ('filtersNav',$productsUtils->getFilters($settings['conditions']));
+			$smarty->assign('paginatorTpl',$smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
+			$smarty->assign('productsTpl',$smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
+			$smarty->assign('childsNav',$this->navigator->nav['subs'][3]);
+			$smarty->assign('filtersNav',$filters->getFilters($settings['conditions']));
 			$smarty->assign('normalView',0);
 			$smarty->assign('content',$this->navigator->content);
 		} else {

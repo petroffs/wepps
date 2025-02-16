@@ -4,7 +4,7 @@
 			<section class="sidebar pps_flex_14" data-url="/ext/Products/Request.php" data-search="{$search}">
 				<div class="nav pps_animate">
 					<ul>
-						{foreach name="out" item="item" from=$extensionNav}
+						{foreach name="out" item="item" from=$childsNav}
 						<li class="{if $content.Id==$item.Id}active{/if}">
 							<a href="{$item.Url}">{$item.Name}</a>
 						</li>
@@ -13,7 +13,7 @@
 				</div>
 				{foreach name="out" item="item" key="key" from=$filtersNav}
 				{assign var="hide" value=""}
-				<div class="nav-filters" data-id='{$key}'>
+				<div class="nav-filters nav-filters-{$key}" data-id='{$key}'>
 					<div class="title">{$item.0.PropertyName}</div>
 					<ul>
 						{foreach name="o" item="i" from=$item}
@@ -41,13 +41,13 @@
 				<div class="content-block">
 					<h1>{$content.Name}</h1>
 					{if $content.Text1}
-					<div class="text">{$content.Text1}</div>
+					<div class="text text-top">{$content.Text1}</div>
 					{/if}
 				</div>
 				<div class="products-wrapper">
 					<div class="products-options content-block pps_flex pps_flex_row">
-						<div class="products-options-count">{$productsCount} товаров</div>
-						<div class="products-options-sort">
+						<div id="pps-options-count">{$productsCount} товаров</div>
+						<div id="pps-options-sort">
 							<label class="pps pps_select">
 								<select data-minimum-results-for-search="Infinity">
 									{foreach name="out" key="key" item="item" from=$productsSorting}
@@ -57,7 +57,9 @@
 							</label>
 						</div>
 					</div>
+					<div id="pps-rows-wrapper">
 					{$productsTpl}
+					</div>
 				</div>
 			</section>
 		</section>

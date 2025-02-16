@@ -1,8 +1,4 @@
-<div id="products-container-id">
-{$get.productsItemsTpl}
-</div>
-<script type="text/javascript">
-{$get.js}
+{$productsTpl}
+<script>
+{$js}
 </script>
-
-
