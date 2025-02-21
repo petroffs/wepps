@@ -4,10 +4,8 @@ class FiltersWepps {
 	}
 	init() {
 		let self = this;
-		$('#pps-options-sort').find('select').off('change');
-		$('#pps-options-sort').find('select').on('change',function(e) {
-			event.stopPropagation();
-			event.preventDefault();
+		$('#pps-options-sort').find('select').off('select2:select');
+		$('#pps-options-sort').find('select').on('select2:select',function(e) {
 			var sel = $(this).val();
 			$.cookie("wepps_sort", sel, { expires: 365, path: '/' });
 			self.response(1);
@@ -80,7 +78,7 @@ class FiltersWepps {
 			if (labels.length) {
 				var str = '';
 				$.each(labels, function(k, v) {
-					str += $(v).attr('name')+',';
+					str += $(v).attr('name')+'|';
 				});
 				str = str.slice(0,-1);
 				serialized += '&f_' + $(value).data('id') + '=' + str;

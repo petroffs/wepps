@@ -43,7 +43,7 @@ class RequestProductsWepps extends RequestWepps {
 				$this->fetch('paginatorTpl','../Template/Paginator/Paginator.tpl');
 				$this->fetch('productsTpl','ProductsItems.tpl');
 				$js = $filters->getFiltersCodeJS($filtersActive,$products['count']);
-				$js .= $filters->setBrowserState($this->navigator->content['Name']);
+				$js .= $filters->setBrowserStateCodeJS($this->navigator->content['Name']);
 				$this->assign('js', $js);
 				break;
 			default:

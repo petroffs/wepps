@@ -65,3 +65,10 @@
 		</section>
 	</section>
 </div>
+{if $filtersJS}sss
+<script>
+$(document).ready(function() {
+	{$filtersJS}
+});
+</script>
+{/if}

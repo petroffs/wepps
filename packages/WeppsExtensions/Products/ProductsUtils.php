@@ -52,7 +52,7 @@ class ProductsUtilsWepps {
 		}
 		foreach ($params as $key => $value) {
 			if (substr($key,0,2)=='f_') {
-				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where DisplayOff=0 and TableName='{$this->list}' and Name ='".str_replace('f_','',$key)."' and Alias in ('".str_replace(",","','",$value)."'))";
+				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where DisplayOff=0 and TableName='{$this->list}' and Name ='".str_replace('f_','',$key)."' and Alias in ('".str_replace("|","','",$value)."'))";
 			}
 		}
 		return $conditions;

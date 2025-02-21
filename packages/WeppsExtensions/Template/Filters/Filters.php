@@ -9,9 +9,8 @@ class FiltersWepps {
 	private $params = [];
 	private $paramsFilters = [];
 	function __construct(array $params=[]) {
-		$this->url = @$params['link'];
-		$this->state = @$params['state'];
 		$this->setParams($params);
+		$this->setParamsFilters();
 	}
 	public function getFilters($conditions) {
 		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
@@ -29,8 +28,11 @@ class FiltersWepps {
 		if (empty($filtersActive)) {
 			return '';
 		}
+		$checked = (@$this->params['checked']===false)?false:true;
+		$last = (!empty($this->params['last']))?$this->params['last']:array_keys($filtersActive)[0];		
+		#$last = (!empty($this->params['last']))?$this->params['last']:0;		
 		$js = "
-			var obj = $('div.nav-filters').not('div.nav-filters-{$this->params['last']}').find('input');
+			var obj = $('div.nav-filters').not('div.nav-filters-{$last}').find('input');
 			obj.prop('disabled', true);
 			obj.siblings('span').children('span').addClass('pps_hide');
 			";
@@ -43,23 +45,30 @@ class FiltersWepps {
 					";
 			}
 		}
-		
 		$js .= "
 			filtersWepps.init();
 			var options = $('.options-count').eq(0);
-			options.attr('data-last','{$this->params['last']}');
-			options.attr('data-check','{$this->params['checked']}');
+			options.attr('data-last','{$last}');
+			options.attr('data-check','{$checked}');
 			$('#pps-options-count').html('{$count} товар".SpellWepps::russ2($count)."');
-			$('.text-top').addClass('pps_hide')
+			//$('.text-top').addClass('pps_hide')
 			";
+		foreach ($this->paramsFilters as $key => $value) {
+			if (substr($key,0,2)=='f_') {
+				foreach(explode('|',$value) as $v) {
+					$js .= "$('.nav-filters-".substr($key, 2)."').find('input[name=\"{$v}\"]').prop('checked',true);\n";
+				}
+			}
+		}
+		#UtilsWepps::debug($js,1);
 		return $js;
 	}
-	public function setBrowserState(string $title='') {
+	public function setBrowserStateCodeJS(string $title='') {
 		if (!empty($this->params['text'])) {
 			$this->paramsFilters['text'] = $this->params['text'];
 		}
 		if (@$this->params['page']>1) {
-			$this->paramsFilters['page'] = $this->get['page'];
+			$this->paramsFilters['page'] = $this->params['page'];
 		}
 		$json = json_encode($this->paramsFilters,JSON_UNESCAPED_UNICODE);
 		$state = (@$this->params['state']=='popstate')?'replaceState':'pushState';
@@ -70,11 +79,11 @@ class FiltersWepps {
 		";
 		return $js;
 	}
-	public function setParams(array $params) {
+	private function setParams(array $params) {
 		$arr = [];
 		foreach ($params as $key=>$value) {
 			$key = preg_replace('~[^-a-z-A-Z0-9\-_\.]+~u', '', $key);
-			$value = preg_replace('~[^-a-z-A-Z0-9\-_\.\,\/]+~u', '', $value);
+			$value = preg_replace('~[^-a-z-A-Z0-9\-_\.\,\/\|]+~u', '', $value);
 			$arr[$key] = $value;
 		}
 		$this->params = &$arr;
@@ -82,7 +91,7 @@ class FiltersWepps {
 	public function getParams() : array {
 		return $this->params;
 	}
-	public function getParamsFilters() : array {
+	private function setParamsFilters() : array {
 		if (empty($this->params)) {
 			return [];
 		}
@@ -92,6 +101,9 @@ class FiltersWepps {
 				$this->paramsFilters[$key] = $value;
 			}
 		}
+		return $this->paramsFilters;
+	}
+	public function getParamsFilters() {
 		return $this->paramsFilters;
 	}
 }
