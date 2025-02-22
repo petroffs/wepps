@@ -16,8 +16,8 @@ class FiltersWepps {
 		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
 		p.Name as PropertyName,count(*) as Co
 		from Products as t
-		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id
-		left outer join s_Properties as p on p.Id = pv.Name
+		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id and pv.DisplayOff=0
+		left outer join s_Properties as p on p.Id = pv.Name and p.DisplayOff=0
 		where $conditions
 		group by pv.Alias
 		order by p.Priority,pv.PValue
@@ -29,8 +29,13 @@ class FiltersWepps {
 			return '';
 		}
 		$checked = (@$this->params['checked']===false)?false:true;
-		$last = (!empty($this->params['last']))?$this->params['last']:array_keys($filtersActive)[0];		
-		#$last = (!empty($this->params['last']))?$this->params['last']:0;		
+		$last = 1;
+		foreach ($this->paramsFilters as $key => $value) {
+			if (substr($key,0,2)=='f_') {
+				$last = substr($key, 2);
+				break;
+			}
+		}
 		$js = "
 			var obj = $('div.nav-filters').not('div.nav-filters-{$last}').find('input');
 			obj.prop('disabled', true);
@@ -51,7 +56,13 @@ class FiltersWepps {
 			options.attr('data-last','{$last}');
 			options.attr('data-check','{$checked}');
 			$('#pps-options-count').html('{$count} товар".SpellWepps::russ2($count)."');
-			//$('.text-top').addClass('pps_hide')
+			//$('.text-top').addClass('pps_hide');
+			
+			var expand = $('.nav-filters-{$last}').find('li.pps_expand').find('a');
+			var items = expand.closest('ul').find('li')
+			if (items.filter('.pps_hide').length!=0) {
+				expand.trigger('click');
+			}
 			";
 		foreach ($this->paramsFilters as $key => $value) {
 			if (substr($key,0,2)=='f_') {

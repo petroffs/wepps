@@ -65,7 +65,7 @@
 		</section>
 	</section>
 </div>
-{if $filtersJS}sss
+{if $filtersJS}
 <script>
 $(document).ready(function() {
 	{$filtersJS}

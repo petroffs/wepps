@@ -3,13 +3,14 @@
 		{foreach name="out" item="item" from=$products}
 		{assign var="images" value=$item.Images_FileUrl|strarr}
 		<section class="pps_flex_13 pps_flex_12_view_medium pps_flex_11_view_small">
+			{$item.Id|pps:"Products"}
 			{if $item.PStatus}
 			<div class="status status{$item.PStatus}" title="{$item.PStatus_Name}"></div>
 			{/if}
 			<a href="{$item.Url}">
 				<span class="img">
 					{if $images.0}
-					<img src="/pic/catprev{$images.0}" class="pps_image"/>
+					<img src="/pic/catbigv{$images.0}" class="pps_image"/>
 					{else}
 					<img src="/ext/Template/files/noimage640.png" class="pps_image"/>
 					{/if}
