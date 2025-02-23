@@ -482,7 +482,8 @@ class NavigatorWepps {
 		$this->data = new NavigatorDataWepps ( "s_Navigator" );
 		$this->data->backOffice = $backOffice;
 		$this->data->lang = $this->lang;
-		$res = $this->data->getMax ( "binary t.Url='{$this->path}'" );
+		$this->data->setParams([$this->path]);
+		$res = $this->data->getMax("binary t.Url=?");
 		
 		if (isset($res[0]['Id'])) {
 			$this->content = $res[0];
@@ -490,19 +491,16 @@ class NavigatorWepps {
 		if (empty($this->content)) {
 			ExceptionWepps::error404();
 		}
-		
 		$this->child = $this->data->getChild($this->content['Id']);
 		$this->parent = $this->data->getChild($this->content['ParentDir']);
 		$this->data->setConcat("if (t.NameMenu!='',t.NameMenu,t.Name) as NameMenu");
 		$this->way = $this->data->getWay($this->content['Id']);
 		$this->nav = $this->data->getNav($this->navLevel);
-		
 		foreach ($this->way as $value) {
 			if ($value['Template']!=0) {
 				$this->tpl = array('tpl'=>$value['Template_FileTemplate']);
 			}
 		}
-		
 		return;
 	}
 	/**
@@ -541,9 +539,8 @@ class NavigatorWepps {
 				'multilanguage' => $multilanguage 
 		);
 	}
-	
-	
 }
+
 class NavigatorDataWepps extends DataWepps {
 	public $backOffice = 0;
 	private $way = array();
@@ -562,7 +559,6 @@ class NavigatorDataWepps extends DataWepps {
 			foreach ($this->nav[0] as $value) {
 				$arr[$value['NGroup']][] = $value;
 			}
-			
 			unset($this->nav[0]);
 			$sub = array();
 			foreach ($this->nav as $value) {
@@ -707,8 +703,9 @@ abstract class ExtensionWepps {
 	public function getItem($tableName, $condition='') {
 		$id = NavigatorWepps::$pathItem;
 		$prefix = ($condition!='') ? ' and ' : '';
-		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = '{$id}'" : $condition." {$prefix} binary t.Alias = '{$id}'";
+		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = ?" : $condition." {$prefix} binary t.Alias = ?";
 		$obj = new DataWepps($tableName);
+		$obj->setParams([$id]);
 		$res = $obj->getMax($condition)[0];
 		if (!isset($res['Id'])) {
 			ExceptionWepps::error404();
@@ -748,17 +745,26 @@ class LanguageWepps {
 	 * @return array
 	 */
 	public static function getLanguage($langLink = null) {
-		$langLink = ($langLink != '/') ? "LinkDirectory='" . $langLink . "' or" : "";
+		
+		if ($langLink!='/') {
+			$sql = "select * from s_NGroupsLang where DisplayOff='0' and LinkDirectory=? or LinkDirectory='/' order by Priority desc limit 2";
+			$langData = ConnectWepps::$instance->fetch($sql,[$langLink]);
+		} else {
+			$sql = "select * from s_NGroupsLang where DisplayOff='0' and LinkDirectory='/' order by Priority desc limit 2";
+			$langData = ConnectWepps::$instance->fetch($sql);
+		}
+		
+		/* $langLink = ($langLink != '/') ? "LinkDirectory='" . $langLink . "' or" : "";
 		$sql = "select * from s_NGroupsLang where DisplayOff='0' and {$langLink} LinkDirectory='/' order by Priority desc limit 2";
-		$langData = ConnectWepps::$instance->fetch ( $sql );
+		$langData = ConnectWepps::$instance->fetch ( $sql ); */
 		$url = "";
 		if (!empty($_SERVER['REQUEST_URI'])) {
 			$url = $_SERVER['REQUEST_URI'];
 		}
 		if (count ( $langData ) == 1) {
 			return array (
-					'id' => $langData [0] ['Id'],
-					'defaultId' => $langData [0] ['Id'],
+					'id' => $langData[0]['Id'],
+					'defaultId' => $langData[0]['Id'],
 					'default' => 1,
 					'interface' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
 					'interfaceDefault' => "Lang" . substr ( $langData [0] ['Name'], 0, 2 ),
