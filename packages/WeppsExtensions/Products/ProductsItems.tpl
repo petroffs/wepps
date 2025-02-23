@@ -12,7 +12,7 @@
 					{if $images.0}
 					<img src="/pic/catbigv{$images.0}" class="pps_image"/>
 					{else}
-					<img src="/ext/Template/files/noimage640.png" class="pps_image"/>
+					<img src="/ext/Template/files/noimage480v.png" class="pps_image"/>
 					{/if}
 				</span>
 				<span class="title">{$item.Name}</span>
