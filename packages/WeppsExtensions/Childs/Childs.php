@@ -5,6 +5,7 @@ use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class ChildsWepps extends ExtensionWepps {
 	public function request() {
@@ -12,6 +13,7 @@ class ChildsWepps extends ExtensionWepps {
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Childs/Childs.tpl';
+				#UtilsWepps::debug($this->navigator->child,1);
 				$smarty->assign('elements',$this->navigator->child);
 				break;
 			default:

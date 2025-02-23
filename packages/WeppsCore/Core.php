@@ -603,9 +603,9 @@ class NavigatorDataWepps extends DataWepps {
 	 * @return array
 	 */
 	public function getChild($id) {
-	    $condition = ($this->backOffice==1) ? "" : "and DisplayOff = 0";
-	    $this->setConcat("if (NameMenu!='',NameMenu,Name) as NameMenu");
-	    $res = $this->get("ParentDir='{$id}' $condition");
+	    $condition = ($this->backOffice==1) ? "" : "and t.DisplayOff = 0";
+	    $this->setConcat("if (t.NameMenu!='',t.NameMenu,t.Name) as NameMenu");
+	    $res = $this->getMax("t.ParentDir='{$id}' $condition");
 	    return $res;
 	}
 	
