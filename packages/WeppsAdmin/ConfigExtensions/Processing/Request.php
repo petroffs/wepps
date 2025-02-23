@@ -7,16 +7,18 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Connect\ConnectWepps;
 
-require_once '../../../../config.php';
-require_once '../../../../autoloader.php';
-require_once '../../../../configloader.php';
+require_once __DIR__ . '/../../../../config.php';
+require_once __DIR__ . '/../../../../autoloader.php';
+require_once __DIR__ . '/../../../../configloader.php';
 
-//http://pps.lubluweb.ru/packages/WeppsAdmin/ConfigExtensions/Processing/Request.php?id=5
+/**
+ * @var \Smarty $smarty
+ */
 
 class RequestProcessingWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
+		if (empty($this->cli) && @ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
 			ExceptionWepps::error404();
 		}
 		switch ($action) {
@@ -25,6 +27,11 @@ class RequestProcessingWepps extends RequestWepps {
 				ConnectWepps::$db->exec($str);
 				UtilsWepps::modal('Поисковый индекс построен');
 				break;
+			case "productsreset":
+				$obj = new ProcessingProductsWepps();
+				$obj->resetProducts();
+				UtilsWepps::modal('Обработка завершена',$this->cli);
+				break;
 			default:
 				UtilsWepps::debug('def1',1);
 				ExceptionWepps::error404();
@@ -32,6 +39,6 @@ class RequestProcessingWepps extends RequestWepps {
 		}
 	}
 }
-$request = new RequestProcessingWepps ($_REQUEST);
+$request = new RequestProcessingWepps (!empty($argv)?$argv:$_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

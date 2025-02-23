@@ -20,8 +20,6 @@ class BotSystemWepps extends BotWepps {
 		 *
 		 * Удалить все файлы, которые попадут в этот список
 		 *
-		 *
-		 *
 		 * Удалить все что в /Addons/Forms/uploads, кроме .htaccess
 		 */
 		
@@ -51,7 +49,6 @@ class BotSystemWepps extends BotWepps {
 		 * Расхождение
 		 */
 		$diff = array_diff($arr1keys, $arr2);
-		
 		
 		/*
 		 * Удаление файлов, не записанных в s_Files

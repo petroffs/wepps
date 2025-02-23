@@ -26,6 +26,10 @@ class ProcessingWepps extends RequestWepps {
 				$this->title = "Построение поискового индекса";
 				$this->tpl = 'ProcessingSearchIndex.tpl';
 				break;
+			case 'products':
+				$this->title = "Товары";
+				$this->tpl = 'ProcessingProducts.tpl';
+				break;
 			default:
 				if ($action!="") {
 					ExceptionWepps::error404();

@@ -224,7 +224,13 @@ class UtilsWepps {
 		return $output;
 	}
 	
-	public static function modal(string $message='') {
+	public static function modal(string $message='',CliWepps $cli = null) {
+		if (!empty($cli)) {
+			$cli->info($message);
+			ConnectWepps::$instance->close();
+			return;
+		}
+		
 		$js = "
 			<script>
 				let dialogWidth = (window.screen.width<400) ? '90%' : 400;
@@ -252,6 +258,7 @@ class UtilsWepps {
 		";
 		echo $js;
 		ConnectWepps::$instance->close();
+		return;
 	}
 	public static function guid(string $string='') : string {
 		$charid = ($string=='') ? strtolower(md5(uniqid(rand(), true))) : strtolower(md5($string));
@@ -387,8 +394,14 @@ abstract class RequestWepps {
 	 */
 	public $errors = [];
 	
+	public $cli;
+	
 	public function __construct(array $settings=[]) {
-		$this->get = UtilsWepps::trim ($settings);
+		$this->get = UtilsWepps::trim($settings);
+		if (php_sapi_name() === 'cli') {
+			$this->cli = new CliWepps();
+			$this->get['action'] = $settings[1];
+		}
 		$action = (isset($this->get['action'])) ? $this->get['action'] : '';
 		$this->request($action);
 		if ($this->noclose==0) {
