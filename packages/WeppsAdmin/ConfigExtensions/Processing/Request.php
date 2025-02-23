@@ -32,6 +32,12 @@ class RequestProcessingWepps extends RequestWepps {
 				$obj->resetProducts();
 				UtilsWepps::modal('Обработка завершена',$this->cli);
 				break;
+			case "productsnames":
+				$obj = new ProcessingProductsWepps();
+				$obj->changeProductsNames();
+				UtilsWepps::modal('Обработка завершена',$this->cli);
+				break;
+				
 			default:
 				UtilsWepps::debug('def1',1);
 				ExceptionWepps::error404();

@@ -698,7 +698,7 @@ class ListsWepps {
 					'TableName'=>$list,
 					'TableNameId'=>$id,
 					'TableNameField'=>$field,
-					'Alias'=>strtolower(SpellWepps::getTranslit($v,2)),
+					'Alias'=>SpellWepps::getTranslit($v,2),
 					'PValue'=>$v,
 					'DisplayOff2'=>0,
 			);
