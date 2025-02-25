@@ -1,3 +1,6 @@
+.page>.exampletest-wrapper {
+	padding-bottom: var(--step4);
+}
 .exampletest-wrapper>.pps_blocks>.pps_block {
 	min-height: 100px;
 	background: var(--color-warning);
