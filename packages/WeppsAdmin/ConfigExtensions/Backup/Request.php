@@ -7,9 +7,9 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Spell\SpellWepps;
 
-require_once '../../../../config.php';
-require_once '../../../../autoloader.php';
-require_once '../../../../configloader.php';
+require_once __DIR__ . '/../../../../config.php';
+require_once __DIR__ . '/../../../../autoloader.php';
+require_once __DIR__ . '/../../../../configloader.php';
 
 /**
  * @var \Smarty $smarty
@@ -18,7 +18,7 @@ require_once '../../../../configloader.php';
 class RequestBackupWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
-		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
+		if (empty($this->cli) && @ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
 			ExceptionWepps::error404();
 		}
 		$cnf = ConnectWepps::$projectDB['cnf'];
@@ -28,13 +28,11 @@ class RequestBackupWepps extends RequestWepps {
 		$backupPath = '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
 		switch ($action) {
 			case "database":
-				
 				/*
 				 * Создать бекап
 				 */
 				$table = (!empty($this->get['list']))?$this->get['list']:'';
 				$path = $root . $backupPath;
-				
 				$type = 1;
 				$comment = (!empty($this->get['comment'])) ? "-".SpellWepps::getTranslit($this->get['comment'],2) : "";
 				$filename = $path . $host . "-" . date("Ymd-His").$comment.".sql";
@@ -247,7 +245,22 @@ class RequestBackupWepps extends RequestWepps {
 				header("Content-Disposition:attachment;filename=list_{$table}.sql");
 				$str = preg_replace("/values \('(\d+)'/", 'values (null', $str);				
 				echo $str;
+				break;
 				
+			/*
+			 * Не используется в UI
+			 */
+			case "addBackupIgnored":
+				$obj = new BackupFilesWepps();
+				$obj->addBackupIgnoredByGit();
+				break;
+			case "addBackup":
+				$obj = new BackupFilesWepps();
+				$obj->addBackup();
+				break;
+			case "addBackupDB":
+				$obj = new BackupFilesWepps();
+				$obj->addBackupDB(false);
 				break;
 			default:
 				ExceptionWepps::error404();
@@ -255,6 +268,6 @@ class RequestBackupWepps extends RequestWepps {
 		}
 	}
 }
-$request = new RequestBackupWepps ($_REQUEST);
+$request = new RequestBackupWepps (!empty($argv)?$argv:$_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

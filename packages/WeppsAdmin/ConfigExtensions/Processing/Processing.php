@@ -22,9 +22,9 @@ class ProcessingWepps extends RequestWepps {
 			return;
 		}
 		switch ($action) {
-			case 'searchindex':
-				$this->title = "Построение поискового индекса";
-				$this->tpl = 'ProcessingSearchIndex.tpl';
+			case 'tasks':
+				$this->title = "Задачи";
+				$this->tpl = 'ProcessingTasks.tpl';
 				break;
 			case 'products':
 				$this->title = "Товары";

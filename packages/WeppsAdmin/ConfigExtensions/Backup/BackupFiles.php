@@ -1,10 +1,10 @@
 <?php
-namespace WeppsExtensions\Addons\Bot;
+namespace WeppsAdmin\ConfigExtensions\Backup;
 
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
 
-class BotBackupWepps {
-	
+class BackupFilesWepps {
 	private $root;
 	private $host;
 	private $backupPath;
@@ -22,20 +22,18 @@ class BotBackupWepps {
 	}
 	
 	public function addBackupIgnoredByGit() {
-		$content = file_get_contents( __DIR__ . "/../../../.gitignore");
+		$content = file_get_contents( $this->root . "/.gitignore");
 		$files = explode("\n", $content);
 		$backupFilename = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}-gitignored.7z";
 		
 		$this->addBackupDB();
 		$this->removeBackup();
-		
 		$str = "";
 		foreach ($files as $file) {
 			if (substr($file, 0,1)=='/' && !strstr($file, "Backup/files")) {
 				$str .= " \"{$this->root}{$file}\"";
 			}
 		}
-		
 		$filedb = "";
 		$scandir = scandir($this->root.$this->backupPath);
 		foreach ($scandir as $file) {
@@ -73,11 +71,9 @@ class BotBackupWepps {
 	}
 	
 	public function addBackupDB($removeSqlFiles=true) {
-		
 		if ($removeSqlFiles==true) {
 			$this->removeBackupDB();
 		}
-		
 		$backupFilenameDB = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}.sql";
 		$str = "mysqldump --defaults-extra-file={$this->cnf} -K --default-character-set=utf8 --add-drop-table $this->db > $backupFilenameDB";
 		exec($str);

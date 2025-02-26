@@ -25,24 +25,28 @@ class RequestProcessingWepps extends RequestWepps {
 			case "searchindex":
 				$str = ListsWepps::setSearchIndex();
 				ConnectWepps::$db->exec($str);
-				UtilsWepps::modal('Поисковый индекс построен');
 				break;
-			case "productsreset":
+			case "resetproducts":
 				$obj = new ProcessingProductsWepps();
 				$obj->resetProducts();
-				UtilsWepps::modal('Обработка завершена',$this->cli);
 				break;
-			case "productsnames":
+			case "namesproducts":
+				/*
+				 * Не используется в UI
+				 */
 				$obj = new ProcessingProductsWepps();
 				$obj->changeProductsNames();
-				UtilsWepps::modal('Обработка завершена',$this->cli);
 				break;
-				
+			case "removefiles":
+				$obj = new ProcessingTasksWepps();
+				$obj->removeFiles();
+				break;
 			default:
 				UtilsWepps::debug('def1',1);
 				ExceptionWepps::error404();
 				break;
 		}
+		UtilsWepps::modal('Обработка завершена',$this->cli);
 	}
 }
 $request = new RequestProcessingWepps (!empty($argv)?$argv:$_REQUEST);

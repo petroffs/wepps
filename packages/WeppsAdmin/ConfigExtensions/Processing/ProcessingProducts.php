@@ -1,13 +1,8 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Addons\Bot\BotSystemWepps;
 use WeppsCore\Spell\SpellWepps;
 
 class ProcessingProductsWepps {
@@ -19,18 +14,13 @@ class ProcessingProductsWepps {
 			ConnectWepps::$db->beginTransaction();
 			$sql = "delete from s_PropertiesValues where TableName='Products' and TableNameId in (select p.Id from Products p where p.NavigatorId in (12,9))";
 			ConnectWepps::$instance->query($sql);
-			
 			$sql = "delete from s_Files where TableName='Products' and TableNameId in (select p.Id from Products p where p.NavigatorId in (12,9))";
 			ConnectWepps::$instance->query($sql);
-			
 			$sql = "delete from Products where NavigatorId in (12,9)";
 			ConnectWepps::$instance->query($sql);
-			
 			ConnectWepps::$db->commit();
-			
-			$obj = new BotSystemWepps();
+			$obj = new ProcessingTasksWepps();
 			$obj->removeFiles();
-			
 		} catch (\Exception $e) {
 			ConnectWepps::$db->rollBack();
 			echo "Error. See debug.conf";
@@ -38,6 +28,7 @@ class ProcessingProductsWepps {
 		}
 	}
 	public function changeProductsNames() {
+		return;
 		/*
 		 * Товары переименовать
 		 */
@@ -60,7 +51,6 @@ class ProcessingProductsWepps {
 				UtilsWepps::debug($e,21);
 			}
 		}
-		
 		
 		/*
 		 * Бренд в фильтрах переименовать

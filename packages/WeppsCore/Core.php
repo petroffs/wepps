@@ -479,12 +479,11 @@ class NavigatorWepps {
 		$this->lang = $navigate ['lang'];
 		$this->multilang = $navigate ['multilanguage'];
 		
-		$this->data = new NavigatorDataWepps ( "s_Navigator" );
+		$this->data = new NavigatorDataWepps("s_Navigator");
 		$this->data->backOffice = $backOffice;
 		$this->data->lang = $this->lang;
 		$this->data->setParams([$this->path]);
 		$res = $this->data->getMax("binary t.Url=?");
-		
 		if (isset($res[0]['Id'])) {
 			$this->content = $res[0];
 		}
@@ -605,6 +604,7 @@ class NavigatorDataWepps extends DataWepps {
 	public function getChild($id) {
 	    $condition = ($this->backOffice==1) ? "" : "and t.DisplayOff = 0";
 	    $this->setConcat("if (t.NameMenu!='',t.NameMenu,t.Name) as NameMenu");
+	    $this->setParams([]);
 	    $res = $this->getMax("t.ParentDir='{$id}' $condition");
 	    return $res;
 	}

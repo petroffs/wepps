@@ -53,12 +53,12 @@ class ConnectWepps {
 	public function fetch($sql, $params=[], $group='') {
 		$this->count++;
 		try {
-			$sth = self::$db->prepare ( $sql );
-			$sth->execute ( $params );
+			$sth = self::$db->prepare($sql);
+			$sth->execute ($params);
 			if ($group == 'group') {
-				return $sth->fetchAll ( PDO::FETCH_ASSOC | PDO::FETCH_GROUP );
+				return $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 			} else {
-				return $sth->fetchAll ( PDO::FETCH_ASSOC );
+				return $sth->fetchAll(PDO::FETCH_ASSOC);
 			}
 		} catch (\Exception $e) {
 			ExceptionWepps::display($e);

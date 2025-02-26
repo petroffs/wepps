@@ -29,26 +29,6 @@ class BotWepps {
 				$obj = new BotFeedsWepps();
 				$obj->setSitemap();
 				break;
-				
-			/*
-			 * services
-			 */
-			case "addBackupIgnored":
-				$obj = new BotBackupWepps();
-				$obj->addBackupIgnoredByGit();
-				break;
-			case "addBackup":
-				$obj = new BotBackupWepps();
-				$obj->addBackup();
-				break;
-			case "addBackupDB":
-				$obj = new BotBackupWepps();
-				$obj->addBackupDB(false);
-				break;
-			case "removeFiles":
-				$obj = new BotSystemWepps();
-				$obj->removeFiles();
-				break;
 			
 			/*
 			 * tests
