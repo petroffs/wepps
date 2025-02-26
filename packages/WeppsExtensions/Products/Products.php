@@ -15,7 +15,6 @@ class ProductsWepps extends ExtensionWepps {
 		$productsUtils = new ProductsUtilsWepps();
 		$productsUtils->setNavigator($this->navigator,'Products');
 		$filters = new FiltersWepps($_GET);
-
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$rand}.css");
@@ -40,7 +39,6 @@ class ProductsWepps extends ExtensionWepps {
 			$smarty->assign('productsTpl',$smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
 			$smarty->assign('childsNav',$this->navigator->nav['subs'][3]);
 			$smarty->assign('filtersNav',$filters->getFilters($conditions));
-			$smarty->assign('normalView',0);
 			$smarty->assign('content',$this->navigator->content);
 			if (!empty($filters->getParamsFilters())) {
 				$filtersActive = $filters->getFilters($settings['conditions']);
@@ -64,7 +62,7 @@ class ProductsWepps extends ExtensionWepps {
 			$res = $obj->getMax($conditions,3,1,"t.Priority");
 			$smarty->assign('elements',$res);
 		}
-		$smarty->assign('normalHeader1',0);
+		$smarty->assign('normalView',0);
 		$this->headers->css("/ext/Products/Products.{$rand}.css");
 		$this->headers->js("/ext/Products/Products.{$rand}.js");
 		$this->headers->css("/ext/Template/Paginator/Paginator.{$rand}.css" );
