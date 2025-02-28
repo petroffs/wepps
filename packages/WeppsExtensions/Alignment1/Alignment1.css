@@ -2,6 +2,12 @@ div.elements.Alignment1 {
 	width: auto;
 	overflow: hidden;
 }
+div.pps_test_grid {
+	background: honeydew;
+}
+div.pps_test_grid>div {
+	background: ivory;
+}
 div.pps_test {
 	color: #fff;
 	background-color: fuchsia;

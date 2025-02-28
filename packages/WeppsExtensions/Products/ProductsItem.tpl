@@ -9,12 +9,6 @@
 						<div class="img">
 							<img src="/pic/catbigv{$item}" class="pps_image" />
 						</div>
-						<div class="img">
-							<img src="/pic/catbigv{$item}" class="pps_image" />
-						</div>
-						<div class="img">
-							<img src="/pic/catbigv{$item}" class="pps_image" />
-						</div>
 						{/foreach}
 					</div>
 				</div>

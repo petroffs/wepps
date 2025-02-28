@@ -24,6 +24,8 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 			$this->headers->css("/ext/Template/Layout/Settings.{$this->rand}.css");
 			$this->headers->js("/ext/Template/Layout/Layout.{$this->rand}.js");
 			$this->headers->css("/ext/Template/Layout/Layout.{$this->rand}.css");
+			$this->headers->css("/ext/Template/Layout/Flexbox.{$this->rand}.css");
+			$this->headers->css("/ext/Template/Layout/Grid.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Layout/Win.{$this->rand}.css");
 			
 			/*

@@ -1,10 +1,10 @@
 <div class="page header">
 	<section>
-		<section class="header-wrapper pps_flex pps_flex_row">
+		<section class="header-wrapper w_grid w_2col w_ji_end_view_small">
 			<div class="header-logo">
 				<a href="/"><img src="/ext/Template/files/wepps-logo.svg" /></a>
 			</div>
-			<div class="header-nav-icon pps_hide pps_flex_view_small">
+			<div class="header-nav-icon pps_hide pps_block_view_small">
 				<a href="" id="header-nav"><i class="fa fa-2x fa-navicon"></i></a>
 			</div>
 		</section>
