@@ -1,18 +1,13 @@
-/*
-.pps_win_parent > :not(.pps_win_bg):not(.pps_loader) {
-    filter: blur(3px);
-}
-*/
-.pps_win_parent {
+.w_modal_parent {
 	overflow-y: scroll;
 }
-.pps_win_parent > header,
-.pps_win_parent > footer,
-.pps_win_parent > main {
+.w_modal_parent > header,
+.w_modal_parent > footer,
+.w_modal_parent > main {
     filter: blur(3px);
     opacity: 0.5;
 }
-.pps_win_bg {
+.w_modal_bg {
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
@@ -25,7 +20,7 @@
 	align-items: center;
 	z-index: 9898;
 }
-.pps_win_bg2 {
+.w_modal_bg2 {
     width: 100%;
     height: 100%;
     max-height: 100%;
@@ -38,7 +33,7 @@
     right: 0;
     overflow: auto;
 }
-.pps_win_element {
+.w_modal_element {
 	position: relative;
 	width: 100%;
 	max-width: 620px;
@@ -53,17 +48,17 @@
 	overflow: auto;
 	scrollbar-width: thin;
 }
-.pps_win_element.pps_win_small {
+.w_modal_element.w_modal_small {
 	max-width: 300px;
 }
-.pps_win_element.pps_win_medium {
+.w_modal_element.w_modal_medium {
 	max-width: 620px;
 }
-.pps_win_element.pps_win_large {
+.w_modal_element.w_modal_large {
 	max-width: 100%;
 	min-height: 100%;
 }
-.pps_win_closer {
+.w_modal_closer {
 	width: 20px;
 	height: 20px;
 	background: transparent url(files/controls-remove-gray.svg);
@@ -74,8 +69,8 @@
 	top:30px;
 	right:30px;
 }
-.pps_win_content h1,
-.pps_win_content h2 {
+.w_modal_content h1,
+.w_modal_content h2 {
 	font-size: 22px;
 	text-align: left;
 	letter-spacing: 2px;
@@ -84,11 +79,11 @@
 	padding-bottom: 20px;
 	margin: 0 0 20px 0;
 }
-.pps_loader {
+.w_loader {
 	position: fixed;
 	top: 0;
 	left: 0;
-	z-index: 9899;
+	z-index: 1000;
 	width: 100% ;
 	height: 100%;
 	background: rgba(255,255,255,.5);
@@ -187,9 +182,4 @@
   100% {
     opacity: 0;
   }
-}
-
-@media screen and (max-width: 1070px) {
-
-
 }

@@ -26,7 +26,7 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 			$this->headers->css("/ext/Template/Layout/Layout.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Layout/Flexbox.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Layout/Grid.{$this->rand}.css");
-			$this->headers->css("/ext/Template/Layout/Win.{$this->rand}.css");
+			$this->headers->css("/ext/Template/Layout/Modal.{$this->rand}.css");
 			
 			/*
 			 * Навигация
@@ -46,7 +46,6 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 			 * Информация организации
 			 */
 			$obj = new DataWepps("Organizations");
-			#UtilsWepps::debug($obj->get()[0],1);
 			$smarty->assign('org',$obj->get()[0]);
 			unset ($obj);
 	

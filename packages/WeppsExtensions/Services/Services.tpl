@@ -9,7 +9,7 @@
 			<div class="services-title">
 				{$item.Name}
 			</div>
-			<div class="services-text pps_hide">
+			<div class="services-text w_hide">
 				<div class="title">{$item.Name}</div>
 				<div class="img"><img src="{if $images.0}/pic/catbig{$images.0}{else}/ext/Template/files/noimage.png{/if}" class="pps_image"/></div>
 				<div class="text">{$item.Descr}</div>

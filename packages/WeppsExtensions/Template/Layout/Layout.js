@@ -1,9 +1,9 @@
 var layoutInit = function() {
-	$('.pps_radius').height($('.pps_radius').width());
-	$('.pps_admin').find('a').on('click',function(event) {
+	$('.w_radius').height($('.pps_radius').width());
+	$('.w_admin').find('a').on('click',function(event) {
 		event.stopPropagation();
 	});
-	$('.pps_select').find('select').select2({
+	$('.w_select').find('select').select2({
 		language: "ru",
 		delay: 500
 	});
@@ -18,29 +18,29 @@ class LayoutWepps {
 		}
 	}
 	init() {
-		$('body').removeClass('pps_win_parent');
-		$('html').removeClass('pps_overflow');
-		$('.pps_win_bg2').remove();
-		$('.pps_win_bg').remove();
-		$('.pps_loader').remove();	
+		$('body').removeClass('w_modal_parent');
+		$('html').removeClass('w_overflow');
+		$('.w_modal_bg2').remove();
+		$('.w_modal_bg').remove();
+		$('.w_loader').remove();	
 		return 1;
 	}
 	remove() {
 		let self = this;
-		$('.pps_win_element').fadeOut(300, function() {
+		$('.w_modal_element').fadeOut(300, function() {
 			self.init();		
 		});
 		return 2;
 	}
-	win(settings={}) {
+	modal(settings={}) {
 		let self = this;
 		this.init();
 		this.window = $('<div></div>');
-		this.window.addClass('pps_win_element');
-		this.window.attr('id', 'pps_win_element');
+		this.window.addClass('w_modal_element');
+		this.window.attr('id', 'w_modal_element');
 		
 		this.closer = $('<div></div>');
-		this.closer.addClass('pps_win_closer');
+		this.closer.addClass('w_modal_closer');
 		this.window.append(this.closer);
 		
 		this.closer.on('click', function() {
@@ -48,33 +48,33 @@ class LayoutWepps {
 		});
 		
 		this.content = $('<div></div>');
-		this.content.addClass('pps_win_content');
+		this.content.addClass('w_modal_content');
 		this.window.append(this.content);
 		switch (settings.size) {
 			case 'small':
-				this.window.addClass('pps_win_small');
+				this.window.addClass('w_modal_small');
 				break;
 			case 'large':
-				this.window.addClass('pps_win_large');
+				this.window.addClass('w_modal_large');
 				break;
 			default:
-				this.window.addClass('pps_win_medium');
+				this.window.addClass('w_modal_medium');
 				break;
 		}
 		this.back = $('<div></div>');
-		this.back.addClass('pps_win_bg');
+		this.back.addClass('w_modal_bg');
 		this.back.append(this.window);
 		this.back2 = $('<div></div>');
-		this.back2.addClass('pps_win_bg2');
+		this.back2.addClass('w_modal_bg2');
 		this.body = $('body');
-		this.body.addClass('pps_win_parent');
+		this.body.addClass('w_modal_parent');
 		this.body.prepend(this.back2);
 		this.body.prepend(this.back);
-		$('html').addClass('pps_overflow');
+		$('html').addClass('w_overflow');
 		this.window.fadeIn();
 		if (settings.content != undefined) {
 			let clone = settings.content.clone();
-			clone.removeClass('pps_hide');
+			clone.removeClass('w_hide');
 			this.content.html(clone);
 		} else if (settings.url != undefined && settings.data != undefined) {
 			settings.obj = this.content;
@@ -88,7 +88,7 @@ class LayoutWepps {
 		});
 		$(document).off('mouseup');
 		$(document).mouseup(function(e) {
-		    if ($('.pps_win_element').has(e.target).length === 0 && $(e.target).hasClass('pps_win_element')==false && $(e.target).hasClass('pps_loader')==false) {
+		    if ($('.w_modal_element').has(e.target).length === 0 && $(e.target).hasClass('w_modal_element')==false && $(e.target).hasClass('w_loader')==false) {
 		      	self.remove();
 		    }
 		});
@@ -96,32 +96,32 @@ class LayoutWepps {
 	}
 	request(settings={}) {
 		let self = this;
-		$("#pps_ajax").remove();
+		$("#w_ajax").remove();
 		$.ajax({
 			type : "POST",
 			url : settings.url,
 			data : settings.data,
 			beforeSend: function(){
-				$('.pps_loader').remove();
-		    	let loader = $('<div class="pps_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
+				$('.w_loader').remove();
+		    	let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
 		        $('body').prepend(loader)
 		        
 		    }
 		}).done(function(responseText) {
-			$('.pps_loader').fadeOut()
+			$('.w_loader').fadeOut()
 			setTimeout(function() {
-				$('.pps_loader').remove();
+				$('.w_loader').remove();
 			},500);
 			if (settings.obj) {
 				settings.obj.html(responseText);
-				$("#pps_ajax").remove();
+				$("#w_ajax").remove();
 			} else {
 				var t = $("<div></div>");
-				t.attr("id", "pps_ajax");
+				t.attr("id", "w_ajax");
 				t.html(responseText);
 				$(document.body).prepend(t);
 				t.css('display', 'none');
-				$("#pps_ajax").remove();
+				$("#w_ajax").remove();
 			}
 			self.call();
 		});
