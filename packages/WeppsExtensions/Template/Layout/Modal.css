@@ -7,68 +7,60 @@
     filter: blur(3px);
     opacity: 0.5;
 }
-.w_modal_bg {
+.w_modal_wrapper {
+	background: rgba(255,255,255,0.5);
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
 	position: fixed;
+	z-index: 9898;
 	top: 0;
 	left: 0;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	z-index: 9898;
 }
-.w_modal_bg2 {
-    width: 100%;
-    height: 100%;
-    max-height: 100%;
-    position: fixed;
-    z-index: 9897;
-    background: rgba(255,255,255,0.5);
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    overflow: auto;
-}
-.w_modal_element {
-	position: relative;
+.w_modal {
+	background-color: var(--color-100);
+	padding: var(--step4);
+	padding-top: 66px;
+	margin: var(--step6) 0;
 	width: 100%;
-	max-width: 620px;
-	min-height: 200px;
+	max-width: 600px;
+	min-height: 240px;
 	max-height: 100%;
-	padding: 30px;
-	margin: 45px 0;
-	background: #fff;
-	display: none;
-	border-radius: 0px;
-	box-shadow:0 0 15px rgba(0,0,0,0.1);
+	position: relative;
+	border-radius: var(--step4);
+	box-shadow:0 0 var(--step2) rgba(0,0,0,0.1);
 	overflow: auto;
 	scrollbar-width: thin;
+	display: none;
 }
-.w_modal_element.w_modal_small {
+.w_modal.w_modal_small {
 	max-width: 300px;
+	min-height: 180px;
 }
-.w_modal_element.w_modal_medium {
+.w_modal.w_modal_medium {
 	max-width: 620px;
 }
-.w_modal_element.w_modal_large {
+.w_modal.w_modal_large {
 	max-width: 100%;
 	min-height: 100%;
+	border-radius: 0;
 }
 .w_modal_closer {
-	width: 20px;
-	height: 20px;
+	width: var(--step4);
+	height: var(--step4);
 	background: transparent url(files/controls-remove-gray.svg);
 	background-size: contain;
 	cursor: pointer;
 	position: absolute;
 	z-index: 2;
-	top:30px;
-	right:30px;
+	top:var(--step4);
+	right: var(--step4);
 }
+
 .w_modal_content h1,
 .w_modal_content h2 {
 	font-size: 22px;
@@ -90,8 +82,8 @@
 }
 
 .lds-spinner {
-	width: 64px;
-	height: 64px;
+	width: 60px;
+	height: 60px;
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -100,7 +92,7 @@
 }
 
 .lds-spinner div {
-	transform-origin: 32px 32px;
+	transform-origin: 30px 30px;
 	animation: lds-spinner 1.2s linear infinite;
 }
 
@@ -183,3 +175,16 @@
     opacity: 0;
   }
 }
+
+@media screen and (max-width: 810px) {
+	.w_modal_wrapper.w_modal_medium {
+		justify-content: end;
+	}
+	.w_modal.w_modal_medium {
+		margin-bottom: 0;
+		border-radius: var(--step4) var(--step4) 0 0;
+	}
+}
+
+
+@media screen and (max-width: 480px) {}

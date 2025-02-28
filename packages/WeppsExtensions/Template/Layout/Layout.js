@@ -1,5 +1,5 @@
 var layoutInit = function() {
-	$('.w_radius').height($('.pps_radius').width());
+	$('.w_radius').height($('.w_radius').width());
 	$('.w_admin').find('a').on('click',function(event) {
 		event.stopPropagation();
 	});
@@ -20,14 +20,13 @@ class LayoutWepps {
 	init() {
 		$('body').removeClass('w_modal_parent');
 		$('html').removeClass('w_overflow');
-		$('.w_modal_bg2').remove();
-		$('.w_modal_bg').remove();
+		$('.w_modal_wrapper').remove();
 		$('.w_loader').remove();	
 		return 1;
 	}
 	remove() {
 		let self = this;
-		$('.w_modal_element').fadeOut(300, function() {
+		$('.w_modal').fadeOut(300, function() {
 			self.init();		
 		});
 		return 2;
@@ -36,36 +35,30 @@ class LayoutWepps {
 		let self = this;
 		this.init();
 		this.window = $('<div></div>');
-		this.window.addClass('w_modal_element');
-		this.window.attr('id', 'w_modal_element');
-		
+		this.window.addClass('w_modal');
+		this.window.attr('id', 'w_modal');
 		this.closer = $('<div></div>');
 		this.closer.addClass('w_modal_closer');
 		this.window.append(this.closer);
-		
 		this.closer.on('click', function() {
 			self.remove();
 		});
-		
 		this.content = $('<div></div>');
 		this.content.addClass('w_modal_content');
 		this.window.append(this.content);
 		switch (settings.size) {
 			case 'small':
-				this.window.addClass('w_modal_small');
-				break;
 			case 'large':
-				this.window.addClass('w_modal_large');
 				break;
 			default:
-				this.window.addClass('w_modal_medium');
+				settings.size = 'medium';
 				break;
 		}
+		this.window.addClass('w_modal_'+settings.size);
 		this.back = $('<div></div>');
-		this.back.addClass('w_modal_bg');
+		this.back.addClass('w_modal_wrapper');
+		this.back.addClass('w_modal_'+settings.size);
 		this.back.append(this.window);
-		this.back2 = $('<div></div>');
-		this.back2.addClass('w_modal_bg2');
 		this.body = $('body');
 		this.body.addClass('w_modal_parent');
 		this.body.prepend(this.back2);
@@ -88,7 +81,7 @@ class LayoutWepps {
 		});
 		$(document).off('mouseup');
 		$(document).mouseup(function(e) {
-		    if ($('.w_modal_element').has(e.target).length === 0 && $(e.target).hasClass('w_modal_element')==false && $(e.target).hasClass('w_loader')==false) {
+		    if ($('.w_modal').has(e.target).length === 0 && $(e.target).hasClass('w_modal')==false && $(e.target).hasClass('w_loader')==false) {
 		      	self.remove();
 		    }
 		});
