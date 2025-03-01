@@ -47,9 +47,9 @@
 							</ul>
 						</div>
 						<div class="text pps_flex_fix pps_flex_11_view_small">
-							<ul class="footer-socials pps_list pps_flex pps_flex_row pps_flex_center">
+							<ul class="footer-socials pps_list pps_flex pps_flex_row pps_flex_center pps_flex_margin">
 								{foreach name=out item=item from=$socials}
-								<li><a class="fa fa-stack fa-lg fa-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a></li>
+								<li><a class="bi bi-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a></li>
 								{/foreach}
 							</ul>
 						</div>

@@ -27,7 +27,7 @@ class LayoutWepps {
 	remove() {
 		let self = this;
 		$('.w_modal').fadeOut(300, function() {
-			self.init();		
+			self.init();
 		});
 		return 2;
 	}
@@ -38,7 +38,7 @@ class LayoutWepps {
 		this.window.addClass('w_modal');
 		this.window.attr('id', 'w_modal');
 		this.closer = $('<div></div>');
-		this.closer.addClass('w_modal_closer');
+		this.closer.addClass('w_modal_closer').addClass('bi').addClass('bi-x');
 		this.window.append(this.closer);
 		this.closer.on('click', function() {
 			self.remove();

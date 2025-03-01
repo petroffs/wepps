@@ -27,7 +27,7 @@ var readyNavInit = function() {
 			var clone = $('ul.header-nav').eq(0).clone();
 			clone.id = 'header-nav-clone';
 			el.append(clone);
-			clone.before("<div class=\"close\"></div>")
+			clone.before("<div class=\"closer\"><i class=\"bi bi-x\"></i></div>")
 			clone.before("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-paddings-i.svg\" class=\"pps_image\"/></a></div>")
 			el.find('.close').on('click', function() {
 				$(this).parent().remove();

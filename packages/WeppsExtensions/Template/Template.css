@@ -209,8 +209,20 @@ body div.content-block section.paginator-wrapper {
 	margin-bottom: 0
 }
 
-@media screen and (max-width: 1440px) {
+body .bi.bi-vk { 
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+body .bi.bi-vk::before {
+	content:'';
+	background: url('files/icons/vk.svg') 50% 50% no-repeat;
+	background-size: 100%;
+	width: 100%; 
+	height: 100%;
+}
 
+@media screen and (max-width: 1440px) {
 	div.page div.page2,
 	div.page>section {
 		padding: 0 var(--step4);

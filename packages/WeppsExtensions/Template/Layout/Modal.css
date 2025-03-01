@@ -50,15 +50,22 @@
 	border-radius: 0;
 }
 .w_modal_closer {
+	font-size: var(--font-large);
+	color: var(--color-75);
 	width: var(--step4);
 	height: var(--step4);
-	background: transparent url(files/controls-remove-gray.svg);
-	background-size: contain;
 	cursor: pointer;
 	position: absolute;
 	z-index: 2;
 	top:var(--step4);
 	right: var(--step4);
+}
+.w_modal_closer::before {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	align-items: center;
 }
 
 .w_modal_content h1,

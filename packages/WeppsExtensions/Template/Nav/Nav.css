@@ -106,9 +106,10 @@ div.pps_nav {
 	z-index: 100;
 }
 
-div.pps_nav .close {
-	background: url(/ext/Template/Layout/files/controls-remove-gray.svg) 0 0 no-repeat;
-	background-size: contain;
+div.pps_nav .closer {
+	font-size: 3em;
+	line-height: 0;
+	color: var(--color-75);
 	width: var(--step6);
 	height: var(--step6);
 	position: absolute;
