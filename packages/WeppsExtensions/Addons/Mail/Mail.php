@@ -94,6 +94,12 @@ class MailWepps {
 		}
 		return $this->content;
 	}
+	public function save($filename='') {
+		$filename = ($filename!='') ? $filename : __DIR__ . '/files/mail.html';
+		$output = file_get_contents($filename);
+		$output .= $this->getContent(false)."\n";
+		file_put_contents($filename, $output);
+	}
 	private function getAttach() {
 		$msg = "";
 		if (count ( $this->attachment ) != 0) {

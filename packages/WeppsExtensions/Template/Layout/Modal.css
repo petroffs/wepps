@@ -31,7 +31,7 @@
 	min-height: 240px;
 	max-height: 100%;
 	position: relative;
-	border-radius: var(--step4);
+	border-radius: var(--step2);
 	box-shadow:0 0 var(--step2) rgba(0,0,0,0.1);
 	overflow: auto;
 	scrollbar-width: thin;
