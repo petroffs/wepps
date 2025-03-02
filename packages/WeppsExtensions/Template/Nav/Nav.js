@@ -18,7 +18,7 @@ var readyNavInit = function() {
 			console.log($(".pps_nav").length);
 			$(".pps_nav").remove();
 		} else {
-			$('body').addClass('pps_nav_parent');
+			$('body').addClass('w_modal_parent');
 			var el = $('<div>');
 			el.id = 'pps_nav';
 			el.addClass('pps_nav');
@@ -26,8 +26,8 @@ var readyNavInit = function() {
 			el.css('height', $( document ).height());
 			var elHeader = $('<div>');
 			elHeader.addClass('w_grid w_2col w_ai_center w_ji_end_view_small');
+			elHeader.append("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-i.svg\" class=\"pps_image\"/></a></div>");
 			elHeader.append(("<div class=\"closer\"><i class=\"bi bi-x-lg\"></i></div>"));
-			elHeader.append("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-paddings-i.svg\" class=\"pps_image\"/></a></div>");
 			var clone = $('ul.header-nav').eq(0).clone();
 			clone.id = 'header-nav-clone';
 			el.append(clone);
@@ -35,7 +35,7 @@ var readyNavInit = function() {
 			//clone.before("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-paddings-i.svg\" class=\"pps_image\"/></a></div>")
 			el.find('.closer').on('click', function() {
 				$(this).closest('.pps_nav').remove();
-				$('body').removeClass('pps_nav_parent');
+				$('body').removeClass('w_modal_parent');
 			});
 			$('.has-childs').children('a').on('click',function(event) {
 				event.preventDefault();
@@ -53,7 +53,6 @@ var readyNavInit = function() {
 			});
 		}
 	});
-	$('a#header-nav').trigger('click');
 }
 
 $(document).ready(readyNavInit);

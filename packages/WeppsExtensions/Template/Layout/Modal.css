@@ -1,5 +1,6 @@
 .w_modal_parent {
 	overflow-y: scroll;
+	overflow: hidden;
 }
 .w_modal_parent > header,
 .w_modal_parent > footer,
@@ -8,7 +9,7 @@
     opacity: 0.5;
 }
 .w_modal_wrapper {
-	background: rgba(255,255,255,0.5);
+	background: rgba(255,255,255,0.1);
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
@@ -70,13 +71,11 @@
 
 .w_modal_content h1,
 .w_modal_content h2 {
-	font-size: 22px;
+	font-size: var(--font-medium);
 	text-align: left;
 	letter-spacing: 2px;
 	width: 100%;
 	max-width: calc(100% - 60px);
-	padding-bottom: 20px;
-	margin: 0 0 20px 0;
 }
 .w_loader {
 	position: fixed;
