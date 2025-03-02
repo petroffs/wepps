@@ -1,7 +1,7 @@
-<section class="news-wrapper pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_animate">
+<section class="news-wrapper pps_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap_large">
 	{foreach name="out" item="item" from=$elements}
 	{assign var="images" value=$item.Images_FileUrl|strarr}
-	<section class="pps_flex_13 pps_flex_12_view_medium">
+	<section>
 		{$item.Id|pps:"News"}
 		<a href="{$item.Url}">
 			<div class="news-img">

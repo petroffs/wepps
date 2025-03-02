@@ -1,8 +1,8 @@
-<div class="pps_interval"></div>
-<section class="childs-wrapper pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin_medium pps_animate">
+<div class="w_interval"></div>
+<section class="childs-wrapper w_animate w_grid w_4col w_2col_view_medium w_1col_view_small w_gap_large">
 	{foreach name="out" item="item" from=$elements}
 	{assign var="images" value=$item.Images_FileUrl|strarr}
-	<section class="pps_flex_14 pps_flex_12_view_medium pps_flex_11_view_small">
+	<section>
 		<a href="{$language.link}{$item.UrlMenu|default:$item.Url}">
 			<div class="childs-img">
 				{if $images.0}
@@ -18,4 +18,4 @@
 	</section>
 	{/foreach}
 </section>
-<div class="pps_interval_medium"></div>
+<div class="w_interval_medium"></div>

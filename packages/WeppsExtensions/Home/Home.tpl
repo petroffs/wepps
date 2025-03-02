@@ -7,27 +7,27 @@
 	</section>
 </div>
 <div class="page services">
-	<section class="pps_overflow_auto">
-		<section class="services-wrapper pps_flex pps_flex_row pps_flex_row_str pps_flex_margin_large">
-			{foreach name="out" key="key" item="item" from=$services}
-				<section class="pps_flex_14 pps_flex_12_view_medium">
-					<div class="services-img">
-						<img src="/pic/catprev/{$item.Images_FileUrl}" class="pps_image"/>
-					</div>
-					<div class="title">{$item.Name}</div>
-				</section>
-			{/foreach}
+	<section>
+		<section class="services-wrapper w_grid w_4col w_2col_view_medium w_gap_large">
+		{foreach name="out" key="key" item="item" from=$services}
+			<section>
+				<div class="services-img">
+					<img src="/pic/catprev/{$item.Images_FileUrl}" class="pps_image"/>
+				</div>
+				<div class="title">{$item.Name}</div>
+			</section>
+		{/foreach}
 		</section>
 	</section>
 </div>
 <div class="page gallery">
 	<section>
 		<div class="pps_interval_large"></div>
-		<section class="gallery-wrapper pps_flex pps_flex_row pps_flex_center pps_flex_row_str pps_flex_margin_large pps_animate">
+		<section class="gallery-wrapper pps_animate w_grid w_4col w_3col_view_medium w_gap_large">
 			{foreach name=out item=item from=$gallery}
-			<section class="pps_flex_14 pps_flex_13_view_medium">
-				<div class="img pps_overflow">
-					<a href="/pic/full{$item.FileUrl}" class="image-gallery"><img src="/pic/catbig{$item.FileUrl}" class="pps_image pps_pointer pps_zoom" /></a>
+			<section>
+				<div class="img w_overflow">
+					<a href="/pic/full{$item.FileUrl}" class="image-gallery"><img src="/pic/catbig{$item.FileUrl}" class="w_image w_pointer w_zoom" /></a>
 				</div>
 			</section>
 			{/foreach}
