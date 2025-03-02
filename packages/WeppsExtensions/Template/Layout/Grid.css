@@ -105,6 +105,18 @@
 	justify-items: end;
 }
 
+.w_grid.w_ai_start {
+	align-items: start;
+}
+
+.w_grid.w_ai_center {
+	align-items: center;
+}
+
+.w_grid.w_ai_end {
+	align-items: end;
+}
+
 @media screen and (max-width: 810px) {
 	.w_grid.w_1col_view_medium {
 		grid-template-columns: auto;

@@ -34,6 +34,7 @@
 	--font-tiny: 12px;
 	--font-medium: 22px;
 	--font-large: 32px;
+	--font-xlarge: 36px;
 	--font-extra: 42px;
 	--border: 1px solid var(--color-85);
 	--shadow: 0 0 12px rgba(0,0,0,0.3);
@@ -52,8 +53,9 @@
 		--font-small: 12px;
 		--font-tiny: 10px;
 		--font-medium: 18px;
-		--font-large: 30px;
-		--font-extra: 36px;
+		--font-large: 28px;
+		--font-xlarge: 32px;
+		--font-extra: 38px;
 	}
 }
 
@@ -71,6 +73,7 @@
 		--font-tiny: 10px;
 		--font-medium: 16px;
 		--font-large: 26px;
-		--font-extra: 30px;
+		--font-xlarge: 30px;
+		--font-extra: 36px;
 	}
 }

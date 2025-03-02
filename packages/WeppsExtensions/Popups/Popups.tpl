@@ -25,3 +25,6 @@
 	Окно для загрузки ответа/response
 </div>
 <div class="w_interval"></div>
+<div class="w_icon">
+
+</div>

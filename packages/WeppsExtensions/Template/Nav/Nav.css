@@ -34,6 +34,10 @@ div.header-nav-icon {
 	cursor: pointer;
 }
 
+div.header-nav-icon .bi {
+	font-size: 2em;
+}
+
 div.header-nav-icon a {
 	color: var(--color-05);
 }
@@ -107,8 +111,6 @@ div.pps_nav {
 }
 
 div.pps_nav .closer {
-	font-size: 3em;
-	line-height: 0;
 	color: var(--color-75);
 	width: var(--step6);
 	height: var(--step6);
@@ -116,6 +118,13 @@ div.pps_nav .closer {
 	top: var(--step6);
 	right: var(--step4);
 	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+div.pps_nav .closer>.bi {
+	font-size: 2em;
 }
 
 div.pps_nav .logo {
@@ -194,4 +203,12 @@ div.pps_nav ul.header-nav>li>ul>li>a {
 
 div.pps_nav ul.header-nav>li>ul>li:hover {
 	background: var(--color-25);
+}
+
+
+@media screen and (max-width: 480px) {
+	div.page.header {
+		padding-top: var(--step2);
+		height: auto;
+	}	
 }

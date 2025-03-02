@@ -1,6 +1,6 @@
 <div class="page header">
 	<section>
-		<section class="header-wrapper w_grid w_2col w_ji_end_view_small">
+		<section class="header-wrapper w_grid w_2col w_ai_center w_ji_end_view_small">
 			<div class="header-logo">
 				<a href="/"><img src="/ext/Template/files/wepps-logo.svg" /></a>
 			</div>
