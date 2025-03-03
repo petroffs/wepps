@@ -40,6 +40,10 @@ var readyFormsInit = function() {
 	$('.pps.pps_area').find('textarea').on('input', function () {
 		autoResizeTextarea(this);
 	}).trigger('input');
+	$('.w_select').find('select').select2({
+		language: "ru",
+		delay: 500
+	});
 }
 $(document).ready(readyFormsInit);
 

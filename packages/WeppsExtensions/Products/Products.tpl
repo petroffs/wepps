@@ -48,7 +48,7 @@
 					<div class="products-options content-block pps_flex pps_flex_row">
 						<div id="pps-options-count">{$productsCount} товаров</div>
 						<div id="pps-options-sort">
-							<label class="pps pps_select">
+							<label class="pps pps_select w_select">
 								<select data-minimum-results-for-search="Infinity">
 									{foreach name="out" key="key" item="item" from=$productsSorting}
 									<option value="{$key}" {if $productsSortingActive==$key} selected="selected"{/if}>{$item}</option>

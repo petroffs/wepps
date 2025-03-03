@@ -1,28 +1,26 @@
 <div class="page news-item">
 	<section class="news-item-wrapper">
-		<div>
-			<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin_medium">
-				{assign var="images" value=$element.Images_FileUrl|strarr}
-				{$element.Id|pps:"News"}
-				{if $images.0}
-				<div class="pps_flex_12 pps_flex_11_view_medium">
-					<div class="news-item-img"><img src="/pic/catbigv{$images.0}"/></div>
-				</div>
-				{/if}
-				<div class="pps_flex_12 pps_flex_11_view_medium">
-					<h1>{$element.Name}</h1>
-					<div class="news-item-date">{$element.NDate|date_format:"%d.%m.%Y"}</div>
-					<div class="news-item-text">{$element.Descr}</div>
-				</div>
+		<div class="w_grid w_2col w_1col_view_small">
+			{assign var="images" value=$element.Images_FileUrl|strarr}
+			{$element.Id|pps:"News"}
+			{if $images.0}
+			<div>
+				<div class="news-item-img"><img src="/pic/catbigv{$images.0}"/></div>
 			</div>
-		</div>	
+			{/if}
+			<div class="w_padding_medium">
+				<h1>{$element.Name}</h1>
+				<div class="news-item-date">{$element.NDate|date_format:"%d.%m.%Y"}</div>
+				<div class="news-item-text">{$element.Descr}</div>
+			</div>
+		</div>
 	</section>
-	<div class="pps_interval"></div>
+	<div class="pps_interval_large"></div>
 	<section>
-		<section class="news-wrapper pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_animate">
+		<section class="news-wrapper pps_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap_large">
 			{foreach name="out" item="item" from=$elements}
 			{assign var="images" value=$item.Images_FileUrl|strarr}
-			<section class="pps_flex_13 pps_flex_12_view_medium">
+			<section>
 				{$item.Id|pps:"News"}
 				<a href="{$item.Url}">
 					<div class="news-img">
@@ -40,6 +38,7 @@
 			</section>
 			{/foreach}
 		</section>
+		<div class="pps_interval_medium"></div>
 	</section>
 	<div class="pps_interval_small"></div>
 </div>

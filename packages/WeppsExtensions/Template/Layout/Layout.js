@@ -3,10 +3,6 @@ var layoutInit = function() {
 	$('.w_admin').find('a').on('click',function(event) {
 		event.stopPropagation();
 	});
-	$('.w_select').find('select').select2({
-		language: "ru",
-		delay: 500
-	});
 }
 $(document).ready(layoutInit);
 //$(window).on('resize', readyLayoutInit);
