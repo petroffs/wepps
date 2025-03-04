@@ -64,6 +64,9 @@ class LayoutWepps {
 		if (settings.content != undefined) {
 			let clone = settings.content.clone();
 			clone.removeClass('w_hide');
+			clone.removeClass('w_hide_view_medium');
+			clone.removeClass('w_hide_view_small');
+			clone.removeClass('w_hide');
 			this.content.html(clone);
 		} else if (settings.url != undefined && settings.data != undefined) {
 			settings.obj = this.content;

@@ -1,5 +1,6 @@
 body section.sidebar div.nav-filters,
-body section.sidebar div.nav-filters-reset {
+body section.sidebar div.nav-filters-reset,
+body section.sidebar div.nav-filters-apply {
 	background: var(--color-100);
 	margin-top: var(--step4);
 	border-radius: var(--step2);
@@ -7,7 +8,8 @@ body section.sidebar div.nav-filters-reset {
 }
 
 body section.sidebar div.nav-filters>.title,
-body section.sidebar div.nav-filters-reset>.title {
+body section.sidebar div.nav-filters-reset>.title,
+body section.sidebar div.nav-filters-apply>.title {
 	font-weight: 600;
 	color: var(--color-50);
 	padding: var(--step2);
@@ -34,3 +36,20 @@ body section.sidebar div.nav-filters ul>li label.pps.pps_checkbox input[type="ch
 body section.sidebar div.nav-filters li.pps_expand a {
 	color: var(--color-02);
 }
+
+@media screen and (max-width: 810px) {
+	body section.sidebar div.nav-filters-apply {
+		background-color: var(--color-95);
+		width: 100%;
+		border-radius: 0;
+		padding: var(--step4);
+		position: fixed;
+		left: 0;
+		bottom: 0;
+	}
+
+	body section.sidebar div.nav-filters-reset {
+		margin-bottom: 90px;
+	}	
+}
+

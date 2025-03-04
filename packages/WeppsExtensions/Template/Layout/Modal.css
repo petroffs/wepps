@@ -5,8 +5,8 @@
 .w_modal_parent > header,
 .w_modal_parent > footer,
 .w_modal_parent > main {
-    filter: blur(3px);
-    opacity: 0.5;
+    filter: blur(0px);
+    opacity: 0.9;
 }
 .w_modal_wrapper {
 	background: rgba(255,255,255,0.1);
@@ -46,9 +46,10 @@
 	max-width: 620px;
 }
 .w_modal.w_modal_large {
-	max-width: 100%;
+	max-width: 80%;
 	min-height: 100%;
 	border-radius: 0;
+	opacity: 0.7;
 }
 .w_modal_closer {
 	font-size: var(--font-large);

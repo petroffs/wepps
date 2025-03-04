@@ -1,8 +1,8 @@
 <div class="products-items-wrapper">
-	<div class="products-items pps_flex pps_flex_row pps_flex_row_str pps_flex_start pps_flex_margin">
-		{foreach name="out" item="item" from=$products}
+	<div class="products-items w_grid w_3col w_2col_view_medium w_gap_medium">
+		{foreach item="item" from=$products}
 		{assign var="images" value=$item.Images_FileUrl|strarr}
-		<section class="pps_flex_13 pps_flex_12_view_medium pps_flex_11_view_small">
+		<section>
 			{$item.Id|pps:"Products"}
 			{if $item.PStatus}
 			<div class="status status{$item.PStatus}" title="{$item.PStatus_Name}"></div>

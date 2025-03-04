@@ -8,6 +8,15 @@ div.products-options {
 	margin-top: var(--step4);
 }
 
+div#pps-option-filters {
+	cursor: pointer;
+}
+
+div#pps-option-filters i {
+	font-size: var(--font-medium);
+}
+
+
 
 /****/
 

@@ -5,7 +5,7 @@ div.pps_error {
 	padding-left: var(--step2);
 	padding-right: var(--step6);
 	min-height: calc(var(--step6) - 2px);
-	border-radius: 1px;
+	border-radius: var(--stepHalf);
 	cursor: pointer;
 	position: absolute;
 	z-index: 10;

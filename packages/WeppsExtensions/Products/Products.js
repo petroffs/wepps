@@ -1,8 +1,19 @@
+/*layoutWeppsFilters = new LayoutWepps();
+layoutWeppsFilters.call = function() {}*/
+
 var productsInit = function() {
 	filtersWepps = new FiltersWepps({
 		filters : 'nav-filters'
 	});
 	filtersWepps.init();
+	
+	$('#pps-option-filters').off('click');
+	$('#pps-option-filters').on('click',function(e) {
+		e.preventDefault();
+		layoutWepps.modal({ size:'large',content: $('.sidebar').eq(0)});
+		productsInit();
+	});
+	
 }
 
 $(document).ready(productsInit);
@@ -12,6 +23,7 @@ $(window).on('popstate', function(event) {
 });
 
 $(document).ready(function() {
+	$('#pps-option-filters').trigger('click');
 	/*
 	$('.imgs-big').slick({
 		slidesToShow : 1,
