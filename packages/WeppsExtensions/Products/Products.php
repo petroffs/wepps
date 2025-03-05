@@ -45,14 +45,16 @@ class ProductsWepps extends ExtensionWepps {
 				$filtersJS = $filters->getFiltersCodeJS($filtersActive,$products['count']);
 				$smarty->assign('filtersJS',$filtersJS);
 			}
+			$this->headers->js("/ext/Products/Products.{$rand}.js");
+			$this->headers->css("/ext/Template/Paginator/Paginator.{$rand}.css" );
 		} else {
 			$this->tpl = 'packages/WeppsExtensions/Products/ProductsItem.tpl';
 			$this->headers->css("/ext/Products/ProductsItem.{$rand}.css");
 			$this->headers->js("/ext/Products/ProductsItem.{$rand}.js");
-			$this->headers->css("/packages/vendor/kenwheeler/slick/slick.css");
-			$this->headers->css("/packages/vendor/kenwheeler/slick/slick-theme.css");
-			$this->headers->js("/packages/vendor/kenwheeler/slick/slick.min.js");
-			$this->headers->css("/ext/Addons/Carousel/Carousel.{$rand}.css");
+			$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick.css");
+			$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick-theme.css");
+			$this->headers->js("/packages/vendor/kenwheeler/slick/slick/slick.min.js");
+			$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css");
 			$this->navigator->content['Text1'] = '';
 			$res = $this->getItem("Products");
 			$smarty->assign('element',$res);
@@ -64,8 +66,6 @@ class ProductsWepps extends ExtensionWepps {
 		}
 		$smarty->assign('normalView',0);
 		$this->headers->css("/ext/Products/Products.{$rand}.css");
-		$this->headers->js("/ext/Products/Products.{$rand}.js");
-		$this->headers->css("/ext/Template/Paginator/Paginator.{$rand}.css" );
 		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js" );
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;

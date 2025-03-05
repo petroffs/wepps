@@ -14,7 +14,7 @@ $(window).on('popstate', function(event) {
 });
 
 $(document).ready(function() {
-	$('#pps-option-filters').trigger('click');
+	//$('#pps-option-filters').trigger('click');
 	/*
 	$('.imgs-big').slick({
 		slidesToShow : 1,

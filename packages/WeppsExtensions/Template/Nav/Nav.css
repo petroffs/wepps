@@ -1,9 +1,8 @@
 header {
 	background: var(--color-100);
 	position: sticky;
-	top: 0;
+	top: -1px;
 	z-index: 11;
-	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
 }
 
 div.page.header {
@@ -199,6 +198,18 @@ div.pps_nav ul.header-nav>li>ul>li>a {
 
 div.pps_nav ul.header-nav>li>ul>li:hover {
 	background: var(--color-25);
+}
+
+header.is-pinned {
+	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+header.is-pinned div.page.header {
+	padding-top: var(--step2);
+}
+
+header.is-pinned .header-nav-wrapper {
+	display: none;
 }
 
 @media screen and (max-width: 480px) {

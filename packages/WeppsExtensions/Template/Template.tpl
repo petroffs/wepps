@@ -16,7 +16,7 @@
 		{$content.Url|pps:"navigator"}
 		{$extensionTop}
 		{if $normalView==1}
-		<div class="page main pps_flex_max pps_flex pps_flex_col">
+		<div class="page pps_flex_max pps_flex pps_flex_col">
 			<section>
 				<h1>{$content.Name}</h1>
 				{if $content.Text1}

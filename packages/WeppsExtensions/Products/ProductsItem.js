@@ -8,7 +8,7 @@ var readyProductsItemInit = function() {
 		fade : false,
 		infinite : true,
 	}
-	$('.fotos-container').eq(0).slick(slickOptions);
+	//$('.fotos-container').eq(0).slick(slickOptions);
 	
 	var slickOptions = {
 		slidesToShow: 5,
@@ -24,7 +24,7 @@ var readyProductsItemInit = function() {
 		centerMode: false,
 		focusOnSelect: true
 	}
-	$('.fotos-nav').eq(0).slick(slickOptions);
+	//$('.fotos-nav').eq(0).slick(slickOptions);
 }
 
 $(document).ready(readyProductsItemInit);

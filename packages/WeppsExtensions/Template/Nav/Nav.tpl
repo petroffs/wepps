@@ -1,4 +1,4 @@
-<div class="page header">
+<div class="page header pps_animate">
 	<section>
 		<section class="header-wrapper w_grid w_2col w_ai_center w_ji_end_view_small">
 			<div class="header-logo">
