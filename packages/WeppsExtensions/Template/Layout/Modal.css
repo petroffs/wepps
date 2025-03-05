@@ -14,7 +14,7 @@
 	height: 100%;
 	max-height: 100%;
 	position: fixed;
-	z-index: 9898;
+	z-index: 900;
 	top: 0;
 	left: 0;
 	display: flex;
@@ -46,10 +46,9 @@
 	max-width: 620px;
 }
 .w_modal.w_modal_large {
-	max-width: 80%;
+	max-width: 100%;
 	min-height: 100%;
 	border-radius: 0;
-	opacity: 0.7;
 }
 .w_modal_closer {
 	font-size: var(--font-large);

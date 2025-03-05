@@ -37,19 +37,27 @@ body section.sidebar div.nav-filters li.pps_expand a {
 	color: var(--color-02);
 }
 
-@media screen and (max-width: 810px) {
-	body section.sidebar div.nav-filters-apply {
-		background-color: var(--color-95);
-		width: 100%;
-		border-radius: 0;
-		padding: var(--step4);
-		position: fixed;
-		left: 0;
-		bottom: 0;
-	}
-
-	body section.sidebar div.nav-filters-reset {
-		margin-bottom: 90px;
-	}	
+body section.sidebar div.nav-filters-apply {
+	display: none;
 }
 
+body #w_modal section.sidebar div.nav-filters-apply {
+	background-color: var(--color-95);
+	width: 100%;
+	border-radius: 0;
+	padding: var(--step4);
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	display: grid;
+}
+
+body #w_modal section.sidebar {
+	padding-bottom: 90px;
+}
+
+@media screen and (max-width: 810px) {
+	
+
+		
+}

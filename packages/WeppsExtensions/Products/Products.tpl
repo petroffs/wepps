@@ -1,7 +1,7 @@
 <div class="page products">
-	<section class="w_grid w_4col w_gap_medium">
-		<section class="sidebar w_4scol_view_medium w_hide_view_medium" data-url="/ext/Products/Request.php" data-search="{$search}">
-			<div class="nav pps_animate">
+	<section class="content-wrapper w_grid w_4col w_gap_medium">
+		<section class="sidebar w_hide_view_medium w_1scol" data-url="/ext/Products/Request.php" data-search="{$search}">
+			<div class="nav pps_animate w_4scol w_2scol_view_medium w_1scol_view_small">
 				<ul>
 					{foreach name="out" item="item" from=$childsNav}
 					<li class="{if $content.Id==$item.Id}active{/if}">
@@ -35,7 +35,7 @@
 					<label class="pps pps_button"><input type="button" value="Очистить"/></label>
 				</div>
 			</div>
-			<div class="nav-filters-apply w_hide w_block_view_medium">
+			<div class="nav-filters-apply">
 				<div class="title">
 					<label class="pps pps_button"><input type="button" value="Применить"/></label>
 				</div>

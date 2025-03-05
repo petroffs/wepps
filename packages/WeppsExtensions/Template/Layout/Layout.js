@@ -22,11 +22,19 @@ class LayoutWepps {
 	}
 	remove() {
 		let self = this;
+		self.removeBefore()
 		$('.w_modal').fadeOut(300, function() {
 			self.init();
+			self.removeAfter()
 		});
 		return 2;
 	}
+	removeBefore() {
+		
+	}
+	removeAfter() {
+			
+		}
 	modal(settings={}) {
 		let self = this;
 		this.init();
@@ -115,11 +123,11 @@ class LayoutWepps {
 				t.css('display', 'none');
 				$("#w_ajax").remove();
 			}
-			self.call();
+			self.requestAfter();
 		});
 		return 1;
 	}
-	call () {
+	requestAfter () {
 		
 	}
 }
