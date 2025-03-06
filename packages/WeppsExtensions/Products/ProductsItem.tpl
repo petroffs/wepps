@@ -3,7 +3,7 @@
 	{$element.Id|pps:"Products"}
 	<section>
 		<div class="product-wrapper">
-			<div class="product-media">
+			<div class="product-media content-block">
 				<div class="img-carousel carousel">
 					{foreach name="out" item="item" from=$images}
 					<div class="img">
@@ -12,15 +12,15 @@
 					{/foreach}
 				</div>
 			</div>
-			<div class="product-title">
+			<div class="product-title content-block">
 				<h1>{$element.Name}</h1>
 				{if $element.PStatus}
 				<div class="status status{$element.PStatus}" title="{$element.PStatus_Name}" data-uk-tooltip></div>
 				{/if}
 			</div>
-			<div class="product-attributes">attributes attributes attributes attributes attributes </div>
+			<div class="product-attributes content-block">attributes attributes attributes attributes attributes </div>
 			<div class="product-price">
-				<div class="prices">
+				<div class="prices content-block">
 					<div class="price">
 						<span>{$element.Price}</span>
 					</div>
@@ -29,14 +29,17 @@
 						<span>{$element.PriceOld}</span>
 					</div>
 					{/if}
+					<label class="pps pps_button">
+						<input type="button" value="Купить"/>
+					</label>
 				</div>
-				<label class="pps pps_button">
-					<input type="button" value="Купить"/>
-				</label>
+				
 			</div>
-			<div class="product-text">
+			{if $element.Descr}
+			<div class="product-text content-block">
 				{$element.Descr}
 			</div>
+			{/if}
 		</div>
 	</section>
 </div>

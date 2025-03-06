@@ -3,53 +3,46 @@ var readyNavInit = function() {
 		event.stopPropagation()
 		event.preventDefault();
 		$(this).addClass('hover');
-		$(this).find('ul').removeClass('pps_hide');
+		$(this).find('ul').removeClass('w_hide');
 	});
 	$('ul.header-nav').children('li').on('mouseleave', function(event) {
 		event.stopPropagation()
 		event.preventDefault();
 		$(this).removeClass('hover');
-		$(this).find('ul').addClass('pps_hide');
+		$(this).find('ul').addClass('w_hide');
 	});
-	
 	$('a#header-nav').on('click', function(e) {
 		e.preventDefault()
-		if ($(".pps_nav").length!=0) {
-			console.log($(".pps_nav").length);
-			$(".pps_nav").remove();
+		if ($(window).width()>810) {
+			var el = $('nav.header-nav-wrapper');
+			el.toggleClass('w_hide_off');
+			return;
+		}
+		if ($(".w_nav").length!=0) {
+			$(".w_nav").remove();
 		} else {
 			$('body').addClass('w_modal_parent');
-			var el = $('<div>');
-			el.id = 'pps_nav';
-			el.addClass('pps_nav');
-			$('body').prepend(el);
-			el.css('height', $( document ).height());
-			var elHeader = $('<div>');
-			elHeader.addClass('w_grid w_2col w_ai_center w_ji_end_view_small');
-			elHeader.append("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-i.svg\" class=\"pps_image\"/></a></div>");
-			elHeader.append(("<div class=\"closer\"><i class=\"bi bi-x-lg\"></i></div>"));
-			var clone = $('ul.header-nav').eq(0).clone();
-			clone.id = 'header-nav-clone';
-			el.append(clone);
-			clone.before(elHeader);
-			//clone.before("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-paddings-i.svg\" class=\"pps_image\"/></a></div>")
-			el.find('.closer').on('click', function() {
-				$(this).closest('.pps_nav').remove();
+			let popup = $('<div>');
+			popup.id = 'w_nav';
+			popup.addClass('w_nav');
+			$('body').prepend(popup);
+			popup.css('height', $( document ).height());
+			let header = $('<section>');
+			header.addClass('header-wrapper-top');
+			header.append(("<div class=\"closer\"><i class=\"bi bi-x-lg\"></i></div>"));
+			header.append("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-logo-paddings-i.svg\" class=\"pps_image\"/></a></div>");
+			popup.append(header);
+			let nav = $('ul.header-nav').eq(0).clone();
+			nav.addClass('w_header-nav');
+			nav.removeClass('header-nav');
+			popup.append(nav);
+			popup.find('.closer').on('click', function() {
+				$(this).closest('.w_nav').remove();
 				$('body').removeClass('w_modal_parent');
 			});
-			$('.has-childs').children('a').on('click',function(event) {
+			popup.find('.has-childs').children('a').on('click',function(event) {
 				event.preventDefault();
-				var t = $(this).closest('ul.header-nav').find('a');
-				t.removeClass('open');
-				$(this).addClass('open');
-				var el = $(this).siblings('ul');
-				if (el.hasClass('pps_hide')) {
-					el.removeClass('pps_hide');
-					$(this).addClass('open');
-				} else {
-					el.addClass('pps_hide');
-					$(this).removeClass('open');
-				}
+				$(this).toggleClass('open');
 			});
 		}
 	});
