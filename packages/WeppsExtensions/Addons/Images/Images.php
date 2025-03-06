@@ -71,6 +71,9 @@ class ImagesWepps {
 			case "slider" :
 				$side = 1280;
 				break;
+			case "sliderm" :
+				$side = 600;
+				break;
 			case "a4":
 				$this->widthDst = 500;
 				$this->heightDst = 705;

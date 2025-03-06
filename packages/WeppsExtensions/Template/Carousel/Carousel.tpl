@@ -6,7 +6,7 @@
 	</div>
 	<div class="carousel carousel-mobile">
 		{foreach name=out item=item key=key from=$carousel}
-		<img src="/pic/slider{$item.ImageMobile_FileUrl}">
+		<img src="/pic/sliderm{$item.ImageMobile_FileUrl}">
 		{/foreach}
 	</div>
 </div>
