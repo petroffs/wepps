@@ -3,8 +3,15 @@
 		<section class="header-wrapper header-wrapper-top">
 			<a href="" id="header-nav"><i class="bi bi-list"></i></a>
 			<div class="header-logo">
-				<a href="/"><img src="/ext/Template/files/wepps-logo-paddings.svg" /></a>
+				<a href="/"><img src="/ext/Template/files/wepps.svg" /></a>
 			</div>
+			<form>
+				<label class="pps pps_input">
+				<input type="text" name="term" placeholder="Поиск"/>
+				</label>
+			</form>
+			<a href="/profile/" id="header-profile"><i class="bi bi-person"></i><span>Войти</span></a>
+			<a href="/cart/" id="header-cart"><i class="bi bi-cart2"></i><span>Корзина</span></a>
 		</section>
 		<section class="header-wrapper">
 			<nav class="header-nav-wrapper w_hide_view_small">

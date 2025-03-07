@@ -37,7 +37,7 @@
 				<div class="footer-wrapper pps_overflow_auto">
 					<div class="pps_flex pps_flex_row pps_flex_end pps_flex_margin pps_padding">
 						<div class="footer-logo pps_flex_fix pps_flex_12_view_small">
-							<a href="/"><img src="/ext/Template/files/wepps-logo.svg" alt="logo"/></a>
+							<a href="/"><img src="/ext/Template/files/wepps.svg" alt="logo"/></a>
 						</div>
 						<div class="text pps_flex_fix pps_flex_12_view_small">
 							<ul class="footer-company pps_list">

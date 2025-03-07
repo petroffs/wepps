@@ -86,6 +86,7 @@ label.pps select {
 	font-family: 'Roboto';
 	font-weight: 300;
 	letter-spacing: 0.03em;
+	outline: none
 }
 
 label.pps.pps_checkbox {

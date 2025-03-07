@@ -6,7 +6,7 @@ header {
 }
 
 div.page.header {
-	padding-top: var(--step4);
+	padding-top: var(--step2);
 	height: auto;
 }
 
@@ -21,30 +21,56 @@ section.header-wrapper {
 
 section.header-wrapper-top {
 	display: grid;
-	grid-template-columns: auto 1fr;
+	grid-template-columns: auto 1fr auto auto;
 	grid-template-rows: auto;
 	gap: var(--step2);
 	align-items: center;
 }
 
+section.header-wrapper-top a {
+	font-size: var(--font-tiny);
+	text-decoration: none;
+	text-align: center;
+	color: var(--color-05);
+	margin: 0px;
+	cursor: pointer;
+}
+
+section.header-wrapper-top a>span {
+	display: block;
+}
+
+section.header-wrapper-top a .bi {
+	font-size: 2em;
+}
+
+section.header-wrapper-top a .bi.bi-list {
+	font-size: 3em;
+}
+
+section.header-wrapper-top a#header-nav {
+	display: none;
+}
+
+div.header-logo {
+	padding: var(--step2) 0;
+}
+
 div.header-logo img {
 	width: 100%;
-	max-width: 200px;
+	max-width: 120px;
 	height: auto;
 	display: block;
 }
 
-a#header-nav {
-	color: var(--color-05);
-	margin: 0px;
-	cursor: pointer;
-	display: none;
+section.header-wrapper-top label.pps {
+	margin: 0 auto;
+	max-width: 540px;
 }
 
-a#header-nav .bi {
-	font-size: 2em;
+section.header-wrapper-top label.pps>input[name="term"] {
+	height: calc(var(--step) * 6);
 }
-
 
 nav.header-nav-wrapper {
 	margin: 0;
@@ -120,7 +146,7 @@ div.w_nav {
 }
 
 div.w_nav .header-wrapper-top {
-	padding: var(--step2) var(--step4);
+	padding: var(--step4) var(--step4);
 	align-items: center;
 }
 
@@ -139,7 +165,7 @@ div.w_nav .closer>.bi {
 }
 
 div.w_nav .logo {
-	max-width: 200px;
+	max-width: 120px;
 }
 
 div.w_nav .w_header-nav {
@@ -200,6 +226,7 @@ div.w_nav ul.w_header-nav ul {
 div.w_nav ul.w_header-nav ul li {
 	padding-left: 30px;
 }
+
 div.w_nav ul.w_header-nav ul li:before {
 	content: '\f285';
 	font-family: 'bootstrap-icons';
@@ -221,8 +248,8 @@ header.is-pinned section.header-wrapper {
 	border-bottom: 0;
 }
 
-header.is-pinned div.page.header {
-	padding-top: var(--step2);
+header.is-pinned section.header-wrapper-top {
+	grid-template-columns: auto auto 1fr auto auto;
 }
 
 header.is-pinned a#header-nav {
@@ -239,7 +266,15 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 		height: auto;
 	}
 
-	a#header-nav {
+	section.header-wrapper-top {
+		grid-template-columns: auto auto 1fr auto auto;
+	}
+
+	section.header-wrapper-top a>span {
+		display: none;
+	}
+
+	section.header-wrapper-top a#header-nav {
 		display: block;
 	}
 }
