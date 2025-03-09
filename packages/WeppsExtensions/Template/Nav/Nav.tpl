@@ -1,14 +1,16 @@
-<div class="page header pps_animate">
+<div class="page header">
 	<section>
 		<section class="header-wrapper header-wrapper-top">
 			<a href="" id="header-nav"><i class="bi bi-list"></i></a>
 			<div class="header-logo">
 				<a href="/"><img src="/ext/Template/files/wepps.svg" /></a>
 			</div>
-			<form>
-				<label class="pps pps_input">
-				<input type="text" name="term" placeholder="Поиск"/>
+			<form action="/women/">
+				<input type="hidden" name="text" id="header-search-text" placeholder="Поиск" value="{$smarty.get.text|escape:'html'}" autocomplete="off"/>
+				<label class="pps pps_select w_select-">
+					<select name="text" id="header-search"></select>
 				</label>
+				<input type="submit" class="w_hide"/>
 			</form>
 			<a href="/profile/" id="header-profile"><i class="bi bi-person"></i><span>Войти</span></a>
 			<a href="/cart/" id="header-cart"><i class="bi bi-cart2"></i><span>Корзина</span></a>
@@ -32,5 +34,14 @@
 				</ul>
 			</nav>
 		</section>
+	</section>
+</div>
+<div class="page footer-nav">
+	<section>
+		<a href="/"><i class="bi bi-house-door"></i></a>
+		<a href="" id="footer-nav"><i class="bi bi-list"></i></a>
+		<a href="/profile/fav.html"><i class="bi bi-heart"></i></a>
+		<a href="/cart/"><i class="bi bi-cart2"></i></a>
+		<a href="/profile/"><i class="bi bi-person"></i></a>
 	</section>
 </div>

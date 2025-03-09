@@ -1,4 +1,4 @@
-var readyNavInit = function() {
+var navInit = function() {
 	$('ul.header-nav').children('li').on('mouseenter', function(event) {
 		event.stopPropagation()
 		event.preventDefault();
@@ -11,7 +11,7 @@ var readyNavInit = function() {
 		$(this).removeClass('hover');
 		$(this).find('ul').addClass('w_hide');
 	});
-	$('a#header-nav').on('click', function(e) {
+	$('a#header-nav,a#footer-nav').on('click', function(e) {
 		e.preventDefault()
 		if ($(window).width()>810) {
 			var el = $('nav.header-nav-wrapper');
@@ -54,7 +54,53 @@ var readyNavInit = function() {
 	observer.observe(el);
 }
 
-$(document).ready(readyNavInit);
+var searchInit = function() {	
+	$('#header-search0').select2({ 
+		maximumSelectionLength: 1,  
+		placeholder: 'Поиск' }
+	).on("select2:select", function(e) {
+			let id = $(this).val();
+			if (id==0) {
+				return;
+			}
+			console.log(id);
+		}
+	).on("select2:opening",function(e) {
+		$(this).siblings('.select2').find('input.select2-search__field').on('keyup', function(e) {
+		   if(e.keyCode === 13) {
+				//console.log($(this).val());
+				$('#header-search-text').val($(this).val());
+				$(this).closest('form').submit();			
+		   } 
+		});
+	});
+	
+	$(document).off('mouseup');
+	select2Ajax({
+		id: '#header-search',
+		url: '/ext/Products/Request.php?action=search',
+		max: 1
+	});
+	$('#header-search').on("select2:select", function(e) {
+			let id = $(this).val();
+			if (id==0) {
+				return;
+			}
+			console.log(id);
+		}
+	);
+	$('#header-search')	.on("select2:opening",function(e) {
+		$(this).siblings('.select2').find('input.select2-search__field').on('keyup', function(e) {
+		   if(e.keyCode === 13) {
+				//console.log($(this).val());
+				$('#header-search-text').val($(this).val());
+				$(this).closest('form').submit();			
+		   } 
+		});
+	});
+}
 
-
-
+$(document).ready(function() {
+	navInit();
+	searchInit();
+});

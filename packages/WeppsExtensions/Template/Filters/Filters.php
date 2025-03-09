@@ -18,11 +18,11 @@ class FiltersWepps {
 		from Products as t
 		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id and pv.DisplayOff=0
 		left outer join s_Properties as p on p.Id = pv.Name and p.DisplayOff=0
-		where $conditions
+		where {$conditions['conditions']}
 		group by pv.Alias
 		order by p.Priority,pv.PValue
 		limit 500";
-		return ConnectWepps::$instance->fetch($sql,[],'group');
+		return ConnectWepps::$instance->fetch($sql,$conditions['params'],'group');
 	}
 	public function getFiltersCodeJS(array $filtersActive=[],int $count=0) {
 		if (empty($filtersActive)) {
@@ -93,8 +93,9 @@ class FiltersWepps {
 	private function setParams(array $params) {
 		$arr = [];
 		foreach ($params as $key=>$value) {
-			$key = preg_replace('~[^-a-z-A-Z0-9\-_\.]+~u', '', $key);
-			$value = preg_replace('~[^-a-z-A-Z0-9\-_\.\,\/\|]+~u', '', $value);
+			$key = preg_replace('~[^-a-z-A-Z\d\-_\.]+~u', '', $key);
+			#$value = preg_replace('~[^-a-z-A-Z0-9\-_\.\,\/\|]+~u', '', $value);
+			$value = preg_replace('~[^\w\d\-_\.\,\/\|]+~u', '', $value);
 			$arr[$key] = $value;
 		}
 		$this->params = &$arr;

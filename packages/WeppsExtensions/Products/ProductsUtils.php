@@ -3,8 +3,6 @@ namespace WeppsExtensions\Products;
 
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 class ProductsUtilsWepps {
 	private $navigator;
@@ -45,17 +43,31 @@ class ProductsUtilsWepps {
 				'conditions'=>$conditions
 		];
 	}
-	public function getConditions(array $params=[]) : string {
+	public function getConditions(array $params=[],bool $isFilters=false) : array {
 		$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
-		if (empty($params)) {
-			return $conditions;
+		$prepare = [];
+		if (!empty($params['text'])) {
+			$conditions .= "\nand t.Name regexp ?";
+			$prepare[] = $params['text'];
+		}
+		if ($isFilters==false) {
+			return [
+					'conditions' => $conditions,
+					'params' => $prepare
+			];
 		}
 		foreach ($params as $key => $value) {
 			if (substr($key,0,2)=='f_') {
-				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where DisplayOff=0 and TableName='{$this->list}' and Name ='".str_replace('f_','',$key)."' and Alias in ('".str_replace("|","','",$value)."'))";
+				$ex = explode('|', $value);
+				$ids = str_repeat('?,', count($ex)-1) . '?';
+				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where DisplayOff=0 and TableName='{$this->list}' and Name ='".str_replace('f_','',$key)."' and Alias in ($ids))";
+				$prepare = array_merge($prepare,$ex);
 			}
 		}
-		return $conditions;
+		return [
+				'conditions' => $conditions,
+				'params' => $prepare
+		];
 	}
 	public function getPages() {
 		return 12;
@@ -63,13 +75,13 @@ class ProductsUtilsWepps {
 	public function getProducts(array $settings) : array {
 		$obj = new DataWepps("Products");
 		$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-		if (!empty($settings['params'])) {
-			$obj->setParams($settings['params']);
+		if (!empty($settings['conditions']['params'])) {
+			$obj->setParams($settings['conditions']['params']);
 		}
 		$settings['pages'] = (!empty($settings['pages'])) ? (int) $settings['pages'] : 20;
 		$settings['page'] = (!empty($settings['page'])) ? (int) $settings['page'] : 1;
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
-		$res = $obj->getMax($settings['conditions'],$settings['pages'],$settings['page'],$settings['sorting']);
+		$res = $obj->getMax($settings['conditions']['conditions'],$settings['pages'],$settings['page'],$settings['sorting']);
 		return [
 				'rows'=>$res,
 				'count'=>$obj->count,

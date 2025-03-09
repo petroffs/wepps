@@ -2,6 +2,31 @@ function autoResizeTextarea(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
 }
+var select2Ajax = function(obj) {
+	let id = obj.id
+	let url = obj.url
+	let max = obj.max
+	//console.log($(id));
+	//$(id).select2("destroy").select2();
+	$(id).select2({
+		language: "ru",
+		multiple: true,
+		maximumSelectionLength: max,
+		ajax: {
+			url: url,
+			delay: 500,
+			dataType: 'json',
+			data: function(params) {
+				var query = {
+					search: params.term,
+					page: params.page || 1
+				}
+				return query;
+			},
+		}
+	});
+	//$(id).select2("destroy").select2();
+}
 var readyFormsInit = function() {
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();

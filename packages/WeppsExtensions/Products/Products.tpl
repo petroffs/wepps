@@ -1,6 +1,6 @@
 <div class="page products">
 	<section class="content-wrapper w_grid w_4col w_gap_medium">
-		<section class="sidebar w_hide_view_medium w_1scol" data-url="/ext/Products/Request.php" data-search="{$search}">
+		<section class="sidebar w_hide_view_medium w_1scol" data-url="/ext/Products/Request.php" data-search="{$smarty.get.text|escape:'url'}">
 			<div class="nav pps_animate w_4scol w_2scol_view_medium w_1scol_view_small">
 				<ul>
 					{foreach name="out" item="item" from=$childsNav}

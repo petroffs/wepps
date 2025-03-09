@@ -7,6 +7,7 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsExtensions\Template\Filters\FiltersWepps;
 use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Childs\ChildsWepps;
 
 class ProductsWepps extends ExtensionWepps {
 	public function request() {
@@ -15,19 +16,24 @@ class ProductsWepps extends ExtensionWepps {
 		$productsUtils = new ProductsUtilsWepps();
 		$productsUtils->setNavigator($this->navigator,'Products');
 		$filters = new FiltersWepps($_GET);
+		$params = $filters->getParams();
+		if ($this->navigator->content['Id']==3 && empty($params['text'])) {
+			return new ChildsWepps($this->navigator, $this->headers);
+		}
+		
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$rand}.css");
 			$this->headers->css("/ext/Template/Filters/Filters.{$rand}.css");
 			$this->headers->js("/ext/Template/Filters/Filters.{$rand}.js");
 			$sorting = $productsUtils->getSorting();
-			$conditions = $productsUtils->getConditions();
-			$conditionsFilters = $productsUtils->getConditions($filters->getParams());
+			$conditions = $productsUtils->getConditions($params,false);
+			$conditionsFilters = $productsUtils->getConditions($params,true);
 			$settings = [
 					'pages'=>$productsUtils->getPages(),
 					'page'=>$this->page,
 					'sorting'=>$sorting['conditions'],
-					'conditions'=>$conditionsFilters
+					'conditions'=>$conditionsFilters,
 			];
 			$products = $productsUtils->getProducts($settings);
 			$smarty->assign('products',$products['rows']);

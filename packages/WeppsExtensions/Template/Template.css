@@ -234,4 +234,8 @@ body .bi.bi-vk::before {
 @media screen and (max-width: 810px) {}
 
 
-@media screen and (max-width: 480px) {}
+@media screen and (max-width: 480px) {
+	footer {
+		margin-bottom: calc(var(--step) * 12);
+	}
+}

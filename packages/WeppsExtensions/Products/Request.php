@@ -4,6 +4,8 @@ namespace WeppsExtensions\Products;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsExtensions\Template\Filters\FiltersWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect\ConnectWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -16,10 +18,31 @@ require_once '../../../configloader.php';
 class RequestProductsWepps extends RequestWepps {
 	private $navigator;
 	public function request($action="") {
-		
 		switch ($action) {
-			case 'test':
-				exit();
+			case 'search':
+				if (empty($this->get['search'])) {
+					exit();
+				}
+				$sql = "select Id id,Name text from Products where Name regexp ? order by Name limit 5";
+				$res = ConnectWepps::$instance->fetch($sql,[@$this->get['search']]);
+				
+				$res = array_merge(
+					[
+						[
+								'id'=>$this->get['search'],'text'=>$this->get['search']
+								
+						]
+					],	
+					$res
+				);
+				$pagination = false;
+				$output = [
+					'results'=>$res,
+					'pagination' => [
+						'more'=> $pagination
+					]
+				];
+				echo json_encode($output,JSON_UNESCAPED_UNICODE);
 				break;
 			case 'filters':
 				$this->tpl = "RequestProductsFilters.tpl";
@@ -28,8 +51,9 @@ class RequestProductsWepps extends RequestWepps {
 				$productsUtils = new ProductsUtilsWepps();
 				$productsUtils->setNavigator($this->navigator,'Products');
 				$filters = new FiltersWepps($this->get);
-				$conditions = $productsUtils->getConditions($filters->getParamsFilters());
+				$params = $filters->getParams();
 				$sorting = $productsUtils->getSorting();
+				$conditions = $productsUtils->getConditions($params,true);
 				$settings = [
 						'pages'=>$productsUtils->getPages(),
 						'page'=>$this->get['page'],

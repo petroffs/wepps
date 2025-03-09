@@ -6,7 +6,6 @@ header {
 }
 
 div.page.header {
-	padding-top: var(--step2);
 	height: auto;
 }
 
@@ -241,7 +240,7 @@ div.w_nav ul.w_header-nav ul li:hover {
 }
 
 header.is-pinned {
-	box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 6px 6px rgba(140, 140, 140, 0.1);
 }
 
 header.is-pinned section.header-wrapper {
@@ -260,21 +259,60 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 	display: none;
 }
 
+.page.footer-nav {
+	background: var(--color-95);
+	border-top: var(--border);
+	position: fixed;
+	bottom: 0;
+	display: none;
+}
+
+.page.footer-nav>section {
+	background: var(--color-95);
+	height: calc(var(--step) * 12);
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.page.footer-nav>section a {
+	font-size: 1.5em;
+	color: var(--color-05);
+}
+
 @media screen and (max-width: 480px) {
 	div.page.header {
-		padding-top: var(--step2);
 		height: auto;
 	}
-
-	section.header-wrapper-top {
-		grid-template-columns: auto auto 1fr auto auto;
+	header section.header-wrapper-top,
+	header.is-pinned section.header-wrapper-top {
+		grid-template-columns: auto 1fr;
+		min-height: calc(var(--step) * 12);
+	}
+	
+	section.header-wrapper-top label.pps>input[name="term"] {
+		height: calc(var(--step) * 8);
 	}
 
 	section.header-wrapper-top a>span {
 		display: none;
 	}
 
+	header.is-pinned a#header-nav,
 	section.header-wrapper-top a#header-nav {
+		display: none;
+	}
+	section.header-wrapper-top a#header-profile {
+		display: none;
+	}
+	
+	section.header-wrapper-top a#header-cart {
+		display: none;
+	}
+	
+	.page.footer-nav {
 		display: block;
+		box-shadow: 0 -6px 6px rgba(140, 140, 140, 0.1);
 	}
 }
