@@ -11,6 +11,20 @@
 					<select name="text" id="header-search"></select>
 				</label>
 				<input type="submit" class="w_hide"/>
+				
+				
+				
+				<input type="text" id="search-input" placeholder="Поиск...">
+				<div id="suggestions">
+				  <div class="suggestions-loader">Загрузка...</div>
+				</div>
+				<div id="results"></div>
+				<div id="loader" style="display: none;">Загрузка...</div>
+				
+				
+				
+				
+				
 			</form>
 			<a href="/profile/" id="header-profile"><i class="bi bi-person"></i><span>Войти</span></a>
 			<a href="/cart/" id="header-cart"><i class="bi bi-cart2"></i><span>Корзина</span></a>

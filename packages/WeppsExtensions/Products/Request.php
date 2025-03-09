@@ -44,6 +44,27 @@ class RequestProductsWepps extends RequestWepps {
 				];
 				echo json_encode($output,JSON_UNESCAPED_UNICODE);
 				break;
+			case 'search2':
+				$page = max(1, (int)($_POST['page'] ?? 1));
+				$limit = (int)($_POST['limit'] ?? 15);
+				$offset = (int) ($page - 1) * $limit;
+				
+				$sql = "select Id id,Name text from Products where Name like ? order by Name limit $limit ,$offset";
+				$sql = "select Id id,Name text from Products where Name regexp ? order by Name limit $offset,$limit";
+				$res = ConnectWepps::$instance->fetch($sql,[$this->get['query']]);
+				
+				$hasMore = count($res) === $limit;
+				
+				$html = '';
+				foreach($res as $row) {
+					$html .= '<div class="suggestion-item">'.htmlspecialchars($row['text']).'</div>';
+				}
+				
+				echo json_encode([
+						'html' => $html,
+						'hasMore' => $hasMore
+				]);
+				break;
 			case 'filters':
 				$this->tpl = "RequestProductsFilters.tpl";
 				$ppsUrl = (isset($this->get['link'])) ? $this->get['link'] : "/catalog/";

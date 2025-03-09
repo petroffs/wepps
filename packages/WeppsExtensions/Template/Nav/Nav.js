@@ -54,7 +54,7 @@ var navInit = function() {
 	observer.observe(el);
 }
 
-var searchInit = function() {	
+var searchInit = function() {
 	$('#header-search0').select2({ 
 		maximumSelectionLength: 1,  
 		placeholder: 'Поиск' }
@@ -100,7 +100,137 @@ var searchInit = function() {
 	});
 }
 
+
+var search2Init = function() {
+	let suggestPage = 1;
+	let suggestLoading = false;
+	let hasMoreSuggestions = true;
+
+	// Обработчик ввода
+	$('#search-input').on('input', function() {
+	  const query = $(this).val().trim();
+	  
+	  if(query.length > 2) {
+	    suggestPage = 1;
+	    hasMoreSuggestions = true;
+	    loadSuggestions(query, true);
+	  } else {
+	    $('#suggestions').hide().empty();
+	  }
+	});
+
+	// Загрузка подсказок
+	function loadSuggestions(query, reset = false) {
+	  if(suggestLoading || !hasMoreSuggestions) return;
+	  
+	  suggestLoading = true;
+	  $('#suggestions .suggestions-loader').show();
+
+	  $.ajax({
+	    url: '/ext/Products/Request.php?action=search2',
+	    method: 'POST',
+	    data: {
+	      action: 'search2',
+	      query: query,
+	      page: suggestPage,
+	      limit: 15
+	    },
+	    success: function(response) {
+	      const data = JSON.parse(response);
+	      
+	      if(reset) {
+	        $('#suggestions').html(data.html);
+	      } else {
+	        $('#suggestions').append(data.html);
+	      }
+	      
+	      hasMoreSuggestions = data.hasMore;
+	      $('#suggestions').show();
+	      suggestPage++;
+	    },
+	    complete: function() {
+	      suggestLoading = false;
+	      $('.suggestions-loader').hide();
+	    }
+	  });
+	}
+
+	// Скролл внутри блока подсказок
+	$('#suggestions').scroll(function() {
+	  const $this = $(this);
+	  const scrollPosition = $this.scrollTop() + $this.innerHeight();
+	  
+	  if(scrollPosition >= $this[0].scrollHeight - 50 && hasMoreSuggestions) {
+	    loadSuggestions($('#search-input').val().trim());
+	  }
+	});
+
+	// Клик по подсказке
+	$('#suggestions').on('click', '.suggestion-item', function() {
+	  $('#search-input').val($(this).text());
+	  $('#suggestions').hide();
+	  loadResults(true);
+	});
+	
+	let selectedIndex = -1; // Индекс выбранного элемента
+
+	// Обработчик клавиатуры
+	$('#search-input').on('keydown', function(e) {
+	  const $suggestions = $('#suggestions .suggestion-item');
+	  const suggestionsCount = $suggestions.length;
+	  
+	  // Стрелка вниз
+	  if(e.key === 'ArrowDown') {
+	    e.preventDefault();
+	    selectedIndex = Math.min(selectedIndex + 1, suggestionsCount - 1);
+	    updateSelection($suggestions);
+	  }
+	  
+	  // Стрелка вверх
+	  if(e.key === 'ArrowUp') {
+	    e.preventDefault();
+	    selectedIndex = Math.max(selectedIndex - 1, -1);
+	    updateSelection($suggestions);
+	  }
+	  
+	  // Enter
+	  if(e.key === 'Enter') {
+	    const selectedItem = $suggestions.eq(selectedIndex);
+	    if(selectedItem.length) {
+	      $('#search-input').val(selectedItem.text());
+	      $('#suggestions').hide();
+	      loadResults(true);
+	    }
+	  }
+	});
+
+	// Обновление выделения
+	function updateSelection(items) {
+	  items.removeClass('active');
+	  
+	  if(selectedIndex >= 0 && selectedIndex < items.length) {
+	    items.eq(selectedIndex)
+	      .addClass('active')
+	      .get(0)
+	      .scrollIntoView({ block: 'nearest' });
+	  }
+	}
+
+	// Модифицируем обработчик ввода
+	$('#search-input').on('input', function() {
+	  selectedIndex = -1; // Сброс выбора при новом вводе
+	  // ... остальной код обработчика ввода ...
+	});
+
+	// При открытии подсказок добавляем обработчик
+	$('#suggestions').on('mouseenter', '.suggestion-item', function() {
+	  selectedIndex = $(this).index();
+	  updateSelection($('#suggestions .suggestion-item'));
+	});
+}
+
 $(document).ready(function() {
 	navInit();
 	searchInit();
+	search2Init();
 });
