@@ -26,6 +26,10 @@ section.header-wrapper-top {
 	align-items: center;
 }
 
+section.header-wrapper-top form {
+	position: relative;
+}
+
 section.header-wrapper-top a {
 	font-size: var(--font-tiny);
 	text-decoration: none;
@@ -280,42 +284,6 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 	font-size: 1.5em;
 	color: var(--color-05);
 }
-
-
-
-#suggestions {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  margin-top: 5px;
-  display: none;
-  position: absolute;
-  width: 100%;
-  background: white;
-  z-index: 1000;
-}
-
-.suggestion-item {
-  padding: 8px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-}
-
-.suggestions-loader {
-  padding: 10px;
-  text-align: center;
-  font-style: italic;
-  color: #666;
-}
-
-.suggestion-item.active {
-  background-color: #f0f0f0;
-  font-weight: bold;
-}
-
-
-
-
 
 @media screen and (max-width: 480px) {
 	div.page.header {

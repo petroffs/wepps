@@ -19,37 +19,11 @@ class RequestProductsWepps extends RequestWepps {
 	private $navigator;
 	public function request($action="") {
 		switch ($action) {
-			case 'search':
-				if (empty($this->get['search'])) {
-					exit();
-				}
-				$sql = "select Id id,Name text from Products where Name regexp ? order by Name limit 5";
-				$res = ConnectWepps::$instance->fetch($sql,[@$this->get['search']]);
-				
-				$res = array_merge(
-					[
-						[
-								'id'=>$this->get['search'],'text'=>$this->get['search']
-								
-						]
-					],	
-					$res
-				);
-				$pagination = false;
-				$output = [
-					'results'=>$res,
-					'pagination' => [
-						'more'=> $pagination
-					]
-				];
-				echo json_encode($output,JSON_UNESCAPED_UNICODE);
-				break;
-			case 'search2':
+			case 'suggestions':
 				$page = max(1, (int)($_POST['page'] ?? 1));
-				$limit = (int)($_POST['limit'] ?? 15);
+				$limit = (int)($_POST['limit'] ?? 12);
 				$offset = (int) ($page - 1) * $limit;
 				
-				$sql = "select Id id,Name text from Products where Name like ? order by Name limit $limit ,$offset";
 				$sql = "select Id id,Name text from Products where Name regexp ? order by Name limit $offset,$limit";
 				$res = ConnectWepps::$instance->fetch($sql,[$this->get['query']]);
 				
@@ -57,7 +31,7 @@ class RequestProductsWepps extends RequestWepps {
 				
 				$html = '';
 				foreach($res as $row) {
-					$html .= '<div class="suggestion-item">'.htmlspecialchars($row['text']).'</div>';
+					$html .= '<div class="w_suggestion-item">'.htmlspecialchars($row['text']).'</div>';
 				}
 				
 				echo json_encode([

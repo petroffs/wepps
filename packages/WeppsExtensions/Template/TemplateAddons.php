@@ -28,6 +28,8 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 			$this->headers->css("/ext/Template/Layout/Flexbox.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Layout/Grid.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Layout/Modal.{$this->rand}.css");
+			$this->headers->js("/ext/Template/Layout/Suggestions.{$this->rand}.js");
+			$this->headers->css("/ext/Template/Layout/Suggestions.{$this->rand}.css");
 			
 			/*
 			 * Навигация

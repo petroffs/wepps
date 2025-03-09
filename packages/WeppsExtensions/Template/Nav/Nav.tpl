@@ -7,19 +7,14 @@
 			</div>
 			<form action="/women/">
 				<input type="hidden" name="text" id="header-search-text" placeholder="Поиск" value="{$smarty.get.text|escape:'html'}" autocomplete="off"/>
-				<label class="pps pps_select w_select-">
-					<select name="text" id="header-search"></select>
-				</label>
 				<input type="submit" class="w_hide"/>
+				<label class="pps pps_input">
+					<input type="text" id="search-input" placeholder="Поиск...">
+					<div id="w_suggestions">
+						<div class="w_suggestions-loader">Загрузка...</div>
+					</div>
+				</label>
 				
-				
-				
-				<input type="text" id="search-input" placeholder="Поиск...">
-				<div id="suggestions">
-				  <div class="suggestions-loader">Загрузка...</div>
-				</div>
-				<div id="results"></div>
-				<div id="loader" style="display: none;">Загрузка...</div>
 				
 				
 				

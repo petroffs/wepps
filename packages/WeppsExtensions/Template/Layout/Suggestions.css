@@ -1,0 +1,30 @@
+#w_suggestions {
+	background: var(--color-100);
+	border: var(--border);
+	border-top: 0;
+	margin-top: 0;
+	border-radius: 0 0 var(--step2) var(--step2);
+	width: 100%;
+	max-height: calc(var(--step) * 48);
+	scrollbar-width: thin;
+	overflow-y: auto;
+	display: none;
+	position: absolute;
+	z-index: 90;
+}
+
+.w_suggestions-loader {
+	padding: var(--step2);
+	text-align: center;
+}
+
+.w_suggestions-item {
+	padding: var(--step);
+	cursor: pointer;
+	border-bottom: var(--border);
+}
+
+.w_suggestions-item.active {
+	background-color: var(--color-98);
+	font-weight: bold;
+}
