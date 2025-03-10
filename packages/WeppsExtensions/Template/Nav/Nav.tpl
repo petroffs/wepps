@@ -6,20 +6,10 @@
 				<a href="/"><img src="/ext/Template/files/wepps.svg" /></a>
 			</div>
 			<form action="/women/">
-				<input type="hidden" name="text" id="header-search-text" placeholder="Поиск" value="{$smarty.get.text|escape:'html'}" autocomplete="off"/>
 				<input type="submit" class="w_hide"/>
 				<label class="pps pps_input">
-					<input type="text" id="search-input" placeholder="Поиск...">
-					<div id="w_suggestions">
-						<div class="w_suggestions-loader">Загрузка...</div>
-					</div>
+					<input type="text" id="search-input" placeholder="Поиск..." name="text" value="{$smarty.get.text|escape:'html'}" autocomplete="off"/>
 				</label>
-				
-				
-				
-				
-				
-				
 			</form>
 			<a href="/profile/" id="header-profile"><i class="bi bi-person"></i><span>Войти</span></a>
 			<a href="/cart/" id="header-cart"><i class="bi bi-cart2"></i><span>Корзина</span></a>

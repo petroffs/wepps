@@ -56,4 +56,9 @@ var navInit = function() {
 
 $(document).ready(function() {
 	navInit();
+	suggestions = new SuggestionsWepps({
+		input : 'search-input',
+		url : '/ext/Products/Request.php?action=suggestions'
+	});
+	suggestions.init();
 });

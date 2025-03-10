@@ -24,14 +24,14 @@ class RequestProductsWepps extends RequestWepps {
 				$limit = (int)($_POST['limit'] ?? 12);
 				$offset = (int) ($page - 1) * $limit;
 				
-				$sql = "select Id id,Name text from Products where Name regexp ? order by Name limit $offset,$limit";
+				$sql = "select Id id,Name text from Products where lower(Name) regexp lower(?) order by Name limit $offset,$limit";
 				$res = ConnectWepps::$instance->fetch($sql,[$this->get['query']]);
 				
 				$hasMore = count($res) === $limit;
 				
 				$html = '';
 				foreach($res as $row) {
-					$html .= '<div class="w_suggestion-item">'.htmlspecialchars($row['text']).'</div>';
+					$html .= '<div class="w_suggestions-item">'.htmlspecialchars($row['text']).'</div>';
 				}
 				
 				echo json_encode([
