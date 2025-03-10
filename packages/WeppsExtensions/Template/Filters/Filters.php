@@ -94,8 +94,11 @@ class FiltersWepps {
 		$arr = [];
 		foreach ($params as $key=>$value) {
 			$key = preg_replace('~[^-a-z-A-Z\d\-_\.]+~u', '', $key);
-			#$value = preg_replace('~[^-a-z-A-Z0-9\-_\.\,\/\|]+~u', '', $value);
-			$value = preg_replace('~[^\w\d\-_\.\,\/\|]+~u', '', $value);
+			if ($key=='text') {
+				$value = $value;
+			} else {
+				$value = preg_replace('~[^\w\d\-_\.\,\/\|]+~u', '', $value);
+			}
 			$arr[$key] = $value;
 		}
 		$this->params = &$arr;

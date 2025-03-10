@@ -20,7 +20,6 @@ class ProductsWepps extends ExtensionWepps {
 		if ($this->navigator->content['Id']==3 && empty($params['text'])) {
 			return new ChildsWepps($this->navigator, $this->headers);
 		}
-		
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$rand}.css");

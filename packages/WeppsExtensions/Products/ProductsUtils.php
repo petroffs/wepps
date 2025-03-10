@@ -3,6 +3,7 @@ namespace WeppsExtensions\Products;
 
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\DataWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class ProductsUtilsWepps {
 	private $navigator;
@@ -47,7 +48,7 @@ class ProductsUtilsWepps {
 		$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
 		$prepare = [];
 		if (!empty($params['text'])) {
-			$conditions .= "\nand t.Name regexp ?";
+			$conditions = "t.DisplayOff=0 and t.Name regexp ?";
 			$prepare[] = $params['text'];
 		}
 		if ($isFilters==false) {
