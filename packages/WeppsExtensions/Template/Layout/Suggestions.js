@@ -115,11 +115,6 @@ class SuggestionsWepps {
 		self.input.on('input', function() {
 			selectedIndex = -1; // Сброс выбора при новом вводе
 		});
-		// При открытии подсказок добавляем обработчик
-		results.on('mouseenter', resultsItemClass, function() {
-			selectedIndex = $(this).index();
-			updateSelection(results.find(resultsItemClass));
-		});
 		results.on('click', resultsItemClass, function() {
 			const $suggestions = results.find(resultsItemClass);
 			selectedIndex = $(this).index();

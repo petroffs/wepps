@@ -43,7 +43,7 @@
 	width: 100%;
 	height: auto;
 }
-
+.w_suggestions-item:hover,
 .w_suggestions-item.active {
 	background-color: var(--color-98);
 }
