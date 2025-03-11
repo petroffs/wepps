@@ -48,8 +48,8 @@ class ProductsUtilsWepps {
 		$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
 		$prepare = [];
 		if (!empty($params['text'])) {
-			$conditions = "t.DisplayOff=0 and t.Name regexp ?";
-			$prepare[] = $params['text'];
+			$conditions = "t.DisplayOff=0 and lower(t.Name) like lower(?)";
+			$prepare[] = $params['text']."%";
 		}
 		if ($isFilters==false) {
 			return [
@@ -75,7 +75,7 @@ class ProductsUtilsWepps {
 	}
 	public function getProducts(array $settings) : array {
 		$obj = new DataWepps("Products");
-		$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
+		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 		if (!empty($settings['conditions']['params'])) {
 			$obj->setParams($settings['conditions']['params']);
 		}

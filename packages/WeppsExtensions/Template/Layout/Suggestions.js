@@ -2,8 +2,8 @@ class SuggestionsWepps {
 	constructor(settings = {}) {
 		this.input = $('#'+settings.input);
 	    this.delay = settings.delay || 300; // Задержка перед запросом
-	    this.limit = settings.limit || 12;  // Лимит подсказок за один запрос
 	    this.url = settings.url || 'search.php'; // URL для запросов
+		this.pathname = '/catalog/';
 	}
 	init() {
 		let suggestPage = 1;
@@ -19,12 +19,12 @@ class SuggestionsWepps {
 		$(this.input).on('input', function() {
 		clearTimeout(inputTimeout); // Отменяем предыдущий таймер
 		 inputTimeout = setTimeout(() => {
-		    const query = $(this).val().trim();
-		    if(query.length > 2) {
+		    const $query = $(this).val().trim();
+		    if($query.length > 2) {
 		      suggestPage = 1;
 		      hasMoreSuggestions = true;
 		      selectedIndex = -1; // Сброс выбора при новом вводе
-		      loadSuggestions(query, true);
+		      loadSuggestions($query, true);
 		    } else {
 		      results.hide().empty();
 		    }
@@ -39,18 +39,17 @@ class SuggestionsWepps {
 		    method: 'POST',
 		    data: {
 		      action: 'suggestions',
-		      query: query,
+		      text: query,
 		      page: suggestPage,
-		      limit: 12
 		    },
 		    success: function(response) {
-		      const data = JSON.parse(response);
+		      const $data = JSON.parse(response);
 		      if(reset) {
-		        results.html(data.html);
+		        results.html($data.html);
 		      } else {
-		        results.append(data.html);
+		        results.append($data.html);
 		      }
-		      hasMoreSuggestions = data.hasMore;
+		      hasMoreSuggestions = $data.hasMore;
 		      results.show();
 		      suggestPage++;
 		    },
@@ -61,70 +60,71 @@ class SuggestionsWepps {
 		  });
 		}
 		// Скролл внутри блока подсказок
-			results.scroll(function() {
-			  const $this = $(this);
-			  const scrollPosition = $this.scrollTop() + $this.innerHeight();
-			  if(scrollPosition >= $this[0].scrollHeight - 50 && hasMoreSuggestions) {
-			    loadSuggestions(self.input.val().trim());
-			  }
-			});
-			// Клик по подсказке
-			results.on('click', resultsItemClass, function() {
-			 self.input.val($(this).text());
-			  results.hide();
-			  //loadResults(true);
-			});
-			let selectedIndex = -1; // Индекс выбранного элемента
-			// Обработчик клавиатуры
-			self.input.on('keydown', function(e) {
-			  const $suggestions = results.find(resultsItemClass);
-			  const suggestionsCount = $suggestions.length;
-			  const input = this.input;
-			  if(e.key === 'Escape') {
-			      e.preventDefault();
-			      results.hide().empty()
-			    }
-			  // Стрелка вниз
-			  if(e.key === 'ArrowDown') {
-			    e.preventDefault();
-			    selectedIndex = Math.min(selectedIndex + 1, suggestionsCount - 1);
-			    updateSelection($suggestions);
-			  }
-			  // Стрелка вверх
-			  if(e.key === 'ArrowUp') {
-			    e.preventDefault();
-			    selectedIndex = Math.max(selectedIndex - 1, -1);
-			    updateSelection($suggestions);
-			  }
-			  // Enter
-			  if(e.key === 'Enter') {
-			    const selectedItem = $suggestions.eq(selectedIndex);
-			    if(selectedItem.length) {
-			      self.input.val(selectedItem.text());
-			      results.hide();
-			      //loadResults(true);
-			    }
-			  }
-			});
-			// Обновление выделения
-			function updateSelection(items) {
-			  items.removeClass('active');
-			  if(selectedIndex >= 0 && selectedIndex < items.length) {
-			    items.eq(selectedIndex)
-			      .addClass('active')
-			      .get(0)
-			      .scrollIntoView({ block: 'nearest' });
-			  }
+		results.scroll(function() {
+			if (($(this).scrollTop() + $(this).innerHeight()) >= $(this)[0].scrollHeight - 50 && hasMoreSuggestions) {
+				loadSuggestions(self.input.val().trim());
 			}
-			// Модифицируем обработчик ввода
-			self.input.on('input', function() {
-			  selectedIndex = -1; // Сброс выбора при новом вводе
-			  // ... остальной код обработчика ввода ...
-			});
-			// При открытии подсказок добавляем обработчик
-			results.on('mouseenter', resultsItemClass, function() {
-			  selectedIndex = $(this).index();
-			  updateSelection(results.find(resultsItemClass));
-			});
+		});
+		// Клик по подсказке
+		results.on('click', resultsItemClass, function() {
+			self.input.val($(this).text());
+			results.hide();
+			$(this).closest('form').submit();
+		});
+		let selectedIndex = -1; // Индекс выбранного элемента
+		// Обработчик клавиатуры
+		self.input.on('keydown', function(e) {
+			const $suggestions = results.find(resultsItemClass);
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				results.hide().empty()
+			}
+			// Стрелка вниз
+			if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				selectedIndex = Math.min(selectedIndex + 1, $suggestions.length - 1);
+				updateSelection($suggestions);
+			}
+			// Стрелка вверх
+			if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				selectedIndex = Math.max(selectedIndex - 1, -1);
+				updateSelection($suggestions);
+			}
+			// Enter
+			if (e.key === 'Enter') {
+				const $selectedItem = $suggestions.eq(selectedIndex);
+				if ($selectedItem.length && selectedIndex > -1) {
+					location.href = $selectedItem.data('url');
+				} else {
+					location.href = self.pathname + '?text=' + $(this).val();
+				}
+			}
+		});
+		// Обновление выделения
+		function updateSelection(items) {
+			items.removeClass('active');
+			if (selectedIndex >= 0 && selectedIndex < items.length) {
+				items.eq(selectedIndex)
+					.addClass('active')
+					.get(0)
+					.scrollIntoView({ block: 'nearest' });
+			}
+		}
+		// Модифицируем обработчик ввода
+		self.input.on('input', function() {
+			selectedIndex = -1; // Сброс выбора при новом вводе
+		});
+		// При открытии подсказок добавляем обработчик
+		results.on('mouseenter', resultsItemClass, function() {
+			selectedIndex = $(this).index();
+			updateSelection(results.find(resultsItemClass));
+		});
+		results.on('click', resultsItemClass, function() {
+			const $suggestions = results.find(resultsItemClass);
+			selectedIndex = $(this).index();
+			const selectedItem = $suggestions.eq(selectedIndex);
+			location.href = selectedItem.data('url');
+		});
 	}
 }

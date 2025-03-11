@@ -5,8 +5,8 @@
 			<div class="header-logo">
 				<a href="/"><img src="/ext/Template/files/wepps.svg" /></a>
 			</div>
-			<form action="/catalog/">
-				<input type="submit" class="w_hide"/>
+			<form action="javascript:void(0)">
+				{*<input type="submit" class="w_hide"/>*}
 				<label class="pps pps_input">
 					<input type="text" id="search-input" placeholder="Поиск..." name="text" value="{$smarty.get.text|escape:'html'}" autocomplete="off"/>
 				</label>
