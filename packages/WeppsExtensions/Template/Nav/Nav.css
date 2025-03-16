@@ -288,6 +288,10 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 @media screen and (max-width: 480px) {
 	div.page.header {
 		height: auto;
+		border-bottom: var(--border);
+	}
+	section.header-wrapper {
+	  border-bottom: none;
 	}
 	header section.header-wrapper-top,
 	header.is-pinned section.header-wrapper-top {
