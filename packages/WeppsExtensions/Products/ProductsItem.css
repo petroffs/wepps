@@ -30,6 +30,15 @@
 	top: 90px;
 }
 
+.price.price-current {
+	font-size: var(--font-large);
+	font-weight: 600;
+}
+
+.price.price-before {
+	font-size: var(--font-medium);
+}
+
 .product-title {
 	grid-area: title;
 }
@@ -41,6 +50,17 @@
 .product-attributes {
 	grid-area: attributes;
 }
+
+.product-attributes>section {
+	border-bottom: var(--border);
+	margin-bottom: var(--step2);
+}
+
+.product-attributes span {
+	width: inherit;
+	display: block;
+}
+
 .product-text {
 	grid-area: text;
 }

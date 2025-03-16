@@ -16,63 +16,41 @@ div#pps-option-filters i {
 	font-size: var(--font-medium);
 }
 
-
+div.product-media {
+	position: relative;
+}
 
 /****/
 
-
 div.status {
-	width: 50px;
-	height: 50px;
-	background-color: #97de90;
-	border-radius: 25px;
-	border: 3px solid white;
-	box-shadow: 0 0 5px #af9d92;
+	background-color: rgba(0,0,0,0.5);
+	border-radius: 50%;
+	width: var(--step6);
+	height: var(--step6);
 	position: absolute;
-	text-align: center;
+	top: var(--step4);
+	left: var(--step4);
 	z-index:1;
-	top: 20px;
-	left: 20px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 div.status:before {
-	content: "\f295";
-	font-size: 32px;
-	line-height: 100%;
-	font-family: 'FontAwesome';
+	content: '\f588';
+	font-size: var(--font-medium);
+	font-family: 'bootstrap-icons';
 	text-align: center;
-	z-index: 1;
+	color: var(--color-100);
 	pointer-events: none;
-	color: white;
-	position: absolute;
-	left:0;
-	top: 5px;
 	width: 100%;
 }
-
-div.status.statusSale {
-	
-}
-
-/*хит*/
-
-div.status.status3 {
-	background-color: #de9090;
-}
 div.status.status3:before {
-	content: "\f005";
-}
-/*распродажа*/
-div.status.status4 {
-	background-color: #97de90; 
+	content: '\f588';
 }
 div.status.status4:before {
-	content: "\f295";
-}
-/*лидер продаж*/
-div.status.status5 {
-	background-color: #90bade; 
+	content: '\F4D1';
 }
 div.status.status5:before {
-	content: "\f087";
+	content: '\F5E7';
 }

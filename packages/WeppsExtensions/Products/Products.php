@@ -6,17 +6,19 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsExtensions\Template\Filters\FiltersWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Childs\ChildsWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Exception\ExceptionWepps;
 
 class ProductsWepps extends ExtensionWepps {
+	private $filters;
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
 		$rand = $this->rand;
 		$productsUtils = new ProductsUtilsWepps();
 		$productsUtils->setNavigator($this->navigator,'Products');
-		$filters = new FiltersWepps($_GET);
-		$params = $filters->getParams();
+		$this->filters = new FiltersWepps($_GET);
+		$params = $this->filters->getParams();
 		if ($this->navigator->content['Id']==3 && empty($params['text'])) {
 			return new ChildsWepps($this->navigator, $this->headers);
 		}
@@ -43,11 +45,11 @@ class ProductsWepps extends ExtensionWepps {
 			$smarty->assign('paginatorTpl',$smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
 			$smarty->assign('productsTpl',$smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
 			$smarty->assign('childsNav',$this->navigator->nav['subs'][3]);
-			$smarty->assign('filtersNav',$filters->getFilters($conditions));
+			$smarty->assign('filtersNav',$this->filters->getFilters($conditions));
 			$smarty->assign('content',$this->navigator->content);
-			if (!empty($filters->getParamsFilters())) {
-				$filtersActive = $filters->getFilters($settings['conditions']);
-				$filtersJS = $filters->getFiltersCodeJS($filtersActive,$products['count']);
+			if (!empty($this->filters->getParamsFilters())) {
+				$filtersActive = $this->filters->getFilters($settings['conditions']);
+				$filtersJS = $this->filters->getFiltersCodeJS($filtersActive,$products['count']);
 				$smarty->assign('filtersJS',$filtersJS);
 			}
 			$this->headers->js("/ext/Products/Products.{$rand}.js");
@@ -74,6 +76,35 @@ class ProductsWepps extends ExtensionWepps {
 		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js" );
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
+	}
+	public function getItem($tableName, $condition='') {
+		$id = NavigatorWepps::$pathItem;
+		$prefix = ($condition!='') ? ' and ' : '';
+		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = ?" : $condition." {$prefix} binary t.Alias = ?";
+		$obj = new DataWepps($tableName);
+		$obj->setParams([$id]);
+		$res = $obj->getMax($condition)[0];
+		if (!isset($res['Id'])) {
+			ExceptionWepps::error404();
+		}
+		$this->extensionData['element'] = 1;
+		$this->navigator->content['Name'] = $res['Name'];
+		if (!empty($res['MetaTitle'])) {
+			$this->navigator->content['MetaTitle'] = $res['MetaTitle'];
+		} else {
+			$this->navigator->content['MetaTitle'] = $res['Name'];
+		}
+		if (!empty($res['MetaKeyword'])) {
+			$this->navigator->content['MetaKeyword'] = $res['MetaKeyword'];
+		}
+		if (!empty($res['MetaDescription'])) {
+			$this->navigator->content['MetaDescription'] = $res['MetaDescription'];
+		}
+		$res['W_Attributes'] = $this->filters->getFilters([
+				'conditions'=>"t.Id = ?",
+				'params'=>[$res['Id']]
+		]);
+		return $res;
 	}
 }
 ?>
