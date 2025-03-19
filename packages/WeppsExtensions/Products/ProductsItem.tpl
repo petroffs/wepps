@@ -35,13 +35,13 @@
 					<div class="price price-current">
 						<span>{$element.Price}</span>
 					</div>
-					{if $element.PriceOld}
+					{if $element.PriceBefore}
 					<div class="price price-before">
-						<span>{$element.PriceOld}</span>
+						<span>{$element.PriceBefore}</span>
 					</div>
 					{/if}
 					<label class="pps pps_button">
-						<input type="button" value="Купить"/>
+						<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"/>
 					</label>
 				</div>
 				

@@ -6,25 +6,13 @@ var cartTopUpdate = function(data) {
 	$('#cartTopPriceAmount').text(data.priceAmountTop);
 }
 
-var readyCartInit = function() {
-	$('a.remove').on('click',function(event) {
-		event.preventDefault();
-		var id = $(this).data('id');
+var cartInit = function() {
+	$('.cart-add').on('click',function(e) {
+		e.preventDefault();
+		let id = $(this).data('id');
+		console.log(id);
+		return;
 		layoutWepps.add('action=removePromt&id='+id,'/ext/Cart/Request.php');
 	});
-	$('select.qtyselect').on('change',function(event) {
-		event.stopPropagation();
-		var id = $(this).data('id');
-		layoutWepps.request('action=qty&id='+id+'&qty='+$(this).val(),'/ext/Cart/Request.php',$('#cart-wrapper'));
-	});
-	$('#orderCart').on('click',function(event) {
-		event.preventDefault();
-		if ($(this).data('auth')==1) {
-			location.href='/cart/order.html';
-		} else {
-			//console.log(11)
-			$('#signInTop').trigger('click');
-		}
-	});
 }
-$(document).ready(readyCartInit);
+$(document).ready(cartInit);

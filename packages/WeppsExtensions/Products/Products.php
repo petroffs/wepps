@@ -72,6 +72,7 @@ class ProductsWepps extends ExtensionWepps {
 			$smarty->assign('elements',$res);
 		}
 		$smarty->assign('normalView',0);
+		$this->headers->js("/ext/Cart/Cart.{$rand}.js");
 		$this->headers->css("/ext/Products/Products.{$rand}.css");
 		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js" );
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));

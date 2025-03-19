@@ -20,12 +20,12 @@
 			<div class="prices-wrapper pps_flex_12 pps_flex pps_flex_row">
 				<div class="prices">
 					<div class="price">{$item.Price|money}</div>
-					{if $item.PriceOld}
-					<div class="price price-before">{$item.PriceOld|money}</div>
+					{if $item.PriceBefore}
+					<div class="price price-before">{$item.PriceBefore|money}</div>
 					{/if}
 				</div>
-				<label class="pps pps_button"> <input type="button"
-					class="addCart" value="В корзину" data-id="{$item.Id}" />
+				<label class="pps pps_button">
+					<input type="button" value="В корзину" class="cart-add" data-id="{$item.Id}"/>
 				</label>
 			</div>
 		</section>
