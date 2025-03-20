@@ -4,8 +4,131 @@ namespace WeppsExtensions\Cart;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Spell\SpellWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class CartUtilsWepps {
+	private $user = [];
+	private $cart = [];
+	private $cartProducts = [];
+	
+	public function __construct() {
+		if (empty(ConnectWepps::$projectData['user'])) {
+			$this->user['JCart'] = $this->_getCartFromCookies();
+		} else {
+			$cart = $this->_getCartFromCookies(false);
+			$jdata = json_decode($cart,true);
+			if (!empty($jdata['items'])) {
+				$jdata2 = json_decode(ConnectWepps::$projectData['user']['JCart'],true);
+				$jdata2['items'] = $jdata2['items']+$jdata['items'];
+				UtilsWepps::cookies('wepps_cart');
+				UtilsWepps::cookies('wepps_cart_guid');
+				$this->setCart();
+			}
+			$this->user = $this->getUser(ConnectWepps::$projectData['user']);
+		}
+		$this->cart = $this->getCart($this->user['JCart']??'');
+	}
+	
+	public function getUser(array $user) : array {
+		return $this->user = $user;
+	}
+	
+	public function getCart(string $cart='') : array {
+		return $this->cart = json_decode($cart,true)??[];
+	}
+
+	public function setCart() {
+		$this->cart['date'] = date('Y-m-d H:i:s');
+		$json = json_encode($this->cart);
+		if (empty(ConnectWepps::$projectData['user'])) {
+			UtilsWepps::cookies('wepps_cart',$json);
+			UtilsWepps::cookies('wepps_cart_guid',UtilsWepps::guid($json.ConnectWepps::$projectServices['jwt']['secret']));
+			return $this->cart;
+		}
+		ConnectWepps::$instance->query("update s_Users set JCart=? where Id=?",[$json,@$this->user['Id']]);
+		return $this->cart;
+	}
+	
+	public function add(int $id,int $quantity=1) {
+		if (!isset($this->cart['items'][$id])) {
+			$this->cart['items'][$id] = 0;
+		}
+		$this->cart['items'][$id] += $quantity;
+		return $this->setCart();
+	}
+	
+	public function remove(int $id) {
+		if (isset($this->cart['items'][$id])) {
+			unset($this->cart['items'][$id]);
+		}
+		return $this->setCart();
+	}
+	
+	public function edit(int $id,int $quantity=1) {
+		if (!isset($this->cart['items'][$id])) {
+			$this->cart['items'][$id] = 0;
+		}
+		$this->cart['items'][$id] = $quantity;
+		return $this->setCart();
+	}
+	
+	
+	
+	
+	
+	
+	public function getCartProd() {
+		if (empty($this->cart['items'])) {
+			return false;
+		}
+		$sql = "";
+		foreach ($this->cart['items'] as $key=>$value) {
+			#$sum += $value['sum'];
+			$sql .= "\n(select '{$key}' `id`,'{$value}' `quantity`) union";
+		}
+		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
+		$ids = implode(',', array_keys($this->cart['items']));
+		$sql = "select x.id,p.Name name,pp.NameOption nameOption,
+				if(pp.ImagesOption!='',pp.ImagesOption,p.ImagesDefault) image,
+				x.quantity,if(y.Price,y.Price,pp.Price) price, (x.quantity * if(y.Price,y.Price,pp.Price)) `sum`,
+				(x.quantity * (pp.Bonus+pp.BonusExpress)) `pointsSum`,pp.Rest `rest`,
+				concat('/',p.DirectoryUrl,'/',p.Id,'.html') url,
+				p.Objem `volume`,
+				p.HashValue guid,
+				if (pp.GUID='00000000-0000-0000-0000-000000000000','',pp.GUID) optionGuid,
+				p.Id `code`
+				from ProductsPrices pp
+				join Products p on p.Id = pp.ProductId join $sql x on x.id=pp.Id
+				left join (select ap.Name,ap.Price,ap.ProductId,ap.DiscountPercent,ad.Beginning,ad.Ending from ActionsPrices ap join ActionsDocs ad on ad.Id=ap.ActionId and ad.Beginning <= now() and ad.Ending >= now()) y on y.ProductId = p.Id
+				where pp.Id in ($ids)";
+		#UtilsPPS::debug($sql,1);
+		$this->cartProducts = ConnectWepps::$instance->fetch($sql);
+		return $this->cartProducts;
+	}
+	public function getCounts($type='sum',$param='') {
+		if (empty($this->cartProducts)) {
+			return false;
+		}
+		$sum = 0;
+		switch ($type) {
+			case 'sum':
+				foreach ($this->cartProducts as $value) {
+					$sum = $sum + $value['sum'];
+				}
+				break;
+			case 'quantity':
+				foreach ($this->cartProducts as $value) {
+					$sum = $sum + $value['quantity'];
+				}
+				break;
+		}
+		return $sum;
+	}
+	
+	
+	
+	
+	
 	public static function cartSummary() {
 		if (isset ( $_SESSION ['cart'] )) {
 			$price = 0;
@@ -160,6 +283,20 @@ class CartUtilsWepps {
 			$obj->add($row);
 		}
 		return array('success'=>1);
+	}
+	private function _getCartHash(string $jcart='') {
+		return UtilsWepps::guid($jcart.ConnectWepps::$projectServices['jwt']['secret']);
+	}
+	private function _getCartFromCookies(bool $shouldCreate=true) {
+		$cart = '';
+		if (isset($_COOKIE['wepps_cart']) && @$_COOKIE['wepps_cart_guid']==self::_getCartHash($_COOKIE['wepps_cart'])) {
+			$cart = $_COOKIE['wepps_cart'];
+		} elseif ($shouldCreate==true) {
+			$cart = '{"items":null}';
+			UtilsWepps::cookies('wepps_cart',$this->user['JCart']??'');
+			UtilsWepps::cookies('wepps_cart_guid',self::_getCartHash($this->user['JCart']??''));
+		}
+		return $cart;
 	}
 }
 

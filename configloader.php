@@ -6,9 +6,11 @@ use WeppsCore\Utils\UsersWepps;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 setlocale(LC_NUMERIC, 'en_US.UTF-8');
-if (!isset($_SESSION)) {
+
+/* if (!isset($_SESSION)) {
 	@session_start();
-}
+} */
+
 /*
  * Инициализация соединения с БД
  * 

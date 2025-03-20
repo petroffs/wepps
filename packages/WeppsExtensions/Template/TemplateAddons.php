@@ -9,6 +9,7 @@ use WeppsCore\Utils\UtilsWepps;
 if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 	class TemplateAddonsWepps extends ExtensionWepps {
 		public function request() {
+			
 			$smarty = SmartyWepps::getSmarty();
 			$this->headers->js("/packages/vendor/components/jquery/jquery.min.js");
 			$this->headers->js("/packages/vendor/components/jqueryui/jquery-ui.min.js");

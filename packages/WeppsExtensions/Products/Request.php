@@ -21,10 +21,6 @@ class RequestProductsWepps extends RequestWepps {
 		switch ($action) {
 			case 'suggestions':
 				$page = max(1, (int)($this->get['page'] ?? 1));
-
-				
-				
-				
 				$productsUtils = new ProductsUtilsWepps();
 				$productsUtils->setNavigator(new NavigatorWepps("/catalog/"),'Products');
 				$filters = new FiltersWepps($this->get);
@@ -39,11 +35,6 @@ class RequestProductsWepps extends RequestWepps {
 						'conditions'=>$conditionsFilters,
 				];
 				$products = $productsUtils->getProducts($settings);
-				
-				
-				/* $sql = "select Id id,Name text from Products where lower(Name) regexp lower(?) order by Name limit $offset,$limit";
-				$res = ConnectWepps::$instance->fetch($sql,[$this->get['query']]); */
-				
 				if (empty($products['rows'])) {
 					echo json_encode([
 							'hasMore' => false
@@ -51,11 +42,9 @@ class RequestProductsWepps extends RequestWepps {
 					break;
 				}
 				$html = '';
-				#UtilsWepps::debug($products['rows'],21);
 				foreach($products['rows'] as $row) {
 					$html .= '<div class="w_suggestions-item" data-url="'.$row['Url'].'"><div><img src="/pic/lists'.$row['Images_FileUrl'].'"></div><div>'.htmlspecialchars($row['Name']).'</div><div class="price"><span>'.$row['Price'].'</span></div></div>';
 				}
-				
 				echo json_encode([
 						'html' => $html,
 						'hasMore' => true
@@ -85,6 +74,7 @@ class RequestProductsWepps extends RequestWepps {
 				$this->fetch('productsTpl','ProductsItems.tpl');
 				$js = $filters->getFiltersCodeJS($filtersActive,$products['count']);
 				$js .= $filters->setBrowserStateCodeJS($this->navigator->content['Name']);
+				$js .= "cartInit();\n";
 				$this->assign('js', $js);
 				break;
 			default:

@@ -10,6 +10,10 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Spell\SpellWepps;
 use WeppsCore\Validator\ValidatorWepps;
 
+if (!isset($_SESSION)) {
+	@session_start();
+}
+
 class ListsWepps {
 	private $content;
 	private $get;
@@ -731,10 +735,10 @@ class ListsWepps {
 			$typeReal = "int(11)";
 			$alterDefault = "NOT NULL default '0'";
 		}
-		
 		switch ($type) {
 			case "area":
-				$typeReal = 'text COLLATE utf8_unicode_ci';
+			case "minitable":
+				$typeReal = 'text COLLATE utf8mb4_unicode_ci';
 				$alterDefault = "NULL default NULL";
 				break;
 			case "digit":
@@ -746,20 +750,13 @@ class ListsWepps {
 				$alterDefault = "NULL default NULL";
 				break;
 			case "file":
-				$typeReal = 'int(11)';
-				$typeReal = 'int';
-				$alterDefault = "NOT NULL default '0'";
-				break;
 			case "int":
-				$typeReal = 'int';
-				$alterDefault = "NOT NULL default '0'";
-				break;
 			case "flag":
 				$typeReal = 'int';
 				$alterDefault = "NOT NULL default '0'";
 				break;
 			case "guid":
-				$typeReal = 'char(36) COLLATE utf8_unicode_ci null';
+				$typeReal = 'char(36) COLLATE utf8mb4_unicode_ci null';
 				$alterDefault = "";
 				break;
 			case "blob":
@@ -767,7 +764,7 @@ class ListsWepps {
 				$alterDefault = "";
 				break;
 			default:
-				$typeReal = 'varchar(128) COLLATE utf8_unicode_ci';
+				$typeReal = 'varchar(128) COLLATE utf8mb4_unicode_ci';
 				$alterDefault = "NOT NULL default ''";
 				break;
 		}
@@ -796,13 +793,13 @@ class ListsWepps {
 		#GUID char(36) COLLATE utf8_unicode_ci default null,
 		$sql = "CREATE TABLE IF NOT EXISTS {$list} (
 				Id int(11) NOT NULL auto_increment,
-				Name varchar(128) COLLATE utf8_unicode_ci NOT NULL default '',
-				Alias varchar(64) COLLATE utf8_unicode_ci NOT NULL default '',
+				Name varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL default '',
+				Alias varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL default '',
 				DisplayOff int(11) NOT NULL default '0',
 				Priority int(11) NOT NULL default '0',
 				PRIMARY KEY (Id)
 			)
-				ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;\n";
+				ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n";
 		$sql .= "DELETE FROM s_ConfigFields WHERE TableName = '{$list}';\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','ID','Идентификатор','Id',1,0,'int','hidden','disabled','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Заголовок','','Name',2,0,'text','','','FieldDefault');\n";

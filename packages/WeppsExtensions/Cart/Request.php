@@ -6,7 +6,6 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Spell\SpellWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Products\ProductsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -15,14 +14,25 @@ require_once '../../../configloader.php';
 class RequestCartWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
-			case 'cartSummary':
-				$cartSummary = CartUtilsWepps::cartSummary();
-				echo $cartSummary['qty'];
-				exit();
-			case 'addCart':
+			case 'add':
 				$this->tpl = 'RequestAddCart.tpl';
-				
+				$cart = new CartUtilsWepps();
+				$cart->add($this->get['id']);
 				break;
+			case 'edit':
+				break;
+			case 'remove':
+				break;
+			case 'removeCart':
+				break;
+			case 'addOrder':
+				break;
+			case 'copyOrder':
+				break;
+				
+				
+				
+				
 			case 'qty':
 				if (!isset($this->get['id'])) exit();
 				if (!isset($this->get['qty'])) exit();

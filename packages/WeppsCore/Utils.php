@@ -348,6 +348,20 @@ class UtilsWepps {
 		}
 		return $headers;
 	}
+	public static function cookies(string $name,string $value='',int $lifetime=86400) {
+		$settings = [
+				'expires' => time() + $lifetime,
+				'path' => '/',
+				'domain' => ConnectWepps::$projectDev['host'],
+				'secure' => true,
+				'httponly' => true,
+				'samesite' => 'strict',
+		];
+		if (empty($value)) {
+			unset($settings['expires']);
+		}
+		setcookie($name, $value, $settings);
+	}
 }
 
 /**
@@ -563,6 +577,10 @@ class FilesWepps {
 	 * @return array
 	 */
 	public static function upload(array $myFiles,string $filesfield,string $myform) : array {
+		if (!isset($_SESSION)) {
+			@session_start();
+		}
+		
 		$root = ConnectWepps::$projectDev['root'];
 		$errors = [];
 		/*
@@ -576,7 +594,7 @@ class FilesWepps {
 			$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
 			return ['error'=>$errors[$filesfield],'js'=>$outer['Out']];
 		}
-		if ((int)$myFiles[0]['size']>3000000) {
+		if ((int)$myFiles[0]['size']>10000000) {
 			#1 мегабайт = 1 000 000 байт
 			$errors[$filesfield] = "Слишком большой файл";
 			$outer = ValidatorWepps::setFormErrorsIndicate($errors,$myform);
@@ -596,7 +614,7 @@ class FilesWepps {
 		$('input[name=\"{$filesfield}\"]').parent().append($('<p class=\"pps_fileadd\">Загружен файл &laquo;{$myFiles[0]['name']}&raquo;</p>'));
 		$('label.{$filesfield}').siblings('.pps_error').trigger('click');
 		</script>";
-		$data = ['success' => 'Form was submitted','js'=>$js];
+		$data = ['success' => 'Files uploaded','js'=>$js];
 		return $data;
 	}
 }
@@ -784,15 +802,7 @@ class UsersWepps {
 				'typ'=>'auth',
 				'id'=>$res[0]['Id']
 		],$lifetime);
-		#setcookie('wepps_token', $token, time() + $lifetime,'/',ConnectWepps::$projectDev['host'],true,true);
-		setcookie('wepps_token', $token, [
-				'expires' => time() + $lifetime,
-				'path' => '/',
-				'domain' => ConnectWepps::$projectDev['host'],
-				'secure' => true,
-				'httponly' => true,
-				'samesite' => 'strict',
-		]);
+		UtilsWepps::cookies('wepps_token',$token,$lifetime);
 		ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?",[date("Y-m-d H:i:s"),$_SERVER['REMOTE_ADDR'],password_hash($this->get['password'],PASSWORD_BCRYPT),$res[0]['Id']]);
 		return true;
 	}
@@ -800,7 +810,7 @@ class UsersWepps {
 		return $this->errors;
 	}
 	public function getAuth() : bool {
-		$allheaders = UtilsWepps::getAllheaders();
+		$allheaders = ConnectWepps::$projectData['headers'] = UtilsWepps::getAllheaders();
 		$token = '';
 		if (!empty($allheaders['authorization']) && strstr($allheaders['authorization'], 'Bearer ')) {
 			$token = str_replace('Bearer ', '', $allheaders['authorization']);
@@ -812,14 +822,7 @@ class UsersWepps {
 		$jwt = new JwtWepps();
 		$data = $jwt->token_decode($token);
 		if (@$data['payload']['typ']!='auth' || empty($data['payload']['id'])) {
-			#setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
-			setcookie('wepps_token', '', [
-					'path' => '/',
-					'domain' => ConnectWepps::$projectDev['host'],
-					'secure' => true,
-					'httponly' => true,
-					'samesite' => 'strict',
-			]);
+			UtilsWepps::cookies('wepps_token');
 			return false;
 		}
 		$sql = "select * from s_Users where Id=? and DisplayOff=0";
@@ -831,14 +834,7 @@ class UsersWepps {
 		if (empty(ConnectWepps::$projectData['user'])) {
 			return false;
 		}
-		#setcookie('wepps_token','',0,'/',ConnectWepps::$projectDev['host'],true,true);
-		setcookie('wepps_token', '', [
-				'path' => '/',
-				'domain' => ConnectWepps::$projectDev['host'],
-				'secure' => true,
-				'httponly' => true,
-				'samesite' => 'strict',
-		]);
+		UtilsWepps::cookies('wepps_token');
 		return true;
 	}
 	public function password() : string {

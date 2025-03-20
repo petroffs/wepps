@@ -11,8 +11,10 @@ var cartInit = function() {
 		e.preventDefault();
 		let id = $(this).data('id');
 		console.log(id);
-		return;
-		layoutWepps.add('action=removePromt&id='+id,'/ext/Cart/Request.php');
+		layoutWepps.request({
+			data:'action=add&id='+id,
+			url:'/ext/Cart/Request.php'
+		});
 	});
 }
 $(document).ready(cartInit);

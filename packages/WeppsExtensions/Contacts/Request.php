@@ -13,6 +13,10 @@ require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
+if (!isset($_SESSION)) {
+	@session_start();
+}
+
 class RequestContactsWepps extends RequestWepps {
 	public function request($action="") {
 		$navigator = new NavigatorWepps(@$this->get['link']);
