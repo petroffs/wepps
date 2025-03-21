@@ -9,7 +9,6 @@ use WeppsCore\Utils\UtilsWepps;
 class CartUtilsWepps {
 	private $user = [];
 	private $cart = [];
-	private $cartProducts = [];
 	
 	public function __construct() {
 		if (empty(ConnectWepps::$projectData['user'])) {
@@ -26,7 +25,7 @@ class CartUtilsWepps {
 			}
 			$this->user = $this->getUser(ConnectWepps::$projectData['user']);
 		}
-		$this->cart = $this->getCart($this->user['JCart']??'');
+		$this->cart = json_decode($this->user['JCart']??'',true)??[];
 	}
 	
 	public function getUser(array $user) : array {
@@ -34,7 +33,7 @@ class CartUtilsWepps {
 	}
 	
 	public function getCart(string $cart='') : array {
-		return $this->cart = json_decode($cart,true)??[];
+		return $this->cart;
 	}
 
 	public function setCart() {
@@ -71,102 +70,41 @@ class CartUtilsWepps {
 		$this->cart['items'][$id] = $quantity;
 		return $this->setCart();
 	}
-	
-	
-	
-	
-	
-	
-	public function getCartProd() {
+	public function getCartSummary() {
+		$output = [
+				'items' => [],
+				'quantity' => 0,
+				'sum' => 0,
+				'date' => "",
+				'delivery'=>[],
+				'payments'=>[]
+		];
 		if (empty($this->cart['items'])) {
-			return false;
+			return $output;
 		}
 		$sql = "";
 		foreach ($this->cart['items'] as $key=>$value) {
-			#$sum += $value['sum'];
+			$output['quantity'] += $value;
 			$sql .= "\n(select '{$key}' `id`,'{$value}' `quantity`) union";
 		}
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
 		$ids = implode(',', array_keys($this->cart['items']));
-		$sql = "select x.id,p.Name name,pp.NameOption nameOption,
-				if(pp.ImagesOption!='',pp.ImagesOption,p.ImagesDefault) image,
-				x.quantity,if(y.Price,y.Price,pp.Price) price, (x.quantity * if(y.Price,y.Price,pp.Price)) `sum`,
-				(x.quantity * (pp.Bonus+pp.BonusExpress)) `pointsSum`,pp.Rest `rest`,
-				concat('/',p.DirectoryUrl,'/',p.Id,'.html') url,
-				p.Objem `volume`,
-				p.HashValue guid,
-				if (pp.GUID='00000000-0000-0000-0000-000000000000','',pp.GUID) optionGuid,
-				p.Id `code`
-				from ProductsPrices pp
-				join Products p on p.Id = pp.ProductId join $sql x on x.id=pp.Id
-				left join (select ap.Name,ap.Price,ap.ProductId,ap.DiscountPercent,ad.Beginning,ad.Ending from ActionsPrices ap join ActionsDocs ad on ad.Id=ap.ActionId and ad.Beginning <= now() and ad.Ending >= now()) y on y.ProductId = p.Id
-				where pp.Id in ($ids)";
-		#UtilsPPS::debug($sql,1);
-		$this->cartProducts = ConnectWepps::$instance->fetch($sql);
-		return $this->cartProducts;
-	}
-	public function getCounts($type='sum',$param='') {
-		if (empty($this->cartProducts)) {
-			return false;
-		}
-		$sum = 0;
-		switch ($type) {
-			case 'sum':
-				foreach ($this->cartProducts as $value) {
-					$sum = $sum + $value['sum'];
-				}
-				break;
-			case 'quantity':
-				foreach ($this->cartProducts as $value) {
-					$sum = $sum + $value['quantity'];
-				}
-				break;
-		}
-		return $sum;
+		$sql = "select x.id,p.Name name,
+				x.quantity,p.Price price, (x.quantity * p.Price) `sum`,
+				concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
+				f.FileUrl image
+				from Products p
+				join $sql x on x.id=p.Id
+				join s_Navigator n on n.Id=p.NavigatorId
+				left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
+				where p.Id in ($ids)";
+		$output['items'] = ConnectWepps::$instance->fetch($sql);
+		$output['sum'] = array_sum(array_column($output['items'],'sum'));
+		$output['date'] = $this->cart['date'];
+		return $output;
 	}
 	
-	
-	
-	
-	
-	public static function cartSummary() {
-		if (isset ( $_SESSION ['cart'] )) {
-			$price = 0;
-			$qty = 0;
-			foreach ( $_SESSION ['cart'] as $key => $value ) {
-				$qty = $qty + $value['Qty'] * $value['Data']['OptionQty'];
-				$price = $price + $value ['PriceAmount'];
-			}
-			$addCart = array (
-					'deliveryPrice',
-					'deliveryChecked',
-					'paymentPrice',
-					'paymentChecked',
-					'cityChecked',
-					'city',
-					'orderId' 
-			);
-			
-			$addCartValues = array();
-			foreach ($addCart as $value) {
-				$addCartValues[$value] = (isset($_SESSION['cartAdd'][$value])) ? doubleval($_SESSION['cartAdd'][$value]) : 0;
-			}
-			if (isset($_SESSION['cartAdd']['city'])) {
-				$addCartValues['city'] = (string) $_SESSION['cartAdd']['city'];
-			}
-			$priceTotal = $price + $addCartValues['deliveryPrice'] + $addCartValues['paymentPrice'];
-			//UtilsWepps::debug($_SESSION);
-			return array (
-					'priceAmount' => $price,
-					'priceTotal' => $priceTotal,
-					'qty' => $qty,
-					'cart' => $_SESSION ['cart'],
-					'cartAdd' => $addCartValues 
-			);
-		}
-		return array('priceAmount'=>0,'qty'=>0,'cart'=>array());
-	}
-	public static function addOrder($settings = array(),$userId=null) {
+	public function addOrder($settings = array(),$userId=null) {
 		if (!isset($_SESSION['user']) && $userId==null) return array('error'=>1);
 		$cartSummary = self::cartSummary();
 		$userId = ($userId==null) ? $_SESSION['user']['Id'] : $userId;
@@ -249,14 +187,14 @@ class CartUtilsWepps {
 		//exit();
 		return $orderId;
 	}
-	public static function getOrder($id) {
+	public function getOrder($id) {
 		$obj = new DataWepps("TradeOrders");
 		$obj->setJoin('left join GeoCities as c on c.Id = t.City');
 		$obj->setConcat('c.Name as CityName');
 		$order = $obj->getMax($id)[0];
 		return $order;
 	}
-	public static function addOrderPositions($orderId) {
+	public function addOrderPositions($orderId) {
 		$dateCurr = date("Y-m-d H:i:s");
 		$cartSummary = self::cartSummary();
 		$date = date('Y-m-d H:i:s');
