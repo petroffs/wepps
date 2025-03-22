@@ -18,10 +18,13 @@
 		{if $normalView==1}
 		<div class="page pps_flex_max pps_flex pps_flex_col">
 			<section>
-				<h1>{$content.Name}</h1>
-				{if $content.Text1}
-				<div class="text">{$content.Text1}</div>
-				{/if}
+				<div class="content-block main">
+					<h1>{$content.Name}</h1>
+					{if $content.Text1}
+					<div class="pps_interval_small"></div>
+					<div class="text">{$content.Text1}</div>
+					{/if}
+				</div>
 				{$extension}
 			</section>
 		</div>

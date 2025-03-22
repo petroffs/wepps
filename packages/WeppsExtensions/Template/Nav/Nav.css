@@ -6,6 +6,7 @@ header {
 }
 
 div.page.header {
+	background: var(--color-100);
 	height: auto;
 }
 

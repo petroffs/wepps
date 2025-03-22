@@ -1,4 +1,3 @@
-<div class="w_interval"></div>
 <section class="childs-wrapper w_animate w_grid w_4col w_2col_view_medium w_1col_view_small w_gap_large">
 	{foreach name="out" item="item" from=$elements}
 	{assign var="images" value=$item.Images_FileUrl|strarr}

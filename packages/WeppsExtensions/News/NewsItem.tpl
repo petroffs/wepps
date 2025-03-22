@@ -17,7 +17,7 @@
 	</section>
 	<div class="pps_interval_large"></div>
 	<section>
-		<section class="news-wrapper pps_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap_large">
+		<section class="news-wrapper pps_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap_medium">
 			{foreach name="out" item="item" from=$elements}
 			{assign var="images" value=$item.Images_FileUrl|strarr}
 			<section>

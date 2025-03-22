@@ -1,8 +1,3 @@
-section.news-wrapper.pps_flex {
-	margin-bottom: var(--step4);
-	width: auto;
-}
-
 section.news-wrapper>section {
 	border-radius: var(--step2);
 	overflow: hidden;

@@ -1,3 +1,16 @@
+
+div.page.cart {
+	margin-top: var(--step4);
+	margin-bottom: var(--step4);
+}
+
+div.page.cart div.content-block:not(:last-child) {
+	margin-bottom: var(--step4);
+}
+
+
+
+
 .cart.default {
 
 }

@@ -1,5 +1,5 @@
 div.page.home {
-	overflow: auto;
+	background: var(--color-100);
 }
 
 div.page.home .text {
@@ -18,7 +18,6 @@ div.page.home .text p:last-child {
 
 div.page.services {
 	color: var(--color-25);
-	background: var(--color-95);
 }
 
 section.services-wrapper {
@@ -43,7 +42,7 @@ section.services-wrapper .title {
 }
 
 div.page.gallery {
-	background: var(--color-85);
+	background: var(--color-95);
 }
 
 section.gallery-wrapper section {
@@ -56,7 +55,7 @@ section.gallery-wrapper section:hover {
 }
 
 div.page.advantages {
-	background: var(--color-95);
+	padding-bottom: var(--step4);
 }
 
 section.advantages-wrapper section:not(:first-child) {

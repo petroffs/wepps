@@ -23,13 +23,15 @@ class CartWepps extends ExtensionWepps {
 				$smarty->assign('cartSummary',$cartSummary);
 				$smarty->assign('cartTotalTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartTotal.tpl'));
 				break;
-			case 'order':
+			case 'checkout':
+			case 'order/complete/ea201f29-82a3-4d59-a522-9ccc00af95e5/':
 				
 				break;
 			default:
 				ExceptionWepps::error404();
 				break;
 		}
+		$smarty->assign('normalView',0);
 		$this->headers->css("/ext/Cart/Cart.{$this->headers::$rand}.css");
 		$this->headers->js("/ext/Cart/Cart.{$this->headers::$rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
