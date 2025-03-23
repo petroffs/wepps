@@ -17,12 +17,11 @@
 							<a href=""><i class="bi bi-bookmarks"></i> В избранное</a>
 						</div>
 						<div class="cart-quantity">
-							<label class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
-								<input type="button" value=""/>
+							<div class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
+								<input type="button" value="" class="min"/>
 								<input type="text" name="quantity" value="{$item.quantity}"/>
-								<input type="button" value=""/>
-								
-							</label>
+								<input type="button" value="" class="max"/>
+							</div>
 							<div class="cart-price price"><span>{$item.price}</span></div> 
 						</div>
 						

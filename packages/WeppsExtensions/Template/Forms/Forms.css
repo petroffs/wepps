@@ -284,38 +284,45 @@ body span.pps_button {
 }
 
 
-label.pps.pps_minmax {
+div.pps.pps_minmax {
 	border: 1px solid var(--color-50);
 	border-radius: var(--stepHalf);
 	max-width: 120px;
 	overflow: hidden;
+	display: flex;
 	flex-wrap: nowrap;
 	justify-content: space-between;
+	align-items: center;
 }
 
-label.pps.pps_minmax>input[type="button"] {
+div.pps.pps_minmax>input[type="button"] {
 	border: none;
 	width: var(--step6);
 	height: var(--step6);
 }
 
-label.pps.pps_minmax>input[type="button"]:first-child {
+div.pps.pps_minmax>input[type="button"]:first-child {
 	background: var(--color-95) center center no-repeat;
 	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-lg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2 8a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11A.5.5 0 0 1 2 8"/></svg>');
 	background-size: var(--step4) auto;
 }
 
-label.pps.pps_minmax>input[type="button"]:last-child {
+div.pps.pps_minmax>input[type="button"]:last-child {
 	background: var(--color-95) center center no-repeat;
 	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"/></svg>');
 	background-size: var(--step4) auto;
 }
 
-label.pps.pps_minmax>input[type="button"]:focus {
-	background-color: var(--color-50);
+div.pps.pps_minmax>input[type="button"]:hover {
+	color: var(--color-100);
+	background-color: var(--color-green);
 }
 
-label.pps.pps_minmax>input[type="text"] {
+div.pps.pps_minmax>input[type="button"]:active {
+	background-color: var(--color-attention);
+}
+
+div.pps.pps_minmax>input[type="text"] {
 	font-weight: normal;
 	text-align: center;
 	color: var(--color-20);
