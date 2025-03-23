@@ -84,7 +84,7 @@ label.pps * {
 label.pps input,
 label.pps textarea,
 label.pps select {
-	font-family: var(--font), sans-serif;
+	font-family: var(--font);
 	font-weight: 300;
 	letter-spacing: 0.03em;
 	outline: none

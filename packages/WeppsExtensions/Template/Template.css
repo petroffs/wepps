@@ -5,7 +5,7 @@
 }
 
 html {
-	font-family: var(--font), sans-serif;
+	font-family: var(--font);
 	font-size: var(--font-default);
 	color: var(--color-25);
 	line-height: 1.4;
