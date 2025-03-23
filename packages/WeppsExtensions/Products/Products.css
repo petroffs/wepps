@@ -20,17 +20,17 @@ div.product-media {
 	position: relative;
 }
 
-/****/
+/**/
 
 div.status {
-	background-color: rgba(0,0,0,0.5);
+	background-color: rgba(0, 0, 0, 0.5);
 	border-radius: 50%;
 	width: var(--step6);
 	height: var(--step6);
 	position: absolute;
 	top: var(--step4);
 	left: var(--step4);
-	z-index:1;
+	z-index: 1;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -45,12 +45,15 @@ div.status:before {
 	pointer-events: none;
 	width: 100%;
 }
+
 div.status.status3:before {
 	content: '\f588';
 }
+
 div.status.status4:before {
 	content: '\F4D1';
 }
+
 div.status.status5:before {
 	content: '\F5E7';
 }
