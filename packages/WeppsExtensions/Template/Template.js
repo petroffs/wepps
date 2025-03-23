@@ -1,4 +1,4 @@
-var readyTemplateInit = function() {
+var templateInit = function() {
 	/*
 	$('#contactme').on('click',function(e) {
 		layoutWepps.add('action=contactme','/ext/Addons/Request.php');
@@ -6,4 +6,4 @@ var readyTemplateInit = function() {
 	$('input[name="phone"]').inputmask({ "mask": "+ 7 (999) 999-99-99" });
 	*/
 }
-$(document).ready(readyTemplateInit);
+$(document).ready(templateInit);

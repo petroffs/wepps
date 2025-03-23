@@ -87,7 +87,7 @@ class FiltersWepps {
 		return true;
 	}
 	response(page=1,gotop,state) {
-		//let sidebar = $('.sidebar').eq(0);
+		let content = $('.'+this.settings.content);
 		let last = this.sidebar.attr('data-last');
 		let checked = this.sidebar.attr('data-check');
 		let search = this.sidebar.attr('data-search');
@@ -109,8 +109,7 @@ class FiltersWepps {
 		});
 		layoutWepps.request({data:serialized,url:url,obj:$('#pps-rows-wrapper')});
 		if (gotop=='top') {
-			var gotop = $('.products-wrapper');
-			$("html, body").animate({ scrollTop: gotop.offset().top - $('header').height()}, 600);
+			$("html, body").animate({ scrollTop: content.offset().top - $('header').height()}, 600);
 			//$('label.pps.tooltipstered').tooltipster('destroy');
 		}
 	}

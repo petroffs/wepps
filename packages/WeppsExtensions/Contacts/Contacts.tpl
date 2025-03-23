@@ -92,7 +92,7 @@
 					</label>
 				</div>
 				<div class="pps_flex_11 pps_flex pps_flex_row">
-					<label class="pps pps_checkbox pps_flex_23 pps_flex_11_view_small"><input type="checkbox" name="approve"/> <span>Я согласен на обработку моих персональных данных</span></label>
+					<label class="pps pps_checkbox pps_flex_23 pps_flex_11_view_small"><input type="checkbox" name="approve"/> <span>Я согласен на<br/><br/> обработку моих персональных данных</span></label>
 					<label class="pps pps_button  pps_flex_13 pps_flex_11_view_small pps_right pps_center_view_small"> <input type="submit"
 						value="Отправить" disabled="disabled" />
 					</label>

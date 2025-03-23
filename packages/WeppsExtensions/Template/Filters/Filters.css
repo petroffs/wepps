@@ -25,12 +25,9 @@ body section.sidebar div.nav-filters ul>li {
 	padding: 0 var(--step2);
 }
 
-body section.sidebar div.nav-filters ul>li label.pps.pps_checkbox input[type="checkbox"]+span::before {
-	color: var(--color-50);
-}
-
 body section.sidebar div.nav-filters ul>li label.pps.pps_checkbox input[type="checkbox"]+span>span {
 	color: var(--color-75);
+	margin-left: var(--step);
 }
 
 body section.sidebar div.nav-filters li.pps_expand a {

@@ -36,7 +36,7 @@ section.services-wrapper section:hover {
 }
 
 section.services-wrapper .title {
-	font-weight: 900;
+	font-weight: 600;
 	font-size: var(--font-medium);
 	padding: var(--step4);
 }

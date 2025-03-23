@@ -17,8 +17,8 @@ div.pps_error {
 }
 
 div.pps_error:after {
-	content: '\f057';
-	font-family: 'FontAwesome';
+	content: '\f622';
+	font-family: 'bootstrap-icons';
 	font-size: var(--font-default);
 	position: absolute;
 	top: 50%;
@@ -48,7 +48,8 @@ form.pps_success {
 label.pps {
 	position: relative;
 	cursor: pointer;
-	display: block;
+	display: flex;
+	align-items: center;
 	margin: 0;
 	padding: 0;
 }
@@ -58,11 +59,11 @@ label.pps.pps_require {
 }
 
 label.pps.pps_require:after {
-	content: '\f111';
-	font-family: 'FontAwesome';
-	font-size: var(--step);
+	content: '\f287';
+	font-family: 'bootstrap-icons';
+	font-size: 9px;
 	position: absolute;
-	left: calc(-1 * var(--step2));
+	left: calc(-1 * var(--step3));
 	top: var(--step2);
 	color: var(--color-attention);
 }
@@ -83,7 +84,7 @@ label.pps * {
 label.pps input,
 label.pps textarea,
 label.pps select {
-	font-family: 'Roboto';
+	font-family: var(--font), sans-serif;
 	font-weight: 300;
 	letter-spacing: 0.03em;
 	outline: none
@@ -99,25 +100,22 @@ label.pps.pps_checkbox input[type="checkbox"] {
 }
 
 label.pps.pps_checkbox input[type="checkbox"]+span {
-	display: inline-block;
-	padding: 0 var(--step) var(--step) var(--step5);
-	position: relative;
+	padding: 0 var(--step) var(--step) 0;
+	display: inline-flex;
+	align-items: center;
 }
 
 label.pps.pps_checkbox input[type="checkbox"]+span:before {
-	content: "\f096";
+	content: "\f584";
+	font-family: 'bootstrap-icons';
 	font-size: var(--font-medium);
-	font-family: 'FontAwesome';
-	line-height: 100%;
-	height: 100%;
-	position: absolute;
-	top: var(--stepHalf);
-	left: 0;
-
+	color: var(--color-50);
+	margin-right: var(--step2);
 }
 
 label.pps.pps_checkbox input[type="checkbox"]:checked+span:before {
-	content: "\f046";
+	content: "\f26C";
+	color: var(--color-green);
 }
 
 label.pps.pps_checkbox input[type="checkbox"][disabled]+span {
@@ -134,23 +132,22 @@ label.pps.pps_radio input[type="radio"] {
 }
 
 label.pps.pps_radio input[type="radio"]+span {
-	display: inline-block;
-	padding: 0 var(--step) var(--step) var(--step5);
+	padding: 0 var(--step) var(--step) 0;
+	display: inline-flex;
+	align-items: center;
 }
 
 label.pps.pps_radio input[type="radio"]+span:before {
-	content: "\f10c";
+	content: "\f28A";
+	font-family: 'bootstrap-icons';
 	font-size: var(--font-medium);
-	height: 100%;
-	line-height: 100%;
-	font-family: 'FontAwesome';
-	position: absolute;
-	top: 0px;
-	left: 0px;
+	color: var(--color-50);
+	margin-right: var(--step2);
 }
 
 label.pps.pps_radio input[type="radio"]:checked+span:before {
-	content: "\f192";
+	content: "\f26A";
+	color: var(--color-green);
 }
 
 label.pps.pps_radio input[type="radio"][disabled]+span {

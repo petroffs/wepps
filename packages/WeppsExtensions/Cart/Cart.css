@@ -1,4 +1,3 @@
-
 div.page.cart {
 	margin-top: var(--step4);
 	margin-bottom: var(--step4);
@@ -8,8 +7,34 @@ div.page.cart div.content-block:not(:last-child) {
 	margin-bottom: var(--step4);
 }
 
+div.page.cart div.cart-items>section {
+	display: grid;
+	grid-template-columns: auto auto repeat(5, 1fr);
+	grid-template-areas:
+		"checkbox image title title title quantity sum"
+	;
+	gap: var(--step4);
+}
 
+div.page.cart div.cart-checkbox {
+	grid-area: checkbox;
+}
 
+div.page.cart div.cart-image {
+	grid-area: image;
+}
+
+div.page.cart div.cart-title {
+	grid-area: title;
+}
+
+div.page.cart div.cart-quantity {
+	grid-area: quantity;
+}
+
+div.page.cart div.cart-sum {
+	grid-area: sum;
+}
 
 .cart.default {
 
