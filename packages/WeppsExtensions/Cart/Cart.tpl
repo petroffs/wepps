@@ -18,11 +18,11 @@
 						</div>
 						<div class="cart-quantity">
 							<div class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
-								<button>
+								<button class="sub">
 									<span></span>
 								</button>
-								<input type="text" name="quantity" value="{$item.quantity}" maxlength="3"/>
-								<button>
+								<input type="text" name="quantity" value="{$item.quantity}" maxlength="3" min="1" max="20"/>
+								<button class="add">
 									<span></span>
 								</button>
 							</div>
@@ -30,7 +30,6 @@
 								<span class="price"><span>{$item.price|money}</span></span><span> за 1 шт.</span>
 							</div> 
 						</div>
-						
 						<div class="cart-sum price"><span>{$item.sum|money}</span></div>
 					</section>
 					{/foreach}

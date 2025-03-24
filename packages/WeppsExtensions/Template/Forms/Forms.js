@@ -32,21 +32,6 @@ var formsInit = function() {
 		event.stopPropagation();
 		formWepps.upload($(this),event.target.files);
 	});
-	$('.pps_form_group').find('.pps_flex_14').on('click',function(event) {
-		var parent1 = $(this).parent();
-		var input1 = parent1.find('input');
-		var num2 = parseInt(input1.val());
-		num2 = (!num2) ? 0 : num2;
-		if ($(this).hasClass('pps_form_group_minus')) {
-			num2--;
-		} else {
-			num2++;
-		}
-		if (num2<parseInt(input1.attr('min'))) num2 = parseInt(input1.attr('min'));
-		if (num2>parseInt(input1.attr('max'))) num2 = parseInt(input1.attr('max'));
-		if (num2==0) num2="не важно"
-		input1.val(num2);
-	});
 	var approveform = function() {
 		$('input[name="approve"]').on('change',function() {
 			if ($(this).prop('checked')==true) {
@@ -127,6 +112,46 @@ class FormWepps {
 			data : str + serialized
 		}
 		layoutWepps.win(settings);
+	}
+	minmax() {
+		let self = this;
+		$('.pps_minmax').find('button').on('click',function(event) {
+			event.preventDefault();
+			let input = $(this).siblings('input');
+			var inputVal = parseInt(input.val())??1;
+			if ($(this).hasClass('sub')) {
+				inputVal--;
+			} else {
+				inputVal++;
+			}
+			if (inputVal<parseInt(input.attr('min'))) {
+				inputVal = parseInt(input.attr('min'));
+			}
+			if (inputVal>parseInt(input.attr('max'))) {
+				inputVal = parseInt(input.attr('max'));
+			}
+			input.val(inputVal);
+			self.minmaxAfter(inputVal)
+		});
+		$('.pps_minmax').find('input').on('keyup',function(event) {
+			event.preventDefault();
+			let input = $(this);
+			var inputVal = parseInt(input.val())??1;
+			if (!Number.isInteger(inputVal)) {
+				inputVal = parseInt(input.attr('min'));
+			}
+			if (inputVal<parseInt(input.attr('min'))) {
+				inputVal = parseInt(input.attr('min'));
+			}
+			if (inputVal>parseInt(input.attr('max'))) {
+				inputVal = parseInt(input.attr('max'));
+			}
+			input.val(inputVal);
+			self.minmaxAfter(input.closest('section').data('id'),inputVal);
+		});
+	}
+	minmaxAfter(id,inputVal) {
+		console.log(id+' / '+inputVal);
 	}
 }
 var formWepps = new FormWepps();

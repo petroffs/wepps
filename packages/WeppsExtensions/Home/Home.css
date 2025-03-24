@@ -78,6 +78,7 @@ section.advantages-wrapper section:nth-child(even) .img {
 section.advantages-wrapper .title {
 	font-size: var(--font-large);
 	font-weight: 600;
+	letter-spacing: 0.06em;
 	line-height: 1.2;
 	margin-bottom: var(--step2);
 }

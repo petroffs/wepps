@@ -35,6 +35,7 @@ class CartWepps extends ExtensionWepps {
 		$smarty->assign('normalView',0);
 		$this->headers->css("/ext/Cart/Cart.{$this->headers::$rand}.css");
 		$this->headers->js("/ext/Cart/Cart.{$this->headers::$rand}.js");
+		$this->headers->js("/ext/Cart/CartCheckout.{$this->headers::$rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

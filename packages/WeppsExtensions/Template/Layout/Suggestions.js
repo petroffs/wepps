@@ -1,8 +1,8 @@
 class SuggestionsWepps {
 	constructor(settings = {}) {
-		this.input = $('#'+settings.input);
-	    this.delay = settings.delay || 300; // Задержка перед запросом
-	    this.url = settings.url || 'search.php'; // URL для запросов
+		this.input = $('#' + settings.input);
+		this.delay = settings.delay || 300; // Задержка перед запросом
+		this.url = settings.url || 'search.php'; // URL для запросов
 		this.pathname = '/catalog/';
 	}
 	init() {
@@ -10,54 +10,54 @@ class SuggestionsWepps {
 		let suggestLoading = false;
 		let hasMoreSuggestions = true;
 		let inputTimeout = null;
-		let results = $('<div>').attr('id','w_suggestions');
+		let results = $('<div>').attr('id', 'w_suggestions');
 		let loader = $('<div>').addClass('w_suggestions-loader').text('Загрузка...');
 		let resultsItemClass = '.w_suggestions-item';
 		$(this.input).after(results);
 		$(this.input).after(loader)
 		let self = this;
 		$(this.input).on('input', function() {
-		clearTimeout(inputTimeout); // Отменяем предыдущий таймер
-		 inputTimeout = setTimeout(() => {
-		    const $query = $(this).val().trim();
-		    if($query.length > 2) {
-		      suggestPage = 1;
-		      hasMoreSuggestions = true;
-		      selectedIndex = -1; // Сброс выбора при новом вводе
-		      loadSuggestions($query, true);
-		    } else {
-		      results.hide().empty();
-		    }
-		  }, 300);
+			clearTimeout(inputTimeout); // Отменяем предыдущий таймер
+			inputTimeout = setTimeout(() => {
+				const $query = $(this).val().trim();
+				if ($query.length > 2) {
+					suggestPage = 1;
+					hasMoreSuggestions = true;
+					selectedIndex = -1; // Сброс выбора при новом вводе
+					loadSuggestions($query, true);
+				} else {
+					results.hide().empty();
+				}
+			}, 300);
 		});
 		function loadSuggestions(query, reset = false) {
-			if(suggestLoading || !hasMoreSuggestions) return;
+			if (suggestLoading || !hasMoreSuggestions) return;
 			suggestLoading = true;
 			loader.show();
-		  $.ajax({
-		    url: '/ext/Products/Request.php?action=suggestions',
-		    method: 'POST',
-		    data: {
-		      action: 'suggestions',
-		      text: query,
-		      page: suggestPage,
-		    },
-		    success: function(response) {
-		      const $data = JSON.parse(response);
-		      if(reset) {
-		        results.html($data.html);
-		      } else {
-		        results.append($data.html);
-		      }
-		      hasMoreSuggestions = $data.hasMore;
-		      results.show();
-		      suggestPage++;
-		    },
-		    complete: function() {
-		      suggestLoading = false;
-		      loader.hide();
-		    }
-		  });
+			$.ajax({
+				url: '/ext/Products/Request.php?action=suggestions',
+				method: 'POST',
+				data: {
+					action: 'suggestions',
+					text: query,
+					page: suggestPage,
+				},
+				success: function(response) {
+					const $data = JSON.parse(response);
+					if (reset) {
+						results.html($data.html);
+					} else {
+						results.append($data.html);
+					}
+					hasMoreSuggestions = $data.hasMore;
+					results.show();
+					suggestPage++;
+				},
+				complete: function() {
+					suggestLoading = false;
+					loader.hide();
+				}
+			});
 		}
 		// Скролл внутри блока подсказок
 		results.scroll(function() {
