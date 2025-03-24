@@ -12,20 +12,26 @@
 						<div class="cart-checkbox"><label class="pps pps_checkbox"><input type="checkbox" name="item" value={$item.id}/><span></span></label></div>
 						<div class="cart-image"><img src="/pic/lists{$item.image}"/></div>
 						<div class="cart-title">
-							<a href="{$item.url}" class="title">{$item.name} {$item.name} {$item.name} {$item.name} {$item.name} {$item.name} {$item.name}</a>
+							<a href="{$item.url}" class="title">{$item.name}</a>
 							<a href=""><i class="bi bi-trash3"></i> Удалить</a>
 							<a href=""><i class="bi bi-bookmarks"></i> В избранное</a>
 						</div>
 						<div class="cart-quantity">
 							<div class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
-								<input type="button" value="" class="min"/>
-								<input type="text" name="quantity" value="{$item.quantity}"/>
-								<input type="button" value="" class="max"/>
+								<button>
+									<span></span>
+								</button>
+								<input type="text" name="quantity" value="{$item.quantity}" maxlength="3"/>
+								<button>
+									<span></span>
+								</button>
 							</div>
-							<div class="cart-price price"><span>{$item.price}</span></div> 
+							<div class="cart-price">
+								<span class="price"><span>{$item.price|money}</span></span><span> за 1 шт.</span>
+							</div> 
 						</div>
 						
-						<div class="cart-sum price"><span>{$item.sum}</span></div>
+						<div class="cart-sum price"><span>{$item.sum|money}</span></div>
 					</section>
 					{/foreach}
 				</div>

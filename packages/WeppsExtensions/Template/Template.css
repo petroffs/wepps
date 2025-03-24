@@ -136,21 +136,21 @@ body div.text p:last-child {
 	margin-bottom: 0;
 }
 
-body div.price {
+body .price {
 	position: relative;
 	max-width: max-content;
 }
 
-body div.price:after {
+body .price:after {
 	content: "₽";
 	margin-left: var(--step);
 }
 
-body div.price.price-before {
+body .price.price-before {
 	color: var(--color-50);
 }
 
-body div.price.price-before::before {
+body .price.price-before::before {
 	content: "";
 	position: absolute;
 	bottom: 0.6em;

@@ -19,9 +19,9 @@ div.page.cart div.cart-items.content-block {
 
 div.page.cart div.cart-items>section {
 	display: grid;
-	grid-template-columns: auto auto repeat(4, 1fr);
+	grid-template-columns: auto auto 1fr 1fr 1fr 120px;
 	grid-template-areas:
-		"checkbox image title title title quantity sum"
+		"checkbox image title title quantity sum"
 	;
 	gap: var(--step4);
 	padding: var(--step2);
@@ -71,6 +71,7 @@ div.page.cart div.cart-title a.title {
 }
 
 div.page.cart div.cart-title a:not(:first-child) {
+	font-size: var(--font-small);
 	font-weight: normal;
 	text-decoration: none;
 	color: var(--color-50);
@@ -82,8 +83,15 @@ div.page.cart div.cart-quantity {
 	grid-area: quantity;
 }
 
-div.page.cart div.cart-quantity .price {
-	color: var(--color-50);
+div.page.cart .cart-price {
+	font-size: var(--font-small);
+	color: var(--color-50);	
+	margin-top: var(--step);
+}
+
+div.page.cart .cart-price>span {
+	display: flex;
+	max-width: max-content;
 }
 
 div.page.cart div.cart-sum {
