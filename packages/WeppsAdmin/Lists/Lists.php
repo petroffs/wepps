@@ -737,7 +737,6 @@ class ListsWepps {
 		}
 		switch ($type) {
 			case "area":
-			case "minitable":
 				$typeReal = 'text COLLATE utf8mb4_unicode_ci';
 				$alterDefault = "NULL default NULL";
 				break;
@@ -764,6 +763,11 @@ class ListsWepps {
 				$alterDefault = "";
 				break;
 			default:
+				if (strstr($type, 'minitable::')) {
+					$typeReal = 'text COLLATE utf8mb4_unicode_ci';
+					$alterDefault = "NULL default NULL";
+					break;
+				}
 				$typeReal = 'varchar(128) COLLATE utf8mb4_unicode_ci';
 				$alterDefault = "NOT NULL default ''";
 				break;
