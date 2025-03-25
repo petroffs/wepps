@@ -130,6 +130,23 @@ class LayoutWepps {
 	requestAfter () {
 		
 	}
+	handler(settings) {
+		let obj = settings.obj;
+		let event = settings.event;
+		let fn = settings.fn;
+		let delay = settings.delay??300;
+		let timeout = null;
+		obj.on(event,(e)=> {
+			clearTimeout(timeout);
+			timeout = setTimeout(()=>{
+				e.preventDefault();
+				fn()
+			},delay);
+		});
+		
+		
+		
+	}
 }
 
 class UtilsWepps {

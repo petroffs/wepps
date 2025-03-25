@@ -2,12 +2,12 @@
 	<div class="w_2scol w_3scol_view_medium">
 		<div class="content-block">
 			<h1>Корзина</h1>
-			<label class="pps pps_checkbox"><input type="checkbox"/><span>Выбрать все</span></label>
+			<label class="pps pps_checkbox"><input type="checkbox" id="cart-active-all" autocomplete="off"/><span>Выбрать все</span></label>
 		</div>
 		<div class="content-block cart-items">
 			{foreach item="item" from=$cartSummary.items}
 			<section data-id="{$item.id}">
-				<div class="cart-checkbox"><label class="pps pps_checkbox"><input type="checkbox" name="item" value={$item.id}/><span></span></label></div>
+				<div class="cart-checkbox"><label class="pps pps_checkbox"><input type="checkbox" name="cart-active" value="{$item.id}" autocomplete="off"/><span></span></label></div>
 				<div class="cart-image"><img src="/pic/lists{$item.image}"/></div>
 				<div class="cart-title">
 					<a href="{$item.url}" class="title">{$item.name}</a>
