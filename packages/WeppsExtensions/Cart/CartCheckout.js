@@ -3,9 +3,8 @@ var cartCheckoutInit = function() {
 	formWepps.minmaxAfter = function(id,inputVal) {
 		clearTimeout(inputTimeout);
 		inputTimeout = setTimeout(() => {
-			console.log('alex');
 			layoutWepps.request({
-				data: 'action=add&id=' + id + '&quantity='+inputVal+'&cart=1',
+				data: 'action=edit&id=' + id + '&quantity='+inputVal+'&context=cart',
 				url: '/ext/Cart/Request.php'
 			});
 		}, 300);

@@ -115,6 +115,16 @@ class FormWepps {
 	}
 	minmax() {
 		let self = this;
+		let fn = function(input,inputVal) {
+			if (inputVal<parseInt(input.attr('min'))) {
+				inputVal = parseInt(input.attr('min'));
+			}
+			if (inputVal>parseInt(input.attr('max'))) {
+				inputVal = parseInt(input.attr('max'));
+			}
+			input.val(inputVal);
+			self.minmaxAfter(input.closest('section').data('id'),inputVal);
+		}
 		$('.pps_minmax').find('button').on('click',function(event) {
 			event.preventDefault();
 			let input = $(this).siblings('input');
@@ -124,14 +134,7 @@ class FormWepps {
 			} else {
 				inputVal++;
 			}
-			if (inputVal<parseInt(input.attr('min'))) {
-				inputVal = parseInt(input.attr('min'));
-			}
-			if (inputVal>parseInt(input.attr('max'))) {
-				inputVal = parseInt(input.attr('max'));
-			}
-			input.val(inputVal);
-			self.minmaxAfter(inputVal)
+			fn(input,inputVal);
 		});
 		$('.pps_minmax').find('input').on('keyup',function(event) {
 			event.preventDefault();
@@ -140,14 +143,7 @@ class FormWepps {
 			if (!Number.isInteger(inputVal)) {
 				inputVal = parseInt(input.attr('min'));
 			}
-			if (inputVal<parseInt(input.attr('min'))) {
-				inputVal = parseInt(input.attr('min'));
-			}
-			if (inputVal>parseInt(input.attr('max'))) {
-				inputVal = parseInt(input.attr('max'));
-			}
-			input.val(inputVal);
-			self.minmaxAfter(input.closest('section').data('id'),inputVal);
+			fn(input,inputVal);
 		});
 	}
 	minmaxAfter(id,inputVal) {

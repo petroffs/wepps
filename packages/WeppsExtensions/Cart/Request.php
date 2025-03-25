@@ -15,11 +15,24 @@ class RequestCartWepps extends RequestWepps {
 	public function request($action="") {
 		switch ($action) {
 			case 'add':
+				if (empty($this->get['id'])) {
+					ExceptionWepps::error(400);
+				}
 				$this->tpl = 'RequestAddCart.tpl';
 				$cart = new CartUtilsWepps();
 				$cart->add($this->get['id']);
 				break;
 			case 'edit':
+				if (empty($this->get['id'])) {
+					ExceptionWepps::error(400);
+				}
+				if (empty($this->get['quantity']) || !is_numeric($this->get['quantity'])) {
+					$this->get['quantity'] = 1;
+				}
+				$this->tpl = 'RequestAddCart.tpl';
+				$cart = new CartUtilsWepps();
+				$cart->edit($this->get['id'],$this->get['quantity']);
+				break;
 				break;
 			case 'remove':
 				break;

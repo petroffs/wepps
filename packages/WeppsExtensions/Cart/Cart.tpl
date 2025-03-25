@@ -21,7 +21,7 @@
 								<button class="sub">
 									<span></span>
 								</button>
-								<input type="text" name="quantity" value="{$item.quantity}" maxlength="3" min="1" max="20"/>
+								<input type="text" name="quantity" value="{$item.quantity}" maxlength="3" min="1" max="20" autocomplete="off"/>
 								<button class="add">
 									<span></span>
 								</button>
