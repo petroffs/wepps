@@ -13,14 +13,15 @@ require_once '../../../configloader.php';
 
 class RequestCartWepps extends RequestWepps {
 	public function request($action="") {
+		$cartUtils = new CartUtilsWepps();
 		switch ($action) {
 			case 'add':
 				if (empty($this->get['id'])) {
 					ExceptionWepps::error(400);
 				}
 				$this->tpl = 'RequestAddCart.tpl';
-				$cart = new CartUtilsWepps();
-				$cart->add($this->get['id']);
+				
+				$cartUtils->add($this->get['id']);
 				break;
 			case 'edit':
 				if (empty($this->get['id'])) {
@@ -29,10 +30,11 @@ class RequestCartWepps extends RequestWepps {
 				if (empty($this->get['quantity']) || !is_numeric($this->get['quantity'])) {
 					$this->get['quantity'] = 1;
 				}
-				$this->tpl = 'RequestAddCart.tpl';
-				$cart = new CartUtilsWepps();
-				$cart->edit($this->get['id'],$this->get['quantity']);
-				break;
+				$this->tpl = 'RequestEditCart.tpl';
+				$cartUtils->edit($this->get['id'],$this->get['quantity']);
+				$cartSummary = $cartUtils->getCartSummary();
+				$this->assign('cartSummary',$cartSummary);
+				$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
 				break;
 			case 'remove':
 				break;

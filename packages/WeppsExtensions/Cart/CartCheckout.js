@@ -5,7 +5,8 @@ var cartCheckoutInit = function() {
 		inputTimeout = setTimeout(() => {
 			layoutWepps.request({
 				data: 'action=edit&id=' + id + '&quantity='+inputVal+'&context=cart',
-				url: '/ext/Cart/Request.php'
+				url: '/ext/Cart/Request.php',
+				obj: $('#cart-checkout')
 			});
 		}, 300);
 	}

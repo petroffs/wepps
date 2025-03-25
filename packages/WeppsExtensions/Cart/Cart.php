@@ -22,7 +22,7 @@ class CartWepps extends ExtensionWepps {
 				}
 				$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
 				$smarty->assign('cartSummary',$cartSummary);
-				$smarty->assign('cartTotalTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartTotal.tpl'));
+				$smarty->assign('cartCheckoutTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartCheckout.tpl'));
 				break;
 			case 'checkout':
 			case 'order/complete/ea201f29-82a3-4d59-a522-9ccc00af95e5/':
