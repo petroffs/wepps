@@ -6,6 +6,7 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Spell\SpellWepps;
 use WeppsCore\Validator\ValidatorWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -20,7 +21,6 @@ class RequestCartWepps extends RequestWepps {
 					ExceptionWepps::error(400);
 				}
 				$this->tpl = 'RequestAddCart.tpl';
-				
 				$cartUtils->add($this->get['id']);
 				break;
 			case 'edit':
@@ -30,11 +30,12 @@ class RequestCartWepps extends RequestWepps {
 				if (empty($this->get['quantity']) || !is_numeric($this->get['quantity'])) {
 					$this->get['quantity'] = 1;
 				}
-				$this->tpl = 'RequestEditCart.tpl';
 				$cartUtils->edit($this->get['id'],$this->get['quantity']);
-				$cartSummary = $cartUtils->getCartSummary();
-				$this->assign('cartSummary',$cartSummary);
-				$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
+				self::displayCart($cartUtils);
+				break;
+			case 'check':
+				$cartUtils->check($this->get['id']);
+				self::displayCart($cartUtils);
 				break;
 			case 'remove':
 				break;
@@ -252,6 +253,12 @@ class RequestCartWepps extends RequestWepps {
 				ExceptionWepps::error404();
 				break;
 		}
+	}
+	private function displayCart(CartUtilsWepps $cartUtils) {
+		$this->tpl = 'RequestEditCart.tpl';
+		$cartSummary = $cartUtils->getCartSummary();
+		$this->assign('cartSummary',$cartSummary);
+		$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
 	}
 }
 

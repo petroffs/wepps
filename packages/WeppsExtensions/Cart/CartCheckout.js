@@ -1,16 +1,25 @@
-let editActive = ()=> {
+let editCheck = ()=> {
 	var ids = "";	
-	$('input[name="cart-active"]:checked').each(function(i,o){
+	$('input[name="cart-check"]:checked').each(function(i,o){
 		ids += $(o).val() + ",";
 	})
-	if (ids) {
-		console.log(ids);
-	} else {
-		console.log('remove');
-	}
+	layoutWepps.request({
+		data: 'action=check&id=' + ids + '&context=cart',
+		url: '/ext/Cart/Request.php',
+		obj: $('#cart-checkout')
+	});
 	return ids;
 }
-
+let editCheckAll = () => {
+	let count = $('input[name="cart-check"]:checked').length;
+	let countAll = $('input[name="cart-check"]').length;
+	let el = $('#cart-check-all'); 
+	if (count==countAll) {
+		el.prop('checked',true);
+	} else {
+		el.prop('checked',false);
+	}
+}
 let cartCheckoutInit = function() {
 	let editTimeout = null;
 	formWepps.minmaxAfter = function(id,inputVal) {
@@ -24,27 +33,27 @@ let cartCheckoutInit = function() {
 		}, 300);
 	}
 	formWepps.minmax();
-	
 	layoutWepps.handler({
-		obj : $('input[name="cart-active"]'),
+		obj : $('input[name="cart-check"]'),
 		event : 'change',
 		fn : ()=> {
-			let ids = editActive();
+			editCheck();
 		}
 	});
-	
 	layoutWepps.handler({
-		obj : $('#cart-active-all'),
+		obj : $('#cart-check-all'),
 		event : 'change',
 		fn : ()=> {
-			if ($('#cart-active-all').prop('checked')) {
-				$('input[name="cart-active"]').prop('checked',true);
+			if ($('#cart-check-all').prop('checked')) {
+				//console.log(1)
+				$('input[name="cart-check"]').prop('checked',true);
 			} else {
-				$('input[name="cart-active"]').prop('checked',false);	
+				//console.log(0)
+				$('input[name="cart-check"]').prop('checked',false);	
 			}
-			let ids = editActive();
+			editCheck();
 		}
-		
 	});
+	editCheckAll();
 }
 $(document).ready(cartCheckoutInit);

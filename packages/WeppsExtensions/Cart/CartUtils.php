@@ -47,27 +47,54 @@ class CartUtilsWepps {
 		ConnectWepps::$instance->query("update s_Users set JCart=? where Id=?",[$json,@$this->user['Id']]);
 		return $this->cart;
 	}
-	
 	public function add(int $id,int $quantity=1) {
-		if (!isset($this->cart['items'][$id])) {
-			$this->cart['items'][$id] = 0;
+		if (empty($this->cart['items'])) {
+			$this->cart['items'] = [];
 		}
-		$this->cart['items'][$id] += $quantity;
+		$keys = array_column($this->cart['items'],'id');
+		if (!in_array($id,$keys)) {
+			array_push($this->cart['items'], [
+					'id' => $id,
+					'ac' => 1,
+					'qu' => $quantity
+			]);
+		} else {
+			$index = array_search($id,$keys);
+			if (intval($index)>=0) {
+				$this->cart['items'][$index]['qu'] += $quantity;
+			}
+		}
 		return $this->setCart();
 	}
-	
+	public function edit(int $id,int $quantity=1) {
+		$keys = array_column($this->cart['items'],'id');
+		if (!in_array($id,$keys)) {
+			array_push($this->cart['items'], [
+					'id' => $id,
+					'ac' => 1,
+					'qu' => $quantity
+			]);
+		} else {
+			$index = array_search($id,$keys);
+			if (intval($index)>=0) {
+				$this->cart['items'][$index]['qu'] = $quantity;
+				$this->cart['items'][$index]['ac'] = 1;
+			}
+		}
+		return $this->setCart();
+	}
+	public function check(string $ids = '') {
+		$ex = explode(',', $ids);
+		foreach ($this->cart['items'] as $key => $value) {
+			$this->cart['items'][$key]['ac'] = (in_array($value['id'],$ex))?1:0;
+		}
+		return $this->setCart();
+	}
 	public function remove(int $id) {
+		exit();
 		if (isset($this->cart['items'][$id])) {
 			unset($this->cart['items'][$id]);
 		}
-		return $this->setCart();
-	}
-	
-	public function edit(int $id,int $quantity=1) {
-		if (!isset($this->cart['items'][$id])) {
-			$this->cart['items'][$id] = 0;
-		}
-		$this->cart['items'][$id] = $quantity;
 		return $this->setCart();
 	}
 	public function getCartSummary() {
@@ -83,14 +110,14 @@ class CartUtilsWepps {
 			return $output;
 		}
 		$sql = "";
-		foreach ($this->cart['items'] as $key=>$value) {
-			$output['quantity'] += $value;
-			$sql .= "\n(select '{$key}' `id`,'{$value}' `quantity`) union";
+		foreach ($this->cart['items'] as $value) {
+			$output['quantity'] += $value['qu'];
+			$sql .= "\n(select '{$value['id']}' `id`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
 		}
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
-		$ids = implode(',', array_keys($this->cart['items']));
+		$ids = implode(',', array_column($this->cart['items'],'id'));
 		$sql = "select x.id,p.Name name,
-				x.quantity,p.Price price, (x.quantity * p.Price) `sum`,
+				x.quantity,x.active,p.Price price, (x.quantity * p.Price) `sum`,
 				concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
 				f.FileUrl image
 				from Products p
