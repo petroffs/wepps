@@ -22,8 +22,9 @@ class CartWepps extends ExtensionWepps {
 				}
 				$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
 				$smarty->assign('cartSummary',$cartSummary);
-				#UtilsWepps::debug(array_column($cartSummary['favorites']['items'],'id'),1);
-				$smarty->assign('cartFavorites',array_column($cartSummary['favorites']['items'],'id'));
+				if (!empty($cartSummary['favorites']['items'])) {
+					$smarty->assign('cartFavorites',array_column($cartSummary['favorites']['items'],'id'));
+				}
 				$smarty->assign('cartCheckoutTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartCheckout.tpl'));
 				break;
 			case 'checkout':

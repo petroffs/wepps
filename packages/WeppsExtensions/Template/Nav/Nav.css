@@ -70,6 +70,7 @@ div.header-logo img {
 section.header-wrapper-top label.pps {
 	margin: 0 auto;
 	max-width: 540px;
+	display: block;
 }
 
 section.header-wrapper-top label.pps>input[name="term"] {
@@ -273,7 +274,7 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 }
 
 .page.footer-nav>section {
-	background: var(--color-95);
+	background: var(--color-100);
 	height: calc(var(--step) * 12);
 	display: flex;
 	flex-direction: row;
@@ -294,10 +295,14 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 	section.header-wrapper {
 	  border-bottom: none;
 	}
+	header {
+	  top: calc(var(--step) * -12);
+	}
 	header section.header-wrapper-top,
 	header.is-pinned section.header-wrapper-top {
-		grid-template-columns: auto 1fr;
+		grid-template-columns: 1fr;
 		min-height: calc(var(--step) * 12);
+		padding-bottom: var(--step2);
 	}
 	
 	section.header-wrapper-top label.pps>input[name="term"] {

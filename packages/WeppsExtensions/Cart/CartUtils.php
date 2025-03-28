@@ -52,7 +52,7 @@ class CartUtilsWepps {
 	}
 	
 	public function getFavorites() : array {
-		return $this->favorites;
+		return $this->favorites??[];
 	}
 	public function getCart(string $cart='') : array {
 		return $this->cart;

@@ -1,12 +1,9 @@
 .w_modal_parent {
-	overflow-y: scroll;
 	overflow: hidden;
 }
-.w_modal_parent > header,
-.w_modal_parent > footer,
-.w_modal_parent > main {
-    filter: blur(0px);
-    opacity: 0.9;
+.w_modal_parent>*:not(.w_modal_wrapper):not(.w_nav) {
+    filter: blur(2px);
+    opacity: 0.6;
 }
 .w_modal_wrapper {
 	background: rgba(255,255,255,0.1);

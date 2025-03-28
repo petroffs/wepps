@@ -8,7 +8,7 @@
 	max-height: calc(var(--step) * 48);
 	scrollbar-width: thin;
 	overflow-y: auto;
-	display: none;
+	display: block;
 	position: absolute;
 	z-index: 90;
 }
