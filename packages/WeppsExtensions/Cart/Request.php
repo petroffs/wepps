@@ -34,12 +34,23 @@ class RequestCartWepps extends RequestWepps {
 				self::displayCart($cartUtils);
 				break;
 			case 'check':
-				$cartUtils->check($this->get['id']);
+				$cartUtils->check(@$this->get['id']);
 				self::displayCart($cartUtils);
 				break;
 			case 'remove':
+				if (empty($this->get['id'])) {
+					ExceptionWepps::error(400);
+				}
+				$cartUtils->remove((int)$this->get['id']);
+				self::displayCart($cartUtils);
 				break;
 			case 'removeCart':
+				break;
+			case 'favorites':
+				if (empty($this->get['id'])) {
+					ExceptionWepps::error(400);
+				}
+				$cartUtils->setFavorites($this->get['id']);
 				break;
 			case 'addOrder':
 				break;
@@ -235,7 +246,7 @@ class RequestCartWepps extends RequestWepps {
 					//UtilsWepps::debug($order,1);
 					
 					
-					/**
+					/*
 					 * Отправка на страницу Финиша и подключение
 					 * финального скрипта для оплаты (при наличии)
 					 * Сохранить флаг в сессию, чтобы вызвать заказ на финише
@@ -257,8 +268,18 @@ class RequestCartWepps extends RequestWepps {
 	private function displayCart(CartUtilsWepps $cartUtils) {
 		$this->tpl = 'RequestEditCart.tpl';
 		$cartSummary = $cartUtils->getCartSummary();
+		if (empty($cartSummary['items'])) {
+			$this->fetch('cartCheckoutTpl','CartEmpty.tpl');
+			return;
+		}
 		$this->assign('cartSummary',$cartSummary);
+		$arr = [];
+		if (!empty($cartSummary['favorites']['items'])) {
+			$arr = array_column($cartSummary['favorites']['items'],'id');
+		}
+		$this->assign('cartFavorites',$arr);
 		$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
+		return;
 	}
 }
 

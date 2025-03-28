@@ -11,8 +11,8 @@
 				<div class="cart-image"><img src="/pic/lists{$item.image}"/></div>
 				<div class="cart-title">
 					<a href="{$item.url}" class="title">{$item.name}</a>
-					<a href=""><i class="bi bi-trash3"></i> Удалить</a>
-					<a href=""><i class="bi bi-bookmarks"></i> В избранное</a>
+					<a href="" class="cart-remove"><i class="bi bi-trash3"></i> <span>Удалить</span></a>
+					<a href="" class="cart-favorite{if $item.id|in_array:$cartFavorites} active{/if}"><i class="bi bi-bookmarks"></i> <span>Избранное</span></a>
 				</div>
 				<div class="cart-quantity">
 					<div class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
@@ -25,7 +25,7 @@
 						</button>
 					</div>
 					<div class="cart-price">
-						<span class="price"><span>{$item.price|money}</span></span><span> за 1 шт.</span>
+						<span class="price"><span>{$item.price|money}</span> за&nbsp;1&nbsp;шт.</span>{*<span> за 1 шт.</span>*}
 					</div> 
 				</div>
 				<div class="cart-sum price"><span>{$item.sum|money}</span></div>

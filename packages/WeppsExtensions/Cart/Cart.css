@@ -79,6 +79,14 @@ div.page.cart div.cart-title a:not(:first-child) {
 	display: block;
 }
 
+div.page.cart div.cart-title a.cart-remove.active {
+	color: var(--color-attention)
+}
+
+div.page.cart div.cart-title a.cart-favorite.active {
+	color: var(--color-success)
+}
+
 div.page.cart div.cart-quantity {
 	grid-area: quantity;
 }
@@ -92,6 +100,11 @@ div.page.cart .cart-price {
 div.page.cart .cart-price>span {
 	display: flex;
 	max-width: max-content;
+	
+}
+
+div.page.cart .price>span:after {
+	margin-right: var(--step);
 }
 
 div.page.cart div.cart-sum {

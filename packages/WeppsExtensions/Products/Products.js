@@ -5,6 +5,8 @@ var productsInit = function() {
 		content : 'content-wrapper'
 	});
 	filtersWepps.init();
+	cart.addHandler();
+	cart.favoritesHandler();
 }
 
 $(document).ready(productsInit);

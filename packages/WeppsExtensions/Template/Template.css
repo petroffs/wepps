@@ -142,16 +142,21 @@ body .price {
 	max-width: max-content;
 }
 
-body .price:after {
+body .price>span {
+	
+}
+
+body .price>span:after {
 	content: "₽";
 	margin-left: var(--step);
+	margin-right: var(--stepHalf);
 }
 
 body .price.price-before {
 	color: var(--color-50);
 }
 
-body .price.price-before::before {
+body .price.price-before>span::before {
 	content: "";
 	position: absolute;
 	bottom: 0.6em;

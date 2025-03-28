@@ -9,7 +9,7 @@ use WeppsCore\Utils\UtilsWepps;
 class CartUtilsWepps {
 	private $user = [];
 	private $cart = [];
-	
+	private $favorites = [];
 	public function __construct() {
 		if (empty(ConnectWepps::$projectData['user'])) {
 			$this->user['JCart'] = $this->_getCartFromCookies();
@@ -24,6 +24,7 @@ class CartUtilsWepps {
 				$this->setCart();
 			}
 			$this->user = $this->getUser(ConnectWepps::$projectData['user']);
+			$this->favorites = json_decode($this->user['JFav'],true);
 		}
 		$this->cart = json_decode($this->user['JCart']??'',true)??[];
 	}
@@ -32,6 +33,27 @@ class CartUtilsWepps {
 		return $this->user = $user;
 	}
 	
+	public function setFavorites(int $id) {
+		$this->favorites['items']??[];
+		$keys = array_column($this->favorites['items'],'id');
+		if (!in_array($id,$keys)) {
+			array_push($this->favorites['items'], [
+					'id' => $id,
+			]);
+		} else {
+			$index = array_search($id,$keys);
+			unset($this->favorites['items'][$index]);
+			$this->favorites['items'] = array_merge($this->favorites['items'],[]);
+		}
+		$this->favorites['date'] = date('Y-m-d H:i:s');
+		$json = json_encode($this->favorites);
+		ConnectWepps::$instance->query("update s_Users set JFav=? where Id=?",[$json,@$this->user['Id']]);
+		return $this->favorites;
+	}
+	
+	public function getFavorites() : array {
+		return $this->favorites;
+	}
 	public function getCart(string $cart='') : array {
 		return $this->cart;
 	}
@@ -91,9 +113,12 @@ class CartUtilsWepps {
 		return $this->setCart();
 	}
 	public function remove(int $id) {
-		exit();
-		if (isset($this->cart['items'][$id])) {
-			unset($this->cart['items'][$id]);
+		$keys = array_column($this->cart['items'],'id');
+		$index = array_search($id,$keys);
+		if (intval($index)>=0) {
+			unset($this->cart['items'][$index]);
+			$this->cart['items'] = array_merge($this->cart['items'],[]);
+			#UtilsWepps::debug($this->cart['items'],2);
 		}
 		return $this->setCart();
 	}
@@ -104,7 +129,8 @@ class CartUtilsWepps {
 				'sum' => 0,
 				'date' => "",
 				'delivery'=>[],
-				'payments'=>[]
+				'payments'=>[],
+				'favorites'=>[]
 		];
 		if (empty($this->cart['items'])) {
 			return $output;
@@ -128,6 +154,7 @@ class CartUtilsWepps {
 		$output['items'] = ConnectWepps::$instance->fetch($sql);
 		$output['sum'] = array_sum(array_column($output['items'],'sum'));
 		$output['date'] = $this->cart['date'];
+		$output['favorites'] = $this->getFavorites();
 		return $output;
 	}
 	

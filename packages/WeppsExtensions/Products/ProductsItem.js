@@ -1,4 +1,6 @@
-var readyProductsItemInit = function() {
+var productsItemInit = function() {
+	cart.addHandler();
+		cart.favoritesHandler();
 	if ($('.fotos-container').eq(0).hasClass('slick-initialized')) $('.fotos-container').eq(0).slick('unslick');
 	var slickOptions = {
 		autoplay : false,
@@ -27,6 +29,4 @@ var readyProductsItemInit = function() {
 	//$('.fotos-nav').eq(0).slick(slickOptions);
 }
 
-$(document).ready(readyProductsItemInit);
-
-
+$(document).ready(productsItemInit);

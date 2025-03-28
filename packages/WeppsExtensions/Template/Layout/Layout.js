@@ -1,4 +1,4 @@
-var layoutInit = function() {
+let layoutInit = function() {
 	$('.w_radius').height($('.w_radius').width());
 	$('.w_admin').find('a').on('click',function(event) {
 		event.stopPropagation();
@@ -136,16 +136,14 @@ class LayoutWepps {
 		let fn = settings.fn;
 		let delay = settings.delay??300;
 		let timeout = null;
-		obj.on(event,(e)=> {
+		obj.on(event,function(e) {
+			let self = $(this);
+			e.preventDefault();
 			clearTimeout(timeout);
 			timeout = setTimeout(()=>{
-				e.preventDefault();
-				fn()
+				fn(self)
 			},delay);
 		});
-		
-		
-		
 	}
 }
 
@@ -155,5 +153,5 @@ class UtilsWepps {
 	}
 }
 
-var layoutWepps = new LayoutWepps();
-var utilsWepps = new UtilsWepps();
+let layoutWepps = new LayoutWepps();
+let utilsWepps = new UtilsWepps();
