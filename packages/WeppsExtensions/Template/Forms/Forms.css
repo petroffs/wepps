@@ -78,6 +78,7 @@ label.pps * {
 }
 
 label.pps input,
+label.pps button,
 label.pps textarea,
 label.pps select {
 	font-family: var(--font);
