@@ -601,7 +601,7 @@ class FilesWepps {
 			return ['error'=>$errors[$filesfield],'js'=>$outer['Out']];
 		}
 		$filepathinfo = pathinfo($myFiles[0]['name']);
-		$filepathinfo['filename'] = strtolower(TextTransformsWepps::getTranslit($filepathinfo['filename'],2));
+		$filepathinfo['filename'] = strtolower(TextTransformsWepps::translit($filepathinfo['filename'],2));
 		$filedest = "{$root}/packages/WeppsExtensions/Addons/Forms/uploads/{$filepathinfo['filename']}-".date("U").".{$filepathinfo['extension']}";
 		move_uploaded_file($myFiles[0]['tmp_name'],$filedest);
 		if (!isset($_SESSION['uploads'][$myform][$filesfield])) {

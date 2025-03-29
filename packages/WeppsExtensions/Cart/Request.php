@@ -130,7 +130,7 @@ class RequestCartWepps extends RequestWepps {
 				$obj->setFields('Name,Id');
 				$obj->setConcat('Name as value');
 				$res = $obj->get("DisplayOff=0 and (CountryId=3159 or (CountryId=9908 and RegionId=10227)) and Name like '%{$this->get['term']}%'",10,1,"Priority,Name");
-				$json = TextTransformsWepps::getJsonCyr($res);
+				$json = json_encode($res,JSON_UNESCAPED_UNICODE);
 				header('Content-type:application/json;charset=utf-8');
 				echo $json;
 				exit();

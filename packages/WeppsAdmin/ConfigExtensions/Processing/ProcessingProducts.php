@@ -41,7 +41,7 @@ class ProcessingProductsWepps {
 				$update = ConnectWepps::$db->prepare("update Products set Name=?,Alias=? where Id=?");
 				foreach ($res as $value) {
 					$name = $this->shiftLetters($value['Name']);
-					$alias = TextTransformsWepps::getTranslit($name."-".$value['Id'],2);
+					$alias = TextTransformsWepps::translit($name."-".$value['Id'],2);
 					$update->execute([$name,$alias,$value['Id']]);
 				}
 				ConnectWepps::$db->commit();
@@ -69,7 +69,7 @@ class ProcessingProductsWepps {
 				foreach ($res as $value) {
 					$id = $value['TableNameId'];
 					$v = $this->shiftLetters($value['PValue']);
-					$alias = TextTransformsWepps::getTranslit($v,2);
+					$alias = TextTransformsWepps::translit($v,2);
 					$hash = md5($list . $field . $id . $prop . $v);
 					$update->execute([$alias,$v,$hash,$value['Id']]);
 				}

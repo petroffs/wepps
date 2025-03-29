@@ -583,7 +583,7 @@ class ListsWepps {
 	
 	public static function getUploadFileName ($upload,$list,$field,$id) {
 		$pathinfo = pathinfo($upload['path']);
-		$translit = TextTransformsWepps::getTranslit($upload['title']);
+		$translit = TextTransformsWepps::translit($upload['title']);
 		$prefix = sprintf("%06d", $id) . "_{$field}_" . date("U") . "_";
 		$lengthMax = 36;
 		$translitPos = strrpos($translit, '.');
@@ -641,7 +641,7 @@ class ListsWepps {
 			}
 			
 			$filepathinfo = pathinfo($value['name']);
-			$filepathinfo['filename'] = strtolower(TextTransformsWepps::getTranslit($filepathinfo['filename'],2));
+			$filepathinfo['filename'] = strtolower(TextTransformsWepps::translit($filepathinfo['filename'],2));
 			$fileurl = "/packages/WeppsAdmin/Admin/Forms/uploads/{$filepathinfo['filename']}-".date("U").".{$filepathinfo['extension']}";
 			$filedest = "{$root}{$fileurl}";
 			move_uploaded_file($value['tmp_name'],$filedest);
@@ -702,7 +702,7 @@ class ListsWepps {
 					'TableName'=>$list,
 					'TableNameId'=>$id,
 					'TableNameField'=>$field,
-					'Alias'=>TextTransformsWepps::getTranslit($v,2),
+					'Alias'=>TextTransformsWepps::translit($v,2),
 					'PValue'=>$v,
 					'DisplayOff2'=>0,
 			);

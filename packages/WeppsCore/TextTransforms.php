@@ -2,19 +2,15 @@
 namespace WeppsCore\TextTransforms;
 
 class TextTransformsWepps {
-	public static function russ($count) {
-		$tmp1 = $count;
-		$tmp2 = substr ( $tmp1, - 1 );
-		
-		$suffix = "у";
-		if ($tmp2 == 0 || ($tmp2 >= 5 && $tmp2 <= 9) || ($tmp1 >= 11 && $tmp1 <= 19)) {
-			$suffix = "";
-		} elseif ($tmp2 >= 2 && $tmp2 <= 4) {
-			$suffix = "ы";
-		}
-		return $suffix;
-	}
-	public static function russ1($count) {
+
+	/**
+	 * Корректные окончания для существительных
+	 * Пример результата: 0 коров, 1 корова, 3 коровы, 16 коров, 21 корова
+	 * 
+	 * @param int $count
+	 * @return string
+	 */
+	public static function ending1(int $count) : string {
 		$tmp1 = $count;
 		$tmp2 = substr ( $tmp1, - 1 );
 		
@@ -26,32 +22,46 @@ class TextTransformsWepps {
 		}
 		return $suffix;
 	}
-	public static function russ2($count) {
+	
+	/**
+	 * Корректные окончания для существительных
+	 * Пример результата: 0 товаров, 1 товар, 3 товара, 16 товаров, 21 товар
+	 *
+	 * @param int $count
+	 * @return string
+	 */
+	public static function ending2(int $count) : string {
 		$tmp1 = $count;
-		$tmp2 = substr ( $tmp1, - 1 );
-		
-		$suffix = "";
+		$tmp2 = substr($tmp1,-1);
+		$output = "";
 		if ($tmp2 == 0 || ($tmp2 >= 5 && $tmp2 <= 9) || ($tmp1 >= 11 && $tmp1 <= 19)) {
-			$suffix = "ов";
+			$output = "ов";
 		} elseif ($tmp2 >= 2 && $tmp2 <= 4) {
-			$suffix = "а";
+			$output = "а";
 		}
-		return $suffix;
+		return $output;
 	}
+	
 	public static function money($string,$view=0) {
 		$tmp = "";
 		if (strstr($string,"от ")!==false) {
 			$tmp = "от ";
 			$string = str_replace("от ","",$string);
 		}
-		if ($view==1) return number_format($string,2,".","");
-		if (is_numeric($string)) return $tmp.number_format($string,0,","," ");
+		if ($view==1) {
+			return number_format($string,2,".","");
+		}
+		if (is_numeric($string)) {
+			return $tmp.number_format($string,0,","," ");
+		}
 		return 0;
 	}
-	public static function setDate($date, $plusyear = null) {
+	public static function date($date, $plusyear = null) {
+		/** @var array $matches */
 		$t = preg_match ( "/(\d\d\d\d)-(\d\d)-(\d\d)/", $date, $matches );
-		if ($t == 0)
+		if ($t == 0) {
 			return "";
+		}
 		$month = array (
 				"января",
 				"февраля",
@@ -69,13 +79,12 @@ class TextTransformsWepps {
 		$dateD = $matches [3];
 		$dateM = $month [$matches [2] - 1];
 		$dateY = $matches [1];
-		
 		if ($plusyear == 1) {
 			$timestamp = mktime ( 0, 0, 0, $matches [2], $matches [3], $matches [1] + 1 );
 			$date = date ( "Y-m-d", $timestamp );
-			return $this->setDate ( $date );
+			return self::date ( $date );
 		}
-		return $new = $dateD . " " . $dateM . " " . $dateY . " г.";
+		return $dateD . " " . $dateM . " " . $dateY . " г.";
 	}
 	public static function num2str($inn = 0) {
 		$o = array (); // Результаты
@@ -185,7 +194,7 @@ class TextTransformsWepps {
 						2 
 				) 
 		) // 10^12
-		                                              // можно дописать всякие секстилионы ...
+		  // можно дописать всякие секстилионы ...
 		;
 		
 		// Нормализация значения, избавляемся от ТОЧКИ, например 6754321.67 переводим в 7654321067
@@ -238,36 +247,11 @@ class TextTransformsWepps {
 			return $f1;
 		return $f5;
 	}
-	public static function getNumberOrder($string) {
-		return sprintf ( "%04d", $string );
+	public static function number(int $number,string $format="%04d") : string {
+		return sprintf($format,$number);
 	}
-	
-	public static function getJsonCyr($inObj) {
-		$trans = array(
-				'\u0430'=>'а', '\u0431'=>'б', '\u0432'=>'в', '\u0433'=>'г',
-				'\u0434'=>'д', '\u0435'=>'е', '\u0451'=>'ё', '\u0436'=>'ж',
-				'\u0437'=>'з', '\u0438'=>'и', '\u0439'=>'й', '\u043a'=>'к',
-				'\u043b'=>'л', '\u043c'=>'м', '\u043d'=>'н', '\u043e'=>'о',
-				'\u043f'=>'п', '\u0440'=>'р', '\u0441'=>'с', '\u0442'=>'т',
-				'\u0443'=>'у', '\u0444'=>'ф', '\u0445'=>'х', '\u0446'=>'ц',
-				'\u0447'=>'ч', '\u0448'=>'ш', '\u0449'=>'щ', '\u044a'=>'ъ',
-				'\u044b'=>'ы', '\u044c'=>'ь', '\u044d'=>'э', '\u044e'=>'ю',
-				'\u044f'=>'я',
-				'\u0410'=>'А', '\u0411'=>'Б', '\u0412'=>'В', '\u0413'=>'Г',
-				'\u0414'=>'Д', '\u0415'=>'Е', '\u0401'=>'Ё', '\u0416'=>'Ж',
-				'\u0417'=>'З', '\u0418'=>'И', '\u0419'=>'Й', '\u041a'=>'К',
-				'\u041b'=>'Л', '\u041c'=>'М', '\u041d'=>'Н', '\u041e'=>'О',
-				'\u041f'=>'П', '\u0420'=>'Р', '\u0421'=>'С', '\u0422'=>'Т',
-				'\u0423'=>'У', '\u0424'=>'Ф', '\u0425'=>'Х', '\u0426'=>'Ц',
-				'\u0427'=>'Ч', '\u0428'=>'Ш', '\u0429'=>'Щ', '\u042a'=>'Ъ',
-				'\u042b'=>'Ы', '\u042c'=>'Ь', '\u042d'=>'Э', '\u042e'=>'Ю',
-				'\u042f'=>'Я',
-				'\u0456'=>'і', '\u0406'=>'І', '\u0454'=>'є', '\u0404'=>'Є',
-				'\u0457'=>'ї', '\u0407'=>'Ї', '\u0491'=>'ґ', '\u0490'=>'Ґ');
-		return strtr( json_encode($inObj), $trans);
-	}
-	
-	public static function getTranslit($cyr_str,$rule=1) {
+		
+	public static function translit($string,$rule=1) {
 		$tr = array(
 				"Ґ"=>"G","Ё"=>"YO","Є"=>"E","Ї"=>"YI","І"=>"I",
 				"і"=>"i","ґ"=>"g","ё"=>"yo","№"=>"#","є"=>"e",
@@ -285,7 +269,7 @@ class TextTransformsWepps {
 				"ц"=>"ts","ч"=>"ch","ш"=>"sh","щ"=>"sch","ъ"=>"",
 				"ы"=>"y","ь"=>"","э"=>"e","ю"=>"u","я"=>"ya"
 		);
-		$str = strtr($cyr_str,$tr);
+		$str = strtr($string,$tr);
 		switch ($rule) {
 			case 3:
 				$str = preg_replace('~[^-a-z-A-Z0-9_\.\/]+~u', '-', $str);

@@ -34,7 +34,7 @@ class RequestBackupWepps extends RequestWepps {
 				$table = (!empty($this->get['list']))?$this->get['list']:'';
 				$path = $root . $backupPath;
 				$type = 1;
-				$comment = (!empty($this->get['comment'])) ? "-".TextTransformsWepps::getTranslit($this->get['comment'],2) : "";
+				$comment = (!empty($this->get['comment'])) ? "-".TextTransformsWepps::translit($this->get['comment'],2) : "";
 				$filename = $path . $host . "-" . date("Ymd-His").$comment.".sql";
 				
 				/*

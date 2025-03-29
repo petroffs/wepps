@@ -31,7 +31,7 @@ class RequestNavigatorAdWepps extends RequestWepps {
                 if (!isset($res[0]['Id'])) {
                     ConnectWepps::$instance->close();
                 }
-                $json = TextTransformsWepps::getJsonCyr($res);
+                $json = json_encode($res,JSON_UNESCAPED_UNICODE);
                 header('Content-type:application/json;charset=utf-8');
                 echo $json;
                 ConnectWepps::$instance->close();
