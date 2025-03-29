@@ -146,8 +146,9 @@ class CartUtilsWepps {
 		$sql = "select x.id,p.Name name,
 				x.quantity,x.active,p.Price price, (x.quantity * p.Price) `sum`,p.PriceBefore priceBefore, 
 				(x.quantity * p.PriceBefore) `sumBefore`,
-				(x.quantity * if(p.PriceBefore=0,p.Price,p.PriceBefore)) `sumBeforeTotal`,
-				if(p.PriceBefore=0,0,(x.quantity * (p.PriceBefore - p.Price))) `sumSaving`,
+				(x.quantity * if(x.active=0,0,if(p.PriceBefore=0,p.Price,p.PriceBefore))) `sumBeforeTotal`,
+				if(p.PriceBefore=0,0,(x.quantity * if(x.active=0,0,(p.PriceBefore - p.Price)))) `sumSaving`,
+				if(x.active=0,0,(x.quantity * p.Price)) `sumActive`,
 				concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
 				f.FileUrl image
 				from Products p
@@ -159,6 +160,7 @@ class CartUtilsWepps {
 		$output['sum'] = array_sum(array_column($output['items'],'sum'));
 		$output['sumSaving'] = array_sum(array_column($output['items'],'sumSaving'));
 		$output['sumBefore'] = array_sum(array_column($output['items'],'sumBeforeTotal'));
+		$output['sumActive'] = array_sum(array_column($output['items'],'sumActive'));
 		$output['date'] = $this->cart['date'];
 		$output['favorites'] = $this->getFavorites();
 		return $output;

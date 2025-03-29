@@ -8,6 +8,25 @@ div.page.cart div.cart-total {
 	top: 90px;
 }
 
+div.page.cart div.cart-total h2 {
+	margin-bottom: var(--step2);
+}
+
+div.page.cart div.cart-total>div {
+	margin-bottom: var(--step2);
+	padding-bottom: var(--step2);
+	border-bottom: var(--border);
+}
+
+div.page.cart div.cart-total>div div.title {
+	font-weight: 600;
+}
+
+div.page.cart div.cart-total>div div.price {
+	font-weight: 600;
+	margin-left: auto;
+}
+
 div.page.cart div.content-block:not(:last-child) {
 	margin-bottom: var(--step4);
 }

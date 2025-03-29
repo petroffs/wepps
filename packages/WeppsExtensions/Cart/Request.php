@@ -273,6 +273,9 @@ class RequestCartWepps extends RequestWepps {
 			return;
 		}
 		$this->assign('cartSummary',$cartSummary);
+		$this->assign('cartText',[
+				'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantity'])
+		]);
 		$arr = [];
 		if (!empty($cartSummary['favorites']['items'])) {
 			$arr = array_column($cartSummary['favorites']['items'],'id');
