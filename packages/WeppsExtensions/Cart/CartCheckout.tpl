@@ -35,7 +35,11 @@
 	</div>
 	<div class="w_3scol_view_medium">
 		<div class="content-block cart-total"><h2>Детали заказа</h2>
+			<label class="pps pps_button pps_button_important"><input type="button" value="Перейти к оформлению"></label>
+			<div class="w_interval"></div>
 			<label class="pps pps_button"><input type="button" value="Перейти к оформлению"></label>
+			<div class="w_interval"></div>
+			<label class="pps pps_button"><button>Перейти к оформлению</button></label>
 		</div>
 	</div>
 </div>

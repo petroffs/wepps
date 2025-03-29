@@ -225,22 +225,28 @@ label.pps.pps_input input:focus {
 	box-shadow: inset 0 0 var(--step2) var(--color-95);
 }
 
-label.pps.pps_button {
+label.pps.pps_button {	
 	display: inline-block;
+	max-width: 100%;
 }
 
 a.pps_button,
 span.pps_button,
-label.pps.pps_button input {
+label.pps.pps_button input,
+label.pps.pps_button button {
 	font-size: var(--font-default);
-	color: var(--color-20);
-	background: var(--color-100);
-	border: var(--border);
+	white-space: normal;
+	color: var(--color-100);
+	background: var(--color-success);
+	border: 1ps solid var(--color-success);
 	border-radius: var(--step);
-	padding: 0 var(--step4);
+	padding: var(--step) var(--step4);
+	max-width: 100%;
 	min-height: calc(var(--step) * 8);
 	cursor: pointer;
 	display: inline-flex;
+	justify-content: center;
+	align-items: center;
 	outline: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -250,23 +256,28 @@ label.pps.pps_button input {
 
 a.pps_button:hover,
 span.pps_button:hover,
-label.pps.pps_button input:hover {
-	color: var(--color-focus);
-	background-color: var(--color-98);
+label.pps.pps_button input:hover,
+label.pps.pps_button button:hover {
+	background-color: var(--color-focus);
 }
 
 a.pps_button:active,
 span.pps_button:active,
-label.pps.pps_button input:active {
-	border-color: var(--color-focus);
+label.pps.pps_button input:active,
+label.pps.pps_button button:active {
+	background-color: var(--color-success);
+	border-color: var(--color-success);
 	cursor: default;
+	box-shadow: 0 0 var(--step2) rgba(0,0,0,0.2);
 }
 
 a.pps_button:disabled,
 span.pps_button:disabled,
 label.pps.pps_button input:disabled,
-label.pps.pps_button input:disabled:hover {
-	background-color: var(--color-85);
+label.pps.pps_button input:disabled:hover,
+label.pps.pps_button button:disabled,
+label.pps.pps_button button:disabled:hover {
+	background-color: var(--color-75);
 	border-color: var(--color-85);
 	box-shadow: none;
 	cursor: default;
@@ -277,6 +288,16 @@ body span.pps_button {
 	text-decoration: none;
 	align-items: center;
 	justify-content: center;
+}
+
+label.pps_button.pps_button_important a.pps_button,
+label.pps_button.pps_button_important span.pps_button,
+label.pps_button.pps_button_important input,
+label.pps_button.pps_button_important button {
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	min-height: calc(var(--step) * 10);
 }
 
 div.pps.pps_minmax {
