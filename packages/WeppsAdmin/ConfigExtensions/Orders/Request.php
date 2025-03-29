@@ -7,7 +7,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Addons\Mail\MailWepps;
 
@@ -318,13 +318,13 @@ class RequestOrdersWepps extends RequestWepps {
 					<strong>{$value['Name']}</strong>{$optionsText}
 				</td>
 				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".SpellWepps::money($value['Price'])." Р.
+					".TextTransformsWepps::money($value['Price'])." Р.
 				</td>
 				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
 					{$value['ItemQty']}
 				</td>
 				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".SpellWepps::money($value['Summ'])." Р.
+					".TextTransformsWepps::money($value['Summ'])." Р.
 				</td>
 			</tr>
 			";
@@ -332,7 +332,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$text .= "
 		<tr>
 			<td colspan=\"3\" align=\"right\"><strong>ИТОГО: </strong></td>
-			<td align=\"right\">".SpellWepps::money($order['order']['Summ'])." Р.</td>
+			<td align=\"right\">".TextTransformsWepps::money($order['order']['Summ'])." Р.</td>
 		</tr>
 		";
 		$text .= "</table>\n";

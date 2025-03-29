@@ -5,7 +5,7 @@ use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 
 require_once __DIR__ . '/../../../../config.php';
 require_once __DIR__ . '/../../../../autoloader.php';
@@ -34,7 +34,7 @@ class RequestBackupWepps extends RequestWepps {
 				$table = (!empty($this->get['list']))?$this->get['list']:'';
 				$path = $root . $backupPath;
 				$type = 1;
-				$comment = (!empty($this->get['comment'])) ? "-".SpellWepps::getTranslit($this->get['comment'],2) : "";
+				$comment = (!empty($this->get['comment'])) ? "-".TextTransformsWepps::getTranslit($this->get['comment'],2) : "";
 				$filename = $path . $host . "-" . date("Ymd-His").$comment.".sql";
 				
 				/*

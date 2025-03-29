@@ -7,7 +7,7 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Admin\AdminWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -248,7 +248,7 @@ class RequestListsWepps extends RequestWepps {
 				if (!isset($res[0]['Id'])) {
 					ConnectWepps::$instance->close();
 				}
-				$json = SpellWepps::getJsonCyr($res);
+				$json = TextTransformsWepps::getJsonCyr($res);
 				header('Content-type:application/json;charset=utf-8');
 				echo $json;
 				ConnectWepps::$instance->close();

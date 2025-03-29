@@ -3,7 +3,7 @@ namespace WeppsExtensions\Cart;
 
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Utils\UtilsWepps;
 
 class CartUtilsWepps {
@@ -144,8 +144,10 @@ class CartUtilsWepps {
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
 		$ids = implode(',', array_column($this->cart['items'],'id'));
 		$sql = "select x.id,p.Name name,
-				x.quantity,x.active,p.Price price, (x.quantity * p.Price) `sum`,
-				p.PriceBefore priceBefore, (x.quantity * if(p.PriceBefore=0,p.Price,p.PriceBefore)) `sumBefore`,if(p.PriceBefore=0,0,(x.quantity * (p.PriceBefore - p.Price))) `sumSaving`,
+				x.quantity,x.active,p.Price price, (x.quantity * p.Price) `sum`,p.PriceBefore priceBefore, 
+				(x.quantity * p.PriceBefore) `sumBefore`,
+				(x.quantity * if(p.PriceBefore=0,p.Price,p.PriceBefore)) `sumBeforeTotal`,
+				if(p.PriceBefore=0,0,(x.quantity * (p.PriceBefore - p.Price))) `sumSaving`,
 				concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
 				f.FileUrl image
 				from Products p
@@ -156,7 +158,7 @@ class CartUtilsWepps {
 		$output['items'] = ConnectWepps::$instance->fetch($sql);
 		$output['sum'] = array_sum(array_column($output['items'],'sum'));
 		$output['sumSaving'] = array_sum(array_column($output['items'],'sumSaving'));
-		$output['sumBefore'] = array_sum(array_column($output['items'],'sumBefore'));
+		$output['sumBefore'] = array_sum(array_column($output['items'],'sumBeforeTotal'));
 		$output['date'] = $this->cart['date'];
 		$output['favorites'] = $this->getFavorites();
 		return $output;
@@ -194,7 +196,7 @@ class CartUtilsWepps {
 		$orderId = ConnectWepps::$instance->insert("TradeOrders", $row);
 		$order = 	self::getOrder($orderId);
 					self::addOrderPositions($orderId);
-		$text = "<h4>ЗАКАЗ №".SpellWepps::getNumberOrder($orderId)." : ".$order['Name']."</h4>\n\n";
+		$text = "<h4>ЗАКАЗ №".TextTransformsWepps::getNumberOrder($orderId)." : ".$order['Name']."</h4>\n\n";
 		if (strlen($row['OComment'])!=0) $text.= "<h4>ПРИМЕЧАНИЯ К ЗАКАЗУ</h4>\n".$order['OComment']."\n\n";
 		$text.= "<h4>ТОВАРЫ ЗАКАЗА</h4>\n";
 		
@@ -219,11 +221,11 @@ class CartUtilsWepps {
 		}
 		$text .= "</table>";
 		
-		$str = ($cartSummary['cartAdd']['deliveryPrice']!=0) ? " (".SpellWepps::money($cartSummary['cartAdd']['deliveryPrice'])." Р.)" : "";
+		$str = ($cartSummary['cartAdd']['deliveryPrice']!=0) ? " (".TextTransformsWepps::money($cartSummary['cartAdd']['deliveryPrice'])." Р.)" : "";
 		$text .= "<p><b>ДОСТАВКА</b>: ".$order['ODelivery_Name'].$str."</p>\n";
-		$str = ($cartSummary['cartAdd']['paymentPrice']!=0) ? " (".SpellWepps::money($cartSummary['cartAdd']['paymentPrice'])." Р.)" : "";
+		$str = ($cartSummary['cartAdd']['paymentPrice']!=0) ? " (".TextTransformsWepps::money($cartSummary['cartAdd']['paymentPrice'])." Р.)" : "";
 		$text .= "<p><b>ОПЛАТА:</b> ".$order['OPayment_Name'].$str."</p>\n";
-		$text .= "<p><b>ИТОГО К ОПЛАТЕ:</b> ".SpellWepps::money($cartSummary['priceTotal'])." Р.</p>\n\n";
+		$text .= "<p><b>ИТОГО К ОПЛАТЕ:</b> ".TextTransformsWepps::money($cartSummary['priceTotal'])." Р.</p>\n\n";
 		$text.= "<p><b>ИНФОРМАЦИЯ О КЛИЕНТЕ</b><br/>\n";
 		$text.= $user['Name']."<br/>\n";
 		$text.= "Адрес доставки: ".$order['AddressIndex'].", ".$order['City']."<br/>\n";

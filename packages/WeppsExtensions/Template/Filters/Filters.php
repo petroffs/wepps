@@ -2,7 +2,7 @@
 namespace WeppsExtensions\Template\Filters;
 
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Utils\UtilsWepps;
 
 class FiltersWepps {
@@ -55,7 +55,7 @@ class FiltersWepps {
 			var options = $('.options-count').eq(0);
 			options.attr('data-last','{$last}');
 			options.attr('data-check','{$checked}');
-			$('#pps-options-count').html('{$count} товар".SpellWepps::russ2($count)."');
+			$('#pps-options-count').html('{$count} товар".TextTransformsWepps::russ2($count)."');
 			//$('.text-top').addClass('pps_hide');
 			
 			var expand = $('.nav-filters-{$last}').find('li.pps_expand').find('a');

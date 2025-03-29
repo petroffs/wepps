@@ -4,7 +4,7 @@ namespace WeppsCore\Utils;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -601,7 +601,7 @@ class FilesWepps {
 			return ['error'=>$errors[$filesfield],'js'=>$outer['Out']];
 		}
 		$filepathinfo = pathinfo($myFiles[0]['name']);
-		$filepathinfo['filename'] = strtolower(SpellWepps::getTranslit($filepathinfo['filename'],2));
+		$filepathinfo['filename'] = strtolower(TextTransformsWepps::getTranslit($filepathinfo['filename'],2));
 		$filedest = "{$root}/packages/WeppsExtensions/Addons/Forms/uploads/{$filepathinfo['filename']}-".date("U").".{$filepathinfo['extension']}";
 		move_uploaded_file($myFiles[0]['tmp_name'],$filedest);
 		if (!isset($_SESSION['uploads'][$myform][$filesfield])) {

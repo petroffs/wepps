@@ -5,7 +5,7 @@ use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -31,7 +31,7 @@ class RequestNavigatorAdWepps extends RequestWepps {
                 if (!isset($res[0]['Id'])) {
                     ConnectWepps::$instance->close();
                 }
-                $json = SpellWepps::getJsonCyr($res);
+                $json = TextTransformsWepps::getJsonCyr($res);
                 header('Content-type:application/json;charset=utf-8');
                 echo $json;
                 ConnectWepps::$instance->close();

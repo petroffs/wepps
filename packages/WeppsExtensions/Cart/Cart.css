@@ -103,7 +103,7 @@ div.page.cart .cart-price>span {
 	
 }
 
-div.page.cart .price>span:after {
+div.page.cart .cart-price .price>span:after {
 	margin-right: var(--step);
 }
 

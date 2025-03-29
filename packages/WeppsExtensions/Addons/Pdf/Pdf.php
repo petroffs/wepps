@@ -5,7 +5,7 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 
@@ -39,7 +39,7 @@ class PdfWepps {
 					$orderNDS = round($order['Summ'] / ((100 + $shop['UrNDS']) / 100) * ($shop['UrNDS'] / 100));
 					$smarty->assign('orderNDS',$orderNDS);
 				}
-				$orderSummLetter = SpellWepps::num2str($order['Summ']);
+				$orderSummLetter = TextTransformsWepps::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
@@ -53,13 +53,13 @@ class PdfWepps {
 				$smarty->assign('user',$user);
 				$this->css .= $smarty->fetch('PdfOrder.css');
 				$this->output = $smarty->fetch('PdfOrder.tpl');
-				$this->filename = "Заказ ". SpellWepps::getNumberOrder($order['Id']).".pdf";
+				$this->filename = "Заказ ". TextTransformsWepps::getNumberOrder($order['Id']).".pdf";
 				break;
 			case "Receipt" :
 				$order = CartUtilsWepps::getOrder($this->get['id']);
 				$obj = new DataWepps("TradeClientsHistory");
 				$orderPositions = $obj->getMax("OrderId='{$this->get['id']}'");
-				$orderSummLetter = SpellWepps::num2str($order['Summ']);
+				$orderSummLetter = TextTransformsWepps::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
@@ -73,7 +73,7 @@ class PdfWepps {
 				$smarty->assign('user',$user);
 				$this->css .= $smarty->fetch('PdfReceipt.css');
 				$this->output = $smarty->fetch('PdfReceipt.tpl');
-				$this->filename = "Квитанция ". SpellWepps::getNumberOrder($order['Id']).".pdf";
+				$this->filename = "Квитанция ". TextTransformsWepps::getNumberOrder($order['Id']).".pdf";
 				break;
 			case "Invoice" :
 				$order = CartUtilsWepps::getOrder($this->get['id']);
@@ -83,7 +83,7 @@ class PdfWepps {
 					$orderNDS = round($order['Summ'] / ((100 + $shop['UrNDS']) / 100) * ($shop['UrNDS'] / 100));
 					$smarty->assign('orderNDS',$orderNDS);
 				}
-				$orderSummLetter = SpellWepps::num2str($order['Summ']);
+				$orderSummLetter = TextTransformsWepps::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
@@ -94,7 +94,7 @@ class PdfWepps {
 				$smarty->assign('orderSummLetter',$orderSummLetter);
 				$this->css .= $smarty->fetch('PdfInvoice.css');
 				$this->output = $smarty->fetch('PdfInvoice.tpl');
-				$this->filename = "Счет на оплату ". SpellWepps::getNumberOrder($order['Id']).".pdf";
+				$this->filename = "Счет на оплату ". TextTransformsWepps::getNumberOrder($order['Id']).".pdf";
 				break;
 			default :
 				ExceptionWepps::error404 ();

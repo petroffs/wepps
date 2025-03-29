@@ -7,7 +7,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsAdmin\Admin\AdminWepps;
 use WeppsCore\Core\DataWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 
 if (!isset($_SESSION)) {
@@ -583,7 +583,7 @@ class ListsWepps {
 	
 	public static function getUploadFileName ($upload,$list,$field,$id) {
 		$pathinfo = pathinfo($upload['path']);
-		$translit = SpellWepps::getTranslit($upload['title']);
+		$translit = TextTransformsWepps::getTranslit($upload['title']);
 		$prefix = sprintf("%06d", $id) . "_{$field}_" . date("U") . "_";
 		$lengthMax = 36;
 		$translitPos = strrpos($translit, '.');
@@ -641,7 +641,7 @@ class ListsWepps {
 			}
 			
 			$filepathinfo = pathinfo($value['name']);
-			$filepathinfo['filename'] = strtolower(SpellWepps::getTranslit($filepathinfo['filename'],2));
+			$filepathinfo['filename'] = strtolower(TextTransformsWepps::getTranslit($filepathinfo['filename'],2));
 			$fileurl = "/packages/WeppsAdmin/Admin/Forms/uploads/{$filepathinfo['filename']}-".date("U").".{$filepathinfo['extension']}";
 			$filedest = "{$root}{$fileurl}";
 			move_uploaded_file($value['tmp_name'],$filedest);
@@ -702,7 +702,7 @@ class ListsWepps {
 					'TableName'=>$list,
 					'TableNameId'=>$id,
 					'TableNameField'=>$field,
-					'Alias'=>SpellWepps::getTranslit($v,2),
+					'Alias'=>TextTransformsWepps::getTranslit($v,2),
 					'PValue'=>$v,
 					'DisplayOff2'=>0,
 			);

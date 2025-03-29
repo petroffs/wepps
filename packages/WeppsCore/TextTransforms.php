@@ -1,7 +1,7 @@
 <?php
-namespace WeppsCore\Spell;
+namespace WeppsCore\TextTransforms;
 
-class SpellWepps {
+class TextTransformsWepps {
 	public static function russ($count) {
 		$tmp1 = $count;
 		$tmp2 = substr ( $tmp1, - 1 );

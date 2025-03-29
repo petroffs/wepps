@@ -4,7 +4,7 @@ namespace WeppsExtensions\Cart;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Utils\UtilsWepps;
 
@@ -77,7 +77,7 @@ class RequestCartWepps extends RequestWepps {
 					readyCartInit();
 					cartTopUpdate({
 						'qtyTop' : '{$cartSummary['qty']}',
-						'priceAmountTop' : '".SpellWepps::money($cartSummary['priceAmount'])."'
+						'priceAmountTop' : '".TextTransformsWepps::money($cartSummary['priceAmount'])."'
 					});
 					
 				";
@@ -110,7 +110,7 @@ class RequestCartWepps extends RequestWepps {
 				readyCartInit();
 				cartTopUpdate({
 					'qtyTop' : '{$cartSummary['qty']}',
-					'priceAmountTop' : '". SpellWepps::money($cartSummary['priceAmount'])."'
+					'priceAmountTop' : '". TextTransformsWepps::money($cartSummary['priceAmount'])."'
 				});
 				";
 				
@@ -130,7 +130,7 @@ class RequestCartWepps extends RequestWepps {
 				$obj->setFields('Name,Id');
 				$obj->setConcat('Name as value');
 				$res = $obj->get("DisplayOff=0 and (CountryId=3159 or (CountryId=9908 and RegionId=10227)) and Name like '%{$this->get['term']}%'",10,1,"Priority,Name");
-				$json = SpellWepps::getJsonCyr($res);
+				$json = TextTransformsWepps::getJsonCyr($res);
 				header('Content-type:application/json;charset=utf-8');
 				echo $json;
 				exit();

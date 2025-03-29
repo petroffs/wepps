@@ -3,7 +3,7 @@ namespace WeppsAdmin\ConfigExtensions\Processing;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 
 class ProcessingProductsWepps {
 	public function __construct() {
@@ -41,7 +41,7 @@ class ProcessingProductsWepps {
 				$update = ConnectWepps::$db->prepare("update Products set Name=?,Alias=? where Id=?");
 				foreach ($res as $value) {
 					$name = $this->shiftLetters($value['Name']);
-					$alias = SpellWepps::getTranslit($name."-".$value['Id'],2);
+					$alias = TextTransformsWepps::getTranslit($name."-".$value['Id'],2);
 					$update->execute([$name,$alias,$value['Id']]);
 				}
 				ConnectWepps::$db->commit();
@@ -69,7 +69,7 @@ class ProcessingProductsWepps {
 				foreach ($res as $value) {
 					$id = $value['TableNameId'];
 					$v = $this->shiftLetters($value['PValue']);
-					$alias = SpellWepps::getTranslit($v,2);
+					$alias = TextTransformsWepps::getTranslit($v,2);
 					$hash = md5($list . $field . $id . $prop . $v);
 					$update->execute([$alias,$v,$hash,$value['Id']]);
 				}
@@ -80,8 +80,6 @@ class ProcessingProductsWepps {
 				UtilsWepps::debug($e,21);
 			}
 		}
-		
-		
 	}
 	private function shiftLetters($str) {
 		$lower_vowels = ['a', 'e', 'i', 'o', 'u'];

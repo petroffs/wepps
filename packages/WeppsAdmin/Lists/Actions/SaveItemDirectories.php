@@ -5,7 +5,7 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsAdmin\Admin\AdminWepps;
-use WeppsCore\Spell\SpellWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 
 class SaveItemDirectoriesWepps extends RequestWepps {
 	public $noclose = 1;
@@ -21,7 +21,7 @@ class SaveItemDirectoriesWepps extends RequestWepps {
 	    $root = ConnectWepps::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='s_Navigator') {
 	    	if ($this->element['Url']=='') {
-	    		$url = "/".SpellWepps::getTranslit($this->element['Name'],2)."/";
+	    		$url = "/".TextTransformsWepps::getTranslit($this->element['Name'],2)."/";
 	    		$sql = "update s_Navigator set Url='{$url}' where Id='{$this->element['Id']}'";
 	    		ConnectWepps::$instance->query($sql);
 	    		$this->element['Url'] = $url;

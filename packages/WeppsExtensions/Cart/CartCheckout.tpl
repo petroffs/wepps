@@ -43,11 +43,7 @@
 			<div>{$cartSummary.quantity} товара {$cartSummary.sumBefore}</div>
 			<div>скидка {$cartSummary.sumSaving}</div>
 			<div>итого {$cartSummary.sum}</div>
-			<label class="pps pps_button pps_button_important"><input type="button" value="Перейти к оформлению"></label>
-			<div class="w_interval"></div>
-			<label class="pps pps_button"><input type="button" value="Перейти к оформлению"></label>
-			<div class="w_interval"></div>
-			<label class="pps pps_button"><button>Перейти к оформлению</button></label>
+			<label class="pps pps_button pps_button_important"><button>Перейти к оформлению</button></label>
 		</div>
 	</div>
 </div>
