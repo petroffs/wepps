@@ -127,6 +127,7 @@ class CartUtilsWepps {
 				'items' => [],
 				'quantity' => 0,
 				'sum' => 0,
+				'sumSaving' => 0,
 				'date' => "",
 				'delivery'=>[],
 				'payments'=>[],
@@ -144,6 +145,7 @@ class CartUtilsWepps {
 		$ids = implode(',', array_column($this->cart['items'],'id'));
 		$sql = "select x.id,p.Name name,
 				x.quantity,x.active,p.Price price, (x.quantity * p.Price) `sum`,
+				p.PriceBefore priceBefore, (x.quantity * if(p.PriceBefore=0,p.Price,p.PriceBefore)) `sumBefore`,if(p.PriceBefore=0,0,(x.quantity * (p.PriceBefore - p.Price))) `sumSaving`,
 				concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
 				f.FileUrl image
 				from Products p
@@ -153,6 +155,8 @@ class CartUtilsWepps {
 				where p.Id in ($ids)";
 		$output['items'] = ConnectWepps::$instance->fetch($sql);
 		$output['sum'] = array_sum(array_column($output['items'],'sum'));
+		$output['sumSaving'] = array_sum(array_column($output['items'],'sumSaving'));
+		$output['sumBefore'] = array_sum(array_column($output['items'],'sumBefore'));
 		$output['date'] = $this->cart['date'];
 		$output['favorites'] = $this->getFavorites();
 		return $output;

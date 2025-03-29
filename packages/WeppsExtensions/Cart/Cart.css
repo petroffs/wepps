@@ -114,6 +114,14 @@ div.page.cart div.cart-sum {
 	grid-area: sum;
 }
 
+div.page.cart div.cart-sum > div {
+	margin-left: auto;
+}
+
+div.page.cart div.cart-sum .price.price-before {
+	font-size: var(--font-small);
+}
+
 div.page.cart h1 {
 	margin-bottom: var(--step2)
 }

@@ -28,13 +28,21 @@
 						<span class="price"><span>{$item.price|money}</span> за&nbsp;1&nbsp;шт.</span>{*<span> за 1 шт.</span>*}
 					</div> 
 				</div>
-				<div class="cart-sum price"><span>{$item.sum|money}</span></div>
+				<div class="cart-sum">
+					<div class="price"><span>{$item.sum|money}</span></div>
+					{if $item.sumBefore>0}
+					<div class="price price-before"><span>{$item.sumBefore|money}</span></div>
+					{/if}
+				</div>
 			</section>
 			{/foreach}
 		</div>
 	</div>
 	<div class="w_3scol_view_medium">
 		<div class="content-block cart-total"><h2>Детали заказа</h2>
+			<div>{$cartSummary.quantity} товара {$cartSummary.sumBefore}</div>
+			<div>скидка {$cartSummary.sumSaving}</div>
+			<div>итого {$cartSummary.sum}</div>
 			<label class="pps pps_button pps_button_important"><input type="button" value="Перейти к оформлению"></label>
 			<div class="w_interval"></div>
 			<label class="pps pps_button"><input type="button" value="Перейти к оформлению"></label>
