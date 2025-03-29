@@ -51,7 +51,7 @@
 			<div class="products-wrapper">
 				<div class="products-options content-block pps_flex pps_flex_row">
 					<div id="pps-option-filters"><i class="bi bi-sliders"></i></div>
-					<div id="pps-options-count">{$productsCount} товаров</div>
+					<div id="pps-options-count">{$productsCount}</div>
 					<div id="pps-options-sort">
 						<label class="pps pps_select w_select">
 							<select data-minimum-results-for-search="Infinity">

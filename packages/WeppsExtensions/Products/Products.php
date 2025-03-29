@@ -7,8 +7,9 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsExtensions\Template\Filters\FiltersWepps;
 use WeppsExtensions\Childs\ChildsWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class ProductsWepps extends ExtensionWepps {
 	private $filters;
@@ -38,7 +39,7 @@ class ProductsWepps extends ExtensionWepps {
 			];
 			$products = $productsUtils->getProducts($settings);
 			$smarty->assign('products',$products['rows']);
-			$smarty->assign('productsCount',$products['count']);
+			$smarty->assign('productsCount', $products['count'] . ' ' . TextTransformsWepps::ending2("товар",$products['count']));
 			$smarty->assign('productsSorting',$sorting['rows']);
 			$smarty->assign('productsSortingActive',$sorting['active']);
 			$smarty->assign('paginator',$products['paginator']);

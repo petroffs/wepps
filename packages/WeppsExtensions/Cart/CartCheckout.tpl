@@ -40,7 +40,7 @@
 	</div>
 	<div class="w_3scol_view_medium">
 		<div class="content-block cart-total"><h2>Детали заказа</h2>
-			<div>{$cartSummary.quantity} товара {$cartSummary.sumBefore}</div>
+			<div>{$cartSummary.quantity} {$cartText.goodsCount} {$cartSummary.sumBefore}</div>
 			<div>скидка {$cartSummary.sumSaving}</div>
 			<div>итого {$cartSummary.sum}</div>
 			<label class="pps pps_button pps_button_important"><button>Перейти к оформлению</button></label>

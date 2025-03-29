@@ -6,6 +6,7 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\TextTransforms\TextTransformsWepps;
 
 class CartWepps extends ExtensionWepps {
 	public function request() {
@@ -22,6 +23,9 @@ class CartWepps extends ExtensionWepps {
 				}
 				$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
 				$smarty->assign('cartSummary',$cartSummary);
+				$smarty->assign('cartText',[
+						'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantity'])
+				]);
 				if (!empty($cartSummary['favorites']['items'])) {
 					$smarty->assign('cartFavorites',array_column($cartSummary['favorites']['items'],'id'));
 				}

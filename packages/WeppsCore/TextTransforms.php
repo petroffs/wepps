@@ -10,7 +10,7 @@ class TextTransformsWepps {
 	 * @param int $count
 	 * @return string
 	 */
-	public static function ending1(int $count) : string {
+	public static function ending1(string $string,int $count) : string {
 		$tmp1 = $count;
 		$tmp2 = substr ( $tmp1, - 1 );
 		
@@ -20,7 +20,7 @@ class TextTransformsWepps {
 		} elseif ($tmp2 >= 2 && $tmp2 <= 4) {
 			$suffix = "а";
 		}
-		return $suffix;
+		return $string.$suffix;
 	}
 	
 	/**
@@ -30,7 +30,7 @@ class TextTransformsWepps {
 	 * @param int $count
 	 * @return string
 	 */
-	public static function ending2(int $count) : string {
+	public static function ending2(string $string,int $count) : string {
 		$tmp1 = $count;
 		$tmp2 = substr($tmp1,-1);
 		$output = "";
@@ -39,7 +39,7 @@ class TextTransformsWepps {
 		} elseif ($tmp2 >= 2 && $tmp2 <= 4) {
 			$output = "а";
 		}
-		return $output;
+		return $string.$output;
 	}
 	
 	public static function money($string,$view=0) {
