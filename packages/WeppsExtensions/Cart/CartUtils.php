@@ -126,8 +126,11 @@ class CartUtilsWepps {
 		$output = [
 				'items' => [],
 				'quantity' => 0,
+				'quantityActive' => 0,
 				'sum' => 0,
 				'sumSaving' => 0,
+				'sumBefore' => 0,
+				'sumActive' => 0,
 				'date' => "",
 				'delivery'=>[],
 				'payments'=>[],
@@ -148,6 +151,7 @@ class CartUtilsWepps {
 				(x.quantity * p.PriceBefore) `sumBefore`,
 				(x.quantity * if(x.active=0,0,if(p.PriceBefore=0,p.Price,p.PriceBefore))) `sumBeforeTotal`,
 				if(p.PriceBefore=0,0,(x.quantity * if(x.active=0,0,(p.PriceBefore - p.Price)))) `sumSaving`,
+				if(x.active=0,0,x.quantity) `quantityActive`,
 				if(x.active=0,0,(x.quantity * p.Price)) `sumActive`,
 				concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
 				f.FileUrl image
@@ -157,6 +161,8 @@ class CartUtilsWepps {
 				left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
 				where p.Id in ($ids)";
 		$output['items'] = ConnectWepps::$instance->fetch($sql);
+		$output['quantity'] = array_sum(array_column($output['items'],'quantity'));
+		$output['quantityActive'] = array_sum(array_column($output['items'],'quantityActive'));
 		$output['sum'] = array_sum(array_column($output['items'],'sum'));
 		$output['sumSaving'] = array_sum(array_column($output['items'],'sumSaving'));
 		$output['sumBefore'] = array_sum(array_column($output['items'],'sumBeforeTotal'));

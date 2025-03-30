@@ -145,6 +145,14 @@ div.page.cart h1 {
 	margin-bottom: var(--step2)
 }
 
+div.cart-region.content-block {
+	overflow: inherit;
+}
+
+div.cart-region label.pps.pps_input {
+	display: block;
+}
+
 @media screen and (max-width: 480px) {
 	div.page.cart div.cart-items>section {
 		grid-template-columns: auto repeat(3, 1fr);

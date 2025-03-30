@@ -65,16 +65,10 @@ class SuggestionsWepps {
 				loadSuggestions(self.input.val().trim());
 			}
 		});
-		// Клик по подсказке
-		results.on('click', resultsItemClass, function() {
-			self.input.val($(this).text());
-			results.hide();
-			$(this).closest('form').submit();
-		});
 		let selectedIndex = -1; // Индекс выбранного элемента
 		// Обработчик клавиатуры
 		self.input.on('keydown', function(e) {
-			const $suggestions = results.find(resultsItemClass);
+			const suggestions = results.find(resultsItemClass);
 			if (e.key === 'Escape') {
 				e.preventDefault();
 				results.hide().empty()
@@ -82,23 +76,19 @@ class SuggestionsWepps {
 			// Стрелка вниз
 			if (e.key === 'ArrowDown') {
 				e.preventDefault();
-				selectedIndex = Math.min(selectedIndex + 1, $suggestions.length - 1);
-				updateSelection($suggestions);
+				selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+				updateSelection(suggestions);
 			}
 			// Стрелка вверх
 			if (e.key === 'ArrowUp') {
 				e.preventDefault();
 				selectedIndex = Math.max(selectedIndex - 1, -1);
-				updateSelection($suggestions);
+				updateSelection(suggestions);
 			}
 			// Enter
 			if (e.key === 'Enter') {
-				const $selectedItem = $suggestions.eq(selectedIndex);
-				if ($selectedItem.length && selectedIndex > -1) {
-					location.href = $selectedItem.data('url');
-				} else {
-					location.href = self.pathname + '?text=' + $(this).val();
-				}
+				self.afterSelectItem(this,suggestions,selectedIndex);
+				results.hide();
 			}
 		});
 		// Обновление выделения
@@ -111,15 +101,18 @@ class SuggestionsWepps {
 					.scrollIntoView({ block: 'nearest' });
 			}
 		}
-		// Модифицируем обработчик ввода
-		self.input.on('input', function() {
-			selectedIndex = -1; // Сброс выбора при новом вводе
-		});
 		results.on('click', resultsItemClass, function() {
-			const $suggestions = results.find(resultsItemClass);
+			const suggestions = results.find(resultsItemClass);
 			selectedIndex = $(this).index();
-			const selectedItem = $suggestions.eq(selectedIndex);
-			location.href = selectedItem.data('url');
+			self.afterSelectItem(self.input,suggestions,selectedIndex);
 		});
+	}
+	afterSelectItem(self,suggestions,selectedIndex) {
+		const selectedItem = suggestions.eq(selectedIndex);
+		if (selectedItem.length && selectedIndex > -1) {
+			location.href = selectedItem.data('url');
+		} else {
+			location.href = this.pathname + '?text=' + $(self).val();
+		}
 	}
 }

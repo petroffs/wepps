@@ -41,24 +41,24 @@
 	<div class="w_3scol_view_medium">
 		<div class="content-block cart-total"><h2>Детали заказа</h2>
 			<div class="w_grid w_3col">
-				<div class="w_2scol title">{$cartSummary.quantity} {$cartText.goodsCount}</div>
+				<div class="w_2scol title">{$cartSummary.quantityActive} {$cartText.goodsCount}</div>
 				<div class="pps_right">
-					<div class="price"><span>{$cartSummary.sumBefore}</span></div>
+					<div class="price"><span>{$cartSummary.sumBefore|money}</span></div>
 				</div>
 			</div>
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">Скидка</div>
 				<div>
-					<div class="price"><span>{$cartSummary.sumSaving}</span></div>
+					<div class="price"><span>{$cartSummary.sumSaving|money}</span></div>
 				</div>
 			</div>
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">Итого</div>
 				<div>
-					<div class="price"><span>{$cartSummary.sumActive}</span></div>
+					<div class="price"><span>{$cartSummary.sumActive|money}</span></div>
 				</div>
 			</div>
-			<label class="pps pps_button pps_button_important"><button>Перейти к оформлению</button></label>
+			<label class="pps pps_button pps_button_important"><button id="order-settings">Перейти к оформлению</button></label>
 		</div>
 	</div>
 </div>

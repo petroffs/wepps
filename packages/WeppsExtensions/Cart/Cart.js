@@ -10,6 +10,7 @@ class CartWepps {
 		this.quantityHandler();
 		this.favoritesHandler();
 		this.checkAll()
+		this.settingsHandler()
 	}
 	add() {
 
@@ -126,6 +127,11 @@ class CartWepps {
 			fn: (self) => {
 				this.favorites(self);
 			}
+		});
+	}
+	settingsHandler() {
+		$('#order-settings').on('click',function() {
+			window.location.href = '/cart/settings.html';
 		});
 	}
 }

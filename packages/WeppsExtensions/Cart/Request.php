@@ -60,70 +60,10 @@ class RequestCartWepps extends RequestWepps {
 				
 				
 				
-			case 'qty':
-				if (!isset($this->get['id'])) exit();
-				if (!isset($this->get['qty'])) exit();
-				if (!isset($_SESSION['cart'][$this->get['id']])) exit();
-				$this->tpl = 'RequestTemplate.tpl';
-				$productId = $this->get['id'];
 				
-				//$_SESSION['cart'][$productId]['Qty'] = ($this->get['option']=='add') ? $_SESSION['cart'][$productId]['Qty'] + 1 : $_SESSION['cart'][$productId]['Qty'] - 1;
-				$_SESSION['cart'][$productId]['Qty'] = (int) $this->get['qty'];
-				$_SESSION['cart'][$productId]['Qty'] = ($_SESSION['cart'][$productId]['Qty']<=$_SESSION['cart'][$productId]['QtyMin']) ? $_SESSION['cart'][$productId]['QtyMin'] : $_SESSION['cart'][$productId]['Qty'];
-				$_SESSION['cart'][$productId]['Qty'] = ($_SESSION['cart'][$productId]['Qty']>=$_SESSION['cart'][$productId]['QtyMax']) ? $_SESSION['cart'][$productId]['QtyMax'] : $_SESSION['cart'][$productId]['Qty'];
-				$_SESSION['cart'][$productId]['PriceAmount'] = $_SESSION['cart'][$productId]['Qty'] * $_SESSION['cart'][$productId]['Data']['OptionQty'] * $_SESSION['cart'][$productId]['Data']['PriceAmount'];
-				$cartSummary = CartUtilsWepps::cartSummary();
-				$js .= "
-					readyCartInit();
-					cartTopUpdate({
-						'qtyTop' : '{$cartSummary['qty']}',
-						'priceAmountTop' : '".TextTransformsWepps::money($cartSummary['priceAmount'])."'
-					});
-					
-				";
-				$this->assign('js', $js);
-				$this->assign('cartSummary',$cartSummary);
-				//$this->assign('',
-				if (isset($_SESSION['user']['ShowAdmin']) && $_SESSION['user']['ShowAdmin']==1) {
-					$this->fetch2('profileStaffTpl','../Profile/ProfileStaff.tpl');
-				}
-				$this->fetch2('cartAboutTpl','CartAbout.tpl');
-				$this->fetch('tpl', 'CartSummary.tpl');
 				
-				break;
-			case 'removePromt':
-				if (!isset($this->get['id'])) exit();
-				if (!isset($_SESSION['cart'][$this->get['id']])) exit();
-				$this->tpl = 'RequestRemovePromt.tpl';
-				$this->assign('product', $_SESSION['cart'][$this->get['id']]);
-				$this->assign('qty', $_SESSION['cart'][$this->get['id']]['Qty']);
-				break;
-			case 'remove':
-				if (!isset($this->get['id'])) exit();
-				if (!isset($_SESSION['cart'][$this->get['id']])) exit();
-				$id = $this->get['id'];
-				$product = $_SESSION['cart'][$this->get['id']];
-				$this->tpl = 'RequestTemplate.tpl';
-				unset($_SESSION['cart'][$id]);
-				$cartSummary = CartUtilsWepps::cartSummary();
-				$js .= "
-				readyCartInit();
-				cartTopUpdate({
-					'qtyTop' : '{$cartSummary['qty']}',
-					'priceAmountTop' : '". TextTransformsWepps::money($cartSummary['priceAmount'])."'
-				});
-				";
-				
-				if ($cartSummary['qty']==0) {
-					$js = "
-					location.href='{$product['Data']['Url']}';
-					";
-				}
-				$this->assign('js', $js);
-				$this->assign('cartSummary',$cartSummary);
-				$this->fetch2('cartAboutTpl','CartAbout.tpl');
-				$this->fetch('tpl', 'CartSummary.tpl');
-				break;
+		
+		
 			case 'cities':
 				if (!isset($this->get['term'])) exit();
 				$obj = new DataWepps("GeoCities");
@@ -136,7 +76,7 @@ class RequestCartWepps extends RequestWepps {
 				exit();
 				break;
 			case "delivery":
-				/**
+				/*
 				 * Способы доставки текущего city
 				 * Вычислить и передать в шаблон
 				 */
@@ -159,7 +99,7 @@ class RequestCartWepps extends RequestWepps {
 				
 			break;
 			case "payment":
-				/**
+				/*
 				 * Способы оплаты текущего delivery
 				 * Вычислить и передать в шаблон
 				 */
@@ -193,7 +133,7 @@ class RequestCartWepps extends RequestWepps {
 				
 				break;
 			case "shipping":
-				/**
+				/*
 				 * Вычисление стоимости доставки
 				 * на основе данных в списке TradeDeliveryVars,TradePaymentVars
 				 */
@@ -220,7 +160,7 @@ class RequestCartWepps extends RequestWepps {
 				exit ();
 				break;
 			case "addOrder" :
-				/**
+				/*
 				 * Проверка данных, индикация ошибок
 				 */
 				$this->errors = array ();
@@ -274,7 +214,7 @@ class RequestCartWepps extends RequestWepps {
 		}
 		$this->assign('cartSummary',$cartSummary);
 		$this->assign('cartText',[
-				'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantity'])
+				'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
 		]);
 		$arr = [];
 		if (!empty($cartSummary['favorites']['items'])) {

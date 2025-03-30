@@ -1,6 +1,8 @@
 <?php
 namespace WeppsCore\TextTransforms;
 
+use WeppsCore\Utils\UtilsWepps;
+
 class TextTransformsWepps {
 
 	/**
