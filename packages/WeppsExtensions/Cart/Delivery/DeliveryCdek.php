@@ -37,10 +37,17 @@ class DeliveryCdekWepps {
 	}
 	public function getRegions() {
 		$data = [
-				'country_code' => ['RU'],
+				'country_codes' => 'RU',
 		];
-		$response = $this->curl->get($this->url.'/v2/location/regions?country_codes[]=RU');
-		UtilsWepps::debug($response->response,21);
+		$response = $this->curl->get($this->url.'/v2/location/regions',$data);
+		return $response->response;
+	}
+	public function getCities() {
+		$data = [
+				'country_codes' => 'RU',
+		];
+		$response = $this->curl->get($this->url.'/v2/location/cities',$data);
+		return $response->response;
 	}
 	private function getToken() {
 		$curl = new Curl();

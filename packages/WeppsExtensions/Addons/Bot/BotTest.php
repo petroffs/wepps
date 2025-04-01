@@ -127,8 +127,8 @@ class BotTestWepps extends BotWepps {
 	}
 	public function setCdekRegions() {
 		$obj = new DeliveryCdekWepps([]);
-		$obj->getRegions();
-		#UtilsWepps::debug(1,21);
+		$t = $obj->getCities();
+		UtilsWepps::debug($t,21);
 	}
 }
 ?>
