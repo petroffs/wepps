@@ -33,29 +33,33 @@ class BotWepps {
 			/*
 			 * tests
 			 */
-			case "hashes":
+			case 'hashes':
 				$obj = new BotTestWepps();
 				$obj->setHashes();
 				break;
-			case "telegramtest":
+			case 'telegramtest':
 				$obj = new BotTestWepps();
 				$obj->telegram();
 				break;
-			case "mailtest":
+			case 'mailtest':
 				$obj = new BotTestWepps();
 				$obj->mail();
 				break;
-			case "dbtest":
+			case 'dbtest':
 				$obj = new BotTestWepps();
 				$obj->testDB();
 				break;
-			case "clitest":
+			case 'clitest':
 				$obj = new BotTestWepps();
 				$obj->cli();
 				break;
-			case "passtest":
+			case 'passtest':
 				$obj = new BotTestWepps();
 				$obj->password();
+				break;
+			case 'cdekregions':
+				$obj = new BotTestWepps();
+				$obj->setCdekRegions();
 				break;
 			default:
 				echo "\nERROR\n";

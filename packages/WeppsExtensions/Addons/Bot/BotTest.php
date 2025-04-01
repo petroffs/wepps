@@ -7,6 +7,7 @@ use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsExtensions\Addons\Mail\MailWepps;
 use WeppsCore\Utils\CliWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
 
 class BotTestWepps extends BotWepps {
 	public $parent = 0;
@@ -123,6 +124,11 @@ class BotTestWepps extends BotWepps {
 		#UtilsWepps::debug('fail',31);
 		$this->cli->error('fail');
 		exit();
+	}
+	public function setCdekRegions() {
+		$obj = new DeliveryCdekWepps([]);
+		$obj->getRegions();
+		#UtilsWepps::debug(1,21);
 	}
 }
 ?>

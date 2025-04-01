@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery\Cdek;
+namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
@@ -10,42 +10,55 @@ class DeliveryCdekWepps {
 	private $password;
 	private $url;
 	private $office;
+	private $token;
 	private $counter=0;
 	
 	public function __construct($settings) {
-		
 		$this->url = ConnectWepps::$projectServices['cdek']['url'];
-		$this->urlauth = ConnectWepps::$projectServices['cdek']['urlauth'];
-		$this->login = ConnectWepps::$projectServices['cdek']['id'];
-		$this->password = ConnectWepps::$projectServices['cdek']['secret'];
+		$this->account = ConnectWepps::$projectServices['cdek']['account'];
+		$this->password = ConnectWepps::$projectServices['cdek']['password'];
 		$this->office = ConnectWepps::$projectServices['cdek']['office'];
 		$this->tokenFilename = __DIR__ . '/files/cdek.conf';
 		$this->settings = $settings;
 		$f = file_get_contents($this->tokenFilename);
-		$jdata = json_decode($f,true);
-		
-		if (date('U')>=@$jdata['lifetime']) {
+		$jdata = json_decode($f,true);	
+		if (empty($jdata) || date('U')>=@$jdata['lifetime']) {
 			$this->getToken();
-		} else {
+		} elseif (!empty($jdata['access_token'])) {
 			$this->token = $jdata['access_token'];
+		} else {
+			UtilsWepps::debug('token error',31);
+			exit();
 		}
-		#$this->getToken();
 		$this->curl = new Curl();
 		$this->curl->setHeader('content-type', 'application/json;charset=UTF-8');
 		$this->curl->setHeader('accept', 'application/json');
 		$this->curl->setHeader('authorization', 'Bearer '.$this->token);
-		#$this->settings = $settings;
+	}
+	public function getRegions() {
+		$data = [
+				'country_code' => ['RU'],
+		];
+		$response = $this->curl->get($this->url.'/v2/location/regions?country_codes[]=RU');
+		UtilsWepps::debug($response->response,21);
 	}
 	private function getToken() {
 		$curl = new Curl();
 		$curl->setHeader('content-type', 'application/x-www-form-urlencoded');
+		#$curl->setHeader('content-type', 'application/json;charset=UTF-8');
+		#$curl->setHeader('accept', 'application/json');
 		$body = [
 				'grant_type' => 'client_credentials',
-				'client_id' => $this->login,
+				'client_id' => $this->account,
 				'client_secret' => $this->password
 		];
-		$response = $curl->post($this->urlauth,$body);
+		;
+		$response = $curl->post($this->url.'/v2/oauth/token',$body);
 		$jdata = json_decode($response->response,true);
+		if (empty($jdata['access_token'])) {
+			echo $response->response;
+			exit();
+		}
 		$this->token = $jdata['access_token'];
 		$jdata['lifetime'] = date('U')+$jdata['expires_in']-300;
 		$this->curl = new Curl();
@@ -54,56 +67,6 @@ class DeliveryCdekWepps {
 		$this->counter++;
 	}
 	public function getTariff() {
-		return self::getTariff2();
-		$this->url = "http://api.cdek.ru/calculator/calculate_price_by_json.php";
-		$date = date("Y-m-d",strtotime(date("Y-m-d",strtotime(date("Y-m-d")))." +1 day"));
-		$this->settings['weight'] = 1;
-		$arr = [
-				"authLogin" => $this->login,
-				"secure" => md5 ( $date . '&' . $this->password ),
-				"version" => "1.0",
-				"dateExecute" => $date,
-				"senderCityId" => $this->office,
-				"receiverCityId" => $this->settings['cityId'],
-				"currency" => "RUB",
-				"tariffList" => [
-						[
-								"priority" => 1,
-								"id" => $this->settings['tariff']
-						]
-				],
-				"goods" => [
-						[
-								"weight" => $this->settings['weight'],
-								"length" => $this->settings['length'],
-								"width" => $this->settings['width'],
-								"height" => $this->settings['height'],
-						]
-				],
-				"services" => [
-						[
-								"id" => 2,
-								"param" => round($this->settings['summ']/2),
-						]
-				]
-		];
-		$json = json_encode($arr,JSON_PRETTY_PRINT);
-		$response = $this->getResponse($this->url,$json);
-		if (!isset($response['response']['result']['price'])) {
-			return array('price'=>0,'status'=>302,'message'=>'Требуется уточнение');
-		}
-		$period = ($response['response']['result']['deliveryPeriodMin']==$response['response']['result']['deliveryPeriodMax']) ? $response['response']['result']['deliveryPeriodMin'] : "{$response['response']['result']['deliveryPeriodMin']}-{$response['response']['result']['deliveryPeriodMax']}";
-		#$response['response']['result']['price'] += 0.0075 * $this->settings['summ'];
-		$response['response']['result']['price'] = round($response['response']['result']['price']/5)*5;
-		if (!empty($this->settings['freelevel']) && $this->settings['freelevel']<=$this->settings['summ']) {
-			if (isset($this->settings['cityRemote']) && $this->settings['cityRemote']==0) {
-				return array('price'=>0,'status'=>200,'message'=>'OK','period'=>$period);
-			}
-		}
-		return array('price'=>$response['response']['result']['price'],'status'=>200,'message'=>'OK','period'=>$period);
-	}
-	
-	public function getTariff2() {
 		$this->url = "https://api.cdek.ru/v2/calculator/tariff";
 		$this->settings['weight'] = 1;
 		$date = date("Y-m-d\TH:i:s+0300",strtotime(date("Y-m-d 20:00:00",strtotime(date("Y-m-d 20:00:00")))." +2 day"));
@@ -145,7 +108,6 @@ class DeliveryCdekWepps {
 		}
 		return array('price'=>$price,'status'=>200,'message'=>'OK','period'=>$period);
 	}
-	
 	public function getCityId($city) {
 		$city = addslashes($city);
 		$sql = "select * from CitiesCdek where Name='$city'";
