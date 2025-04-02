@@ -23,6 +23,9 @@ class RequestUploadsWepps extends RequestWepps {
 		}
 		switch ($action) {
 			case "excel":
+				if (!isset($_SESSION)) {
+					@session_start();
+				}
 				$list = "s_UploadsSource";
 				$id = (int) $this->get['source'];
 				$objFile = new DataWepps("s_Files");

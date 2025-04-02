@@ -125,10 +125,5 @@ class BotTestWepps extends BotWepps {
 		$this->cli->error('fail');
 		exit();
 	}
-	public function setCdekRegions() {
-		$obj = new DeliveryCdekWepps([]);
-		$t = $obj->getCities();
-		UtilsWepps::debug($t,21);
-	}
 }
 ?>

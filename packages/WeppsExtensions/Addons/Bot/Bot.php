@@ -5,6 +5,7 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Utils\CliWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
 
 class BotWepps {
 	public $parent = 1;
@@ -57,9 +58,11 @@ class BotWepps {
 				$obj = new BotTestWepps();
 				$obj->password();
 				break;
-			case 'cdekregions':
-				$obj = new BotTestWepps();
-				$obj->setCdekRegions();
+			case 'cdek':
+				$obj = new DeliveryCdekWepps([]);
+				#$obj->setPoints();
+				#$obj->setCities();
+				$obj->setRegions();
 				break;
 			default:
 				echo "\nERROR\n";

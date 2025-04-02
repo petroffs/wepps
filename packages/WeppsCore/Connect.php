@@ -131,5 +131,22 @@ class ConnectWepps {
 		];
 		return $output;
 	}
+	public function transaction(callable $func) {
+		ConnectWepps::$db->setAttribute(\PDO::ATTR_AUTOCOMMIT, 0);
+		try {
+			ConnectWepps::$db->beginTransaction();
+			if (ConnectWepps::$db->inTransaction()) {
+				$func();
+			}
+			ConnectWepps::$db->commit();
+			return true;
+		} catch (\Exception $e) {
+			ConnectWepps::$db->rollBack();
+			echo "Error. See debug.conf";
+			UtilsWepps::debug($e,21);
+			return false;
+		}
+		ConnectWepps::$db->setAttribute(\PDO::ATTR_AUTOCOMMIT, 1);
+	}
 }
 ?>

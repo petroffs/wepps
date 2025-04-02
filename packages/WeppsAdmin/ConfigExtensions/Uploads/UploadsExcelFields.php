@@ -2,7 +2,6 @@
 
 namespace WeppsAdmin\ConfigExtensions\Uploads;
 
-use WeppsCore\Utils\UtilsWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
@@ -38,6 +37,7 @@ class UploadsExcelFieldsWepps {
 					$sql = "delete from s_ConfigFields where TableName='' and Field=''";
 					ConnectWepps::$instance->query($sql);
 					$res = $obj->get("TableName = '{$row1['TableName']}' and Field = '{$row1['Field']}'");
+					#UtilsWepps::debug($res);
 					if (!isset($res[0]['Id'])) {
 						$id = $obj->add($row1);
 						if ((int)$id!=0) {
@@ -75,7 +75,6 @@ class UploadsExcelFieldsWepps {
 							'message' => 'no errors'];
 			}
 		}
-		
 		$out = [
 				'status' => '1',
 				'message' => 'format error'
