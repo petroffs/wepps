@@ -29,7 +29,7 @@ class SuggestionsWepps {
 				} else {
 					results.hide().empty();
 				}
-			}, 300);
+			}, self.delay);
 		});
 		function loadSuggestions(query, reset = false) {
 			if (suggestLoading || !hasMoreSuggestions) return;
