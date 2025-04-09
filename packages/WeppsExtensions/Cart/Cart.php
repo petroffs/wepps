@@ -23,6 +23,7 @@ class CartWepps extends ExtensionWepps {
 				}
 				$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
 				$smarty->assign('cartSummary',$cartSummary);
+				#UtilsWepps::debug($cartSummary,1);
 				$smarty->assign('cartText',[
 						'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
 				]);
@@ -32,7 +33,8 @@ class CartWepps extends ExtensionWepps {
 				$smarty->assign('cartCheckoutTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartCheckout.tpl'));
 				break;
 			case 'settings':
-				if ($cartSummary['quantity']==0) {
+				$this->extensionData['element'] = 1;
+				if ($cartSummary['quantityActive']==0) {
 					$this->navigator->content['Name'] = "Ваша корзина пуста";
 					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
 					break;
@@ -42,7 +44,6 @@ class CartWepps extends ExtensionWepps {
 						'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
 				]);
 				$this->tpl = 'packages/WeppsExtensions/Cart/CartSettings.tpl';
-				$this->extensionData['element'] = 1;
 				break;
 			case 'order/complete/ea201f29-82a3-4d59-a522-9ccc00af95e5/':
 				

@@ -7,6 +7,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect\ConnectWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -56,14 +57,37 @@ class RequestCartWepps extends RequestWepps {
 				break;
 			case 'copyOrder':
 				break;
-				
-				
-				
-				
-				
+			
+			case 'cities':
+				$onpage=12;
+				$page = max(1, (int)($this->get['page'] ?? 1));
+				$limit = ($page - 1) * $onpage;
+				/* $sql = "select c.Id,r.Id RegionsId,c.Name,r.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
+						join RegionsCdek r on r.Id = c.RegionsId where c.Name like \"{$this->get['text']}%\" limit $limit,$onpage";
+				UtilsWepps::debug($sql,21) */
+				$sql = "select c.Id,r.Id RegionsId,c.Name,r.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
+						join RegionsCdek r on r.Id = c.RegionsId where c.Name like ? limit $limit,$onpage";
+				$res = ConnectWepps::$instance->fetch($sql,["{$this->get['text']}%"]);
+				if (empty($res)) {
+					echo json_encode([
+							'hasMore' => false
+					]);
+					break;
+				}
+				$html = '';
+				foreach($res as $row) {
+					$html .= '<div class="w_suggestions-item" data-id="'.$row['Id'].'"><div>'.htmlspecialchars($row['Title']).'</div></div>';
+				}
+				echo json_encode([
+						'html' => $html,
+						'hasMore' => true
+				]);
+				break;
 				
 		
-		
+			/*
+			 * to remove
+			 */		
 			case 'cities':
 				if (!isset($this->get['term'])) exit();
 				$obj = new DataWepps("GeoCities");

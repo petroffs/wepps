@@ -21,28 +21,12 @@
 }
 
 .w_suggestions-item {
+	border-bottom: var(--border);
 	padding: var(--step);
 	cursor: pointer;
-	border-bottom: var(--border);
-	display: grid;
-	grid-template-columns: auto 1fr auto;
-	gap: var(--step2);
-	justify-content: center;
-	align-items: center;
+	display: block;
 }
-.w_suggestions-item>div:first-child {
-	max-width: 50px;
-}
-.w_suggestions-item>div:nth-child(2) {
-	font-weight: 600;
-}
-.w_suggestions-item>div:last-child {
-	text-align: right;
-}
-.w_suggestions-item>div img {
-	width: 100%;
-	height: auto;
-}
+
 .w_suggestions-item:hover,
 .w_suggestions-item.active {
 	background-color: var(--color-98);

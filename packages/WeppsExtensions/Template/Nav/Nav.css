@@ -73,8 +73,30 @@ section.header-wrapper-top label.pps {
 	display: block;
 }
 
-section.header-wrapper-top label.pps>input[name="term"] {
+section.header-wrapper-top label.pps>input[name="text"] {
 	height: calc(var(--step) * 6);
+}
+
+section.header-wrapper-top .w_suggestions-item {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	gap: var(--step2);
+	justify-content: center;
+	align-items: center;
+}
+section.header-wrapper-top .w_suggestions-item>div:first-child {
+	max-width: 50px;
+}
+section.header-wrapper-top .w_suggestions-item>div:nth-child(2) {
+	font-weight: 600;
+}
+section.header-wrapper-top .w_suggestions-item>div:last-child {
+	text-align: right;
+}
+
+section.header-wrapper-top .w_suggestions-item>div img {
+	width: 100%;
+	height: auto;
 }
 
 nav.header-nav-wrapper {

@@ -58,7 +58,7 @@
 					<div class="price"><span>{$cartSummary.sumActive|money}</span></div>
 				</div>
 			</div>
-			<label class="pps pps_button pps_button_important"><button id="order-settings">Перейти к оформлению</button></label>
+			<label class="pps pps_button pps_button_important"><button id="order-settings"{if $cartSummary.quantityActive==0}disabled="disabled"{/if}>Перейти к оформлению</button></label>
 		</div>
 	</div>
 </div>

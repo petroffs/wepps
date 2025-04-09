@@ -90,6 +90,7 @@ class DeliveryCdekWepps {
 			$row = [
 					'Id' => '',
 					'Name' => '',
+					'RegionsId' => '',
 					'JData' => '',
 			];
 			$prepare = ConnectWepps::$instance->prepare($row);
@@ -98,6 +99,7 @@ class DeliveryCdekWepps {
 				$row = [
 						'Id' => $value['code'],
 						'Name' => $value['city'],
+						'RegionsId' => $value['region_code'],
 						'JData' => json_encode($value,JSON_UNESCAPED_UNICODE),
 				];
 				$insert->execute($row);

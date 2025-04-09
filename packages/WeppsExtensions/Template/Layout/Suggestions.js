@@ -1,6 +1,7 @@
 class SuggestionsWepps {
 	constructor(settings = {}) {
 		this.input = $('#' + settings.input);
+		this.action = settings.action
 		this.delay = settings.delay || 300; // Задержка перед запросом
 		this.url = settings.url || 'search.php'; // URL для запросов
 		this.pathname = '/catalog/';
@@ -35,10 +36,10 @@ class SuggestionsWepps {
 			suggestLoading = true;
 			loader.show();
 			$.ajax({
-				url: '/ext/Products/Request.php?action=suggestions',
+				url: self.url,
 				method: 'POST',
 				data: {
-					action: 'suggestions',
+					action: self.action,
 					text: query,
 					page: suggestPage,
 				},
@@ -105,6 +106,7 @@ class SuggestionsWepps {
 			const suggestions = results.find(resultsItemClass);
 			selectedIndex = $(this).index();
 			self.afterSelectItem(self.input,suggestions,selectedIndex);
+			results.hide();
 		});
 	}
 	afterSelectItem(self,suggestions,selectedIndex) {

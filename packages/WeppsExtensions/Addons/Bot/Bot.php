@@ -61,8 +61,8 @@ class BotWepps {
 			case 'cdek':
 				$obj = new DeliveryCdekWepps([]);
 				#$obj->setPoints();
-				#$obj->setCities();
-				$obj->setRegions();
+				$obj->setCities();
+				#$obj->setRegions();
 				break;
 			default:
 				echo "\nERROR\n";
