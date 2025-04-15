@@ -1,5 +1,6 @@
 <?php
 namespace WeppsExtensions\Error404;
+
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\ExtensionWepps;
 
@@ -15,5 +16,3 @@ class Error404Wepps extends ExtensionWepps {
 		return;
 	}
 }
-
-?>
