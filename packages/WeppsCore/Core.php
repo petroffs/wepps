@@ -75,25 +75,27 @@ class DataWepps {
 	public $lang;
 	
 	public function __construct($tableName='') {
-		if ($tableName == "")
+		if ($tableName == "") {
 			exit ();
-			return $this->tableName = UtilsWepps::trim ( $tableName );
+		}
+		$this->tableName = UtilsWepps::trim ( $tableName );
 	}
 	/**
 	 * Получить набор строк таблицы
 	 */
-	function get($id = NULL, $onPage = 20, $currentPage = 1, $orderBy = "Priority") {
-		if ($id == NULL)
-			$id = "Id!=0";
+	function get(string $conditions = '', $onPage = 20, $currentPage = 1, $orderBy = "Priority") {
+		if (empty($conditions)) {
+			$conditions = "Id!=0";
+		}
 		$fields = $this->fields;
 		$fields = ($fields != '') ? $fields : '*';
 		$concat = $this->concat;
 		if ($concat != '') {
 			$concat = "," . $concat;
 		}
-		$formatted = $this->_getFormatted ( $id, $onPage, $currentPage, $orderBy );
-		$this->sql = "select $fields $concat from {$this->tableName} where {$formatted['id']} {$formatted['orderBy']} {$formatted['limit']}";
-		$this->sqlCounter = "select count(*) Co from {$this->tableName} where {$formatted['id']}";
+		$formatted = $this->_getFormatted ( $conditions, $onPage, $currentPage, $orderBy );
+		$this->sql = "select $fields $concat from {$this->tableName} where {$formatted['conditions']} {$formatted['orderBy']} {$formatted['limit']}";
+		$this->sqlCounter = "select count(*) Co from {$this->tableName} where {$formatted['conditions']}";
 		$res = ConnectWepps::$instance->fetch ( $this->sql );
 		if ($currentPage > 0) {
 			$paginator = $this->_getPaginator($formatted['onPage'], $formatted['currentPage']);
@@ -113,13 +115,13 @@ class DataWepps {
 	 * @param string $orderBy
 	 * @return array
 	 */
-	public function getMax($id = null, $onPage = 20, $currentPage = 0, $orderBy = "t.Priority") {
-		if ($id == null) {
-			$id = "t.Id!=0";
+	public function getMax(string $conditions = '', $onPage = 20, $currentPage = 0, $orderBy = "t.Priority") {
+		if (empty($conditions)) {
+			$conditions = "t.Id!=0";
 		}
-		$formatted = $this->_getFormatted($id,$onPage,$currentPage,$orderBy);
-		if (substr($formatted['id'], 0,2)=='Id') {
-			$formatted['id'] = "t.".$formatted['id'];
+		$formatted = $this->_getFormatted($conditions,$onPage,$currentPage,$orderBy);
+		if (substr($formatted['conditions'], 0,2)=='Id') {
+			$formatted['conditions'] = "t.".$formatted['conditions'];
 		}
 		$settings = $this->getScheme();
 		$fields = $joins = "";
@@ -148,7 +150,7 @@ class DataWepps {
 				case "remote_multi":
 					$fields .= "t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},\n";
 					$joins .= "left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id and sk{$f}.DisplayOff=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}' left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1\n";
-					$formatted['id'] .= "";
+					$formatted['conditions'] .= "";
 					$f ++;
 					break;
 				case "area":
@@ -173,8 +175,8 @@ class DataWepps {
 		}
 		$group = ($this->group=='') ? 't.Id' : $this->group;
 		$having = (!empty($this->having)) ? "having {$this->having}" : '';
-		$this->sql = "select $fields $concat from {$this->tableName} as t $joins $joinCustom where {$formatted['id']} group by $group $having {$formatted['orderBy']} {$formatted['limit']}";
-		$this->sqlCounter = "select count(z.Id) Co from (select t.Id from {$this->tableName} as t $joins $joinCustom where {$formatted['id']} group by $group) z";
+		$this->sql = "select $fields $concat from {$this->tableName} as t $joins $joinCustom where {$formatted['conditions']} group by $group $having {$formatted['orderBy']} {$formatted['limit']}";
+		$this->sqlCounter = "select count(z.Id) Co from (select t.Id from {$this->tableName} as t $joins $joinCustom where {$formatted['conditions']} group by $group) z";
 		$res = ConnectWepps::$instance->fetch($this->sql,$this->params);
 		if ($currentPage > 0) {
 			$paginator = $this->_getPaginator($formatted['onPage'],$formatted['currentPage']);
@@ -192,7 +194,7 @@ class DataWepps {
 	 * @param string $orderBy
 	 * @return array
 	 */
-	private function _getFormatted($id, $onPage, $currentPage, $orderBy) {
+	private function _getFormatted(string $conditions, $onPage, $currentPage, $orderBy) {
 		$onPage = UtilsWepps::trim ( $onPage );
 		if ($onPage=='') $onPage = 100; 
 		$currentPage = UtilsWepps::trim ( $currentPage );
@@ -200,9 +202,9 @@ class DataWepps {
 		if ($orderBy!='') $orderBy = "order by $orderBy";
 		$currentPage = (( int ) $currentPage <= 0) ? 1 : ( int ) $currentPage;
 		$limit = ($currentPage - 1) * $onPage;
-		$id = (is_numeric ( $id )) ? "Id='{$id}'" : $id;
+		$conditions = (is_numeric ( $conditions )) ? "Id='{$conditions}'" : $conditions;
 		return [
-				'id' => $id,
+				'conditions' => $conditions,
 				'onPage' => $onPage,
 				'currentPage' => $currentPage,
 				'orderBy' => $orderBy,
@@ -224,7 +226,6 @@ class DataWepps {
 			$res = ConnectWepps::$instance->fetch($this->sqlCounter,$this->params);
 		} else {
 			return [];
-			$res = ConnectWepps::$instance->fetch ( "SELECT FOUND_ROWS() as Co" );
 		}
 		#UtilsWepps::debug($this->sqlCounter,1);
 		if (!empty($res[0]['Co'])) {
@@ -345,7 +346,6 @@ class DataWepps {
 			if ($value[0]['Required']==1) {
 				if (empty($row[$key])) {
 					throw new \RuntimeException("Field \"$key\" is empty");
-					return 0;
 				}
 				$insert[$key] = $row[$key];
 			}
@@ -565,7 +565,7 @@ class NavigatorDataWepps extends DataWepps {
 					if (isset($v['ParentDir'])) $sub[$v['ParentDir']][] = $v;
 				}
 			}
-			return array ('groups'=>$arr,'subs'=>$sub);
+			return ['groups'=>$arr,'subs'=>$sub];
 		} else {
 			$res = $this->nav[$this->navLevel-1];
 			$res2 = UtilsWepps::array($res);
@@ -580,7 +580,6 @@ class NavigatorDataWepps extends DataWepps {
 			$this->navLevel++;
 			return $this->getNav($navLevel);
 		}
-		return $res;
 	}
 	
 	/**
@@ -689,7 +688,12 @@ abstract class ExtensionWepps {
 	public $page = 1;
 	
 	public $rand;
-	
+
+	/**
+	 * Указатель на элемент в шаблоне
+	 */
+	public $extensionData = [];
+
 	function __construct(NavigatorWepps $navigator, TemplateHeadersWepps $headers, $get = array()) {
 		$this->get = UtilsWepps::trim ( $get );
 		$this->navigator = &$navigator;
