@@ -17,4 +17,3 @@ unset($obj);
 #$stat = array('db'=>ConnectWepps::$instance->count,'time'=>microtime(true)-$start);
 //UtilsWepps::debug($stat,1);
 ConnectWepps::$instance->close();
-?>
