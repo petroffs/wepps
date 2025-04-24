@@ -7,9 +7,9 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 
 class ProcessingWepps extends RequestWepps {
-	private $way;
-	private $title;
-	private $headers;
+	public $way;
+	public $title;
+	public $headers;
 	public function request($action="") {
 		$this->tpl = 'Processing.tpl';
 		$this->title = $this->get['ext']['Name'];

@@ -74,6 +74,9 @@ label.pps.pps_require.pps_title {
 
 label.pps * {
 	font-size: var(--font-default);
+	
+}
+label.pps>* {
 	transition: all 0.3s ease;
 }
 
@@ -111,12 +114,12 @@ label.pps.pps_checkbox input[type="checkbox"]+span:before {
 
 label.pps.pps_checkbox input[type="checkbox"]:checked+span:before {
 	content: "\f26C";
-	color: var(--color-success);
+	color: var(--color-button);
 }
 
 label.pps.pps_checkbox input[type="checkbox"][disabled]+span {
 	color: var(--color-85);
-	cursor: default;
+	cursor: not-allowed;
 }
 
 label.pps.pps_checkbox input[type="checkbox"][disabled]+span:before {
@@ -143,7 +146,7 @@ label.pps.pps_radio input[type="radio"]+span:before {
 
 label.pps.pps_radio input[type="radio"]:checked+span:before {
 	content: "\f26A";
-	color: var(--color-success);
+	color: var(--color-button);
 }
 
 label.pps.pps_radio input[type="radio"][disabled]+span {
@@ -172,15 +175,15 @@ label.pps.pps_upload input[type="file"] {
 label.pps.pps_upload span {
 	font-weight: 300;
 	line-height: inherit;
-	color: var(--color-success);
+	color: var(--color-button);
 	background: var(--color-100);
-	border: var(--stepHalf) solid var(--color-success);
+	border: var(--stepHalf) solid var(--color-button);
 	border-radius: var(--step);
 	margin: 0;
 	padding: 0 var(--step2);
 	width: auto;
 	max-width: max-content;
-	min-height: var(--step6);
+	min-height: calc(var(--step) * 8);
 	overflow: hidden;
 	display: flex;
 	flex-direction: row;
@@ -202,18 +205,18 @@ label.pps.pps_input input {
 	width: 100%;
 	border: var(--border);
 	border-radius: var(--step);
-	padding: var(--step);
-	height: var(--step6);
+	padding: var(--step2);
+	min-height: calc(var(--step) * 8);
 	margin: 0;
 	display: block;
 }
 
 label.pps.pps_area textarea {
 	width: 100%;
-	min-height: 65px;
+	min-height: calc(var(--step) * 20);
 	border: var(--border);
 	border-radius: var(--step);
-	padding: 4px 5px;
+	padding: var(--step2);
 	margin: 0 !important;
 	resize: none;
 	overflow: hidden;
@@ -223,7 +226,7 @@ label.pps.pps_area textarea {
 label.pps.pps_select select:focus,
 label.pps.pps_area textarea:focus,
 label.pps.pps_input input:focus {
-	box-shadow: inset 0 0 var(--step2) var(--color-95);
+	outline: var(--stepHalf) solid var(--color-button);
 }
 
 label.pps.pps_button {	
@@ -238,8 +241,8 @@ label.pps.pps_button button {
 	font-size: var(--font-default);
 	white-space: normal;
 	color: var(--color-100);
-	background: var(--color-success);
-	border: 1ps solid var(--color-success);
+	background: var(--color-button);
+	border: var(--stepHalf) solid var(--color-button);
 	border-radius: var(--step);
 	padding: var(--step) var(--step4);
 	max-width: 100%;
@@ -259,6 +262,7 @@ a.pps_button:hover,
 span.pps_button:hover,
 label.pps.pps_button input:hover,
 label.pps.pps_button button:hover {
+	color: var(--color-98);
 	background-color: var(--color-focus);
 }
 
@@ -266,8 +270,8 @@ a.pps_button:active,
 span.pps_button:active,
 label.pps.pps_button input:active,
 label.pps.pps_button button:active {
-	background-color: var(--color-success);
-	border-color: var(--color-success);
+	background-color: var(--color-active);
+	border-color: var(--color-active);
 	cursor: default;
 	box-shadow: 0 0 var(--step2) rgba(0,0,0,0.2);
 }
@@ -281,7 +285,7 @@ label.pps.pps_button button:disabled:hover {
 	background-color: var(--color-75);
 	border-color: var(--color-85);
 	box-shadow: none;
-	cursor: default;
+	cursor: not-allowed;
 }
 
 body a.pps_button,
@@ -380,31 +384,19 @@ form {
 	padding: 0px;
 }
 
-.select2-container .select2-selection--single {
-	border: var(--border);
-	border-radius: var(--step);
-	height: var(--step6);
-	min-height: var(--step6);
-
+.select2-container--default.select2-container {
+	border-radius: var(--step2);
+	border: var(--stepHalf) solid var(--color-button);
 }
 
-.select2-container .select2-selection--single:hover {
-	border-color: var(--color-85);
-	box-shadow: inset 0 0 var(--step2) var(--color-95);
+.select2-container .select2-selection--single {
+	border: var(--border);
+	height: calc(var(--step) * 8);
 }
 
 .select2-container .select2-selection--multiple {
 	border-color: var(--color-85);
-	min-height: var(--step6);
-}
-
-.select2-container .select2-selection--multiple:hover {
-	border-color: var(--color-85);
-	box-shadow: inset 0 0 var(--step2) var(--color-95);
-}
-
-.select2-container--default .select2-results__group {
-	opacity: 0.5;
+	height: calc(var(--step) * 8);
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
@@ -414,7 +406,7 @@ form {
 
 .select2-container .select2-selection--single .select2-selection__rendered {
 	display: flex;
-	height: var(--step6);
+	height: calc(var(--step) * 8);
 	flex-direction: column;
 	justify-content: center;
 }
@@ -423,6 +415,32 @@ form {
 	display: inline-flex;
 	flex-wrap: wrap;
 	align-items: center;
-	min-height: var(--step5);
+	height: calc(var(--step) * 8);
 	padding-bottom: var(--step);
 }
+
+ 
+.select2-container--default.select2-container--open {
+	border: var(--stepHalf) solid var(--color-button);
+	border-radius: var(--step2) var(--step2) 0 0;
+}
+
+
+.select2-container .select2-selection--multiple----:hover {
+	border-color: var(--color-85);
+	box-shadow: inset 0 0 var(--step2) var(--color-95);
+}
+
+/* Жесткое переопределение для теста */
+.select2-container.select2-container--hover {
+	outline: 2px solid red !important;
+	outline-offset: 2px;
+  }
+  .select2-container--focus {
+	outline: 2px solid red !important;
+}
+
+.select2-dropdown {
+	border: var(--stepHalf) solid var(--color-button);
+	width: 100%;
+  }

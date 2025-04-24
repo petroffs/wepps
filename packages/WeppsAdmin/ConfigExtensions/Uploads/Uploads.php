@@ -10,9 +10,9 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\DataWepps;
 
 class UploadsWepps extends RequestWepps {
-	private $way;
-	private $title;
-	private $headers;
+	public $way;
+	public $title;
+	public $headers;
 	public function request($action="") {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Uploads.tpl';
