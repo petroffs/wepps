@@ -140,7 +140,7 @@ class ListsWepps {
         	if (isset($listItems[0]['Id'])) {
         		$smarty->assign('listItems',$listItems);
         		$smarty->assign('paginator',$listObj->paginator);
-        		$smarty->assign('paginatorUrl',"/_pps/lists/{$ppsUrlEx[1]}/");
+        		$smarty->assign('paginatorUrl',"/_wepps/lists/{$ppsUrlEx[1]}/");
         		$smarty->assign('paginatorTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Admin/Paginator/PaginatorLists.tpl'));
         		$smarty->assign('orderField',$orderField);
         		$headers->css ("/packages/WeppsAdmin/Admin/Paginator/Paginator.{$headers::$rand}.css");
@@ -556,9 +556,9 @@ class ListsWepps {
 		    $addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
 		    $addActionRequest = new $addActionClass (array('listSettings'=>$listSettings,'listScheme'=>$listScheme,'element'=>$row));
 		}
-		$path = "/_pps/lists/{$list}/{$id}/";
+		$path = "/_wepps/lists/{$list}/{$id}/";
 		if ($data['pps_path']=='navigator') {
-			$path = "/_pps/navigator{$addActionRequest->element['Url']}";
+			$path = "/_wepps/navigator{$addActionRequest->element['Url']}";
 		}
 		$jslocation = "";
 		if (isset($_SESSION['uploads']) || @$data['pps_tablename_id']=='add') {
@@ -875,9 +875,9 @@ class ListsWepps {
 				}
 			}
 		}
-		$href = "'/_pps/lists/{$list}/{$newId}/'";
+		$href = "'/_wepps/lists/{$list}/{$newId}/'";
 		if ($path=='navigator') {
-			$href = "'/_pps/navigator/{$source['Url']}/'";
+			$href = "'/_wepps/navigator/{$source['Url']}/'";
 		}
 		$js = "
 			<script>
@@ -908,11 +908,11 @@ class ListsWepps {
 			$addActionRequest = new $addActionClass (array('listSettings'=>$listSettings,'id'=>$id));
 		}
 		
-		$href = "'/_pps/lists/{$list}/'";
+		$href = "'/_wepps/lists/{$list}/'";
 		if ($path=='navigator') {
 			$sql = "select d1.Id,d1.Url,d1.ParentDir,(select d2.Url from s_Navigator as d2 where d2.Id = d1.ParentDir) as ParentUrl from s_Navigator as d1 where d1.Id = '{$id}'";
 			$res = ConnectWepps::$instance->fetch($sql);
-			$href = "'/_pps/navigator/{$res[0]['ParentUrl']}/'";
+			$href = "'/_wepps/navigator/{$res[0]['ParentUrl']}/'";
 		}
 		
 		$sql = "";		

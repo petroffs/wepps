@@ -1,8 +1,8 @@
 <div class="way">
 	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
-		<li><a href="/_pps/">Главная</a></li>
-		<li><a href="/_pps/lists/">Списки данных</a></li>
-		<li><a href="/_pps/lists/{$listSettings.TableName}/">{$listSettings.Name}</a></li>
+		<li><a href="/_wepps/">Главная</a></li>
+		<li><a href="/_wepps/lists/">Списки данных</a></li>
+		<li><a href="/_wepps/lists/{$listSettings.TableName}/">{$listSettings.Name}</a></li>
 	</ul>
 </div>
 <div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
@@ -12,10 +12,10 @@
 			<h2>{$content.Name}</h2>
 			<div class="controls-area pps_flex pps_flex_row pps_flex_row_top">
 				<div class="pps_flex_12 pps_flex_11_view_small">
-					<a href="/_pps/lists/{$listSettings.TableName}/add/" class="pps_button" title="Добавить"><i class="fa fa-plus"></i> Добавить</a>
+					<a href="/_wepps/lists/{$listSettings.TableName}/add/" class="pps_button" title="Добавить"><i class="fa fa-plus"></i> Добавить</a>
 					{if $permConfig==1}
-					<a href="/_pps/lists/s_Config/{$listSettings.Id}/" class="pps_button" title="Конфигурация"><i class="fa fa-gear"></i> Конфигурация</a>
-					<a href="/_pps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="pps_button" title="Настройки полей"><i class="fa fa-gears"></i> Настройки полей</a>
+					<a href="/_wepps/lists/s_Config/{$listSettings.Id}/" class="pps_button" title="Конфигурация"><i class="fa fa-gear"></i> Конфигурация</a>
+					<a href="/_wepps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="pps_button" title="Настройки полей"><i class="fa fa-gears"></i> Настройки полей</a>
 					<a title="Экспорт данных" href="#" class="pps_button" id="export" data-list="{$listSettings.TableName}"><i class="fa fa-download"></i> Экспорт</a>
 					{/if}
 				</div>
@@ -65,7 +65,7 @@
 					<tbody>
 						{foreach name="out" item="item" key="key" from=$listItems}
 						<tr class="data{if $smarty.foreach.out.last} data-last{/if}{if $item.DisplayOff==1} hidden{/if}"
-							data-url="/_pps/lists/{$listSettings.TableName}/{$item.Id}/"
+							data-url="/_wepps/lists/{$listSettings.TableName}/{$item.Id}/"
 							data-id="{$item.Id}">
 							{foreach name="o" item="i" key="k" from=$listScheme}
 							{if $i.0.Type|@strstr:"select"}

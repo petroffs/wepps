@@ -72,7 +72,7 @@ var readyListsInit = function() {
 		var field = $(this).closest('form').find('select').val();
 		var search = $(this).val();
 		var orderby = ($(this).data('orderby')!='') ? 'orderby='+$(this).data('orderby')+'&' : '';
-		var href = '/_pps/lists/'+$(this).data('list')+'/?'+orderby+'field='+field+'&search='+search;
+		var href = '/_wepps/lists/'+$(this).data('list')+'/?'+orderby+'field='+field+'&search='+search;
 		location.href = href;
 	});
 	if ($( "#list-search" ).length) {

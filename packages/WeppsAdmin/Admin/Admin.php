@@ -103,12 +103,12 @@ class AdminWepps {
 		$m = preg_match ( "/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match );
 		if (strstr($url, "home/")) {
 			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: /_pps/");
+			header("Location: /_wepps/");
 			exit();
 		}
 		elseif (substr ( $url, - 1 ) != '/' && $m==0 && $url!='' && $_SERVER['REQUEST_URI']!='/') {
 			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: /_pps/{$url}/");
+			header("Location: /_wepps/{$url}/");
 			exit();
 		} elseif (strstr($_SERVER['REQUEST_URI'],'index.php')) {
 			header("HTTP/1.1 301 Moved Permanently");

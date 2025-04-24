@@ -2,7 +2,7 @@
 	{foreach name="out" item="item" from=$elements}
 	{assign var="images" value=$item.Images_FileUrl|strarr}
 	<section class="pps_flex_13 pps_flex_12_view_medium">
-		{$item.Id|pps:"News"}
+		{$item.Id|wepps:"News"}
 		<div class="_Example10-img">
 			{if $images.0}
 			<img src="/pic/catbig{$images.0}" class="pps_image"/>

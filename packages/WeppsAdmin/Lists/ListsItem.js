@@ -188,7 +188,7 @@ var readyListsItemVEInit = function() {
 			tinymce.init({
 				  selector: '#'+dest,
 				  language: 'ru',
-				  language_url : '/packages/vendor_local/tinymce_pps/languages/ru.js',
+				  language_url : '/packages/vendor_local/tinymce_wepps/languages/ru.js',
 				  height: 500,
 				  menubar: 'insert',
 				  convert_urls: false,
@@ -202,7 +202,7 @@ var readyListsItemVEInit = function() {
 				  ,
 				  contextmenu: "cut copy paste | link image table",
 				  content_css: [
-						'/packages/vendor_local/tinymce_pps/styles.css'
+						'/packages/vendor_local/tinymce_wepps/styles.css'
 					  ],
 				  style_formats: [
 						{title: "Headers", items: [

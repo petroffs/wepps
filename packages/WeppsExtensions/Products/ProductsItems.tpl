@@ -3,7 +3,7 @@
 		{foreach item="item" from=$products}
 		{assign var="images" value=$item.Images_FileUrl|strarr}
 		<section>
-			{$item.Id|pps:"Products"}
+			{$item.Id|wepps:"Products"}
 			{if $item.PStatus}
 			<div class="status status{$item.PStatus}" title="{$item.PStatus_Name}"></div>
 			{/if}

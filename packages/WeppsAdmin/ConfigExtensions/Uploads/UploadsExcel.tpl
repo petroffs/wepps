@@ -35,7 +35,7 @@
 			{foreach name="out" item="item" from=$files}
 			<li class="pps_flex pps_flex_row"><div class="pps_flex_12"><i class="fa fa-file-o"></i> <a href="/f{$item.FileUrl}">{$item.Name}</a></div><div class="descr pps_flex_12">{$item.FileDate|date_format:"%d.%m.%Y"}</div></li>
 			{/foreach}
-			<li class="pps_flex pps_flex_row"><div class="pps_flex_12"><i class="fa fa-file-o"></i> <a href="/_pps/lists/s_UploadsSource/">Все загрузки</a></div><div class="descr pps_flex_12"></div></li>
+			<li class="pps_flex pps_flex_row"><div class="pps_flex_12"><i class="fa fa-file-o"></i> <a href="/_wepps/lists/s_UploadsSource/">Все загрузки</a></div><div class="descr pps_flex_12"></div></li>
 		</ul>
 	
 	{/if}

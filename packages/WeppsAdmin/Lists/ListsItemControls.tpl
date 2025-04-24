@@ -8,11 +8,11 @@
 	
 		{if $ppsUrl}
 			{if !$ppsUrl|@strstr:"addNavigator"}
-				<a class="pps_button list-item-add" href="/_pps/{$ppsPath}{$ppsUrl}addNavigator/" title="Добавить раздел"><i class="fa fa-plus"></i> Добавить</a>
+				<a class="pps_button list-item-add" href="/_wepps/{$ppsPath}{$ppsUrl}addNavigator/" title="Добавить раздел"><i class="fa fa-plus"></i> Добавить</a>
 				<a class="pps_button list-item-remove" href="" data-path="{$ppsPath}" title="Удалить"><i class="fa fa-remove"></i> Удалить</a>
 			{/if}
 		{elseif $element.Id}
-			<a class="pps_button list-item-add" href="/_pps/{$ppsPath}/{$listSettings.TableName}/add/" title="Добавить элемент"><i class="fa fa-plus"></i> Добавить</a>
+			<a class="pps_button list-item-add" href="/_wepps/{$ppsPath}/{$listSettings.TableName}/add/" title="Добавить элемент"><i class="fa fa-plus"></i> Добавить</a>
 			<a class="pps_button list-item-remove" href="" data-path="{$ppsPath}" title="Удалить"><i class="fa fa-remove"></i> Удалить</a>
 		{/if}
 	{/if}

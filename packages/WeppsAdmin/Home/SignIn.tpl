@@ -1,6 +1,6 @@
 <div class="pps_flex_11 way">
 	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
-		<li><a href="/_pps/">Главная</a></li>
+		<li><a href="/_wepps/">Главная</a></li>
 		<li>Авторизация</li>
 	</ul>
 </div>

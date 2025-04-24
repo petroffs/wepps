@@ -1,5 +1,5 @@
 <div class="page pps_panel panel-accordion" id="pps_panel_{$panel.Id}">
-	{$content.Id|pps:"panels":$panel.Id}
+	{$content.Id|wepps:"panels":$panel.Id}
 	<section class="panel-accordion-header">
 		{if $panel.Name}
 		<div class="title">{$panel.Name}</div>
@@ -19,7 +19,7 @@
 		<div class="pps_blocks pps_overflow_auto {if $user.ShowAdmin} pps_sortable{/if} {$panel.LayoutCSS}">
 			{foreach name="blocks" item="block" from=$blocks}
 			<div class="pps_block block-accordion {$block.LayoutCSS}" id="pps_block_{$panel.Id}_{$block.Id}" data-id="{$block.Id}">
-				{$block.Id|pps:"s_Blocks"}
+				{$block.Id|wepps:"s_Blocks"}
 				<div class="title">{$block.Name}</div>
 				<div class="text pps_hide">{$block.Descr}</div>
 				{$block.Template}

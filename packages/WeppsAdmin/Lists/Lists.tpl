@@ -1,7 +1,7 @@
 <div class="way">
 	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
-		<li><a href="/_pps/">Главная</a></li>
-		<li><a href="/_pps/lists/">Списки данных</a></li>
+		<li><a href="/_wepps/">Главная</a></li>
+		<li><a href="/_wepps/lists/">Списки данных</a></li>
 	</ul>
 </div>
 <div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
@@ -19,7 +19,7 @@
 							{foreach name="o" item="i" key="k" from=$item}
 							<div class="container pps_flex pps_flex_row pps_flex_row_str">
 								<div class="pps_flex_23">
-									<div class="container-title"><a href="/_pps/lists/{$i.TableName}/">{$i.Name}</a></div>
+									<div class="container-title"><a href="/_wepps/lists/{$i.TableName}/">{$i.Name}</a></div>
 									<div class="container-descr">{$i.TableName}</div>
 								</div>
 								<div class="pps_flex_13 pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">

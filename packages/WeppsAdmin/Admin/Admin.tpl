@@ -20,7 +20,7 @@
 							</div>
 							{foreach name="out" item="item" key="key" from=$navtop}
 							<div class="item{if $contenttop.Alias==$item.Alias} active{/if}">
-								<a href="/_pps/{$item.Alias}/">{$item.Name}</a>
+								<a href="/_wepps/{$item.Alias}/">{$item.Name}</a>
 							</div>
 							{/foreach}
 						</div>

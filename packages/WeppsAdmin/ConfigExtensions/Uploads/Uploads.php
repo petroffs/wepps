@@ -16,7 +16,7 @@ class UploadsWepps extends RequestWepps {
 		$this->title = $this->get['ext']['Name'];
 		$this->way = [];
 		array_push($this->way, [
-			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",
+			'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/",
 			'Name'=>$this->title
 		]);
 		$this->headers = new TemplateHeadersWepps();
@@ -46,7 +46,7 @@ class UploadsWepps extends RequestWepps {
 				break;
 		}
 		array_push($this->way, [
-			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/{$action}.html",
+			'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/{$action}.html",
 			'Name'=>$this->title
 		]);
 	}

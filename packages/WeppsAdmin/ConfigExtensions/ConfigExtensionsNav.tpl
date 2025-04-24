@@ -15,7 +15,7 @@
 			<ul class="pps_list dir">
 				{foreach name="o" item="i" from=$item.ENavArr}
 				<li class="{if $extsActive==$i.1}active{/if}"><a
-					href="/_pps/extensions/{$item.Alias}/{$i.1}.html">{$i.0}</a></li>
+					href="/_wepps/extensions/{$item.Alias}/{$i.1}.html">{$i.0}</a></li>
 				{/foreach}
 			</ul>
 		</li>

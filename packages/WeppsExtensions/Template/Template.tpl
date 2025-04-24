@@ -13,7 +13,7 @@
 		{$navTpl}
 	</header>
 	<main>
-		{$content.Url|pps:"navigator"}
+		{$content.Url|wepps:"navigator"}
 		{$extensionTop}
 		{if $normalView==1}
 		<div class="page pps_flex_max pps_flex pps_flex_col">

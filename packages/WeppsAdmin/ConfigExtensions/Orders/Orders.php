@@ -16,7 +16,7 @@ class OrdersWepps extends RequestWepps {
 		$this->title = $this->get['ext']['Name'];
 		$this->way = [];
 		array_push($this->way, [
-			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",
+			'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/",
 			'Name'=>$this->title
 		]);
 		$this->headers = new TemplateHeadersWepps();
@@ -54,7 +54,7 @@ class OrdersWepps extends RequestWepps {
 				]);
 				$smarty->assign('statuses',$statuses);
 				$smarty->assign('statusesActive',$statusesActive);
-				$smarty->assign('url','https://platform.wepps.ubu/_pps/extensions/Orders/orders.html');
+				$smarty->assign('url','https://platform.wepps.ubu/_wepps/extensions/Orders/orders.html');
 				
 				/*
 				 * Заказы
@@ -76,7 +76,7 @@ class OrdersWepps extends RequestWepps {
 					$smarty->assign('orders',$orders);
 					$smarty->assign('paginator',$obj->paginator);
 					#UtilsWepps::debug($obj->paginator,21);
-					$smarty->assign('paginatorUrl',"/_pps/extensions/Orders/orders.html?status=$statusesActive");
+					$smarty->assign('paginatorUrl',"/_wepps/extensions/Orders/orders.html?status=$statusesActive");
 					$smarty->assign('paginatorTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/Orders/Paginator.tpl'));
 					$this->headers->css("/packages/WeppsAdmin/Admin/Paginator/Paginator.{$this->headers::$rand}.css");
 				}
@@ -86,7 +86,7 @@ class OrdersWepps extends RequestWepps {
 				break;
 		}
 		array_push($this->way, [
-			'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/{$action}.html",
+			'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/{$action}.html",
 			'Name'=>$this->title
 		]);
 	}

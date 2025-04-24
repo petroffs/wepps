@@ -2,7 +2,7 @@
 	<section class="news-item-wrapper">
 		<div class="w_grid w_2col w_1col_view_small">
 			{assign var="images" value=$element.Images_FileUrl|strarr}
-			{$element.Id|pps:"News"}
+			{$element.Id|wepps:"News"}
 			{if $images.0}
 			<div>
 				<div class="news-item-img"><img src="/pic/catbigv{$images.0}"/></div>
@@ -21,7 +21,7 @@
 			{foreach name="out" item="item" from=$elements}
 			{assign var="images" value=$item.Images_FileUrl|strarr}
 			<section>
-				{$item.Id|pps:"News"}
+				{$item.Id|wepps:"News"}
 				<a href="{$item.Url}">
 					<div class="news-img">
 						{if $images.0}

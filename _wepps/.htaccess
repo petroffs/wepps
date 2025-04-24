@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /_pps/
+RewriteBase /_wepps/
 RewriteCond %{HTTPS} off
 RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 RewriteRule ^(.*)$ index.php?ppsUrl=$1&%{QUERY_STRING} [L]

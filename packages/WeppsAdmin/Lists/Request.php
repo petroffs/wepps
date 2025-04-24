@@ -243,7 +243,7 @@ class RequestListsWepps extends RequestWepps {
 				$condition = "(t.Name like '%$id%' or t.TableName like '%$id%')";
 				
 				$obj = new DataWepps("s_Config");
-				$obj->setConcat("t.Id as id,t.Name as value,concat('/_pps/lists/',t.TableName,'/') as Url");
+				$obj->setConcat("t.Id as id,t.Name as value,concat('/_wepps/lists/',t.TableName,'/') as Url");
 				$res = $obj->getMax($condition);
 				if (!isset($res[0]['Id'])) {
 					ConnectWepps::$instance->close();

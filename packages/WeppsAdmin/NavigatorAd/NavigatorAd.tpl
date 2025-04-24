@@ -1,9 +1,9 @@
 <div class="way">
 	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
-		<li><a href="/_pps/">Главная</a></li>
-		<li><a href="/_pps/navigator/">Навигатор</a></li>
+		<li><a href="/_wepps/">Главная</a></li>
+		<li><a href="/_wepps/navigator/">Навигатор</a></li>
 		{foreach name="out" item="item" key="key" from=$way}
-		<li><a href="/_pps/navigator{$item.Url}">{$item.Name}</a></li>
+		<li><a href="/_wepps/navigator{$item.Url}">{$item.Name}</a></li>
 		{/foreach}
 	</ul>
 </div>
@@ -33,10 +33,10 @@
 				  <ul class="pps_list dir level{$level}" data-parent="{$entry.element.Id}" data-level="{$level}">
 				  {foreach $data as $entry}
 				    {if count($entry.child)>0}
-				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}" data-id="{$entry.element.Id}"><a href="/_pps/navigator{$entry.element.Url}">{$entry.element.Name}</a>&nbsp;<i class="fa fa-folder-o"></i></li>
+				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}" data-id="{$entry.element.Id}"><a href="/_wepps/navigator{$entry.element.Url}">{$entry.element.Name}</a>&nbsp;<i class="fa fa-folder-o"></i></li>
 				      {menu data=$entry.child level=$level+1}
 				    {else}
-				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}"><a href="/_pps/navigator{$entry.element.Url}">{$entry.element.Name}</a></li>
+				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}"><a href="/_wepps/navigator{$entry.element.Url}">{$entry.element.Name}</a></li>
 				    {/if}
 				  {/foreach}
 				  </ul>

@@ -7,7 +7,7 @@
 				</div>	
 				{foreach name="o" item="i" from=$ext.ENavArr}
 				<div class="container">
-					<div class="container-title"><a href="/_pps/extensions/{$ext.Alias}/{$i.1}.html">{$i.0}</a></div>
+					<div class="container-title"><a href="/_wepps/extensions/{$ext.Alias}/{$i.1}.html">{$i.0}</a></div>
 					<div class="container-descr">{$i.1}</div>
 				</div>
 				{/foreach}

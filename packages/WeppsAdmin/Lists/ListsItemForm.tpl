@@ -32,12 +32,12 @@
 			<div class="title pps_flex_13">
 				<div class="title2">
 				{if $permFields==1}
-				<a href="/_pps/lists/s_ConfigFields/{$item.0.Id}/">{$item.0.Name}</a>
+				<a href="/_wepps/lists/s_ConfigFields/{$item.0.Id}/">{$item.0.Name}</a>
 				{else}
 				{$item.0.Name}
 				{/if}
 				{if $element[$key|cat:"_Table"]}
-				<a href="/_pps/lists/{$element[$key|cat:"_Table"]}/" target="_blank"><i class="fa fa-external-link"></i></a>
+				<a href="/_wepps/lists/{$element[$key|cat:"_Table"]}/" target="_blank"><i class="fa fa-external-link"></i></a>
 				{/if}
 				</div>
 				<div class="descr pps_flex_23">
@@ -118,7 +118,7 @@
 						<div>
 							<div class="files-controls pps_flex pps_flex_row">
 								<a href="" class="files-item-copy-link"><i class="fa fa-copy"></i></a>
-								<a href="/_pps/lists/s_Files/{$i.Id}/"><i class="fa fa-edit"></i></a>
+								<a href="/_wepps/lists/s_Files/{$i.Id}/"><i class="fa fa-edit"></i></a>
 								<a href="" class="files-item-remove-link"><i class="fa fa-remove"></i></a>
 							</div>
 						</div>
@@ -215,7 +215,7 @@
 					{foreach name="o" item="i" key="k" from=$element[$key|cat:"_Properties"]}
 					<div>
 						<div class="title2">
-							{$i.Name}{if $i.PExt} <span>{$i.PExt}</span>{/if} <a href="/_pps/lists/s_Properties/{$i.Id}/" target="_blank"><i class="fa fa-external-link"></i></a>
+							{$i.Name}{if $i.PExt} <span>{$i.PExt}</span>{/if} <a href="/_wepps/lists/s_Properties/{$i.Id}/" target="_blank"><i class="fa fa-external-link"></i></a>
 						</div>
 						{if $i.PDescr}
 						<div class="descr2">{$i.PDescr}</div>

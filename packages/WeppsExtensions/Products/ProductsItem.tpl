@@ -1,6 +1,6 @@
 {assign var="images" value=$element.Images_FileUrl|strarr}
 <div class="page product pps_flex_max">
-	{$element.Id|pps:"Products"}
+	{$element.Id|wepps:"Products"}
 	<section>
 		<div class="product-wrapper">
 			<div class="product-media content-block">

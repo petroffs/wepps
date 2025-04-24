@@ -1,7 +1,7 @@
 <div class="way">
 	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
-		<li><a href="/_pps/">Главная</a></li>
-		<li><a href="/_pps/extensions/">Системные расширения</a></li>
+		<li><a href="/_wepps/">Главная</a></li>
+		<li><a href="/_wepps/extensions/">Системные расширения</a></li>
 		{if $way}
 		{foreach name="out" item="item" key="key" from=$way}
 		<li><a href="{$item.Url}">{$item.Name}</a></li>
@@ -28,7 +28,7 @@
 							</div>
 							{foreach name="o" item="i" from=$item.ENavArr}
 							<div class="container">
-								<div class="container-title"><a href="/_pps/extensions/{$item.Alias}/{$i.1}.html">{$i.0}</a></div>
+								<div class="container-title"><a href="/_wepps/extensions/{$item.Alias}/{$i.1}.html">{$i.0}</a></div>
 								<div class="container-descr">{$i.1}</div>
 							</div>
 							{/foreach}

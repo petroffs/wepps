@@ -22,7 +22,7 @@
 			<ul class="pps_list dir">
 				{foreach name="o" item="i" key="k" from=$item}
 				<li class="{if $i.TableName==$listSettings.TableName}active{/if}"><a
-					href="/_pps/lists/{$i.TableName}/">{$i.Name}</a></li> {/foreach}
+					href="/_wepps/lists/{$i.TableName}/">{$i.Name}</a></li> {/foreach}
 			</ul>
 		</li> {/foreach}
 	</ul>

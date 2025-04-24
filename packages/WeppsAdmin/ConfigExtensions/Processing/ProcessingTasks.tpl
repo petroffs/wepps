@@ -6,7 +6,7 @@
 			<label class="pps pps_button"><input type="submit" value="Построить индекс"/></label>
 		</div>
 		<div class="pps_flex_12 pps_flex_11_view_medium">
-			Заполнение списка <a href="/_pps/lists/s_SearchKeys/">Индексы
+			Заполнение списка <a href="/_wepps/lists/s_SearchKeys/">Индексы
 				связей полей</a>
 		</div>
 	</div>
@@ -20,6 +20,6 @@
 			<label class="pps pps_button"><input type="submit" value="Очистка файлов"/></label>
 		</div>
 		<div class="pps_flex_12 pps_flex_11_view_medium">
-			Удаление файлов из папки /files/lists/* и /pic/* (только тех, которые не указаны в списке <a href="/_pps/lists/s_Files/">Файлы</a>).</div>
+			Удаление файлов из папки /files/lists/* и /pic/* (только тех, которые не указаны в списке <a href="/_wepps/lists/s_Files/">Файлы</a>).</div>
 	</div>
 </form>

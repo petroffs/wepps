@@ -11,7 +11,7 @@ class _Example10Wepps extends RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = '_Example10.tpl';
 		$this->title = $this->get['ext']['Name'];
-		$this->way = [[	'Url'=>"/_pps/extensions/{$this->get['ext']['Alias']}/",
+		$this->way = [[	'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/",
 						'Name'=>$this->title]];
 		$smarty->assign('test1','test1');
 		$smarty->assign('url','/packages/WeppsAdmin/ConfigExtensions/_Example10/Request.php');

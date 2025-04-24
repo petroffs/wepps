@@ -863,7 +863,7 @@ class SmartyWepps {
 		$smarty = new \Smarty();
 		//$smarty->template_dir = ($backOffice == 0) ? 'tpl/' : 'control/tpl/';
 		$smarty->addTemplateDir( $root . 'packages/' );
-		$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_pps/');
+		$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_wepps/');
 		$smarty->compile_dir = $root . 'files/tpl/compile';
 		$smarty->cache_dir = $root . 'files/tpl/cache/';
 		$smarty->error_reporting = error_reporting() & ~E_NOTICE & ~E_WARNING;

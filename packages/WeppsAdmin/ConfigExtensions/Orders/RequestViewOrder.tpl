@@ -91,7 +91,7 @@
 							{assign var="pay" value=$item|strarr}
 								<div class="even pps_flex pps_flex_row pps_flex_row_str">
 									<div class="pps_flex_12">
-										{$pay.1} <a href="/_pps/lists/Payments/{$pay.0}/" target="_blank"><i class="fa fa-link"></i></a>
+										{$pay.1} <a href="/_wepps/lists/Payments/{$pay.0}/" target="_blank"><i class="fa fa-link"></i></a>
 										<div class="date">{$pay.3}</div>
 									</div>
 									<div class="price pps_right pps_flex_12"><span>{$pay.2|money:2}</span></div> 
@@ -144,7 +144,7 @@
 					</div>
 				</div>
 				<div class="settings client pps_flex_12 pps_flex_11_view_small">
-					<div class="title">Заказ <a href="/_pps/lists/Orders/{$order.Id}/" target="_blank"><i class="fa fa-link"></i></a></div>
+					<div class="title">Заказ <a href="/_wepps/lists/Orders/{$order.Id}/" target="_blank"><i class="fa fa-link"></i></a></div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Номер</div>
 						<div class="dd pps_flex_23">{$order.Id}</div>
@@ -162,7 +162,7 @@
 						<div class="dd pps_flex_23">{$order.OPayment_Name}</div>
 					</div>
 					<div class="pps_interval"></div>
-					<div class="title">Клиент <a href="/_pps/lists/s_Users/{$order.UserId}/" target="_blank"><i class="fa fa-link"></i></a></div>
+					<div class="title">Клиент <a href="/_wepps/lists/s_Users/{$order.UserId}/" target="_blank"><i class="fa fa-link"></i></a></div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
 						<div class="dt pps_flex_13">Номер</div>
 						<div class="dd pps_flex_23">{$order.UserId}</div>

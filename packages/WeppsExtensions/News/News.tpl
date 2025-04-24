@@ -2,7 +2,7 @@
 	{foreach name="out" item="item" from=$elements}
 	{assign var="images" value=$item.Images_FileUrl|strarr}
 	<section>
-		{$item.Id|pps:"News"}
+		{$item.Id|wepps:"News"}
 		<a href="{$item.Url}">
 			<div class="news-img">
 				{if $images.0}
