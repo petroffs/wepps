@@ -384,24 +384,34 @@ form {
 	padding: 0px;
 }
 
-.select2-container--default.select2-container {
-	border-radius: var(--step2);
-	border: var(--stepHalf) solid var(--color-button);
-}
-
 .select2-container .select2-selection--single {
-	border: var(--border);
 	height: calc(var(--step) * 8);
+	border-radius: var(--step2);
+	border-color: var(--color-95);
 }
 
 .select2-container .select2-selection--multiple {
-	border-color: var(--color-85);
 	height: calc(var(--step) * 8);
+	border-radius: var(--step2);
+	border-color: var(--color-button);
+	border-width: var(--stepHalf);
 }
+
+.select2-search--dropdown {
+	padding: var(--step2)
+  }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
 	top: 50%;
 	transform: translate(0, -50%);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+	border-color: var(--color-button) transparent transparent transparent;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+	border-color: transparent transparent var(--color-button) transparent;
 }
 
 .select2-container .select2-selection--single .select2-selection__rendered {
@@ -419,28 +429,34 @@ form {
 	padding-bottom: var(--step);
 }
 
- 
-.select2-container--default.select2-container--open {
+
+
+.select2-dropdown {
+	background-color: var(--color-100);
 	border: var(--stepHalf) solid var(--color-button);
-	border-radius: var(--step2) var(--step2) 0 0;
+	border-radius: var(--step2);
+}
+.select2-container--open .select2-dropdown--above {
+	border-bottom: none;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
 }
 
-
-.select2-container .select2-selection--multiple----:hover {
-	border-color: var(--color-85);
-	box-shadow: inset 0 0 var(--step2) var(--color-95);
+.select2-container--open .select2-dropdown--below {
+	border-top: none;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 
 /* Жесткое переопределение для теста */
 .select2-container.select2-container--hover {
-	outline: 2px solid red !important;
-	outline-offset: 2px;
+	/* outline: 2px solid red !important;
+	outline-offset: 2px; */
   }
   .select2-container--focus {
-	outline: 2px solid red !important;
+	/* outline: 2px solid red !important; */
 }
 
 .select2-dropdown {
-	border: var(--stepHalf) solid var(--color-button);
-	width: 100%;
+	outline: 1px solid var(--color-button);
   }

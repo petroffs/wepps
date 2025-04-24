@@ -8,4 +8,4 @@ var readyContactsInit = function() {
 		map.addMarker(coord,{title:title,descr:descr});
 	});
 }
-$(window).load(readyContactsInit);
+//$(window).load(readyContactsInit);
