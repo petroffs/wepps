@@ -60,14 +60,13 @@ class BotWepps {
 				break;
 			case 'cdek':
 				$obj = new DeliveryCdekWepps([]);
-				#$obj->setPoints();
+				$obj->setPoints();
 				$obj->setCities();
-				#$obj->setRegions();
+				$obj->setRegions();
 				break;
 			default:
 				echo "\nERROR\n";
 				exit();
-				break;
 		}
 		$start = microtime(true)-$start;
 		echo "\n$action - OK [$start sec.]\n";

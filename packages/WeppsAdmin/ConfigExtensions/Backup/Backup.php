@@ -11,6 +11,9 @@ use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Admin\AdminWepps;
 
 class BackupWepps extends RequestWepps {
+	private $way;
+	private $title;
+	private $headers;
 	public function request($action="") {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Backup.tpl';
@@ -94,4 +97,3 @@ class BackupWepps extends RequestWepps {
 		]);
 	}
 }
-?>

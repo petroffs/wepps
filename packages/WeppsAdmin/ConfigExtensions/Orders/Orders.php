@@ -10,6 +10,9 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\DataWepps;
 
 class OrdersWepps extends RequestWepps {
+	private $way;
+	private $title;
+	private $headers;
 	public function request($action="") {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = 'Orders.tpl';
@@ -91,4 +94,3 @@ class OrdersWepps extends RequestWepps {
 		]);
 	}
 }
-?>

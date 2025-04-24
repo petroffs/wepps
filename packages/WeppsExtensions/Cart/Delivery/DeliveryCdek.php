@@ -6,13 +6,15 @@ use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
 
 class DeliveryCdekWepps {
+	private $settings = [];
 	private $account;
 	private $password;
 	private $url;
 	private $office;
+	private $tokenFilename;
 	private $token;
+	private $curl;
 	private $counter=0;
-	
 	public function __construct($settings) {
 		$this->url = ConnectWepps::$projectServices['cdek']['url'];
 		$this->account = ConnectWepps::$projectServices['cdek']['account'];

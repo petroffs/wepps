@@ -182,8 +182,7 @@ class RequestCartWepps extends RequestWepps {
 				echo $js;
 				//UtilsWepps::debug($_SESSION['cartAdd']);
 				exit ();
-				break;
-			case "addOrder" :
+			case "addOrder--" :
 				/*
 				 * Проверка данных, индикация ошибок
 				 */

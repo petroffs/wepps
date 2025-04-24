@@ -7,6 +7,7 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Exception\ExceptionWepps;
 
 class _Example10Wepps extends RequestWepps {
+	private $title;
 	public function request($action="") {
 		$smarty = SmartyWepps::getSmarty();
 		$this->tpl = '_Example10.tpl';
