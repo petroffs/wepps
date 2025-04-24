@@ -431,7 +431,7 @@ abstract class RequestWepps {
 	/**
 	 * Обработка запроса (Реализация логики)
 	 */
-	abstract function request();
+	abstract public function request(string $action='');
 	
 	/**
 	 * Подключение стилей и js-сценариев
@@ -482,27 +482,16 @@ class TemplateHeadersWepps {
 	);
 	
 	public function js(string $filename) {
-		return $this->cssjs['js'][] = "\n".'<script type="text/javascript" src="'.$filename.'"></script>';
+		return $this->cssjs['js'][] = (string) "\n".'<script type="text/javascript" src="'.$filename.'"></script>';
 	}
 	public function css(string $filename) {
-		return $this->cssjs['css'][] .= "\n".'<link rel="stylesheet" type="text/css" href="'.$filename.'"/>';
+		return $this->cssjs['css'][] = (string) "\n".'<link rel="stylesheet" type="text/css" href="'.$filename.'"/>';
 	}
 	public function meta(string $meta) {
-		return $this->output['meta'] .= "\n".$meta;
+		return $this->output['meta'] .= (string) "\n".$meta;
 	}
-	private function join_old(string $str) {
-		$ex = explode("\n",$str);
-		if ($ex[0]=='') unset($ex[0]);
-		$match = [];
-		foreach ($ex as $value) {
-			if (strstr($value, "text/javascript")) {
-				preg_match('/src="(.+)"></', $value,$match);
-				$this->js($match[1]);
-			} else {
-				preg_match('/href="(.+)"\/>/', $value,$match);
-				$this->css($match[1]);
-			}
-		}
+	public function resetMeta() {
+		return $this->output['meta'] = "";
 	}
 	public function join(TemplateHeadersWepps $headers) {
 		$this->cssjs['js'] = array_merge($this->cssjs['js'],$headers->cssjs['js']);
