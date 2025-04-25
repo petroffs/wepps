@@ -2,10 +2,10 @@ class SuggestionsWepps {
 	constructor(settings = {}) {
 		this.input = $('#' + settings.input);
 		this.action = settings.action
-		this.delay = settings.delay || 300; // Задержка перед запросом
-		this.url = settings.url || 'search.php'; // URL для запросов
+		this.delay = settings.delay || 300;
+		this.url = settings.url || 'search.php';
 		this.pathname = '/catalog/';
-		this. results = $('<div>').addClass('w_suggestions w_hide');
+		this.results = $('<div>').addClass('w_suggestions w_hide');
 		$(this.input).after(this.results);
 	}
 	init() {
@@ -17,8 +17,8 @@ class SuggestionsWepps {
 		let resultsItemClass = '.w_suggestions-item';
 		$(this.input).after(loader)
 		let self = this;
-		$(this.input).on('input', function() {
-			clearTimeout(inputTimeout); // Отменяем предыдущий таймер
+		$(this.input).on('input', function () {
+			clearTimeout(inputTimeout);
 			inputTimeout = setTimeout(() => {
 				const $query = $(this).val().trim();
 				if ($query.length > 2) {
@@ -27,7 +27,7 @@ class SuggestionsWepps {
 					selectedIndex = -1; // Сброс выбора при новом вводе
 					loadSuggestions($query, true);
 				} else {
-					self.inputDefault();
+					self.remove();
 				}
 			}, self.delay);
 		});
@@ -43,7 +43,7 @@ class SuggestionsWepps {
 					text: query,
 					page: suggestPage,
 				},
-				success: function(response) {
+				success: function (response) {
 					const $data = JSON.parse(response);
 					if (reset) {
 						self.results.html($data.html).removeClass('w_hide');
@@ -54,25 +54,25 @@ class SuggestionsWepps {
 					self.input.addClass('focus');
 					suggestPage++;
 				},
-				complete: function() {
+				complete: function () {
 					suggestLoading = false;
 					loader.hide();
 				}
 			});
 		}
 		// Скролл внутри блока подсказок
-		self.results.scroll(function() {
+		self.results.scroll(function () {
 			if (($(this).scrollTop() + $(this).innerHeight()) >= $(this)[0].scrollHeight - 50 && hasMoreSuggestions) {
 				loadSuggestions(self.input.val().trim());
 			}
 		});
 		let selectedIndex = -1; // Индекс выбранного элемента
 		// Обработчик клавиатуры
-		self.input.on('keydown', function(e) {
+		self.input.on('keydown', function (e) {
 			const suggestions = self.results.find(resultsItemClass);
 			if (e.key === 'Escape') {
 				e.preventDefault();
-				self.inputDefault();
+				self.remove();
 			}
 			// Стрелка вниз
 			if (e.key === 'ArrowDown') {
@@ -88,28 +88,37 @@ class SuggestionsWepps {
 			}
 			// Enter
 			if (e.key === 'Enter') {
-				self.afterSelectItem(this,suggestions,selectedIndex);
-				self.inputDefault();
+				self.afterSelectItem(this, suggestions, selectedIndex);
+				self.remove();
 			}
 		});
 		// Обновление выделения
 		function updateSelection(items) {
-			items.removeClass('active');
+			items.removeClass('focus');
 			if (selectedIndex >= 0 && selectedIndex < items.length) {
 				items.eq(selectedIndex)
-					.addClass('active')
+					.addClass('focus')
 					.get(0)
 					.scrollIntoView({ block: 'nearest' });
 			}
 		}
-		self.results.on('click', resultsItemClass, function() {
+		self.results.on('click', resultsItemClass, function () {
 			const suggestions = self.results.find(resultsItemClass);
 			selectedIndex = $(this).index();
-			self.afterSelectItem(self.input,suggestions,selectedIndex);
-			self.inputDefault();
+			self.afterSelectItem(self.input, suggestions, selectedIndex);
+			self.remove();
+		});
+		$(document).on("click", function (event) {
+			let t = $(event.target).attr('id');
+			if (t!=self.input.attr('id')) {
+				self.remove();
+			}
+			if (!$(event.target).closest('label').length) {
+				//self.remove();
+			}
 		});
 	}
-	afterSelectItem(self,suggestions,selectedIndex) {
+	afterSelectItem(self, suggestions, selectedIndex) {
 		const selectedItem = suggestions.eq(selectedIndex);
 		if (selectedItem.length && selectedIndex > -1) {
 			location.href = selectedItem.data('url');
@@ -117,7 +126,7 @@ class SuggestionsWepps {
 			location.href = this.pathname + '?text=' + $(self).val();
 		}
 	}
-	inputDefault() {
+	remove() {
 		this.results.empty().addClass('w_hide');
 		this.input.removeClass('focus');
 	}

@@ -64,21 +64,25 @@
 				</div>
 				<div class="pps_flex_11">
 					<span class="title">Test Checkbox</span>
-					<label class="pps pps_checkbox">
-						<input type="checkbox"> <span>Опция 1</span>
-					</label>
-					<label class="pps pps_checkbox">
-						<input type="checkbox"> <span>Опция 2</span>
-					</label>
+					<div class="pps_fields">
+						<label class="pps pps_checkbox">
+							<input type="checkbox"> <span>Опция 1</span>
+						</label>
+						<label class="pps pps_checkbox">
+							<input type="checkbox"> <span>Опция 2</span>
+						</label>
+					</div>
 				</div>
 				<div class="pps_flex_11">
 					<span class="title">Test Radio</span>
-					<label class="pps pps_radio">
-						<input type="radio" name="radiotest"> <span>Опция 1</span>
-					</label>
-					<label class="pps pps_radio">
-						<input type="radio" name="radiotest"> <span>Опция 2</span>
-					</label>
+					<div class="pps_fields">
+						<label class="pps pps_radio">
+							<input type="radio" name="radiotest"> <span>Опция 1</span>
+						</label>
+						<label class="pps pps_radio">
+							<input type="radio" name="radiotest"> <span>Опция 2</span>
+						</label>
+					</div>
 				</div>
 				<div class="pps_flex_11">
 					<span class="title">Test Select</span>

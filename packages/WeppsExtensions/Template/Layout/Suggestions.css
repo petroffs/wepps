@@ -8,18 +8,19 @@ label.pps.pps_input>input.w_suggestions {
 label.pps.pps_input>input.focus {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
+	border-bottom: none;
 }
 div.w_suggestions {
 	background: var(--color-100);
 	border: var(--border);
-	border-top: 0;
 	border-width: var(--stepHalf);
+	border-top-width: 1px;
 	border-color: var(--color-button);
 	border-radius: 0 0 var(--step2) var(--step2);
-	width: calc(100% + var(--step) - 1px);
+	width: 100%;
+	/* width: calc(100% + var(--step) - 1px); */
 	max-height: calc(var(--step) * 48);
 	margin-top: 0;
-	margin-left: -3px;
 	scrollbar-width: thin;
 	overflow-y: auto;
 	display: block;
@@ -46,7 +47,7 @@ div.w_suggestions-item {
 }
 
 div.w_suggestions-item:hover,
-div.w_suggestions-item.active {
+div.w_suggestions-item.focus {
 	background-color: var(--color-98);
 }
 
