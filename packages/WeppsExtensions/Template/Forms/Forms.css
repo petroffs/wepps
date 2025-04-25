@@ -42,7 +42,7 @@ form.pps_success {
 	padding: var(--step4) var(--step4);
 	background: var(--color-98);
 	border: var(--stepHalf) solid var(--color-success);
-	border-radius: var(--step);
+	border-radius: var(--step2);
 }
 
 label.pps {
@@ -74,8 +74,9 @@ label.pps.pps_require.pps_title {
 
 label.pps * {
 	font-size: var(--font-default);
-	
+
 }
+
 label.pps>* {
 	transition: all 0.3s ease;
 }
@@ -178,7 +179,7 @@ label.pps.pps_upload span {
 	color: var(--color-button);
 	background: var(--color-100);
 	border: var(--stepHalf) solid var(--color-button);
-	border-radius: var(--step);
+	border-radius: var(--step2);
 	margin: 0;
 	padding: 0 var(--step2);
 	width: auto;
@@ -190,11 +191,12 @@ label.pps.pps_upload span {
 	justify-content: center;
 	align-items: center;
 	align-content: center;
+	user-select: none;
 }
 
 label.pps.pps_upload span:hover {
-	color: var(--color-focus);
-	background-color: var(--color-98);
+	color: var(--color-100);
+	background-color: var(--color-button);
 }
 
 label.pps.pps_upload i {
@@ -204,7 +206,7 @@ label.pps.pps_upload i {
 label.pps.pps_input input {
 	width: 100%;
 	border: var(--border);
-	border-radius: var(--step);
+	border-radius: var(--step2);
 	padding: var(--step2);
 	min-height: calc(var(--step) * 8);
 	margin: 0;
@@ -215,7 +217,7 @@ label.pps.pps_area textarea {
 	width: 100%;
 	min-height: calc(var(--step) * 20);
 	border: var(--border);
-	border-radius: var(--step);
+	border-radius: var(--step2);
 	padding: var(--step2);
 	margin: 0 !important;
 	resize: none;
@@ -229,7 +231,7 @@ label.pps.pps_input input:focus {
 	outline: var(--stepHalf) solid var(--color-button);
 }
 
-label.pps.pps_button {	
+label.pps.pps_button {
 	display: inline-block;
 	max-width: 100%;
 }
@@ -243,7 +245,7 @@ label.pps.pps_button button {
 	color: var(--color-100);
 	background: var(--color-button);
 	border: var(--stepHalf) solid var(--color-button);
-	border-radius: var(--step);
+	border-radius: var(--step2);
 	padding: var(--step) var(--step4);
 	max-width: 100%;
 	min-height: calc(var(--step) * 8);
@@ -264,6 +266,7 @@ label.pps.pps_button input:hover,
 label.pps.pps_button button:hover {
 	color: var(--color-98);
 	background-color: var(--color-focus);
+	border-color: var(--color-focus);
 }
 
 a.pps_button:active,
@@ -273,7 +276,7 @@ label.pps.pps_button button:active {
 	background-color: var(--color-active);
 	border-color: var(--color-active);
 	cursor: default;
-	box-shadow: 0 0 var(--step2) rgba(0,0,0,0.2);
+	box-shadow: 0 0 var(--step2) rgba(0, 0, 0, 0.2);
 }
 
 a.pps_button:disabled,
@@ -307,7 +310,7 @@ label.pps_button.pps_button_important button {
 
 div.pps.pps_minmax {
 	border: var(--border);
-	border-radius: var(--step);
+	border-radius: var(--step2);
 	max-width: 120px;
 	overflow: hidden;
 	display: flex;
@@ -320,8 +323,8 @@ div.pps.pps_minmax>button {
 	border: none;
 	padding: 0;
 	margin: 0;
-	width: var(--step6);
-	height: var(--step6);
+	width: calc(var(--step) * 8);
+	height: calc(var(--step) * 8);
 }
 
 div.pps.pps_minmax>button>span {
@@ -384,26 +387,45 @@ form {
 	padding: 0px;
 }
 
-.select2-container .select2-selection--single {
-	height: calc(var(--step) * 8);
-	border-radius: var(--step2);
-	border-color: var(--color-95);
-}
-
+.select2-container .select2-selection--single,
 .select2-container .select2-selection--multiple {
 	height: calc(var(--step) * 8);
 	border-radius: var(--step2);
-	border-color: var(--color-button);
-	border-width: var(--stepHalf);
+	border-color: var(--color-85);
 }
 
 .select2-search--dropdown {
 	padding: var(--step2)
-  }
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+	border-color: var(--color-button);
+	border-radius: var(--step);
+	padding: var(--step2);
+}
+
+.select2-dropdown {
+	background-color: var(--color-100);
+	border: var(--stepHalf) solid var(--color-button);
+	border-radius: var(--step2);
+}
+
+.select2-container--open .select2-dropdown--above {
+	border-bottom: none;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.select2-container--open .select2-dropdown--below {
+	border-top: none;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {
 	top: 50%;
 	transform: translate(0, -50%);
+	right: var(--step);
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow b {
@@ -429,34 +451,47 @@ form {
 	padding-bottom: var(--step);
 }
 
-
-
-.select2-dropdown {
-	background-color: var(--color-100);
-	border: var(--stepHalf) solid var(--color-button);
-	border-radius: var(--step2);
-}
-.select2-container--open .select2-dropdown--above {
-	border-bottom: none;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-}
-
-.select2-container--open .select2-dropdown--below {
+.select2-container--default.select2-container--open.select2-container--above .select2-selection--single,
+.select2-container--default.select2-container--open.select2-container--above .select2-selection--multiple {
+	border-width: var(--stepHalf);
+	border-color: var(--color-button);
 	border-top: none;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+	border-radius: 0 0 var(--step2) var(--step2);
 }
 
-/* Жесткое переопределение для теста */
-.select2-container.select2-container--hover {
-	/* outline: 2px solid red !important;
-	outline-offset: 2px; */
-  }
-  .select2-container--focus {
-	/* outline: 2px solid red !important; */
+.select2-container--default.select2-container--open.select2-container--below .select2-selection--single,
+.select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+	border-width: var(--stepHalf);
+	border-color: var(--color-button);
+	border-bottom: none;
+	border-radius: var(--step2) var(--step2) 0 0;
 }
 
-.select2-dropdown {
-	outline: 1px solid var(--color-button);
-  }
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+	border-color: var(--color-85);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+	color: var(--color-100);
+	background-color: var(--color-button);
+	border: var(--border);
+	border-radius: var(--step2);
+	cursor: default;
+	float: left;
+	margin-right: var(--step);
+	margin-top: var(--step);
+	padding: var(--step) var(--step2);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+	color: var(--color-100);
+	margin-right: var(--step);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+	color: var(--color-95);
+}
+
+.select2-container--default .select2-results__option:last-child {
+	border-radius: 0 0 var(--step2) var(--step2);
+}

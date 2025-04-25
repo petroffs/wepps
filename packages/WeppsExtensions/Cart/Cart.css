@@ -103,7 +103,7 @@ div.page.cart div.cart-title a.cart-remove.active {
 }
 
 div.page.cart div.cart-title a.cart-favorite.active {
-	color: var(--color-success)
+	color: var(--color-button)
 }
 
 div.page.cart div.cart-quantity {
