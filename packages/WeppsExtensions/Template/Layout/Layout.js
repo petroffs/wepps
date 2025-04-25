@@ -1,6 +1,6 @@
-let layoutInit = function() {
+let layoutInit = function () {
 	$('.w_radius').height($('.w_radius').width());
-	$('.w_admin').find('a').on('click',function(event) {
+	$('.w_admin').find('a').on('click', function (event) {
 		event.stopPropagation();
 	});
 }
@@ -8,34 +8,34 @@ $(document).ready(layoutInit);
 //$(window).on('resize', readyLayoutInit);
 
 class LayoutWepps {
-	constructor(settings={}) {
+	constructor(settings = {}) {
 		if (settings != undefined) {
-			this.settings = settings 
+			this.settings = settings
 		}
 	}
 	init() {
 		$('body').removeClass('w_modal_parent');
 		$('html').removeClass('w_overflow');
 		$('.w_modal_wrapper').remove();
-		$('.w_loader').remove();	
+		$('.w_loader').remove();
 		return 1;
 	}
 	remove() {
 		let self = this;
 		self.removeBefore()
-		$('.w_modal').fadeOut(300, function() {
+		$('.w_modal').fadeOut(300, function () {
 			self.init();
 			self.removeAfter()
 		});
 		return 2;
 	}
 	removeBefore() {
-		
+
 	}
 	removeAfter() {
-			
-		}
-	modal(settings={}) {
+
+	}
+	modal(settings = {}) {
 		let self = this;
 		this.init();
 		this.window = $('<div></div>');
@@ -44,7 +44,7 @@ class LayoutWepps {
 		this.closer = $('<div></div>');
 		this.closer.addClass('w_modal_closer').addClass('bi').addClass('bi-x');
 		this.window.append(this.closer);
-		this.closer.on('click', function() {
+		this.closer.on('click', function () {
 			self.remove();
 		});
 		this.content = $('<div></div>');
@@ -58,10 +58,10 @@ class LayoutWepps {
 				settings.size = 'medium';
 				break;
 		}
-		this.window.addClass('w_modal_'+settings.size);
+		this.window.addClass('w_modal_' + settings.size);
 		this.back = $('<div></div>');
 		this.back.addClass('w_modal_wrapper');
-		this.back.addClass('w_modal_'+settings.size);
+		this.back.addClass('w_modal_' + settings.size);
 		this.back.append(this.window);
 		this.body = $('body');
 		this.body.addClass('w_modal_parent');
@@ -79,39 +79,39 @@ class LayoutWepps {
 		} else if (settings.url != undefined && settings.data != undefined) {
 			settings.obj = this.content;
 			this.request(settings);
-		} 
+		}
 		$(document).off('keyup');
-		$(document).keyup(function(e) {
-		    if (e.keyCode == 27) {
-		    	self.remove();
-		    }
+		$(document).keyup(function (e) {
+			if (e.keyCode == 27) {
+				self.remove();
+			}
 		});
 		$(document).off('mouseup');
-		$(document).mouseup(function(e) {
-		    if ($('.w_modal').has(e.target).length === 0 && $(e.target).hasClass('w_modal')==false && $(e.target).hasClass('w_loader')==false) {
-		      	self.remove();
-		    }
+		$(document).mouseup(function (e) {
+			if ($('.w_modal').has(e.target).length === 0 && $(e.target).hasClass('w_modal') == false && $(e.target).hasClass('w_loader') == false) {
+				self.remove();
+			}
 		});
 		return 1;
 	}
-	request(settings={}) {
+	request(settings = {}) {
 		let self = this;
 		$("#w_ajax").remove();
 		$.ajax({
-			type : "POST",
-			url : settings.url,
-			data : settings.data,
-			beforeSend: function(){
+			type: "POST",
+			url: settings.url,
+			data: settings.data,
+			beforeSend: function () {
 				$('.w_loader').remove();
-		    	let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
-		        $('body').prepend(loader)
-		        
-		    }
-		}).done(function(responseText) {
+				let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
+				$('body').prepend(loader)
+
+			}
+		}).done(function (responseText) {
 			$('.w_loader').fadeOut()
-			setTimeout(function() {
+			setTimeout(function () {
 				$('.w_loader').remove();
-			},500);
+			}, 500);
 			if (settings.obj) {
 				settings.obj.html(responseText);
 				$("#w_ajax").remove();
@@ -127,22 +127,22 @@ class LayoutWepps {
 		});
 		return 1;
 	}
-	requestAfter () {
-		
+	requestAfter() {
+
 	}
 	handler(settings) {
 		let obj = settings.obj;
 		let event = settings.event;
 		let fn = settings.fn;
-		let delay = settings.delay??300;
+		let delay = settings.delay ?? 300;
 		let timeout = null;
-		obj.on(event,function(e) {
+		obj.on(event, function (e) {
 			let self = $(this);
 			e.preventDefault();
 			clearTimeout(timeout);
-			timeout = setTimeout(()=>{
+			timeout = setTimeout(() => {
 				fn(self)
-			},delay);
+			}, delay);
 		});
 	}
 }

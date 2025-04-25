@@ -12,10 +12,10 @@
 					</label>
 					
 				</div>
-				<div class="content-block cart-delivery">
+				<div class="content-block cart-delivery w_hide" id="cart-delivey-settings">
 					<h2>Выберите способ доставки</h2>
 				</div>
-				<div class="content-block cart-payment">
+				<div class="content-block cart-payment w_hide" id="cart-payment-settings">
 					<h2>Выберите способ оплаты</h2>
 				</div>
 			</div>

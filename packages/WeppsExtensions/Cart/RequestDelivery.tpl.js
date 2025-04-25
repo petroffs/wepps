@@ -1,0 +1,1 @@
+$('#cart-delivey-settings').removeClass('w_hide');

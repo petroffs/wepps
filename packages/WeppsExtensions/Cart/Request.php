@@ -57,17 +57,14 @@ class RequestCartWepps extends RequestWepps {
 				break;
 			case 'copyOrder':
 				break;
-			
 			case 'cities':
 				$onpage=12;
 				$page = max(1, (int)($this->get['page'] ?? 1));
 				$limit = ($page - 1) * $onpage;
-				/* $sql = "select c.Id,r.Id RegionsId,c.Name,r.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
-						join RegionsCdek r on r.Id = c.RegionsId where c.Name like \"{$this->get['text']}%\" limit $limit,$onpage";
-				UtilsWepps::debug($sql,21) */
+				$text = urldecode($this->get['text']);
 				$sql = "select c.Id,r.Id RegionsId,c.Name,r.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
-						join RegionsCdek r on r.Id = c.RegionsId where c.Name like ? limit $limit,$onpage";
-				$res = ConnectWepps::$instance->fetch($sql,["{$this->get['text']}%"]);
+						join RegionsCdek r on r.Id = c.RegionsId where concat(c.Name,', ',r.Name) like ? limit $limit,$onpage";
+				$res = ConnectWepps::$instance->fetch($sql,["{$text}%"]);
 				if (empty($res)) {
 					echo json_encode([
 							'hasMore' => false
@@ -83,45 +80,25 @@ class RequestCartWepps extends RequestWepps {
 						'hasMore' => true
 				]);
 				break;
-				
 		
-			/*
-			 * to remove
-			 */		
-			case 'cities':
-				if (!isset($this->get['term'])) exit();
-				$obj = new DataWepps("GeoCities");
-				$obj->setFields('Name,Id');
-				$obj->setConcat('Name as value');
-				$res = $obj->get("DisplayOff=0 and (CountryId=3159 or (CountryId=9908 and RegionId=10227)) and Name like '%{$this->get['term']}%'",10,1,"Priority,Name");
-				$json = json_encode($res,JSON_UNESCAPED_UNICODE);
-				header('Content-type:application/json;charset=utf-8');
-				echo $json;
-				exit();
-				break;
+			
 			case "delivery":
-				/*
-				 * Способы доставки текущего city
-				 * Вычислить и передать в шаблон
-				 */
-				$cond = " and IsRetail=1";
-				if ($_SESSION['user']['Opt']==1) {
-					$cond = " and IsRetail=0";
-				}
+				$this->tpl = 'RequestDelivery.tpl';	
 				
 				
 				
-				$obj = new DataWepps("TradeDeliveryVars");
-				$res = $obj->getMax("t.DisplayOff=0 and (Region = '' or Region like '%{$this->get['city']}%') and RegionExcl not like ('%{$this->get['city']}%') $cond",30,1,'t.Priority,t.Name');
-				$this->assign('delivery', $res);
-				$this->assign('city', $this->get['city']);
-				$this->tpl = 'RequestOrderDelivery.tpl';
+				// $obj = new DataWepps("TradeDeliveryVars");
+				// $res = $obj->getMax("t.DisplayOff=0 and (Region = '' or Region like '%{$this->get['city']}%') and RegionExcl not like ('%{$this->get['city']}%') $cond",30,1,'t.Priority,t.Name');
+				// $this->assign('delivery', $res);
 				
-				$_SESSION['cartAdd']['cityChecked'] = $this->get['cityId']; 
-				$_SESSION['cartAdd']['city'] = $this->get['city'];
 				
 				
 			break;
+
+			/*
+			 * to remove
+			 */		
+			
 			case "payment":
 				/*
 				 * Способы оплаты текущего delivery
