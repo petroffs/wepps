@@ -1,11 +1,25 @@
-#w_suggestions {
+ 
+label.pps.pps_input {
+	
+} 
+label.pps.pps_input>input.w_suggestions {
+
+}
+label.pps.pps_input>input.focus {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+div.w_suggestions {
 	background: var(--color-100);
 	border: var(--border);
 	border-top: 0;
-	margin-top: 0;
+	border-width: var(--stepHalf);
+	border-color: var(--color-button);
 	border-radius: 0 0 var(--step2) var(--step2);
-	width: 100%;
+	width: calc(100% + var(--step) - 1px);
 	max-height: calc(var(--step) * 48);
+	margin-top: 0;
+	margin-left: -3px;
 	scrollbar-width: thin;
 	overflow-y: auto;
 	display: block;
@@ -13,22 +27,26 @@
 	z-index: 90;
 }
 
-.w_suggestions-loader {
+div.w_suggestions.w_hide {
+	display: none;
+}
+
+div.w_suggestions-loader {
 	padding: var(--step2);
 	text-align: center;
 	position: absolute;
 	display: none;
 }
 
-.w_suggestions-item {
+div.w_suggestions-item {
 	border-bottom: var(--border);
 	padding: var(--step);
 	cursor: pointer;
 	display: block;
 }
 
-.w_suggestions-item:hover,
-.w_suggestions-item.active {
+div.w_suggestions-item:hover,
+div.w_suggestions-item.active {
 	background-color: var(--color-98);
 }
 
