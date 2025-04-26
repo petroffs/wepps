@@ -84,6 +84,7 @@ class RequestCartWepps extends RequestWepps {
 			
 			case "delivery":
 				$this->tpl = 'RequestDelivery.tpl';	
+				$this->tpl = 'RequestDeliveryEmpty.tpl';	
 				
 				
 				
@@ -118,7 +119,7 @@ class RequestCartWepps extends RequestWepps {
 				$priceAdd = ($res[0]['PriceDelivMorePers']==1) ? round($cartSummary['priceAmount'] * $res[0]['PriceDelivMore'] / 100,0) : $res[0]['PriceDelivMore'];
 				if ($res[0]['DeliveryExt']!='' && is_file($res[0]['DeliveryExt'])) require_once $res[0]['DeliveryExt'];
 				$_SESSION['cartAdd']['deliveryChecked'] = $this->get['delivery'];
-				$_SESSION['cartAdd']['deliveryPrice'] = $priceAdd;
+				$_SESSION['cartAdd']['deliveryPric	e'] = $priceAdd;
 				$cartSummary = CartUtilsWepps::cartSummary();
 				$js = "
 						$('input[name=\"delivery\"]').attr('data-price','0');

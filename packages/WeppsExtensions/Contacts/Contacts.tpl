@@ -64,7 +64,7 @@
 				</div>
 				<div class="pps_flex_11">
 					<span class="title">Test Checkbox</span>
-					<div class="pps_fields">
+					<div class="w_fields">
 						<label class="pps pps_checkbox">
 							<input type="checkbox"> <span>Опция 1</span>
 						</label>
@@ -75,7 +75,7 @@
 				</div>
 				<div class="pps_flex_11">
 					<span class="title">Test Radio</span>
-					<div class="pps_fields">
+					<div class="w_fields">
 						<label class="pps pps_radio">
 							<input type="radio" name="radiotest"> <span>Опция 1</span>
 						</label>

@@ -1,16 +1,15 @@
 div.pps_error {
 	color: var(--color-100);
 	background: var(--color-attention);
-	background-size: 15px 15px;
 	padding-left: var(--step2);
 	padding-right: var(--step6);
-	min-height: calc(var(--step6) - 2px);
-	border-radius: var(--step);
+	min-height: calc(var(--step) * 6);
+	border-radius: var(--step2);
 	cursor: pointer;
 	position: absolute;
 	z-index: 10;
-	right: 1px;
-	top: 1px;
+	right: var(--step);
+	top: var(--step);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -215,7 +214,8 @@ label.pps.pps_upload i {
 	margin-right: var(--step);
 }
 
-div.pps_fields,
+.pps_fields,
+.w_fields,
 label.pps.pps_input input {
 	background: var(--color-100);
 	width: 100%;
@@ -225,6 +225,24 @@ label.pps.pps_input input {
 	min-height: calc(var(--step) * 8);
 	margin: 0;
 	display: block;
+}
+
+.w_fields.w_success {
+	color: var(--color-100);
+	background-color: var(--color-success);
+	border-color: var(--color-success);
+}
+
+.w_fields.w_attention {
+	color: var(--color-100);
+	background-color: var(--color-attention);
+	border-color: var(--color-attention);
+}
+
+.w_fields.w_warning {
+	color: var(--color-05);
+	background-color: var(--color-warning);
+	border-color: var(--color-warning);
 }
 
 label.pps.pps_area textarea {

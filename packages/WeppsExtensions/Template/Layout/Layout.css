@@ -40,6 +40,24 @@ img.pps_image {
 	align-items: center;
 }
 
+.w_success {
+	color: var(--color-100);
+	background-color: var(--color-success);
+	border-color: var(--color-success);
+}
+
+.w_attention {
+	color: var(--color-100);
+	background-color: var(--color-attention);
+	border-color: var(--color-attention);
+}
+
+.w_warning {
+	color: var(--color-05);
+	background-color: var(--color-warning);
+	border-color: var(--color-warning);
+}
+
 .w_relative,
 .pps_relative {
 	position: relative;
