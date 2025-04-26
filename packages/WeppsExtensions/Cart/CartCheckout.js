@@ -10,7 +10,7 @@ $(document).ready(() => {
 	suggestionsRegions.afterSelectItem = function (self, suggestions, selectedIndex) {
 		const selectedItem = suggestions.eq(selectedIndex);
 		if (selectedItem.length && selectedIndex > -1) {
-			//$(self).val(selectedItem.text())
+			$(self).val(selectedItem.text())
 			layoutWepps.request({
 				data: 'action=delivery&cityId=' + selectedItem.data('id') + '&context=cart',
 				url: '/ext/Cart/Request.php',

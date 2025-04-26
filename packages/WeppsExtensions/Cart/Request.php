@@ -84,7 +84,15 @@ class RequestCartWepps extends RequestWepps {
 			
 			case "delivery":
 				$this->tpl = 'RequestDelivery.tpl';	
-				$this->tpl = 'RequestDeliveryEmpty.tpl';	
+				
+				$obj = new DataWepps("Delivery");
+				$res = $obj->getMax("t.DisplayOff=0 ");
+				
+				#$cartUtils->
+				
+				
+				
+				#$this->tpl = 'RequestDeliveryEmpty.tpl';	
 				
 				
 				

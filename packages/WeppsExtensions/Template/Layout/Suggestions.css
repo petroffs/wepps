@@ -33,8 +33,9 @@ div.w_suggestions.w_hide {
 }
 
 div.w_suggestions-loader {
-	padding: var(--step2);
 	text-align: center;
+	background-color: var(--color-100);
+	padding: var(--step2);
 	position: absolute;
 	display: none;
 }
