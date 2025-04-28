@@ -6,6 +6,7 @@ use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Utils\CliWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 
 class BotWepps {
 	public $parent = 1;
@@ -30,7 +31,12 @@ class BotWepps {
 				$obj = new BotFeedsWepps();
 				$obj->setSitemap();
 				break;
-			
+			case 'cdek':
+				$obj = new DeliveryCdekWepps([]);
+				$obj->setPoints();
+				$obj->setCities();
+				$obj->setRegions();
+				break;
 			/*
 			 * tests
 			 */
@@ -58,11 +64,10 @@ class BotWepps {
 				$obj = new BotTestWepps();
 				$obj->password();
 				break;
-			case 'cdek':
-				$obj = new DeliveryCdekWepps([]);
-				$obj->setPoints();
-				$obj->setCities();
-				$obj->setRegions();
+			case 'deliverytariffs':
+				$obj = new DeliveryUtilsWepps();
+				#$obj->getDeliveryTariffsByCitiesId(137);
+				$obj->getDeliveryTariffsByCitiesId(394);
 				break;
 			default:
 				echo "\nERROR\n";

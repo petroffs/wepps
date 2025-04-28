@@ -8,6 +8,7 @@ use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -58,13 +59,8 @@ class RequestCartWepps extends RequestWepps {
 			case 'copyOrder':
 				break;
 			case 'cities':
-				$onpage=12;
-				$page = max(1, (int)($this->get['page'] ?? 1));
-				$limit = ($page - 1) * $onpage;
-				$text = urldecode($this->get['text']);
-				$sql = "select c.Id,r.Id RegionsId,c.Name,r.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
-						join RegionsCdek r on r.Id = c.RegionsId where concat(c.Name,', ',r.Name) like ? limit $limit,$onpage";
-				$res = ConnectWepps::$instance->fetch($sql,["{$text}%"]);
+				$deliveryUtils = new DeliveryUtilsWepps();
+				$res = $deliveryUtils->getCitiesByQuery($this->get['text']);
 				if (empty($res)) {
 					echo json_encode([
 							'hasMore' => false
@@ -80,28 +76,11 @@ class RequestCartWepps extends RequestWepps {
 						'hasMore' => true
 				]);
 				break;
-		
-			
 			case "delivery":
-				$this->tpl = 'RequestDelivery.tpl';	
-				
-				$obj = new DataWepps("Delivery");
-				$res = $obj->getMax("t.DisplayOff=0 ");
-				
-				#$cartUtils->
-				
-				
-				
-				#$this->tpl = 'RequestDeliveryEmpty.tpl';	
-				
-				
-				
-				// $obj = new DataWepps("TradeDeliveryVars");
-				// $res = $obj->getMax("t.DisplayOff=0 and (Region = '' or Region like '%{$this->get['city']}%') and RegionExcl not like ('%{$this->get['city']}%') $cond",30,1,'t.Priority,t.Name');
-				// $this->assign('delivery', $res);
-				
-				
-				
+				$this->tpl = 'RequestDelivery.tpl';
+				$deliveryUtils = new DeliveryUtilsWepps();
+				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId(137);
+				$this->assign('delivery', $delivery);
 			break;
 
 			/*

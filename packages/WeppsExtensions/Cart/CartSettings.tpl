@@ -10,14 +10,9 @@
 					<label class="pps pps_input">
 						<input type="text" name="region" id="cart-region" placeholder="Начните вводить город, и выберите из подсказки"/>
 					</label>
-					
 				</div>
-				<div class="content-block cart-delivery w_hide" id="cart-delivey-settings">
-					<h2>Выберите способ доставки</h2>
-				</div>
-				<div class="content-block cart-payment w_hide" id="cart-payment-settings">
-					<h2>Выберите способ оплаты</h2>
-				</div>
+				<div class="content-block cart-delivery w_hide" id="cart-delivey-settings"></div>
+				<div class="content-block cart-payment w_hide" id="cart-payment-settings"></div>
 			</div>
 			<div class="w_3scol_view_medium">
 				<div class="content-block cart-total">
