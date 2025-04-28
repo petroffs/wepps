@@ -1,14 +1,11 @@
-<label class="pps pps_input"><div>Способ оплаты</div></label>
-{foreach name="out" item="item" from=$get.payment}
-<label class="pps pps_radio"> <input type="radio" name="payment"
-	value="{$item.Id}" data-city="{$get.city}" data-price="0"/> <span>{$item.Name}</span>
-</label>
+<h2>Выберите способ оплаты</h2>
+{foreach name="out" item="item" from=$payments}
+	<label class="pps pps_radio">
+		<input type="radio" name="payments" value="{$item.Id}" data-price="0" />
+		<span>{$item.Name}</span>
+	</label>
 {/foreach}
-
 <script>
-$('input[name="payment"]').on('change',function(event) {
-	event.stopPropagation();
-	layoutWepps.request('action=shipping&city='+$(this).data('city')+'&delivery={$get.deliveryChecked}&payment='+$(this).attr('value'), '/ext/Cart/Request.php');
-});
-{$get.jscode}
+	cartPayments();
 </script>
+{$get.cssjs}

@@ -13,7 +13,7 @@ class CartWepps extends ExtensionWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$cartUtils = new CartUtilsWepps();
 		$cartSummary = $cartUtils->getCartSummary();
-		#UtilsWepps::debug($cartSummary,21);
+		#UtilsWepps::debug($cartSummary,1);
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				if ($cartSummary['quantity']==0) {

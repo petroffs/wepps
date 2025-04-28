@@ -11,8 +11,8 @@
 						<input type="text" name="region" id="cart-region" placeholder="Начните вводить город, и выберите из подсказки"/>
 					</label>
 				</div>
-				<div class="content-block cart-delivery w_hide" id="cart-delivey-settings"></div>
-				<div class="content-block cart-payment w_hide" id="cart-payment-settings"></div>
+				<div class="content-block cart-delivery w_hide" id="cart-delivery-settings"></div>
+				<div class="content-block cart-payments w_hide" id="cart-payments-settings"></div>
 			</div>
 			<div class="w_3scol_view_medium">
 				<div class="content-block cart-total">

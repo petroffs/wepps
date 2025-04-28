@@ -93,8 +93,8 @@ class ConnectWepps {
 		self::$instance->query($sql,$arr['row']);
 		return $id;
 	}
-	public function selectRegx($id) {
-		return "(,+|^)".$id."(,+|$)";
+	public function selectRegx(string $id='') : string {
+		return (string) '(,+|^)'.$id.'(,+|$)';
 	}
 	public function close($exit=1) {
 		self::$db = null;

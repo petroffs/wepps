@@ -3,6 +3,7 @@ namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
+use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
 
 class DeliveryUtilsWepps
@@ -17,8 +18,7 @@ class DeliveryUtilsWepps
         $term = urldecode($term);
         $sql = "select c.Id,r.Id RegionsId,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
 						join RegionsCdek r on r.Id = c.RegionsId where concat(c.Name,', ',r.Name) like ? limit $limit,$onpage";
-        $res = ConnectWepps::$instance->fetch($sql, ["{$term}%"]);
-        return $res;
+        return ConnectWepps::$instance->fetch($sql, ["{$term}%"]);
     }
     public function getCitiesById(int $id,int $page = 1,int $onpage = 12): array
     {
@@ -26,31 +26,46 @@ class DeliveryUtilsWepps
         $limit = ($page - 1) * $onpage;
         $sql = "select c.Id,r.Id RegionsId,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";
-        $res = ConnectWepps::$instance->fetch($sql, [$id]);
-        return $res;
+        return ConnectWepps::$instance->fetch($sql, [$id]);
     }
-    public function getDeliveryTariffsByCitiesId(int $cityId) : array
+    public function getDeliveryTariffsByCitiesId(string $citiesId) : array
     {
-        $cities = $this->getCitiesById($cityId);
-        if (empty($cities)) {
+        $sql = "select d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
+                d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.JSettings,
+                c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName
+                from OrdersDelivery d 
+                left join CitiesCdek c on c.Id=?
+                left join RegionsCdek r on r.Id = c.RegionsId
+                group by d.Id";
+        $res = ConnectWepps::$instance->fetch($sql, [$citiesId]);
+        if (empty($res)) {
             return [];
         }
-
-        UtilsWepps::debug($cities,21);
-
-        $cityName = $this->getCitiesByQuery(""); 
-
-        $conditions = "t.DisplayOff=0 and Region = '' or Region like '%{$this->get['city']}%') and RegionExcl not like ('%{$this->get['city']}%') $cond";
-        $obj = new DataWepps("OrdersDelivery");
-
-
-				$res = $obj->getMax("t.DisplayOff=0 ");
-				#$cartUtils->
-				#$this->tpl = 'RequestDeliveryEmpty.tpl';	
-				// $obj = new DataWepps("TradeDeliveryVars");
-				// $res = $obj->getMax("t.DisplayOff=0 and (Region = '' or Region like '%{$this->get['city']}%') and RegionExcl not like ('%{$this->get['city']}%') $cond",30,1,'t.Priority,t.Name');
-				// $this->assign('delivery', $res);
-        UtilsWepps::debug($cityId,21);
-        return [];
+        $output = [];
+        foreach ($res as $value) {
+            $w = 0;
+            if (!$value['IncludeCitiesId'] && !$value['IncludeRegionsId']) {
+                $w = 1;
+            } elseif (!empty($value['CitiesId']) && $this->_match($value['CitiesId'],$value['IncludeCitiesId'])) {
+                $w = 1;
+            } elseif (!empty($value['RegionsId']) && ($this->_match($value['RegionsId'],$value['IncludeRegionsId']))) {
+                $w = 1;
+            }
+            if (!empty($value['CitiesId']) && !empty($value['ExcludeCitiesId']) && $this->_match($value['CitiesId'],$value['ExcludeCitiesId'])) {
+                $w = 0;
+            }
+            if (!empty($value['RegionsId']) && !empty($value['ExcludeRegionsId']) && ($this->_match($value['RegionsId'],$value['ExcludeRegionsId']))) {
+                $w = 0;
+            }
+            if ($w==1) {
+                $output[] = $value;
+            }
+        }
+        return $output;
+    }
+    private function _match($digit,$field) {
+        $ex = explode(',', $field);
+        $ex = array_map('trim', $ex);
+        return in_array($digit, $ex);
     }
 }

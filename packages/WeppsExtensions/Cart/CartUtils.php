@@ -76,6 +76,19 @@ class CartUtilsWepps
 		ConnectWepps::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$this->user['Id']]);
 		return $this->cart;
 	}
+	public function setCartCitiesId(string $citiesId) : void {
+		$this->cart['citiesId'] = $citiesId;
+		$this->setCart();
+	}
+	public function setCartDelivery(string $deliveryId) : void {
+		$this->cart['deliveryId'] = $deliveryId;
+		$this->setCart();
+
+	}
+	public function setCartPayments(string $paymentsId) : void {
+		$this->cart['paymentsId'] = $paymentsId;
+		$this->setCart();
+	}
 	public function add(int $id, int $quantity = 1)
 	{
 		if (empty($this->cart['items'])) {
@@ -181,6 +194,15 @@ class CartUtilsWepps
 		$output['sumActive'] = array_sum(array_column($output['items'], 'sumActive'));
 		$output['date'] = $this->cart['date'];
 		$output['favorites'] = $this->getFavorites();
+		if (!empty($this->cart['citiesId'])) {
+			$output['delivery']['citiesId'] = $this->cart['citiesId'];
+		}
+		if (!empty($this->cart['deliveryId'])) {
+			$output['delivery']['deliveryId'] = $this->cart['deliveryId'];
+		}
+		if (!empty($this->cart['paymentsId'])) {
+			$output['payments']['paymentsId'] = $this->cart['paymentsId'];
+		}
 		return $output;
 	}
 	private function _getCartHash(string $jcart = '')

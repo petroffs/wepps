@@ -9,6 +9,7 @@ use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
+use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -77,12 +78,38 @@ class RequestCartWepps extends RequestWepps {
 				]);
 				break;
 			case "delivery":
+				if (empty($this->get["citiesId"])) {
+					http_response_code(404);
+					exit();
+				}
 				$this->tpl = 'RequestDelivery.tpl';
 				$deliveryUtils = new DeliveryUtilsWepps();
-				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId(137);
-				$this->assign('delivery', $delivery);
+				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($this->get['citiesId']);
+				if (!empty($delivery)) {
+					$this->assign('delivery', $delivery);
+					$cartUtils->setCartCitiesId($this->get['citiesId']);
+				}
 			break;
-
+			case "payments":
+				if (empty($this->get["deliveryId"])) {
+					http_response_code(404);
+					exit();
+				}
+				$this->tpl = 'RequestPayments.tpl';
+				$paymentsUtils = new PaymentsUtilsWepps();
+				$payments = $paymentsUtils->getPaymentsByDeliveryId($this->get['deliveryId']);
+				if (!empty($payments)) {
+					$this->assign('payments', $payments);
+					$cartUtils->setCartDelivery($this->get['deliveryId']);
+				}
+			break;
+			case "shipping":
+				if (empty($this->get["paymentsId"])) {
+					http_response_code(404);
+					exit();
+				}
+				$cartUtils->setCartPayments($this->get['paymentsId']);
+				break;
 			/*
 			 * to remove
 			 */		
