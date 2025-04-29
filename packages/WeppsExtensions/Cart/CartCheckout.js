@@ -1,5 +1,5 @@
 $(document).ready(() => {
-	//cart.initCheckout();
+	//cart.init();
 	
 });
 let cartDelivery = function() {

@@ -163,7 +163,7 @@ class RequestCartWepps extends RequestWepps {
 		$this->tpl = 'RequestEditCart.tpl';
 		$cartSummary = $cartUtils->getCartSummary();
 		if (empty($cartSummary['items'])) {
-			$this->fetch('cartCheckoutTpl','CartEmpty.tpl');
+			$this->fetch('cartDefaultTpl','CartEmpty.tpl');
 			return;
 		}
 		$this->assign('cartSummary',$cartSummary);
@@ -175,7 +175,7 @@ class RequestCartWepps extends RequestWepps {
 			$arr = array_column($cartSummary['favorites']['items'],'id');
 		}
 		$this->assign('cartFavorites',$arr);
-		$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
+		$this->fetch('cartDefaultTpl','CartDefault.tpl');
 		return;
 	}
 }

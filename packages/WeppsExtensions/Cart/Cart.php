@@ -30,7 +30,7 @@ class CartWepps extends ExtensionWepps {
 				if (!empty($cartSummary['favorites']['items'])) {
 					$smarty->assign('cartFavorites',array_column($cartSummary['favorites']['items'],'id'));
 				}
-				$smarty->assign('cartCheckoutTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartCheckout.tpl'));
+				$smarty->assign('cartDefaultTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartDefault.tpl'));
 				break;
 			case 'settings':
 				$this->extensionData['element'] = 1;

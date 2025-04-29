@@ -1,2 +1,2 @@
-{$cartCheckoutTpl}
+{$cartDefaultTpl}
 {$get.cssjs}

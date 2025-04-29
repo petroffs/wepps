@@ -2,7 +2,7 @@ class CartWepps {
 	constructor(settings = {}) {
 		this.settings = settings;
 	}
-	initCheckout() {
+	init() {
 		this.addHandler();
 		this.checkHandler();
 		this.checkAllHandler();

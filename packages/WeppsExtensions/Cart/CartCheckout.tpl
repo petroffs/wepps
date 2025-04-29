@@ -2,45 +2,30 @@
 	<div class="w_2scol w_3scol_view_medium">
 		<div class="content-block">
 			<h1>Корзина</h1>
-			<label class="pps pps_checkbox"><input type="checkbox" id="cart-check-all" checked="checked"
-					autocomplete="off" /><span>Выбрать все</span></label>
 		</div>
-		<div class="content-block cart-items">
-			{foreach item="item" from=$cartSummary.items}
-				<section data-id="{$item.id}">
-					<div class="cart-checkbox"><label class="pps pps_checkbox"><input type="checkbox" name="cart-check"
-								value="{$item.id}" {if $item.active==1}checked="checked" {/if}
-								autocomplete="off" /><span></span></label></div>
-					<div class="cart-image"><img src="/pic/lists{$item.image}" /></div>
-					<div class="cart-title">
-						<a href="{$item.url}" class="title">{$item.name}</a>
-						<a href="" class="cart-remove"><i class="bi bi-trash3"></i> <span>Удалить</span></a>
-						<a href="" class="cart-favorite{if $item.id|in_array:$cartFavorites} active{/if}"><i
-								class="bi bi-bookmarks"></i> <span>Избранное</span></a>
-					</div>
-					<div class="cart-quantity">
-						<div class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
-							<button class="sub">
-								<span></span>
-							</button>
-							<input type="text" name="quantity" value="{$item.quantity}" maxlength="3" min="1" max="20"
-								autocomplete="off" />
-							<button class="add">
-								<span></span>
-							</button>
-						</div>
-						<div class="cart-price">
-							<span class="price"><span>{$item.price|money}</span>
-								за&nbsp;1&nbsp;шт.</span>{*<span> за 1 шт.</span>*}
-						</div>
-					</div>
-					<div class="cart-sum">
-						<div class="price"><span>{$item.sum|money}</span></div>
-						{if $item.sumBefore>0}
-							<div class="price price-before"><span>{$item.sumBefore|money}</span></div>
-						{/if}
-					</div>
-				</section>
+		<div class="content-block cart-region">
+			<h2>Выберите ваш регион доставки</h2>
+			<label class="pps pps_input">
+				<input type="text" name="region" id="cart-region"
+					placeholder="Начните вводить город, и выберите из подсказки" name="citiesId" value="{$cartCity.Title}" data-id="{$cartCity.Id}"/>
+			</label>
+		</div>
+		<div class="content-block cart-delivery{if !$delivery} w_hide{/if}" id="cart-delivery-settings">
+			<h2>Выберите способ доставки</h2>
+			{foreach name="out" item="item" from=$delivery}
+				<label class="pps pps_radio">
+					<input type="radio" name="delivery" value="{$item.Id}" data-price="0"{if $item.Id==$deliveryActive} checked{/if}/>
+					<span>{$item.Name}</span>
+				</label>
+			{/foreach}
+		</div>
+		<div class="content-block cart-payments{if !$payments} w_hide{/if}" id="cart-payments-settings">
+			<h2>Выберите способ оплаты</h2>
+			{foreach name="out" item="item" from=$payments}
+				<label class="pps pps_radio">
+					<input type="radio" name="payments" value="{$item.Id}" data-price="0"{if $item.Id==$paymentsActive} checked{/if}/>
+					<span>{$item.Name}</span>
+				</label>
 			{/foreach}
 		</div>
 	</div>
@@ -48,30 +33,37 @@
 		<div class="content-block cart-total">
 			<h2>Детали заказа</h2>
 			<div class="w_grid w_3col">
-				<div class="w_2scol title">{$cartSummary.quantityActive} {$cartText.goodsCount}</div>
+				<div class="w_2scol title">{$cartSummary.quantityActive}
+					{$cartText.goodsCount}</div>
 				<div class="pps_right">
-					<div class="price"><span>{$cartSummary.sumBefore|money}</span></div>
+					<div class="price">
+						<span>{$cartSummary.sumBefore|money}</span>
+					</div>
 				</div>
 			</div>
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">Скидка</div>
 				<div>
-					<div class="price"><span>{$cartSummary.sumSaving|money}</span></div>
+					<div class="price">
+						<span>{$cartSummary.sumSaving|money}</span>
+					</div>
 				</div>
 			</div>
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">Итого</div>
 				<div>
-					<div class="price"><span>{$cartSummary.sumActive|money}</span></div>
+					<div class="price">
+						<span>{$cartSummary.sumActive|money}</span>
+					</div>
 				</div>
 			</div>
-			<label class="pps pps_button pps_button_important"><button id="cart-btn-settings"
-					{if $cartSummary.quantityActive==0}disabled="disabled" {/if}>Перейти к оформлению</button></label>
+			<label class="pps pps_button pps_button_important"><button id="order-place">Разместить
+					заказ</button></label>
 		</div>
 	</div>
 </div>
 <script>
 $(document).ready(() => {
-	cart.initCheckout();
+	cart.initSettings();
 });
 </script>
