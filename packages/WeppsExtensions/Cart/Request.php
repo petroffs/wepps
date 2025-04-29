@@ -154,7 +154,6 @@ class RequestCartWepps extends RequestWepps {
 					echo $js;
 				}
 				exit();
-			break;
 			default:
 				ExceptionWepps::error404();
 				break;

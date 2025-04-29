@@ -62,3 +62,8 @@
 		</div>
 	</div>
 </div>
+<script>
+$(document).ready(() => {
+	cart.initSettings();
+});
+</script>

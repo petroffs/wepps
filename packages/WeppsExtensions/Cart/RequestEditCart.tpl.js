@@ -1,1 +1,1 @@
-cart.init();
+cart.initCheckout();

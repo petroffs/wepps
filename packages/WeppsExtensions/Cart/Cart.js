@@ -2,7 +2,7 @@ class CartWepps {
 	constructor(settings = {}) {
 		this.settings = settings;
 	}
-	init() {
+	initCheckout() {
 		this.addHandler();
 		this.checkHandler();
 		this.checkAllHandler();
@@ -10,7 +10,10 @@ class CartWepps {
 		this.quantityHandler();
 		this.favoritesHandler();
 		this.checkAll()
-		this.settingsHandler()
+		this.btnSettingsHandler()
+	}
+	initSettings() {
+		this.citiesSearchHandler();
 	}
 	add() {
 
@@ -129,10 +132,29 @@ class CartWepps {
 			}
 		});
 	}
-	settingsHandler() {
-		$('#order-settings').on('click',function() {
+	btnSettingsHandler() {
+		$('#cart-btn-settings').on('click',function() {
 			window.location.href = '/cart/settings.html';
 		});
+	}
+	citiesSearchHandler() {
+		let suggestionsRegions = new SuggestionsWepps({
+			input: 'cart-region',
+			action: 'cities',
+			url: '/ext/Cart/Request.php'
+		});
+		suggestionsRegions.init();
+		suggestionsRegions.afterSelectItem = function (self, suggestions, selectedIndex) {
+			const selectedItem = suggestions.eq(selectedIndex);
+			if (selectedItem.length && selectedIndex > -1) {
+				$(self).val(selectedItem.text())
+				layoutWepps.request({
+					data: 'action=delivery&citiesId=' + selectedItem.data('id') + '&context=cart',
+					url: '/ext/Cart/Request.php',
+					obj: $('#cart-delivery-settings').eq(0)
+				});
+			}
+		}
 	}
 }
 
