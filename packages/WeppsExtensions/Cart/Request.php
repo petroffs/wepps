@@ -110,71 +110,11 @@ class RequestCartWepps extends RequestWepps {
 				}
 				$cartUtils->setCartPayments($this->get['paymentsId']);
 				break;
-			/*
-			 * to remove
-			 */		
 			
-			case "payment":
-				/*
-				 * Способы оплаты текущего delivery
-				 * Вычислить и передать в шаблон
-				 */
-				$obj = new DataWepps("TradePaymentVars");
-				$res = $obj->getMax("t.DisplayOff=0 and sk1.Field1 = '{$this->get['delivery']}'",30,1,'t.Priority,t.Name');
-				
-				
-				//
-				
-				$this->assign('payment', $res);
-				$this->assign('city', $this->get['city']);
-				$obj = new DataWepps("TradeDeliveryVars");
-				$res = $obj->getMax($this->get['delivery']);
-				$cartSummary = CartUtilsWepps::cartSummary();
-				$priceAdd = ($res[0]['PriceDelivMorePers']==1) ? round($cartSummary['priceAmount'] * $res[0]['PriceDelivMore'] / 100,0) : $res[0]['PriceDelivMore'];
-				if ($res[0]['DeliveryExt']!='' && is_file($res[0]['DeliveryExt'])) require_once $res[0]['DeliveryExt'];
-				$_SESSION['cartAdd']['deliveryChecked'] = $this->get['delivery'];
-				$_SESSION['cartAdd']['deliveryPric	e'] = $priceAdd;
-				$cartSummary = CartUtilsWepps::cartSummary();
-				$js = "
-						$('input[name=\"delivery\"]').attr('data-price','0');
-						$('input[name=\"delivery\"]:checked').attr('data-price','{$priceAdd}');
-						cartPriceAdd('{$cartSummary['priceTotal']}');
-						
-						$('.cart-other').css('opacity',0.5);
-						$('#submitOrder').prop('disabled',true);
-					";
-				$this->assign('jscode', $js);
-				$this->assign('deliveryChecked', $this->get['delivery']);
-				$this->tpl = 'RequestOrderPayment.tpl';
-				
-				break;
-			case "shipping":
-				/*
-				 * Вычисление стоимости доставки
-				 * на основе данных в списке TradeDeliveryVars,TradePaymentVars
-				 */
-				$obj = new DataWepps("TradePaymentVars");
-				$res = $obj->getMax($this->get['payment']);
-				$cartSummary = CartUtilsWepps::cartSummary();
-				$priceAdd = ($res[0]['PriceMorePers']==1) ? round($cartSummary['priceAmount'] * $res[0]['PriceMore'] / 100,0) : $res[0]['PriceMore'];
-				if ($res[0]['PaymentExt']!='' && is_file($res[0]['PaymentExt'])) require_once $res[0]['PaymentExt'];
-				$_SESSION['cartAdd']['paymentChecked'] = $this->get['payment'];
-				$_SESSION['cartAdd']['paymentPrice'] = $priceAdd;
-				$cartSummary = CartUtilsWepps::cartSummary();
-				$js = "
-						<script>
-						$('input[name=\"payment\"]').attr('data-price','0');
-						$('input[name=\"payment\"]:checked').attr('data-price','{$priceAdd}');
-						cartPriceAdd('{$cartSummary['priceTotal']}');
-						
-						$('.cart-other').css('opacity',1);
-						$('#submitOrder').prop('disabled',false);
-						</script>
-					";
-				echo $js;
-				//UtilsWepps::debug($_SESSION['cartAdd']);
-				exit ();
-			case "addOrder--" :
+			/**
+			 * ! to remove
+			 */
+				case "addOrder--" :
 				/*
 				 * Проверка данных, индикация ошибок
 				 */
