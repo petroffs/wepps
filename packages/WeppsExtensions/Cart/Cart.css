@@ -145,11 +145,11 @@ div.page.cart h1 {
 	margin-bottom: var(--step2)
 }
 
-div.cart-region.content-block {
+div.cart-city.content-block {
 	overflow: inherit;
 }
 
-div.cart-region label.pps.pps_input {
+div.cart-city label.pps.pps_input {
 	display: block;
 }
 

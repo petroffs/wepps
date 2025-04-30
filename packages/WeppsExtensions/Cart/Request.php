@@ -82,12 +82,11 @@ class RequestCartWepps extends RequestWepps {
 					http_response_code(404);
 					exit();
 				}
-				$this->tpl = 'RequestDelivery.tpl';
 				$deliveryUtils = new DeliveryUtilsWepps();
 				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($this->get['citiesId']);
 				if (!empty($delivery)) {
-					$this->assign('delivery', $delivery);
 					$cartUtils->setCartCitiesId($this->get['citiesId']);
+					self::displayCheckoutCart($cartUtils);
 				}
 			break;
 			case "payments":
@@ -95,12 +94,11 @@ class RequestCartWepps extends RequestWepps {
 					http_response_code(404);
 					exit();
 				}
-				$this->tpl = 'RequestPayments.tpl';
 				$paymentsUtils = new PaymentsUtilsWepps();
 				$payments = $paymentsUtils->getPaymentsByDeliveryId($this->get['deliveryId']);
 				if (!empty($payments)) {
-					$this->assign('payments', $payments);
 					$cartUtils->setCartDelivery($this->get['deliveryId']);
+					self::displayCheckoutCart($cartUtils);
 				}
 			break;
 			case "shipping":
@@ -109,6 +107,7 @@ class RequestCartWepps extends RequestWepps {
 					exit();
 				}
 				$cartUtils->setCartPayments($this->get['paymentsId']);
+				self::displayCheckoutCart($cartUtils);
 				break;
 			default:
 				ExceptionWepps::error404();
@@ -145,7 +144,12 @@ class RequestCartWepps extends RequestWepps {
 		$this->assign('cartText',[
 				'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
 		]);
-		
+		$checkout = $cartUtils->getCheckoutData();
+		$this->assign('cartCity',$checkout['city']);
+		$this->assign('delivery',$checkout['delivery']);
+		$this->assign('deliveryActive',$checkout['deliveryActive']);
+		$this->assign('payments',$checkout['payments']);
+		$this->assign('paymentsActive',$checkout['paymentsActive']);
 		$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
 		return;
 	}

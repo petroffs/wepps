@@ -14,7 +14,9 @@ class CartWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
 		$cartUtils = new CartUtilsWepps();
+		$cartUtils->setCartSummary();
 		$cartSummary = $cartUtils->getCartSummary();
+		#UtilsWepps::debug($cartSummary,1);
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				if ($cartSummary['quantity']==0) {
@@ -44,32 +46,12 @@ class CartWepps extends ExtensionWepps {
 				$smarty->assign('cartText',[
 						'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
 				]);
-				$deliveryUtils = new DeliveryUtilsWepps();
-				$paymentsUtils = new PaymentsUtilsWepps();
-
-				if (!empty($cartSummary['delivery']['citiesId'])) {
-					$cartCity = $deliveryUtils->getCitiesById($cartSummary['delivery']['citiesId']);
-					if (!empty($cartCity[0]['Id'])) {
-						$deliveryActive = "0";
-						$payments = [];
-						$paymentsActive = "0";
-						$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($cartCity[0]['Id']);
-						if (!empty($cartSummary['delivery']['deliveryId'])) {
-							$deliveryActive = (string) $cartSummary['delivery']['deliveryId'];
-							$payments = $paymentsUtils->getPaymentsByDeliveryId($deliveryActive);
-							if (!empty($cartSummary['payments']['paymentsId'])) {
-								$paymentsActive = $cartSummary['payments']['paymentsId'];
-							}
-						}
-						$smarty->assign('cartCity',$cartCity[0]);
-						$smarty->assign('delivery',$delivery);
-						$smarty->assign('deliveryActive',$deliveryActive);
-						$smarty->assign('payments',$payments);
-						$smarty->assign('paymentsActive',$paymentsActive);
-					}
-				}
-				#UtilsWepps::debug($paymentsActive,1);
-				#$payments = $paymentsUtils->getPayments($cartSummary[''][
+				$checkout = $cartUtils->getCheckoutData();
+				$smarty->assign('cartCity',$checkout['city']);
+				$smarty->assign('delivery',$checkout['delivery']);
+				$smarty->assign('deliveryActive',$checkout['deliveryActive']);
+				$smarty->assign('payments',$checkout['payments']);
+				$smarty->assign('paymentsActive',$checkout['paymentsActive']);
 				$smarty->assign('cartDefaultTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartCheckout.tpl'));
 				break;
 			case 'order/complete/ea201f29-82a3-4d59-a522-9ccc00af95e5/':

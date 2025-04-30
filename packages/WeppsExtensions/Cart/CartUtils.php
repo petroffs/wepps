@@ -67,24 +67,28 @@ class CartUtilsWepps
 		return $this->cart;
 	}
 
-	public function setCart()
+	public function setCart() : void
 	{
 		$this->cart['date'] = date('Y-m-d H:i:s');
 		$json = json_encode($this->cart);
 		if (empty(ConnectWepps::$projectData['user'])) {
 			UtilsWepps::cookies('wepps_cart', $json);
 			UtilsWepps::cookies('wepps_cart_guid', UtilsWepps::guid($json . ConnectWepps::$projectServices['jwt']['secret']));
-			return $this->cart;
+			return;
 		}
+		$this->setCartSummary();
 		ConnectWepps::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$this->user['Id']]);
-		return $this->cart;
+		return;
 	}
 	public function setCartCitiesId(string $citiesId) : void {
 		$this->cart['citiesId'] = $citiesId;
+		unset($this->cart['deliveryId']);
+		unset($this->cart['paymentsId']);
 		$this->setCart();
 	}
 	public function setCartDelivery(string $deliveryId) : void {
 		$this->cart['deliveryId'] = $deliveryId;
+		unset($this->cart['paymentsId']);
 		$this->setCart();
 
 	}
@@ -92,7 +96,7 @@ class CartUtilsWepps
 		$this->cart['paymentsId'] = $paymentsId;
 		$this->setCart();
 	}
-	public function add(int $id, int $quantity = 1)
+	public function add(int $id, int $quantity = 1) : void
 	{
 		if (empty($this->cart['items'])) {
 			$this->cart['items'] = [];
@@ -110,9 +114,10 @@ class CartUtilsWepps
 				$this->cart['items'][$index]['qu'] += $quantity;
 			}
 		}
-		return $this->setCart();
+		$this->setCart();
+		return;
 	}
-	public function edit(int $id, int $quantity = 1)
+	public function edit(int $id, int $quantity = 1) : void
 	{
 		$keys = array_column($this->cart['items'], 'id');
 		if (!in_array($id, $keys)) {
@@ -128,7 +133,8 @@ class CartUtilsWepps
 				$this->cart['items'][$index]['ac'] = 1;
 			}
 		}
-		return $this->setCart();
+		$this->setCart();
+		return;
 	}
 	public function check(string $ids = '')
 	{
@@ -149,9 +155,9 @@ class CartUtilsWepps
 		}
 		return $this->setCart();
 	}
-	public function getCartSummary()
+	public function setCartSummary() : bool 
 	{
-		$output = [
+		$this->summary = [
 			'items' => [],
 			'quantity' => 0,
 			'quantityActive' => 0,
@@ -165,11 +171,11 @@ class CartUtilsWepps
 			'favorites' => []
 		];
 		if (empty($this->cart['items'])) {
-			return $output;
+			return true;
 		}
 		$sql = "";
 		foreach ($this->cart['items'] as $value) {
-			$output['quantity'] += $value['qu'];
+			$this->summary['quantity'] += $value['qu'];
 			$sql .= "\n(select '{$value['id']}' `id`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
 		}
 		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
@@ -188,25 +194,29 @@ class CartUtilsWepps
 				join s_Navigator n on n.Id=p.NavigatorId
 				left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
 				where p.Id in ($ids)";
-		$output['items'] = ConnectWepps::$instance->fetch($sql);
-		$output['quantity'] = array_sum(array_column($output['items'], 'quantity'));
-		$output['quantityActive'] = array_sum(array_column($output['items'], 'quantityActive'));
-		$output['sum'] = array_sum(array_column($output['items'], 'sum'));
-		$output['sumSaving'] = array_sum(array_column($output['items'], 'sumSaving'));
-		$output['sumBefore'] = array_sum(array_column($output['items'], 'sumBeforeTotal'));
-		$output['sumActive'] = array_sum(array_column($output['items'], 'sumActive'));
-		$output['date'] = $this->cart['date'];
-		$output['favorites'] = $this->getFavorites();
+		$this->summary['items'] = ConnectWepps::$instance->fetch($sql);
+		$this->summary['quantity'] = array_sum(array_column($this->summary['items'], 'quantity'));
+		$this->summary['quantityActive'] = array_sum(array_column($this->summary['items'], 'quantityActive'));
+		$this->summary['sum'] = array_sum(array_column($this->summary['items'], 'sum'));
+		$this->summary['sumSaving'] = array_sum(array_column($this->summary['items'], 'sumSaving'));
+		$this->summary['sumBefore'] = array_sum(array_column($this->summary['items'], 'sumBeforeTotal'));
+		$this->summary['sumActive'] = array_sum(array_column($this->summary['items'], 'sumActive'));
+		$this->summary['date'] = $this->cart['date'];
+		$this->summary['favorites'] = $this->getFavorites();
 		if (!empty($this->cart['citiesId'])) {
-			$output['delivery']['citiesId'] = $this->cart['citiesId'];
+			$this->summary['delivery']['citiesId'] = $this->cart['citiesId'];
 		}
 		if (!empty($this->cart['deliveryId'])) {
-			$output['delivery']['deliveryId'] = $this->cart['deliveryId'];
+			$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId'];
 		}
 		if (!empty($this->cart['paymentsId'])) {
-			$output['payments']['paymentsId'] = $this->cart['paymentsId'];
+			$this->summary['payments']['paymentsId'] = $this->cart['paymentsId'];
 		}
-		return $output;
+		return true;
+	}
+	public function getCartSummary() : array
+	{
+		return $this->summary;
 	}
 	private function _getCartHash(string $jcart = '')
 	{
@@ -225,10 +235,10 @@ class CartUtilsWepps
 		return $cart;
 	}
 
-	public function getCheckoutData(array $cartSummary) {
+	public function getCheckoutData() {
 		$deliveryUtils = new DeliveryUtilsWepps();
 		$paymentsUtils = new PaymentsUtilsWepps();
-
+		$cartSummary = $this->getCartSummary();
 		$delivery = [];
 		$deliveryActive = "";
 		$payments = [];
@@ -248,11 +258,6 @@ class CartUtilsWepps
 						$paymentsActive = $cartSummary['payments']['paymentsId'];
 					}
 				}
-				// $smarty->assign('cartCity',$cartCity[0]);
-				// $smarty->assign('delivery',$delivery);
-				// $smarty->assign('deliveryActive',$deliveryActive);
-				// $smarty->assign('payments',$payments);
-				// $smarty->assign('paymentsActive',$paymentsActive);
 			}
 		}
 		return [

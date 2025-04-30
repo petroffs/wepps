@@ -141,7 +141,7 @@ class CartWepps {
 	}
 	citiesHandler() {
 		let suggestionsRegions = new SuggestionsWepps({
-			input: 'cart-region',
+			input: 'cart-city',
 			action: 'cities',
 			url: '/ext/Cart/Request.php',
 		});
@@ -159,8 +159,13 @@ class CartWepps {
 		}
 	}
 	deliveryHandler() {
-		$('#cart-delivery-settings').removeClass('w_hide');
-		$('input[type="radio"][name="delivery"]').change(function (e) { 
+		let obj = $('input[type="radio"][name="delivery"]');
+		if (!obj.length) {
+			return;
+		}
+		$('#cart-delivery-checkout').removeClass('w_hide');
+		obj.off('change');
+		obj.change(function (e) { 
 			e.preventDefault();
 			layoutWepps.request({
 				data: 'action=payments&deliveryId=' + $(this).val() + '&context=cart',
@@ -170,8 +175,13 @@ class CartWepps {
 		});
 	}
 	paymentsHandler() {
-		$('#cart-payments-settings').removeClass('w_hide');
-		$('input[type="radio"][name="payments"]').change(function (e) { 
+		let obj = $('input[type="radio"][name="payments"]');
+		if (!obj.length) {
+			return;
+		}
+		$('#cart-payments-checkout').removeClass('w_hide');
+		obj.off('change');
+		obj.change(function (e) { 
 			e.preventDefault();
 			layoutWepps.request({
 				data: 'action=shipping&paymentsId=' + $(this).val() + '&context=cart',
