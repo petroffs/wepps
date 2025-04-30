@@ -32,7 +32,7 @@ class CartWepps extends ExtensionWepps {
 				}
 				$smarty->assign('cartDefaultTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartDefault.tpl'));
 				break;
-			case 'settings':
+			case 'checkout':
 				$this->extensionData['element'] = 1;
 				if ($cartSummary['quantityActive']==0) {
 					$this->navigator->content['Name'] = "Ваша корзина пуста";
@@ -70,7 +70,7 @@ class CartWepps extends ExtensionWepps {
 				}
 				#UtilsWepps::debug($paymentsActive,1);
 				#$payments = $paymentsUtils->getPayments($cartSummary[''][
-				$smarty->assign('cartCheckoutTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartSettings.tpl'));
+				$smarty->assign('cartDefaultTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartCheckout.tpl'));
 				break;
 			case 'order/complete/ea201f29-82a3-4d59-a522-9ccc00af95e5/':
 				
@@ -82,7 +82,6 @@ class CartWepps extends ExtensionWepps {
 		$smarty->assign('normalView',0);
 		$this->headers->css("/ext/Cart/Cart.{$this->headers::$rand}.css");
 		$this->headers->js("/ext/Cart/Cart.{$this->headers::$rand}.js");
-		$this->headers->js("/ext/Cart/CartCheckout.{$this->headers::$rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

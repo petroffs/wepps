@@ -1,2 +1,0 @@
-{$cartDefaultTpl}
-{$get.cssjs}

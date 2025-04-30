@@ -12,8 +12,10 @@ class CartWepps {
 		this.checkAll()
 		this.btnSettingsHandler()
 	}
-	initSettings() {
-		this.citiesSearchHandler();
+	initCheckout() {
+		this.citiesHandler();
+		this.deliveryHandler();
+		this.paymentsHandler();
 	}
 	add() {
 
@@ -40,7 +42,7 @@ class CartWepps {
 		layoutWepps.request({
 			data: 'action=check&id=' + ids + '&context=cart',
 			url: '/ext/Cart/Request.php',
-			obj: $('#cart-checkout')
+			obj: $('#cart-default')
 		});
 		return ids;
 	}
@@ -103,7 +105,7 @@ class CartWepps {
 				layoutWepps.request({
 					data: 'action=edit&id=' + id + '&quantity=' + inputVal,
 					url: '/ext/Cart/Request.php',
-					obj: $('#cart-checkout')
+					obj: $('#cart-default')
 				});
 			}, 300);
 		}
@@ -117,7 +119,7 @@ class CartWepps {
 				layoutWepps.request({
 					data: 'action=remove&id=' + id,
 					url: '/ext/Cart/Request.php',
-					obj: $('#cart-checkout')
+					obj: $('#cart-default')
 				});
 			}
 			$(this).addClass('active').find('span').text('Потдвердить удаление');
@@ -134,14 +136,14 @@ class CartWepps {
 	}
 	btnSettingsHandler() {
 		$('#cart-btn-settings').on('click',function() {
-			window.location.href = '/cart/settings.html';
+			window.location.href = '/cart/checkout.html';
 		});
 	}
-	citiesSearchHandler() {
+	citiesHandler() {
 		let suggestionsRegions = new SuggestionsWepps({
 			input: 'cart-region',
 			action: 'cities',
-			url: '/ext/Cart/Request.php'
+			url: '/ext/Cart/Request.php',
 		});
 		suggestionsRegions.init();
 		suggestionsRegions.afterSelectItem = function (self, suggestions, selectedIndex) {
@@ -151,10 +153,32 @@ class CartWepps {
 				layoutWepps.request({
 					data: 'action=delivery&citiesId=' + selectedItem.data('id') + '&context=cart',
 					url: '/ext/Cart/Request.php',
-					obj: $('#cart-delivery-settings').eq(0)
+					obj: $('#cart-default')
 				});
 			}
 		}
+	}
+	deliveryHandler() {
+		$('#cart-delivery-settings').removeClass('w_hide');
+		$('input[type="radio"][name="delivery"]').change(function (e) { 
+			e.preventDefault();
+			layoutWepps.request({
+				data: 'action=payments&deliveryId=' + $(this).val() + '&context=cart',
+				url: '/ext/Cart/Request.php',
+				obj: $('#cart-default')
+			});
+		});
+	}
+	paymentsHandler() {
+		$('#cart-payments-settings').removeClass('w_hide');
+		$('input[type="radio"][name="payments"]').change(function (e) { 
+			e.preventDefault();
+			layoutWepps.request({
+				data: 'action=shipping&paymentsId=' + $(this).val() + '&context=cart',
+				url: '/ext/Cart/Request.php',
+				obj: $('#cart-default')
+			});
+		});
 	}
 }
 

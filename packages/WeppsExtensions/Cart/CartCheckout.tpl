@@ -7,7 +7,7 @@
 			<h2>Выберите ваш регион доставки</h2>
 			<label class="pps pps_input">
 				<input type="text" name="region" id="cart-region"
-					placeholder="Начните вводить город, и выберите из подсказки" name="citiesId" value="{$cartCity.Title}" data-id="{$cartCity.Id}"/>
+					placeholder="Начните вводить город, и выберите из подсказки" name="citiesId" value="{$cartCity.Title}" data-id="{$cartCity.Id}" autocomplete="off"/>
 			</label>
 		</div>
 		<div class="content-block cart-delivery{if !$delivery} w_hide{/if}" id="cart-delivery-settings">
@@ -64,6 +64,6 @@
 </div>
 <script>
 $(document).ready(() => {
-	cart.initSettings();
+	cart.initCheckout();
 });
 </script>

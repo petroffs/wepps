@@ -1,5 +1,5 @@
 <div class="page cart">
-	<section id="cart-checkout">
+	<section id="cart-default">
 	{$cartDefaultTpl}
 	</section>
 </div>

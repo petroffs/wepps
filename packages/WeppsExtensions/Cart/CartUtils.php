@@ -5,12 +5,15 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
+use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
 class CartUtilsWepps
 {
 	private $user = [];
 	private $cart = [];
 	private $favorites = [];
+	private $summary = [];
 	public function __construct()
 	{
 		if (empty(ConnectWepps::$projectData['user'])) {
@@ -221,14 +224,44 @@ class CartUtilsWepps
 		}
 		return $cart;
 	}
-	public function getDelivery()
-	{
 
-	}
+	public function getCheckoutData(array $cartSummary) {
+		$deliveryUtils = new DeliveryUtilsWepps();
+		$paymentsUtils = new PaymentsUtilsWepps();
 
-	public function getPayments()
-	{
+		$delivery = [];
+		$deliveryActive = "";
+		$payments = [];
+		$paymentsActive = "";
 
+		if (!empty($cartSummary['delivery']['citiesId'])) {
+			$cartCity = $deliveryUtils->getCitiesById($cartSummary['delivery']['citiesId']);
+			if (!empty($cartCity[0]['Id'])) {
+				$deliveryActive = "0";
+				$payments = [];
+				$paymentsActive = "0";
+				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($cartCity[0]['Id']);
+				if (!empty($cartSummary['delivery']['deliveryId'])) {
+					$deliveryActive = (string) $cartSummary['delivery']['deliveryId'];
+					$payments = $paymentsUtils->getPaymentsByDeliveryId($deliveryActive);
+					if (!empty($cartSummary['payments']['paymentsId'])) {
+						$paymentsActive = $cartSummary['payments']['paymentsId'];
+					}
+				}
+				// $smarty->assign('cartCity',$cartCity[0]);
+				// $smarty->assign('delivery',$delivery);
+				// $smarty->assign('deliveryActive',$deliveryActive);
+				// $smarty->assign('payments',$payments);
+				// $smarty->assign('paymentsActive',$paymentsActive);
+			}
+		}
+		return [
+			'city' => @$cartCity[0],
+			'delivery' => $delivery,
+			'deliveryActive' => $deliveryActive,
+			'payments' => $payments,
+			'paymentsActive' => $paymentsActive,
+		];
 	}
 
 	/**

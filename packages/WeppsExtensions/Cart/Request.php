@@ -110,57 +110,13 @@ class RequestCartWepps extends RequestWepps {
 				}
 				$cartUtils->setCartPayments($this->get['paymentsId']);
 				break;
-			
-			/**
-			 * ! to remove
-			 */
-				case "addOrder--" :
-				/*
-				 * Проверка данных, индикация ошибок
-				 */
-				$this->errors = array ();
-				$this->errors ['address'] = ValidatorWepps::isNotEmpty ( $this->get ['address'], "Не заполнено" );
-				$this->errors ['addressIndex'] = ValidatorWepps::isNotEmpty ( $this->get ['addressIndex'], "Не заполнено" );
-				$outer = ValidatorWepps::setFormErrorsIndicate ( $this->errors, $this->get ['form'] );
-				echo $outer ['Out'];
-				if ($outer ['Co'] == 0) {
-					/**
-					 * Регистрация заказа
-					 */
-					$settings = array (
-							'phone' => $this->get ['phone'],
-							'email' => $this->get ['email'],
-							'address' => $this->get ['address'],
-							'addressIndex' => $this->get ['addressIndex'],
-							'comment' => $this->get ['comment'],
-					);
-					$orderId = CartUtilsWepps::addOrder($settings);
-					$_SESSION['cartAdd']['orderId'] = $orderId;
-					
-					
-					//UtilsWepps::debug($order,1);
-					
-					
-					/*
-					 * Отправка на страницу Финиша и подключение
-					 * финального скрипта для оплаты (при наличии)
-					 * Сохранить флаг в сессию, чтобы вызвать заказ на финише
-					 */
-					$js = "
-							<script>
-							location.href='/cart/finish.html';
-							</script>
-							";
-					echo $js;
-				}
-				exit();
 			default:
 				ExceptionWepps::error404();
 				break;
 		}
 	}
 	private function displayCart(CartUtilsWepps $cartUtils) {
-		$this->tpl = 'RequestEditCart.tpl';
+		$this->tpl = 'RequestDefault.tpl';
 		$cartSummary = $cartUtils->getCartSummary();
 		if (empty($cartSummary['items'])) {
 			$this->fetch('cartDefaultTpl','CartEmpty.tpl');
@@ -176,6 +132,21 @@ class RequestCartWepps extends RequestWepps {
 		}
 		$this->assign('cartFavorites',$arr);
 		$this->fetch('cartDefaultTpl','CartDefault.tpl');
+		return;
+	}
+	private function displayCheckoutCart(CartUtilsWepps $cartUtils) {
+		$this->tpl = 'RequestCheckout.tpl';
+		$cartSummary = $cartUtils->getCartSummary();
+		if (empty($cartSummary['items'])) {
+			$this->fetch('cartDefaultTpl','CartEmpty.tpl');
+			return;
+		}
+		$this->assign('cartSummary',$cartSummary);
+		$this->assign('cartText',[
+				'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
+		]);
+		
+		$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
 		return;
 	}
 }
