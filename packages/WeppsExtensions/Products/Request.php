@@ -12,7 +12,7 @@ require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
 /**
- * @var Smarty $smarty
+ * @var \Smarty $smarty
  */
 
 class RequestProductsWepps extends RequestWepps {
@@ -80,11 +80,9 @@ class RequestProductsWepps extends RequestWepps {
 			default:
 				$this->tpl = "RequestProducts.tpl";
 				exit();
-				break;
 		}
 	}
 }
 $request = new RequestProductsWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

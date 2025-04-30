@@ -16,7 +16,7 @@
 			{foreach name="out" item="item" from=$delivery}
 				<label class="pps pps_radio">
 					<input type="radio" name="delivery" value="{$item.Id}" data-price="0" {if $item.Id==$deliveryActive}
-						checked{/if} />
+						checked{/if} autocomplete="off"/>
 					<span>{$item.Name}</span>
 				</label>
 			{/foreach}
@@ -26,7 +26,7 @@
 			{foreach name="out" item="item" from=$payments}
 				<label class="pps pps_radio">
 					<input type="radio" name="payments" value="{$item.Id}" data-price="0" {if $item.Id==$paymentsActive}
-						checked{/if} />
+						checked{/if} autocomplete="off"/>
 					<span>{$item.Name}</span>
 				</label>
 			{/foreach}
@@ -61,7 +61,7 @@
 				</div>
 			</div>
 			<label class="pps pps_button pps_button_important">
-				<button id="order-place" {if !$deliveryActive || !$paymentsActive} disabled{/if}>
+				<button id="cart-btn-confirm" {if !$deliveryActive || !$paymentsActive} disabled{/if}>
 					Разместить заказ
 				</button>
 			</label>

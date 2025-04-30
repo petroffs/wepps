@@ -125,6 +125,7 @@ class FormWepps {
 			input.val(inputVal);
 			self.minmaxAfter(input.closest('section').data('id'),inputVal);
 		}
+		$('.pps_minmax').find('button').off('click');
 		$('.pps_minmax').find('button').on('click',function(event) {
 			event.preventDefault();
 			let input = $(this).siblings('input');
@@ -136,6 +137,7 @@ class FormWepps {
 			}
 			fn(input,inputVal);
 		});
+		$('.pps_minmax').find('input').off('keyup');
 		$('.pps_minmax').find('input').on('keyup',function(event) {
 			event.preventDefault();
 			let input = $(this);

@@ -136,6 +136,7 @@ class LayoutWepps {
 		let fn = settings.fn;
 		let delay = settings.delay ?? 300;
 		let timeout = null;
+		obj.off(event);
 		obj.on(event, function (e) {
 			let self = $(this);
 			e.preventDefault();

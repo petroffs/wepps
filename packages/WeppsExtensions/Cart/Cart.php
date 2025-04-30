@@ -14,45 +14,19 @@ class CartWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
 		$cartUtils = new CartUtilsWepps();
-		$cartUtils->setCartSummary();
-		$cartSummary = $cartUtils->getCartSummary();
-		#UtilsWepps::debug($cartSummary,1);
+		$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
+		$this->headers->meta('<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">');
+		$this->headers->meta('<meta http-equiv="Pragma" content="no-cache">');
+		$this->headers->meta('<meta http-equiv="Expires" content="0">');
 		switch (NavigatorWepps::$pathItem) {
 			case '':
-				if ($cartSummary['quantity']==0) {
-					$this->navigator->content['Name'] = "Ваша корзина пуста";
-					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
-					break;
-				}
-				$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
-				$smarty->assign('cartSummary',$cartSummary);
-				$smarty->assign('cartText',[
-						'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
-				]);
-				if (!empty($cartSummary['favorites']['items'])) {
-					$smarty->assign('cartFavorites',array_column($cartSummary['favorites']['items'],'id'));
-				}
-				$smarty->assign('cartDefaultTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartDefault.tpl'));
+				$template = new CartTemplatesWepps($smarty,$cartUtils);
+				$template->default();
 				break;
 			case 'checkout':
 				$this->extensionData['element'] = 1;
-				if ($cartSummary['quantityActive']==0) {
-					$this->navigator->content['Name'] = "Ваша корзина пуста";
-					$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
-					break;
-				}
-				$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
-				$smarty->assign('cartSummary',$cartSummary);
-				$smarty->assign('cartText',[
-						'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
-				]);
-				$checkout = $cartUtils->getCheckoutData();
-				$smarty->assign('cartCity',$checkout['city']);
-				$smarty->assign('delivery',$checkout['delivery']);
-				$smarty->assign('deliveryActive',$checkout['deliveryActive']);
-				$smarty->assign('payments',$checkout['payments']);
-				$smarty->assign('paymentsActive',$checkout['paymentsActive']);
-				$smarty->assign('cartDefaultTpl',$smarty->fetch('packages/WeppsExtensions/Cart/CartCheckout.tpl'));
+				$template = new CartTemplatesWepps($smarty,$cartUtils);
+				$template->checkout();
 				break;
 			case 'order/complete/ea201f29-82a3-4d59-a522-9ccc00af95e5/':
 				

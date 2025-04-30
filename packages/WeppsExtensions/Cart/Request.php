@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\Cart;
 
+use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -116,41 +117,16 @@ class RequestCartWepps extends RequestWepps {
 	}
 	private function displayCart(CartUtilsWepps $cartUtils) {
 		$this->tpl = 'RequestDefault.tpl';
-		$cartSummary = $cartUtils->getCartSummary();
-		if (empty($cartSummary['items'])) {
-			$this->fetch('cartDefaultTpl','CartEmpty.tpl');
-			return;
-		}
-		$this->assign('cartSummary',$cartSummary);
-		$this->assign('cartText',[
-				'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
-		]);
-		$arr = [];
-		if (!empty($cartSummary['favorites']['items'])) {
-			$arr = array_column($cartSummary['favorites']['items'],'id');
-		}
-		$this->assign('cartFavorites',$arr);
-		$this->fetch('cartDefaultTpl','CartDefault.tpl');
+		$smarty = SmartyWepps::getSmarty();
+		$template = new CartTemplatesWepps($smarty,$cartUtils);
+		$template->default();
 		return;
 	}
 	private function displayCheckoutCart(CartUtilsWepps $cartUtils) {
 		$this->tpl = 'RequestCheckout.tpl';
-		$cartSummary = $cartUtils->getCartSummary();
-		if (empty($cartSummary['items'])) {
-			$this->fetch('cartDefaultTpl','CartEmpty.tpl');
-			return;
-		}
-		$this->assign('cartSummary',$cartSummary);
-		$this->assign('cartText',[
-				'goodsCount' => TextTransformsWepps::ending2("товар",$cartSummary['quantityActive'])
-		]);
-		$checkout = $cartUtils->getCheckoutData();
-		$this->assign('cartCity',$checkout['city']);
-		$this->assign('delivery',$checkout['delivery']);
-		$this->assign('deliveryActive',$checkout['deliveryActive']);
-		$this->assign('payments',$checkout['payments']);
-		$this->assign('paymentsActive',$checkout['paymentsActive']);
-		$this->fetch('cartCheckoutTpl','CartCheckout.tpl');
+		$smarty = SmartyWepps::getSmarty();
+		$template = new CartTemplatesWepps($smarty,$cartUtils);
+		$template->checkout();
 		return;
 	}
 }

@@ -1,4 +1,4 @@
-{$cartCheckoutTpl}
+{$cartDefaultTpl}
 {$get.cssjs}
 <script>
 cart.initCheckout();
