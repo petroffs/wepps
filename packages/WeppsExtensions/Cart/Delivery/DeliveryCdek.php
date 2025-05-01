@@ -4,6 +4,7 @@ namespace WeppsExtensions\Cart\Delivery;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
+use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryCdekWepps extends DeliveryWepps
 {
@@ -18,6 +19,8 @@ class DeliveryCdekWepps extends DeliveryWepps
 	private $counter = 0;
 	public function __construct($settings)
 	{
+		parent::__construct($settings);
+    	$this->setDeliveryType(1);
 		$this->url = ConnectWepps::$projectServices['cdek']['url'];
 		$this->account = ConnectWepps::$projectServices['cdek']['account'];
 		$this->password = ConnectWepps::$projectServices['cdek']['password'];
@@ -173,8 +176,15 @@ class DeliveryCdekWepps extends DeliveryWepps
 		file_put_contents($this->tokenFilename, json_encode($jdata), JSON_UNESCAPED_UNICODE);
 		$this->counter++;
 	}
-	public function getTariff()
+	public function getTariff(CartUtilsWepps $cartUtils)
 	{
+		return $output = [
+            'status'=>200,
+            'title'=> $this->settings['Name'],
+            'price' => $this->settings['Tariff'],
+            'period' => '1-3'
+        ];
+
 		$this->url = "https://api.cdek.ru/v2/calculator/tariff";
 		$this->settings['weight'] = 1;
 		$date = date("Y-m-d\TH:i:s+0300", strtotime(date("Y-m-d 20:00:00", strtotime(date("Y-m-d 20:00:00"))) . " +2 day"));

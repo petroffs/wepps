@@ -5,6 +5,7 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryUtilsWepps
 {
@@ -28,7 +29,7 @@ class DeliveryUtilsWepps
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";
         return ConnectWepps::$instance->fetch($sql, [$id]);
     }
-    public function getDeliveryTariffsByCitiesId(string $citiesId) : array
+    public function getDeliveryTariffsByCitiesId(string $citiesId,CartUtilsWepps $cartUtils) : array
     {
         $sql = "select d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
                 d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.JSettings,if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefaultWepps') DeliveryExt,
@@ -61,7 +62,11 @@ class DeliveryUtilsWepps
                 $output[] = $value;
             }
         }
-        UtilsWepps::debug($output,21);
+        foreach ($output as $key => $value) {
+            $className = "\WeppsExtensions\\Cart\\Delivery\\{$value['DeliveryExt']}";
+		    $class = new $className($value);
+            $output[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);
+        }
         return $output;
     }
     private function _match($digit,$field) {

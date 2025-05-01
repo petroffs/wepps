@@ -153,6 +153,30 @@ div.cart-city label.pps.pps_input {
 	display: block;
 }
 
+div.page.cart .cart-delivery label.pps.pps_radio {
+	width: 100%;
+	max-width: 100%;
+	border-bottom: var(--border);
+}
+
+div.page.cart label.pps.pps_radio:last-child input[type="radio"] + span {
+	padding: 0 var(--step) var(--step) 0;
+}
+
+div.page.cart .cart-delivery label.pps.pps_radio:last-child {
+	border-bottom: none;
+}
+
+div.page.cart .cart-delivery label.pps.pps_radio span.period {
+	padding: 0 var(--step) var(--step) 0;
+	display: flex;
+}
+
+div.page.cart .cart-delivery label.pps.pps_radio span.price {
+	padding: 0 var(--step) var(--step) 0;
+	display: flex;
+}
+
 @media screen and (max-width: 480px) {
 	div.page.cart div.cart-items>section {
 		grid-template-columns: auto repeat(3, 1fr);

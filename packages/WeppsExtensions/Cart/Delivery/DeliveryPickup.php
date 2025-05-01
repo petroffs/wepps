@@ -7,8 +7,8 @@ use Curl\Curl;
 
 class DeliveryPickupWepps extends DeliveryWepps
 {
-    public function __construct() {
-		parent::__construct();
-        $this->setDeliveryType(1);
+    public function __construct(array $settings) {
+		parent::__construct($settings);
+    $this->setDeliveryType(1);
 	}
 }

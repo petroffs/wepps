@@ -84,7 +84,8 @@ class RequestCartWepps extends RequestWepps {
 					exit();
 				}
 				$deliveryUtils = new DeliveryUtilsWepps();
-				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($this->get['citiesId']);
+				$cartUtils->setCartSummary();
+				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($this->get['citiesId'],$cartUtils);
 				if (!empty($delivery)) {
 					$cartUtils->setCartCitiesId($this->get['citiesId']);
 					self::displayCheckoutCart($cartUtils);
@@ -99,8 +100,8 @@ class RequestCartWepps extends RequestWepps {
 				$payments = $paymentsUtils->getPaymentsByDeliveryId($this->get['deliveryId']);
 				if (!empty($payments)) {
 					$cartUtils->setCartDelivery($this->get['deliveryId']);
-					self::displayCheckoutCart($cartUtils);
 				}
+				self::displayCheckoutCart($cartUtils);
 			break;
 			case "shipping":
 				if (empty($this->get["paymentsId"])) {

@@ -234,7 +234,6 @@ class CartUtilsWepps
 		}
 		return $cart;
 	}
-
 	public function getCheckoutData() {
 		$deliveryUtils = new DeliveryUtilsWepps();
 		$paymentsUtils = new PaymentsUtilsWepps();
@@ -250,7 +249,7 @@ class CartUtilsWepps
 				$deliveryActive = "0";
 				$payments = [];
 				$paymentsActive = "0";
-				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($cartCity[0]['Id']);
+				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($cartCity[0]['Id'],$this);
 				if (!empty($cartSummary['delivery']['deliveryId'])) {
 					$deliveryActive = (string) $cartSummary['delivery']['deliveryId'];
 					$payments = $paymentsUtils->getPaymentsByDeliveryId($deliveryActive);
