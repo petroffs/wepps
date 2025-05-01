@@ -31,7 +31,7 @@ class DeliveryUtilsWepps
     public function getDeliveryTariffsByCitiesId(string $citiesId) : array
     {
         $sql = "select d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
-                d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.JSettings,
+                d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.JSettings,if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefaultWepps') DeliveryExt,
                 c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName
                 from OrdersDelivery d 
                 left join CitiesCdek c on c.Id=?
@@ -61,6 +61,7 @@ class DeliveryUtilsWepps
                 $output[] = $value;
             }
         }
+        UtilsWepps::debug($output,21);
         return $output;
     }
     private function _match($digit,$field) {
