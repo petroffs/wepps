@@ -5,10 +5,10 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
 
-class DeliveryPickupWepps extends DeliveryWepps
+class DeliveryDefaultWepps extends DeliveryWepps
 {
     public function __construct() {
 		parent::__construct();
-        $this->setDeliveryType(1);
+        $this->setDeliveryType(2);
 	}
 }

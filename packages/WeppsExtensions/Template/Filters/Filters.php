@@ -95,7 +95,7 @@ class FiltersWepps {
 		foreach ($params as $key=>$value) {
 			$key = preg_replace('~[^-a-z-A-Z\d\-_\.]+~u', '', $key);
 			if ($key=='text') {
-				$value = $value;
+				//$value = $value;
 			} else {
 				$value = preg_replace('~[^\w\d\-_\.\,\/\|]+~u', '', $value);
 			}

@@ -5,7 +5,7 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
 
-class DeliveryCdekWepps
+class DeliveryCdekWepps extends DeliveryWepps
 {
 	private $settings = [];
 	private $account;

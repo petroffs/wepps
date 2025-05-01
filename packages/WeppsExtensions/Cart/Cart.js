@@ -142,6 +142,9 @@ class CartWepps {
 			e.preventDefault();
 			window.open('/cart/checkout.html','_self');
 		});
+		// window.addEventListener('popstate', (event) => {
+		// 	console.log('restore');
+		//   });
 		document.addEventListener('visibilitychange', () => {
 			if (!document.hidden) {
 				window.location.reload();

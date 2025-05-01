@@ -72,6 +72,8 @@
 </div>
 <script>
 $(document).ready(() => {
+	//window.history.pushState({ 'push':1 }, '', '/cart/');
+	//console.log('pushed?')
 	cart.init();
 });
 </script>
