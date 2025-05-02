@@ -153,28 +153,45 @@ div.cart-city label.pps.pps_input {
 	display: block;
 }
 
-div.page.cart .cart-delivery label.pps.pps_radio {
+div.page.cart .cart-variants label.pps.pps_radio {
 	width: 100%;
 	max-width: 100%;
 	border-bottom: var(--border);
 }
 
-div.page.cart label.pps.pps_radio:last-child input[type="radio"] + span {
-	padding: 0 var(--step) var(--step) 0;
+div.page.cart .cart-variants label.pps.pps_radio:first-of-type {
+	border-radius: var(--step2) var(--step2) 0 0;
 }
 
-div.page.cart .cart-delivery label.pps.pps_radio:last-child {
+div.page.cart .cart-variants label.pps.pps_radio:last-of-type {
 	border-bottom: none;
+	border-radius: 0 0 var(--step2) var(--step2);
 }
 
-div.page.cart .cart-delivery label.pps.pps_radio span.period {
-	padding: 0 var(--step) var(--step) 0;
-	display: flex;
+div.page.cart .cart-variants label.pps.pps_radio:hover {
+	background: var(--color-95);
 }
 
-div.page.cart .cart-delivery label.pps.pps_radio span.price {
-	padding: 0 var(--step) var(--step) 0;
+div.page.cart .cart-variants label.pps.pps_radio span.title {
+	padding: var(--step);
 	display: flex;
+	flex-grow:1;
+}
+
+div.page.cart .cart-variants label.pps.pps_radio span.period {
+	padding: var(--step);
+	display: flex;
+	justify-content: flex-end;
+	flex: 1 1 20%;
+	max-width: 20%;
+}
+
+div.page.cart .cart-variants label.pps.pps_radio span.price {
+	padding: var(--step);
+	display: flex;
+	justify-content: flex-end;
+	flex: 1 1 20%;
+	max-width: 20%;
 }
 
 @media screen and (max-width: 480px) {

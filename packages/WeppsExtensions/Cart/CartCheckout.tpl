@@ -11,25 +11,25 @@
 					data-id="{$cartCity.Id}" autocomplete="off" />
 			</label>
 		</div>
-		<div class="content-block cart-delivery{if !$delivery} w_hide{/if}" id="cart-delivery-checkout">
+		<div class="content-block cart-variants cart-delivery{if !$delivery} w_hide{/if}" id="cart-delivery-checkout">
 			<h2>Выберите способ доставки</h2>
 			{foreach name="out" item="item" from=$delivery}
 				<label class="pps pps_radio">
 					<input type="radio" name="delivery" value="{$item.Id}" data-price="0" {if $item.Id==$deliveryActive}
 						checked{/if} autocomplete="off"/>
 					<span class="title">{$item.Name}</span>
-					<span class="period"><span>{$item.Addons.tariff.period}</span></span>
+					<span class="period"><span>{$item.Addons.tariff.period} дн</span></span>
 					<span class="price"><span>{$item.Addons.tariff.price}</span></span>
 				</label>
 			{/foreach}
 		</div>
-		<div class="content-block cart-payments{if !$payments} w_hide{/if}" id="cart-payments-checkout">
+		<div class="content-block cart-variants cart-payments{if !$payments} w_hide{/if}" id="cart-payments-checkout">
 			<h2>Выберите способ оплаты {if !$payments}w_hide{/if}</h2>
 			{foreach name="out" item="item" from=$payments}
 				<label class="pps pps_radio">
 					<input type="radio" name="payments" value="{$item.Id}" data-price="0" {if $item.Id==$paymentsActive}
 						checked{/if} autocomplete="off"/>
-					<span>{$item.Name}</span>
+					<span class="title">{$item.Name}</span>
 				</label>
 			{/foreach}
 		</div>

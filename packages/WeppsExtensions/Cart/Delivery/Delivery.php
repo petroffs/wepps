@@ -36,7 +36,7 @@ class DeliveryWepps
             'period' => '1-3'
         ];
         if (@$this->settings['IsTariffPercentage']==1) {
-            $output['price'] = TemplateUtilsWepps::round($this->settings['Tariff'] * $cartUtils->getCartSummary()['sumActive'] / 100,2);
+            $output['price'] = TemplateUtilsWepps::round($this->settings['Tariff'] * $cartUtils->getCartSummary()['sumActive'] / 100,2,'str');
         }
         return $output;
     }
