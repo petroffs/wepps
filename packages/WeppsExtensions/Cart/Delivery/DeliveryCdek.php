@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
+use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
@@ -45,7 +46,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 
 	public function setPoints(): bool
 	{
-		$func = function () {
+		$func = function (array $args) {
 			$data = [
 				'country_code' => 'RU',
 			];
@@ -78,24 +79,31 @@ class DeliveryCdekWepps extends DeliveryWepps
 				$insert->execute($row);
 			}
 		};
-		ConnectWepps::$instance->transaction($func);
+		ConnectWepps::$instance->transaction($func,[]);
 		return true;
 	}
-	public function setCities()
+	public function setCities(int $page)
 	{
-		$func = function () {
-			$data = [
-				'country_codes' => 'RU',
-			];
-			$response = $this->curl->get($this->url . '/v2/location/cities', $data);
+		$func = function (array $args) {
+			$page = $args['page'] ??1;
+			//$response = $this->curl->get($this->url . '/v2/location/cities?country_codes=RU&size=1000&page='.(string)$page);
+			$url = $this->url . '/v2/location/cities?size=1000&page='.(string)$page.'&country_codes=RU';
+			$cli = new CliWepps();
+			$cli->progress($page,150);
+			$response = $this->curl->get($url);
 			if (empty($response->response)) {
 				return false;
 			}
 			$jdata = json_decode($response->response, true);
 			if (empty($jdata)) {
+				if ($page>1) {
+					return true;
+				}
 				return false;
 			}
-			ConnectWepps::$instance->query('truncate CitiesCdek');
+			if ($page == 1) {
+				ConnectWepps::$instance->query('truncate CitiesCdek');
+			}
 			$row = [
 				'Id' => '',
 				'Name' => '',
@@ -114,12 +122,16 @@ class DeliveryCdekWepps extends DeliveryWepps
 				$insert->execute($row);
 			}
 		};
-		ConnectWepps::$instance->transaction($func);
+		ConnectWepps::$instance->transaction($func,['page'=>$page]);
+		$page++;
+		if ($page<=150) {
+			return self::setCities($page);
+		}		
 		return true;
 	}
 	public function setRegions()
 	{
-		$func = function () {
+		$func = function (array $args) {
 			$data = [
 				'country_codes' => 'RU',
 			];
@@ -148,7 +160,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 				$insert->execute($row);
 			}
 		};
-		ConnectWepps::$instance->transaction($func);
+		ConnectWepps::$instance->transaction($func, []);
 		return true;
 	}
 	private function getToken()

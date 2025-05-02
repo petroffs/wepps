@@ -6,6 +6,7 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Utils\CliWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
@@ -35,8 +36,8 @@ class BotWepps {
 				break;
 			case 'cdek':
 				$obj = new DeliveryCdekWepps([]);
-				$obj->setPoints();
-				$obj->setCities();
+				#$obj->setPoints();
+				#$obj->setCities(1);
 				$obj->setRegions();
 				break;
 			/*
@@ -68,8 +69,9 @@ class BotWepps {
 				break;
 			case 'deliverytariffs':
 				$obj = new DeliveryUtilsWepps();
+				$cartUtils = new CartUtilsWepps();
 				#$obj->getDeliveryTariffsByCitiesId(137);
-				$obj->getDeliveryTariffsByCitiesId("20");
+				$obj->getDeliveryTariffsByCitiesId("20",$cartUtils);
 				break;
 			case 'paymentstariffs':
 				$obj = new PaymentsUtilsWepps();

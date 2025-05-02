@@ -131,12 +131,12 @@ class ConnectWepps {
 		];
 		return $output;
 	}
-	public function transaction(callable $func) {
+	public function transaction(callable $func, array $args) {
 		ConnectWepps::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
 		try {
 			ConnectWepps::$db->beginTransaction();
 			if (ConnectWepps::$db->inTransaction()) {
-				$func();
+				$func($args);
 			}
 			ConnectWepps::$db->commit();
 			ConnectWepps::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
