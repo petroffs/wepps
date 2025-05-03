@@ -37,8 +37,8 @@ class BotWepps {
 			case 'cdek':
 				$obj = new DeliveryCdekWepps([]);
 				#$obj->setPoints();
-				#$obj->setCities(1);
-				$obj->setRegions();
+				$obj->setCities();
+				#$obj->setRegions();
 				break;
 			/*
 			 * tests

@@ -82,14 +82,15 @@ class DeliveryCdekWepps extends DeliveryWepps
 		ConnectWepps::$instance->transaction($func,[]);
 		return true;
 	}
-	public function setCities(int $page)
+	public function setCities(int $page=0)
 	{
 		$func = function (array $args) {
-			$page = $args['page'] ??1;
+			$page = $args['page'] ??0;
 			//$response = $this->curl->get($this->url . '/v2/location/cities?country_codes=RU&size=1000&page='.(string)$page);
-			$url = $this->url . '/v2/location/cities?size=1000&page='.(string)$page.'&country_codes=RU';
+			$url = $this->url . '/v2/location/cities?country_codes=RU&&size=1000&page='.$page;
 			$cli = new CliWepps();
 			$cli->progress($page,150);
+			#$cli->info(text: $url);
 			$response = $this->curl->get($url);
 			if (empty($response->response)) {
 				return false;
@@ -101,14 +102,14 @@ class DeliveryCdekWepps extends DeliveryWepps
 				}
 				return false;
 			}
-			if ($page == 1) {
+			if ($page == 0) {
 				ConnectWepps::$instance->query('truncate CitiesCdek');
 			}
 			$row = [
 				'Id' => '',
 				'Name' => '',
 				'RegionsId' => '',
-				'JData' => '',
+				//'JData' => '',
 			];
 			$prepare = ConnectWepps::$instance->prepare($row);
 			$insert = ConnectWepps::$db->prepare("insert into CitiesCdek {$prepare['insert']}");
@@ -117,7 +118,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 					'Id' => $value['code'],
 					'Name' => $value['city'],
 					'RegionsId' => $value['region_code'],
-					'JData' => json_encode($value, JSON_UNESCAPED_UNICODE),
+					//'JData' => json_encode($value, JSON_UNESCAPED_UNICODE),
 				];
 				$insert->execute($row);
 			}

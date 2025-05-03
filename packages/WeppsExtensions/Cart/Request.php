@@ -62,7 +62,7 @@ class RequestCartWepps extends RequestWepps {
 				break;
 			case 'cities':
 				$deliveryUtils = new DeliveryUtilsWepps();
-				$res = $deliveryUtils->getCitiesByQuery($this->get['text']);
+				$res = $deliveryUtils->getCitiesByQuery($this->get['text'],(int) $this->get['page']??1);
 				if (empty($res)) {
 					echo json_encode([
 							'hasMore' => false
