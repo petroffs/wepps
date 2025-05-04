@@ -1,36 +1,28 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery;
+namespace WeppsExtensions\Cart\Payments;
 
+use WeppsCore\Connect\ConnectWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Template\TemplateUtilsWepps;
 
-class DeliveryWepps
+class PaymentsWepps
 {
-    /**
-     * 
-     * Тип доставки
-     * 1 - Доставка в ПВЗ
-     * 2 - Доставка до двери
-     * @var int
-     */
-    private $type = 1;
     private $settings;
-    public function __construct(array $settings)
+    public function __construct(array $settings=[])
     {
         $this->settings = $settings;
     }
-    public function getTariff(CartUtilsWepps $cartUtils)
+public function getTariff(CartUtilsWepps $cartUtils)
     {
         $cartSummary = $cartUtils->getCartSummary();
         if (empty($cartSummary)) {
             return [];
         }
         $output = [
-            'status'=>200,
+            'status'=>($this->settings['Tariff']>0)?200:0,
             'title'=> $this->settings['Name'],
-            'text'=> 'Тариф способа доставки',
+            'text'=> 'Наценка за выбранный способ оплаты',
             'price' => $this->settings['Tariff'],
-            'period' => '1-3'
         ];
         if (@$this->settings['IsTariffPercentage']==1) {
             $output['price'] = TemplateUtilsWepps::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100,0,'str');
@@ -46,24 +38,12 @@ class DeliveryWepps
         $output = [
             'status'=>($this->settings['Discount']>0)?200:0,
             'title'=> $this->settings['Name'],
-            'text'=> "Скидка за выбранный способ доставки",
+            'text'=> "Скидка за выбранный способ оплаты",
             'price' => $this->settings['Discount'],
         ];
         if (@$this->settings['IsDiscountPercentage']==1) {
             $output['price'] = TemplateUtilsWepps::round($this->settings['Discount'] * $cartSummary['sumActive'] / 100,0,'str');
         }
         return $output;
-    }
-    public function getPoints()
-    {
-
-    }
-
-    public function getAddressForm()
-    {
-
-    }
-    public function setDeliveryType(int $type = 1) {
-        $this->type = $type;
     }
 }

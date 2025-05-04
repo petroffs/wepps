@@ -13,23 +13,43 @@
 		</div>
 		<div class="content-block cart-variants cart-delivery{if !$delivery} w_hide{/if}" id="cart-delivery-checkout">
 			<h2>Выберите способ доставки</h2>
+			<div class="header">
+				<div class="title">Наименование</div>
+				<div class="period">Сроки</div>
+				<div class="price">Тариф</div>
+			</div>
 			{foreach name="out" item="item" from=$delivery}
 				<label class="pps pps_radio">
 					<input type="radio" name="delivery" value="{$item.Id}" data-price="0" {if $item.Id==$deliveryActive}
 						checked{/if} autocomplete="off"/>
 					<span class="title">{$item.Name}</span>
 					<span class="period"><span>{$item.Addons.tariff.period} дн</span></span>
-					<span class="price"><span>{$item.Addons.tariff.price}</span></span>
+					<span class="price"><span>{$item.Addons.tariff.price|money}</span></span>
+					{if $item.Addons.discount.price>0}
+					<span class="text attention">{$item.Addons.discount.text}</span>
+					<span class="price attention"><span>-{$item.Addons.discount.price|money}</span></span>
+					{/if}
 				</label>
 			{/foreach}
 		</div>
 		<div class="content-block cart-variants cart-payments{if !$payments} w_hide{/if}" id="cart-payments-checkout">
 			<h2>Выберите способ оплаты {if !$payments}w_hide{/if}</h2>
+			<div class="header">
+				<div class="title">Наименование</div>
+			</div>
 			{foreach name="out" item="item" from=$payments}
 				<label class="pps pps_radio">
 					<input type="radio" name="payments" value="{$item.Id}" data-price="0" {if $item.Id==$paymentsActive}
 						checked{/if} autocomplete="off"/>
 					<span class="title">{$item.Name}</span>
+					{if $item.Addons.tariff.price>0}
+					<span class="text attention">{$item.Addons.tariff.text}</span>
+					<span class="price attention"><span>{$item.Addons.tariff.price|money}</span></span>
+					{/if}
+					{if $item.Addons.discount.price>0}
+					<span class="text attention">{$item.Addons.discount.text}</span>
+					<span class="price attention"><span>-{$item.Addons.discount.price|money}</span></span>
+					{/if}
 				</label>
 			{/foreach}
 		</div>
@@ -46,19 +66,61 @@
 					</div>
 				</div>
 			</div>
+			{if $cartSummary.sumSaving|money}
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">Скидка</div>
 				<div>
 					<div class="price">
-						<span>{$cartSummary.sumSaving|money}</span>
+						<span>- {$cartSummary.sumSaving|money}</span>
 					</div>
 				</div>
 			</div>
+			{/if}
+			{if $cartSummary.delivery.tariff.status}
+			<div class="w_grid w_3col">
+				<div class="w_2scol title">Доставка</div>
+				<div>
+					<div class="price">
+						<span>{$cartSummary.delivery.tariff.price|money}</span>
+					</div>
+				</div>
+			</div>
+			{/if}
+			{if $cartSummary.delivery.discount.status==200}
+			<div class="w_grid w_3col">
+				<div class="w_2scol title">{$cartSummary.delivery.discount.title}</div>
+				<div>
+					<div class="price">
+						<span>-{$cartSummary.delivery.discount.price|money}</span>
+					</div>
+				</div>
+			</div>
+			{/if}
+			{if $cartSummary.payments.tariff.status==200}
+			<div class="w_grid w_3col">
+				<div class="w_2scol title">{$cartSummary.payments.tariff.text}</div>
+				<div>
+					<div class="price">
+						<span>{$cartSummary.payments.tariff.price|money}</span>
+					</div>
+				</div>
+			</div>
+			{/if}
+			{if $cartSummary.payments.discount.status==200}
+			<div class="w_grid w_3col">
+				<div class="w_2scol title">{$cartSummary.payments.discount.text}</div>
+				<div>
+					<div class="price">
+						<span>-{$cartSummary.payments.discount.price|money}</span>
+					</div>
+				</div>
+			</div>
+			{/if}
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">Итого</div>
 				<div>
 					<div class="price">
-						<span>{$cartSummary.sumActive|money}</span>
+						<span>{$cartSummary.sumTotal|money}</span>
 					</div>
 				</div>
 			</div>

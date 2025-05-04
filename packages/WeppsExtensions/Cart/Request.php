@@ -97,7 +97,7 @@ class RequestCartWepps extends RequestWepps {
 					exit();
 				}
 				$paymentsUtils = new PaymentsUtilsWepps();
-				$payments = $paymentsUtils->getPaymentsByDeliveryId($this->get['deliveryId']);
+				$payments = $paymentsUtils->getPaymentsByDeliveryId($this->get['deliveryId'],$cartUtils);
 				if (!empty($payments)) {
 					$cartUtils->setCartDelivery($this->get['deliveryId']);
 				}

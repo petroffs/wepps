@@ -153,10 +153,40 @@ div.cart-city label.pps.pps_input {
 	display: block;
 }
 
+div.page.cart .cart-variants .header {
+	color: var(--color-75);
+	display: flex;
+	align-items: center;
+	margin: 0;
+	padding: 0;
+}
+div.page.cart .cart-variants .header .title {
+	padding: var(--step);
+	display: flex;
+	flex-grow:1;
+}
+
+div.page.cart .cart-variants .header .period {
+	padding: var(--step);
+	display: flex;
+	justify-content: flex-end;
+	flex: 1 1 20%;
+	max-width: 20%;
+}
+
+div.page.cart .cart-variants .header .price {
+	padding: var(--step);
+	display: flex;
+	justify-content: flex-end;
+	flex: 1 1 20%;
+	max-width: 20%;
+}
+
 div.page.cart .cart-variants label.pps.pps_radio {
 	width: 100%;
 	max-width: 100%;
 	border-bottom: var(--border);
+	flex-flow: row wrap;
 }
 
 div.page.cart .cart-variants label.pps.pps_radio:first-of-type {
@@ -176,6 +206,7 @@ div.page.cart .cart-variants label.pps.pps_radio span.title {
 	padding: var(--step);
 	display: flex;
 	flex-grow:1;
+	min-width: 60%;
 }
 
 div.page.cart .cart-variants label.pps.pps_radio span.period {
@@ -193,6 +224,23 @@ div.page.cart .cart-variants label.pps.pps_radio span.price {
 	flex: 1 1 20%;
 	max-width: 20%;
 }
+
+div.page.cart .cart-variants label.pps.pps_radio span.text {
+	padding-left: calc(var(--step) * 7);
+	width: 80%;
+}
+
+div.page.cart .cart-variants label.pps.pps_radio span.attention {
+	color: var(--color-75);
+}
+
+div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.period+.price+.text,
+div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.period+.price+.text+.price,
+div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.text,
+div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.text+.price {
+	color: var(--color-success);
+}
+
 
 @media screen and (max-width: 480px) {
 	div.page.cart div.cart-items>section {

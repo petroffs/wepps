@@ -44,16 +44,12 @@ class CartTemplatesWepps {
             $this->smarty->assign('cartDefaultTpl',$this->smarty->fetch(__DIR__ .'/CartEmpty.tpl'));
             return;
         }
-        //$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
+        #UtilsWepps::debug($this->cartSummary,1);
         $this->smarty->assign('cartSummary',$this->cartSummary);
         $this->smarty->assign('cartText',[
                 'goodsCount' => TextTransformsWepps::ending2("товар",$this->cartSummary['quantityActive'])
         ]);
-        
         $checkout = $this->cartUtils->getCheckoutData();
-
-        #UtilsWepps::debug($checkout);
-
         $this->smarty->assign('cartCity',$checkout['city']);
         $this->smarty->assign('delivery',$checkout['delivery']);
         $this->smarty->assign('deliveryActive',$checkout['deliveryActive']);

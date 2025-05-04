@@ -2,8 +2,6 @@
 namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
@@ -29,16 +27,21 @@ class DeliveryUtilsWepps
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";
         return ConnectWepps::$instance->fetch($sql, [$id]);
     }
-    public function getDeliveryTariffsByCitiesId(string $citiesId,CartUtilsWepps $cartUtils) : array
+    public function getDeliveryTariffsByCitiesId(string $citiesId,CartUtilsWepps $cartUtils,string $deliveryId='') : array
     {
+        $conditions = "d.DisplayOff=0 and d.Id != ?";
+        if (!empty($deliveryId)) {
+            $conditions = "d.DisplayOff=0 and d.Id = ?";
+        }
         $sql = "select d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
-                d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.JSettings,if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefaultWepps') DeliveryExt,
+                d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.Discount,d.IsDiscountPercentage,d.JSettings,
+                if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefaultWepps') DeliveryExt,
                 c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName
                 from OrdersDelivery d 
                 left join CitiesCdek c on c.Id=?
                 left join RegionsCdek r on r.Id = c.RegionsId
-                group by d.Id";
-        $res = ConnectWepps::$instance->fetch($sql, [$citiesId]);
+                where $conditions group by d.Id";
+        $res = ConnectWepps::$instance->fetch($sql, [$citiesId,$deliveryId]);
         if (empty($res)) {
             return [];
         }
@@ -66,6 +69,7 @@ class DeliveryUtilsWepps
             $className = "\WeppsExtensions\\Cart\\Delivery\\{$value['DeliveryExt']}";
 		    $class = new $className($value);
             $output[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);
+            $output[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
         }
         return $output;
     }

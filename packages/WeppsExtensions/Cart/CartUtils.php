@@ -33,12 +33,10 @@ class CartUtilsWepps
 		}
 		$this->cart = json_decode($this->user['JCart'] ?? '', true) ?? [];
 	}
-
 	public function getUser(array $user): array
 	{
 		return $this->user = $user;
 	}
-
 	public function setFavorites(int $id)
 	{
 		$this->favorites['items'] ?? [];
@@ -57,7 +55,6 @@ class CartUtilsWepps
 		ConnectWepps::$instance->query("update s_Users set JFav=? where Id=?", [$json, @$this->user['Id']]);
 		return $this->favorites;
 	}
-
 	public function getFavorites(): array
 	{
 		return $this->favorites ?? [];
@@ -66,11 +63,10 @@ class CartUtilsWepps
 	{
 		return $this->cart;
 	}
-
 	public function setCart() : void
 	{
 		$this->cart['date'] = date('Y-m-d H:i:s');
-		$json = json_encode($this->cart);
+		$json = json_encode($this->cart,JSON_UNESCAPED_UNICODE);
 		if (empty(ConnectWepps::$projectData['user'])) {
 			UtilsWepps::cookies('wepps_cart', $json);
 			UtilsWepps::cookies('wepps_cart_guid', UtilsWepps::guid($json . ConnectWepps::$projectServices['jwt']['secret']));
@@ -89,11 +85,27 @@ class CartUtilsWepps
 	public function setCartDelivery(string $deliveryId) : void {
 		$this->cart['deliveryId'] = $deliveryId;
 		unset($this->cart['paymentsId']);
+		$deliveryUtils = new DeliveryUtilsWepps();
 		$this->setCart();
-
+		$this->setCartSummary();
+		$tariffs = $deliveryUtils->getDeliveryTariffsByCitiesId($this->cart['citiesId'],$this,$deliveryId);
+		#UtilsWepps::debug($this->getCartSummary());
+		if (!empty($tariffs[0])) {
+			$this->cart['deliveryTariff'] = $tariffs[0]['Addons']['tariff'];
+			$this->cart['deliveryDiscount'] = $tariffs[0]['Addons']['discount'];
+		}
+		$this->setCart();
 	}
 	public function setCartPayments(string $paymentsId) : void {
 		$this->cart['paymentsId'] = $paymentsId;
+		$paymentsUtils = new PaymentsUtilsWepps();
+		$this->setCart();
+		$this->setCartSummary();
+		$tariffs = $paymentsUtils->getPaymentsByDeliveryId($this->cart['deliveryId'],$this,$paymentsId);
+		if (!empty($tariffs[0])) {
+			$this->cart['paymentsTariff'] = $tariffs[0]['Addons']['tariff'];
+			$this->cart['paymentsDiscount'] = $tariffs[0]['Addons']['discount'];
+		}
 		$this->setCart();
 	}
 	public function add(int $id, int $quantity = 1) : void
@@ -165,6 +177,7 @@ class CartUtilsWepps
 			'sumSaving' => 0,
 			'sumBefore' => 0,
 			'sumActive' => 0,
+			'sumTotal' => 0,
 			'date' => "",
 			'delivery' => [],
 			'payments' => [],
@@ -200,18 +213,34 @@ class CartUtilsWepps
 		$this->summary['sum'] = array_sum(array_column($this->summary['items'], 'sum'));
 		$this->summary['sumSaving'] = array_sum(array_column($this->summary['items'], 'sumSaving'));
 		$this->summary['sumBefore'] = array_sum(array_column($this->summary['items'], 'sumBeforeTotal'));
-		$this->summary['sumActive'] = array_sum(array_column($this->summary['items'], 'sumActive'));
+		$this->summary['sumActive'] = $this->summary['sumTotal'] = array_sum(array_column($this->summary['items'], 'sumActive'));
 		$this->summary['date'] = $this->cart['date'];
 		$this->summary['favorites'] = $this->getFavorites();
 		if (!empty($this->cart['citiesId'])) {
 			$this->summary['delivery']['citiesId'] = $this->cart['citiesId'];
 		}
-		if (!empty($this->cart['deliveryId'])) {
-			$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId'];
+		$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId']??'0';
+		if (!empty($this->cart['deliveryTariff'])) {
+			$this->summary['delivery']['tariff'] = $this->cart['deliveryTariff'];
+			$this->summary['sumTotal'] += $this->cart['deliveryTariff']['price'];
+		}
+		if (!empty($this->cart['deliveryDiscount'])) {
+			$this->summary['delivery']['discount'] = $this->cart['deliveryDiscount'];
+			$this->summary['sumTotal'] -= $this->cart['deliveryDiscount']['price'];
 		}
 		if (!empty($this->cart['paymentsId'])) {
 			$this->summary['payments']['paymentsId'] = $this->cart['paymentsId'];
 		}
+		if (!empty($this->cart['paymentsTariff'])) {
+			$this->summary['payments']['tariff'] = $this->cart['paymentsTariff'];
+			$this->summary['sumTotal'] += $this->cart['paymentsTariff']['price'];
+		}
+		if (!empty($this->cart['paymentsDiscount'])) {
+			$this->summary['payments']['discount'] = $this->cart['paymentsDiscount'];
+			$this->summary['sumTotal'] -= $this->cart['paymentsDiscount']['price'];
+		}
+		#UtilsWepps::debug($this->cart,1);
+		#UtilsWepps::debug($this->summary,1);
 		return true;
 	}
 	public function getCartSummary() : array
@@ -252,7 +281,7 @@ class CartUtilsWepps
 				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($cartCity[0]['Id'],$this);
 				if (!empty($cartSummary['delivery']['deliveryId'])) {
 					$deliveryActive = (string) $cartSummary['delivery']['deliveryId'];
-					$payments = $paymentsUtils->getPaymentsByDeliveryId($deliveryActive);
+					$payments = $paymentsUtils->getPaymentsByDeliveryId($deliveryActive,$this);
 					if (!empty($cartSummary['payments']['paymentsId'])) {
 						$paymentsActive = $cartSummary['payments']['paymentsId'];
 					}

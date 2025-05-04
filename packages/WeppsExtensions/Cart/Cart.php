@@ -6,9 +6,6 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
-use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
 class CartWepps extends ExtensionWepps {
 	public function request() {
