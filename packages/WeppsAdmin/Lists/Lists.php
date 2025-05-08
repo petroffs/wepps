@@ -271,7 +271,7 @@ class ListsWepps {
 		$sql = "select TableNameField,Id,Name,FileDescription,Priority,TableNameId,InnerName,TableName,FileDate,FileSize,FileExt,FileType,FileUrl
 				from s_Files where TableName = '{$obj->tableName}' and TableNameId = '{$id}'
 				order by Priority";
-		$files = ConnectWepps::$instance->fetch($sql,null,'group');
+		$files = ConnectWepps::$instance->fetch($sql,[],'group');
 		if (count($files)!=0) {
 			$element[0] = array_merge($element[0], $files);
 		}
@@ -324,7 +324,7 @@ class ListsWepps {
 					$sql = "select {$recurciveId}t.Id,concat(t.{$ex[2]},' (',t.Id,') ') as {$ex[2]} from {$tablename} as t
 					left join {$ex[1]} as t2 on t2.Id = t.{$ex[4]}
 					{$where} group by t.{$ex[2]} order by t2.Priority,{$ex[2]}";
-					$res = ConnectWepps::$instance->fetch($sql,null,'group');
+					$res = ConnectWepps::$instance->fetch($sql,[],'group');
 					$options = array();
 					$options[0] = "-";
 					foreach ($res as $k=>$v) {
@@ -359,7 +359,7 @@ class ListsWepps {
 				
 			} elseif (strstr($value[0]['Type'], 'dbtable')) {
 				$sql = "select TableName,Name from s_ConfigFields order by TableName";
-				$res = ConnectWepps::$instance->fetch($sql,null,'group');
+				$res = ConnectWepps::$instance->fetch($sql,[],'group');
 				$options = array();
 				$options[0] = "-";
 				foreach ($res as $k => $v) {
@@ -416,7 +416,7 @@ class ListsWepps {
 						 * Значения полей
 						 */
 						$sql = "select Name,Id,PValue from s_PropertiesValues where DisplayOff=0 and TableName = '{$value[0]['TableName']}' and TableNameId = '{$element[0]['Id']}' and TableNameField = '{$key}'";
-						$res2 = ConnectWepps::$instance->fetch($sql,null,'group');
+						$res2 = ConnectWepps::$instance->fetch($sql,[],'group');
 						//$selected2 = [];
 						foreach ($res as $k => $v) {
 							if ($v['PType'] == 'select') {

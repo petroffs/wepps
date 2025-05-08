@@ -161,7 +161,7 @@ class AdminWepps {
 	
 	public static function getTranslate() {
 		$sql = "select Name,LangRu,LangEn from s_Lang where Category='back'";
-		$res = ConnectWepps::$instance->fetch($sql,null,'group');
+		$res = ConnectWepps::$instance->fetch($sql,[],'group');
 		$translate = array();
 		foreach ($res as $key=>$value) {
 			$translate[$key] = $value[0]['LangRu'];
