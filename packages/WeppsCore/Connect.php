@@ -15,6 +15,7 @@ class ConnectWepps {
 	public static $projectData;
 	public $count;
 	private $sth;
+	private $memcache;
 	private function __construct($projectSettings = array()) {
 		self::$projectInfo = $projectSettings['Info'];
 		self::$projectDev = $projectSettings['Dev'];
@@ -40,6 +41,10 @@ class ConnectWepps {
 			}
 			exit();
 		}
+		if (class_exists('Memcache') && self::$projectServices['memcached']['active']) {
+			$this->memcache = new \Memcache();
+			$this->memcache->connect(self::$projectServices['memcached']['host'], self::$projectServices['memcached']['port']);
+		}
 	}
 	function __destruct() {
 		self::$db = null;
@@ -53,12 +58,29 @@ class ConnectWepps {
 	public function fetch($sql, $params=[], $group='') {
 		$this->count++;
 		try {
+			$isCache = 0;
+			if (strstr($sql,'join ')) {
+				$isCache = 1;
+			}
+			$key = md5($sql.implode(';',$params));
+			if (!empty($this->memcache) && $isCache==1 && !empty($this->memcache->get($key))) {
+				$res = $this->memcache->get($key);
+				return $this->memcache->get($key);
+			}
 			$sth = self::$db->prepare($sql);
 			$sth->execute ($params);
 			if ($group == 'group') {
-				return $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+				$res = $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+				if (!empty($this->memcache) && $isCache==1) {
+					$this->memcache->set($key,$res,false,86000);
+				}
+				return $res;
 			} else {
-				return $sth->fetchAll(PDO::FETCH_ASSOC);
+				$res = $sth->fetchAll(PDO::FETCH_ASSOC);
+				if (!empty($this->memcache) && $isCache==1) {
+					$this->memcache->set($key,$res,false,86000);
+				}
+				return $res;
 			}
 		} catch (\Exception $e) {
 			ExceptionWepps::display($e);

@@ -7,7 +7,7 @@
 			</div>
 			<form action="javascript:void(0)">
 				<label class="pps pps_input">
-					<input type="text" id="search-input" placeholder="Поиск..." name="text" value="{$smarty.get.text|escape:'html'}" autocomplete="off"/>
+					<input type="text" id="search-input" placeholder="Поиск..." name="text" value="{$smarty.get.text|default:''|escape:'html'}" autocomplete="off"/>
 				</label>
 			</form>
 			<a href="/profile/" id="header-profile"><i class="bi bi-person"></i><span>Войти</span></a>

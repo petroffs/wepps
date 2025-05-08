@@ -272,7 +272,7 @@ class DataWepps {
 			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.DisplayOff,t.FGroup
 			from s_ConfigFields as t
 			where t.TableName = '{$this->tableName}' $fields order by $orderBy";
-			$res = ConnectWepps::$instance->fetch($sql,null,'group');
+			$res = ConnectWepps::$instance->fetch($sql,[],'group');
 			if (count($res)==0) {
 				http_response_code(404);
 				UtilsWepps::debug("Указанной таблицы {$this->tableName} не существует",1);
