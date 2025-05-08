@@ -64,7 +64,6 @@ class ConnectWepps {
 			}
 			$key = md5($sql.implode(';',$params));
 			if (!empty($this->memcache) && $isCache==1 && !empty($this->memcache->get($key))) {
-				$res = $this->memcache->get($key);
 				return $this->memcache->get($key);
 			}
 			$sth = self::$db->prepare($sql);
