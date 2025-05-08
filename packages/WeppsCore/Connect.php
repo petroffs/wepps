@@ -16,6 +16,7 @@ class ConnectWepps {
 	public $count;
 	private $sth;
 	private $memcache;
+	private $memcached;
 	private function __construct($projectSettings = array()) {
 		self::$projectInfo = $projectSettings['Info'];
 		self::$projectDev = $projectSettings['Dev'];
@@ -44,6 +45,9 @@ class ConnectWepps {
 		if (class_exists('Memcache') && self::$projectServices['memcached']['active']) {
 			$this->memcache = new \Memcache();
 			$this->memcache->connect(self::$projectServices['memcached']['host'], self::$projectServices['memcached']['port']);
+		} else if (class_exists('Memcached') && self::$projectServices['memcached']['active']) {
+			$this->memcached = new \Memcached();
+			$this->memcached->addServer(self::$projectServices['memcached']['host'], self::$projectServices['memcached']['port']);
 		}
 	}
 	function __destruct() {
@@ -65,6 +69,8 @@ class ConnectWepps {
 			$key = md5($sql.implode(';',$params));
 			if (!empty($this->memcache) && $isCache==1 && !empty($this->memcache->get($key))) {
 				return $this->memcache->get($key);
+			} else if (!empty($this->memcached) && $isCache==1 && !empty($this->memcached->get($key))) {
+				return $this->memcached->get($key);
 			}
 			$sth = self::$db->prepare($sql);
 			$sth->execute ($params);
@@ -72,12 +78,16 @@ class ConnectWepps {
 				$res = $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 				if (!empty($this->memcache) && $isCache==1) {
 					$this->memcache->set($key,$res,false,86000);
+				} else if (!empty($this->memcached) && $isCache==1) {
+					$this->memcached->set($key,$res,86000);
 				}
 				return $res;
 			} else {
 				$res = $sth->fetchAll(PDO::FETCH_ASSOC);
 				if (!empty($this->memcache) && $isCache==1) {
 					$this->memcache->set($key,$res,false,86000);
+				} else if (!empty($this->memcached) && $isCache==1) {
+					$this->memcached->set($key,$res,86000);
 				}
 				return $res;
 			}
