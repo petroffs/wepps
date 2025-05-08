@@ -63,6 +63,7 @@ class ConnectWepps {
 		$this->count++;
 		try {
 			$isCache = 0;
+			$cacheExpire = ConnectWepps::$projectServices['memcached']['expire'];
 			if (strstr($sql,'join ')) {
 				$isCache = 1;
 			}
@@ -77,17 +78,17 @@ class ConnectWepps {
 			if ($group == 'group') {
 				$res = $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
 				if (!empty($this->memcache) && $isCache==1) {
-					$this->memcache->set($key,$res,false,86000);
+					$this->memcache->set($key,$res,false,$cacheExpire);
 				} else if (!empty($this->memcached) && $isCache==1) {
-					$this->memcached->set($key,$res,86000);
+					$this->memcached->set($key,$res,$cacheExpire);
 				}
 				return $res;
 			} else {
 				$res = $sth->fetchAll(PDO::FETCH_ASSOC);
 				if (!empty($this->memcache) && $isCache==1) {
-					$this->memcache->set($key,$res,false,86000);
+					$this->memcache->set($key,$res,false,$cacheExpire);
 				} else if (!empty($this->memcached) && $isCache==1) {
-					$this->memcached->set($key,$res,86000);
+					$this->memcached->set($key,$res,$cacheExpire);
 				}
 				return $res;
 			}
