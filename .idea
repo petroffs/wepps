@@ -1,7 +1,6 @@
 remote
 	sudo certbot certonly -d wepps.dev -d www.wepps.dev -d wepps.ru -d www.wepps.ru -d platform.wepps.dev -d sh.wepps.dev -d pps.wepps.dev
-	sudo apt install php8.3-curl php8.3-xml php8.3-mbstring php8.3-zip php8.3-pdo php8.3-mysql php8.3-gd && sudo service php8.3-fpm restart
-	sudo apt install php8.3-{curl,xml,mysql,mbstring,zip,pdo,gd,imap} && sudo service php8.3-fpm restart
+	sudo apt install php8.4-{curl,xml,mysql,mbstring,zip,pdo,gd,imap,dom,memcached} && sudo service php8.4-fpm restart
 	sudo a2enmod rewrite && sudo service apache2 restart
 	mysql --defaults-extra-file=/var/www/config.cnf wepps_platformdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 local

@@ -4,6 +4,7 @@ namespace WeppsExtensions\Template;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Template\Blocks\BlocksWepps;
 use WeppsCore\Connect\ConnectWepps;
 

@@ -1,6 +1,8 @@
 <?php
 namespace WeppsCore\Core;
 
+use Smarty\Smarty;
+use SmartyExtWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -858,14 +860,14 @@ class PermissionsWepps {
 class SmartyWepps {
 	private static $instance;
 	private function __construct($backOffice = 0) {
-		//$root =  $_SERVER['DOCUMENT_ROOT'] . "/";
-		$root =  ConnectWepps::$projectDev['root'] . "/";
-		$smarty = new \Smarty();
+		$root =  ConnectWepps::$projectDev['root'];
+		$smarty = new Smarty();
 		//$smarty->template_dir = ($backOffice == 0) ? 'tpl/' : 'control/tpl/';
-		$smarty->addTemplateDir( $root . 'packages/' );
-		$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_wepps/');
-		$smarty->compile_dir = $root . 'files/tpl/compile';
-		$smarty->cache_dir = $root . 'files/tpl/cache/';
+		$smarty->setTemplateDir( $root . '/packages/' );
+		#$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_wepps/');
+		$smarty->addExtension(new \WeppsExtensions\Addons\SmartyExt\SmartyExtWepps());
+		$smarty->setCompileDir($root . '/files/tpl/compile');
+		$smarty->setCacheDir($root . 'files/tpl/cache');
 		$smarty->error_reporting = error_reporting() & ~E_NOTICE & ~E_WARNING;
 		self::$instance = $smarty;
 	}
