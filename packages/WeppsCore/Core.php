@@ -2,13 +2,12 @@
 namespace WeppsCore\Core;
 
 use Smarty\Smarty;
-use SmartyExtWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
-
+use WeppsExtensions\Addons\SmartyExt\SmartyExtWepps;
+use WeppsExtensions\Addons\SmartyExt\SmartyPluginsWepps;
 
 /**
  * Класс по работе со списками данных
@@ -865,7 +864,8 @@ class SmartyWepps {
 		//$smarty->template_dir = ($backOffice == 0) ? 'tpl/' : 'control/tpl/';
 		$smarty->setTemplateDir( $root . '/packages/' );
 		#$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_wepps/');
-		$smarty->addExtension(new \WeppsExtensions\Addons\SmartyExt\SmartyExtWepps());
+		$smarty->addExtension(new SmartyExtWepps());
+		(new SmartyPluginsWepps($smarty));
 		$smarty->setCompileDir($root . '/files/tpl/compile');
 		$smarty->setCacheDir($root . 'files/tpl/cache');
 		$smarty->error_reporting = error_reporting() & ~E_NOTICE & ~E_WARNING;
