@@ -17,8 +17,6 @@ class CartTemplatesWepps {
     public function default() : void {
         $this->cartUtils->setCartSummary();
         if ($this->cartSummary['quantity']==0) {
-            #$this->navigator->content['Name'] = "Ваша корзина пуста";
-            #$this->tpl = 'packages/WeppsExtensions/Cart/CartEmpty.tpl';
             $this->smarty->assign('cartDefaultTpl',$this->smarty->fetch(__DIR__ .'/CartEmpty.tpl'));
             return;
         }
@@ -33,11 +31,9 @@ class CartTemplatesWepps {
     }
     public function checkout() : void {
         if ($this->cartSummary['quantityActive']==0) {
-            #$this->navigator->content['Name'] = "Ваша корзина пуста";
             $this->smarty->assign('cartDefaultTpl',$this->smarty->fetch(__DIR__ .'/CartEmpty.tpl'));
             return;
         }
-        #UtilsWepps::debug($this->cartSummary,1);
         $this->smarty->assign('cartSummary',$this->cartSummary);
         $this->smarty->assign('cartText',[
                 'goodsCount' => TextTransformsWepps::ending2("товар",$this->cartSummary['quantityActive'])

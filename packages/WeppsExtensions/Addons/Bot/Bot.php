@@ -1,10 +1,7 @@
 <?php
 namespace WeppsExtensions\Addons\Bot;
-use PhpOffice\PhpSpreadsheet\Calculation\Financial\CashFlow\Constant\Periodic\Payments;
+
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Utils\CliWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
@@ -71,12 +68,13 @@ class BotWepps {
 				$obj = new DeliveryUtilsWepps();
 				$cartUtils = new CartUtilsWepps();
 				#$obj->getDeliveryTariffsByCitiesId(137);
-				$obj->getDeliveryTariffsByCitiesId("20",$cartUtils);
+				$obj->getTariffsByCitiesId("20",$cartUtils);
 				break;
 			case 'paymentstariffs':
 				$obj = new PaymentsUtilsWepps();
+				$cartUtils = new CartUtilsWepps();
 				#$obj->getDeliveryTariffsByCitiesId(137);
-				$obj->getPaymentsByDeliveryId("6");
+				$obj->getByDeliveryId("6", $cartUtils);
 				break;
 			default:
 				echo "\nERROR\n";
@@ -86,4 +84,3 @@ class BotWepps {
 		echo "\n$action - OK [$start sec.]\n";
 	}
 }
-?>

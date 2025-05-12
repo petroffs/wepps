@@ -7,7 +7,6 @@ use WeppsExtensions\Template\TemplateUtilsWepps;
 class DeliveryWepps
 {
     /**
-     * 
      * Тип доставки
      * 1 - Доставка в ПВЗ
      * 2 - Доставка до двери
@@ -53,6 +52,12 @@ class DeliveryWepps
             $output['price'] = TemplateUtilsWepps::round($this->settings['Discount'] * $cartSummary['sumActive'] / 100,0,'str');
         }
         return $output;
+    }
+    public function getOperations() {
+        return ['template','data for template','fetch ?'];
+    }
+    public function processOperations() {
+        return ['template','data for template','fetch ?'];
     }
     public function getPoints()
     {

@@ -14,7 +14,7 @@ class PaymentsUtilsWepps
 
     }
     
-    public function getPaymentsByDeliveryId(string $deliveryId,CartUtilsWepps $cartUtils,string $paymentsId=''): array
+    public function getByDeliveryId(string $deliveryId,CartUtilsWepps $cartUtils,string $paymentsId=''): array
     {
         $conditions = "p.DisplayOff=0 and p.Id != ?";
         if (!empty($paymentsId)) {

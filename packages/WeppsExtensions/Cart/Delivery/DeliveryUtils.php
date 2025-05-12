@@ -2,11 +2,11 @@
 namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryUtilsWepps
 {
+    private $operations;
     public function __construct()
     {
     }
@@ -27,7 +27,7 @@ class DeliveryUtilsWepps
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";
         return ConnectWepps::$instance->fetch($sql, [$id]);
     }
-    public function getDeliveryTariffsByCitiesId(string $citiesId,CartUtilsWepps $cartUtils,string $deliveryId='') : array
+    public function getTariffsByCitiesId(string $citiesId,CartUtilsWepps $cartUtils,string $deliveryId='') : array
     {
         $conditions = "d.DisplayOff=0 and d.Id != ?";
         if (!empty($deliveryId)) {
@@ -65,13 +65,23 @@ class DeliveryUtilsWepps
                 $output[] = $value;
             }
         }
+        $cartSummary = $cartUtils->getCartSummary();
         foreach ($output as $key => $value) {
             $className = "\WeppsExtensions\\Cart\\Delivery\\{$value['DeliveryExt']}";
+            /**
+             * @var DeliveryWepps $class
+             */
 		    $class = new $className($value);
             $output[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);
             $output[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
+            if ($value['Id']==@$cartSummary['delivery']['deliveryId']) {
+                $this->operations = $class->getOperations();
+            }
         }
         return $output;
+    }
+    public function getOperations() {
+        return $this->operations;
     }
     private function _match($digit,$field) {
         $ex = explode(',', $field);

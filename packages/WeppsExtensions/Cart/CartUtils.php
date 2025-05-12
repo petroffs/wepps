@@ -88,8 +88,7 @@ class CartUtilsWepps
 		$deliveryUtils = new DeliveryUtilsWepps();
 		$this->setCart();
 		$this->setCartSummary();
-		$tariffs = $deliveryUtils->getDeliveryTariffsByCitiesId($this->cart['citiesId'],$this,$deliveryId);
-		#UtilsWepps::debug($this->getCartSummary());
+		$tariffs = $deliveryUtils->getTariffsByCitiesId($this->cart['citiesId'],$this,$deliveryId);
 		if (!empty($tariffs[0])) {
 			$this->cart['deliveryTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['deliveryDiscount'] = $tariffs[0]['Addons']['discount'];
@@ -101,7 +100,7 @@ class CartUtilsWepps
 		$paymentsUtils = new PaymentsUtilsWepps();
 		$this->setCart();
 		$this->setCartSummary();
-		$tariffs = $paymentsUtils->getPaymentsByDeliveryId($this->cart['deliveryId'],$this,$paymentsId);
+		$tariffs = $paymentsUtils->getByDeliveryId($this->cart['deliveryId'],$this,$paymentsId);
 		if (!empty($tariffs[0])) {
 			$this->cart['paymentsTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['paymentsDiscount'] = $tariffs[0]['Addons']['discount'];
@@ -163,7 +162,6 @@ class CartUtilsWepps
 		if (intval($index) >= 0) {
 			unset($this->cart['items'][$index]);
 			$this->cart['items'] = array_merge($this->cart['items'], []);
-			#UtilsWepps::debug($this->cart['items'],2);
 		}
 		return $this->setCart();
 	}
@@ -239,8 +237,6 @@ class CartUtilsWepps
 			$this->summary['payments']['discount'] = $this->cart['paymentsDiscount'];
 			$this->summary['sumTotal'] -= $this->cart['paymentsDiscount']['price'];
 		}
-		#UtilsWepps::debug($this->cart,1);
-		#UtilsWepps::debug($this->summary,1);
 		return true;
 	}
 	public function getCartSummary() : array
@@ -271,17 +267,18 @@ class CartUtilsWepps
 		$deliveryActive = "";
 		$payments = [];
 		$paymentsActive = "";
-
 		if (!empty($cartSummary['delivery']['citiesId'])) {
 			$cartCity = $deliveryUtils->getCitiesById($cartSummary['delivery']['citiesId']);
 			if (!empty($cartCity[0]['Id'])) {
 				$deliveryActive = "0";
 				$payments = [];
 				$paymentsActive = "0";
-				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($cartCity[0]['Id'],$this);
+				$delivery = $deliveryUtils->getTariffsByCitiesId($cartCity[0]['Id'],$this);
 				if (!empty($cartSummary['delivery']['deliveryId'])) {
 					$deliveryActive = (string) $cartSummary['delivery']['deliveryId'];
-					$payments = $paymentsUtils->getPaymentsByDeliveryId($deliveryActive,$this);
+					$deliveryOperations = $deliveryUtils->getOperations();
+					UtilsWepps::debug($deliveryOperations,1);
+					$payments = $paymentsUtils->getByDeliveryId($deliveryActive,$this);
 					if (!empty($cartSummary['payments']['paymentsId'])) {
 						$paymentsActive = $cartSummary['payments']['paymentsId'];
 					}

@@ -3,12 +3,7 @@ namespace WeppsExtensions\Cart;
 
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsCore\Validator\ValidatorWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
@@ -85,7 +80,7 @@ class RequestCartWepps extends RequestWepps {
 				}
 				$deliveryUtils = new DeliveryUtilsWepps();
 				$cartUtils->setCartSummary();
-				$delivery = $deliveryUtils->getDeliveryTariffsByCitiesId($this->get['citiesId'],$cartUtils);
+				$delivery = $deliveryUtils->getTariffsByCitiesId($this->get['citiesId'],$cartUtils);
 				if (!empty($delivery)) {
 					$cartUtils->setCartCitiesId($this->get['citiesId']);
 					self::displayCheckoutCart($cartUtils);
@@ -97,7 +92,7 @@ class RequestCartWepps extends RequestWepps {
 					exit();
 				}
 				$paymentsUtils = new PaymentsUtilsWepps();
-				$payments = $paymentsUtils->getPaymentsByDeliveryId($this->get['deliveryId'],$cartUtils);
+				$payments = $paymentsUtils->getByDeliveryId($this->get['deliveryId'],$cartUtils);
 				if (!empty($payments)) {
 					$cartUtils->setCartDelivery($this->get['deliveryId']);
 				}
