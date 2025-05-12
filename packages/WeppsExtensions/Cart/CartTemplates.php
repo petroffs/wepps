@@ -15,7 +15,7 @@ class CartTemplatesWepps {
     private $smarty;
     private $cartUtils;
     private $cartSummary;
-    public function __construct(Smarty $smarty,CartUtilsWepps $cartUtils) {
+    public function __construct(Smarty\Smarty $smarty,CartUtilsWepps $cartUtils) {
         $this->smarty = &$smarty;
         $this->cartUtils = &$cartUtils;
 		$this->cartUtils->setCartSummary();

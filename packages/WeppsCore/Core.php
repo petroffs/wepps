@@ -853,17 +853,13 @@ class PermissionsWepps {
 }
 /**
  * Инициализация шаблонизатора
- * @author Petroffscom
- *
  */
 class SmartyWepps {
 	private static $instance;
 	private function __construct($backOffice = 0) {
 		$root =  ConnectWepps::$projectDev['root'];
 		$smarty = new Smarty();
-		//$smarty->template_dir = ($backOffice == 0) ? 'tpl/' : 'control/tpl/';
 		$smarty->setTemplateDir( $root . '/packages/' );
-		#$smarty->addPluginsDir( $root . 'packages/vendor_local/smarty_wepps/');
 		$smarty->addExtension(new SmartyExtWepps());
 		(new SmartyPluginsWepps($smarty));
 		$smarty->setCompileDir($root . '/files/tpl/compile');
@@ -871,7 +867,7 @@ class SmartyWepps {
 		$smarty->error_reporting = error_reporting() & ~E_NOTICE & ~E_WARNING;
 		self::$instance = $smarty;
 	}
-	public static function getSmarty($backOffice = 0) {
+	public static function getSmarty($backOffice = 0) : Smarty {
 		if (empty ( self::$instance )) {
 			new SmartyWepps ( $backOffice );
 		}
