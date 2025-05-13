@@ -54,7 +54,13 @@ class DeliveryWepps
         return $output;
     }
     public function getOperations() {
-        return ['template','data for template','fetch ?'];
+        return [
+            'tpl' => 'OperationsPickpoints.tpl',
+            //'tpl' => 'OperationsAddress.tpl',
+            //'tpl' => 'OperationsNotice.tpl',
+            'data' => [],
+            'allowOrderBtn' => false
+        ];
     }
     public function processOperations() {
         return ['template','data for template','fetch ?'];

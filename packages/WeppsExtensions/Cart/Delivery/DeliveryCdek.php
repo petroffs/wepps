@@ -44,6 +44,23 @@ class DeliveryCdekWepps extends DeliveryWepps
 		$this->curl->setHeader('authorization', 'Bearer ' . $this->token);
 	}
 
+	public function getTariff(CartUtilsWepps $cartUtils)
+	{
+		return $output = [
+            'status'=>200,
+            'title'=> $this->settings['Name'],
+            'price' => $this->settings['Tariff'],
+            'period' => '1-3'
+        ];
+	}
+	public function getOperations() {
+        return [
+            'tpl' => 'OperationsPoints.tpl',
+            'data' => [],
+            'allowOrderBtn' => false
+        ];
+    }
+
 	public function setPoints(): bool
 	{
 		$func = function (array $args) {
@@ -189,84 +206,13 @@ class DeliveryCdekWepps extends DeliveryWepps
 		file_put_contents($this->tokenFilename, json_encode($jdata), JSON_UNESCAPED_UNICODE);
 		$this->counter++;
 	}
-	public function getTariff(CartUtilsWepps $cartUtils)
-	{
-		return $output = [
-            'status'=>200,
-            'title'=> $this->settings['Name'],
-            'price' => $this->settings['Tariff'],
-            'period' => '1-3'
-        ];
 
-		$this->url = "https://api.cdek.ru/v2/calculator/tariff";
-		$this->settings['weight'] = 1;
-		$date = date("Y-m-d\TH:i:s+0300", strtotime(date("Y-m-d 20:00:00", strtotime(date("Y-m-d 20:00:00"))) . " +2 day"));
-		$jdata = [
-			'type' => "1",
-			'date' => $date,
-			'currency' => "1",
-			'tariff_code' => (string) $this->settings['tariff'],
-			'from_location' => [
-				"code" => (int) $this->office
-			],
-			'to_location' => [
-				"code" => (int) $this->settings['cityId']
-			],
-			'services' => [
-				[
-					'code' => 'INSURANCE',
-					'parameter' => (string) $this->settings['summ'] . ".0"
-				],
-				/* [
-								   'code' => 'SMS'
-								   ], */
-			],
-			'packages' => [
-				'weight' => (int) $this->settings['weight'] * 1000,
-				'length' => (int) $this->settings['length'],
-				'width' => (int) $this->settings['width'],
-				'height' => (int) $this->settings['height'],
-			],
-		];
-		$json = json_encode($jdata, JSON_UNESCAPED_UNICODE);
-		$response = $this->getResponse($this->url, $json);
-		$period = ($response['response']['calendar_min'] == $response['response']['calendar_max']) ? $response['response']['calendar_max'] : "{$response['response']['calendar_min']}-{$response['response']['calendar_max']}";
-		$price = round($response['response']['total_sum'] / 5) * 5;
-		if (!empty($this->settings['freelevel']) && $this->settings['freelevel'] <= $this->settings['summ']) {
-			if (isset($this->settings['cityRemote']) && $this->settings['cityRemote'] == 0) {
-				return array('price' => 0, 'status' => 200, 'message' => 'OK', 'period' => $period);
-			}
-		}
-		return array('price' => $price, 'status' => 200, 'message' => 'OK', 'period' => $period);
-	}
-	public function getCityId($city)
-	{
-		$city = addslashes($city);
-		$sql = "select * from CitiesCdek where Name='$city'";
-		$res = ConnectWepps::$instance->fetch($sql);
-		if (!empty($res[0]['Id'])) {
-			return $res[0]['Id'];
-		} else {
-			/*
-			 * Пересмотреть, возможно этот код легаси
-			 * http://integration.cdek.ru/v1/location/cities/ - Не работает!!!
-			 */
-			$url = "http://integration.cdek.ru/v1/location/cities/json?cityName=" . urlencode($city);
-			$response = $this->getResponse($url);
-			if (!empty($response['response'][0]['cityCode'])) {
-				array_multisort(array_column($response['response'], 'paymentLimit'), SORT_ASC, $response['response']);
-				if (isset($response['response'][0])) {
-					return $response['response'][0]['cityCode'];
-				}
-			}
-		}
-	}
-	public function getCityPoints($cityId)
-	{
-		$url = "https://integration.cdek.ru/pvzlist/v1/json?cityid=$cityId";
-		$response = $this->getResponse($url);
-		return $response;
-	}
+
+
+	/**
+	 * ! remove/update
+	 */
+
 	public function getOffices($cityId = 137)
 	{
 		$country = ($this->settings['country'] == 'Belarus') ? 'BY' : 'RU';
