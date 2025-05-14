@@ -2,6 +2,8 @@
 namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryUtilsWepps
@@ -10,7 +12,7 @@ class DeliveryUtilsWepps
     public function __construct()
     {
     }
-    public function getCitiesByQuery(string $term = '',int $page = 1,int $onpage = 12): array
+    public function getCitiesByQuery(string $term = '', int $page = 1, int $onpage = 12): array
     {
         $page = max(1, (int) ($page) ?? 1);
         $limit = ($page - 1) * $onpage;
@@ -19,7 +21,7 @@ class DeliveryUtilsWepps
 						join RegionsCdek r on r.Id = c.RegionsId where concat(c.Name,', ',r.Name) like ? limit $limit,$onpage";
         return ConnectWepps::$instance->fetch($sql, ["{$term}%"]);
     }
-    public function getCitiesById(int $id,int $page = 1,int $onpage = 12): array
+    public function getCitiesById(int $id, int $page = 1, int $onpage = 12): array
     {
         $page = max(1, (int) ($page) ?? 1);
         $limit = ($page - 1) * $onpage;
@@ -27,7 +29,7 @@ class DeliveryUtilsWepps
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";
         return ConnectWepps::$instance->fetch($sql, [$id]);
     }
-    public function getTariffsByCitiesId(string $citiesId,CartUtilsWepps $cartUtils,string $deliveryId='') : array
+    public function getTariffsByCitiesId(string $citiesId, CartUtilsWepps $cartUtils, string $deliveryId = ''): array
     {
         $conditions = "d.DisplayOff=0 and d.Id != ?";
         if (!empty($deliveryId)) {
@@ -41,7 +43,7 @@ class DeliveryUtilsWepps
                 left join CitiesCdek c on c.Id=?
                 left join RegionsCdek r on r.Id = c.RegionsId
                 where $conditions group by d.Id";
-        $res = ConnectWepps::$instance->fetch($sql, [$citiesId,$deliveryId]);
+        $res = ConnectWepps::$instance->fetch($sql, [$citiesId, $deliveryId]);
         if (empty($res)) {
             return [];
         }
@@ -50,18 +52,18 @@ class DeliveryUtilsWepps
             $w = 0;
             if (!$value['IncludeCitiesId'] && !$value['IncludeRegionsId']) {
                 $w = 1;
-            } elseif (!empty($value['CitiesId']) && $this->_match($value['CitiesId'],$value['IncludeCitiesId'])) {
+            } elseif (!empty($value['CitiesId']) && $this->_match($value['CitiesId'], $value['IncludeCitiesId'])) {
                 $w = 1;
-            } elseif (!empty($value['RegionsId']) && ($this->_match($value['RegionsId'],$value['IncludeRegionsId']))) {
+            } elseif (!empty($value['RegionsId']) && ($this->_match($value['RegionsId'], $value['IncludeRegionsId']))) {
                 $w = 1;
             }
-            if (!empty($value['CitiesId']) && !empty($value['ExcludeCitiesId']) && $this->_match($value['CitiesId'],$value['ExcludeCitiesId'])) {
+            if (!empty($value['CitiesId']) && !empty($value['ExcludeCitiesId']) && $this->_match($value['CitiesId'], $value['ExcludeCitiesId'])) {
                 $w = 0;
             }
-            if (!empty($value['RegionsId']) && !empty($value['ExcludeRegionsId']) && ($this->_match($value['RegionsId'],$value['ExcludeRegionsId']))) {
+            if (!empty($value['RegionsId']) && !empty($value['ExcludeRegionsId']) && ($this->_match($value['RegionsId'], $value['ExcludeRegionsId']))) {
                 $w = 0;
             }
-            if ($w==1) {
+            if ($w == 1) {
                 $output[] = $value;
             }
         }
@@ -71,19 +73,22 @@ class DeliveryUtilsWepps
             /**
              * @var DeliveryWepps $class
              */
-		    $class = new $className($value);
-            $output[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);
+            $class = new $className($value,$cartUtils);
+            $output[$key]['Addons']['tariff'] = $class->getTariff();
             $output[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
-            if ($value['Id']==@$cartSummary['delivery']['deliveryId']) {
+            if ($value['Id'] == @$cartSummary['delivery']['deliveryId']) {
+                #UtilsWepps::debug($cartUtils->getHeaders(),1);
                 $this->operations = $class->getOperations();
             }
         }
         return $output;
     }
-    public function getOperations() {
+    public function getOperations()
+    {
         return $this->operations;
     }
-    private function _match($digit,$field) {
+    private function _match($digit, $field)
+    {
         $ex = explode(',', $field);
         $ex = array_map('trim', $ex);
         return in_array($digit, $ex);

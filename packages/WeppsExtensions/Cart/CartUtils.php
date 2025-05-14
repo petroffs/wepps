@@ -4,6 +4,7 @@ namespace WeppsExtensions\Cart;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
@@ -14,6 +15,7 @@ class CartUtilsWepps
 	private $cart = [];
 	private $favorites = [];
 	private $summary = [];
+	private $headers;
 	public function __construct()
 	{
 		if (empty(ConnectWepps::$projectData['user'])) {
@@ -23,7 +25,7 @@ class CartUtilsWepps
 			$jdata = json_decode($cart, true);
 			if (!empty($jdata['items'])) {
 				$jdata2 = json_decode(ConnectWepps::$projectData['user']['JCart'], true);
-				$jdata2['items'] = $jdata2['items'] + $jdata['items'];
+				$jdata2['items'] += $jdata['items'];
 				UtilsWepps::cookies('wepps_cart');
 				UtilsWepps::cookies('wepps_cart_guid');
 				$this->setCart();
@@ -293,6 +295,14 @@ class CartUtilsWepps
 			'paymentsActive' => $paymentsActive,
 		];
 	}
+	public function setHeaders(TemplateHeadersWepps $headers) : void
+    {
+        $this->headers = $headers;
+    }
+	public function getHeaders() : TemplateHeadersWepps
+    {
+        return $this->headers;
+    }
 
 	/**
 	 * ! Далее переделка

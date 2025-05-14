@@ -11,6 +11,7 @@ class CartWepps extends ExtensionWepps {
 	public function request() {
 		$smarty = SmartyWepps::getSmarty();
 		$cartUtils = new CartUtilsWepps();
+		$cartUtils->setHeaders($this->headers);
 		$this->tpl = 'packages/WeppsExtensions/Cart/Cart.tpl';
 		$this->headers->meta('<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">');
 		$this->headers->meta('<meta http-equiv="Pragma" content="no-cache">');

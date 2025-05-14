@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
+use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Template\TemplateUtilsWepps;
 
@@ -14,13 +15,15 @@ class DeliveryWepps
      */
     private $type = 1;
     private $settings;
-    public function __construct(array $settings)
+    protected $cartUtils;
+    public function __construct(array $settings,CartUtilsWepps $cartUtils)
     {
         $this->settings = $settings;
+        $this->cartUtils = $cartUtils;
     }
-    public function getTariff(CartUtilsWepps $cartUtils)
+    public function getTariff() : array
     {
-        $cartSummary = $cartUtils->getCartSummary();
+        $cartSummary = $this->cartUtils->getCartSummary();
         if (empty($cartSummary)) {
             return [];
         }
@@ -55,9 +58,9 @@ class DeliveryWepps
     }
     public function getOperations() {
         return [
-            'tpl' => 'OperationsPickpoints.tpl',
-            //'tpl' => 'OperationsAddress.tpl',
-            //'tpl' => 'OperationsNotice.tpl',
+			'title' => $this->settings['Name'],
+			'ext' => $this->settings['DeliveryExt'],
+            'tpl' => 'OperationsPoints.tpl',
             'data' => [],
             'allowOrderBtn' => false
         ];

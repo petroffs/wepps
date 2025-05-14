@@ -18,9 +18,9 @@ class DeliveryCdekWepps extends DeliveryWepps
 	private $token;
 	private $curl;
 	private $counter = 0;
-	public function __construct($settings)
+	public function __construct(array $settings,CartUtilsWepps $cartUtils)
 	{
-		parent::__construct($settings);
+		parent::__construct($settings,$cartUtils);
     	$this->setDeliveryType(1);
 		$this->url = ConnectWepps::$projectServices['cdek']['url'];
 		$this->account = ConnectWepps::$projectServices['cdek']['account'];
@@ -44,7 +44,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 		$this->curl->setHeader('authorization', 'Bearer ' . $this->token);
 	}
 
-	public function getTariff(CartUtilsWepps $cartUtils)
+	public function getTariff() : array
 	{
 		return $output = [
             'status'=>200,
@@ -53,8 +53,12 @@ class DeliveryCdekWepps extends DeliveryWepps
             'period' => '1-3'
         ];
 	}
-	public function getOperations() {
+	public function getOperations() : array	{
+		$headers = $this->cartUtils->getHeaders();
+        #$headers->css();
         return [
+			'title' => $this->settings['Name'],
+			'ext' => $this->settings['DeliveryExt'],
             'tpl' => 'OperationsPoints.tpl',
             'data' => [],
             'allowOrderBtn' => false
