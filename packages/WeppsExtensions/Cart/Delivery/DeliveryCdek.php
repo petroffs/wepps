@@ -55,7 +55,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 	}
 	public function getOperations() : array	{
 		$headers = $this->cartUtils->getHeaders();
-        #$headers->css();
+        UtilsWepps::debug($headers,1);
         return [
 			'title' => $this->settings['Name'],
 			'ext' => $this->settings['DeliveryExt'],
