@@ -18,10 +18,10 @@ class DeliveryCdekWepps extends DeliveryWepps
 	private $token;
 	private $curl;
 	private $counter = 0;
-	public function __construct(array $settings,CartUtilsWepps $cartUtils)
+	public function __construct(array $settings, CartUtilsWepps $cartUtils)
 	{
-		parent::__construct($settings,$cartUtils);
-    	$this->setDeliveryType(1);
+		parent::__construct($settings, $cartUtils);
+		$this->setDeliveryType(1);
 		$this->url = ConnectWepps::$projectServices['cdek']['url'];
 		$this->account = ConnectWepps::$projectServices['cdek']['account'];
 		$this->password = ConnectWepps::$projectServices['cdek']['password'];
@@ -44,26 +44,27 @@ class DeliveryCdekWepps extends DeliveryWepps
 		$this->curl->setHeader('authorization', 'Bearer ' . $this->token);
 	}
 
-	public function getTariff() : array
+	public function getTariff(): array
 	{
 		return $output = [
-            'status'=>200,
-            'title'=> $this->settings['Name'],
-            'price' => $this->settings['Tariff'],
-            'period' => '1-3'
-        ];
+			'status' => 200,
+			'title' => $this->settings['Name'],
+			'price' => $this->settings['Tariff'],
+			'period' => '1-3'
+		];
 	}
-	public function getOperations() : array	{
+	public function getOperations(): array
+	{
 		$headers = $this->cartUtils->getHeaders();
-        UtilsWepps::debug($headers,1);
-        return [
+		$headers->css("/ext/Cart/Delivery/DeliveryCdek.{$headers::$rand}.css");
+		return [
 			'title' => $this->settings['Name'],
 			'ext' => $this->settings['DeliveryExt'],
-            'tpl' => 'OperationsPoints.tpl',
-            'data' => [],
-            'allowOrderBtn' => false
-        ];
-    }
+			'tpl' => 'OperationsPickpoints.tpl',
+			'data' => [],
+			'allowOrderBtn' => false
+		];
+	}
 
 	public function setPoints(): bool
 	{
@@ -100,17 +101,17 @@ class DeliveryCdekWepps extends DeliveryWepps
 				$insert->execute($row);
 			}
 		};
-		ConnectWepps::$instance->transaction($func,[]);
+		ConnectWepps::$instance->transaction($func, []);
 		return true;
 	}
-	public function setCities(int $page=0)
+	public function setCities(int $page = 0)
 	{
 		$func = function (array $args) {
-			$page = $args['page'] ??0;
+			$page = $args['page'] ?? 0;
 			//$response = $this->curl->get($this->url . '/v2/location/cities?country_codes=RU&size=1000&page='.(string)$page);
-			$url = $this->url . '/v2/location/cities?country_codes=RU&&size=1000&page='.$page;
+			$url = $this->url . '/v2/location/cities?country_codes=RU&&size=1000&page=' . $page;
 			$cli = new CliWepps();
-			$cli->progress($page,150);
+			$cli->progress($page, 150);
 			#$cli->info(text: $url);
 			$response = $this->curl->get($url);
 			if (empty($response->response)) {
@@ -118,7 +119,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 			}
 			$jdata = json_decode($response->response, true);
 			if (empty($jdata)) {
-				if ($page>1) {
+				if ($page > 1) {
 					return true;
 				}
 				return false;
@@ -144,11 +145,11 @@ class DeliveryCdekWepps extends DeliveryWepps
 				$insert->execute($row);
 			}
 		};
-		ConnectWepps::$instance->transaction($func,['page'=>$page]);
+		ConnectWepps::$instance->transaction($func, ['page' => $page]);
 		$page++;
-		if ($page<=150) {
+		if ($page <= 150) {
 			return self::setCities($page);
-		}		
+		}
 		return true;
 	}
 	public function setRegions()
@@ -235,7 +236,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 	public function getExtension()
 	{
 		if ($this->settings['tariff'] != 136) {
-			return array();
+			return [];
 		}
 		$points = $this->getOffices();
 		$output = [];

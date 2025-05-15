@@ -4,6 +4,7 @@ namespace WeppsExtensions\Cart;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
@@ -120,6 +121,8 @@ class RequestCartWepps extends RequestWepps {
 	}
 	private function displayCheckoutCart(CartUtilsWepps $cartUtils) {
 		$this->tpl = 'RequestCheckout.tpl';
+		$headers = new TemplateHeadersWepps();
+		$cartUtils->setHeaders();
 		$smarty = SmartyWepps::getSmarty();
 		$template = new CartTemplatesWepps($smarty,$cartUtils);
 		$template->checkout();
@@ -130,4 +133,3 @@ class RequestCartWepps extends RequestWepps {
 $request = new RequestCartWepps($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

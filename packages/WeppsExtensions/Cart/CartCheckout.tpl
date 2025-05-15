@@ -32,6 +32,7 @@
 				</label>
 			{/foreach}
 		</div>
+		{$deliveryOperationsTpl}
 		<div class="content-block cart-variants cart-payments{if !$payments} w_hide{/if}" id="cart-payments-checkout">
 			<h2>Выберите способ оплаты {if !$payments}w_hide{/if}</h2>
 			<div class="header">

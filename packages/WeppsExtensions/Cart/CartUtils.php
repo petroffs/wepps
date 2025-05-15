@@ -279,7 +279,6 @@ class CartUtilsWepps
 				if (!empty($cartSummary['delivery']['deliveryId'])) {
 					$deliveryActive = (string) $cartSummary['delivery']['deliveryId'];
 					$deliveryOperations = $deliveryUtils->getOperations();
-					UtilsWepps::debug($deliveryOperations,1);
 					$payments = $paymentsUtils->getByDeliveryId($deliveryActive,$this);
 					if (!empty($cartSummary['payments']['paymentsId'])) {
 						$paymentsActive = $cartSummary['payments']['paymentsId'];
@@ -291,6 +290,7 @@ class CartUtilsWepps
 			'city' => @$cartCity[0],
 			'delivery' => $delivery,
 			'deliveryActive' => $deliveryActive,
+			'deliveryOperations' => $deliveryOperations,
 			'payments' => $payments,
 			'paymentsActive' => $paymentsActive,
 		];
