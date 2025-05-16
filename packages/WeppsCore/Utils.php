@@ -501,8 +501,8 @@ class TemplateHeadersWepps
 		'cssjs' => ''
 	);
 	private $cssjs = array(
-		'js' => array(),
-		'css' => array()
+		'js' => [],
+		'css' => []
 	);
 
 	public function js(string $filename)

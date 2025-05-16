@@ -5,6 +5,7 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
@@ -92,6 +93,10 @@ class RequestCartWepps extends RequestWepps {
 					http_response_code(404);
 					exit();
 				}
+				
+				$headers = new TemplateHeadersWepps();
+				$cartUtils->setHeaders($headers);
+
 				$paymentsUtils = new PaymentsUtilsWepps();
 				$payments = $paymentsUtils->getByDeliveryId($this->get['deliveryId'],$cartUtils);
 				if (!empty($payments)) {
@@ -121,8 +126,6 @@ class RequestCartWepps extends RequestWepps {
 	}
 	private function displayCheckoutCart(CartUtilsWepps $cartUtils) {
 		$this->tpl = 'RequestCheckout.tpl';
-		$headers = new TemplateHeadersWepps();
-		$cartUtils->setHeaders();
 		$smarty = SmartyWepps::getSmarty();
 		$template = new CartTemplatesWepps($smarty,$cartUtils);
 		$template->checkout();

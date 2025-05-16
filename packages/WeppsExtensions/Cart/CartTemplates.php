@@ -44,10 +44,11 @@ class CartTemplatesWepps
             'goodsCount' => TextTransformsWepps::ending2("товар", $this->cartSummary['quantityActive'])
         ]);
         $checkout = $this->cartUtils->getCheckoutData();
-        #UtilsWepps::debug($checkout['deliveryOperations']['tpl'], 1);
         if (!empty($checkout['deliveryOperations']['tpl'])) {
+            $this->smarty->assign('deliveryCssjs',$this->cartUtils->getHeaders()->get()['cssjs']);
             $this->smarty->assign('deliveryOperationsTpl', $this->smarty->fetch(__DIR__ . '/Delivery/' . $checkout['deliveryOperations']['tpl']));
         }
+        
         $this->smarty->assign('cartCity', $checkout['city']);
         $this->smarty->assign('delivery', $checkout['delivery']);
         $this->smarty->assign('deliveryActive', $checkout['deliveryActive']);

@@ -1,3 +1,4 @@
-div.test {
-    font-weight: normal;
+body div.content-block.delivery-pickpoints {
+    background-color: var(--color-warning);
+
 }
