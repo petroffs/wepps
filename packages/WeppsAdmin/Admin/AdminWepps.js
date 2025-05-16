@@ -19,5 +19,5 @@ var readyAdminWeppsInit = function() {
 		language: "ru",
 		delay: 500
 	});
-}
+};
 $(document).ready(readyAdminWeppsInit);

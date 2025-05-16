@@ -496,32 +496,34 @@ abstract class RequestWepps
 class TemplateHeadersWepps
 {
 	public static $rand;
-	private $output = array(
+	private $output = [
 		'meta' => '',
 		'cssjs' => ''
-	);
-	private $cssjs = array(
+	];
+	private $cssjs = [
 		'js' => [],
 		'css' => []
-	);
+	];
 
-	public function js(string $filename)
+	public function js(string $filename) : string
 	{
-		return $this->cssjs['js'][] = (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
+		#return $this->cssjs['js'][] = (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
+		return $this->cssjs['js'][] = $filename;
 	}
-	public function css(string $filename)
+	public function css(string $filename) : string
 	{
-		return $this->cssjs['css'][] = (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
+		#return $this->cssjs['css'][] = (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
+		return $this->cssjs['css'][] = $filename;
 	}
-	public function meta(string $meta)
+	public function meta(string $meta) : string
 	{
 		return $this->output['meta'] .= (string) "\n" . $meta;
 	}
-	public function resetMeta()
+	public function resetMeta() : string
 	{
 		return $this->output['meta'] = "";
 	}
-	public function join(TemplateHeadersWepps $headers)
+	public function join(TemplateHeadersWepps $headers) : void
 	{
 		$this->cssjs['js'] = array_merge($this->cssjs['js'], $headers->cssjs['js']);
 		$this->cssjs['css'] = array_merge($this->cssjs['css'], $headers->cssjs['css']);
@@ -530,12 +532,87 @@ class TemplateHeadersWepps
 	 * Установка $this->output - содержит html-код
 	 * @return string[]
 	 */
-	public function get()
+	public function get(bool $libOnly = false) : array
 	{
 		$this->cssjs['css'] = array_unique($this->cssjs['css']);
 		$this->cssjs['js'] = array_unique($this->cssjs['js']);
-		$this->output['cssjs'] = implode("", $this->cssjs['css']) . implode("", $this->cssjs['js']);
+		$this->output['cssjs'] = "";
+		foreach($this->cssjs['css'] as $filename) {
+			#echo $filename."\n";
+			if ($libOnly == true && strstr($filename,$this::$rand)) {
+				continue;
+			}
+			$this->output['cssjs'] .= (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
+		}
+		foreach($this->cssjs['js'] as $filename) {
+			if ($libOnly == true && strstr($filename,$this::$rand)) {
+				continue;
+			}
+			$this->output['cssjs'] .= (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
+		}
+		$this->output['cssjs'] = trim($this->output['cssjs'],"\n");
 		return $this->output;
+	}
+	public function min() : array {
+		$arr = $this->get(true);
+		$hash = md5(implode('',$this->cssjs['css']).implode('',$this->cssjs['js']));
+		$filehtml = __DIR__ . '/../../files/tpl/cssjs/'.$hash;
+		$cli = new CliWepps();
+		if (is_file($filehtml)) {
+			$currenttime = time();
+			$liftime = 300;
+			$filetime = filemtime($filehtml);
+			if (($currenttime - $filetime) > $liftime) {
+				unlink($filehtml);
+			} else {
+				$arr['cssjs'] .= "\n". file_get_contents($filehtml);
+				return $arr;
+			}
+		}
+		$output = "<style>";
+		foreach($this->cssjs['css'] as $filename) {
+			$filename = getcwd() . str_replace('/ext/','/packages/WeppsExtensions/', $filename);
+			$filename = str_replace($this::$rand.'.','', $filename);
+			$css = (is_file($filename))?file_get_contents($filename):'';
+			if (empty($css) || !strstr($filename,'/Wepps')) {
+				continue;
+			}
+			 // Удаляем комментарии
+			$css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
+			// Удаляем пробелы, табы, новые строки и т.д.
+			$css = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    '], '', $css);
+			// Удаляем пробелы вокруг символов
+			$css = preg_replace('/\s*([{}|:;,])\s*/', '$1', $css);
+			// Удаляем последнюю точку с запятой перед закрывающей скобкой
+			$css = preg_replace('/;}/', '}', $css);
+			// Удаляем пробелы между числами и единицами измерения (px -> px)
+			$css = preg_replace('/(\d+)(px|em|rem|%|pt|pc|in|mm|cm|ex)/', '$1$2', $css);
+			$output .= trim($css);
+		}
+		$output .= "</style>\n";
+		$output .= "<script type=\"text/javascript\">";
+		foreach($this->cssjs['js'] as $filename) {
+			$filename = getcwd() . str_replace('/ext/','/packages/WeppsExtensions/', $filename);
+			$filename = str_replace($this::$rand.'.','', $filename);
+			$js = (is_file($filename))?file_get_contents($filename):'';
+			if (empty($js) || !strstr($filename,'/Wepps')) {
+				continue;
+			}
+			// Удаляем однострочные комментарии
+			$js = preg_replace('!/\*.*?\*/!s', '', $js);
+    		$js = preg_replace('!//.*?\n!', '', $js);
+			// Удаляем пробелы вокруг операторов
+			$js = preg_replace('/\s*([=+\-*\/%&|^<>(){}\[\];,:])\s*/', '$1', $js);
+			// Удаляем лишние пробелы и переносы строк
+			$js = preg_replace('/\s+/', ' ', $js);
+			// Удаляем пробелы после ключевых слов
+			$js = preg_replace('/(\b(if|else|for|while|switch|function|return|var)\b)\s+/', '$1 ', $js);
+			$output .= trim($js);
+		}
+		$output .= "</script>";
+		#$cli->put($output,$filehtml);
+		$arr['cssjs'] .= "\n". $output;
+		return $arr;
 	}
 }
 

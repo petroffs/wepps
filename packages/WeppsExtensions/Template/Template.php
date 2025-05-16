@@ -9,7 +9,7 @@ use WeppsExtensions\Template\Blocks\BlocksWepps;
 use WeppsCore\Connect\ConnectWepps;
 
 class TemplateWepps extends ExtensionWepps {
-	function request() {
+	public function request() {
 		$smarty = SmartyWepps::getSmarty();
 		$smarty->assign('parent',$this->navigator->parent);
 		$smarty->assign('child',$this->navigator->child);
@@ -49,14 +49,19 @@ class TemplateWepps extends ExtensionWepps {
 		 */
 		if (@ConnectWepps::$projectData['user']['ShowAdmin']==1) {
 			$this->headers->css("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.css");
-			$this->headers->js("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.js");
+			#$this->headers->js("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.js");
 		}
 
 		/*
 		 * Передача данных в шаблон
 		 */
 		$this->headers->js("/ext/Template/{$tpl}.{$this->rand}.js");
-		$smarty->assign('headers',$this->headers->get());
+		if (ConnectWepps::$projectDev['debug']==1) {
+			$smarty->assign('headers',$this->headers->get());
+		} else {
+			$smarty->assign('headers',$this->headers->min());
+		}
+
 		$smarty->assign('content',$this->navigator->content);
 		$smarty->assign('nav',$this->navigator->nav);
 		

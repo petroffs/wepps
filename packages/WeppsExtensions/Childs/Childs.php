@@ -25,7 +25,7 @@ class ChildsWepps extends ExtensionWepps {
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Childs/Childs.{$this->rand}.css");
-		$this->headers->js("/ext/Childs/Childs.{$this->rand}.js");
+		#$this->headers->js("/ext/Childs/Childs.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}

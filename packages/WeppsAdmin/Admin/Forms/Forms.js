@@ -1,7 +1,7 @@
 var resizeTextareaAuto = function(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
-}
+};
 var getSelect2Ajax = function(obj,fn) {
 	$(obj.id).select2({
 		multiple: true,
@@ -23,7 +23,7 @@ var getSelect2Ajax = function(obj,fn) {
 	}).on('select2:select', function(event) {
 		fn(event);
 	});
-}
+};
 var readyFormsInit = function() {
 	/* test */
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
@@ -53,7 +53,7 @@ var readyFormsInit = function() {
 				$(this).closest('form').find('input[type="submit"]').eq(0).prop('disabled','disabled');
 			}
 		});
-	}
+	};
 	approveform();
 	$('a.reset').on('click',function(event) {
 		event.preventDefault();
@@ -63,7 +63,7 @@ var readyFormsInit = function() {
 	$('.pps.pps_area').find('textarea').on('input', function () {
 		resizeTextareaAuto(this);
 	}).trigger('input');
-}
+};
 $(document).ready(readyFormsInit);
 
 class FormWepps {
@@ -71,7 +71,7 @@ class FormWepps {
 		if (settings != undefined) {
 			this.settings = settings
 		}
-	}
+	};
 	upload(el,files) {
 		let filesfield = el.attr('name');
 		let myform = el.closest('form').attr('id');
@@ -93,7 +93,7 @@ class FormWepps {
 			t.html(responseText);
 			$(document.body).prepend(t);
 		});
-	}
+	};
 	send(action, myform, url) {
 		$('.controlserrormess').remove();
 		let link = $(location).attr('pathname');
@@ -107,7 +107,7 @@ class FormWepps {
 			data : str + serialized
 		}
 		layoutWepps.request(settings);
-	}
+	};
 	popup(action, myform, url) {
 		$('.controlserrormess').remove();
 		let link = $(location).attr('pathname');
@@ -121,6 +121,6 @@ class FormWepps {
 			data : str + serialized
 		}
 		layoutWepps.win(settings);
-	}
-}
+	};
+};
 var formWepps = new FormWepps();
