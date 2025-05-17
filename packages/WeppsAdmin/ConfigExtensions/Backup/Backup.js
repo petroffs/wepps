@@ -17,7 +17,7 @@ var readyBackupExtInit = function() {
 					let settings = {
 						data:str,
 						url:'/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php'
-					}
+					};
 					layoutWepps.request(settings);
 					$(this).dialog("close");
 				}
@@ -48,5 +48,5 @@ var readyBackupExtInit = function() {
 		window.location.href = '/packages/WeppsAdmin/Lists/Request.php?action=export&list=' + id;
 		return false;
 	});
-}
+};
 $(document).ready(readyBackupExtInit);

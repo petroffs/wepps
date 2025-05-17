@@ -5,6 +5,5 @@ var readyAuthInit = function() {
 		location.href = href; 
 	});
 	$('input[name="login"]').focus();
-}
-
+};
 $(document).ready(readyAuthInit);

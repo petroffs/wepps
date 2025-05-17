@@ -507,25 +507,25 @@ class TemplateHeadersWepps
 		'css' => []
 	];
 
-	public function js(string $filename) : string
+	public function js(string $filename): string
 	{
 		#return $this->cssjs['js'][] = (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
 		return $this->cssjs['js'][] = $filename;
 	}
-	public function css(string $filename) : string
+	public function css(string $filename): string
 	{
 		#return $this->cssjs['css'][] = (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
 		return $this->cssjs['css'][] = $filename;
 	}
-	public function meta(string $meta) : string
+	public function meta(string $meta): string
 	{
 		return $this->output['meta'] .= (string) "\n" . $meta;
 	}
-	public function resetMeta() : string
+	public function resetMeta(): string
 	{
 		return $this->output['meta'] = "";
 	}
-	public function join(TemplateHeadersWepps $headers) : void
+	public function join(TemplateHeadersWepps $headers): void
 	{
 		$this->cssjs['js'] = array_merge($this->cssjs['js'], $headers->cssjs['js']);
 		$this->cssjs['css'] = array_merge($this->cssjs['css'], $headers->cssjs['css']);
@@ -534,48 +534,49 @@ class TemplateHeadersWepps
 	 * Установка $this->output - содержит html-код
 	 * @return string[]
 	 */
-	public function get(bool $libOnly = false) : array
+	public function get(bool $libOnly = false): array
 	{
 		$this->cssjs['css'] = array_unique($this->cssjs['css']);
 		$this->cssjs['js'] = array_unique($this->cssjs['js']);
 		$this->output['cssjs'] = "";
-		foreach($this->cssjs['css'] as $filename) {
+		foreach ($this->cssjs['css'] as $filename) {
 			#echo $filename."\n";
-			if ($libOnly == true && strstr($filename,$this::$rand)) {
+			if ($libOnly == true && strstr($filename, $this::$rand)) {
 				continue;
 			}
 			$this->output['cssjs'] .= (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
 		}
-		foreach($this->cssjs['js'] as $filename) {
-			if ($libOnly == true && strstr($filename,$this::$rand)) {
+		foreach ($this->cssjs['js'] as $filename) {
+			if ($libOnly == true && strstr($filename, $this::$rand)) {
 				continue;
 			}
 			$this->output['cssjs'] .= (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
 		}
-		$this->output['cssjs'] = trim($this->output['cssjs'],"\n");
+		$this->output['cssjs'] = trim($this->output['cssjs'], "\n");
 		return $this->output;
 	}
-	public function min() : array {
+	public function minify(): array
+	{
 		$arr = $this->get(true);
-		$hash = md5(implode('',$this->cssjs['css']).implode('',$this->cssjs['js']));
-		$filehtml = __DIR__ . '/../../files/tpl/cssjs/'.$hash;
+		$hash = md5(implode('', $this->cssjs['css']) . implode('', $this->cssjs['js']));
+		$filehtml = __DIR__ . '/../../files/tpl/minify/' . $hash;
 		if (is_file($filehtml)) {
 			$currenttime = time();
-			$liftime = 300;
+			$liftime = ConnectWepps::$projectServices['minify']['lifetime'];
 			$filetime = filemtime($filehtml);
 			if (($currenttime - $filetime) > $liftime) {
 				unlink($filehtml);
 			} else {
-				$arr['cssjs'] .= "\n". file_get_contents($filehtml);
+				$arr['cssjs'] .= "\n" . file_get_contents($filehtml);
 				return $arr;
 			}
 		}
 		$minifier = new CSS();
 		$output = "<style>";
-		foreach($this->cssjs['css'] as $filename) {
-			$filename = getcwd() . str_replace('/ext/','/packages/WeppsExtensions/', $filename);
-			$filename = str_replace($this::$rand.'.','', $filename);
-			if (!is_file($filename) || !strstr($filename,'/Wepps')) {
+		foreach ($this->cssjs['css'] as $filename) {
+			$filename = ConnectWepps::$projectDev['root'] . str_replace('/ext/', '/packages/WeppsExtensions/', $filename);
+			$filename = str_replace($this::$rand . '.', '', $filename);
+			if (!is_file($filename) || !strstr($filename, '/Wepps')) {
 				continue;
 			}
 			$minifier->add($filename);
@@ -584,30 +585,31 @@ class TemplateHeadersWepps
 		$output .= "</style>\n";
 		$minifier = new JS();
 		$output .= "<script type=\"text/javascript\">";
-		foreach($this->cssjs['js'] as $filename) {
-			$filename = getcwd() . str_replace('/ext/','/packages/WeppsExtensions/', $filename);
-			$filename = str_replace($this::$rand.'.','', $filename);
-			if (!is_file($filename) || !strstr($filename,'/Wepps')) {
+		foreach ($this->cssjs['js'] as $filename) {
+			$filename = ConnectWepps::$projectDev['root'] . str_replace('/ext/', '/packages/WeppsExtensions/', $filename);
+			$filename = str_replace($this::$rand . '.', '', $filename);
+			if (!is_file($filename) || !strstr($filename, '/Wepps')) {
 				continue;
 			}
 			$minifier->add($filename);
 		}
 
-		$t = $minifier->minify();
-		if (strstr($t,"\n")) {
+		/**
+		 * Тестирование
+		 */
+		/* $t = $minifier->minify();
+		if (strstr($t, "\n")) {
 			echo $t;
 			exit();
 		}
+		echo 'OK';
+		exit(); */
 
-
-		$output .= $t;
+		$output .= $minifier->minify();
 		$output .= "</script>";
-		
-		/** После тестов открыть */
-		#$cli = new CliWepps();
-		#$cli->put($output,$filehtml);
-		
-		$arr['cssjs'] .= (string) "\n". $output;
+		$cli = new CliWepps();
+		$cli->put($output, $filehtml);
+		$arr['cssjs'] .= (string) "\n" . $output;
 		return $arr;
 	}
 }

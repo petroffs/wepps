@@ -14,13 +14,12 @@ use WeppsAdmin\Admin\AdminWepps;
 
 
 class NavigatorAdWepps {
-    function __construct(TemplateHeadersWepps &$headers) {
+    public function __construct(TemplateHeadersWepps &$headers) {
 		$smarty = SmartyWepps::getSmarty();
 		$headers->js ("/packages/WeppsAdmin/NavigatorAd/NavigatorAd.{$headers::$rand}.js");
 		$headers->css("/packages/WeppsAdmin/NavigatorAd/NavigatorAd.{$headers::$rand}.css");
 		$ppsUrl = substr($_GET['ppsUrl'], 9);
 		$navigator = new NavigatorWepps($ppsUrl,1);
-		$navsub = array();
 		$nav2 = new NavigatorDataWepps("s_Navigator");
 
 		$translate = AdminWepps::getTranslate();
@@ -31,15 +30,12 @@ class NavigatorAdWepps {
 		 */
 		$navtree = $nav2->getChildTree();
 		$smarty->assign('navtree',$navtree);
-		//UtilsWepps::debug($navtree,1);
+		
 		/*
 		 * Элемент списка
 		 */
 		$listForm = ListsWepps::getListItemForm($headers,"s_Navigator", $navigator->content['Id']);
 		$navigator->content = $listForm['element'];
-				
-		$listSettings = $listForm['listSettings'];
-		$tpl2 = "ListsItem.tpl";
 		$headers = &$listForm['headers'];
 
 		if ($navigator->content['Id'] == 'add') {
@@ -51,16 +47,10 @@ class NavigatorAdWepps {
 		} else {
 		    ExceptionWepps::error404();
 		}
-		
-		/*
-		 * Вывод данных
-		 */
 		$smarty->assign('nav',$navigator->nav);
-		//UtilsWepps::debug($navigator->nav,1);
 		$smarty->assign('way',$navigator->way);
 		$navigator->content['MetaTitle'] = "{$navigator->content['Name']} — Навигатор";
 		$navigator->content['NameNavItem'] = "Навигатор";
-		
 		$smarty->assign('ppsUrl',$ppsUrl);
 		$smarty->assign('ppsPath','navigator');
 		$smarty->assign('permFields',$listForm['permFields']);
@@ -72,11 +62,6 @@ class NavigatorAdWepps {
 		$smarty->assign('controlsTpl', $smarty->fetch( ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemControls.tpl'));
 		if (isset($_SESSION['uploads']['list-data-form'])) $smarty->assign('uploaded',$_SESSION['uploads']['list-data-form']);
 		$smarty->assign('listItemFormTpl',$smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemForm.tpl'));
-
-		/*
-		 * Финальный шаблон
-		 */
-		$smarty->assign('headers', $headers->get());
 		$tpl = $smarty->fetch( __DIR__ . '/NavigatorAd.tpl');
 		$smarty->assign('extension',$tpl);
 	}

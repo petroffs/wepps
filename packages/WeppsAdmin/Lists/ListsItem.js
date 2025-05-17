@@ -120,7 +120,7 @@ var readyListsItemInit = function() {
 				'buttons':[]
 			});
 			return;
-		}
+		};
 		var str = 'action=propOptionAdd&id='+id+'&value='+input1.val();
 		if (select1.find("option[value='" + input1.val() + "']").length) {
 			$("#dialog").html('<p>Опция уже существует</p>').dialog({
@@ -132,12 +132,12 @@ var readyListsItemInit = function() {
 		} else {
 			select1.append("<option value=\""+input1.val()+"\" selected=\"selected\">"+input1.val()+"</option>");
 			let settings = {
-						data: str,
-						url: '/packages/WeppsAdmin/Lists/Request.php',
-					}
+				data: str,
+				url: '/packages/WeppsAdmin/Lists/Request.php',
+			};
 			layoutWepps.request(settings);
 			input1.val('');
-	    }
+	    };
 		$("#dialog").html('<p>Опция добавлена</p>').dialog({
 			'title':'Сообщение',
 			'modal': true,
@@ -169,7 +169,7 @@ var readyListsItemInit = function() {
 			fields1.removeClass('pps_hide');
 		}
 	});
-}
+};
 var readyListsItemVEInit = function() {
 	$('form.list-data').find('.field-ve').off('click');
 	$('form.list-data').find('.field-ve').on('click',function(event) {
@@ -263,7 +263,7 @@ var readyListsItemFilesInit = function() {
 			status = 0;
 			$(this).removeClass('active');
 			$('.field-file-action').addClass('pps_hide');
-		}
+		};
 		$(this).data('status',status);
 	});
 	$('form.list-data').find('.files-upload').off('click');
@@ -276,7 +276,7 @@ var readyListsItemFilesInit = function() {
 				el.removeClass('active');
 			} else {
 				el.addClass('active');
-			}
+			};
 			return;	
 		};
 	});
@@ -288,7 +288,7 @@ var readyListsItemFilesInit = function() {
 		el.each(function(i,e) {
 			ids += $(e).data('id')+','
 		});
-		ids = ids.substr(0,ids.length-1)
+		ids = ids.substr(0,ids.length-1);
 		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="pps pps_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
 			'title':'Сообщение',
 			'modal': true,
@@ -417,11 +417,11 @@ var readyListsItemFilesInit = function() {
 	});
 	if ($('form.list-data').find('.controls-tabs').find('a').eq(1)) {
 		$('form.list-data').find('.controls-tabs').find('a').eq(1).trigger('click');
-	}
+	};
 	$('form.list-data').find('.files').sortable({
       placeholder: "sortable-active",
       update: function( event, ui ) {
-    	  let items = ui.item.parent()
+    	  let items = ui.item.parent();
     	  var str = '';
     	  items.children().each(function(index) {
     		  //console.log($(this).data('id'));
@@ -437,7 +437,7 @@ var readyListsItemFilesInit = function() {
       }
     });
 	$('form.list-data').find('.files').disableSelection();
-}
+};
 var readyListsItemMinitableInit = function() {
 	$('form.list-data').find('a.minitable-remove').off('click');
 	$('form.list-data').find('a.minitable-remove').on('click',function(event) {
@@ -454,7 +454,7 @@ var readyListsItemMinitableInit = function() {
 		$(this).closest('.minitable').append(el);
 		readyListsItemMinitableInit();
 	});
-}
+};
 $(document).ready(readyListsItemInit);
 $(document).ready(readyListsItemVEInit);
 $(document).ready(readyListsItemFilesInit);
@@ -509,15 +509,15 @@ function urlRusLat(str) {
             if (ch == cyr2latChars[j][0]) {
                 newCh = cyr2latChars[j][1];
             }
-        }
+        };
         newStr += newCh;
-    }
+    };
     return newStr.replace(/[_]{2,}/gim, '_').replace(/\n/gim, '');
 };
 
 var getSelectRemote = function(obj) {
-	let id = obj.id
-	let url = obj.url
+	let id = obj.id;
+	let url = obj.url;
 	$(id).select2({
 		language: "ru",
 		ajax: {

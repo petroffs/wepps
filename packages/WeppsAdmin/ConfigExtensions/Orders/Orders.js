@@ -7,7 +7,7 @@ var readyOrdersInit = function() {
 			data:str,
 			url:'/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
 			obj:obj
-		}
+		};
 		layoutWepps.request(settings);
 		$('.orders').children('.item').children('.order-wrapper').html('');
 		obj.removeClass('pps_hide');
@@ -17,5 +17,5 @@ var readyOrdersInit = function() {
 	if ($('.orders').children('.item').length==1) {
 		$('.orders').children('.item').children('.item-field').eq(0).trigger('click');	
 	}
-}
+};
 $(document).ready(readyOrdersInit);

@@ -52,7 +52,7 @@ var formsInit = function() {
 		language: "ru",
 		delay: 500
 	});
-}
+};
 $(document).ready(formsInit);
 
 class FormWepps {
@@ -132,7 +132,7 @@ class FormWepps {
 				inputVal--;
 			} else {
 				inputVal++;
-			}
+			};
 			fn(input,inputVal);
 		});
 		$('.pps_minmax').find('input').off('keyup');
@@ -142,7 +142,7 @@ class FormWepps {
 			var inputVal = parseInt(input.val())??1;
 			if (!Number.isInteger(inputVal)) {
 				inputVal = parseInt(input.attr('min'));
-			}
+			};
 			fn(input,inputVal);
 		});
 	};

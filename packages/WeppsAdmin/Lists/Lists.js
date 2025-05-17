@@ -3,14 +3,15 @@ var readyListsInit = function() {
 	if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 			.test(navigator.userAgent)) {
 		isMobile = true;
-	}
+	};
 	if (isMobile == false) {
 		var mx = 0;
 		$(".draggable").on({
 			mousemove : function(e) {
 				var mx2 = e.pageX - this.offsetLeft;
-				if (mx)
+				if (mx) {
 					this.scrollLeft = this.sx + mx - mx2;
+				}
 			},
 			mousedown : function(e) {
 				this.sx = this.scrollLeft;
@@ -20,12 +21,13 @@ var readyListsInit = function() {
 		$(document).on("mouseup", function() {
 			mx = 0;
 		});
-	}
+	};
 
 	var cntrlIsPressed = false;
 	$(document).keydown(function(event){
-	    if(event.which=="17")
+	    if(event.which=="17") {
 	        cntrlIsPressed = true;
+		}
 	});
 	$(document).keyup(function(){
 	    cntrlIsPressed = false;
@@ -90,7 +92,7 @@ var readyListsInit = function() {
 		        		 "</div>")
 		        .appendTo( ul );
 		 };
-	}
+	};
 	$('a#export').on('click',function(event) {
 		event.preventDefault();
 		location.href='/packages/WeppsAdmin/Lists/Request.php?action=export&list='+$(this).data('list');

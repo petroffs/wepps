@@ -12,7 +12,7 @@ use WeppsAdmin\Admin\AdminWepps;
 class ConfigExtensionsWepps
 {
 	private $extensions;
-	function __construct(TemplateHeadersWepps &$headers)
+	public function __construct(TemplateHeadersWepps &$headers)
 	{
 		$smarty = SmartyWepps::getSmarty();
 		$headers->js("/packages/WeppsAdmin/ConfigExtensions/ConfigExtensions.{$headers::$rand}.js");
@@ -65,7 +65,6 @@ class ConfigExtensionsWepps
 		$smarty->assign('exts', $this->extensions);
 		$smarty->assign('extsNavTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/ConfigExtensionsNav.tpl'));
 		$smarty->assign('content', $content);
-		$smarty->assign('headers', $headers->get());
 		$tpl = $smarty->fetch(__DIR__ . '/' . $tpl2);
 		$smarty->assign('extension', $tpl);
 	}

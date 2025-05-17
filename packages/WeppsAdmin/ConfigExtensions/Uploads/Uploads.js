@@ -10,7 +10,7 @@ var readyUploadInit = function() {
 		let settings = {
 			data:str,
 			url:'/packages/WeppsAdmin/Lists/Request.php',
-		}
+		};
 		layoutWepps.request(settings);
 		$(this).parent().remove();
 	});

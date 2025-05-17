@@ -4,7 +4,7 @@ var readyConfigExtInit = function() {
 		var href = $(this).data('url');
 		location.href = href; 
 	});
-}
+};
 $(document).ready(readyConfigExtInit);
 
 

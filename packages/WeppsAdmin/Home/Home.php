@@ -28,7 +28,6 @@ class HomeWepps {
 			];
 		}
 		$smarty->assign('content', $content);
-		$smarty->assign('headers', $headers->get());
 		$tpl = $smarty->fetch(__DIR__ . '/' . $tpl);
 		$smarty->assign('extension', $tpl);
 	}

@@ -12,7 +12,7 @@ class LayoutWepps {
 		if (settings != undefined) {
 			this.settings = settings 
 		}
-	}
+	};
 	init() {
 		$('body').removeClass('pps_win_parent');
 		$('html').removeClass('pps_overflow');
@@ -20,14 +20,14 @@ class LayoutWepps {
 		$('.pps_win_bg').remove();
 		$('.pps_loader').remove();	
 		return 1;
-	}
+	};
 	remove() {
 		let self = this;	
 		$('.pps_win_element').fadeOut(300, function() {
 			self.init();		
 		});
 		return 2;
-	}
+	};
 	win(settings={}) {
 		let self = this;
 		this.init();
@@ -56,7 +56,7 @@ class LayoutWepps {
 			default:
 				this.window.addClass('pps_win_medium');
 				break;
-		}
+		};
 		this.back = $('<div></div>');
 		this.back.addClass('pps_win_bg');
 		this.back.append(this.window);
@@ -86,10 +86,10 @@ class LayoutWepps {
 		$(document).mouseup(function(e) {
 		    if ($('.pps_win_element').has(e.target).length === 0 && $(e.target).hasClass('pps_win_element')==false && $(e.target).hasClass('pps_loader')==false) {
 		      	self.remove();
-		    }
+		    };
 		});
 		return 1;
-	}
+	};
 	request(settings={}) {
 		let self = this;
 		$("#pps_ajax").remove();
@@ -97,13 +97,13 @@ class LayoutWepps {
 			type : "POST",
 			url : settings.url,
 			data : settings.data,
-			beforeSend: function(){
+			beforeSend: function() {
 				$('.pps_loader').remove();
 		    	let loader = $('<div class="pps_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
 		        $('body').prepend(loader);
 		    }
 		}).done(function(responseText) {
-			$('.pps_loader').fadeOut()
+			$('.pps_loader').fadeOut();
 			setTimeout(function() {
 				$('.pps_loader').remove();
 			},500);
@@ -117,21 +117,21 @@ class LayoutWepps {
 				$(document.body).prepend(t);
 				t.css('display', 'none');
 				$("#pps_ajax").remove();
-			}
+			};
 			self.call();
 		});
 		return 1;
-	}
+	};
 	call () {
 		
-	}
-}
+	};
+};
 
 class UtilsWepps {
 	money(val) {
 		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
-	}
-}
+	};
+};
 
 var layoutWepps = new LayoutWepps();
 var utilsWepps = new UtilsWepps();

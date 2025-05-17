@@ -56,10 +56,13 @@ class TemplateWepps extends ExtensionWepps {
 		 * Передача данных в шаблон
 		 */
 		$this->headers->js("/ext/Template/{$tpl}.{$this->rand}.js");
-		if (ConnectWepps::$projectDev['debug']==1) {
-			$smarty->assign('headers',$this->headers->get());
-		} else {
-			$smarty->assign('headers',$this->headers->min());
+		switch (ConnectWepps::$projectDev['debug']) {
+			case 1:
+				$smarty->assign('headers', $this->headers->get());
+				break;
+			default:
+				$smarty->assign('headers', $this->headers->minify());
+				break;
 		}
 
 		$smarty->assign('content',$this->navigator->content);
