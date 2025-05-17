@@ -12,5 +12,5 @@ var readyGalleryInit = function() {
 			cursor: ''
 		}
 	});
-}
+};
 $(document).ready(readyGalleryInit);

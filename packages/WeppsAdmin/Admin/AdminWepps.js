@@ -8,11 +8,11 @@ var readyAdminWeppsInit = function() {
 		}
 	});
 	$('#sign-out').on('click',function(event) {
-		event.preventDefault()
+		event.preventDefault();
 		let settings = {
 			url: '/packages/WeppsAdmin/Admin/Request.php',
 			data : 'action=sign-out'
-		}
+		};
 		layoutWepps.request(settings);
 	});
 	$('.pps_select').find('select').select2({

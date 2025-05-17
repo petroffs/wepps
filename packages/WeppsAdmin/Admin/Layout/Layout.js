@@ -3,7 +3,7 @@ var readyLayoutInit = function() {
 	$('.pps_admin').find('a').on('click',function(event) {
 		event.stopPropagation();
 	});
-}
+};
 $(document).ready(readyLayoutInit);
 //$(window).on('resize', readyLayoutInit);
 
@@ -75,7 +75,7 @@ class LayoutWepps {
 		} else if (settings.url != undefined && settings.data != undefined) {
 			settings.obj = this.content;
 			this.request(settings);
-		} 
+		};
 		$(document).off('keyup');
 		$(document).keyup(function(e) {
 		    if (e.keyCode == 27) {

@@ -20,5 +20,5 @@ var readyHomeInit = function() {
 		map.addMap('map',{coord:coord,zoom:16});
 		map.addMarker(coord,{title:title,descr:descr});
 	});
-}
+};
 $(document).ready(readyHomeInit);

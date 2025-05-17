@@ -7,7 +7,7 @@ var blocksAccordionPanelInit = function() {
 		} else {
 			parent.addClass('active');
 			parent.children('.text').removeClass('pps_hide');
-		}
+		};
 	});
-}
+};
 $(document).ready(blocksAccordionPanelInit);

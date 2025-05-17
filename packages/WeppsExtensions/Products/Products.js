@@ -7,7 +7,7 @@ var productsInit = function() {
 	filtersWepps.init();
 	cart.addHandler();
 	cart.favoritesHandler();
-}
+};
 
 $(document).ready(productsInit);
 

@@ -4,5 +4,5 @@ var readyServicesInit = function() {
 		console.log($(this).find('.services-text'));
 		layoutWepps.modal({ size:'medium',content: $(this).find('.services-text')});
 	});
-}
+};
 $(document).ready(readyServicesInit);

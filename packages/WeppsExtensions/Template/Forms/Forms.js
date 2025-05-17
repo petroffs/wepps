@@ -1,11 +1,11 @@
 function autoResizeTextarea(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
-}
+};
 var select2Ajax = function(obj) {
-	let id = obj.id
-	let url = obj.url
-	let max = obj.max
+	let id = obj.id;
+	let url = obj.url;
+	let max = obj.max;
 	//console.log($(id));
 	//$(id).select2("destroy").select2();
 	$(id).select2({
@@ -20,13 +20,13 @@ var select2Ajax = function(obj) {
 				var query = {
 					search: params.term,
 					page: params.page || 1
-				}
+				};
 				return query;
-			},
+			}
 		}
 	});
 	//$(id).select2("destroy").select2();
-}
+};
 var formsInit = function() {
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();
@@ -40,7 +40,7 @@ var formsInit = function() {
 				$(this).closest('form').find('input[type="submit"]').eq(0).prop('disabled','disabled');
 			}
 		});
-	}
+	};
 	approveform();
 	$('a.reset').on('click',function(event) {
 		event.preventDefault();
@@ -54,7 +54,7 @@ var formsInit = function() {
 		language: "ru",
 		delay: 500
 	});
-}
+};
 $(document).ready(formsInit);
 
 class FormWepps {
@@ -62,7 +62,7 @@ class FormWepps {
 		if (settings != undefined) {
 			this.settings = settings
 		}
-	}
+	};
 	upload(el,files) {
 		let filesfield = el.attr('name');
 		let myform = el.closest('form').attr('id');
@@ -84,7 +84,7 @@ class FormWepps {
 			t.html(responseText);
 			$(document.body).prepend(t);
 		});
-	}
+	};
 	send(action, myform, url) {
 		$('.pps_error').remove();
 		let link = $(location).attr('pathname');
@@ -92,13 +92,13 @@ class FormWepps {
 		var serialized = $("#" + myform).serialize();
 		if (!layoutWepps) {
 			var layoutWepps = new LayoutWepps();	
-		}
+		};
 		let settings = {
 			url: url,
 			data : str + serialized
-		}
+		};
 		layoutWepps.request(settings);
-	}
+	};
 	popup(action, myform, url) {
 		$('.pps_error').remove();
 		let link = $(location).attr('pathname');
@@ -106,25 +106,25 @@ class FormWepps {
 		var serialized = $("#" + myform).serialize();
 		if (!layoutWepps) {
 			var layoutWepps = new LayoutWepps();	
-		}
+		};
 		let settings = {
 			url: url,
 			data : str + serialized
-		}
+		};
 		layoutWepps.win(settings);
-	}
+	};
 	minmax() {
 		let self = this;
 		let fn = function(input,inputVal) {
 			if (inputVal<parseInt(input.attr('min'))) {
 				inputVal = parseInt(input.attr('min'));
-			}
+			};
 			if (inputVal>parseInt(input.attr('max'))) {
 				inputVal = parseInt(input.attr('max'));
-			}
+			};
 			input.val(inputVal);
 			self.minmaxAfter(input.closest('section').data('id'),inputVal);
-		}
+		};
 		$('.pps_minmax').find('button').off('click');
 		$('.pps_minmax').find('button').on('click',function(event) {
 			event.preventDefault();
@@ -134,7 +134,7 @@ class FormWepps {
 				inputVal--;
 			} else {
 				inputVal++;
-			}
+			};
 			fn(input,inputVal);
 		});
 		$('.pps_minmax').find('input').off('keyup');
@@ -144,12 +144,12 @@ class FormWepps {
 			var inputVal = parseInt(input.val())??1;
 			if (!Number.isInteger(inputVal)) {
 				inputVal = parseInt(input.attr('min'));
-			}
+			};
 			fn(input,inputVal);
 		});
-	}
+	};
 	minmaxAfter(id,inputVal) {
 		console.log(id+' / '+inputVal);
-	}
-}
+	};
+};
 var formWepps = new FormWepps();

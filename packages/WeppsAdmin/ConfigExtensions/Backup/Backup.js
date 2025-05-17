@@ -29,7 +29,7 @@ var readyBackupExtInit = function() {
 					let settings = {
 						data:str,
 						url:'/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php'
-					}
+					};
 					layoutWepps.request(settings);
 					$(this).dialog("close");
 				}

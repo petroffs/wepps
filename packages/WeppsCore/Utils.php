@@ -1,6 +1,8 @@
 <?php
 namespace WeppsCore\Utils;
 
+use MatthiasMullie\Minify\CSS;
+use MatthiasMullie\Minify\JS;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -557,7 +559,6 @@ class TemplateHeadersWepps
 		$arr = $this->get(true);
 		$hash = md5(implode('',$this->cssjs['css']).implode('',$this->cssjs['js']));
 		$filehtml = __DIR__ . '/../../files/tpl/cssjs/'.$hash;
-		$cli = new CliWepps();
 		if (is_file($filehtml)) {
 			$currenttime = time();
 			$liftime = 300;
@@ -569,49 +570,44 @@ class TemplateHeadersWepps
 				return $arr;
 			}
 		}
+		$minifier = new CSS();
 		$output = "<style>";
 		foreach($this->cssjs['css'] as $filename) {
 			$filename = getcwd() . str_replace('/ext/','/packages/WeppsExtensions/', $filename);
 			$filename = str_replace($this::$rand.'.','', $filename);
-			$css = (is_file($filename))?file_get_contents($filename):'';
-			if (empty($css) || !strstr($filename,'/Wepps')) {
+			if (!is_file($filename) || !strstr($filename,'/Wepps')) {
 				continue;
 			}
-			 // Удаляем комментарии
-			$css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
-			// Удаляем пробелы, табы, новые строки и т.д.
-			$css = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    '], '', $css);
-			// Удаляем пробелы вокруг символов
-			$css = preg_replace('/\s*([{}|:;,])\s*/', '$1', $css);
-			// Удаляем последнюю точку с запятой перед закрывающей скобкой
-			$css = preg_replace('/;}/', '}', $css);
-			// Удаляем пробелы между числами и единицами измерения (px -> px)
-			$css = preg_replace('/(\d+)(px|em|rem|%|pt|pc|in|mm|cm|ex)/', '$1$2', $css);
-			$output .= trim($css);
+			$minifier->add($filename);
 		}
+		$output .= $minifier->minify();
 		$output .= "</style>\n";
+		$minifier = new JS();
 		$output .= "<script type=\"text/javascript\">";
 		foreach($this->cssjs['js'] as $filename) {
 			$filename = getcwd() . str_replace('/ext/','/packages/WeppsExtensions/', $filename);
 			$filename = str_replace($this::$rand.'.','', $filename);
-			$js = (is_file($filename))?file_get_contents($filename):'';
-			if (empty($js) || !strstr($filename,'/Wepps')) {
+			if (!is_file($filename) || !strstr($filename,'/Wepps')) {
 				continue;
 			}
-			// Удаляем однострочные комментарии
-			$js = preg_replace('!/\*.*?\*/!s', '', $js);
-    		$js = preg_replace('!//.*?\n!', '', $js);
-			// Удаляем пробелы вокруг операторов
-			$js = preg_replace('/\s*([=+\-*\/%&|^<>(){}\[\];,:])\s*/', '$1', $js);
-			// Удаляем лишние пробелы и переносы строк
-			$js = preg_replace('/\s+/', ' ', $js);
-			// Удаляем пробелы после ключевых слов
-			$js = preg_replace('/(\b(if|else|for|while|switch|function|return|var)\b)\s+/', '$1 ', $js);
-			$output .= trim($js);
+			$minifier->add($filename);
 		}
+
+		$t = $minifier->minify();
+		if (strstr($t,"\n")) {
+			echo $t;
+			exit();
+		}
+
+
+		$output .= $t;
 		$output .= "</script>";
+		
+		/** После тестов открыть */
+		#$cli = new CliWepps();
 		#$cli->put($output,$filehtml);
-		$arr['cssjs'] .= "\n". $output;
+		
+		$arr['cssjs'] .= (string) "\n". $output;
 		return $arr;
 	}
 }

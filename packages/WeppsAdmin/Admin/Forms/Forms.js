@@ -1,49 +1,34 @@
-var resizeTextareaAuto = function(textarea) {
+function autoResizeTextarea(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
 };
-var getSelect2Ajax = function(obj,fn) {
-	$(obj.id).select2({
-		multiple: true,
+var select2Ajax = function(obj) {
+	let id = obj.id;
+	let url = obj.url;
+	let max = obj.max;
+	$(id).select2({
 		language: "ru",
-		maximumSelectionLength: 1,
-		placeholder : obj.placeholder,
+		multiple: true,
+		maximumSelectionLength: max,
 		ajax: {
-			url: obj.url,
+			url: url,
 			delay: 500,
 			dataType: 'json',
 			data: function(params) {
 				var query = {
 					search: params.term,
 					page: params.page || 1
-				}
+				};
 				return query;
-			},
+			}
 		}
-	}).on('select2:select', function(event) {
-		fn(event);
 	});
+	//$(id).select2("destroy").select2();
 };
-var readyFormsInit = function() {
-	/* test */
+var formsInit = function() {
 	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();
 		formWepps.upload($(this),event.target.files);
-	});
-	$('.pps_form_group').find('.pps_flex_14').on('click',function(event) {
-		var parent1 = $(this).parent();
-		var input1 = parent1.find('input');
-		var num2 = parseInt(input1.val());
-		num2 = (!num2) ? 0 : num2;
-		if ($(this).hasClass('pps_form_group_minus')) {
-			num2--;
-		} else {
-			num2++;
-		}
-		if (num2<parseInt(input1.attr('min'))) num2 = parseInt(input1.attr('min'));
-		if (num2>parseInt(input1.attr('max'))) num2 = parseInt(input1.attr('max'));
-		if (num2==0) num2="не важно"
-		input1.val(num2);
 	});
 	var approveform = function() {
 		$('input[name="approve"]').on('change',function() {
@@ -61,10 +46,14 @@ var readyFormsInit = function() {
 		document.getElementById(t.attr('id')).reset();
 	});
 	$('.pps.pps_area').find('textarea').on('input', function () {
-		resizeTextareaAuto(this);
+		autoResizeTextarea(this);
 	}).trigger('input');
-};
-$(document).ready(readyFormsInit);
+	$('.pps_select').find('select').select2({
+		language: "ru",
+		delay: 500
+	});
+}
+$(document).ready(formsInit);
 
 class FormWepps {
 	constructor(settings={}) {
@@ -80,7 +69,7 @@ class FormWepps {
 			data.append(key, value);
 		});
 		$.ajax({
-			url : '/packages/WeppsAdmin/Lists/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
+			url : '/ext/Addons/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
 			type : 'POST',
 			data : data,
 			cache : false,
@@ -95,32 +84,70 @@ class FormWepps {
 		});
 	};
 	send(action, myform, url) {
-		$('.controlserrormess').remove();
+		$('.pps_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
 		if (!layoutWepps) {
 			var layoutWepps = new LayoutWepps();	
-		}
+		};
 		let settings = {
 			url: url,
 			data : str + serialized
-		}
+		};
 		layoutWepps.request(settings);
 	};
 	popup(action, myform, url) {
-		$('.controlserrormess').remove();
+		$('.pps_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
 		if (!layoutWepps) {
 			var layoutWepps = new LayoutWepps();	
-		}
+		};
 		let settings = {
 			url: url,
 			data : str + serialized
-		}
+		};
 		layoutWepps.win(settings);
+	};
+	minmax() {
+		let self = this;
+		let fn = function(input,inputVal) {
+			if (inputVal<parseInt(input.attr('min'))) {
+				inputVal = parseInt(input.attr('min'));
+			};
+			if (inputVal>parseInt(input.attr('max'))) {
+				inputVal = parseInt(input.attr('max'));
+			};
+			input.val(inputVal);
+			self.minmaxAfter(input.closest('section').data('id'),inputVal);
+		};
+		$('.pps_minmax').find('button').off('click');
+		$('.pps_minmax').find('button').on('click',function(event) {
+			event.preventDefault();
+			let input = $(this).siblings('input');
+			var inputVal = parseInt(input.val())??1;
+			if ($(this).hasClass('sub')) {
+				inputVal--;
+			} else {
+				inputVal++;
+			}
+			fn(input,inputVal);
+		});
+		$('.pps_minmax').find('input').off('keyup');
+		$('.pps_minmax').find('input').on('keyup',function(event) {
+			event.preventDefault();
+			let input = $(this);
+			var inputVal = parseInt(input.val())??1;
+			if (!Number.isInteger(inputVal)) {
+				inputVal = parseInt(input.attr('min'));
+			}
+			fn(input,inputVal);
+		});
+	};
+	minmaxAfter(id,inputVal) {
+		console.log(id+' / '+inputVal);
 	};
 };
 var formWepps = new FormWepps();

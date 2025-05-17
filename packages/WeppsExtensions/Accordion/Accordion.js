@@ -10,7 +10,7 @@ var readyAccordionInit = function() {
 				parent.addClass('active');
 				parent.find('.text').slideDown();
 			},100);
-		}
+		};
 	});
-}
+};
 $(document).ready(readyAccordionInit);

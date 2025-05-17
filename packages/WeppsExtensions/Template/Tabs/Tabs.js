@@ -8,6 +8,5 @@ var readyTabsInit = function() {
 		$(item).addClass('active');
 	});
 	$("ul.tabs").find("li").eq(0).trigger('click');
-}
-
+};
 $(document).ready(readyTabsInit);

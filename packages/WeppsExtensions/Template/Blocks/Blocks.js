@@ -14,5 +14,5 @@ var readyBlocksInit = function() {
 		}
 	});
 	$( ".pps_sortable" ).disableSelection();
-}
+};
 $(document).ready(readyBlocksInit);

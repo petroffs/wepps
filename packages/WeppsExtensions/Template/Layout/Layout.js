@@ -3,7 +3,7 @@ let layoutInit = function () {
 	$('.w_admin').find('a').on('click', function (event) {
 		event.stopPropagation();
 	});
-}
+};
 $(document).ready(layoutInit);
 //$(window).on('resize', readyLayoutInit);
 
@@ -12,29 +12,29 @@ class LayoutWepps {
 		if (settings != undefined) {
 			this.settings = settings
 		}
-	}
+	};
 	init() {
 		$('body').removeClass('w_modal_parent');
 		$('html').removeClass('w_overflow');
 		$('.w_modal_wrapper').remove();
 		$('.w_loader').remove();
 		return 1;
-	}
+	};
 	remove() {
 		let self = this;
-		self.removeBefore()
+		self.removeBefore();
 		$('.w_modal').fadeOut(300, function () {
 			self.init();
 			self.removeAfter()
 		});
 		return 2;
-	}
+	};
 	removeBefore() {
 
-	}
+	};
 	removeAfter() {
 
-	}
+	};
 	modal(settings = {}) {
 		let self = this;
 		this.init();
@@ -57,7 +57,7 @@ class LayoutWepps {
 			default:
 				settings.size = 'medium';
 				break;
-		}
+		};
 		this.window.addClass('w_modal_' + settings.size);
 		this.back = $('<div></div>');
 		this.back.addClass('w_modal_wrapper');
@@ -79,7 +79,7 @@ class LayoutWepps {
 		} else if (settings.url != undefined && settings.data != undefined) {
 			settings.obj = this.content;
 			this.request(settings);
-		}
+		};
 		$(document).off('keyup');
 		$(document).keyup(function (e) {
 			if (e.keyCode == 27) {
@@ -93,7 +93,7 @@ class LayoutWepps {
 			}
 		});
 		return 1;
-	}
+	};
 	request(settings = {}) {
 		let self = this;
 		$("#w_ajax").remove();
@@ -105,10 +105,9 @@ class LayoutWepps {
 				$('.w_loader').remove();
 				let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
 				$('body').prepend(loader)
-
 			}
 		}).done(function (responseText) {
-			$('.w_loader').fadeOut()
+			$('.w_loader').fadeOut();
 			setTimeout(function () {
 				$('.w_loader').remove();
 			}, 500);
@@ -122,14 +121,14 @@ class LayoutWepps {
 				$(document.body).prepend(t);
 				t.css('display', 'none');
 				$("#w_ajax").remove();
-			}
+			};
 			self.requestAfter();
 		});
 		return 1;
-	}
+	};
 	requestAfter() {
 
-	}
+	};
 	handler(settings) {
 		let obj = settings.obj;
 		let event = settings.event;
@@ -145,14 +144,14 @@ class LayoutWepps {
 				fn(self)
 			}, delay);
 		});
-	}
-}
+	};
+};
 
 class UtilsWepps {
 	digit(val) {
 		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
-	}
-}
+	};
+};
 
 let layoutWepps = new LayoutWepps();
 let utilsWepps = new UtilsWepps();

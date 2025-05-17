@@ -58,10 +58,10 @@ var readyListsInit = function() {
 			$(this).after(elem);
 			let str = 'action=filter&list='+$(this).data('list')+'&field='+$(this).data('field')+'&orderby='+$(this).data('orderby');
 			let settings = {
-						data: str,
-						url: '/packages/WeppsAdmin/Lists/Request.php',
-						obj: $('#'+filter2style)
-					}
+				data: str,
+				url: '/packages/WeppsAdmin/Lists/Request.php',
+				obj: $('#'+filter2style)
+			};
 			layoutWepps.request(settings);
 		} else {
 			$(this).removeClass('active');
@@ -94,7 +94,6 @@ var readyListsInit = function() {
 	$('a#export').on('click',function(event) {
 		event.preventDefault();
 		location.href='/packages/WeppsAdmin/Lists/Request.php?action=export&list='+$(this).data('list');
-	});
-	
-}
+	});	
+};
 $(document).ready(readyListsInit);

@@ -3,6 +3,6 @@ var ready_Example11Init = function() {
 		e.preventDefault();
 		let id = $(this).data('id');
 		layoutWepps.win({ size:'medium',data:'action=test&id='+id,url:'/ext/_Example11/Request.php' });
-	})
-}
+	});
+};
 $(document).ready(ready_Example11Init);

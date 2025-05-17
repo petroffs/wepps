@@ -3,7 +3,7 @@ var yandexMapsConstructor = function() {
 		let myCoord = coord.split(',');
 		let myLatlng = [parseFloat(myCoord[0]),parseFloat(myCoord[1])];
 		return myLatlng;
-	}
+	};
 	this.addMap = function(mapId, settings) {
 		let widthWin = $(window).width();
 		let zoom = 16;
@@ -13,7 +13,7 @@ var yandexMapsConstructor = function() {
 			zoom = 14;
 		} else if (widthWin<=768) {
 			zoom = 15;
-		}
+		};
 		zoom = (settings.zoom)?settings.zoom:zoom;
 		
 		this.map = new ymaps.Map(document.getElementById(mapId), {
@@ -25,7 +25,7 @@ var yandexMapsConstructor = function() {
             suppressMapOpenBlock: true
         });
 		this.map.behaviors.disable('scrollZoom');
-	}
+	};
 	this.markers = [];	
 	this.addMarker = function(coord,customobj) {
 		let myLatlng = this.getLatlng(coord);
@@ -43,7 +43,7 @@ var yandexMapsConstructor = function() {
         });
 		this.map.geoObjects.add(marker);
 		this.markers.push(marker);
-	}
+	};
 	this.addClusterer = function() {
 		let clusterer = new ymaps.Clusterer({
 	        preset: 'islands#invertedBlueClusterIcons',
@@ -58,8 +58,8 @@ var yandexMapsConstructor = function() {
 	    });
 		clusterer.add(this.markers);
 	    this.map.geoObjects.add(clusterer);
-	}
-}
+	};
+};
 /**
  * 	Пример вызова
  *  $headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=7f8feb44-10b0-419b-be74-0bb485407e59");

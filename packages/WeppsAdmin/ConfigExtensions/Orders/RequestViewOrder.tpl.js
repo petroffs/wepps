@@ -30,7 +30,7 @@ var readyViewOrderInit = function() {
 			data: 'action=setProducts&id='+el.data('order')+'&index='+el.data('index')+'&products='+el.data('products')+'&price='+el.find('.price').find('input').val()+'&quantity='+el.find('select.quantity').val(),
 			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
 			obj: obj
-		}
+		};
 		layoutWepps.request(settings);
 	});
 	$('div.products').find('a.list-item-remove').off('click');
@@ -119,9 +119,9 @@ var readyViewOrderInit = function() {
 		layoutWepps.request(settings);
 		return;
 	});
-}
+};
 
-readyViewOrderInit()
+readyViewOrderInit();
 readyAdminWeppsInit();
 if ($( "#add-products" ).length) {
 	getSelect2Ajax({
@@ -132,4 +132,4 @@ if ($( "#add-products" ).length) {
 		let params = event.params.data;
 		$('#add-products-price').val(params.price);
 	});
-}
+};

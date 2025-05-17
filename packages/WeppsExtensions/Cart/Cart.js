@@ -1,7 +1,7 @@
 class CartWepps {
 	constructor(settings = {}) {
 		this.settings = settings;
-	}
+	};
 	init() {
 		this.addHandler();
 		this.checkHandler();
@@ -9,21 +9,21 @@ class CartWepps {
 		this.removeHandler();
 		this.quantityHandler();
 		this.favoritesHandler();
-		this.checkAll()
+		this.checkAll();
 		this.btnCheckoutHandler()
-	}
+	};
 	initCheckout() {
 		this.citiesHandler();
 		this.deliveryHandler();
 		this.paymentsHandler();
 		this.btnConfirmtHandler()
-	}
+	};
 	add() {
 
-	}
+	};
 	edit() {
 
-	}
+	};
 	favorites(self) {
 		self.toggleClass('active');
 		let id = self.closest('section').data('id');
@@ -31,22 +31,22 @@ class CartWepps {
 			data: 'action=favorites&id=' + id,
 			url: '/ext/Cart/Request.php'
 		});
-	}
+	};
 	remove() {
 
-	}
+	};
 	check(self) {
 		var ids = "";
 		$('input[name="cart-check"]:checked').each(function(i, o) {
 			ids += $(o).val() + ",";
-		})
+		});
 		layoutWepps.request({
 			data: 'action=check&id=' + ids + '&context=cart',
 			url: '/ext/Cart/Request.php',
 			obj: $('#cart-default')
 		});
 		return ids;
-	}
+	};
 	checkAll() {
 		let count = $('input[name="cart-check"]:checked').length;
 		let countAll = $('input[name="cart-check"]').length;
@@ -56,14 +56,14 @@ class CartWepps {
 		} else {
 			el.prop('checked', false);
 		}
-	}
+	};
 	metrics() {
 		$('#cartTopQty').removeClass('pps_hide');
 		$('#cartTopQty').text(data.qtyTop);
 		$('#cartTopPriceAmount').parent().removeClass('pps_hide');
 		$('#cartTopPriceAmount').closest('.itm').addClass('active');
 		$('#cartTopPriceAmount').text(data.priceAmountTop);
-	}
+	};
 	addHandler() {
 		$('.cart-add').on('click', function(e) {
 			e.preventDefault();
@@ -74,7 +74,7 @@ class CartWepps {
 				url: '/ext/Cart/Request.php'
 			});
 		});
-	}
+	};
 	checkHandler() {
 		layoutWepps.handler({
 			obj: $('input[name="cart-check"]'),
@@ -83,7 +83,7 @@ class CartWepps {
 				this.check(self);
 			}
 		});
-	}
+	};
 	checkAllHandler() {
 		layoutWepps.handler({
 			obj: $('#cart-check-all'),
@@ -93,11 +93,11 @@ class CartWepps {
 					$('input[name="cart-check"]').prop('checked', true);
 				} else {
 					$('input[name="cart-check"]').prop('checked', false);
-				}
+				};
 				this.check(self);
 			}
 		});
-	}
+	};
 	quantityHandler() {
 		let editTimeout = null;
 		formWepps.minmaxAfter = function(id, inputVal) {
@@ -109,9 +109,9 @@ class CartWepps {
 					obj: $('#cart-default')
 				});
 			}, 300);
-		}
+		};
 		formWepps.minmax();
-	}
+	};
 	removeHandler() {
 		$('.cart-remove').off('click');
 		$('.cart-remove').on('click',function(e) {
@@ -123,10 +123,10 @@ class CartWepps {
 					url: '/ext/Cart/Request.php',
 					obj: $('#cart-default')
 				});
-			}
+			};
 			$(this).addClass('active').find('span').text('Потдвердить удаление');
 		});
-	}
+	};
 	favoritesHandler() {
 		layoutWepps.handler({
 			obj: $('.cart-favorite'),
@@ -135,7 +135,7 @@ class CartWepps {
 				this.favorites(self);
 			}
 		});
-	}
+	};
 	btnCheckoutHandler() {
 		$('#cart-btn-checkout').off('click');
 		$('#cart-btn-checkout').on('click',function(e) {
@@ -150,7 +150,7 @@ class CartWepps {
 				window.location.reload();
 			}
 		});
-	}
+	};
 	citiesHandler() {
 		let suggestionsRegions = new SuggestionsWepps({
 			input: 'cart-city',
@@ -161,7 +161,7 @@ class CartWepps {
 		suggestionsRegions.afterSelectItem = function (self, suggestions, selectedIndex) {
 			const selectedItem = suggestions.eq(selectedIndex);
 			if (selectedItem.length && selectedIndex > -1) {
-				$(self).val(selectedItem.text())
+				$(self).val(selectedItem.text());
 				layoutWepps.request({
 					data: 'action=delivery&citiesId=' + selectedItem.data('id') + '&context=cart',
 					url: '/ext/Cart/Request.php',
@@ -169,12 +169,12 @@ class CartWepps {
 				});
 			}
 		}
-	}
+	};
 	deliveryHandler() {
 		let obj = $('input[type="radio"][name="delivery"]');
 		if (!obj.length) {
 			return;
-		}
+		};
 		$('#cart-delivery-checkout').removeClass('w_hide');
 		obj.off('change');
 		obj.change(function (e) { 
@@ -185,12 +185,12 @@ class CartWepps {
 				obj: $('#cart-default')
 			});
 		});
-	}
+	};
 	paymentsHandler() {
 		let obj = $('input[type="radio"][name="payments"]');
 		if (!obj.length) {
 			return;
-		}
+		};
 		$('#cart-payments-checkout').removeClass('w_hide');
 		obj.off('change');
 		obj.change(function (e) { 
@@ -201,7 +201,7 @@ class CartWepps {
 				obj: $('#cart-default')
 			});
 		});
-	}
+	};
 	btnConfirmtHandler() {
 		$('#cart-btn-confirm').off('click');
 		$('#cart-btn-confirm').on('click',function(e) {
@@ -214,5 +214,5 @@ class CartWepps {
 			}
 		});
 	}
-}
+};
 let cart = new CartWepps();

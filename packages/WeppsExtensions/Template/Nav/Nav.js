@@ -1,25 +1,25 @@
 var navInit = function() {
 	$('ul.header-nav').children('li').on('mouseenter', function(event) {
-		event.stopPropagation()
+		event.stopPropagation();
 		event.preventDefault();
 		$(this).addClass('hover');
 		$(this).find('ul').removeClass('w_hide');
 	});
 	$('ul.header-nav').children('li').on('mouseleave', function(event) {
-		event.stopPropagation()
+		event.stopPropagation();
 		event.preventDefault();
 		$(this).removeClass('hover');
 		$(this).find('ul').addClass('w_hide');
 	});
 	$('a#header-nav,a#footer-nav').on('click', function(e) {
-		e.preventDefault()
+		e.preventDefault();
 		if ($(window).width()>810) {
 			var el = $('nav.header-nav-wrapper');
 			el.toggleClass('w_hide_off');
 			return;
-		}
-		if ($(".w_nav").length!=0) {
-			$(".w_nav").remove();
+		};
+		if ($('.w_nav').length!=0) {
+			$('.w_nav').remove();
 		} else {
 			$('body').addClass('w_modal_parent');
 			let popup = $('<div>');
@@ -44,15 +44,15 @@ var navInit = function() {
 				event.preventDefault();
 				$(this).toggleClass('open');
 			});
-		}
+		};
 	});
-	const el = document.querySelector("header")
+	const el = document.querySelector("header");
 	const observer = new IntersectionObserver( 
 	  ([e]) => e.target.classList.toggle("is-pinned", e.intersectionRatio < 1),
 	  { threshold: [1] }
 	);
 	observer.observe(el);
-}
+};
 
 $(document).ready(function() {
 	navInit();
