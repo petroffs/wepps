@@ -57,12 +57,41 @@ class DeliveryCdekWepps extends DeliveryWepps
 	{
 		$headers = $this->cartUtils->getHeaders();
 		$headers->css("/ext/Cart/Delivery/DeliveryCdek.{$headers::$rand}.css");
+		$jdata = json_decode($this->settings['JSettings'],true);
+		$tpl = 'OperationsNotice.tpl';
+		$data = [];
+		$allowBtn = false;
+		switch (@$jdata['tariff']) {
+			case 136:
+				$tpl = 'OperationsPickpoints.tpl';
+				$data = [];
+				#$from = ConnectWepps::$projectServices['cdek']['office']['sender'];
+				$to = $this->cartUtils->getCartSummary()['delivery']['citiesId']??0;
+				$sql = "select * from PointsCdek where CitiesId = ?";
+				$res = ConnectWepps::$instance->fetch($sql,[$to]);
+				if (empty($res)) {
+					break;
+				}
+				foreach ($res as $value) {
+					UtilsWepps::debug($value,1);
+				}
+				break;
+			case 137:
+				$tpl = 'OperationsAddress.tpl';
+				$data = [];
+				$allowBtn = true;
+				break;
+			default:
+
+				break;
+		}
+
 		return [
 			'title' => $this->settings['Name'],
 			'ext' => $this->settings['DeliveryExt'],
-			'tpl' => 'OperationsPickpoints.tpl',
-			'data' => [],
-			'allowOrderBtn' => false
+			'tpl' => $tpl,
+			'data' => $data,
+			'allowOrderBtn' => $allowBtn
 		];
 	}
 
