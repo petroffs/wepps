@@ -77,7 +77,6 @@ class DeliveryUtilsWepps
             $output[$key]['Addons']['tariff'] = $class->getTariff();
             $output[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
             if ($value['Id'] == @$cartSummary['delivery']['deliveryId']) {
-                #UtilsWepps::debug($cartUtils->getHeaders(),1);
                 $this->operations = $class->getOperations();
             }
         }
