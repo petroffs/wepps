@@ -25,9 +25,10 @@ class HomeWepps extends ExtensionWepps {
 				if (!empty($res[0]['Id'])) {
 					$smarty->assign('carousel',$res);
 					$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Carousel/Carousel.tpl');
-					$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick.css");
-					$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick-theme.css");
-					$this->headers->js("/packages/vendor/kenwheeler/slick/slick/slick.min.js");
+					$this->headers->css("/packages/vendor_local/slick/slick/slick.css");
+					$this->headers->css("/packages/vendor_local/slick/slick/slick-theme.css");
+					$this->headers->js("/packages/vendor_local/slick/slick/slick.min.js");
+					$this->headers->js("/ext/Template/Carousel/Carousel.{$this->rand}.js	");
 					$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css");
 				}
 

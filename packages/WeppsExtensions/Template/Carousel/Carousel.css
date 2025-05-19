@@ -2,6 +2,7 @@ div.carousel-wrapper {
 	width: 100%;
 	height: auto;
 	margin: 0 auto;
+	opacity: 0;
 }
 div.carousel-wrapper button:focus,
 div.carousel-wrapper input:focus {
