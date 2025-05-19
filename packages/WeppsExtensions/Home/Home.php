@@ -28,7 +28,7 @@ class HomeWepps extends ExtensionWepps {
 					$this->headers->css("/packages/vendor_local/slick/slick/slick.css");
 					$this->headers->css("/packages/vendor_local/slick/slick/slick-theme.css");
 					$this->headers->js("/packages/vendor_local/slick/slick/slick.min.js");
-					$this->headers->js("/ext/Template/Carousel/Carousel.{$this->rand}.js	");
+					$this->headers->js("/ext/Template/Carousel/Carousel.{$this->rand}.js");
 					$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css");
 				}
 
