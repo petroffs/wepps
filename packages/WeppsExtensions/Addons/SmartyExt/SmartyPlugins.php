@@ -59,9 +59,9 @@ class SmartyPluginsWepps
                 return $str;
             }
             switch ($tablename) {
-                case "'navigator'":
+                case "navigator":
                     $str = (string) '<div class="navigator pps_admin_navigator"><a href="/_wepps/navigator.'.$id.'" target="_blank"></a></div>';
-                case "'panels'":
+                case "panels":
                     $str = (string) '<div class="pps_admin_list pps_admin_panels\">
                             <a href="/_wepps/lists/s_Panels/'.$panel.'/" target="_blank" title="Редактировать панель"></a>
                             <a href="/_wepps/lists/s_Panels/add/?NavigatorId='.$id.'" target="_blank" title="Добавить панель"></a>
