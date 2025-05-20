@@ -6,7 +6,7 @@ $(document).ready(function(){
 		dots:true,
 		fade:true,
 		infinite: true
-	}
+	};
 	var carousel = ($(window).width()>480) ? '.carousel' : '.carousel-mobile';
 	$(carousel).slick(slickOptions).trigger('init');
 	$(window).resize(function() {

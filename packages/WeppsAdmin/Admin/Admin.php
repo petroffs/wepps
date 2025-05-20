@@ -89,12 +89,12 @@ class AdminWepps {
 		$className = "WeppsAdmin\\{$navItem['Extension']}\\{$navItem['Extension']}Wepps";
 		if(class_exists($className)) {
 			$obj = new $className($this->headers,$this->nav);
-			switch (ConnectWepps::$projectDev['debug']) {
-			case 1:
-				$smarty->assign('headers', $this->headers->get());
+			switch (ConnectWepps::$projectServices['minify']['active']) {
+			case true:
+				$smarty->assign('headers', $this->headers->minify());
 				break;
 			default:
-				$smarty->assign('headers', $this->headers->minify());
+				$smarty->assign('headers', $this->headers->get());
 				break;
 			}
 			return $obj;
