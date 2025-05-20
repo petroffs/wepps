@@ -55,13 +55,11 @@ class DeliveryCdekWepps extends DeliveryWepps
 	}
 	public function getOperations(): array
 	{
-		$apikey = ConnectWepps::$projectServices['yandexmaps']['apikey'];
 		$headers = $this->cartUtils->getHeaders();
 		$headers->css("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.css");
 		$headers->js("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.js");
 		$headers->js("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.js");
 		$headers->css("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.css");
-		$headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
 
 		$jdata = json_decode($this->settings['JSettings'],true);
 		$tpl = 'OperationsNotice.tpl';

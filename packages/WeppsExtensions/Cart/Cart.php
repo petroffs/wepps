@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\Cart;
 
+use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\ExtensionWepps;
@@ -36,6 +37,8 @@ class CartWepps extends ExtensionWepps {
 				break;
 		}
 		$smarty->assign('normalView',0);
+		$apikey = ConnectWepps::$projectServices['yandexmaps']['apikey'];
+		$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
 		$this->headers->css("/ext/Cart/Cart.{$this->headers::$rand}.css");
 		$this->headers->js("/ext/Cart/Cart.{$this->headers::$rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));

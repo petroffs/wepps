@@ -88,15 +88,16 @@ class RequestCartWepps extends RequestWepps {
 					self::displayCheckoutCart($cartUtils);
 				}
 			break;
+			case 'address':
+				$deliveryUtils = new DeliveryUtilsWepps();
+				$cartUtils->setCartSummary();
+				$deliveryUtils->setAddress($this->get,$cartUtils);
+				break;
 			case "payments":
 				if (empty($this->get["deliveryId"])) {
 					http_response_code(404);
 					exit();
 				}
-				
-				$headers = new TemplateHeadersWepps();
-				$cartUtils->setHeaders($headers);
-
 				$paymentsUtils = new PaymentsUtilsWepps();
 				$payments = $paymentsUtils->getByDeliveryId($this->get['deliveryId'],$cartUtils);
 				if (!empty($payments)) {

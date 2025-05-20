@@ -89,14 +89,7 @@ class AdminWepps {
 		$className = "WeppsAdmin\\{$navItem['Extension']}\\{$navItem['Extension']}Wepps";
 		if(class_exists($className)) {
 			$obj = new $className($this->headers,$this->nav);
-			switch (ConnectWepps::$projectServices['minify']['active']) {
-			case true:
-				$smarty->assign('headers', $this->headers->minify());
-				break;
-			default:
-				$smarty->assign('headers', $this->headers->get());
-				break;
-			}
+			$smarty->assign('headers', $this->headers->get());
 			return $obj;
 		} else {
 			echo "Класс $className не найден.";

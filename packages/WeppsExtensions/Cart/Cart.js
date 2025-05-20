@@ -208,11 +208,11 @@ class CartWepps {
 			e.preventDefault();
 			window.open('/cart/order.html','_self');
 		});
-		document.addEventListener('visibilitychange', () => {
+		/* document.addEventListener('visibilitychange', () => {
 			if (!document.hidden) {
 				window.location.reload();
 			}
-		});
+		}); */
 	}
 };
 let cart = new CartWepps();

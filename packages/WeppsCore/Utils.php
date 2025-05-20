@@ -534,13 +534,12 @@ class TemplateHeadersWepps
 	 * Установка $this->output - содержит html-код
 	 * @return string[]
 	 */
-	public function get(bool $libOnly = false): array
+	private function prepare(bool $libOnly = false): array
 	{
 		$this->cssjs['css'] = array_unique($this->cssjs['css']);
 		$this->cssjs['js'] = array_unique($this->cssjs['js']);
 		$this->output['cssjs'] = "";
 		foreach ($this->cssjs['css'] as $filename) {
-			#echo $filename."\n";
 			if ($libOnly == true && strstr($filename, $this::$rand)) {
 				continue;
 			}
@@ -555,9 +554,12 @@ class TemplateHeadersWepps
 		$this->output['cssjs'] = trim($this->output['cssjs'], "\n");
 		return $this->output;
 	}
-	public function minify(): array
+	public function get(): array
 	{
-		$arr = $this->get(true);
+		if (ConnectWepps::$projectServices['minify']['active'] === false) {
+			return $this->prepare();
+		}
+		$arr = $this->prepare(true);
 		$hash = md5(implode('', $this->cssjs['css']) . implode('', $this->cssjs['js']));
 		$filehtml = __DIR__ . '/../../files/tpl/minify/' . $hash;
 		if (is_file($filehtml)) {

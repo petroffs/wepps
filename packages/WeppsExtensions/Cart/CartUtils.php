@@ -301,6 +301,9 @@ class CartUtilsWepps
     }
 	public function getHeaders() : TemplateHeadersWepps
     {
+		if (empty($this->headers)) {
+			$this->headers = new TemplateHeadersWepps();
+		}
         return $this->headers;
     }
 

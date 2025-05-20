@@ -86,6 +86,16 @@ class DeliveryUtilsWepps
     {
         return $this->operations;
     }
+    public function setAddress(array $data,CartUtilsWepps $cartUtils) {
+        /**
+         * ? Получить контекст корзины, выбранную доставку, данные post
+         * Записать в cart
+         * 
+         * Далее эти данные будут использоваться при рендере - отображение ранее выбранных пвз, или др. контактных данных
+         */
+        UtilsWepps::debug($data);
+        UtilsWepps::debug($cartUtils);
+    }
     private function _match($digit, $field)
     {
         $ex = explode(',', $field);
