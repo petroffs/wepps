@@ -55,8 +55,14 @@ class DeliveryCdekWepps extends DeliveryWepps
 	}
 	public function getOperations(): array
 	{
+		$apikey = ConnectWepps::$projectServices['yandexmaps']['apikey'];
 		$headers = $this->cartUtils->getHeaders();
-		$headers->css("/ext/Cart/Delivery/DeliveryCdek.{$headers::$rand}.css");
+		$headers->css("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.css");
+		$headers->js("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.js");
+		$headers->js("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.js");
+		$headers->css("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.css");
+		$headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
+
 		$jdata = json_decode($this->settings['JSettings'],true);
 		$tpl = 'OperationsNotice.tpl';
 		$data = [];
@@ -67,13 +73,29 @@ class DeliveryCdekWepps extends DeliveryWepps
 				$data = [];
 				#$from = ConnectWepps::$projectServices['cdek']['office']['sender'];
 				$to = $this->cartUtils->getCartSummary()['delivery']['citiesId']??0;
-				$sql = "select * from PointsCdek where CitiesId = ?";
+				$sql = "select * from PointsCdek where CitiesId = ? limit 1000";
 				$res = ConnectWepps::$instance->fetch($sql,[$to]);
 				if (empty($res)) {
 					break;
 				}
+				$zoom = 11;
 				foreach ($res as $value) {
-					UtilsWepps::debug($value,1);
+					$jdata = json_decode($value['JData'],true);
+					$row = [
+						'Id' => $value['Id'],
+						'Name' => $value['Name'],
+						'Code' => $jdata['code'],
+						'Country' => $jdata['location']['country_code'],
+						'City' => $jdata['location']['city'],
+						'Address' => $jdata['location']['address'],
+						'WorkTime' => $jdata['work_time'],
+						'PostalCode' => $jdata['location']['postal_code'],
+						'Phone'=>$jdata['phones'][0]['number'],
+						'Email' => '',
+						'Coords' => "{$jdata['location']['latitude']},{$jdata['location']['longitude']}",
+						'MapZoom' => $zoom
+					];
+					array_push($data,$row);
 				}
 				break;
 			case 137:

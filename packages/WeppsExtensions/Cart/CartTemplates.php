@@ -45,7 +45,8 @@ class CartTemplatesWepps
         ]);
         $checkout = $this->cartUtils->getCheckoutData();
         if (!empty($checkout['deliveryOperations']['tpl'])) {
-            $this->smarty->assign('deliveryMinify',$this->cartUtils->getHeaders()->minify()['cssjs']);
+            $this->smarty->assign('deliveryMinify',$this->cartUtils->getHeaders()->get()['cssjs']);
+            $this->smarty->assign('deliveryOperations', $checkout['deliveryOperations']);
             $this->smarty->assign('deliveryOperationsTpl', $this->smarty->fetch(__DIR__ . '/Delivery/' . $checkout['deliveryOperations']['tpl']));
         }
         
