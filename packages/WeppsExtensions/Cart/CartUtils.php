@@ -65,10 +65,10 @@ class CartUtilsWepps
 	{
 		return $this->cart;
 	}
-	public function setCart() : void
+	public function setCart(): void
 	{
 		$this->cart['date'] = date('Y-m-d H:i:s');
-		$json = json_encode($this->cart,JSON_UNESCAPED_UNICODE);
+		$json = json_encode($this->cart, JSON_UNESCAPED_UNICODE);
 		if (empty(ConnectWepps::$projectData['user'])) {
 			UtilsWepps::cookies('wepps_cart', $json);
 			UtilsWepps::cookies('wepps_cart_guid', UtilsWepps::guid($json . ConnectWepps::$projectServices['jwt']['secret']));
@@ -78,38 +78,46 @@ class CartUtilsWepps
 		ConnectWepps::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$this->user['Id']]);
 		return;
 	}
-	public function setCartCitiesId(string $citiesId) : void {
+	public function setCartCitiesId(string $citiesId): void
+	{
 		$this->cart['citiesId'] = $citiesId;
 		unset($this->cart['deliveryId']);
 		unset($this->cart['paymentsId']);
 		$this->setCart();
 	}
-	public function setCartDelivery(string $deliveryId) : void {
+	public function setCartDelivery(string $deliveryId): void
+	{
 		$this->cart['deliveryId'] = $deliveryId;
 		unset($this->cart['paymentsId']);
 		$deliveryUtils = new DeliveryUtilsWepps();
 		$this->setCart();
 		$this->setCartSummary();
-		$tariffs = $deliveryUtils->getTariffsByCitiesId($this->cart['citiesId'],$this,$deliveryId);
+		$tariffs = $deliveryUtils->getTariffsByCitiesId($this->cart['citiesId'], $this, $deliveryId);
 		if (!empty($tariffs[0])) {
 			$this->cart['deliveryTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['deliveryDiscount'] = $tariffs[0]['Addons']['discount'];
 		}
 		$this->setCart();
 	}
-	public function setCartPayments(string $paymentsId) : void {
+	public function setCartDeliveryOperations(array $address = [])
+	{
+		$this->cart['deliveryOperations'] = $address;
+		$this->setCart();
+	}
+	public function setCartPayments(string $paymentsId): void
+	{
 		$this->cart['paymentsId'] = $paymentsId;
 		$paymentsUtils = new PaymentsUtilsWepps();
 		$this->setCart();
 		$this->setCartSummary();
-		$tariffs = $paymentsUtils->getByDeliveryId($this->cart['deliveryId'],$this,$paymentsId);
+		$tariffs = $paymentsUtils->getByDeliveryId($this->cart['deliveryId'], $this, $paymentsId);
 		if (!empty($tariffs[0])) {
 			$this->cart['paymentsTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['paymentsDiscount'] = $tariffs[0]['Addons']['discount'];
 		}
 		$this->setCart();
 	}
-	public function add(int $id, int $quantity = 1) : void
+	public function add(int $id, int $quantity = 1): void
 	{
 		if (empty($this->cart['items'])) {
 			$this->cart['items'] = [];
@@ -130,7 +138,7 @@ class CartUtilsWepps
 		$this->setCart();
 		return;
 	}
-	public function edit(int $id, int $quantity = 1) : void
+	public function edit(int $id, int $quantity = 1): void
 	{
 		$keys = array_column($this->cart['items'], 'id');
 		if (!in_array($id, $keys)) {
@@ -167,7 +175,7 @@ class CartUtilsWepps
 		}
 		return $this->setCart();
 	}
-	public function setCartSummary() : bool 
+	public function setCartSummary(): bool
 	{
 		$this->summary = [
 			'items' => [],
@@ -219,7 +227,7 @@ class CartUtilsWepps
 		if (!empty($this->cart['citiesId'])) {
 			$this->summary['delivery']['citiesId'] = $this->cart['citiesId'];
 		}
-		$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId']??'0';
+		$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId'] ?? '0';
 		if (!empty($this->cart['deliveryTariff'])) {
 			$this->summary['delivery']['tariff'] = $this->cart['deliveryTariff'];
 			$this->summary['sumTotal'] += $this->cart['deliveryTariff']['price'];
@@ -241,7 +249,7 @@ class CartUtilsWepps
 		}
 		return true;
 	}
-	public function getCartSummary() : array
+	public function getCartSummary(): array
 	{
 		return $this->summary;
 	}
@@ -261,7 +269,8 @@ class CartUtilsWepps
 		}
 		return $cart;
 	}
-	public function getCheckoutData() {
+	public function getCheckoutData()
+	{
 		$deliveryUtils = new DeliveryUtilsWepps();
 		$paymentsUtils = new PaymentsUtilsWepps();
 		$cartSummary = $this->getCartSummary();
@@ -275,11 +284,11 @@ class CartUtilsWepps
 				$deliveryActive = "0";
 				$payments = [];
 				$paymentsActive = "0";
-				$delivery = $deliveryUtils->getTariffsByCitiesId($cartCity[0]['Id'],$this);
+				$delivery = $deliveryUtils->getTariffsByCitiesId($cartCity[0]['Id'], $this);
 				if (!empty($cartSummary['delivery']['deliveryId'])) {
 					$deliveryActive = (string) $cartSummary['delivery']['deliveryId'];
 					$deliveryOperations = $deliveryUtils->getOperations();
-					$payments = $paymentsUtils->getByDeliveryId($deliveryActive,$this);
+					$payments = $paymentsUtils->getByDeliveryId($deliveryActive, $this);
 					if (!empty($cartSummary['payments']['paymentsId'])) {
 						$paymentsActive = $cartSummary['payments']['paymentsId'];
 					}
@@ -295,17 +304,17 @@ class CartUtilsWepps
 			'paymentsActive' => $paymentsActive,
 		];
 	}
-	public function setHeaders(TemplateHeadersWepps $headers) : void
-    {
-        $this->headers = $headers;
-    }
-	public function getHeaders() : TemplateHeadersWepps
-    {
+	public function setHeaders(TemplateHeadersWepps $headers): void
+	{
+		$this->headers = $headers;
+	}
+	public function getHeaders(): TemplateHeadersWepps
+	{
 		if (empty($this->headers)) {
 			$this->headers = new TemplateHeadersWepps();
 		}
-        return $this->headers;
-    }
+		return $this->headers;
+	}
 
 	/**
 	 * ! Далее переделка
@@ -435,5 +444,3 @@ class CartUtilsWepps
 		return array('success' => 1);
 	}
 }
-
-?>

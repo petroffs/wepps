@@ -36,8 +36,9 @@ var yandexMapsConstructor = function() {
             //hintContent: "host"
         },
         {
-        	iconLayout: 'default#image',
-        	//iconImageHref: '/ext/Template/files/geomarker-mk.png',
+			
+        	//iconLayout: 'default#image',
+        	//iconImageHref: '/ext/Template/files/geomarker.png',
         	//iconImageSize: [35, 45],
         	//iconImageOffset: [-5, -38]
         });

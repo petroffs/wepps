@@ -88,7 +88,7 @@ class RequestCartWepps extends RequestWepps {
 					self::displayCheckoutCart($cartUtils);
 				}
 			break;
-			case 'address':
+			case 'deliveryOperations':
 				$deliveryUtils = new DeliveryUtilsWepps();
 				$cartUtils->setCartSummary();
 				$deliveryUtils->setAddress($this->get,$cartUtils);

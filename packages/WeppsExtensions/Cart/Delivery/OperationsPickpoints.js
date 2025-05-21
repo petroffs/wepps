@@ -1,42 +1,55 @@
-var setPoint = function (id) {
+var setPoint = function (id,request=true) {
 	let point = $('div.delivery-pickpoints-items').children('div').eq(id);
 	let pointWorkTime = (point.data('work-time')) ? '<p><strong>Время работы</strong><br/>' + point.data('work-time') + '</p>' : '';
 	let pointAddr = (point.data('city')) ? '<p><strong>Адрес ПВЗ ' + point.data('name') + '</strong><br/>' + point.data('city') + ', ' + point.data('address') + '</p>' : '<p><strong>Адрес ПВЗ ' + point.data('name') + '</strong><br/>' + point.data('address') + '</p>';
-	$('#delivery-pickpoints-address').children('div').text();
-	$('#delivery-pickpoints-address').children('div').html(
+	$('#delivery-pickpoints-operations').children('div').text();
+	$('#delivery-pickpoints-operations').children('div').html(
 		pointAddr +
 		pointWorkTime
 	);
-	$('input[name="address-id"]').val(point.data('id'));
-	$('input[name="address-title"]').val(point.data('name'));
-	$('input[name="address-city"]').val(point.data('city'));
-	$('input[name="address-street"]').val(point.data('address'));
-	$('input[name="address-postal-code"]').val(point.data('postal-code'));
-	$("html, body").animate({
-		scrollTop: $('#delivery-pickpoints-address').offset().top
-	}, 1000);
+	$('input[name="operations-id"]').val(point.data('id'));
+	$('input[name="operations-title"]').val(point.data('name'));
+	$('input[name="operations-city"]').val(point.data('city'));
+	$('input[name="operations-street"]').val(point.data('address'));
+	$('input[name="operations-postal-code"]').val(point.data('postal-code'));
+	/* $("html, body").animate({
+		scrollTop: $('#delivery-pickpoints-operations').offset().top
+	}, 1000); */
 	$('a.set').text('ПВЗ Выбран');
-	let fields = $('input[name^="address-"]');
-	layoutWepps.request({
-		data: 'action=address&' + fields.serialize() + '&context=cart',
-		url: '/ext/Cart/Request.php'
-	});
+	if (request == true) {
+		let fields = $('input[name^="operations-"]');
+		layoutWepps.request({
+			data: 'action=deliveryOperations&' + fields.serialize() + '&context=cart',
+			url: '/ext/Cart/Request.php'
+		});
+	}
 };
 var fnCdekPointsInit = function () {
 	ymaps.ready(init);
 	function init() {
-		var map = new yandexMapsConstructor();
-		var coords = $('.delivery-pickpoints-item').eq(0).data('coords');
-		map.addMap('delivery-pickpoints-map', { coord: coords, zoom: $('.delivery-pickpoints-item').eq(0).data('zoom') });
+		let map = new yandexMapsConstructor();
+
+		var point = $('.delivery-pickpoints-item').eq(0);
+		var zoom = point.data('zoom');
+		var indx = 0;
+		var active = 0;
+		if ($('.delivery-pickpoints-item.active').length) {
+			point = $('.delivery-pickpoints-item.active').eq(0);
+			zoom = 14;
+			indx = point.data('indx');
+			active = 1;
+		}
+
+		//let point = ($('.delivery-pickpoints-item.active').length)?$('.delivery-pickpoints-item.active').eq(0):$('.delivery-pickpoints-item').eq(0);
+		let coords = point.data('coords');
+		map.addMap('delivery-pickpoints-map', { coord: coords, zoom: zoom });
 		$.each($('div.delivery-pickpoints-item'), function (i, v) {
 			let coords = $(v).data('coords');
 			let title = $(v).data('name');
-
 			let descr = $(v).data('address') + '<br/>' + $(v).data('work-time') + '<br/>' + $(v).data('phone') + '<br/>' + $(v).data('email') +
 				'<br/><a href="javascript:setPoint(' + i + ')" class="set">Выбрать этот ПВЗ</a>'
 			map.addMarker(coords, { title: title, descr: descr });
 		});
-
 		map.map.events.add('click', function (e) {
 			map.map.balloon.close();
 		});
@@ -60,6 +73,13 @@ var fnCdekPointsInit = function () {
 			}
 		});
 		map.map.controls.add(geolocationControl);
+
+		//map.markers[indx].events.fire('click');
+		//map.markers[indx].options.set('preset', 'islands#redIcon');
+		map.markers[indx].options.set('preset', 'islands#blueStarIcon');
+		if (active == 1) {
+			setPoint(indx,false);
+		}
 	}
 };
 $(document).ready(fnCdekPointsInit);

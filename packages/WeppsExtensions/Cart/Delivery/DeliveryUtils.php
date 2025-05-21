@@ -86,15 +86,18 @@ class DeliveryUtilsWepps
     {
         return $this->operations;
     }
-    public function setAddress(array $data,CartUtilsWepps $cartUtils) {
-        /**
-         * ? Получить контекст корзины, выбранную доставку, данные post
-         * Записать в cart
-         * 
-         * Далее эти данные будут использоваться при рендере - отображение ранее выбранных пвз, или др. контактных данных
-         */
-        UtilsWepps::debug($data);
-        UtilsWepps::debug($cartUtils);
+    public function setAddress(array $data,CartUtilsWepps $cartUtils) : bool {
+        $data = array_filter($data, fn($key) => str_starts_with($key, 'operations-'), ARRAY_FILTER_USE_KEY);
+        if (empty($data)) {
+            $cartUtils->setCartDeliveryOperations();
+            return true;
+        }
+        $operations = [];
+        foreach ($data as $key => $value) {
+            $operations[str_replace('operations-','',$key)] = trim(htmlspecialchars(substr($value,0,64)));
+        }
+        $cartUtils->setCartDeliveryOperations($operations);
+        return true;
     }
     private function _match($digit, $field)
     {

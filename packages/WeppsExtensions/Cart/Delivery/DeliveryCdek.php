@@ -105,12 +105,15 @@ class DeliveryCdekWepps extends DeliveryWepps
 
 				break;
 		}
-
+		
+		#$cart = $this->cartUtils->getCart();
+		#UtilsWepps::debug($cart,1);
 		return [
 			'title' => $this->settings['Name'],
 			'ext' => $this->settings['DeliveryExt'],
 			'tpl' => $tpl,
 			'data' => $data,
+			'active' => @$this->cartUtils->getCart()['deliveryOperations'],
 			'allowOrderBtn' => $allowBtn
 		];
 	}
