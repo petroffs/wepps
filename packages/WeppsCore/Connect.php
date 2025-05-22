@@ -77,21 +77,15 @@ class ConnectWepps {
 			$sth->execute ($params);
 			if ($group == 'group') {
 				$res = $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
-				if (!empty($this->memcache) && $isCache==1) {
-					$this->memcache->set($key,$res,false,$cacheExpire);
-				} else if (!empty($this->memcached) && $isCache==1) {
-					$this->memcached->set($key,$res,$cacheExpire);
-				}
-				return $res;
 			} else {
 				$res = $sth->fetchAll(PDO::FETCH_ASSOC);
-				if (!empty($this->memcache) && $isCache==1) {
-					$this->memcache->set($key,$res,false,$cacheExpire);
-				} else if (!empty($this->memcached) && $isCache==1) {
-					$this->memcached->set($key,$res,$cacheExpire);
-				}
-				return $res;
 			}
+			if (!empty($this->memcache) && $isCache==1) {
+				$this->memcache->set($key,$res,false,$cacheExpire);
+			} else if (!empty($this->memcached) && $isCache==1) {
+				$this->memcached->set($key,$res,$cacheExpire);
+			}
+			return $res;
 		} catch (\Exception $e) {
 			ExceptionWepps::display($e);
 		}
