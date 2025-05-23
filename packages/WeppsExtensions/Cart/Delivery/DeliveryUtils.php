@@ -86,16 +86,25 @@ class DeliveryUtilsWepps
     {
         return $this->operations;
     }
-    public function setAddress(array $data,CartUtilsWepps $cartUtils) : bool {
+    public function setOperations(array $data,CartUtilsWepps $cartUtils) : bool {
         $data = array_filter($data, fn($key) => str_starts_with($key, 'operations-'), ARRAY_FILTER_USE_KEY);
         if (empty($data)) {
             $cartUtils->setCartDeliveryOperations();
             return true;
         }
-        $operations = [];
+        $cart = $cartUtils->getCart();
+        $data2 = [];
         foreach ($data as $key => $value) {
-            $operations[str_replace('operations-','',$key)] = trim(htmlspecialchars(substr($value,0,64)));
+            $data2[str_replace('operations-','',$key)] = trim(htmlspecialchars(substr($value,0,96)));
         }
+        $key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations'], 'id'));
+        if ($key === false) {
+            $key = 0;
+        }
+        $operations[$key] = [
+            'id' => (string) $cart['deliveryId'] ?? '-1',
+            'data' => $data2
+        ];
         $cartUtils->setCartDeliveryOperations($operations);
         return true;
     }

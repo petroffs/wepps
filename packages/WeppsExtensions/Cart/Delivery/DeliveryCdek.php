@@ -9,7 +9,6 @@ use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryCdekWepps extends DeliveryWepps
 {
-	private $settings = [];
 	private $account;
 	private $password;
 	private $url;
@@ -21,7 +20,6 @@ class DeliveryCdekWepps extends DeliveryWepps
 	public function __construct(array $settings, CartUtilsWepps $cartUtils)
 	{
 		parent::__construct($settings, $cartUtils);
-		$this->setDeliveryType(1);
 		$this->url = ConnectWepps::$projectServices['cdek']['url'];
 		$this->account = ConnectWepps::$projectServices['cdek']['account'];
 		$this->password = ConnectWepps::$projectServices['cdek']['password'];
@@ -56,21 +54,21 @@ class DeliveryCdekWepps extends DeliveryWepps
 	public function getOperations(): array
 	{
 		$headers = $this->cartUtils->getHeaders();
-		$headers->css("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.css");
-		$headers->js("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.js");
-		$headers->js("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.js");
-		$headers->css("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.css");
-
 		$jdata = json_decode($this->settings['JSettings'],true);
 		$tpl = 'OperationsNotice.tpl';
 		$data = [];
 		$allowBtn = false;
+		$cart = $this->cartUtils->getCart();
 		switch (@$jdata['tariff']) {
 			case 136:
+				$headers->css("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.css");
+				$headers->js("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.js");
+				$headers->js("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.js");
+				$headers->css("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.css");
 				$tpl = 'OperationsPickpoints.tpl';
 				$data = [];
 				#$from = ConnectWepps::$projectServices['cdek']['office']['sender'];
-				$to = $this->cartUtils->getCartSummary()['delivery']['citiesId']??0;
+				$to = $cart['citiesId']??0;
 				$sql = "select * from PointsCdek where CitiesId = ? limit 1000";
 				$res = ConnectWepps::$instance->fetch($sql,[$to]);
 				if (empty($res)) {
@@ -97,6 +95,8 @@ class DeliveryCdekWepps extends DeliveryWepps
 				}
 				break;
 			case 137:
+				#$headers->css("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.css");
+				$headers->js("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.js");
 				$tpl = 'OperationsAddress.tpl';
 				$data = [];
 				$allowBtn = true;
@@ -105,15 +105,12 @@ class DeliveryCdekWepps extends DeliveryWepps
 
 				break;
 		}
-		
-		#$cart = $this->cartUtils->getCart();
-		#UtilsWepps::debug($cart,1);
 		return [
 			'title' => $this->settings['Name'],
 			'ext' => $this->settings['DeliveryExt'],
 			'tpl' => $tpl,
 			'data' => $data,
-			'active' => @$this->cartUtils->getCart()['deliveryOperations'],
+			'active' => self::getOperationsActive($cart),
 			'allowOrderBtn' => $allowBtn
 		];
 	}

@@ -1,4 +1,4 @@
-var setPoint = function (id,request=true) {
+var setPoint = function (id, request = true) {
 	let point = $('div.delivery-pickpoints-items').children('div').eq(id);
 	let pointWorkTime = (point.data('work-time')) ? '<p><strong>Время работы</strong><br/>' + point.data('work-time') + '</p>' : '';
 	let pointAddr = (point.data('city')) ? '<p><strong>Адрес ПВЗ ' + point.data('name') + '</strong><br/>' + point.data('city') + ', ' + point.data('address') + '</p>' : '<p><strong>Адрес ПВЗ ' + point.data('name') + '</strong><br/>' + point.data('address') + '</p>';
@@ -24,7 +24,7 @@ var setPoint = function (id,request=true) {
 		});
 	}
 };
-var fnCdekPointsInit = function () {
+var fnPointsInit = function () {
 	ymaps.ready(init);
 	function init() {
 		let map = new yandexMapsConstructor();
@@ -78,8 +78,8 @@ var fnCdekPointsInit = function () {
 		//map.markers[indx].options.set('preset', 'islands#redIcon');
 		map.markers[indx].options.set('preset', 'islands#blueStarIcon');
 		if (active == 1) {
-			setPoint(indx,false);
+			setPoint(indx, false);
 		}
 	}
 };
-$(document).ready(fnCdekPointsInit);
+$(document).ready(fnPointsInit);

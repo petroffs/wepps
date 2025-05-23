@@ -99,9 +99,9 @@ class CartUtilsWepps
 		}
 		$this->setCart();
 	}
-	public function setCartDeliveryOperations(array $address = [])
+	public function setCartDeliveryOperations(array $operations = [])
 	{
-		$this->cart['deliveryOperations'] = $address;
+		$this->cart['deliveryOperations'] = $operations;
 		$this->setCart();
 	}
 	public function setCartPayments(string $paymentsId): void

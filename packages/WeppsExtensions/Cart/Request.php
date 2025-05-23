@@ -91,7 +91,7 @@ class RequestCartWepps extends RequestWepps {
 			case 'deliveryOperations':
 				$deliveryUtils = new DeliveryUtilsWepps();
 				$cartUtils->setCartSummary();
-				$deliveryUtils->setAddress($this->get,$cartUtils);
+				$deliveryUtils->setOperations($this->get,$cartUtils);
 				break;
 			case "payments":
 				if (empty($this->get["deliveryId"])) {

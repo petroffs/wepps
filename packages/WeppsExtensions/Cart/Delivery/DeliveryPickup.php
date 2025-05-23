@@ -8,16 +8,25 @@ use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryPickupWepps extends DeliveryWepps
 {
-  public function __construct(array $settings,CartUtilsWepps $cartUtils)
+  public function __construct(array $settings, CartUtilsWepps $cartUtils)
   {
-    parent::__construct($settings,$cartUtils);
-    $this->setDeliveryType(1);
+    parent::__construct($settings, $cartUtils);
   }
-  public function getOperations() {
-        return [
-            'tpl' => 'OperationsNotice.tpl',
-            'data' => [],
-            'allowOrderBtn' => true
-        ];
-    }
+  public function getOperations()
+  {
+    $tpl = 'OperationsNotice.tpl';
+    $data = [
+      'text' => $this->settings['Descr']
+    ];
+    $allowBtn = true;
+    return [
+      'title' => $this->settings['Name'],
+      'ext' => $this->settings['DeliveryExt'],
+      'tpl' => $tpl,
+      'data' => $data,
+      'active' => @$this->cartUtils->getCart()['deliveryOperations'],
+      'allowOrderBtn' => $allowBtn
+    ];
+
+  }
 }

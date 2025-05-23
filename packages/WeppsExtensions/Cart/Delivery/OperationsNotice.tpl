@@ -1,3 +1,3 @@
 <div class="content-block">
-    notice notice notice notice
+    {$deliveryOperations.data.text}
 </div>

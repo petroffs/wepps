@@ -12,11 +12,11 @@
     </div>
     <div id="delivery-pickpoints-map"></div>
     <div id="delivery-pickpoints-operations">
-        <input type="text" name="operations-id" value="{$deliveryOperations.active.id}" autocomplete="off"/>
-        <input type="text" name="operations-title" value="{$deliveryOperations.active.title}" autocomplete="off"/>
-        <input type="text" name="operations-city" value="{$deliveryOperations.active.city}" autocomplete="off"/>
-        <input type="text" name="operations-street" value="{$deliveryOperations.active.street}" autocomplete="off"/>
-        <input type="text" name="operations-postal-code" value="{$deliveryOperations.active['postal-code']}" autocomplete="off"/>
+        <input type="hidden" name="operations-id" value="{$deliveryOperations.active.id}" autocomplete="off"/>
+        <input type="hidden" name="operations-title" value="{$deliveryOperations.active.title}" autocomplete="off"/>
+        <input type="hidden" name="operations-city" value="{$deliveryOperations.active.city}" autocomplete="off"/>
+        <input type="hidden" name="operations-street" value="{$deliveryOperations.active.street}" autocomplete="off"/>
+        <input type="hidden" name="operations-postal-code" value="{$deliveryOperations.active['postal-code']}" autocomplete="off"/>
         <div></div>
     </div>
 </div>

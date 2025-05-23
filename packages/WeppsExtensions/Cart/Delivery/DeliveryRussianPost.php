@@ -11,7 +11,6 @@ class DeliveryRussianPostWepps extends DeliveryWepps
     public function __construct(array $settings,CartUtilsWepps $cartUtils)
     {
         parent::__construct($settings,$cartUtils);
-        $this->setDeliveryType(1);
     }
     public function getOperations()
     {
