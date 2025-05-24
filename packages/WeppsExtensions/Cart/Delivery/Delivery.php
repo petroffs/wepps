@@ -9,10 +9,12 @@ class DeliveryWepps
 {
     protected $settings;
     protected $cartUtils;
+    protected $deliveryUtils;
     public function __construct(array $settings, CartUtilsWepps $cartUtils)
     {
         $this->settings = $settings;
         $this->cartUtils = $cartUtils;
+        $this->deliveryUtils = new DeliveryUtilsWepps();
     }
     public function getTariff(): array
     {

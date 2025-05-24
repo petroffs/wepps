@@ -99,13 +99,17 @@ class DeliveryUtilsWepps
         }
         $key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations'], 'id'));
         if ($key === false) {
-            $key = 0;
+            $cart['deliveryOperations'][] = [
+                'id' => (string) ($cart['deliveryId'] ?? '-1'),
+                'data' => $data2
+            ];
+        } else {
+            $cart['deliveryOperations'][$key] = [
+                'id' => (string) ($cart['deliveryId'] ?? '-1'),
+                'data' => $data2
+            ];
         }
-        $operations[$key] = [
-            'id' => (string) $cart['deliveryId'] ?? '-1',
-            'data' => $data2
-        ];
-        $cartUtils->setCartDeliveryOperations($operations);
+        $cartUtils->setCartDeliveryOperations($cart['deliveryOperations']);
         return true;
     }
     private function _match($digit, $field)

@@ -39,7 +39,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 		$this->curl = new Curl();
 		$this->curl->setHeader('content-type', 'application/json;charset=UTF-8');
 		$this->curl->setHeader('accept', 'application/json');
-		$this->curl->setHeader('authorization', 'Bearer ' . $this->token);
+		$this->curl->setHeader('authorization', value: 'Bearer ' . $this->token);
 	}
 
 	public function getTariff(): array
@@ -95,10 +95,12 @@ class DeliveryCdekWepps extends DeliveryWepps
 				}
 				break;
 			case 137:
-				#$headers->css("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.css");
+				$citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
 				$headers->js("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.js");
 				$tpl = 'OperationsAddress.tpl';
-				$data = [];
+				$data = [
+					'deliveryCtiy' => $citiesById[0]
+				];
 				$allowBtn = true;
 				break;
 			default:

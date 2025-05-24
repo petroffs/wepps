@@ -6,22 +6,17 @@
                 <input type="text" name="operations-postal-code" value="{$deliveryOperations.active['postal-code']}"/>
             </label>
         </div>
+        <div class="">
+            <div class="title">Город</div>
+            <label class="pps pps_input">
+                <input type="hidden" name="operations-city" value="{$deliveryOperations.data.deliveryCtiy.Title}" readonly/>
+                <input type="text" name="operations-city2" value="{$deliveryOperations.data.deliveryCtiy.Title}" disabled/>
+            </label>
+        </div>
         <div class="w_2scol">
-            <div class="title">Улица</div>
+            <div class="title">Адрес</div>
             <label class="pps pps_input">
-                <input type="text" name="operations-street" value="{$deliveryOperations.active.street}"/>
-            </label>
-        </div>
-        <div>
-            <div class="title">Дом, корпус</div>
-            <label class="pps pps_input">
-                <input type="text" name="operations-house" value="{$deliveryOperations.active.house}"/>
-            </label>
-        </div>
-        <div>
-            <div class="title">Квартира, офис</div>
-            <label class="pps pps_input">
-                <input type="text" name="operations-flat" value="{$deliveryOperations.active.flat}"/>
+                <input type="text" name="operations-address" value="{$deliveryOperations.active.address}"/>
             </label>
         </div>
          <div>
