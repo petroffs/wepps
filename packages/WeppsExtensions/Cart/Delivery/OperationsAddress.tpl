@@ -1,4 +1,4 @@
-<div class="content-block">
+<div class="content-block content-block-address">
     <div class="w_grid w_3col w_gap_large">
         <div>
             <div class="title">Индекс</div>
@@ -15,8 +15,8 @@
         </div>
         <div class="w_2scol">
             <div class="title">Адрес</div>
-            <label class="pps pps_input">
-                <input type="text" name="operations-address" value="{$deliveryOperations.active.address}"/>
+            <label class="pps pps_input label-dadata">
+                <input type="text" name="operations-address" value="{$deliveryOperations.active.address}" data-token="{$deliveryOperations.data.token}"/>
             </label>
         </div>
          <div>

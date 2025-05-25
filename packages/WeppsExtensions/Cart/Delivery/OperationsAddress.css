@@ -1,0 +1,19 @@
+body div.content-block.content-block-address {
+    overflow: inherit;
+}
+label.pps.label-dadata {
+    display: block;
+}
+label.pps.label-dadata input.suggestions-input.active {
+    border-radius: var(--step2) var(--step2) 0 0;
+    border-bottom-color: transparent;
+    border-bottom: none;
+}
+
+label.pps.label-dadata input.suggestions-input + .suggestions-wrapper>.suggestions-suggestions {
+    border-color: var(--color-button);
+    border-width: var(--stepHalf);
+    border-top-width: 1px;
+    border-radius: 0 0 var(--step2) var(--step2);
+    overflow: hidden;
+}
