@@ -79,6 +79,36 @@ label.pps>* {
 	transition: all 0.3s ease;
 }
 
+label.pps>i.pps_field_empty {
+	font-style: normal;
+	background-color: var(--color-85);
+	border-radius: var(--step2);
+	width: var(--step5);
+	height: var(--step5);
+	position: absolute;
+	right: calc(var(--step) * 1.5);
+	top: calc(var(--step) * 1.5);
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+label.pps>i.pps_field_empty::before {
+	content: "\f659";
+	font-family: 'bootstrap-icons';
+	font-size: var(--font-default);
+	color: var(--color-50);
+}
+
+label.pps>i.pps_field_empty:hover {
+	background-color: var(--color-button);
+}
+label.pps>i.pps_field_empty:hover::before {
+	color: var(--color-100);
+}
+
 label.pps input,
 label.pps button,
 label.pps textarea,

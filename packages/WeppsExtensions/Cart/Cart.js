@@ -16,7 +16,8 @@ class CartWepps {
 		this.citiesHandler();
 		this.deliveryHandler();
 		this.paymentsHandler();
-		this.btnConfirmtHandler()
+		this.btnConfirmtHandler();
+		formsInit();
 	};
 	add() {
 

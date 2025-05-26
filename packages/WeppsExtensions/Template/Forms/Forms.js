@@ -54,6 +54,9 @@ var formsInit = function() {
 		language: "ru",
 		delay: 500
 	});
+	$('i.pps_field_empty').on('click',function() {
+		$(this).siblings('input,textarea').val('');
+	});
 };
 $(document).ready(formsInit);
 

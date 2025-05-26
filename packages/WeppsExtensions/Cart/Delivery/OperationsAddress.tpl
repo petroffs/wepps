@@ -11,6 +11,7 @@
         <div class="w_2scol">
             <div class="title">Адрес</div>
             <label class="pps pps_input label-dadata">
+                <i class="pps_field_empty"></i>
                 <input type="text" name="operations-address" value="{$deliveryOperations.active.address}" data-token="{$deliveryOperations.data.token}"/>
             </label>
         </div>
