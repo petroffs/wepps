@@ -25,7 +25,7 @@ class DeliveryUtilsWepps
     {
         $page = max(1, (int) ($page) ?? 1);
         $limit = ($page - 1) * $onpage;
-        $sql = "select c.Id,r.Id RegionsId,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
+        $sql = "select c.Id,r.Id RegionsId,r.Name RegionsName,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";
         return ConnectWepps::$instance->fetch($sql, [$id]);
     }
@@ -95,7 +95,7 @@ class DeliveryUtilsWepps
         $cart = $cartUtils->getCart();
         $data2 = [];
         foreach ($data as $key => $value) {
-            $data2[str_replace('operations-','',$key)] = trim(htmlspecialchars(substr($value,0,96)));
+            $data2[str_replace('operations-','',$key)] = trim(htmlspecialchars(substr($value,0,256)));
         }
         $key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations'], 'id'));
         if ($key === false) {

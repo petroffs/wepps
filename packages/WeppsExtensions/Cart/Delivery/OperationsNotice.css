@@ -1,0 +1,6 @@
+body div.content-block.delivery-notice {
+    background-color: var(--color-button);
+}
+body div.content-block.delivery-notice p {
+    color: var(--color-100);
+}

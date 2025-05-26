@@ -14,6 +14,9 @@ class DeliveryPickupWepps extends DeliveryWepps
   }
   public function getOperations()
   {
+    $headers = $this->cartUtils->getHeaders();
+    #$headers->js("/ext/Cart/Delivery/OperationsNotice.{$headers::$rand}.js");
+    $headers->css("/ext/Cart/Delivery/OperationsNotice.{$headers::$rand}.css");
     $tpl = 'OperationsNotice.tpl';
     $data = [
       'text' => $this->settings['Descr']

@@ -7,7 +7,7 @@
 			<h2>Выберите ваш регион доставки</h2>
 			<label class="pps pps_input">
 				<input type="text" name="citiesId" id="cart-city"
-					placeholder="Начните вводить город, и выберите из подсказки" value="{$cartCity.Title}" data-city="{$cartCity.Name}"
+					placeholder="Начните вводить город, и выберите из подсказки" value="{$cartCity.Title}" data-city="{$cartCity.Name}" data-region="{$cartCity.RegionsName}"
 					data-id="{$cartCity.Id}" autocomplete="off" />
 			</label>
 		</div>

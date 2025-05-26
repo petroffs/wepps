@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
+use WeppsCore\Connect\ConnectWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryAddressWepps extends DeliveryWepps
@@ -19,9 +20,13 @@ class DeliveryAddressWepps extends DeliveryWepps
     $cart = $this->cartUtils->getCart();
     $citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
     $headers->js("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.js");
+    $headers->css("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.css");
+    $headers->css("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css");
+    $headers->js("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js");
     $tpl = 'OperationsAddress.tpl';
     $data = [
-      'deliveryCtiy' => $citiesById[0]
+      'deliveryCtiy' => $citiesById[0],
+      'token' => ConnectWepps::$projectServices['dadata']['token']
     ];
     $allowBtn = true;
     return [
