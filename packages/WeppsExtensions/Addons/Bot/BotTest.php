@@ -125,5 +125,8 @@ class BotTestWepps extends BotWepps {
 		$this->cli->error('fail');
 		exit();
 	}
+	public function postalcodes() {
+		UtilsWepps::debug(1,21);
+	}
 }
 ?>

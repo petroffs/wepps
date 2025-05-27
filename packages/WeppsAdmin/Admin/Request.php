@@ -75,7 +75,6 @@ class RequestAdminWepps extends RequestWepps {
 				}
 				echo "OK";
 				exit();
-				break;
 			case "git":
 				$json = file_get_contents('php://input');
 				$token = ConnectWepps::$projectServices['git']['token'];
@@ -99,7 +98,5 @@ class RequestAdminWepps extends RequestWepps {
 	}
 }
 $request = new RequestAdminWepps ($_REQUEST);
-/** @var \Smarty $smarty */
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

@@ -81,7 +81,7 @@ label.pps>* {
 
 label.pps>i.pps_field_empty {
 	font-style: normal;
-	background-color: var(--color-85);
+	background-color: transparent;
 	border-radius: var(--step2);
 	width: var(--step5);
 	height: var(--step5);

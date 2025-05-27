@@ -76,6 +76,10 @@ class BotWepps {
 				#$obj->getDeliveryTariffsByCitiesId(137);
 				$obj->getByDeliveryId("6", $cartUtils);
 				break;
+			case 'postalcodes':
+				$obj = new BotTestWepps();
+				$obj->postalcodes();
+				break;
 			default:
 				echo "\nERROR\n";
 				exit();

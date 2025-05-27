@@ -74,7 +74,7 @@ class FormWepps {
 			data.append(key, value);
 		});
 		$.ajax({
-			url : '/ext/Addons/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
+			url : '/ext/Tempate/Request.php?action=upload&filesfield=' + filesfield + '&myform=' + myform,
 			type : 'POST',
 			data : data,
 			cache : false,
