@@ -59,6 +59,23 @@ class ConnectWepps {
 		}
 		return self::$instance;
 	}
+	public function setMemcached($key,$value) {
+		$cacheExpire = ConnectWepps::$projectServices['memcached']['expire'];
+		if (!empty($this->memcache)) {
+			$this->memcache->set($key, $value, false, $cacheExpire);
+		} else if (!empty($this->memcached)) {
+			$this->memcached->set($key, $value, $cacheExpire);
+		}
+		return true;
+	}
+	public function getMemcached($key)
+	{
+		if (!empty($this->memcache) && !empty($this->memcache->get($key))) {
+			return $this->memcache->get($key);
+		} else if (!empty($this->memcached) && !empty($this->memcached->get($key))) {
+			return $this->memcached->get($key);
+		}
+	}
 	public function fetch($sql, $params=[], $group='') {
 		$this->count++;
 		try {

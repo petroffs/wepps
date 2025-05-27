@@ -275,6 +275,7 @@ class CartUtilsWepps
 		$paymentsUtils = new PaymentsUtilsWepps();
 		$cartSummary = $this->getCartSummary();
 		$delivery = [];
+		$deliveryOperations = [];
 		$deliveryActive = "";
 		$payments = [];
 		$paymentsActive = "";

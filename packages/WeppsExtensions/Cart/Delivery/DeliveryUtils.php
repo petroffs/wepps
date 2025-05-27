@@ -38,7 +38,7 @@ class DeliveryUtilsWepps
         $sql = "select d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
                 d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.Discount,d.IsDiscountPercentage,d.JSettings,
                 if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefaultWepps') DeliveryExt,
-                c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName
+                c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName,c.PostalCode
                 from OrdersDelivery d 
                 left join CitiesCdek c on c.Id=?
                 left join RegionsCdek r on r.Id = c.RegionsId

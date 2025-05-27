@@ -19,7 +19,6 @@ var fnAddressInit = function () {
 	let suggest = $('input[name="operations-address"]').eq(0);
 	let parent = suggest.closest('.delivery-address');
 	let token = suggest.data('token');
-	console.log($('#cart-city').data('city'));
 	suggest.suggestions({
 		token: token,
 		type: "ADDRESS",

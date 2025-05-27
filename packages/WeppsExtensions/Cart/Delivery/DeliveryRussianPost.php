@@ -5,12 +5,57 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Template\TemplateUtilsWepps;
 
 class DeliveryRussianPostWepps extends DeliveryWepps
 {
     public function __construct(array $settings, CartUtilsWepps $cartUtils)
     {
         parent::__construct($settings, $cartUtils);
+    }
+    public function getTariff(): array
+    {
+        $cartSummary = $this->cartUtils->getCartSummary();
+        if (empty($cartSummary)) {
+            return [];
+        }
+
+        /**
+         * ! Реализовать здесь
+         * $this->settings['PostalCode'] - если '' && !=-1 - попробовать получить и записать
+         */
+        #UtilsWepps::debug($this->settings['PostalCode'],1);
+        $from = ConnectWepps::$projectServices['russianpost']['office']['sender'];
+        $to = $this->settings['PostalCode'];
+        $weight = "1000";
+        $sum = $cartSummary['sumActive'] * 100;
+        $url = "https://delivery.pochta.ru/v2/calculate/tariff/delivery?json&object=54020&from=$from&to=$to&transtype=1&weight=$weight&size=30x30x10&group=0&closed=1&sumoc=$sum";
+        
+        /**
+         * ! memcached need
+         */
+        $hash = md5($url);
+
+        $curl = new Curl();
+        $curl->setHeader('Content-Type', 'application/json;charset=UTF-8');
+        $response = $curl->get($url)->response;
+        $jdata = json_decode($response, true);
+        $period = "-";
+        if (!empty($jdata['delivery']['min'])) {
+            $period = "{$jdata['delivery']['min']}-{$jdata['delivery']['max']}";
+            if ($jdata['delivery']['min'] == $jdata['delivery']['max']) {
+                $period = $jdata['delivery']['min'];
+            }
+        }
+        $price = round(($jdata['paynds']) / (100 * 5)) * 5;
+        $output = [
+            'status' => 200,
+            'title' => $this->settings['Name'],
+            'text' => 'Тариф способа доставки',
+            'price' => $price,
+            'period' => $period
+        ];
+        return $output;
     }
     public function getOperations(): array
     {
