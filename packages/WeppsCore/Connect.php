@@ -3,6 +3,7 @@ namespace WeppsCore\Connect;
 
 use PDO;
 use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\MemcachedWepps;
 use WeppsCore\Utils\UtilsWepps;
 
 class ConnectWepps {
@@ -15,7 +16,6 @@ class ConnectWepps {
 	public static $projectData;
 	public $count;
 	private $sth;
-	private $memcache;
 	private $memcached;
 	private function __construct($projectSettings = array()) {
 		self::$projectInfo = $projectSettings['Info'];
@@ -42,13 +42,7 @@ class ConnectWepps {
 			}
 			exit();
 		}
-		if (class_exists('Memcache') && self::$projectServices['memcached']['active']) {
-			$this->memcache = new \Memcache();
-			$this->memcache->connect(self::$projectServices['memcached']['host'], self::$projectServices['memcached']['port']);
-		} else if (class_exists('Memcached') && self::$projectServices['memcached']['active']) {
-			$this->memcached = new \Memcached();
-			$this->memcached->addServer(self::$projectServices['memcached']['host'], self::$projectServices['memcached']['port']);
-		}
+		$this->memcached = new MemcachedWepps();
 	}
 	function __destruct() {
 		self::$db = null;
@@ -59,23 +53,6 @@ class ConnectWepps {
 		}
 		return self::$instance;
 	}
-	public function setMemcached($key,$value) {
-		$cacheExpire = ConnectWepps::$projectServices['memcached']['expire'];
-		if (!empty($this->memcache)) {
-			$this->memcache->set($key, $value, false, $cacheExpire);
-		} else if (!empty($this->memcached)) {
-			$this->memcached->set($key, $value, $cacheExpire);
-		}
-		return true;
-	}
-	public function getMemcached($key)
-	{
-		if (!empty($this->memcache) && !empty($this->memcache->get($key))) {
-			return $this->memcache->get($key);
-		} else if (!empty($this->memcached) && !empty($this->memcached->get($key))) {
-			return $this->memcached->get($key);
-		}
-	}
 	public function fetch($sql, $params=[], $group='') {
 		$this->count++;
 		try {
@@ -85,10 +62,8 @@ class ConnectWepps {
 				$isCache = 1;
 			}
 			$key = md5($sql.implode(';',$params));
-			if (!empty($this->memcache) && $isCache==1 && !empty($this->memcache->get($key))) {
-				return $this->memcache->get($key);
-			} else if (!empty($this->memcached) && $isCache==1 && !empty($this->memcached->get($key))) {
-				return $this->memcached->get($key);
+			if (!empty($this->memcached) && $isCache==1 && !empty($res = $this->memcached->get($key))) {
+				return $res;
 			}
 			$sth = self::$db->prepare($sql);
 			$sth->execute ($params);
@@ -97,10 +72,8 @@ class ConnectWepps {
 			} else {
 				$res = $sth->fetchAll(PDO::FETCH_ASSOC);
 			}
-			if (!empty($this->memcache) && $isCache==1) {
-				$this->memcache->set($key,$res,false,$cacheExpire);
-			} else if (!empty($this->memcached) && $isCache==1) {
-				$this->memcached->set($key,$res,$cacheExpire);
+			if (!empty($this->memcached) && $isCache==1) {
+				$this->memcached->set($key,$res);
 			}
 			return $res;
 		} catch (\Exception $e) {

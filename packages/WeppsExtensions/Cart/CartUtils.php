@@ -4,6 +4,7 @@ namespace WeppsExtensions\Cart;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
+use WeppsCore\Utils\MemcachedWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
@@ -16,6 +17,7 @@ class CartUtilsWepps
 	private $favorites = [];
 	private $summary = [];
 	private $headers;
+	private $memcached;
 	public function __construct()
 	{
 		if (empty(ConnectWepps::$projectData['user'])) {
@@ -34,6 +36,7 @@ class CartUtilsWepps
 			$this->favorites = json_decode($this->user['JFav'], true);
 		}
 		$this->cart = json_decode($this->user['JCart'] ?? '', true) ?? [];
+		$this->memcached = new MemcachedWepps();
 	}
 	public function getUser(array $user): array
 	{
@@ -315,6 +318,9 @@ class CartUtilsWepps
 			$this->headers = new TemplateHeadersWepps();
 		}
 		return $this->headers;
+	}
+	public function getMemcached() {
+		return $this->memcached;
 	}
 
 	/**

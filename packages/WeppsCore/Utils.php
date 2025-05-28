@@ -980,6 +980,37 @@ class UsersWepps
 	}
 }
 
+class MemcachedWepps {
+	private $memcache;
+	private $memcached;
+	public function __construct() {
+		if (class_exists('Memcache') && ConnectWepps::$projectServices['memcached']['active']) {
+			$this->memcache = new \Memcache();
+			$this->memcache->connect(ConnectWepps::$projectServices['memcached']['host'], ConnectWepps::$projectServices['memcached']['port']);
+		} else if (class_exists('Memcached') && ConnectWepps::$projectServices['memcached']['active']) {
+			$this->memcached = new \Memcached();
+			$this->memcached->addServer(ConnectWepps::$projectServices['memcached']['host'], ConnectWepps::$projectServices['memcached']['port']);
+		}
+	}
+	public function set($key,$value) {
+		$cacheExpire = ConnectWepps::$projectServices['memcached']['expire'];
+		if (!empty($this->memcache)) {
+			$this->memcache->set($key, $value, false, $cacheExpire);
+		} else if (!empty($this->memcached)) {
+			$this->memcached->set($key, $value, $cacheExpire);
+		}
+		return true;
+	}
+	public function get($key)
+	{
+		if (!empty($this->memcache) && !empty($this->memcache->get($key))) {
+			return $this->memcache->get($key);
+		} else if (!empty($this->memcached) && !empty($this->memcached->get($key))) {
+			return $this->memcached->get($key);
+		}
+	}
+}
+
 if (!function_exists('getallheaders')) {
 	function getallheaders()
 	{
