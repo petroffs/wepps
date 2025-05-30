@@ -44,11 +44,80 @@ class DeliveryCdekWepps extends DeliveryWepps
 
 	public function getTariff(): array
 	{
-		return $output = [
+		$cartSummary = $this->cartUtils->getCartSummary();
+        if (empty($cartSummary)) {
+            return [];
+        }
+		$jsettings = json_decode($this->settings['JSettings'],true);
+		#$date = date("Y-m-d\T11:00:00+0300",strtotime(date("Y-m-d",strtotime(date("Y-m-d")))." +1 day"));
+		#UtilsWepps::debug($cartSummary['sumActive'],1);
+		#UtilsWepps::debug($this->settings,1);
+		#UtilsWepps::debug($this->cartUtils->getCart(),1);
+		$jdata = [
+			#'date' => (string) $date,
+			#'type' => 1,
+			#'currency' => '',
+			#'lang' => '',
+			'tariff_code' => (int) $jsettings['tariff'],
+			'from_location' => [
+				'code' => (int) ConnectWepps::$projectServices['cdek']['office']['sender']
+				/* 'postal_code' => '',
+				'country_code' => '',
+				'city' => '',
+				'address' => '',
+				'contragent_type' => '', */
+			],
+			'to_location' => [
+				'code' => (int) $this->settings['CitiesId']
+				/* 'postal_code' => '',
+				'country_code' => '',
+				'city' => '',
+				'address' => '',
+				'contragent_type' => '', */
+			],
+			'services' => [
+				[
+					'code' => 'INSURANCE',
+					'parameter' => (string) $cartSummary['sumActive'] . ".0"
+				],
+				/* [
+										  'code' => 'SMS'
+								  ], */
+			],
+			'packages' => [
+				'weight' => (int) $jsettings['weight'] * 1000,
+				'length' => (int) $jsettings['length'],
+				'width' => (int) $jsettings['width'],
+				'height' => (int) $jsettings['height']
+			]
+		];
+		$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+		$hash = md5($json);
+		if (empty($response = $this->cartUtils->getMemcached()->get($hash))) {
+			$url = ConnectWepps::$projectServices['cdek']['url']."/v2/calculator/tariff";
+			$response = $this->curl->post($url,$json)->response;
+			$response = json_decode($response,true);
+			$this->cartUtils->getMemcached()->set($hash,$response);
+		}
+		#UtilsWepps::debug($response,1);
+		if (empty($response['calendar_min'])) {
+			return [];
+		}
+		$period = ($response['calendar_min']==$response['calendar_max']) ? $response['calendar_max'] : "{$response['calendar_min']}-{$response['calendar_max']}";
+		$price = round($response['total_sum']/5)*5;
+		if (!empty($this->settings['freelevel']) && $this->settings['freelevel']<=$cartSummary['sumActive']) {
+			return [
+				'status' => 200,
+				'title' => $this->settings['Name'],
+				'price' => 0,
+				'period' => $period
+			];
+		}
+		return [
 			'status' => 200,
 			'title' => $this->settings['Name'],
-			'price' => $this->settings['Tariff'],
-			'period' => '1-3'
+			'price' => $price,
+			'period' => $period
 		];
 	}
 	public function getOperations(): array
