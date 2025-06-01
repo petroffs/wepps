@@ -19,11 +19,20 @@ class DeliveryRussianPostWepps extends DeliveryWepps
         if (empty($cartSummary)) {
             return [];
         }
-
-        /**
-         * ! Реализовать здесь
-         * $this->settings['PostalCode'] - если '' && !=-1 - попробовать получить и записать
-         */
+        if (empty($this->settings['PostalCode'])) {
+            $obj = new DeliveryCdekWepps($this->settings,$this->cartUtils);
+            $this->settings['PostalCode'] = $obj->getPostalcodes();
+            if (empty($this->settings['PostalCode'])) {
+                $output = [
+                    'status' => 400,
+                    'title' => $this->settings['Name'],
+                    'text' => 'Ошибка расчета',
+                    'price' => 0,
+                    'period' => '0'
+                ];
+                return $output;
+            }
+        }
         $from = ConnectWepps::$projectServices['russianpost']['office']['sender'];
         $to = $this->settings['PostalCode'];
         $weight = "1000";
@@ -36,7 +45,7 @@ class DeliveryRussianPostWepps extends DeliveryWepps
             $curl->setHeader('Content-Type', 'application/json;charset=UTF-8');
             $response = $curl->get($url)->response;
             $jdata = json_decode($response, true);
-            $this->cartUtils->getMemcached()->set($hash,$jdata);
+            $this->cartUtils->getMemcached()->set($hash,$jdata,86400);
         }
         $period = "-";
         if (!empty($jdata['delivery']['min'])) {

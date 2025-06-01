@@ -992,12 +992,12 @@ class MemcachedWepps {
 			$this->memcached->addServer(ConnectWepps::$projectServices['memcached']['host'], ConnectWepps::$projectServices['memcached']['port']);
 		}
 	}
-	public function set($key,$value) {
-		$cacheExpire = ConnectWepps::$projectServices['memcached']['expire'];
+	public function set($key,$value,$expire = 0) {
+		$expire = ($expire == 0) ? ConnectWepps::$projectServices['memcached']['expire'] : $expire;
 		if (!empty($this->memcache)) {
-			$this->memcache->set($key, $value, false, $cacheExpire);
+			$this->memcache->set($key, $value, false, $expire);
 		} else if (!empty($this->memcached)) {
-			$this->memcached->set($key, $value, $cacheExpire);
+			$this->memcached->set($key, $value, $expire);
 		}
 		return true;
 	}

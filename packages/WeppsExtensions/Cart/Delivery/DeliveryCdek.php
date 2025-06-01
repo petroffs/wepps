@@ -97,7 +97,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 			$url = ConnectWepps::$projectServices['cdek']['url']."/v2/calculator/tariff";
 			$response = $this->curl->post($url,$json)->response;
 			$response = json_decode($response,true);
-			$this->cartUtils->getMemcached()->set($hash,$response);
+			$this->cartUtils->getMemcached()->set($hash,$response,86400);
 		}
 		#UtilsWepps::debug($response,1);
 		if (empty($response['calendar_min'])) {
@@ -303,6 +303,11 @@ class DeliveryCdekWepps extends DeliveryWepps
 		};
 		ConnectWepps::$instance->transaction($func, []);
 		return true;
+	}
+	public function getPostalcodes() {
+		$response = $this->curl->get($this->url . '/v2/location/postalcodes?code='.$this->settings['CitiesId']);
+		$jdata = @json_decode($response->response,true);
+		return $jdata;
 	}
 	private function getToken()
 	{
