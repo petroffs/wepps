@@ -54,6 +54,11 @@
 					{/if}
 				</label>
 			{/foreach}
+			<div class="w_interval_large"></div>
+			<h2>Комментарий</h2>
+			<label class="pps pps_area">
+				<textarea name="comment"></textarea>
+			</label>
 		</div>
 	</div>
 	<div class="w_3scol_view_medium">

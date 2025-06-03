@@ -10,7 +10,7 @@ var setPoint = function (id, request = true) {
 	$('input[name="operations-id"]').val(point.data('id'));
 	$('input[name="operations-title"]').val(point.data('name'));
 	$('input[name="operations-city"]').val(point.data('city'));
-	$('input[name="operations-street"]').val(point.data('address'));
+	$('input[name="operations-address-short"]').val(point.data('address'));
 	$('input[name="operations-postal-code"]').val(point.data('postal-code'));
 	/* $("html, body").animate({
 		scrollTop: $('#delivery-pickpoints-operations').offset().top
@@ -28,19 +28,14 @@ var fnPointsInit = function () {
 	ymaps.ready(init);
 	function init() {
 		let map = new yandexMapsConstructor();
-
-		var point = $('.delivery-pickpoints-item').eq(0);
+		let point = $('.delivery-pickpoints-item').eq(0);
 		var zoom = point.data('zoom');
-		var indx = 0;
-		var active = 0;
+		var indx = -1;
 		if ($('.delivery-pickpoints-item.active').length) {
 			point = $('.delivery-pickpoints-item.active').eq(0);
 			zoom = 14;
 			indx = point.data('indx');
-			active = 1;
 		}
-
-		//let point = ($('.delivery-pickpoints-item.active').length)?$('.delivery-pickpoints-item.active').eq(0):$('.delivery-pickpoints-item').eq(0);
 		let coords = point.data('coords');
 		map.addMap('delivery-pickpoints-map', { coord: coords, zoom: zoom });
 		$.each($('div.delivery-pickpoints-item'), function (i, v) {
@@ -53,10 +48,8 @@ var fnPointsInit = function () {
 		map.map.events.add('click', function (e) {
 			map.map.balloon.close();
 		});
-
 		map.addClusterer();
-
-		var searchControl = new ymaps.control.SearchControl({
+		let searchControl = new ymaps.control.SearchControl({
 			options: {
 				float: 'right',
 				placeholderContent: 'Поиск по улице, дому',
@@ -66,18 +59,14 @@ var fnPointsInit = function () {
 			}
 		});
 		map.map.controls.add(searchControl);
-
-		var geolocationControl = new ymaps.control.GeolocationControl({
+		let geolocationControl = new ymaps.control.GeolocationControl({
 			options: {
 				noPlacemark: true
 			}
 		});
 		map.map.controls.add(geolocationControl);
-
-		//map.markers[indx].events.fire('click');
-		//map.markers[indx].options.set('preset', 'islands#redIcon');
-		map.markers[indx].options.set('preset', 'islands#blueStarIcon');
-		if (active == 1) {
+		if (indx != -1) {
+			map.markers[indx].options.set('preset', 'islands#blueStarIcon');
 			setPoint(indx, false);
 		}
 	}

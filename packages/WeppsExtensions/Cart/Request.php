@@ -53,10 +53,6 @@ class RequestCartWepps extends RequestWepps {
 				}
 				$cartUtils->setFavorites($this->get['id']);
 				break;
-			case 'addOrder':
-				break;
-			case 'copyOrder':
-				break;
 			case 'cities':
 				$deliveryUtils = new DeliveryUtilsWepps();
 				$res = $deliveryUtils->getCitiesByQuery($this->get['text'],(int) $this->get['page']??1);
@@ -112,6 +108,20 @@ class RequestCartWepps extends RequestWepps {
 				}
 				$cartUtils->setCartPayments($this->get['paymentsId']);
 				self::displayCheckoutCart($cartUtils);
+				break;
+			case 'addOrder':
+				/**
+				 * По доставке/оплате получить контекст и вызывать необходимые проверки
+				 * Если ошибки - выводим
+				 * Если нет ошибок - вызываем необходимые сценарии 
+				 * 	доставка - извлекаем нужные поля
+				 * 	оплата - формируем ссылки и др. на оплату если требуется
+				 * Оформляем заказ
+				 * Жетально через транзакции
+				 */
+				UtilsWepps::debug($this->get,21);
+				break;
+			case 'copyOrder':
 				break;
 			default:
 				ExceptionWepps::error404();

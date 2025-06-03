@@ -47,4 +47,6 @@ var fnAddressInit = function () {
 	});
 	//https://confluence.hflabs.ru/pages/viewpage.action?pageId=207454320
 };
-$(document).ready(fnAddressInit);
+$(document).ready(() => {
+	setTimeout(fnAddressInit,500);
+});

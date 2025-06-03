@@ -207,13 +207,13 @@ class CartWepps {
 		$('#cart-btn-confirm').off('click');
 		$('#cart-btn-confirm').on('click',function(e) {
 			e.preventDefault();
-			window.open('/cart/order.html','_self');
+			let serialize = $('#cart-default').find('input,textarea').serialize();
+			console.log(serialize);
+			layoutWepps.request({
+				data: 'action=addOrder&context=cart&'+serialize,
+				url: '/ext/Cart/Request.php'
+			});
 		});
-		/* document.addEventListener('visibilitychange', () => {
-			if (!document.hidden) {
-				window.location.reload();
-			}
-		}); */
 	}
 };
 let cart = new CartWepps();

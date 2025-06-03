@@ -49,31 +49,13 @@ class DeliveryCdekWepps extends DeliveryWepps
             return [];
         }
 		$jsettings = json_decode($this->settings['JSettings'],true);
-		#$date = date("Y-m-d\T11:00:00+0300",strtotime(date("Y-m-d",strtotime(date("Y-m-d")))." +1 day"));
-		#UtilsWepps::debug($cartSummary['sumActive'],1);
-		#UtilsWepps::debug($this->settings,1);
-		#UtilsWepps::debug($this->cartUtils->getCart(),1);
 		$jdata = [
-			#'date' => (string) $date,
-			#'type' => 1,
-			#'currency' => '',
-			#'lang' => '',
 			'tariff_code' => (int) $jsettings['tariff'],
 			'from_location' => [
 				'code' => (int) ConnectWepps::$projectServices['cdek']['office']['sender']
-				/* 'postal_code' => '',
-				'country_code' => '',
-				'city' => '',
-				'address' => '',
-				'contragent_type' => '', */
 			],
 			'to_location' => [
 				'code' => (int) $this->settings['CitiesId']
-				/* 'postal_code' => '',
-				'country_code' => '',
-				'city' => '',
-				'address' => '',
-				'contragent_type' => '', */
 			],
 			'services' => [
 				[
@@ -81,8 +63,8 @@ class DeliveryCdekWepps extends DeliveryWepps
 					'parameter' => (string) $cartSummary['sumActive'] . ".0"
 				],
 				/* [
-										  'code' => 'SMS'
-								  ], */
+						'code' => 'SMS'
+				], */
 			],
 			'packages' => [
 				'weight' => (int) $jsettings['weight'] * 1000,
@@ -99,20 +81,14 @@ class DeliveryCdekWepps extends DeliveryWepps
 			$response = json_decode($response,true);
 			$this->cartUtils->getMemcached()->set($hash,$response,86400);
 		}
-		#UtilsWepps::debug($response,1);
 		if (empty($response['calendar_min'])) {
 			return [];
 		}
 		$period = ($response['calendar_min']==$response['calendar_max']) ? $response['calendar_max'] : "{$response['calendar_min']}-{$response['calendar_max']}";
 		$price = round($response['total_sum']/5)*5;
-		if (!empty($this->settings['freelevel']) && $this->settings['freelevel']<=$cartSummary['sumActive']) {
-			return [
-				'status' => 200,
-				'title' => $this->settings['Name'],
-				'price' => 0,
-				'period' => $period
-			];
-		}
+		if ($this->settings['FreeLevel']>0 && $this->settings['FreeLevel']<=$cartSummary['sumActive']) {
+            $price = 0;
+        }
 		return [
 			'status' => 200,
 			'title' => $this->settings['Name'],
@@ -166,9 +142,13 @@ class DeliveryCdekWepps extends DeliveryWepps
 			case 137:
 				$citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
 				$headers->js("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.js");
+				$headers->css("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.css");
+				$headers->css("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css");
+				$headers->js("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js");
 				$tpl = 'OperationsAddress.tpl';
 				$data = [
-					'deliveryCtiy' => $citiesById[0]
+					'deliveryCtiy' => $citiesById[0],
+					'token' => ConnectWepps::$projectServices['dadata']['token']
 				];
 				$allowBtn = true;
 				break;
@@ -185,7 +165,9 @@ class DeliveryCdekWepps extends DeliveryWepps
 			'allowOrderBtn' => $allowBtn
 		];
 	}
+	public function getErrors_500() {
 
+	}
 	public function setPoints(): bool
 	{
 		$func = function (array $args) {

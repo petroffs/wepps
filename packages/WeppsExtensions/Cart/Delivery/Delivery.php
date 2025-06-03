@@ -22,11 +22,15 @@ class DeliveryWepps
         if (empty($cartSummary)) {
             return [];
         }
+        $price = $this->settings['Tariff'];
+        if ($this->settings['FreeLevel']>0 && $this->settings['FreeLevel']<=$cartSummary['sumActive']) {
+            $price = 0;
+        }
         $output = [
             'status' => 200,
             'title' => $this->settings['Name'],
             'text' => 'Тариф способа доставки',
-            'price' => $this->settings['Tariff'],
+            'price' => $price,
             'period' => '1-3'
         ];
         if (@$this->settings['IsTariffPercentage'] == 1) {
@@ -75,4 +79,8 @@ class DeliveryWepps
         }
         return $operations;
     }
+    public function getErrors(array $get) : array {
+        
+        return [];
+	}
 }

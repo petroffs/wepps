@@ -11,6 +11,8 @@ body div.content-block.delivery-pickpoints #delivery-pickpoints-map {
 	width: 100%;
 	height: 400px;
 	background: var(--color-98);
+    border-radius: var(--step);
+    overflow: hidden;
 }
 
 body div.content-block.delivery-pickpoints #delivery-pickpoints-map a.set {
