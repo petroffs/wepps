@@ -44,7 +44,7 @@ class ListsWepps
 		}
 		$str = trim($str, "union ");
 		$stat = ConnectWepps::$instance->fetch($str, array(), 'group');
-		$arr = array();
+		$arr = [];
 		foreach ($res as $value) {
 			$value['RowsCount'] = $stat[$value['TableName']][0]['Rows'];
 			$value['FieldsCount'] = $stat[$value['TableName']][0]['Fields'];
@@ -220,7 +220,7 @@ class ListsWepps
 		/*
 		 * Табы
 		 */
-		$tabs = array();
+		$tabs = [];
 		foreach ($listScheme as $value) {
 			foreach ($value as $v) {
 				if (!isset($tabs[$v['FGroup']])) {
@@ -298,7 +298,7 @@ class ListsWepps
 				$where = (!empty($element[0][$key])) ? "where Id in ({$element[0][$key]})" : "where Id in (0)";
 				$sql = "select Id,{$ex[2]} from {$tablename} {$where} order by {$ex[2]}";
 				$res = ConnectWepps::$instance->fetch($sql);
-				$selected = array();
+				$selected = [];
 				foreach ($res as $k => $v) {
 					$selected[$v['Id']] = "{$v[$ex[2]]} ({$v['Id']})";
 				}
@@ -314,7 +314,7 @@ class ListsWepps
 				$where = (!empty($element[0][$key])) ? "where Id in ({$element[0][$key]})" : "where Id in (0)";
 				$sql = "select Id,{$ex[2]} from {$tablename} {$where} order by {$ex[2]}";
 				$res = ConnectWepps::$instance->fetch($sql);
-				$selected = array();
+				$selected = [];
 
 				foreach ($res as $k => $v) {
 					$selected[$v['Id']] = $v['Id'];
@@ -332,10 +332,10 @@ class ListsWepps
 					left join {$ex[1]} as t2 on t2.Id = t.{$ex[4]}
 					{$where} group by t.{$ex[2]} order by t2.Priority,{$ex[2]}";
 					$res = ConnectWepps::$instance->fetch($sql, [], 'group');
-					$options = array();
+					$options = [];
 					$options[0] = "-";
 					foreach ($res as $k => $v) {
-						$options[$k] = array();
+						$options[$k] = [];
 						foreach ($v as $v2) {
 							$options[$k][$v2['Id']] = $v2[$ex[2]];
 						}
@@ -345,7 +345,7 @@ class ListsWepps
 					$sql = "select t.Id,concat(t.{$ex[2]},' (',t.Id,') ') as {$ex[2]} from {$tablename} as t
 					{$where} order by {$ex[2]}";
 					$res = ConnectWepps::$instance->fetch($sql);
-					$options = array();
+					$options = [];
 					$options[0] = "-";
 					foreach ($res as $k => $v) {
 						$options[$v['Id']] = $v[$ex[2]];
@@ -367,7 +367,7 @@ class ListsWepps
 			} elseif (strstr($value[0]['Type'], 'dbtable')) {
 				$sql = "select TableName,Name from s_ConfigFields order by TableName";
 				$res = ConnectWepps::$instance->fetch($sql, [], 'group');
-				$options = array();
+				$options = [];
 				$options[0] = "-";
 				foreach ($res as $k => $v) {
 					$options[$k] = $k;
@@ -402,7 +402,7 @@ class ListsWepps
 				 */
 				$sql = "select Id,Name from s_PropertiesGroups where DisplayOff=0 $condition order by Priority";
 				$res = ConnectWepps::$instance->fetch($sql);
-				$options = array();
+				$options = [];
 				$options[0] = "-";
 				foreach ($res as $k => $v) {
 					$options[$v['Id']] = $v['Name'];
@@ -631,7 +631,7 @@ class ListsWepps
 	public static function addUpload($myFiles, $filesfield, $myform)
 	{
 		$root = $_SERVER['DOCUMENT_ROOT'];
-		$errors = array();
+		$errors = [];
 		$js = '';
 
 		$sql = "delete from s_Files where InnerName=''";
@@ -658,7 +658,7 @@ class ListsWepps
 			$filedest = "{$root}{$fileurl}";
 			move_uploaded_file($value['tmp_name'], $filedest);
 			if (!isset($_SESSION['uploads'][$myform][$filesfield])) {
-				$_SESSION['uploads'][$myform][$filesfield] = array();
+				$_SESSION['uploads'][$myform][$filesfield] = [];
 			}
 			$_SESSION['uploads'][$myform][$filesfield][] = array('path' => $filedest, 'title' => $value['name'], 'url' => $fileurl, 'type' => $value['type'], 'size' => $value['size']);
 			/* $_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
@@ -979,7 +979,7 @@ class ListsWepps
 					if (empty($v2)) {
 						continue;
 					}
-					$rowData = array();
+					$rowData = [];
 					$rowData['Name'] = $v['Id'];
 					$rowData['Field1'] = $v2;
 					$rowData['Field2'] = "";

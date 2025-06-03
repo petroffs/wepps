@@ -98,7 +98,7 @@ class AdminWepps {
 	}
 	private function getNavigateUrl($url) {
 		//UtilsWepps::debug($url,1);
-		$match = array();
+		$match = [];
 		$m = preg_match ( "/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match );
 		if (strstr($url, "home/")) {
 			header("HTTP/1.1 301 Moved Permanently");
@@ -161,7 +161,7 @@ class AdminWepps {
 	public static function getTranslate() {
 		$sql = "select Name,LangRu,LangEn from s_Lang where Category='back'";
 		$res = ConnectWepps::$instance->fetch($sql,[],'group');
-		$translate = array();
+		$translate = [];
 		foreach ($res as $key=>$value) {
 			$translate[$key] = $value[0]['LangRu'];
 		}

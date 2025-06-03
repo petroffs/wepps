@@ -64,7 +64,7 @@ class BackupWepps extends RequestWepps {
 				}
 				$str = trim($str,"union ");
 				$stat = ConnectWepps::$instance->fetch($str,[],'group');
-				$arr = array();
+				$arr = [];
 				foreach ($res as $value) {
 					$value['RowsCount'] = $stat[$value['TableName']][0]['Rows'];
 					$value['FieldsCount'] = $stat[$value['TableName']][0]['Fields'];

@@ -24,7 +24,7 @@ class ProcessingTasksWepps {
 		 */
 		$output = [];
 		exec("find {$this->root}/files/lists/ {$this->root}/pic/ -name '*.*' ! -name '*.htaccess'",$output);
-		$arr1 = array();
+		$arr1 = [];
 		foreach ($output as $value) {
 			$str = substr($value, strpos($value, "/files/"));
 			$arr1[$str][] = $value;
@@ -36,7 +36,7 @@ class ProcessingTasksWepps {
 		 */
 		$sql = "select Id,FileUrl from s_Files";
 		$res = ConnectWepps::$instance->fetch($sql);
-		$arr2 = array();
+		$arr2 = [];
 		foreach ($res as $value) {
 			$arr2[] = $value['FileUrl'];
 		}

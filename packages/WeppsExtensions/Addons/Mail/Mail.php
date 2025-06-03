@@ -142,7 +142,7 @@ class MailWepps {
 		preg_match_all("/img src=\"([0-9a-zA-Z\.\-\_\/\:]+)/",$msg,$matches);
 		$messfiles = "";
 		if (is_array($matches[1])) {
-			$tmp = array();
+			$tmp = [];
 			$arrContextOptions = [ 
 					"ssl" => [ 
 							"verify_peer" => false,

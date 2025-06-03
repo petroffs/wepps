@@ -43,7 +43,7 @@ class RemoteServicesWepps {
 	 * Например ПВЗ для СДЕК
 	 */
 	public function getExtension() {
-	    return array();
+	    return [];
 	}
 	
 	private function getCache($hash) {

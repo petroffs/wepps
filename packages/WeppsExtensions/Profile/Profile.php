@@ -24,7 +24,7 @@ class ProfileWepps {
 		$smarty = SmartyWepps::getSmarty ();
 		$this->pathItem = $ppsUrl;
 		$users = new DataWepps("s_Users");
-		$user = array();
+		$user = [];
 		if (isset($_SESSION['user']['Id'])) {
 			$users->setJoin("left outer join GeoCities as c on c.Id = t.City");
 			$users->setConcat("c.Name as City_Name");
@@ -126,7 +126,7 @@ if (isset ( $navigator )) {
 	$smarty->assign ( 'way', $navigator->way );
 	$obj = new ProfileWepps($navigator,$ppsUrl,$_GET);
 	if ($obj->pathItem!='') {
-		$extension->extensionData['element'] = array();
+		$extension->extensionData['element'] = [];
 	}
 	$smarty->assign('get',$obj->get);
 	$smarty->assign('tpl',$obj->outer);

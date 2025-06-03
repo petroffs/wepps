@@ -201,7 +201,7 @@ class UtilsWepps
 	{
 		$arr = [];
 		if (!is_array($value))
-			return array();
+			return [];
 
 		if ($output == '') {
 			foreach ($value as $v) {
@@ -707,7 +707,7 @@ class FilesWepps
 		$filedest = "{$root}/packages/WeppsExtensions/Addons/Forms/uploads/{$filepathinfo['filename']}-" . date("U") . ".{$filepathinfo['extension']}";
 		move_uploaded_file($myFiles[0]['tmp_name'], $filedest);
 		if (!isset($_SESSION['uploads'][$myform][$filesfield])) {
-			$_SESSION['uploads'][$myform][$filesfield] = array();
+			$_SESSION['uploads'][$myform][$filesfield] = [];
 		}
 		array_push($_SESSION['uploads'][$myform][$filesfield], $filedest);
 		$_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);

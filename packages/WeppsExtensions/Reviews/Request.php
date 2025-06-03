@@ -21,7 +21,7 @@ class RequestReviewsWepps extends RequestWepps {
 				/*
 				 * Проверка формы
 				 */
-				$this->errors = array();
+				$this->errors = [];
 				$this->errors['name'] = ValidatorWepps::isNotEmpty($this->get['name'], "Не заполнено");
 				$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверно заполнено");
 				$this->errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
@@ -31,7 +31,7 @@ class RequestReviewsWepps extends RequestWepps {
 					/*
 					 * Добавление отзыва
 					 */
-					$row = array();
+					$row = [];
 					$row['Name'] = $this->get['name'];
 					$row['RAuthorEmail'] = $this->get['email'];
 					$row['RText'] = $this->get['comment'];

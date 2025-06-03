@@ -55,7 +55,7 @@ class RequestContactsWepps extends RequestWepps {
 					$message .= "Эл. почта: {$this->get['email']}\n";
 					//$message .= "Город: {$this->get['city']}\n";
 					
-					$attachment = array();
+					$attachment = [];
 					if (isset($_SESSION['uploads'][$this->get['form']]['feedback-upload']) && is_array($_SESSION['uploads'][$this->get['form']]['feedback-upload'])) {
 						$attachment = $_SESSION['uploads'][$this->get['form']]['feedback-upload'];
 					}

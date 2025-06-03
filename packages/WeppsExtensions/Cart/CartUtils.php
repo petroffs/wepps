@@ -343,7 +343,7 @@ class CartUtilsWepps
 		));
 
 		//exit();
-		$row = array();
+		$row = [];
 		$row['Name'] = $user['Name'];
 		$row['UserId'] = $user['Id'];
 		$row['Email'] = $settings['email'];
@@ -428,7 +428,7 @@ class CartUtilsWepps
 		$date = date('Y-m-d H:i:s');
 		$obj = new DataWepps("TradeClientsHistory");
 		foreach ($cartSummary['cart'] as $key => $value) {
-			$row = array();
+			$row = [];
 			$row['Name'] = "{$value['Data']['ProductType_NameOsn']} {$value['Data']['Name']}";
 			$row['ItemQty'] = $value['Data']['OptionQty'] * $value['Qty'];
 			$row['Price'] = $value['Data']['PriceAmount'];

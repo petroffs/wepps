@@ -241,7 +241,7 @@ class DataWepps
 			$dataPages = ceil($res[0]['Co'] / $onPage);
 			$this->count = $res[0]['Co'];
 		}
-		$arr = array();
+		$arr = [];
 		$arr['current'] = $currentPage;
 		for ($i = 1; $i <= $dataPages; $i++) {
 			$arr['pages'][$i] = $i;
@@ -427,7 +427,7 @@ class NavigatorWepps
 	 * Навигация верхнего уровня
 	 * @var array
 	 */
-	public $nav = array();
+	public $nav = [];
 	/**
 	 * Содержание раздела
 	 * 
@@ -530,7 +530,7 @@ class NavigatorWepps
 	 */
 	private function getNavigateUrl($url)
 	{
-		$match = array();
+		$match = [];
 		$m = preg_match("/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match);
 		if (substr($url, -1) != '/' && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
 			header("HTTP/1.1 301 Moved Permanently");
@@ -564,10 +564,10 @@ class NavigatorWepps
 class NavigatorDataWepps extends DataWepps
 {
 	public $backOffice = 0;
-	private $way = array();
-	private $nav = array();
+	private $way = [];
+	private $nav = [];
 	private $navLevel = 0;
-	private $rchild = array();
+	private $rchild = [];
 
 	public function getNav($navLevel)
 	{
@@ -577,12 +577,12 @@ class NavigatorDataWepps extends DataWepps
 			$this->navLevel++;
 			return $this->getNav($navLevel);
 		} elseif ($navLevel <= $this->navLevel) {
-			$arr = array();
+			$arr = [];
 			foreach ($this->nav[0] as $value) {
 				$arr[$value['NGroup']][] = $value;
 			}
 			unset($this->nav[0]);
-			$sub = array();
+			$sub = [];
 			foreach ($this->nav as $value) {
 				foreach ($value as $v) {
 					if (isset($v['ParentDir']))
@@ -700,7 +700,7 @@ abstract class ExtensionWepps
 	 * Входные данные
 	 * @var array
 	 */
-	public $get = array();
+	public $get = [];
 	/**
 	 * Наименование шаблона
 	 * @var string
@@ -861,7 +861,7 @@ class LanguageWepps
 		if (count($res2) == 0)
 			return $data;
 		$resParall = UtilsWepps::array($res2, 'TableId');
-		$resParall2 = array();
+		$resParall2 = [];
 		foreach ($res as $key => $value) {
 			if (!empty($resParall[$key]['Id'])) {
 				$resParall2[$key] = $resParall[$key];

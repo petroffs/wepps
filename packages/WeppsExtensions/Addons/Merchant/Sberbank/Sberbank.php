@@ -57,7 +57,7 @@ class SberbankWepps {
 		        $sql = "update TradeOrders set OBuyOrderId='$orderIdU',OBuyMerchant='Sberbank' where Id= '{$this->get['id']}'";
                 ConnectWepps::$instance->query($sql);
 		        
-		        $data = array();
+		        $data = [];
 		        $data['userName'] = $this->login;
 		        $data['password'] = $this->password;
 		        $data['orderNumber'] = urlencode($orderIdU);
@@ -74,7 +74,7 @@ class SberbankWepps {
 		        
 		        $sql = "select * from TradeClientsHistory where OrderId='{$orderContent['Id']}'";
 		        $res = ConnectWepps::$instance->fetch($sql);
-		        $positions = array();
+		        $positions = [];
 		        foreach ($res as $key=>$value) {
 		        	$positions[] = array(
 		        			'positionId'=>$key+1,
@@ -116,7 +116,7 @@ class SberbankWepps {
 						'action' => $action,
 						'error'> 0,
 				);
-				$_SESSION['merch'] = array();
+				$_SESSION['merch'] = [];
 				$_SESSION['merch']['MessageStatus'] = 1;
 				$_SESSION['merch']['Color'] = "#75cc4a";
 				$_SESSION['merch']['Message'] = "Платеж успешно проведен";
@@ -130,7 +130,7 @@ class SberbankWepps {
 						'action' => $action,
 						'error' => 1 
 				);
-				$_SESSION['merch'] = array();
+				$_SESSION['merch'] = [];
 				$_SESSION['merch']['MessageStatus'] = 0;
 				$_SESSION['merch']['Color'] = "red";
 				$_SESSION['merch']['Message'] = "Платеж не проведен";
