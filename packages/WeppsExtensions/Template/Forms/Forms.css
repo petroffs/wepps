@@ -109,6 +109,10 @@ label.pps>i.pps_field_empty:hover::before {
 	color: var(--color-100);
 }
 
+label.pps>i.pps_field_empty+input {
+	padding-right: var(--step6);
+}
+
 label.pps input,
 label.pps button,
 label.pps textarea,

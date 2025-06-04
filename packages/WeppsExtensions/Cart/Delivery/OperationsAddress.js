@@ -13,10 +13,10 @@ var fnAddressInit = function () {
 			url: '/ext/Cart/Request.php'
 		});
 	});
-	$('input[name="operations-address"], input[name="operations-postal-code"]').on('focus', function () {
+	$('input[name="operations-address-short"], input[name="operations-postal-code"]').on('focus', function () {
 		$('.delivery-btn.w_hide').removeClass('w_hide');
 	});
-	let suggest = $('input[name="operations-address"]').eq(0);
+	let suggest = $('input[name="operations-address-short"]').eq(0);
 	let parent = suggest.closest('.delivery-address');
 	let token = suggest.data('token');
 	suggest.suggestions({
@@ -33,12 +33,13 @@ var fnAddressInit = function () {
 			suggest.removeClass('active');
 			parent.addClass('active');
 			parent.find('input[name="operations-address-short"]').val(cleanString2(suggestion.value,suggestion.data.city_with_type??suggestion.data.region_with_type))
+			parent.find('input[name="operations-address"]').val(suggestion.value)
 			parent.find('input[name="operations-postal-code"]').val(suggestion.data.postal_code)
 			$('#deliveryAddressBtn').trigger('click');
 		},
 		onSearchStart: function(params) {
 			suggest.addClass('active');
-			parent.find('input[name="operations-address-short"]').val(cleanString2(''))
+			parent.find('input[name="operations-address"]').val(cleanString2(''))
 			parent.find('input[name="operations-postal-code"]').val('')
 		},
 		onSelectNothing: function(params) {

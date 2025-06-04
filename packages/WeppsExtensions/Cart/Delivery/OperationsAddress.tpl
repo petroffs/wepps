@@ -4,7 +4,7 @@
             <div class="title">Город</div>
             <label class="pps pps_input">
                 <input type="hidden" name="operations-city" value="{$deliveryOperations.data.deliveryCtiy.Title}" readonly/>
-                <input type="hidden" name="operations-address-short" value="{$deliveryOperations.active['address-short']}" readonly/>
+                <input type="hidden" name="operations-address" value="{$deliveryOperations.active.address}" readonly/>
                 <input type="text" name="operations-city2" value="{$deliveryOperations.data.deliveryCtiy.Title}" disabled/>
             </label>
         </div>
@@ -12,7 +12,7 @@
             <div class="title">Адрес</div>
             <label class="pps pps_input label-dadata">
                 <i class="pps_field_empty"></i>
-                <input type="text" name="operations-address" value="{$deliveryOperations.active.address}" data-token="{$deliveryOperations.data.token}"/>
+                <input type="text" name="operations-address-short" value="{$deliveryOperations.active['address-short']}" data-token="{$deliveryOperations.data.token}"/>
             </label>
         </div>
         <div>

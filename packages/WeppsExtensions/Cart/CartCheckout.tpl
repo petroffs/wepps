@@ -57,7 +57,7 @@
 			<div class="w_interval_large"></div>
 			<h2>Комментарий</h2>
 			<label class="pps pps_area">
-				<textarea name="comment"></textarea>
+				<textarea name="comment" autocomplete="off"></textarea>
 			</label>
 		</div>
 	</div>
