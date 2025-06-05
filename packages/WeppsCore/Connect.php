@@ -147,6 +147,9 @@ class ConnectWepps {
 		];
 		return $output;
 	}
+	public function in(array $in) : string {
+		return str_repeat('?,', count($in) - 1) . '?';
+	}
 	public function transaction(callable $func, array $args) {
 		ConnectWepps::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
 		try {
