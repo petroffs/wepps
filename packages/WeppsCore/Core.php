@@ -530,9 +530,8 @@ class NavigatorWepps
 	 */
 	private function getNavigateUrl($url)
 	{
-		$match = [];
-		$m = preg_match("/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match);
-		if (substr($url, -1) != '/' && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
+		$m = preg_match("/([^\/\?\&\=]+)\.([\w\d]{1,7}+)($|[\?])/", $url, $match);
+		if (empty(str_ends_with($url,'/')) && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
 			header("HTTP/1.1 301 Moved Permanently");
 			header("Location: {$url}/");
 			exit();

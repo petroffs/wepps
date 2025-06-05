@@ -4,7 +4,6 @@ remote
 	sudo a2enmod rewrite && sudo service apache2 restart
 	mysql --defaults-extra-file=/var/www/config.cnf wepps_platformdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 local
-	mysql --defaults-extra-file=/y/domains/config.cnf wepps_platformdb < /y/domains/wepps.platform.pps/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 	mysql --defaults-extra-file=/d/var/home/config.cnf wepps_platformdb < /d/var/home/wepps.platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 wsl	
 	mysql --defaults-extra-file=/var/www/config.cnf wepps_platformdb < /var/www/wepps/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql

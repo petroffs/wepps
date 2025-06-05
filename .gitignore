@@ -6,7 +6,7 @@
 /packages/WeppsAdmin/*/.htaccess
 /packages/WeppsAdmin/Admin/Forms/uploads*
 /packages/WeppsExtensions/Template/Forms/uploads*
-/packages/WeppsExtensions/Addons/Mail/files/mail.html
+/packages/WeppsExtensions/Addons/Bot/files/*
 /files/tpl/*
 /files/lists/*
 /pic/*
