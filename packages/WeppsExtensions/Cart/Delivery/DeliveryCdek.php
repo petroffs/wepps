@@ -5,6 +5,7 @@ use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
+use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryCdekWepps extends DeliveryWepps
@@ -166,8 +167,13 @@ class DeliveryCdekWepps extends DeliveryWepps
 		];
 	}
 	public function getErrors(array $get) : array {
-        UtilsWepps::debug('errors test',3);
-        return [];
+		$errors = [];
+		$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
+		$errors['operations-address'] = ValidatorWepps::isEmail($get['operations-address'], "Неверно заполнено");
+		$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
+		$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+		$outer = ValidatorWepps::setFormErrorsIndicate($errors, $get['form']);
+        return $outer;
 	}
 	public function setPoints(): bool
 	{

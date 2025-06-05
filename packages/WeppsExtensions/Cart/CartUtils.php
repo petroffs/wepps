@@ -346,11 +346,10 @@ class CartUtilsWepps
 		if (empty($cartSummary['delivery']['extension'])) {
 			return [];
 		}
-
-		/**
-         * @var \WeppsExtensions\Cart\Delivery\DeliveryWepps $class
-         */
 		$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}";
+		/**
+		 * @var \WeppsExtensions\Cart\Delivery\DeliveryWepps $class
+		 */
         $class = new $className([],$this);
 
 		/**
@@ -358,10 +357,17 @@ class CartUtilsWepps
 		 * 
 		 * Получить ошибки и вывести в методе, браузере
 		 * 
+		 * return - ошибки, html, etc
+		 * 
 		 */
 		$errors = $class->getErrors($get);
 
-		UtilsWepps::debug($errors,1);
+		if (!empty($errors['Co']) && $errors['Co']>0) {
+			return [
+				'errors' => $errors
+			];
+		}
+		UtilsWepps::debug($errors,31);
 
 		/**
 		 * place order

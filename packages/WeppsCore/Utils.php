@@ -58,11 +58,11 @@ class UtilsWepps
 				break;
 			case 3:
 				$output = $header . $val;
-				echo $output;
+				echo $output . "\n\n";
 				break;
 			case 31:
 				$output = $header . $val;
-				echo $output . "\n";
+				echo $output . "\n\n";
 				ConnectWepps::$instance->close();
 				break;
 			case 1:
