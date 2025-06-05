@@ -119,7 +119,7 @@ class RequestCartWepps extends RequestWepps {
 				 * Оформляем заказ
 				 * Жетально через транзакции
 				 */
-				UtilsWepps::debug($this->get,21);
+				$cartUtils->addOrder($this->get);
 				break;
 			case 'copyOrder':
 				break;

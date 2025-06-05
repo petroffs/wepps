@@ -2,8 +2,6 @@
 namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
 class DeliveryUtilsWepps
@@ -76,6 +74,7 @@ class DeliveryUtilsWepps
             $class = new $className($value,$cartUtils);
             $output[$key]['Addons']['tariff'] = $class->getTariff();
             $output[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
+            $output[$key]['Addons']['extension'] = $value['DeliveryExt'];
             if ($value['Id'] == @$cartSummary['delivery']['deliveryId']) {
                 $this->operations = $class->getOperations();
             }

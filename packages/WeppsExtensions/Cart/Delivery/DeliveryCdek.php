@@ -165,8 +165,9 @@ class DeliveryCdekWepps extends DeliveryWepps
 			'allowOrderBtn' => $allowBtn
 		];
 	}
-	public function getErrors_500() {
-
+	public function getErrors(array $get) : array {
+        UtilsWepps::debug('errors test',3);
+        return [];
 	}
 	public function setPoints(): bool
 	{

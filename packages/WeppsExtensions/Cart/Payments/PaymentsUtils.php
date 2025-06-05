@@ -36,6 +36,7 @@ class PaymentsUtilsWepps
 		    $class = new $className($value);
             $res[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);
             $res[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
+            $res[$key]['Addons']['extension'] = $value['PaymentsExt'];
         }
         return $res;
     }

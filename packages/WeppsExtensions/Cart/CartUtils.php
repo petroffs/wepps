@@ -10,6 +10,7 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
+
 class CartUtilsWepps
 {
 	private $user = [];
@@ -96,9 +97,11 @@ class CartUtilsWepps
 		$this->setCart();
 		$this->setCartSummary();
 		$tariffs = $deliveryUtils->getTariffsByCitiesId($this->cart['citiesId'], $this, $deliveryId);
+		//exit();
 		if (!empty($tariffs[0])) {
 			$this->cart['deliveryTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['deliveryDiscount'] = $tariffs[0]['Addons']['discount'];
+			$this->cart['deliveryExtension'] = $tariffs[0]['Addons']['extension'];
 		}
 		$this->setCart();
 	}
@@ -117,6 +120,7 @@ class CartUtilsWepps
 		if (!empty($tariffs[0])) {
 			$this->cart['paymentsTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['paymentsDiscount'] = $tariffs[0]['Addons']['discount'];
+			$this->cart['paymentsExtension'] = $tariffs[0]['Addons']['extension'];
 		}
 		$this->setCart();
 	}
@@ -231,6 +235,9 @@ class CartUtilsWepps
 			$this->summary['delivery']['citiesId'] = $this->cart['citiesId'];
 		}
 		$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId'] ?? '0';
+		if (!empty($this->cart['deliveryId'])) {
+			$this->summary['delivery']['extension'] = $this->cart['deliveryExtension'];
+		}
 		if (!empty($this->cart['deliveryTariff'])) {
 			$this->summary['delivery']['tariff'] = $this->cart['deliveryTariff'];
 			$this->summary['sumTotal'] += $this->cart['deliveryTariff']['price'];
@@ -241,6 +248,7 @@ class CartUtilsWepps
 		}
 		if (!empty($this->cart['paymentsId'])) {
 			$this->summary['payments']['paymentsId'] = $this->cart['paymentsId'];
+			$this->summary['payments']['extension'] = $this->cart['paymentsExtension'];
 		}
 		if (!empty($this->cart['paymentsTariff'])) {
 			$this->summary['payments']['tariff'] = $this->cart['paymentsTariff'];
@@ -322,12 +330,51 @@ class CartUtilsWepps
 	public function getMemcached() {
 		return $this->memcached;
 	}
+	public function addOrder(array $get) {
+		#$deliveryUtils = new DeliveryUtilsWepps();
+		#$paymentsUtils = new PaymentsUtilsWepps();
+		$this->setCartSummary();
+		$cartSummary = $this->getCartSummary();
+		
+		/**
+		 * erors check
+		 * display errors
+		 * place order
+		 * payment ext-s
+		 */
+		
+		if (empty($cartSummary['delivery']['extension'])) {
+			return [];
+		}
+
+		/**
+         * @var \WeppsExtensions\Cart\Delivery\DeliveryWepps $class
+         */
+		$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}";
+        $class = new $className([],$this);
+
+		/**
+		 * errors check
+		 * 
+		 * Получить ошибки и вывести в методе, браузере
+		 * 
+		 */
+		$errors = $class->getErrors($get);
+
+		UtilsWepps::debug($errors,1);
+
+		/**
+		 * place order
+		 * paynment ext-s
+		 */
+		return [];
+	}
 
 	/**
 	 * ! Далее переделка
 	 */
 
-	public function addOrder($settings = array(), $userId = null)
+	public function addOrder_LEGACY($settings = array(), $userId = null)
 	{
 		if (!isset($_SESSION['user']) && $userId == null)
 			return array('error' => 1);
