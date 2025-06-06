@@ -86,7 +86,7 @@
 						<div class="dt pps_flex_14">Оплата</div>
 						{if $order.Payments}
 						<div class="dd pps_flex_34">
-							{assign var="payments" value=$order.Payments|explode:";;;"}
+							{assign var="payments" value=$order.Payments|split:";;;"}
 							{foreach item="item" from=$payments}
 							{assign var="pay" value=$item|strarr}
 								<div class="even pps_flex pps_flex_row pps_flex_row_str">

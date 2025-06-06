@@ -8,7 +8,7 @@ class SmartyPluginsWepps
 {
     public function __construct(Smarty $smarty)
     {
-        $smarty->registerPlugin('modifier', 'explode', function ($string, $delimiter = ',') {
+        $smarty->registerPlugin('modifier', 'split', function ($string, $delimiter = ',') {
             return explode($delimiter, $string);
         });
         $smarty->registerPlugin('modifier', 'json_decode', function ($jsonString, $assoc = true) {
