@@ -156,7 +156,6 @@ class RequestOrdersWepps extends RequestWepps {
 				 */
 				
 				
-				
 				$order = $this->getOrder($this->get['id']);
 				break;
     			
@@ -175,36 +174,8 @@ class RequestOrdersWepps extends RequestWepps {
     			$url = ConnectWepps::$projectDev['protocol'].ConnectWepps::$projectDev['host'];
     			
     			if ($payment=='true') {
-    			    $text .= "<br/><br/>
-                                <div style=\"text-align:center\"><a href=\"{$url}/ext/MerchantSberbank/Request.php?action=form&id={$order['order']['Id']}\" style=\"display:inline-block;background: #087fc4;
-                                color: white;
-                                border-radius: 5px;
-                                border: 1px solid #087fc4;
-                                padding: 10px 20px;
-                                font-weight: bold;
-                                font-size: 14px;
-                                letter-spacing: 0.1px;
-                                box-shadow: inset 0 -15px 15px #076ca7;
-                                text-decoration: none;
-                                text-shadow: 0 1px 1px #054e79;\">Оплата онлайн</a>
-                                
-                                </div>
-                                <br/></br/>
-                                ";
-    			    $text .= "<div style=\"color:#e5e5e5e;font-size:12px\">
-                                Для оплаты (ввода реквизитов Вашей карты) Вы будете перенаправлены на платежный шлюз ПАО СБЕРБАНК. Соединение с платежным шлюзом и передача информации осуществляется в защищенном режиме с использованием протокола шифрования SSL. В случае если Ваш банк поддерживает технологию безопасного проведения интернет-платежей Verified By Visa, MasterCard SecureCode, MIR Accept, J-Secure для проведения платежа также может потребоваться ввод специального пароля.
-                                <br/>
-                                Настоящий сайт поддерживает 256-битное шифрование. Конфиденциальность сообщаемой персональной информации
-                                обеспечивается ПАО СБЕРБАНК. Введенная информация не будет предоставлена третьим лицам за исключением случаев,
-                                предусмотренных законодательством РФ. Проведение платежей по банковским картам осуществляется в строгом соответствии с требованиями платежных систем МИР, Visa Int., MasterCard Europe Sprl, JCB
-                                <br/>
-                                Данная транзакция осуществляется в пользу ООО \"ПСС ГРАЙТЕК\".
-                                </div><br/></br/>";
+    			    $text .= "";
     			}
-    			
-    			
-    			$text .= "<br/>---<br/>С уважением, команда ПСС ГРАЙТЕК";
-
     			$mail = new MailWepps("html");
 				$mail->output = false;
 				$mail->mail($to, $subject, $text);
@@ -233,6 +204,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$products = json_decode($order['JPositions'],true);
 		$sql = '';
 		$sum = 0;
+		UtilsWepps::debug($products);
 		foreach ($products as $value) {
 			$sum += $value['sum'];
 			$sql .= "\n(select '{$value['id']}' `id`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`) union";
