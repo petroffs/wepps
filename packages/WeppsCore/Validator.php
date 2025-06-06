@@ -140,12 +140,10 @@ class ValidatorWepps {
 	/**
 	 * Индикация ошибок формы
 	 */
-	public static function setFormErrorsIndicate ($errors,$form) {
+	public static function setFormErrorsIndicate($errors,$form) {
 	    $str = "<script>\n";
-	    $errorCount=0;
 	    foreach ($errors as $key => $value) {
 	        if ($value!="") {
-	            $errorCount++;
 	            $str .= "
 				var elem = $('#{$form}').find('[name=\"{$key}\"]');
                 if (elem.length==0) {
@@ -175,7 +173,12 @@ class ValidatorWepps {
 				});
 		";
 	    $str .= "</script>";
-	    return array('Co'=>$errorCount,'Out'=>$str);
+		$errors = array_filter($errors, function ($value) {return !empty($value);});
+	    return [
+			'errors'=>$errors,
+			'count'=>count($errors),
+			'html'=>$str,
+		];
 	}
 	
 	/**
@@ -190,7 +193,7 @@ class ValidatorWepps {
 			$js
 			</script>
 				";
-		return array('Out'=>$str);
+		return array('html'=>$str);
 	}
 }
 

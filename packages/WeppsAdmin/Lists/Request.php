@@ -18,11 +18,6 @@ require_once '../../../configloader.php';
 if (!isset($_SESSION)) {
 	@session_start();
 }
-
-/**
- * @var \Smarty $smarty
- */
-
 class RequestListsWepps extends RequestWepps {
 	public function request($action="") {
 		$this->tpl = '';
@@ -45,7 +40,6 @@ class RequestListsWepps extends RequestWepps {
 					$sql = "select distinct t.Id,t.{$ex[2]} from {$ex[1]} as t 
 							inner join s_SearchKeys as sk on sk.Field1 = t.Id and sk.Field3='List::{$this->get['list']}::{$this->get['field']}'
 							inner join {$this->get['list']} as l on sk.Name=l.Id order by t.{$ex[2]}";
-					//UtilsWepps::debug($sql);
 					$res = ConnectWepps::$instance->fetch($sql);
 					$this->assign('fieldkey', 'Id');
 					$this->assign('fieldname', $ex[2]);
@@ -185,8 +179,8 @@ class RequestListsWepps extends RequestWepps {
 				 * Индикация ошибок
 				 */
 				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
-				echo $outer['Out'];
-				if ($outer['Co']==0) {
+				echo $outer['html'];
+				if ($outer['count']==0) {
 					/*
 					 * Сохранение информации
 					 */
@@ -200,7 +194,7 @@ class RequestListsWepps extends RequestWepps {
 						$outer = ListsWepps::setListItem($this->get['pps_tablename'],$this->get['pps_tablename_id'],$this->get);
 					}
 					
-					echo $outer['output'];
+					echo $outer['html'];
 				}
 				break;
 			case "remove":
@@ -208,17 +202,14 @@ class RequestListsWepps extends RequestWepps {
 					ExceptionWepps::error404();
 				}
 				$outer = ListsWepps::removeListItem($this->get['list'],$this->get['id'],$this->get['pps_path']);
-				echo $outer['output'];
+				echo $outer['html'];
 				break; 
 			case "copy":
 				if (!isset($this->get['id']) || !isset($this->get['list'])) {
 					ExceptionWepps::error404();
 				}
-				
-				//UtilsWepps::debug($this->get,1);
-				
 				$outer = ListsWepps::copyListItem($this->get['list'],$this->get['id'],$this->get['pps_path']);
-				echo $outer['output'];
+				echo $outer['html'];
 				break;
 			case "propOptionAdd":
 				if (!isset($this->get['id']) || !isset($this->get['value'])) {

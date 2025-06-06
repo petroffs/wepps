@@ -588,7 +588,7 @@ class ListsWepps
 				},1500);
 			</script>
 		";
-		return ['status' => '1', 'output' => $js];
+		return ['status' => '1', 'html' => $js];
 	}
 
 	public static function getUploadFileName($upload, $list, $field, $id)
@@ -641,7 +641,7 @@ class ListsWepps
 			/*if (!stristr($value['name'],"jpg") && !stristr($value['name'],"jpeg") && !stristr($value['name'],"png")) {
 						 $errors[$filesfield] = "Неверный тип файла ".$value['name'];
 						 $outer = $this->setFormErrorsIndicate($errors,$myform);
-						 return array('error'=>$errors[$filesfield],'js'=>$outer['Out']);
+						 return array('error'=>$errors[$filesfield],'js'=>$outer['html']);
 					 } */
 			if ((int) $value['size'] > 50000000) {
 				/**
@@ -649,7 +649,7 @@ class ListsWepps
 				 */
 				$errors[$filesfield] = "Слишком большой файл";
 				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
-				return array('error' => $errors[$filesfield], 'js' => $outer['Out']);
+				return array('error' => $errors[$filesfield], 'js' => $outer['html']);
 			}
 
 			$filepathinfo = pathinfo($value['name']);
@@ -906,13 +906,13 @@ class ListsWepps
 			location.href={$href};
 			</script>
 		";
-		return array('status' => '1', 'output' => $js);
+		return array('status' => '1', 'html' => $js);
 	}
 	public static function removeListItem($list = "", $id = 0, $path = "lists")
 	{
 
 		if ($list == "" || (int) $id == 0) {
-			return array('status' => '0', 'output' => "");
+			return array('status' => '0', 'html' => "");
 		}
 
 		/*
@@ -950,7 +950,7 @@ class ListsWepps
 			location.href={$href};
 			</script>
 		";
-		return array('status' => '1', 'output' => $js);
+		return array('status' => '1', 'html' => $js);
 	}
 	public static function setSearchIndex($list = '', $id = 0)
 	{

@@ -26,7 +26,7 @@ class RequestReviewsWepps extends RequestWepps {
 				$this->errors['email'] = ValidatorWepps::isEmail($this->get['email'], "Неверно заполнено");
 				$this->errors['comment'] = ValidatorWepps::isNotEmpty($this->get['comment'], "Не заполнено");
 				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
-				$this->assign('jscode', $outer['Out']);
+				$this->assign('jscode', $outer['html']);
 				if ($outer['Co']==0) {
 					/*
 					 * Добавление отзыва
@@ -45,7 +45,7 @@ class RequestReviewsWepps extends RequestWepps {
 					 * Вывод сообщения о добавлении отзыва
 					 */
 					$arr = ValidatorWepps::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);
-					$this->assign('jscode', $arr['Out']);
+					$this->assign('jscode', $arr['html']);
 				}
 				$this->tpl = "RequestReviewsAdd.tpl";
 				break;

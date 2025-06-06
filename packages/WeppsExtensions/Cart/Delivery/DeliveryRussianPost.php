@@ -1,11 +1,10 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
-use Curl\Curl;
+use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Template\TemplateUtilsWepps;
+use Curl\Curl;
 
 class DeliveryRussianPostWepps extends DeliveryWepps
 {
@@ -92,4 +91,13 @@ class DeliveryRussianPostWepps extends DeliveryWepps
             'allowOrderBtn' => $allowBtn
         ];
     }
+    public function getErrors(array $get): array
+	{
+		$cartSummary = $this->cartUtils->getCartSummary();
+		$errors = [];
+		$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
+		$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
+		$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+		return $errors;
+	}
 }

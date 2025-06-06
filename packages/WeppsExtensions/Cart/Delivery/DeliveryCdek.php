@@ -46,10 +46,10 @@ class DeliveryCdekWepps extends DeliveryWepps
 	public function getTariff(): array
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();
-        if (empty($cartSummary)) {
-            return [];
-        }
-		$jsettings = json_decode($this->settings['JSettings'],true);
+		if (empty($cartSummary)) {
+			return [];
+		}
+		$jsettings = json_decode($this->settings['JSettings'], true);
 		$jdata = [
 			'tariff_code' => (int) $jsettings['tariff'],
 			'from_location' => [
@@ -64,8 +64,8 @@ class DeliveryCdekWepps extends DeliveryWepps
 					'parameter' => (string) $cartSummary['sumActive'] . ".0"
 				],
 				/* [
-						'code' => 'SMS'
-				], */
+									'code' => 'SMS'
+							], */
 			],
 			'packages' => [
 				'weight' => (int) $jsettings['weight'] * 1000,
@@ -74,22 +74,22 @@ class DeliveryCdekWepps extends DeliveryWepps
 				'height' => (int) $jsettings['height']
 			]
 		];
-		$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+		$json = json_encode($jdata, JSON_UNESCAPED_UNICODE);
 		$hash = md5($json);
 		if (empty($response = $this->cartUtils->getMemcached()->get($hash))) {
-			$url = ConnectWepps::$projectServices['cdek']['url']."/v2/calculator/tariff";
-			$response = $this->curl->post($url,$json)->response;
-			$response = json_decode($response,true);
-			$this->cartUtils->getMemcached()->set($hash,$response,86400);
+			$url = ConnectWepps::$projectServices['cdek']['url'] . "/v2/calculator/tariff";
+			$response = $this->curl->post($url, $json)->response;
+			$response = json_decode($response, true);
+			$this->cartUtils->getMemcached()->set($hash, $response, 86400);
 		}
 		if (empty($response['calendar_min'])) {
 			return [];
 		}
-		$period = ($response['calendar_min']==$response['calendar_max']) ? $response['calendar_max'] : "{$response['calendar_min']}-{$response['calendar_max']}";
-		$price = round($response['total_sum']/5)*5;
-		if ($this->settings['FreeLevel']>0 && $this->settings['FreeLevel']<=$cartSummary['sumActive']) {
-            $price = 0;
-        }
+		$period = ($response['calendar_min'] == $response['calendar_max']) ? $response['calendar_max'] : "{$response['calendar_min']}-{$response['calendar_max']}";
+		$price = round($response['total_sum'] / 5) * 5;
+		if ($this->settings['FreeLevel'] > 0 && $this->settings['FreeLevel'] <= $cartSummary['sumActive']) {
+			$price = 0;
+		}
 		return [
 			'status' => 200,
 			'title' => $this->settings['Name'],
@@ -100,7 +100,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 	public function getOperations(): array
 	{
 		$headers = $this->cartUtils->getHeaders();
-		$jdata = json_decode($this->settings['JSettings'],true);
+		$jdata = json_decode($this->settings['JSettings'], true);
 		$tpl = 'OperationsNotice.tpl';
 		$data = [];
 		$allowBtn = false;
@@ -114,15 +114,15 @@ class DeliveryCdekWepps extends DeliveryWepps
 				$tpl = 'OperationsPickpoints.tpl';
 				$data = [];
 				#$from = ConnectWepps::$projectServices['cdek']['office']['sender'];
-				$to = $cart['citiesId']??0;
+				$to = $cart['citiesId'] ?? 0;
 				$sql = "select * from PointsCdek where CitiesId = ? limit 1000";
-				$res = ConnectWepps::$instance->fetch($sql,[$to]);
+				$res = ConnectWepps::$instance->fetch($sql, [$to]);
 				if (empty($res)) {
 					break;
 				}
 				$zoom = 11;
 				foreach ($res as $value) {
-					$jdata = json_decode($value['JData'],true);
+					$jdata = json_decode($value['JData'], true);
 					$row = [
 						'Id' => $value['Id'],
 						'Name' => $value['Name'],
@@ -132,12 +132,12 @@ class DeliveryCdekWepps extends DeliveryWepps
 						'Address' => $jdata['location']['address'],
 						'WorkTime' => $jdata['work_time'],
 						'PostalCode' => $jdata['location']['postal_code'],
-						'Phone'=>$jdata['phones'][0]['number'],
+						'Phone' => $jdata['phones'][0]['number'],
 						'Email' => '',
 						'Coords' => "{$jdata['location']['latitude']},{$jdata['location']['longitude']}",
 						'MapZoom' => $zoom
 					];
-					array_push($data,$row);
+					array_push($data, $row);
 				}
 				break;
 			case 137:
@@ -166,14 +166,26 @@ class DeliveryCdekWepps extends DeliveryWepps
 			'allowOrderBtn' => $allowBtn
 		];
 	}
-	public function getErrors(array $get) : array {
+	public function getErrors(array $get): array
+	{
+		$cartSummary = $this->cartUtils->getCartSummary();
 		$errors = [];
-		$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
-		$errors['operations-address'] = ValidatorWepps::isEmail($get['operations-address'], "Неверно заполнено");
-		$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
-		$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
-		$outer = ValidatorWepps::setFormErrorsIndicate($errors, $get['form']);
-        return $outer;
+		switch (@$cartSummary['delivery']['settings']['tariff']) {
+			case 136:
+				$errors['operations-id'] = ValidatorWepps::isNotEmpty($get['operations-id'], "Не заполнено");
+				$errors['operations-title'] = ValidatorWepps::isNotEmpty($get['operations-title'], "Не заполнено");
+				$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
+				$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
+				$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+				break;
+			case 137:
+			default:
+				$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
+				$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
+				$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+				break;
+		}
+		return $errors;
 	}
 	public function setPoints(): bool
 	{
@@ -293,9 +305,10 @@ class DeliveryCdekWepps extends DeliveryWepps
 		ConnectWepps::$instance->transaction($func, []);
 		return true;
 	}
-	public function getPostalcodes() {
-		$response = $this->curl->get($this->url . '/v2/location/postalcodes?code='.$this->settings['CitiesId']);
-		$jdata = @json_decode($response->response,true);
+	public function getPostalcodes()
+	{
+		$response = $this->curl->get($this->url . '/v2/location/postalcodes?code=' . $this->settings['CitiesId']);
+		$jdata = @json_decode($response->response, true);
 		return $jdata;
 	}
 	private function getToken()

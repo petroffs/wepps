@@ -39,8 +39,8 @@ class RequestContactsWepps extends RequestWepps {
 					}
 				}
 				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
-				$this->assign('jscode', $outer['Out']);
-				if ($outer['Co']==0) {
+				$this->assign('jscode', $outer['html']);
+				if ($outer['count']==0) {
 					/*
 					 * Отправка E-mail
 					 */
@@ -81,7 +81,7 @@ class RequestContactsWepps extends RequestWepps {
 					 * Вывод сообщения о добавлении отзыва
 					 */
 					$arr = ValidatorWepps::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);
-					$this->assign('jscode', $arr['Out']);
+					$this->assign('jscode', $arr['html']);
 				}
 				$this->tpl = "RequestContacts.tpl";
 				break;

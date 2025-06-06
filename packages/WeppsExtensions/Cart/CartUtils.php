@@ -7,6 +7,7 @@ use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Utils\MemcachedWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
@@ -97,11 +98,11 @@ class CartUtilsWepps
 		$this->setCart();
 		$this->setCartSummary();
 		$tariffs = $deliveryUtils->getTariffsByCitiesId($this->cart['citiesId'], $this, $deliveryId);
-		//exit();
 		if (!empty($tariffs[0])) {
 			$this->cart['deliveryTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['deliveryDiscount'] = $tariffs[0]['Addons']['discount'];
 			$this->cart['deliveryExtension'] = $tariffs[0]['Addons']['extension'];
+			$this->cart['deliverySettings'] = json_decode($tariffs[0]['JSettings'],true);
 		}
 		$this->setCart();
 	}
@@ -237,6 +238,7 @@ class CartUtilsWepps
 		$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId'] ?? '0';
 		if (!empty($this->cart['deliveryId'])) {
 			$this->summary['delivery']['extension'] = $this->cart['deliveryExtension'];
+			$this->summary['delivery']['settings'] = $this->cart['deliverySettings'];
 		}
 		if (!empty($this->cart['deliveryTariff'])) {
 			$this->summary['delivery']['tariff'] = $this->cart['deliveryTariff'];
@@ -342,7 +344,6 @@ class CartUtilsWepps
 		 * place order
 		 * payment ext-s
 		 */
-		
 		if (empty($cartSummary['delivery']['extension'])) {
 			return [];
 		}
@@ -361,13 +362,13 @@ class CartUtilsWepps
 		 * 
 		 */
 		$errors = $class->getErrors($get);
-
-		if (!empty($errors['Co']) && $errors['Co']>0) {
-			return [
-				'errors' => $errors
-			];
+		$errors = ValidatorWepps::setFormErrorsIndicate($errors, $get['form']);
+		if ($errors['count']>0) {
+			echo $errors['html'];
+			exit();
 		}
-		UtilsWepps::debug($errors,31);
+		
+		UtilsWepps::debug('place order',3);
 
 		/**
 		 * place order

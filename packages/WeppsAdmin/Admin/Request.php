@@ -22,8 +22,8 @@ class RequestAdminWepps extends RequestWepps {
 				$users->signIn();
 				$this->errors = $users->errors();
 				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
-				echo $outer['Out'];
-				if ($outer['Co']==0) {
+				echo $outer['html'];
+				if ($outer['count']==0) {
 					$js = "
 						<script>
 						location.reload();

@@ -80,7 +80,6 @@ class DeliveryWepps
         return $operations;
     }
     public function getErrors(array $get) : array {
-        #UtilsWepps::debug('errors test');
         return [];
 	}
 }

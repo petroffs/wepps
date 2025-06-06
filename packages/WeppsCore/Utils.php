@@ -694,13 +694,13 @@ class FilesWepps
 		if (!strstr($myFiles[0]['type'], "image/")) {
 			$errors[$filesfield] = "Неверный тип файла";
 			$outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
-			return ['error' => $errors[$filesfield], 'js' => $outer['Out']];
+			return ['error' => $errors[$filesfield], 'js' => $outer['html']];
 		}
 		if ((int) $myFiles[0]['size'] > 10000000) {
 			#1 мегабайт = 1 000 000 байт
 			$errors[$filesfield] = "Слишком большой файл";
 			$outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
-			return ['error' => $errors[$filesfield], 'js' => $outer['Out']];
+			return ['error' => $errors[$filesfield], 'js' => $outer['html']];
 		}
 		$filepathinfo = pathinfo($myFiles[0]['name']);
 		$filepathinfo['filename'] = strtolower(TextTransformsWepps::translit($filepathinfo['filename'], 2));
