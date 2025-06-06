@@ -6,7 +6,7 @@ var readyViewOrderInit = function() {
 		language: "ru",
 		delay: 500
 	});*/
-	readyFormsInit();
+	formsInit();
 	let order = $('.orders').children('.item[data-id="'+orderId+'"]');
 	order.children('.item-field.price').find('span').text(utilsWepps.money(orderSum));
 	$('select.quantity,.price>label>input').on('focus',function(event) {
@@ -124,10 +124,11 @@ var readyViewOrderInit = function() {
 readyViewOrderInit();
 readyAdminWeppsInit();
 if ($( "#add-products" ).length) {
-	getSelect2Ajax({
+	select2Ajax({
 		id : '#add-products',
 		url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchProducts',
-		placeholder: 'Новый товар'
+		placeholder: 'Новый товар',
+		max: 1
 	},function(event) {
 		let params = event.params.data;
 		$('#add-products-price').val(params.price);

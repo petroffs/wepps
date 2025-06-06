@@ -6,6 +6,7 @@ var select2Ajax = function(obj) {
 	let id = obj.id;
 	let url = obj.url;
 	let max = obj.max;
+	let placeholder = obj.placeholder;
 	$(id).select2({
 		language: "ru",
 		multiple: true,

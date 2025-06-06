@@ -96,6 +96,7 @@ class RequestOrdersWepps extends RequestWepps {
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "searchProducts":
+				#UtilsWepps::debug($this->get,31);
 				$jdata = self::searchProducts(@$this->get['search'],$this->get['page']);
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				header ( 'Content-type:application/json;charset=utf-8' );
@@ -262,13 +263,17 @@ class RequestOrdersWepps extends RequestWepps {
 		return ['order'=>$order,'products'=>$products,'statuses'=>$statuses];
 	}
 	private function searchProducts($text='',$page=1) {
-		$term = $text;
-		$limit = 10;
-		$offset = ($page-1)*$limit;
-		$sql = "select t.Id `id`,t.Name `text`,t.Price `price` from Products t
-                		where t.DisplayOff=0 and (t.Name like '%{$term}%' or t.Articul like '%{$term}%')
-                        group by t.Id order by t.Name asc limit $offset,$limit";
-		$res = ConnectWepps::$instance->fetch($sql);
+		if (strlen($text) < 3) {
+			$res = [];
+		} else {
+			$term = $text;
+			$limit = 10;
+			$offset = ($page - 1) * $limit;
+			$sql = "select t.Id `id`,t.Name `text`,t.Price `price` from Products t
+				where t.DisplayOff=0 and (t.Name like '%{$term}%' or t.Article like '%{$term}%')
+				group by t.Id order by t.Name asc limit $offset,$limit";
+			$res = ConnectWepps::$instance->fetch($sql);
+		}
 		$pagination = false;
 		if (!empty($res)) {
 			$pagination = true;
