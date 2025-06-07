@@ -75,8 +75,11 @@ class RequestOrdersWepps extends RequestWepps {
 				];
 				
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				
 				$sql = "update Orders set JPositions=? where Id=?";
 				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
+				UtilsWepps::debug($sql);
+				UtilsWepps::debug([$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "removeProducts":
@@ -154,32 +157,7 @@ class RequestOrdersWepps extends RequestWepps {
 				/*
 				 * Уведомление клиенту
 				 */
-				
-				
-				$order = $this->getOrder($this->get['id']);
-				break;
-    			
-    			/*
-    			 * MailWepps
-    			 */
-    			$orderPositionsText = $this->getOrderPositionsText($order);
-    			
-    			$to = $order['order']['Email'];
-    			$subject = "Сообщение по заказу";
-    			$text = "Уважаемый, {$order['order']['Name']}!<br/><br/>".nl2br($message);
-    			
-    			if ($attach=='true') {
-    			    $text .= $orderPositionsText;
-    			}
-    			$url = ConnectWepps::$projectDev['protocol'].ConnectWepps::$projectDev['host'];
-    			
-    			if ($payment=='true') {
-    			    $text .= "";
-    			}
-    			$mail = new MailWepps("html");
-				$mail->output = false;
-				$mail->mail($to, $subject, $text);
-				$this->tpl = "RequestViewOrder.tpl";
+				#$order = $this->getOrder($this->get['id']);
 				break;
 			default:
 				ExceptionWepps::error(404);
@@ -204,14 +182,14 @@ class RequestOrdersWepps extends RequestWepps {
 		$products = json_decode($order['JPositions'],true);
 		$sql = '';
 		$sum = 0;
-		UtilsWepps::debug($products);
 		foreach ($products as $value) {
 			$sum += $value['sum'];
-			$sql .= "\n(select '{$value['id']}' `id`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`) union";
+			$sql .= "\n(select '{$value['id']}' `id`,'{$value['name']}' `name`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`) union";
 		}
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
 		$ids = implode(',', array_column($products, 'id'));
-		$sql = "select x.id,t.Name name,x.quantity,x.price,x.sum from Products t inner join $sql x on x.id=t.Id where t.Id in ($ids)";
+		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
+		#UtilsWepps::debug($sql);
 		$products = ConnectWepps::$instance->fetch($sql);
 		$this->assign('products', $products);
 		$order['OSum'] = $sum;
@@ -235,7 +213,7 @@ class RequestOrdersWepps extends RequestWepps {
 		return ['order'=>$order,'products'=>$products,'statuses'=>$statuses];
 	}
 	private function searchProducts($text='',$page=1) {
-		if (strlen($text) < 3) {
+		if (strlen($text) < 0) {
 			$res = [];
 		} else {
 			$term = $text;
@@ -317,6 +295,5 @@ class RequestOrdersWepps extends RequestWepps {
 	}
 }
 $request = new RequestOrdersWepps ($_REQUEST);
-/** @var \Smarty $smarty */
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
