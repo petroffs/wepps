@@ -36,7 +36,7 @@
 				</div>
 			</div>
 			{/foreach}
-			<div class="item item-add pps_flex pps_flex_row pps_flex_row_str" data-order="{$order.Id}">
+			<div class="item item-add pps_flex pps_flex_row pps_flex_row_str" data-order="{$order.Id}" data-name="">
 				<div class="title2 pps_flex_13 pps_flex_45_view_small pps_order_1_view_small">
 					<label class="pps pps_select">
 						<select id="add-products"></select>

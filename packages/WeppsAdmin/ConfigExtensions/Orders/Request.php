@@ -58,29 +58,21 @@ class RequestOrdersWepps extends RequestWepps {
 				break;
 			case 'addProducts':
 				$this->tpl = "RequestViewOrder.tpl";
-				if (empty($this->get['id']) || empty($this->get['products']) || empty($this->get['quantity']) || empty($this->get['price'])) {
+				if (empty($this->get['id']) || empty($this->get['products']) || empty($this->get['name']) || empty($this->get['quantity']) || empty($this->get['price'])) {
 					ExceptionWepps::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
 				$jdata = json_decode($order['order']['JPositions'],true);
-				
-				/* $jdata[$this->get['index']]['quantity'] = (int) $this->get['quantity'];
-				$jdata[$this->get['index']]['price'] = (float) $this->get['price'];
-				$jdata[$this->get['index']]['sum'] = UtilsWepps::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'],2); */
-				
 				$jdata[] = [
 						'id' => (int) $this->get['products'],
+						'name' => (string) $this->get['name'],
 						'quantity' => (int) $this->get['quantity'],
 						'price' => (float) $this->get['price'],
 						'sum' => UtilsWepps::round((float) $this->get['price'] * (int) $this->get['quantity'],2),
 				];
-				
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
-				
 				$sql = "update Orders set JPositions=? where Id=?";
 				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
-				UtilsWepps::debug($sql);
-				UtilsWepps::debug([$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "removeProducts":
@@ -94,6 +86,7 @@ class RequestOrdersWepps extends RequestWepps {
 					ExceptionWepps::error(400);
 				}
 				unset($jdata[$this->get['index']]);
+				$jdata = array_merge([],$jdata);
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
 				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
@@ -218,10 +211,10 @@ class RequestOrdersWepps extends RequestWepps {
 			$term = $text;
 			$limit = 10;
 			$offset = ($page - 1) * $limit;
-			$sql = "select t.Id `id`,t.Name `text`,t.Price `price` from Products t
-				where t.DisplayOff=0 and (t.Name like '%{$term}%' or t.Article like '%{$term}%')
+			$sql = "select t.Id `id`,t.Name `text`,t.Name `name`,t.Price `price` from Products t
+				where t.DisplayOff=0 and (t.Name like ? or t.Article like ?)
 				group by t.Id order by t.Name asc limit $offset,$limit";
-			$res = ConnectWepps::$instance->fetch($sql);
+			$res = ConnectWepps::$instance->fetch($sql,["%{$term}%","%{$term}%"]);
 		}
 		$pagination = false;
 		if (!empty($res)) {

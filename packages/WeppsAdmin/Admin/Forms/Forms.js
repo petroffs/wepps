@@ -2,7 +2,7 @@ function autoResizeTextarea(textarea) {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
 };
-var select2Ajax = function(obj) {
+var select2Ajax = function(obj,fn) {
 	let id = obj.id;
 	let url = obj.url;
 	let max = obj.max;
@@ -23,6 +23,8 @@ var select2Ajax = function(obj) {
 				return query;
 			}
 		}
+	}).on('select2:select', function(event) {
+		fn(event);
 	});
 	//$(id).select2("destroy").select2();
 };

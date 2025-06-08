@@ -72,7 +72,7 @@ var readyViewOrderInit = function() {
 		let el = $(this).closest('.item');
 		let obj = $('#view'+el.data('order'));
 		let settings = {
-			data: 'action=addProducts&id='+el.data('order')+'&products='+$('#add-products').val()+'&price='+$('#add-products-price').val()+'&quantity='+$('#add-products-quantity').val(),
+			data: 'action=addProducts&id='+el.data('order')+'&products='+$('#add-products').val()+'&name='+$('#add-products').data('name')+'&price='+$('#add-products-price').val()+'&quantity='+$('#add-products-quantity').val(),
 			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
 			obj: obj
 		}
@@ -123,7 +123,7 @@ var readyViewOrderInit = function() {
 
 readyViewOrderInit();
 readyAdminWeppsInit();
-if ($( "#add-products" ).length) {
+if ($("#add-products").length) {
 	select2Ajax({
 		id : '#add-products',
 		url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php?action=searchProducts',
@@ -132,5 +132,7 @@ if ($( "#add-products" ).length) {
 	},function(event) {
 		let params = event.params.data;
 		$('#add-products-price').val(params.price);
+		$('#add-products').data('name',params.name);
+		//console.log($('#add-products').closest('.item').data('name'));
 	});
 };
