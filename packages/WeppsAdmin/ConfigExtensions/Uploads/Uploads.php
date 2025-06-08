@@ -37,11 +37,11 @@ class UploadsWepps extends RequestWepps {
 				}
 
 				$obj = new DataWepps("s_UploadsSource");
-				$source = $obj->get("DisplayOff=0",200,1);
+				$source = $obj->fetchmini("DisplayOff=0",200,1);
 				$smarty->assign('source',$source);
 				
 				$obj = new DataWepps("s_Files");
-				$files = $obj->getMax("TableName='s_UploadsSource'",5,1,"t.Id desc");
+				$files = $obj->fetch("TableName='s_UploadsSource'",5,1,"t.Id desc");
 				$smarty->assign('files',$files);
 				break;
 			default:

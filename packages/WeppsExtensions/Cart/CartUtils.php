@@ -388,7 +388,7 @@ class CartUtilsWepps
 		$cartSummary = self::cartSummary();
 		$userId = ($userId == null) ? $_SESSION['user']['Id'] : $userId;
 		$obj = new DataWepps("s_Users");
-		$user = $obj->get($userId)[0];
+		$user = $obj->fetchmini($userId)[0];
 		$obj->set($user['Id'], array(
 			'CityRegion' => $cartSummary['cartAdd']['cityChecked'],
 			'City' => $cartSummary['cartAdd']['city'],
@@ -472,7 +472,7 @@ class CartUtilsWepps
 		$obj = new DataWepps("TradeOrders");
 		$obj->setJoin('left join GeoCities as c on c.Id = t.City');
 		$obj->setConcat('c.Name as CityName');
-		$order = $obj->getMax($id)[0];
+		$order = $obj->fetch($id)[0];
 		return $order;
 	}
 	public function addOrderPositions($orderId)

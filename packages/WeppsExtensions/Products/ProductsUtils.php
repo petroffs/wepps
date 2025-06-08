@@ -82,7 +82,7 @@ class ProductsUtilsWepps {
 		$settings['pages'] = (!empty($settings['pages'])) ? (int) $settings['pages'] : 20;
 		$settings['page'] = (!empty($settings['page'])) ? (int) $settings['page'] : 1;
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
-		$res = $obj->getMax($settings['conditions']['conditions'],$settings['pages'],$settings['page'],$settings['sorting']);
+		$res = $obj->fetch($settings['conditions']['conditions'],$settings['pages'],$settings['page'],$settings['sorting']);
 		return [
 				'rows'=>$res,
 				'count'=>$obj->count,

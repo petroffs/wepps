@@ -23,7 +23,7 @@ class PdfWepps {
 		if ($action == '' || $id == '') ExceptionWepps::error404();
 		$smarty = SmartyWepps::getSmarty();
 		$obj = new DataWepps("TradeShops");
-		$shop = $obj->getMax(1)[0];
+		$shop = $obj->fetch(1)[0];
 		$smarty->assign('shopInfo',$shop);
 		$smarty->assign('projectInfo',ConnectWepps::$projectInfo);
 		$smarty->assign('projectDev',ConnectWepps::$projectDev);
@@ -34,7 +34,7 @@ class PdfWepps {
 			case "Order" :
 				$order = CartUtilsWepps::getOrder($this->get['id']);
 				$obj = new DataWepps("TradeClientsHistory");
-				$orderPositions = $obj->getMax("OrderId='{$this->get['id']}'");
+				$orderPositions = $obj->fetch("OrderId='{$this->get['id']}'");
 				if ($shop['UrNDS']!=0) {
 					$orderNDS = round($order['Summ'] / ((100 + $shop['UrNDS']) / 100) * ($shop['UrNDS'] / 100));
 					$smarty->assign('orderNDS',$orderNDS);
@@ -45,7 +45,7 @@ class PdfWepps {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
 				}
 				$obj = new DataWepps("s_Users");
-				$user = $obj->getMax($order['UserId'])[0];
+				$user = $obj->fetch($order['UserId'])[0];
 				$smarty->assign('order',$order);
 				$smarty->assign('orderPositions',$orderPositions);
 				$smarty->assign('orderPositionsCount',$orderPositionsCount);
@@ -58,14 +58,14 @@ class PdfWepps {
 			case "Receipt" :
 				$order = CartUtilsWepps::getOrder($this->get['id']);
 				$obj = new DataWepps("TradeClientsHistory");
-				$orderPositions = $obj->getMax("OrderId='{$this->get['id']}'");
+				$orderPositions = $obj->fetch("OrderId='{$this->get['id']}'");
 				$orderSummLetter = TextTransformsWepps::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
 					if ($value['ProductId']!=0) $orderPositionsCount += $value['ItemQty'];
 				}
 				$obj = new DataWepps("s_Users");
-				$user = $obj->getMax($order['UserId'])[0];
+				$user = $obj->fetch($order['UserId'])[0];
 				$smarty->assign('order',$order);
 				$smarty->assign('orderPositions',$orderPositions);
 				$smarty->assign('orderPositionsCount',$orderPositionsCount);
@@ -78,7 +78,7 @@ class PdfWepps {
 			case "Invoice" :
 				$order = CartUtilsWepps::getOrder($this->get['id']);
 				$obj = new DataWepps("TradeClientsHistory");
-				$orderPositions = $obj->getMax("OrderId='{$this->get['id']}'");
+				$orderPositions = $obj->fetch("OrderId='{$this->get['id']}'");
 				if ($shop['UrNDS']!=0) {
 					$orderNDS = round($order['Summ'] / ((100 + $shop['UrNDS']) / 100) * ($shop['UrNDS'] / 100));
 					$smarty->assign('orderNDS',$orderNDS);

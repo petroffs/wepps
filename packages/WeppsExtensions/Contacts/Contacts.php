@@ -16,7 +16,7 @@ class ContactsWepps extends ExtensionWepps {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Contacts/Contacts.tpl';
 				$obj = new DataWepps("Contacts");
-				$res = $obj->getMax("t.DisplayOff=0");
+				$res = $obj->fetch("t.DisplayOff=0");
 				#UtilsWepps::debug($res,1);
 				$smarty->assign('elements',$res);
 				break;

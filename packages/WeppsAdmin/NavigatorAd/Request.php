@@ -27,7 +27,7 @@ class RequestNavigatorAdWepps extends RequestWepps {
                 
                 $obj = new DataWepps("s_Navigator");
                 $obj->setConcat("t.Id as id,if (t.NameMenu!='',t.NameMenu,t.Name) as value,concat('/_wepps/navigator',t.Url) as Url");
-                $res = $obj->getMax($condition);
+                $res = $obj->fetch($condition);
                 if (!isset($res[0]['Id'])) {
                     ConnectWepps::$instance->close();
                 }

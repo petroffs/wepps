@@ -15,7 +15,7 @@ class NewsWepps extends ExtensionWepps {
 				$conditions = 't.DisplayOff=0';
 				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($conditions,12,$this->page,"t.NDate desc");
+				$res = $obj->fetch($conditions,12,$this->page,"t.NDate desc");
 				$smarty->assign('elements', $res);
 				$smarty->assign('paginator', $obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl' ));
@@ -28,7 +28,7 @@ class NewsWepps extends ExtensionWepps {
 				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
 				$obj = new DataWepps("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($conditions,3,1,"t.NDate");
+				$res = $obj->fetch($conditions,3,1,"t.NDate");
 				$smarty->assign('elements',$res);
 				$smarty->assign('normalView',0);
 			break;

@@ -15,7 +15,7 @@ class GalleryWepps extends ExtensionWepps {
 				$this->tpl = 'packages/WeppsExtensions/Gallery/Gallery.tpl';
 				$obj = new DataWepps("s_Files");
 				$obj->setJoin("inner join Gallery as fg on fg.Id=t.TableNameId and t.TableName='Gallery'");
-				$res = $obj->getMax("t.TableName='Gallery' and fg.NavigatorId = '{$this->navigator->content['Id']}'",500,1,'t.Priority');
+				$res = $obj->fetch("t.TableName='Gallery' and fg.NavigatorId = '{$this->navigator->content['Id']}'",500,1,'t.Priority');
 				$smarty->assign('elements',$res);
 				break;
 			default:

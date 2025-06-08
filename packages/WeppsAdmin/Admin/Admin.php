@@ -133,7 +133,7 @@ class AdminWepps {
 	public static function getPermissions($permId=0,$check=[]) {
 		if ($permId==0 || (int) $permId==0) return array('status'=>0);
 		$obj = new DataWepps("s_Permissions");
-		$res = $obj->getMax($permId)[0];
+		$res = $obj->fetch($permId)[0];
 		if (!isset($res['Id'])) return array('status'=>0);
 
 		$lists = explode(",", $res['TableName']);

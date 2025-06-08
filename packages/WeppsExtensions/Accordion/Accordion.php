@@ -14,7 +14,7 @@ class AccordionWepps extends ExtensionWepps {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Accordion/Accordion.tpl';
 				$obj = new DataWepps("Services");
-				$res = $obj->getMax("t.DisplayOff=0");
+				$res = $obj->fetch("t.DisplayOff=0");
 				$smarty->assign('elements',$res);
 				break;
 			default:

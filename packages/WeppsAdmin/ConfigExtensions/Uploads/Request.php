@@ -58,14 +58,14 @@ class RequestUploadsWepps extends RequestWepps {
 				 *  and Name like '%addfields%'
 				 */
 				$obj = new DataWepps("s_UploadsSource");
-				$source = $obj->get($id)[0];
+				$source = $obj->fetchmini($id)[0];
 				
 				if (!isset($source['Id']) || $id == 0) {
 					UtilsWepps::modal('Ошибка : Укажите источник');
 				}
 				
 				$obj = new DataWepps("s_Files");
-				$files = $obj->getMax("TableName='{$list}' and t.FileDescription!='' and JSON_EXTRACT(t.FileDescription, '$.source') = {$id}",1,1,"t.Id desc");
+				$files = $obj->fetch("TableName='{$list}' and t.FileDescription!='' and JSON_EXTRACT(t.FileDescription, '$.source') = {$id}",1,1,"t.Id desc");
 				if (!isset($files[0]['Id'])) {
 					UtilsWepps::modal('Ошибка : Файл не найден');
 				}

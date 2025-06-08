@@ -86,7 +86,7 @@ class DataWepps
 	/**
 	 * Получить набор строк таблицы
 	 */
-	function get(string $conditions = '', $onPage = 20, $currentPage = 1, $orderBy = "Priority")
+	public function fetchmini(string $conditions = '', $onPage = 20, $currentPage = 1, $orderBy = "Priority")
 	{
 		if (empty($conditions)) {
 			$conditions = "Id!=0";
@@ -119,7 +119,7 @@ class DataWepps
 	 * @param string $orderBy
 	 * @return array
 	 */
-	public function getMax(string $conditions = '', $onPage = 20, $currentPage = 0, $orderBy = "t.Priority")
+	public function fetch(string $conditions = '', $onPage = 20, $currentPage = 0, $orderBy = "t.Priority")
 	{
 		if (empty($conditions)) {
 			$conditions = "t.Id!=0";
@@ -503,7 +503,7 @@ class NavigatorWepps
 		$this->data->backOffice = $backOffice;
 		$this->data->lang = $this->lang;
 		$this->data->setParams([$this->path]);
-		$res = $this->data->getMax("binary t.Url=?");
+		$res = $this->data->fetch("binary t.Url=?");
 		if (isset($res[0]['Id'])) {
 			$this->content = $res[0];
 		}
@@ -572,7 +572,7 @@ class NavigatorDataWepps extends DataWepps
 	{
 		$condition = ($this->backOffice == 1) ? "t.DisplayOff in (0,1)" : "t.DisplayOff = 0";
 		if ($this->navLevel == 0) {
-			$this->nav[$this->navLevel] = $this->getMax("{$condition} and t.ParentDir in (1,0) and t.NGroup!=0 and t.TableId=0", 100, 1, "t.NGroup,t.Priority");
+			$this->nav[$this->navLevel] = $this->fetch("{$condition} and t.ParentDir in (1,0) and t.NGroup!=0 and t.TableId=0", 100, 1, "t.NGroup,t.Priority");
 			$this->navLevel++;
 			return $this->getNav($navLevel);
 		} elseif ($navLevel <= $this->navLevel) {
@@ -598,7 +598,7 @@ class NavigatorDataWepps extends DataWepps
 				$this->navLevel++;
 				return $this->getNav($navLevel);
 			}
-			$res = $this->getMax("{$condition} and t.ParentDir in ({$res2Keys}) and t.TableId=0", 100, 1, "t.Priority");
+			$res = $this->fetch("{$condition} and t.ParentDir in ({$res2Keys}) and t.TableId=0", 100, 1, "t.Priority");
 			$this->nav[$this->navLevel] = $res;
 			$this->navLevel++;
 			return $this->getNav($navLevel);
@@ -612,7 +612,7 @@ class NavigatorDataWepps extends DataWepps
 	 */
 	public function getWay($id)
 	{
-		$res = $this->getMax($id);
+		$res = $this->fetch($id);
 		array_push($this->way, $res[0]);
 		if ($res[0]['ParentDir'] == 0)
 			return array_reverse($this->way);
@@ -630,7 +630,7 @@ class NavigatorDataWepps extends DataWepps
 		$condition = ($this->backOffice == 1) ? "" : "and t.DisplayOff = 0";
 		$this->setConcat("if (t.NameMenu!='',t.NameMenu,t.Name) as NameMenu");
 		$this->setParams([]);
-		$res = $this->getMax("t.ParentDir='{$id}' $condition");
+		$res = $this->fetch("t.ParentDir='{$id}' $condition");
 		return $res;
 	}
 
@@ -641,7 +641,7 @@ class NavigatorDataWepps extends DataWepps
 	 */
 	public function getRChild($id)
 	{
-		$res = $this->get("ParentDir='{$id}' and DisplayOff=0");
+		$res = $this->fetchmini("ParentDir='{$id}' and DisplayOff=0");
 		if (isset($res[0]['Id'])) {
 			foreach ($res as $value) {
 				$this->rchild[] = $value['Id'];
@@ -741,7 +741,7 @@ abstract class ExtensionWepps
 		$condition = (strlen((int) $id) == strlen($id)) ? $condition . " {$prefix} t.Id = ?" : $condition . " {$prefix} binary t.Alias = ?";
 		$obj = new DataWepps($tableName);
 		$obj->setParams([$id]);
-		$res = $obj->getMax($condition)[0];
+		$res = $obj->fetch($condition)[0];
 		if (!isset($res['Id'])) {
 			ExceptionWepps::error404();
 		}

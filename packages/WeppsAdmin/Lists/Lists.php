@@ -136,7 +136,7 @@ class ListsWepps
 				}
 			}
 			$listObj->truncate = 160;
-			$listItems = $listObj->getMax($listCondition, $listSettings['ItemsOnPage'], $page, "t." . $listSettings['IsOrderBy']);
+			$listItems = $listObj->fetch($listCondition, $listSettings['ItemsOnPage'], $page, "t." . $listSettings['IsOrderBy']);
 
 			if (isset($listItems[0]['Id'])) {
 				$smarty->assign('listItems', $listItems);
@@ -266,7 +266,7 @@ class ListsWepps
 		} elseif ((int) $id == 0) {
 			ExceptionWepps::error404();
 		} else {
-			$element = $obj->getMax($id);
+			$element = $obj->fetch($id);
 		}
 		if (!isset($element[0]['Id'])) {
 			ExceptionWepps::error404();

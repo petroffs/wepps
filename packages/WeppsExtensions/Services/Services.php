@@ -16,7 +16,7 @@ class ServicesWepps extends ExtensionWepps {
 				$conditions = "";
 				$obj = new DataWepps("Services");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->getMax($conditions,20,$this->page,"t.Priority");
+				$res = $obj->fetch($conditions,20,$this->page,"t.Priority");
 				$smarty->assign('elements',$res);
 				break;
 			default:

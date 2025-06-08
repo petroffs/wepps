@@ -19,8 +19,8 @@ class HomeWepps extends ExtensionWepps {
 				 * Карусель на главной
 				 */
 				$obj = new DataWepps("Sliders");
-				$res = $obj->getMax("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
-				#$res = $obj->getMax("t.DisplayOff=0 and t.SPlace=1");
+				$res = $obj->fetch("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
+				#$res = $obj->fetch("t.DisplayOff=0 and t.SPlace=1");
 				#UtilsWepps::debug($obj->sql,1);
 				if (!empty($res[0]['Id'])) {
 					$smarty->assign('carousel',$res);
@@ -36,7 +36,7 @@ class HomeWepps extends ExtensionWepps {
 				 * Услуги
 				 */
 				$obj = new DataWepps("Services");
-				$res = $obj->getMax("t.DisplayOff=0");
+				$res = $obj->fetch("t.DisplayOff=0");
 				$smarty->assign('services',$res);
 				
 				/*
@@ -47,7 +47,7 @@ class HomeWepps extends ExtensionWepps {
 				
 				$obj = new DataWepps("s_Files");
 				$obj->setJoin("inner join Gallery as fg on fg.Id=t.TableNameId and t.TableName='Gallery'");
-				$res = $obj->getMax("t.TableName='Gallery' and fg.NavigatorId=17",500,1,'t.Priority');
+				$res = $obj->fetch("t.TableName='Gallery' and fg.NavigatorId=17",500,1,'t.Priority');
 				$smarty->assign('gallery',$res);
 
 				/*
@@ -65,7 +65,7 @@ class HomeWepps extends ExtensionWepps {
 				$apikey = ConnectWepps::$projectServices['yandexmaps']['apikey'];
 				$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
 				$obj = new DataWepps("Contacts");
-				$res = $obj->getMax("t.DisplayOff=0",1);
+				$res = $obj->fetch("t.DisplayOff=0",1);
 				$smarty->assign('contacts',$res);
 				#UtilsWepps::debug($res,1);
 				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/Home.tpl');

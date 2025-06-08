@@ -170,7 +170,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
 		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
 		$obj->setParams([$id]);
-		$order = @$obj->getMax("t.Id=?")[0];
+		$order = @$obj->fetch("t.Id=?")[0];
 		#UtilsWepps::debug($obj->sql,2);
 		if (empty($order)) {
 			ExceptionWepps::error(404);
@@ -189,7 +189,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
 		$ids = implode(',', array_column($products, 'id'));
 		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
-		#UtilsWepps::debug($sql);
+		UtilsWepps::debug($sql);
 		$products = ConnectWepps::$instance->fetch($sql);
 		$this->assign('products', $products);
 		$order['OSum'] = $sum;
@@ -200,7 +200,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$obj->setParams([$id]);
 		$obj->setJoin("join s_Users u on u.Id=t.UserId");
 		$obj->setConcat("u.Name UsersName");
-		$res = $obj->getMax("t.DisplayOff=0 and t.OrderId=?",2000,1,"t.Priority");
+		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?",2000,1,"t.Priority");
 		if (!empty($res)) {
 			$order['Messages'] = [];
 			foreach ($res as $value) {

@@ -73,7 +73,7 @@ class RequestListsWepps extends RequestWepps {
 			case 'fileRemove':
 				if (!isset($this->get['id']) || (int) $this->get['id']==0) ExceptionWepps::error404();
 				$obj = new DataWepps("s_Files");
-				$res = $obj->get("Id in ({$this->get['id']})");
+				$res = $obj->fetchmini("Id in ({$this->get['id']})");
 				if (!isset($res[0]['Id'])) {
 					ExceptionWepps::error404();
 				}
@@ -235,7 +235,7 @@ class RequestListsWepps extends RequestWepps {
 				
 				$obj = new DataWepps("s_Config");
 				$obj->setConcat("t.Id as id,t.Name as value,concat('/_wepps/lists/',t.TableName,'/') as Url");
-				$res = $obj->getMax($condition);
+				$res = $obj->fetch($condition);
 				if (!isset($res[0]['Id'])) {
 					ConnectWepps::$instance->close();
 				}
@@ -248,7 +248,7 @@ class RequestListsWepps extends RequestWepps {
 				if (!isset($this->get['list'])) ExceptionWepps::error404();
 				$tableName = $this->get['list'];
 				$obj = new DataWepps($tableName);
-				$tableData = $obj->get(null,5000,1);
+				$tableData = $obj->fetchmini(null,5000,1);
 				$filename = "data_$tableName.xlsx";
 				
 				$spreadsheet = new Spreadsheet();

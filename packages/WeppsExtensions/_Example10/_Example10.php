@@ -15,7 +15,7 @@ class _Example10Wepps extends ExtensionWepps {
 				$this->tpl = 'packages/WeppsExtensions/_Example10/_Example10.tpl';
 				$conditions = 't.DisplayOff=0';
 				$obj = new DataWepps("News");
-				$res = $obj->getMax($conditions,6,$this->page,'t.Priority desc');
+				$res = $obj->fetch($conditions,6,$this->page,'t.Priority desc');
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));

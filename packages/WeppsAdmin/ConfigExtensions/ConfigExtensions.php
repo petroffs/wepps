@@ -73,7 +73,7 @@ class ConfigExtensionsWepps
 		$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions']);
 		$fcond = "'" . implode("','", $perm['extensions']) . "'";
 		$objExt = new DataWepps("s_ConfigExtensions");
-		$extensions = $objExt->getMax("t.DisplayOff=0 and t.Id in ($fcond)", 2000);
+		$extensions = $objExt->fetch("t.DisplayOff=0 and t.Id in ($fcond)", 2000);
 		$this->extensions = [];
 		foreach ($extensions as $value) {
 			$value['ENavArr'] = UtilsWepps::arrayFromString($value['ENav'], ":::");

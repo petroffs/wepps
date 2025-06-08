@@ -28,7 +28,7 @@ class BotFeedsWepps extends BotWepps {
 		$obj = new DataWepps("News");
 		$obj->setFields("Name,Alias,Id");
 		$obj->setConcat ( "concat('/novosti/',if(Alias!='',Alias,Id),'.html') as Url" );
-		$res = $obj->get("DisplayOff=0",50000,1);
+		$res = $obj->fetchmini("DisplayOff=0",50000,1);
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>http://{$this->host}{$value['Url']}</loc></url>";
 		}

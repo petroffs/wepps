@@ -28,7 +28,7 @@ class ProfileWepps {
 		if (isset($_SESSION['user']['Id'])) {
 			$users->setJoin("left outer join GeoCities as c on c.Id = t.City");
 			$users->setConcat("c.Name as City_Name");
-			$user = $users->getMax($_SESSION['user']['Id'])[0];
+			$user = $users->fetch($_SESSION['user']['Id'])[0];
 			$smarty->assign('user',$user);
 			$this->get['user'] = $user;
 			$this->get['title'] = 'Личный кабинет';
@@ -49,11 +49,11 @@ class ProfileWepps {
 					if (isset($get['key1']) && isset($get['key2'])) {
 						$login = UtilsWepps::trim($get['key1']);
 						$loginKey = UtilsWepps::trim($get['key2']);
-						$user = $users->getMax("binary t.Login = '{$login}' and t.FieldChangeKey='{$loginKey}'")[0];
+						$user = $users->fetch("binary t.Login = '{$login}' and t.FieldChangeKey='{$loginKey}'")[0];
 						if (isset($user['Id'])) {
 							$this->get['title'] = 'Личный кабинет';
 							$change = UserWepps::setValue($user);
-							$user = $users->getMax($user['Id'])[0];
+							$user = $users->fetch($user['Id'])[0];
 							if ($change['status'] == true) {
 								$mess = "";
 								$mess .= "дата: ".date("d.m.Y")." время: ".date("H:i")."\n\n";
@@ -88,7 +88,7 @@ class ProfileWepps {
 				if (isset($user['Id'])) {
 					$obj = new DataWepps("TradeOrders");
 					$page = (isset($get['page'])) ? $get['page'] : 1;
-					$orders = $obj->getMax("t.DisplayOff=0 and t.UserId = '{$user['Id']}'",20,$page,"t.Id desc");
+					$orders = $obj->fetch("t.DisplayOff=0 and t.UserId = '{$user['Id']}'",20,$page,"t.Id desc");
 					
 					if (isset($orders[0]['Id'])) {
 						$smarty->assign("orders",$orders);

@@ -73,7 +73,7 @@ class OrdersWepps extends RequestWepps
 					$obj->setParams([$statusesActive, $this->get['search'], $this->get['search']]);
 				}
 				$page = (empty($_GET['page'])) ? 1 : (int) $_GET['page'];
-				$orders = $obj->getMax($condition, 50, $page, "t.Id desc");
+				$orders = $obj->fetch($condition, 50, $page, "t.Id desc");
 				if (!empty($orders[0]['Id'])) {
 					$smarty->assign('orders', $orders);
 					$smarty->assign('paginator', $obj->paginator);

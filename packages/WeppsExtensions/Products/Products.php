@@ -69,7 +69,7 @@ class ProductsWepps extends ExtensionWepps {
 			$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
 			$obj = new DataWepps("Products");
 			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-			$res = $obj->getMax($conditions,3,1,"t.Priority");
+			$res = $obj->fetch($conditions,3,1,"t.Priority");
 			$smarty->assign('elements',$res);
 		}
 		$smarty->assign('normalView',0);
@@ -85,7 +85,7 @@ class ProductsWepps extends ExtensionWepps {
 		$condition = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = ?" : $condition." {$prefix} binary t.Alias = ?";
 		$obj = new DataWepps($tableName);
 		$obj->setParams([$id]);
-		$res = $obj->getMax($condition)[0];
+		$res = $obj->fetch($condition)[0];
 		if (!isset($res['Id'])) {
 			ExceptionWepps::error404();
 		}

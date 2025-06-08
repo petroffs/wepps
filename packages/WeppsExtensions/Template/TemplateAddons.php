@@ -50,14 +50,14 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {
 			 * Информация организации
 			 */
 			$obj = new DataWepps("Organizations");
-			$smarty->assign('org',$obj->get()[0]);
+			$smarty->assign('org',$obj->fetchmini()[0]);
 			unset ($obj);
 	
 			/*
 			 * Соцсети
 			 */
 			$obj = new DataWepps("ServList");
-			$res = $obj->getMax("t.Categories='Соцсети' and t.DisplayOff=0");
+			$res = $obj->fetch("t.Categories='Соцсети' and t.DisplayOff=0");
 			$smarty->assign('socials',$res);
 			unset($obj);
 	

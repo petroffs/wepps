@@ -68,7 +68,7 @@ class BotTestWepps extends BotWepps {
 		$obj->setParams([
 				'Брюки Armani Junior'
 		]);
-		$res = $obj->getMax("t.DisplayOff=0 and t.Name = ?",5,1);
+		$res = $obj->fetch("t.DisplayOff=0 and t.Name = ?",5,1);
 		UtilsWepps::debug($res,21);
 		exit();
 		$row = [

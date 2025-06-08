@@ -16,14 +16,14 @@ class BlocksWepps extends ExtensionWepps {
 				$this->headers->css("/ext/Template/Blocks/Blocks.{$this->rand}.css");
 				$this->headers->js("/ext/Template/Blocks/Blocks.{$this->rand}.js");
 				$obj = new DataWepps("s_Panels");
-				$panels = $obj->getMax("t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'");
+				$panels = $obj->fetch("t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'");
 				if (empty($panels)) {
 					return;
 				}
 
 				$obj = new DataWepps("s_Blocks");
 				$obj->setJoin("join s_Panels p on p.Id = t.PanelId inner join s_Navigator d on d.Id = p.NavigatorId");
-				$res = $obj->getMax("t.DisplayOff=0 and d.Id='{$this->navigator->content['Id']}'");
+				$res = $obj->fetch("t.DisplayOff=0 and d.Id='{$this->navigator->content['Id']}'");
 				
 				$blocks = [];
 				foreach($res as $value) {
