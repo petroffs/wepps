@@ -23,6 +23,7 @@ class RequestOrdersWepps extends RequestWepps {
 		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
 			ExceptionWepps::error(404);
 		}
+		ConnectWepps::$instance->cached('no');
 		switch ($action) {
 			case "test":
 				UtilsWepps::debug('test1',1);
@@ -164,7 +165,6 @@ class RequestOrdersWepps extends RequestWepps {
 				break;
 		}
 	}
-	
 	private function getOrder($id) {
 		$obj = new DataWepps("Orders");
 		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
@@ -189,7 +189,6 @@ class RequestOrdersWepps extends RequestWepps {
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
 		$ids = implode(',', array_column($products, 'id'));
 		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
-		UtilsWepps::debug($sql);
 		$products = ConnectWepps::$instance->fetch($sql);
 		$this->assign('products', $products);
 		$order['OSum'] = $sum;

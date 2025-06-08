@@ -983,11 +983,22 @@ class UsersWepps
 class MemcachedWepps {
 	private $memcache;
 	private $memcached;
-	public function __construct() {
-		if (class_exists('Memcache') && ConnectWepps::$projectServices['memcached']['active']) {
+	public function __construct($isActive='auto') {
+		switch ($isActive) {
+			case 'yes':
+				$isActive = true;
+				break;
+			case 'no':
+				$isActive = false;
+				break;
+			default:
+				$isActive = ConnectWepps::$projectServices['memcached']['active'];
+				break;
+		}
+		if (class_exists('Memcache') && $isActive) {
 			$this->memcache = new \Memcache();
 			$this->memcache->connect(ConnectWepps::$projectServices['memcached']['host'], ConnectWepps::$projectServices['memcached']['port']);
-		} else if (class_exists('Memcached') && ConnectWepps::$projectServices['memcached']['active']) {
+		} else if (class_exists('Memcached') && $isActive) {
 			$this->memcached = new \Memcached();
 			$this->memcached->addServer(ConnectWepps::$projectServices['memcached']['host'], ConnectWepps::$projectServices['memcached']['port']);
 		}

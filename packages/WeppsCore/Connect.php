@@ -167,4 +167,7 @@ class ConnectWepps {
 			return false;
 		}
 	}
+	public function cached($isActive='auto') {
+		$this->memcached = new MemcachedWepps($isActive);
+	}
 }
