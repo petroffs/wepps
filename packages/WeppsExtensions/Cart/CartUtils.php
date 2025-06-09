@@ -372,12 +372,40 @@ class CartUtilsWepps
 			echo $errors['html'];
 			exit();
 		}
-		
-		UtilsWepps::debug('place order',3);
-
+		$profile = ConnectWepps::$projectData['user'];
+		$positions = [];
+		$row = [
+			'Name' => $profile['Name'],
+			'UserId' => $profile['Id'],
+			'UserIP' => @$_SERVER['REMOTE_ADDR'],
+			'Phone' => $profile['Phone'],
+			'Email' => $profile['Email'],
+			'OStatus' => '1',
+			'OSum' => $cartSummary['sumTotal'],
+			'ODate' => date('Y-m-d H:i:s'),
+			'OText' => '',
+			'ODelivery' => $cartSummary['delivery']['deliveryId'],
+			'OPayment' => $cartSummary['payments']['paymentsId'],
+			'Address' => @$get['operations-address'],
+			'City' => @$get['operations-city'],
+			'CityId' => $cartSummary['delivery']['citiesId'],
+			'PostalCode' => @$get['operations-postal-code'],
+			'OComment' => @$get['comment'],
+			'JData' => json_encode($cartSummary,JSON_UNESCAPED_UNICODE),
+			'JPositions' => $positions,
+		];
+		UtilsWepps::debug($row,31);
 		/**
 		 * place order
-		 * paynment ext-s
+		 * 
+		 * user info
+		 * positions
+		 * payment
+		 * delivery
+		 * etc
+		 * 
+		 * hash заказа, переход на фин. страницу
+		 * paynment ext-s - подключение оплаты, или др. сценарий
 		 */
 		return [];
 	}
