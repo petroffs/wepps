@@ -23,6 +23,8 @@ class RequestCartWepps extends RequestWepps {
 				}
 				$this->tpl = 'RequestAddCart.tpl';
 				$cartUtils->add($this->get['id']);
+				$cartSummary = $cartUtils->getCartSummary();
+				$this->assign('cartSummary', $cartSummary);
 				break;
 			case 'edit':
 				if (empty($this->get['id'])) {
