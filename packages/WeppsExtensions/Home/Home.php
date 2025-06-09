@@ -20,8 +20,6 @@ class HomeWepps extends ExtensionWepps {
 				 */
 				$obj = new DataWepps("Sliders");
 				$res = $obj->fetch("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
-				#$res = $obj->fetch("t.DisplayOff=0 and t.SPlace=1");
-				#UtilsWepps::debug($obj->sql,1);
 				if (!empty($res[0]['Id'])) {
 					$smarty->assign('carousel',$res);
 					$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Carousel/Carousel.tpl');
@@ -54,7 +52,7 @@ class HomeWepps extends ExtensionWepps {
 				 * Преимущества
 				 */
 				$obj = new DataWepps("Advantages");
-				$res = $obj->getMax ("t.DisplayOff=0");
+				$res = $obj->fetch("t.DisplayOff=0");
 				$smarty->assign('advantages',$res);
 
 				/*

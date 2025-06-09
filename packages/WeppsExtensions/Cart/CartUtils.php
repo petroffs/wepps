@@ -70,6 +70,11 @@ class CartUtilsWepps
 	{
 		return $this->cart;
 	}
+	public function getCartMetrics() {
+		return [
+			'items' => array_sum(array_column($this->cart['items']??[], 'qu'))
+		];
+	}
 	public function setCart(): void
 	{
 		$this->cart['date'] = date('Y-m-d H:i:s');

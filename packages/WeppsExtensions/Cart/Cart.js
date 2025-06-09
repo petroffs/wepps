@@ -58,12 +58,11 @@ class CartWepps {
 			el.prop('checked', false);
 		}
 	};
-	metrics() {
-		$('#cartTopQty').removeClass('pps_hide');
-		$('#cartTopQty').text(data.qtyTop);
-		$('#cartTopPriceAmount').parent().removeClass('pps_hide');
-		$('#cartTopPriceAmount').closest('.itm').addClass('active');
-		$('#cartTopPriceAmount').text(data.priceAmountTop);
+	metrics(obj) {
+		if (obj.items) {
+			$('a#header-cart').attr('data-metrics',obj.items);
+			$('a#footer-cart').attr('data-metrics',obj.items);
+		}
 	};
 	addHandler() {
 		$('.cart-add').on('click', function(e) {

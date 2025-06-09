@@ -26,16 +26,16 @@ class DataWepps
 	 */
 	public $count = 0;
 	/**
-	 * Пагинация, заполяется при вызове методов get, getMax
+	 * Пагинация, заполяется при вызове методов fetchmini, fetch
 	 */
 	public $paginator;
 	/**
-	 * Запрос БД, сформированный в get, getMax
+	 * Запрос БД, сформированный в fetchmini, fetch
 	 */
 	public $sql;
 	private $sqlCounter;
 	/**
-	 * Для полей area обрезать возвращаемые значения в getMax()
+	 * Для полей area обрезать возвращаемые значения в fetch()
 	 * @var integer
 	 */
 	public $truncate = 0;

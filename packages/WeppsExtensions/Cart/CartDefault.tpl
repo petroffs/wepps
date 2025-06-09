@@ -75,5 +75,8 @@ $(document).ready(() => {
 	//window.history.pushState({ 'push':1 }, '', '/cart/');
 	//console.log('pushed?')
 	cart.init();
+	cart.metrics({
+		items: '{$cartSummary.quantity}'
+	});
 });
 </script>
