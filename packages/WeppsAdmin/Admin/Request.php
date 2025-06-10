@@ -54,7 +54,7 @@ class RequestAdminWepps extends RequestWepps {
 				}
 				break;
 			case "hook":
-				if (empty(ConnectWepps::$projectServices['git']['token']) || ConnectWepps::$projectServices['git']['token'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {
+				if (empty(ConnectWepps::$projectServices['wepps']['git']) || ConnectWepps::$projectServices['wepps']['git'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {
 					http_response_code(401);
 					echo "FAIL";
 					exit();
@@ -77,7 +77,7 @@ class RequestAdminWepps extends RequestWepps {
 				exit();
 			case "git":
 				$json = file_get_contents('php://input');
-				$token = ConnectWepps::$projectServices['git']['token'];
+				$token = ConnectWepps::$projectServices['wepps']['git'];
 				if (empty($token) || $token!=$_SERVER['HTTP_CLIENTTOKEN']) {
 					http_response_code(401);
 					echo "FAIL";

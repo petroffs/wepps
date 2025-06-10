@@ -374,6 +374,15 @@ class CartUtilsWepps
 		}
 		$profile = ConnectWepps::$projectData['user'];
 		$positions = [];
+		foreach ($cartSummary['items'] as $value) {
+			$positions[] = [
+				'id' => $value['id'],
+				'name' => $value['id'],
+				'quantity' => $value['id'],
+				'price' => $value['id'],
+				'sum' => $value['id'],
+			];
+		}
 		$row = [
 			'Name' => $profile['Name'],
 			'UserId' => $profile['Id'],
@@ -383,18 +392,42 @@ class CartUtilsWepps
 			'OStatus' => '1',
 			'OSum' => $cartSummary['sumTotal'],
 			'ODate' => date('Y-m-d H:i:s'),
-			'OText' => '',
+			#'OText' => '',
 			'ODelivery' => $cartSummary['delivery']['deliveryId'],
 			'OPayment' => $cartSummary['payments']['paymentsId'],
 			'Address' => @$get['operations-address'],
 			'City' => @$get['operations-city'],
 			'CityId' => $cartSummary['delivery']['citiesId'],
 			'PostalCode' => @$get['operations-postal-code'],
-			'OComment' => @$get['comment'],
+			#'OComment' => @$get['comment'],
 			'JData' => json_encode($cartSummary,JSON_UNESCAPED_UNICODE),
-			'JPositions' => $positions,
+			'JPositions' => json_encode($positions,JSON_UNESCAPED_UNICODE),
 		];
-		UtilsWepps::debug($row,31);
+		$func = function (array $args) {
+			$row = $args['row'];
+			$get = $args['get'];
+			$prepare = ConnectWepps::$instance->prepare($row);
+			$insert = ConnectWepps::$db->prepare("insert Orders {$prepare['insert']}");
+			$insert->execute($row);
+			$id = ConnectWepps::$db->lastInsertId();
+			if (!empty($get['comment'])) {
+				$row = [
+					'Name' => 'Msg',
+					'OrderId' => $id,
+					'UserId' => $row['UserId'],
+					'EType' => 'msg',
+					'EDate' => $row['ODate'],
+				];
+				$prepare = ConnectWepps::$instance->prepare($row);
+				$insert = ConnectWepps::$db->prepare("insert OrdersEvents {$prepare['insert']}");
+				$insert->execute($row);
+
+				$text = "Уведомление клиенту о заказе";
+				ConnectWepps::$instance->query("update Orders set OText=? where Id=?",[$text,$id]);
+			}
+		};
+		ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
+
 		/**
 		 * place order
 		 * 

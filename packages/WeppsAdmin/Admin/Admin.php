@@ -78,7 +78,7 @@ class AdminWepps {
 		$smarty->assign('contenttop',$navItem);
 		//$smarty->assign('navTpl',$smarty->fetch( __DIR__ . '/AdminNav.tpl'));
 		
-		if (ConnectWepps::$projectDev['multilang']==1) {
+		if (ConnectWepps::$projectServices['wepps']['multilang']==1) {
 			$sql = "select * from s_NGroupsLang where DisplayOff=0 order by Priority";
 			$language = ConnectWepps::$instance->fetch($sql);
 			$smarty->assign('language',$language);
