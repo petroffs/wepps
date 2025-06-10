@@ -1,12 +1,14 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
+use ReturnTypeWillChange;
 use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Template\TemplateUtilsWepps;
 
 class DeliveryCdekWepps extends DeliveryWepps
 {
@@ -93,7 +95,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 		return [
 			'status' => 200,
 			'title' => $this->settings['Name'],
-			'price' => $price,
+			'price' => TemplateUtilsWepps::round($price,2,'str'),
 			'period' => $period
 		];
 	}
@@ -195,11 +197,11 @@ class DeliveryCdekWepps extends DeliveryWepps
 			];
 			$response = $this->curl->get($this->url . '/v2/deliverypoints', $data);
 			if (empty($response->response)) {
-				return false;
+				return [];
 			}
 			$jdata = json_decode($response->response, true);
 			if (empty($jdata)) {
-				return false;
+				return [];
 			}
 			ConnectWepps::$instance->query('truncate PointsCdek');
 			$row = [
@@ -219,6 +221,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 				];
 				$insert->execute($row);
 			}
+			return [];
 		};
 		ConnectWepps::$instance->transaction($func, []);
 		return true;
@@ -234,14 +237,14 @@ class DeliveryCdekWepps extends DeliveryWepps
 			#$cli->info(text: $url);
 			$response = $this->curl->get($url);
 			if (empty($response->response)) {
-				return false;
+				return [];
 			}
 			$jdata = json_decode($response->response, true);
 			if (empty($jdata)) {
 				if ($page > 1) {
-					return true;
+					return [];
 				}
-				return false;
+				return [];
 			}
 			if ($page == 0) {
 				ConnectWepps::$instance->query('truncate CitiesCdek');
@@ -263,13 +266,14 @@ class DeliveryCdekWepps extends DeliveryWepps
 				];
 				$insert->execute($row);
 			}
+			return [];
 		};
 		ConnectWepps::$instance->transaction($func, ['page' => $page]);
 		$page++;
 		if ($page <= 150) {
 			return self::setCities($page);
 		}
-		return true;
+		return [];
 	}
 	public function setRegions()
 	{
@@ -279,11 +283,11 @@ class DeliveryCdekWepps extends DeliveryWepps
 			];
 			$response = $this->curl->get($this->url . '/v2/location/regions', $data);
 			if (empty($response->response)) {
-				return false;
+				return [];
 			}
 			$jdata = json_decode($response->response, true);
 			if (empty($jdata)) {
-				return false;
+				return [];
 			}
 			ConnectWepps::$instance->query('truncate RegionsCdek');
 			$row = [
@@ -301,6 +305,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 				];
 				$insert->execute($row);
 			}
+			return [];
 		};
 		ConnectWepps::$instance->transaction($func, []);
 		return true;

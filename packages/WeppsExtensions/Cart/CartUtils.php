@@ -375,12 +375,15 @@ class CartUtilsWepps
 		$profile = ConnectWepps::$projectData['user'];
 		$positions = [];
 		foreach ($cartSummary['items'] as $value) {
+			if (empty($value['active'])) {
+				continue;
+			}
 			$positions[] = [
 				'id' => $value['id'],
-				'name' => $value['id'],
-				'quantity' => $value['id'],
-				'price' => $value['id'],
-				'sum' => $value['id'],
+				'name' => $value['name'],
+				'quantity' => $value['quantity'],
+				'price' => $value['price'],
+				'sum' => $value['sum'],
 			];
 		}
 		$row = [
@@ -394,7 +397,9 @@ class CartUtilsWepps
 			'ODate' => date('Y-m-d H:i:s'),
 			#'OText' => '',
 			'ODelivery' => $cartSummary['delivery']['deliveryId'],
+			'ODeliverySum' => $cartSummary['delivery']['tariff']['price'],
 			'OPayment' => $cartSummary['payments']['paymentsId'],
+			'OPaymentSum' => $cartSummary['payments']['tariff']['price'],
 			'Address' => @$get['operations-address'],
 			'City' => @$get['operations-city'],
 			'CityId' => $cartSummary['delivery']['citiesId'],
@@ -417,16 +422,20 @@ class CartUtilsWepps
 					'UserId' => $row['UserId'],
 					'EType' => 'msg',
 					'EDate' => $row['ODate'],
+					'EText' => trim(strip_tags($get['comment']))
 				];
 				$prepare = ConnectWepps::$instance->prepare($row);
 				$insert = ConnectWepps::$db->prepare("insert OrdersEvents {$prepare['insert']}");
 				$insert->execute($row);
-
 				$text = "Уведомление клиенту о заказе";
 				ConnectWepps::$instance->query("update Orders set OText=? where Id=?",[$text,$id]);
 			}
+			return [
+				'id' => $id
+			];
 		};
-		ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
+		$response = ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
+		UtilsWepps::debug($response,31);
 
 		/**
 		 * place order

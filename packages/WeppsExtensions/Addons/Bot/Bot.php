@@ -32,10 +32,13 @@ class BotWepps {
 				$obj->setSitemap();
 				break;
 			case 'cdek':
-				$obj = new DeliveryCdekWepps([]);
-				$obj->setPoints();
-				$obj->setCities();
-				$obj->setRegions();
+				$obj = new DeliveryCdekWepps([],new CartUtilsWepps());
+				#$obj->setPoints();
+				/**
+				 * ! Индесы дописаны отдельно, при записи городов - индексы сотрутся
+				 */
+				#$obj->setCities();
+				#$obj->setRegions();
 				break;
 			/*
 			 * tests

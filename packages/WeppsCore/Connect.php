@@ -150,21 +150,21 @@ class ConnectWepps {
 	public function in(array $in) : string {
 		return str_repeat('?,', count($in) - 1) . '?';
 	}
-	public function transaction(callable $func, array $args) {
+	public function transaction(callable $func, array $args): array {
 		ConnectWepps::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
 		try {
 			ConnectWepps::$db->beginTransaction();
 			if (ConnectWepps::$db->inTransaction()) {
-				$func($args);
+				$response = $func($args);
 			}
 			ConnectWepps::$db->commit();
 			ConnectWepps::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
-			return true;
+			return $response;
 		} catch (\Exception $e) {
 			ConnectWepps::$db->rollBack();
 			echo "Error. See debug.conf";
 			UtilsWepps::debug($e,21);
-			return false;
+			return [];
 		}
 	}
 	public function cached($isActive='auto') {
