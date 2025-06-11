@@ -265,11 +265,25 @@ class CartUtilsWepps
 			$this->summary['payments']['discount'] = $this->cart['paymentsDiscount'];
 			$this->summary['sumTotal'] -= $this->cart['paymentsDiscount']['price'];
 		}
+		#$json = json_encode($this->summary,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
+		#UtilsWepps::debug($json,1);
 		return true;
 	}
 	public function getCartSummary(): array
 	{
 		return $this->summary;
+	}
+	public function getCartPercentage(float $percentage = 0) : float {
+		$sum = 0;
+		foreach ($this->summary['items'] as $value) {
+			if ($value['active']!=1) {
+				continue;
+			}
+			$sum += UtilsWepps::round(($value['price'] - $value['price']*$percentage/100)*$value['quantity']);
+		}
+		$sum = $this->summary['sumActive'] - $sum;
+		#UtilsWepps::debug($sum,1);
+		return $sum;
 	}
 	private function _getCartHash(string $jcart = '')
 	{

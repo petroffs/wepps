@@ -59,7 +59,7 @@ class DeliveryRussianPostWepps extends DeliveryWepps
             'status' => 200,
             'title' => $this->settings['Name'],
             'text' => 'Тариф способа доставки',
-            'price' => TemplateUtilsWepps::round($price,2,'str'),
+            'price' => TemplateUtilsWepps::round($price,2),
             'period' => $period
         ];
         return $output;

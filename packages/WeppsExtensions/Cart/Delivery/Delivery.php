@@ -22,7 +22,7 @@ class DeliveryWepps
         if (empty($cartSummary)) {
             return [];
         }
-        $price = $this->settings['Tariff'];
+        $price = (float) $this->settings['Tariff'];
         if ($this->settings['FreeLevel']>0 && $this->settings['FreeLevel']<=$cartSummary['sumActive']) {
             $price = 0;
         }
@@ -34,7 +34,7 @@ class DeliveryWepps
             'period' => '1-3'
         ];
         if (@$this->settings['IsTariffPercentage'] == 1) {
-            $output['price'] = TemplateUtilsWepps::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100, 0, 'str');
+            $output['price'] = TemplateUtilsWepps::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100, 0);
         }
         return $output;
     }
@@ -48,10 +48,15 @@ class DeliveryWepps
             'status' => ($this->settings['Discount'] > 0) ? 200 : 0,
             'title' => $this->settings['Name'],
             'text' => "Скидка за выбранный способ доставки",
-            'price' => $this->settings['Discount'],
         ];
-        if (@$this->settings['IsDiscountPercentage'] == 1) {
-            $output['price'] = TemplateUtilsWepps::round($this->settings['Discount'] * $cartSummary['sumActive'] / 100, 0, 'str');
+        switch (@$this->settings['IsDiscountPercentage']) {
+            case 1:
+                $output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Discount']);
+                #$output['price'] = TemplateUtilsWepps::round($this->settings['Discount'] * $cartSummary['sumActive'] / 100, 0);
+            break;
+            default:
+                $output['price'] = (float) $this->settings['Discount'];
+            break;
         }
         return $output;
     }

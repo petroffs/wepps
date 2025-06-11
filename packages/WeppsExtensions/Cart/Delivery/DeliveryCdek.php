@@ -95,7 +95,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 		return [
 			'status' => 200,
 			'title' => $this->settings['Name'],
-			'price' => TemplateUtilsWepps::round($price,2,'str'),
+			'price' => TemplateUtilsWepps::round($price,2),
 			'period' => $period
 		];
 	}

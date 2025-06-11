@@ -26,10 +26,10 @@
 						checked{/if} autocomplete="off"/>
 					<span class="title">{$item.Name}</span>
 					<span class="period"><span>{$item.Addons.tariff.period} дн</span></span>
-					<span class="price"><span>{$item.Addons.tariff.price|money}</span></span>
+					<span class="price"><span>{$item.Addons.tariff.price|money:2}</span></span>
 					{if $item.Addons.discount.price>0}
 					<span class="text attention">{$item.Addons.discount.text}</span>
-					<span class="price attention"><span>-{$item.Addons.discount.price|money}</span></span>
+					<span class="price attention"><span>-{$item.Addons.discount.price|money:2}</span></span>
 					{/if}
 				</label>
 			{/foreach}
@@ -47,11 +47,11 @@
 					<span class="title">{$item.Name}</span>
 					{if $item.Addons.tariff.price>0}
 					<span class="text attention">{$item.Addons.tariff.text}</span>
-					<span class="price attention"><span>{$item.Addons.tariff.price|money}</span></span>
+					<span class="price attention"><span>{$item.Addons.tariff.price|money:2}</span></span>
 					{/if}
 					{if $item.Addons.discount.price>0}
 					<span class="text attention">{$item.Addons.discount.text}</span>
-					<span class="price attention"><span>-{$item.Addons.discount.price|money}</span></span>
+					<span class="price attention"><span>-{$item.Addons.discount.price|money:2}</span></span>
 					{/if}
 				</label>
 			{/foreach}
@@ -70,16 +70,16 @@
 					{$cartText.goodsCount}</div>
 				<div class="pps_right">
 					<div class="price">
-						<span>{$cartSummary.sumBefore|money}</span>
+						<span>{$cartSummary.sumBefore|money:2}</span>
 					</div>
 				</div>
 			</div>
-			{if $cartSummary.sumSaving|money}
+			{if $cartSummary.sumSaving|money:2}
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">Скидка</div>
 				<div>
 					<div class="price">
-						<span>- {$cartSummary.sumSaving|money}</span>
+						<span>- {$cartSummary.sumSaving|money:2}</span>
 					</div>
 				</div>
 			</div>
@@ -89,7 +89,7 @@
 				<div class="w_2scol title">Доставка</div>
 				<div>
 					<div class="price">
-						<span>{$cartSummary.delivery.tariff.price|money}</span>
+						<span>{$cartSummary.delivery.tariff.price|money:2}</span>
 					</div>
 				</div>
 			</div>
@@ -99,7 +99,7 @@
 				<div class="w_2scol title">{$cartSummary.delivery.discount.title}</div>
 				<div>
 					<div class="price">
-						<span>-{$cartSummary.delivery.discount.price|money}</span>
+						<span>-{$cartSummary.delivery.discount.price|money:2}</span>
 					</div>
 				</div>
 			</div>
@@ -109,7 +109,7 @@
 				<div class="w_2scol title">{$cartSummary.payments.tariff.text}</div>
 				<div>
 					<div class="price">
-						<span>{$cartSummary.payments.tariff.price|money}</span>
+						<span>{$cartSummary.payments.tariff.price|money:2}</span>
 					</div>
 				</div>
 			</div>
@@ -119,7 +119,7 @@
 				<div class="w_2scol title">{$cartSummary.payments.discount.text}</div>
 				<div>
 					<div class="price">
-						<span>-{$cartSummary.payments.discount.price|money}</span>
+						<span>-{$cartSummary.payments.discount.price|money:2}</span>
 					</div>
 				</div>
 			</div>
@@ -128,7 +128,7 @@
 				<div class="w_2scol title">Итого</div>
 				<div>
 					<div class="price">
-						<span>{$cartSummary.sumTotal|money}</span>
+						<span>{$cartSummary.sumTotal|money:2}</span>
 					</div>
 				</div>
 			</div>
