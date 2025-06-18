@@ -3,7 +3,6 @@ namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Template\TemplateUtilsWepps;
 
 class DeliveryWepps
 {
@@ -34,7 +33,7 @@ class DeliveryWepps
             'period' => '1-3'
         ];
         if (@$this->settings['IsTariffPercentage'] == 1) {
-            $output['price'] = TemplateUtilsWepps::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100, 0);
+            $output['price'] = UtilsWepps::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100, 0);
         }
         return $output;
     }
@@ -52,10 +51,9 @@ class DeliveryWepps
         switch (@$this->settings['IsDiscountPercentage']) {
             case 1:
                 $output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Discount']);
-                #$output['price'] = TemplateUtilsWepps::round($this->settings['Discount'] * $cartSummary['sumActive'] / 100, 0);
             break;
             default:
-                $output['price'] = (float) $this->settings['Discount'];
+                $output['price'] = UtilsWepps::round($this->settings['Discount']);
             break;
         }
         return $output;

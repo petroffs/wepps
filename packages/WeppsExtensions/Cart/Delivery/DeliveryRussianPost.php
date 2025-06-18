@@ -2,10 +2,10 @@
 namespace WeppsExtensions\Cart\Delivery;
 
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use Curl\Curl;
-use WeppsExtensions\Template\TemplateUtilsWepps;
 
 class DeliveryRussianPostWepps extends DeliveryWepps
 {
@@ -59,7 +59,7 @@ class DeliveryRussianPostWepps extends DeliveryWepps
             'status' => 200,
             'title' => $this->settings['Name'],
             'text' => 'Тариф способа доставки',
-            'price' => TemplateUtilsWepps::round($price,2),
+            'price' => UtilsWepps::round($price),
             'period' => $period
         ];
         return $output;

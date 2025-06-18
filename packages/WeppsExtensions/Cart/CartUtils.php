@@ -215,11 +215,11 @@ class CartUtilsWepps
 		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
 		$ids = implode(',', array_column($this->cart['items'], 'id'));
 		$sql = "select x.id,p.Name name,
-				x.quantity,x.active,p.Price price, (x.quantity * p.Price) `sum`,p.PriceBefore priceBefore, 
-				(x.quantity * p.PriceBefore) `sumBefore`,
-				(x.quantity * if(x.active=0,0,if(p.PriceBefore=0,p.Price,p.PriceBefore))) `sumBeforeTotal`,
+				(x.quantity*1) quantity,(x.active*1) active,(p.Price+0e0) price, (x.quantity*p.Price) `sum`,(p.PriceBefore+0e0) priceBefore, 
+				(x.quantity*p.PriceBefore) `sumBefore`,
+				(x.quantity*if(x.active=0,0,if(p.PriceBefore=0,p.Price,p.PriceBefore))) `sumBeforeTotal`,
 				if(p.PriceBefore=0,0,(x.quantity * if(x.active=0,0,(p.PriceBefore - p.Price)))) `sumSaving`,
-				if(x.active=0,0,x.quantity) `quantityActive`,
+				if(x.active=0,0,x.quantity*1) `quantityActive`,
 				if(x.active=0,0,(x.quantity * p.Price)) `sumActive`,
 				concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
 				f.FileUrl image
@@ -282,8 +282,7 @@ class CartUtilsWepps
 			$sum += UtilsWepps::round(($value['price'] - $value['price']*$percentage/100)*$value['quantity']);
 		}
 		$sum = $this->summary['sumActive'] - $sum;
-		#UtilsWepps::debug($sum,1);
-		return $sum;
+		return UtilsWepps::round($sum);
 	}
 	private function _getCartHash(string $jcart = '')
 	{
@@ -403,7 +402,7 @@ class CartUtilsWepps
 		$row = [
 			'Name' => $profile['Name'],
 			'UserId' => $profile['Id'],
-			'UserIP' => @$_SERVER['REMOTE_ADDR'],
+			'UserIP' => $_SERVER['REMOTE_ADDR']??'',
 			'Phone' => $profile['Phone'],
 			'Email' => $profile['Email'],
 			'OStatus' => '1',
@@ -414,10 +413,10 @@ class CartUtilsWepps
 			'ODeliverySum' => $cartSummary['delivery']['tariff']['price'],
 			'OPayment' => $cartSummary['payments']['paymentsId'],
 			'OPaymentSum' => $cartSummary['payments']['tariff']['price'],
-			'Address' => @$get['operations-address'],
-			'City' => @$get['operations-city'],
+			'Address' => $get['operations-address']??'',
+			'City' => $get['operations-city']??'',
 			'CityId' => $cartSummary['delivery']['citiesId'],
-			'PostalCode' => @$get['operations-postal-code'],
+			'PostalCode' => $get['operations-postal-code']??'',
 			#'OComment' => @$get['comment'],
 			'JData' => json_encode($cartSummary,JSON_UNESCAPED_UNICODE),
 			'JPositions' => json_encode($positions,JSON_UNESCAPED_UNICODE),

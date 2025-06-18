@@ -1,14 +1,12 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
-use ReturnTypeWillChange;
 use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Template\TemplateUtilsWepps;
 
 class DeliveryCdekWepps extends DeliveryWepps
 {
@@ -95,7 +93,7 @@ class DeliveryCdekWepps extends DeliveryWepps
 		return [
 			'status' => 200,
 			'title' => $this->settings['Name'],
-			'price' => TemplateUtilsWepps::round($price,2),
+			'price' => UtilsWepps::round($price),
 			'period' => $period
 		];
 	}

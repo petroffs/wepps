@@ -1,10 +1,8 @@
 <?php
 namespace WeppsExtensions\Cart\Payments;
 
-use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Template\TemplateUtilsWepps;
 
 class PaymentsWepps
 {
@@ -26,12 +24,10 @@ class PaymentsWepps
 		];
 		switch (@$this->settings['IsTariffPercentage']) {
 			case 1:
-				#UtilsWepps::debug((float)$this->settings['Tariff'],1);
 				$output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Tariff']);
-				#$output['price'] = TemplateUtilsWepps::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100, 0);
 				break;
 			default:
-				$output['price'] = (float) $this->settings['Tariff'];
+				$output['price'] = UtilsWepps::round($this->settings['Tariff']);
 				break;
 		}
 		return $output;
@@ -51,10 +47,9 @@ class PaymentsWepps
 		switch (@$this->settings['IsDiscountPercentage']) {
 			case 1:
 				$output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Discount']);
-				#$output['price'] = TemplateUtilsWepps::round($this->settings['Discount'] * $cartSummary['sumActive'] / 100, 0);
 				break;
 			default:
-				$output['price'] = (float) $this->settings['Discount'];
+				$output['price'] = UtilsWepps::round($this->settings['Discount']);
 				break;
 		}
 		return $output;
