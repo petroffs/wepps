@@ -44,6 +44,7 @@
 	color: var(--color-75);
 	word-break: break-all;
 	white-space: normal;
+	padding-right: var(--step);
 }
 
 .orders>.item.active>.order-wrapper .settings>.item>.dd .date {

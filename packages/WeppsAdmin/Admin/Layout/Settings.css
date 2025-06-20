@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,500,700,900&subset=cyrillic-ext');
+
+:root {
+	--color-00: #000000;
+	--color-02: #050505;
+	--color-05: #0d0d0d;
+	--color-20: #333333;
+	--color-25: #404040;
+	--color-50: #808080;
+	--color-75: #bfbfbf;
+	--color-85: #d9d9d9;
+	--color-95: #f2f2f2;
+	--color-98: #fafafa;
+	--color-100: #ffffff;
+	--color-attention: #cf4343;
+	--color-success: #52c585;
+	--color-warning: #f6f1a3;
+	--color-button: #5897fb;
+	--color-focus: #007fff;
+	--color-active: #5897fb;
+	--color-green: #00AC86;
+	--color-red: #d06666;
+	--color-primary: var(--color-20);
+	--color-slave: var(--color-75);
+	--color-highlight: #fffed3;
+	--color-links: #0080C0;
+}
+
+:root {
+	--margin: 0;
+	--step: 6px;
+	--stepHalf: 3px;
+	--step2: 12px;
+	--step3: 18px;
+	--step4: 24px;
+	--step5: 30px;
+	--step6: 36px;
+	--width: 100%;
+	--height: 100%;
+	--font: 'Roboto',sans-serif;
+	--font-default: 16px;
+	--font-small: 14px;
+	--font-tiny: 12px;
+	--font-medium: 22px;
+	--font-large: 32px;
+	--font-xlarge: 36px;
+	--font-extra: 42px;
+	--border: 1px solid var(--color-85);
+	--shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+
+@media screen and (max-width: 810px) {
+	:root {
+		--step: 5px;
+		--stepHalf: 2.5px;
+		--step2: 10px;
+		--step3: 15px;
+		--step4: 20px;
+		--step5: 25px;
+		--step6: 30px;
+		--font-default: 14px;
+		--font-small: 12px;
+		--font-tiny: 10px;
+		--font-medium: 18px;
+		--font-large: 28px;
+		--font-xlarge: 32px;
+		--font-extra: 38px;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	:root {
+		--step: 4px;
+		--stepHalf: 2px;
+		--step2: 8px;
+		--step3: 12px;
+		--step4: 16px;
+		--step5: 20px;
+		--step6: 24px;
+		--font-default: 14px;
+		--font-small: 12px;
+		--font-tiny: 10px;
+		--font-medium: 16px;
+		--font-large: 26px;
+		--font-xlarge: 30px;
+		--font-extra: 36px;
+	}
+}

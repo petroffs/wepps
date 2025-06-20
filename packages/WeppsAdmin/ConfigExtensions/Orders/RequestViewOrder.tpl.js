@@ -119,6 +119,22 @@ var readyViewOrderInit = function() {
 		layoutWepps.request(settings);
 		return;
 	});
+	$('div.settings-wrapper').find('a.list-item-tariff').off('click');
+	$('div.settings-wrapper').find('a.list-item-tariff').on('click',function(event) {
+		event.preventDefault();
+		let el = $(this).closest('.settings-wrapper');
+		let obj = $('#view'+el.data('order'));
+		
+		let target = $(this).data('target');
+		let value = $('input[name="'+target+'"]').val();
+		let settings = {
+			data: 'action=setTariff&id='+el.data('order')+'&tariff='+target+'&value='+value,
+			url: '/packages/WeppsAdmin/ConfigExtensions/Orders/Request.php',
+			obj: obj
+		}
+		layoutWepps.request(settings);
+		return;
+	});
 };
 
 readyViewOrderInit();

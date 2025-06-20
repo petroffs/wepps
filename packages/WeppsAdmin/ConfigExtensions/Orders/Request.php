@@ -5,17 +5,12 @@ use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Addons\Mail\MailWepps;
 
 require_once '../../../../config.php';
 require_once '../../../../autoloader.php';
 require_once '../../../../configloader.php';
-
-//http://pps.lubluweb.ru/packages/WeppsAdmin/ConfigExtensions/Processing/Request.php?id=5
 
 class RequestOrdersWepps extends RequestWepps {
 	public function request($action="") {
@@ -147,11 +142,12 @@ class RequestOrdersWepps extends RequestWepps {
 				]);
 				$sql = "insert into OrdersEvents {$arr['insert']}";
 				ConnectWepps::$instance->query($sql,$arr['row']);
-				
-				/*
-				 * Уведомление клиенту
-				 */
-				#$order = $this->getOrder($this->get['id']);
+				$order = $this->getOrder($this->get['id']);
+				break;
+			case 'setTariff':
+				$this->tpl = "RequestViewOrder.tpl";
+				UtilsWepps::debug($this->get);
+				$order = $this->getOrder($this->get['id']);
 				break;
 			default:
 				ExceptionWepps::error(404);

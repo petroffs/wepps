@@ -1,31 +1,8 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,500,700,900&subset=cyrillic-ext');
-
 *,
 *::before,
 *::after {
 	box-sizing: border-box;
 	outline: none;
-}
-
-:root {
-	--color-00: #000000;
-	--color-02: #050505;
-	--color-05: #0d0d0d;
-	--color-20: #333333;
-	--color-25: #404040;
-	--color-50: #808080;
-	--color-75: #bfbfbf;
-	--color-85: #d9d9d9;
-	--color-95: #f2f2f2;
-	--color-98: #fafafa;
-	--color-100: #ffffff;
-
-	--color-primary: var(--color-20);
-	--color-slave: var(--color-75);
-	--color-attention: #cf4343;
-	--color-highlight: #fffed3;
-	--color-focus: #007fff;
-	--color-links: #0080C0;
 }
 
 html {

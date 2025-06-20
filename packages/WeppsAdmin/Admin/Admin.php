@@ -66,6 +66,8 @@ class AdminWepps {
 		$this->headers->js("/packages/vendor/select2/select2/dist/js/select2.min.js");
 		$this->headers->js("/packages/vendor/select2/select2/dist/js/i18n/ru.js");
 		$this->headers->css("/packages/vendor/select2/select2/dist/css/select2.min.css");
+		$this->headers->css("/packages/WeppsAdmin/Admin/Layout/Settings.{$headers::$rand}.css");
+		$this->headers->css("/packages/WeppsAdmin/Admin/Layout/Grid.{$headers::$rand}.css");
 		$this->headers->js("/packages/WeppsAdmin/Admin/Layout/Layout.{$headers::$rand}.js");
 		$this->headers->css("/packages/WeppsAdmin/Admin/Layout/Layout.{$headers::$rand}.css");
 		$this->headers->css("/packages/WeppsAdmin/Admin/Layout/Win.{$headers::$rand}.css");
