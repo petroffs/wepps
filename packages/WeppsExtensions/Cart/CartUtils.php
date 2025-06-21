@@ -284,6 +284,44 @@ class CartUtilsWepps
 		$sum = $this->summary['sumActive'] - $sum;
 		return UtilsWepps::round($sum);
 	}
+	public function getCartPositionsRecounter(array $items=[],float $deliveryDiscount=0,float $paymentTariff=0,float $paymentDiscount=0) : array {
+		$sum = 0;
+		if ($deliveryDiscount>0 || $paymentTariff>0 || $paymentDiscount>0) {
+			$sum = array_sum(array_column($items, 'sum'));
+		}
+		if ($sum==0) {
+			return $items;
+		}
+		if ($deliveryDiscount>0) {
+			foreach($items as $key=>$value) {
+				$rate = UtilsWepps::round($value['sum']/$sum,6);
+				$tariffRecount = - UtilsWepps::round($rate*$deliveryDiscount);
+				$items[$key]['tariff']??0;
+				$items[$key]['tariff']+=$tariffRecount;
+			}
+		}
+		if ($paymentTariff>0) {
+			foreach($items as $key=>$value) {
+				$rate = UtilsWepps::round($value['sum']/$sum,6);
+				$tariffRecount = UtilsWepps::round($rate*$paymentTariff);
+				$items[$key]['tariff']??0;
+				$items[$key]['tariff']+=$tariffRecount;
+			}
+		}
+		if ($paymentDiscount>0) {
+			foreach($items as $key=>$value) {
+				$rate = UtilsWepps::round($value['sum']/$sum,6);
+				$tariffRecount = - UtilsWepps::round($rate*$paymentDiscount);
+				$items[$key]['tariff']??0;
+				$items[$key]['tariff']+=$tariffRecount;
+			}
+		}
+		foreach($items as $key=>$value) {
+			$items[$key]['sumTotal']=$value['sum'] + $items[$key]['tariff'];
+			$items[$key]['priceTotal']= UtilsWepps::round($items[$key]['sumTotal']/$value['quantity'],2);
+		}
+		return $items;
+	}
 	private function _getCartHash(string $jcart = '')
 	{
 		return UtilsWepps::guid($jcart . ConnectWepps::$projectServices['jwt']['secret']);
@@ -410,9 +448,11 @@ class CartUtilsWepps
 			'ODate' => date('Y-m-d H:i:s'),
 			#'OText' => '',
 			'ODelivery' => $cartSummary['delivery']['deliveryId'],
-			'ODeliverySum' => $cartSummary['delivery']['tariff']['price'],
+			'ODeliveryTariff' => $cartSummary['delivery']['tariff']['price'],
+			'ODeliveryDiscount' => $cartSummary['delivery']['discount']['price'],
 			'OPayment' => $cartSummary['payments']['paymentsId'],
-			'OPaymentSum' => $cartSummary['payments']['tariff']['price'],
+			'OPaymentTariff' => $cartSummary['payments']['tariff']['price'],
+			'OPaymentDiscount' => $cartSummary['payments']['discount']['price'],
 			'Address' => $get['operations-address']??'',
 			'City' => $get['operations-city']??'',
 			'CityId' => $cartSummary['delivery']['citiesId'],

@@ -283,7 +283,7 @@ class UtilsWepps
 	}
 	public static function round($number, $scale = 2, $type = 'float')
 	{
-		for ($i = 8; $i > 1; $i = $i - 2) {
+		for ($i=8;$i>=$scale;$i=$i-2) {
 			$number = round($number, $i);
 		}
 		if ($type == 'str') {

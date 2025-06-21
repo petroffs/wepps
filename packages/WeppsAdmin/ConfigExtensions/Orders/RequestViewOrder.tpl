@@ -11,7 +11,7 @@
 			</div>
 			{foreach name="out" key="key" item="item" from=$products}
 			{assign var="options" value=$item.options|json_decode:true}
-			<div class="item pps_flex pps_flex_row" data-index="{$key}" data-products="{$item.id}" data-order="{$order.Id}">
+			<div class="item pps_flex pps_flex_row pps_flex_row_str" data-index="{$key}" data-products="{$item.id}" data-order="{$order.Id}">
 				<div class="title2 pps_flex_13 pps_flex_45_view_small pps_order_1_view_small">{$item.name}
 					<div class="options">{if $options.name}{$options.name} : {$options.value}{/if}</div>
 				</div>
@@ -19,6 +19,9 @@
 					<label class="pps pps_input">
 						<input type="text" name="price" value="{$item.price}"/>
 					</label>
+					{if $item.priceTotal}
+					<div class="price-tariff price"><span>{$item.priceTotal|money:2}</span></div>
+					{/if}
 				</div>
 				<div class="quantity pps_flex_16 pps_flex_16 pps_flex_13_view_small pps_order_4_view_small">
 					<label class="pps pps_select">
@@ -29,7 +32,11 @@
 						</select>
 					</label>
 				</div>
-				<div class="price sum pps_flex_16 pps_flex_16 pps_flex_13_view_small pps_order_5_view_small pps_right_view_small"><span>{$item.sum|money:2}</span></div>
+				<div class="price sum pps_flex_16 pps_flex_16 pps_flex_13_view_small pps_order_5_view_small pps_right_view_small"><span>{$item.sum|money:2}</span>
+				{if $item.sumTotal}
+				<div class="price-tariff price"><span>{$item.sumTotal|money:2}</span></div>
+				{/if}
+				</div>
 				<div class="options pps_right pps_flex_16 pps_flex_15_view_small pps_order_2_view_small">
 					<a class="pps_button list-item-save pps_hide" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
 					<a class="pps_button list-item-remove" href="" data-path="position" title="Удалить"><i class="fa fa-remove"></i></a>
@@ -115,8 +122,8 @@
 						<div class="dd pps_flex_34">
 							{foreach item="item" from=$order.Messages} 
 							<div class="even">
-								<div class="text">{$item.text|@nl2br}</div>
-								<div class="date">{$item.date} {$item.user}</div>
+								<div class="text">{$item.EText|@nl2br}</div>
+								<div class="date">{$item.EDate} {$item.UsersName}</div>
 							</div> 
 							{/foreach}
 							 
@@ -172,7 +179,7 @@
 						<div class="dt pps_flex_13 pps_right">Скидка <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
 						<div class="dd pps_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps pps_input"><input type="text" name="delivery-discount" value="{$order.ODeliveryDescount}"></label>
+								<label class="pps pps_input"><input type="text" name="delivery-discount" value="{$order.ODeliveryDiscount}"></label>
 							</div>
 							<div class="pps_right">
 								<a class="pps_button list-item-tariff" data-target="delivery-discount" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
@@ -228,10 +235,8 @@
 		</div>
 	</div>
 </div>
-
 <script>
 var orderId = '{$order.Id}';
 var orderSum= '{$order.OSum}';
 </script>
-
 {$get.cssjs}

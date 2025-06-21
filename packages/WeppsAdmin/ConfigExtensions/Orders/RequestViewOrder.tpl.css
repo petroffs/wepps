@@ -3,6 +3,7 @@
 	margin-bottom: var(--step2);
 	padding: 0 var(--step);
 }
+
 .orders>.item.active>.order-wrapper .products>.item {
 	padding: var(--step);
 	border-bottom: var(--border);
@@ -17,9 +18,7 @@
 	background: transparent;
 }
 
-.orders>.item.active>.order-wrapper .products>.item>.quantity>label.pps {
-	
-}
+.orders>.item.active>.order-wrapper .products>.item>.quantity>label.pps {}
 
 .orders>.item.active>.order-wrapper .products>.item>.options>a {
 	margin-left: var(--step2);
@@ -28,6 +27,12 @@
 .orders>.item.active>.order-wrapper .products>.item label.pps.pps_input,
 .orders>.item.active>.order-wrapper .products>.item label.pps.pps_select {
 	padding-right: var(--step3);
+}
+
+.orders>.item.active>.order-wrapper .products>.item .price-tariff {
+	font-weight: 400;
+	font-size: var(--font-tiny);
+	color: var(--color-attention);
 }
 
 .orders>.item.active>.order-wrapper .settings>.item {
@@ -52,9 +57,7 @@
 	font-weight: 300;
 }
 
-
 .even:nth-of-type(even) {
 	background: var(--color-98);
 	border-radius: var(--step);
 }
-

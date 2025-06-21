@@ -7,6 +7,7 @@ use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
 
 require_once '../../../../config.php';
 require_once '../../../../autoloader.php';
@@ -128,17 +129,18 @@ class RequestOrdersWepps extends RequestWepps {
 				if (empty($this->get['id']) || empty($this->get['messages'])) {
 					ExceptionWepps::error(404);
 				}
-				$jdata = [
+				/* $jdata = [
 						'date' => date('Y-m-d H:i:s'),
 						'text' => $this->get['messages']
-						
-				];
+				]; */
 				$arr = ConnectWepps::$instance->prepare([
-						'Name' => 'Message',
+						'Name' => 'Msg',
 						'OrderId' => $this->get['id'],
 						'UserId' => ConnectWepps::$projectData['user']['Id'],
-						'EType' => 'messages',
-						'JData' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
+						'EType' => 'msg',
+						'EDate' => date('Y-m-d H:i:s'),
+						'EText' => trim(strip_tags($this->get['messages']))
+						#'JData' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
 				]);
 				$sql = "insert into OrdersEvents {$arr['insert']}";
 				ConnectWepps::$instance->query($sql,$arr['row']);
@@ -155,7 +157,7 @@ class RequestOrdersWepps extends RequestWepps {
 						$field = 'ODeliveryTariff';
 						break;
 					case 'delivery-discount':
-						$field = 'ODeliveryDescount';
+						$field = 'ODeliveryDiscount';
 						break;
 					case 'payment-tariff':
 						$field = 'OPaymentTariff';
@@ -193,16 +195,24 @@ class RequestOrdersWepps extends RequestWepps {
 		$products = json_decode($order['JPositions'],true);
 		$sql = '';
 		$sum = 0;
+		$cartUtils = new CartUtilsWepps();
+		$products = $cartUtils->getCartPositionsRecounter($products,$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
 		foreach ($products as $value) {
 			$sum += $value['sum'];
-			$sql .= "\n(select '{$value['id']}' `id`,'{$value['name']}' `name`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`) union";
+			$sql .= "\n(select '{$value['id']}' `id`,'{$value['name']}' `name`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`,'{$value['priceTotal']}' `priceTotal`,'{$value['sumTotal']}' `sumTotal`) union";
 		}
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
 		$ids = implode(',', array_column($products, 'id'));
-		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
+		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum,x.priceTotal,x.sumTotal from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
 		$products = ConnectWepps::$instance->fetch($sql);
 		$this->assign('products', $products);
-		$order['OSum'] = $sum;
+
+		$sum += $order['ODeliveryTariff'];
+		$sum -= $order['ODeliveryDiscount'];
+		$sum += $order['OPaymentTariff'];
+		$sum -= $order['OPaymentDiscount'];
+
+		$order['OSum'] = UtilsWepps::round($sum);
 		#$order['OSumPay'] = $sum - $order['PricePaid'];
 		$sql = "update Orders set OSum=? where Id=?";
 		ConnectWepps::$instance->query($sql,[$sum,$id]);
@@ -212,12 +222,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$obj->setConcat("u.Name UsersName");
 		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?",2000,1,"t.Priority");
 		if (!empty($res)) {
-			$order['Messages'] = [];
-			foreach ($res as $value) {
-				$jdata = json_decode($value['JData'],true);
-				$jdata['user'] = $value['UsersName'];
-				array_push($order['Messages'], $jdata);
-			}
+			$order['Messages'] = $res;
 		}
 		$this->assign('order', $order);
 		return ['order'=>$order,'products'=>$products,'statuses'=>$statuses];

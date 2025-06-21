@@ -207,7 +207,6 @@ class CartWepps {
 		$('#cart-btn-confirm').on('click',function(e) {
 			e.preventDefault();
 			let serialize = $('#cart-default').find('input,textarea').serialize();
-			console.log(serialize);
 			layoutWepps.request({
 				data: 'action=addOrder&context=cart&'+serialize,
 				url: '/ext/Cart/Request.php'
