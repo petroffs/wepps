@@ -161,7 +161,7 @@
 						<div class="dt pps_flex_13 pps_right">Тариф</div>
 						<div class="dd pps_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps pps_input"><input type="text" name="delivery-tariff" value="50"></label>
+								<label class="pps pps_input"><input type="text" name="delivery-tariff" value="{$order.ODeliveryTariff}"></label>
 							</div>
 							<div class="pps_right">
 								<a class="pps_button list-item-tariff" data-target="delivery-tariff" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
@@ -169,10 +169,10 @@
 						</div>
 					</div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
-						<div class="dt pps_flex_13 pps_right">Скидка</div>
+						<div class="dt pps_flex_13 pps_right">Скидка <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
 						<div class="dd pps_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps pps_input"><input type="text" name="delivery-discount" value="50"></label>
+								<label class="pps pps_input"><input type="text" name="delivery-discount" value="{$order.ODeliveryDescount}"></label>
 							</div>
 							<div class="pps_right">
 								<a class="pps_button list-item-tariff" data-target="delivery-discount" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
@@ -184,10 +184,10 @@
 						<div class="dd pps_flex_23">{$order.OPayment_Name}</div>
 					</div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
-						<div class="dt pps_flex_13 pps_right">Тариф</div>
+						<div class="dt pps_flex_13 pps_right">Тариф  <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
 						<div class="dd pps_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps pps_input"><input type="text" name="payment-tariff" value="50"></label>
+								<label class="pps pps_input"><input type="text" name="payment-tariff" value="{$order.OPaymentTariff}"></label>
 							</div>
 							<div class="pps_right">
 								<a class="pps_button list-item-tariff" data-target="payment-tariff" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
@@ -195,10 +195,10 @@
 						</div>
 					</div>
 					<div class="item pps_flex pps_flex_row pps_flex_start">
-						<div class="dt pps_flex_13 pps_right">Скидка</div>
+						<div class="dt pps_flex_13 pps_right">Скидка  <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
 						<div class="dd pps_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps pps_input"><input type="text" name="payment-discount" value="50"></label>
+								<label class="pps pps_input"><input type="text" name="payment-discount" value="{$order.OPaymentDiscount}"></label>
 							</div>
 							<div class="pps_right">
 								<a class="pps_button list-item-tariff" data-target="payment-discount" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>

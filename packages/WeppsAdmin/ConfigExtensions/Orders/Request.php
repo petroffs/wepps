@@ -146,7 +146,29 @@ class RequestOrdersWepps extends RequestWepps {
 				break;
 			case 'setTariff':
 				$this->tpl = "RequestViewOrder.tpl";
-				UtilsWepps::debug($this->get);
+				if (empty($this->get['tariff']) || empty($this->get['value'])) {
+					http_response_code(404);
+					exit();
+				}
+				switch(@$this->get['tariff']) {
+					case 'delivery-tariff':
+						$field = 'ODeliveryTariff';
+						break;
+					case 'delivery-discount':
+						$field = 'ODeliveryDescount';
+						break;
+					case 'payment-tariff':
+						$field = 'OPaymentTariff';
+						break;
+					case 'payment-discount':
+						$field = 'OPaymentDiscount';
+						break;
+					default:
+						http_response_code(404);
+						exit();
+				}
+				$sql = "update Orders set $field = ? where Id = ?";
+				ConnectWepps::$instance->query($sql,[(float) $this->get['value'],(int) $this->get['id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			default:
