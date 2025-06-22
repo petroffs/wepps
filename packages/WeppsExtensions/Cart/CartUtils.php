@@ -437,6 +437,7 @@ class CartUtilsWepps
 				'sum' => $value['sum'],
 			];
 		}
+		$positions = $this->getCartPositionsRecounter($positions,$cartSummary['delivery']['discount']['price'],$cartSummary['payments']['tariff']['price'],$cartSummary['payments']['discount']['price']);
 		$row = [
 			'Name' => $profile['Name'],
 			'UserId' => $profile['Id'],
@@ -503,6 +504,83 @@ class CartUtilsWepps
 		 * paynment ext-s - подключение оплаты, или др. сценарий
 		 */
 		return [];
+	}
+
+	public function getOrderText(array $order) : string {
+		$sql = "select * from ServList where Categories='ШаблонЗаказНовый' order by Id desc limit 0,1";
+		$res = ConnectWepps::$instance->fetch($sql);
+		if (empty($text = $res[0]['Descr'])) {
+			return '';
+		}
+		$jdata = json_decode($order['JData'],true);
+		$jpositions = json_decode($order['JPositions'],true);
+		#UtilsWepps::debug($jdata,21);
+		#UtilsWepps::debug($jdata['delivery']['tariff']['title'],21);
+		$positions = "<table width=\"100%\" cellpadding=\"10\" border=\"1\">";
+		$positions .= "<tr>";
+		$positions .= "<th width=\"50%\" align=\"left\">Наименование</th>";
+		$positions .= "<th width=\"25%\" align=\"center\">Кол-во</th>";
+		$positions .= "<th width=\"25%\" align=\"right\">Сумма</th>";
+		$positions .= "</tr>";
+		foreach($jpositions as $value) {
+			$positions .= '<tr>';
+			$positions .= '<td align="left">'.$value['name'].'</td>';
+			$positions .= '<td align="center">'.$value['quantity'].'</td>';
+			$positions .= '<td align="right">'.UtilsWepps::round($value['sum'],2,'str').'</td>';
+			$positions .= '</tr>';
+		}
+		$positions .= '<tr>';
+		$positions .= '<td align="left">'.$jdata['delivery']['tariff']['title'].'</td>';
+		$positions .= '<td align="center"></td>';
+		$positions .= '<td align="right">'.UtilsWepps::round($jdata['delivery']['tariff']['price'],2,'str').'</td>';
+		$positions .= '</tr>';
+		if (!empty($jdata['delivery']['discount']['price'])) {
+			$positions .= '<tr>';
+			$positions .= '<td align="left">'.$jdata['delivery']['discount']['text'].'</td>';
+			$positions .= '<td align="center"></td>';
+			$positions .= '<td align="right">- '.UtilsWepps::round($jdata['delivery']['discount']['price'],2,'str').'</td>';
+			$positions .= '</tr>';
+		}
+		if (!empty($jdata['payments']['tariff']['price'])) {
+			$positions .= '<tr>';
+			$positions .= '<td align="left">'.$jdata['payments']['tariff']['text'].'</td>';
+			$positions .= '<td align="center"></td>';
+			$positions .= '<td align="right">- '.UtilsWepps::round($jdata['payments']['tariff']['price'],2,'str').'</td>';
+			$positions .= '</tr>';
+		}
+		if (!empty($jdata['payments']['discount']['price'])) {
+			$positions .= '<tr>';
+			$positions .= '<td align="left">'.$jdata['payments']['discount']['text'].'</td>';
+			$positions .= '<td align="center"></td>';
+			$positions .= '<td align="right">- '.UtilsWepps::round($jdata['payments']['discount']['price'],2,'str').'</td>';
+			$positions .= '</tr>';
+		}
+		$positions .= '<tr>';
+		$positions .= '<td align="left"></td>';
+		$positions .= '<td align="center">ИТОГО: </td>';
+		$positions .= '<td align="right"><b>'.UtilsWepps::round($jdata['sumTotal'],2,'str').'</b></td>';
+		$positions .= '</tr>';
+		$positions .= "</table>";
+
+		$addons = "
+
+		Адрес:
+		Способ доставки:
+		Способ оплаты:
+		Комментарий:
+
+		<b>Покупатель</b><br/>
+		{$order['Name']}<br/>
+		{$order['Phone']}<br/>
+		{$order['Email']}<br/>
+		";
+		$text = str_replace('[ЗАКАЗ]',$order['Id'],$text);
+		$text = str_replace('[НАИМЕНОВАНИЕ]',$order['Name'],$text);
+		$text = str_replace('[ИМЯ]',$order['Name'],$text);
+		$text = str_replace('[ТОВАРЫ]',$positions,$text);
+		$text = str_replace('[ДОПОЛНИТЕЛЬНО]',$addons,$text);
+		$text = str_replace('[ПРОЕКТ]',ConnectWepps::$projectInfo['name'],$text);
+		return $text;
 	}
 
 	/**

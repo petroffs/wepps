@@ -287,7 +287,7 @@ class UtilsWepps
 			$number = round($number, $i);
 		}
 		if ($type == 'str') {
-			return number_format($number, $scale, ".", "");
+			return number_format($number, $scale, ".", " ");
 		}
 		return doubleval(number_format($number, $scale, ".", ""));
 	}

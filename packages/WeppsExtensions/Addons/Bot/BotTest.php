@@ -7,6 +7,7 @@ use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsExtensions\Addons\Mail\MailWepps;
 use WeppsCore\Utils\CliWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
 
 class BotTestWepps extends BotWepps {
@@ -127,6 +128,17 @@ class BotTestWepps extends BotWepps {
 	}
 	public function postalcodes() {
 		UtilsWepps::debug(1,21);
+	}
+	public function testOrderText() {
+		$cartUtils = new CartUtilsWepps();
+		$id = 41;
+		$sql = "select * from Orders where Id=?";
+		$res = ConnectWepps::$instance->fetch($sql,[$id])[0];
+		$str = $cartUtils->getOrderText($res);
+		
+		$sql = "update Orders set OText=? where Id=?";
+		ConnectWepps::$instance->query($sql,[$str,$id]);
+		#UtilsWepps::debug($str,21);
 	}
 }
 ?>

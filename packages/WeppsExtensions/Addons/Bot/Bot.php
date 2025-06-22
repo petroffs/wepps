@@ -83,6 +83,10 @@ class BotWepps {
 				$obj = new BotTestWepps();
 				$obj->postalcodes();
 				break;
+			case 'ordertext':
+				$obj = new BotTestWepps();
+				$obj->testOrderText();
+				break;
 			default:
 				echo "\nERROR\n";
 				exit();

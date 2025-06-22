@@ -2,9 +2,6 @@
 namespace WeppsExtensions\Cart\Payments;
 
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Utils\CliWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
 class PaymentsUtilsWepps
@@ -29,7 +26,6 @@ class PaymentsUtilsWepps
                 where $conditions and d.Id=?
                 group by p.Id
                 order by p.Priority";
-        //UtilsWepps::debug($paymentsId);
         $res = ConnectWepps::$instance->fetch($sql, [$paymentsId,$deliveryId]);
         foreach ($res as $key => $value) {
             $className = "\WeppsExtensions\\Cart\\Payments\\{$value['PaymentsExt']}";
