@@ -15,6 +15,7 @@
         <input type="hidden" name="operations-id" value="{$deliveryOperations.active.id}" autocomplete="off"/>
         <input type="hidden" name="operations-title" value="{$deliveryOperations.active.title}" autocomplete="off"/>
         <input type="hidden" name="operations-city" value="{$deliveryOperations.active.city}" autocomplete="off"/>
+        <input type="hidden" name="operations-address" value="{$deliveryOperations.active['address']}" autocomplete="off"/>
         <input type="hidden" name="operations-address-short" value="{$deliveryOperations.active['address-short']}" autocomplete="off"/>
         <input type="hidden" name="operations-postal-code" value="{$deliveryOperations.active['postal-code']}" autocomplete="off"/>
         <div></div>

@@ -15,8 +15,8 @@ class DeliveryUtilsWepps
         $page = max(1, (int) ($page) ?? 1);
         $limit = ($page - 1) * $onpage;
         $term = urldecode($term);
-        $sql = "select c.Id,r.Id RegionsId,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
-						join RegionsCdek r on r.Id = c.RegionsId where concat(c.Name,', ',r.Name) like ? limit $limit,$onpage";
+        $sql = "select c.Id,r.Id RegionsId,c.Name,concat(if(c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name))) Title from CitiesCdek c
+						join RegionsCdek r on r.Id = c.RegionsId where concat(c.Name,', ',r.Name) like ? and c.Name not like '% (%' order by if(c.Name=r.Name,0,1) limit $limit,$onpage";
         return ConnectWepps::$instance->fetch($sql, ["{$term}%"]);
     }
     public function getCitiesById(int $id, int $page = 1, int $onpage = 12): array

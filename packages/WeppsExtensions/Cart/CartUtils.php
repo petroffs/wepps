@@ -514,8 +514,6 @@ class CartUtilsWepps
 		}
 		$jdata = json_decode($order['JData'],true);
 		$jpositions = json_decode($order['JPositions'],true);
-		#UtilsWepps::debug($jdata,21);
-		#UtilsWepps::debug($jdata['delivery']['tariff']['title'],21);
 		$positions = "<table width=\"100%\" cellpadding=\"10\" border=\"1\">";
 		$positions .= "<tr>";
 		$positions .= "<th width=\"50%\" align=\"left\">Наименование</th>";
@@ -529,8 +527,9 @@ class CartUtilsWepps
 			$positions .= '<td align="right">'.UtilsWepps::round($value['sum'],2,'str').'</td>';
 			$positions .= '</tr>';
 		}
+		$deliveryAddress = (!empty($order['Address'])) ? '<br/>'.$order['PostalCode'] . ', ' . $order['Address'] : '';
 		$positions .= '<tr>';
-		$positions .= '<td align="left">'.$jdata['delivery']['tariff']['title'].'</td>';
+		$positions .= '<td align="left">'.$jdata['delivery']['tariff']['title'].$deliveryAddress.'</td>';
 		$positions .= '<td align="center"></td>';
 		$positions .= '<td align="right">'.UtilsWepps::round($jdata['delivery']['tariff']['price'],2,'str').'</td>';
 		$positions .= '</tr>';
@@ -562,17 +561,12 @@ class CartUtilsWepps
 		$positions .= '</tr>';
 		$positions .= "</table>";
 
-		$addons = "
-
-		Адрес:
-		Способ доставки:
-		Способ оплаты:
-		Комментарий:
-
-		<b>Покупатель</b><br/>
+		$comment = (!empty($order['EText']))?'<p><p><b>Комментарий</b><br/>'.$order['EText'].'</p>':'';
+		$addons = "$comment
+		<p><b>Покупатель</b><br/>
 		{$order['Name']}<br/>
 		{$order['Phone']}<br/>
-		{$order['Email']}<br/>
+		{$order['Email']}</p>
 		";
 		$text = str_replace('[ЗАКАЗ]',$order['Id'],$text);
 		$text = str_replace('[НАИМЕНОВАНИЕ]',$order['Name'],$text);
