@@ -7,6 +7,8 @@ local
 	mysql --defaults-extra-file=/d/var/home/config.cnf wepps_platformdb < /d/var/home/wepps.platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 wsl	
 	mysql --defaults-extra-file=/var/www/config.cnf wepps_platformdb < /var/www/wepps/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
+git
+	git config --global core.quotepath false
 
 $json = json_encode($this->summary['items'],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
 UtilsWepps::debug($json,1);
