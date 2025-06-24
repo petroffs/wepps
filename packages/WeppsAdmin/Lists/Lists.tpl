@@ -18,13 +18,9 @@
 							<div class="descr"></div>
 							{foreach name="o" item="i" key="k" from=$item}
 							<div class="container pps_flex pps_flex_row pps_flex_row_str">
-								<div class="pps_flex_23">
+								<div class="pps_flex_11">
 									<div class="container-title"><a href="/_wepps/lists/{$i.TableName}/">{$i.Name}</a></div>
 									<div class="container-descr">{$i.TableName}</div>
-								</div>
-								<div class="pps_flex_13 pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-									<div class="container-descr pps_flex_12 pps_right">{$i.FieldsCount}</div>
-									<div class="container-descr pps_flex_12 pps_right">{$i.RowsCount}</div>
 								</div>
 							</div>
 							{/foreach}
