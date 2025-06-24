@@ -777,7 +777,7 @@ class CliWepps
 		if (!file_exists($path['dirname'])) {
 			mkdir($path['dirname'], 0755, true);
 		}
-		if (!copy($source, $destination)) {
+		if (!file_put_contents($destination, file_get_contents($source))) {
 			return false;
 		}
 		return true;
