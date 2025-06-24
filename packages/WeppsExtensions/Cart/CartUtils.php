@@ -296,7 +296,9 @@ class CartUtilsWepps
 			foreach($items as $key=>$value) {
 				$rate = UtilsWepps::round($value['sum']/$sum,6);
 				$tariffRecount = - UtilsWepps::round($rate*$deliveryDiscount);
-				$items[$key]['tariff']??0;
+				if (empty($items[$key]['tariff'])) {
+					$items[$key]['tariff'] = 0;
+				}
 				$items[$key]['tariff']+=$tariffRecount;
 			}
 		}
@@ -304,7 +306,9 @@ class CartUtilsWepps
 			foreach($items as $key=>$value) {
 				$rate = UtilsWepps::round($value['sum']/$sum,6);
 				$tariffRecount = UtilsWepps::round($rate*$paymentTariff);
-				$items[$key]['tariff']??0;
+				if (empty($items[$key]['tariff'])) {
+					$items[$key]['tariff'] = 0;
+				}
 				$items[$key]['tariff']+=$tariffRecount;
 			}
 		}
@@ -312,7 +316,9 @@ class CartUtilsWepps
 			foreach($items as $key=>$value) {
 				$rate = UtilsWepps::round($value['sum']/$sum,6);
 				$tariffRecount = - UtilsWepps::round($rate*$paymentDiscount);
-				$items[$key]['tariff']??0;
+				if (empty($items[$key]['tariff'])) {
+					$items[$key]['tariff'] = 0;
+				}
 				$items[$key]['tariff']+=$tariffRecount;
 			}
 		}
@@ -458,7 +464,6 @@ class CartUtilsWepps
 			'City' => $get['operations-city']??'',
 			'CityId' => $cartSummary['delivery']['citiesId'],
 			'PostalCode' => $get['operations-postal-code']??'',
-			#'OComment' => @$get['comment'],
 			'JData' => json_encode($cartSummary,JSON_UNESCAPED_UNICODE),
 			'JPositions' => json_encode($positions,JSON_UNESCAPED_UNICODE),
 		];
@@ -470,7 +475,7 @@ class CartUtilsWepps
 			$insert->execute($row);
 			$id = ConnectWepps::$db->lastInsertId();
 			if (!empty($get['comment'])) {
-				$row = [
+				$row2 = [
 					'Name' => 'Msg',
 					'OrderId' => $id,
 					'UserId' => $row['UserId'],
@@ -478,12 +483,29 @@ class CartUtilsWepps
 					'EDate' => $row['ODate'],
 					'EText' => trim(strip_tags($get['comment']))
 				];
-				$prepare = ConnectWepps::$instance->prepare($row);
+				$prepare = ConnectWepps::$instance->prepare($row2);
 				$insert = ConnectWepps::$db->prepare("insert OrdersEvents {$prepare['insert']}");
-				$insert->execute($row);
-				$text = "Уведомление клиенту о заказе";
-				ConnectWepps::$instance->query("update Orders set OText=? where Id=?",[$text,$id]);
+				$insert->execute($row2);
 			}
+			$row['Id'] = $id;
+			$row['EText'] = @$row2['EText'];
+			$text = $this->getOrderText($row);
+			ConnectWepps::$instance->query("update Orders set OText=? where Id=?",[$text,$id]);
+			$jdata = [
+				'id' => $id,
+				'email' => true,
+			];
+			$row2 = [
+				'Name' => 'order-new',
+				'Alias' => '',
+				'LDate' => $row['ODate'],
+				'IP' => $row['UserIP'],
+				'BRequest' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
+				'TRequest' => 'cli',
+			];
+			$prepare = ConnectWepps::$instance->prepare($row2);
+			$insert = ConnectWepps::$db->prepare("insert s_LocalServicesLog {$prepare['insert']}");
+			$insert->execute($row2);
 			return [
 				'id' => $id
 			];

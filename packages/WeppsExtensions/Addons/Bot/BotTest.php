@@ -130,8 +130,11 @@ class BotTestWepps extends BotWepps {
 		UtilsWepps::debug(1,21);
 	}
 	public function testOrderText() {
+		/*
+		 * EText - комментарий
+		 */
 		$cartUtils = new CartUtilsWepps();
-		$id = 50;
+		$id = 41;
 		$sql = "select o.Id,o.Name,o.JData,o.JPositions,o.Address,o.PostalCode,o.Phone,o.Email,e.EText from Orders o
 		left join OrdersEvents e on e.OrderId=o.Id and e.EType='Msg' where o.Id=? order by e.Id";
 		$res = ConnectWepps::$instance->fetch($sql,[$id])[0];
