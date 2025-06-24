@@ -57,4 +57,8 @@ class CartTemplatesWepps
 		$this->smarty->assign('cartDefaultTpl', $this->smarty->fetch(__DIR__ . '/CartCheckout.tpl'));
 		return;
 	}
+	public function order() {
+		$this->smarty->assign('cartDefaultTpl', $this->smarty->fetch(__DIR__ . '/CartOrder.tpl'));
+		return;
+	}
 }

@@ -29,8 +29,10 @@ class CartWepps extends ExtensionWepps {
 				$template = new CartTemplatesWepps($smarty,$cartUtils);
 				$template->checkout();
 				break;
-			case 'order/complete/ea201f29-82a3-4d59-a522-9ccc00af95e5/':
-				
+			case 'order':
+				$this->extensionData['element'] = 1;
+				$template = new CartTemplatesWepps($smarty,$cartUtils);
+				$template->order();
 				break;
 			default:
 				ExceptionWepps::error404();

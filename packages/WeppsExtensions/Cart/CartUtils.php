@@ -490,7 +490,8 @@ class CartUtilsWepps
 			$row['Id'] = $id;
 			$row['EText'] = @$row2['EText'];
 			$text = $this->getOrderText($row);
-			ConnectWepps::$instance->query("update Orders set OText=? where Id=?",[$text,$id]);
+			$alias = UtilsWepps::guid($id.'_'.ConnectWepps::$projectServices['wepps']['sign']);
+			ConnectWepps::$instance->query("update Orders set OText=?,Alias=? where Id=?",[$text,$alias,$id]);
 			$jdata = [
 				'id' => $id,
 				'email' => true,
@@ -507,25 +508,12 @@ class CartUtilsWepps
 			$insert = ConnectWepps::$db->prepare("insert s_LocalServicesLog {$prepare['insert']}");
 			$insert->execute($row2);
 			return [
-				'id' => $id
+				'id' => $id,
+				'alias' => $alias,
+				'html' => "<script>window.location.href='/cart/order.html?id={$alias}'</script>"
 			];
 		};
-		$response = ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
-		UtilsWepps::debug($response,31);
-
-		/**
-		 * place order
-		 * 
-		 * user info
-		 * positions
-		 * payment
-		 * delivery
-		 * etc
-		 * 
-		 * hash заказа, переход на фин. страницу
-		 * paynment ext-s - подключение оплаты, или др. сценарий
-		 */
-		return [];
+		return ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
 	}
 
 	public function getOrderText(array $order) : string {

@@ -121,8 +121,9 @@ class RequestCartWepps extends RequestWepps {
 				 * Оформляем заказ
 				 * Жетально через транзакции
 				 */
-				$cartUtils->addOrder($this->get);
-				break;
+				$response = $cartUtils->addOrder($this->get);
+				echo $response['html'];
+				exit();
 			case 'copyOrder':
 				break;
 			default:
