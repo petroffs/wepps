@@ -1,9 +1,7 @@
-var readyError404Init = function() {
-	$('.btn').find('input').eq(0).on('click',function() {
-		window.history.back();
-	});
-	$('.btn').find('input').eq(1).on('click',function() {
-		location.href = '/';
+var error404Init = function() {
+	$('#error404_search').on('click',function(e) {
+		e.preventDefault();
+		console.log(1);
 	});
 }
-$(document).ready(readyError404Init);
+$(document).ready(error404Init);

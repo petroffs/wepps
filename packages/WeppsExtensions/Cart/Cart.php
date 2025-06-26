@@ -17,6 +17,7 @@ class CartWepps extends ExtensionWepps {
 		$this->headers->meta('<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">');
 		$this->headers->meta('<meta http-equiv="Pragma" content="no-cache">');
 		$this->headers->meta('<meta http-equiv="Expires" content="0">');
+		$cartUtils->setHeaders($this->headers);
 		switch (NavigatorWepps::$pathItem) {
 			case '':
 				$template = new CartTemplatesWepps($smarty,$cartUtils);
@@ -25,7 +26,7 @@ class CartWepps extends ExtensionWepps {
 			case 'checkout':
 				$this->extensionData['element'] = 1;
 				$headers = new TemplateHeadersWepps();
-				$cartUtils->setHeaders($headers);
+				$cartUtils->setHeaders($headers); # зачем ?
 				$template = new CartTemplatesWepps($smarty,$cartUtils);
 				$template->checkout();
 				break;
@@ -35,6 +36,9 @@ class CartWepps extends ExtensionWepps {
 				$template->order();
 				break;
 			default:
+				/* $this->extensionData['element'] = 1;
+				$template = new CartTemplatesWepps($smarty,$cartUtils);
+				$template->empty(); */
 				ExceptionWepps::error404();
 				break;
 		}

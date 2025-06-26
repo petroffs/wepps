@@ -6,10 +6,14 @@ use WeppsExtensions\Cart\CartUtilsWepps;
 
 class PaymentsWepps
 {
-	private $settings;
-	public function __construct(array $settings = [])
+	protected $settings;
+    protected $cartUtils;
+	protected $paymentsUtils;
+	public function __construct(array $settings = [],CartUtilsWepps $cartUtils)
 	{
 		$this->settings = $settings;
+		$this->cartUtils = $cartUtils;
+		$this->paymentsUtils = new PaymentsUtilsWepps();
 	}
 	public function getTariff(CartUtilsWepps $cartUtils)
 	{
@@ -53,5 +57,17 @@ class PaymentsWepps
 				break;
 		}
 		return $output;
+	}
+	public function getOperations(array $order): array {
+		#$headers = $this->cartUtils->getHeaders();
+		#$headers->js("/ext/Cart/Payments/PaymentsDefault.{$headers::$rand}.js");
+		#$headers->css("/ext/Cart/Payments/PaymentsDefault.{$headers::$rand}.css");
+		$tpl = 'PaymentsDefault.tpl';
+		return [
+			'tpl' => $tpl,
+			'data' => [
+				'order' => $order
+			]
+		];
 	}
 }

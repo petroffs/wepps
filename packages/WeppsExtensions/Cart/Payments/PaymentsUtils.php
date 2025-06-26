@@ -29,7 +29,10 @@ class PaymentsUtilsWepps
         $res = ConnectWepps::$instance->fetch($sql, [$paymentsId,$deliveryId]);
         foreach ($res as $key => $value) {
             $className = "\WeppsExtensions\\Cart\\Payments\\{$value['PaymentsExt']}";
-		    $class = new $className($value);
+            /**
+             * @var \WeppsExtensions\Cart\Payments\PaymentsWepps $class
+             */
+		    $class = new $className($value,$cartUtils);
             $res[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);
             $res[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
             $res[$key]['Addons']['extension'] = $value['PaymentsExt'];

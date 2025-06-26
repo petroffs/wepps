@@ -11,6 +11,7 @@ class Error404Wepps extends ExtensionWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$this->headers->css("/ext/Error404/Error404.{$this->rand}.css");
 		$this->headers->js("/ext/Error404/Error404.{$this->rand}.js");
+		$smarty->assign('normalView',0);
 		$this->extensionData['element'] = 1;
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));		
 		return;
