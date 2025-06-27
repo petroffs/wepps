@@ -16,6 +16,7 @@
 		"select2/select2" : "*",
 		"adhocore/jwt" : "*",
 		"twbs/bootstrap-icons": "*",
-		"matthiasmullie/minify": "^1.3"
+		"matthiasmullie/minify": "*",
+		"yoomoney/yookassa-sdk-php" : "*"
 	}
 }
