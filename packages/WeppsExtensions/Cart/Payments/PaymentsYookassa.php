@@ -4,6 +4,12 @@ namespace WeppsExtensions\Cart\Payments;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
+/* if (!function_exists('autoLoader')) {
+	throw new \RuntimeException(
+        'This file should be loaded via autoLoader.'
+    );
+} */
+
 class PaymentsYookassaWepps extends PaymentsWepps
 {
 	private $get;
@@ -11,14 +17,6 @@ class PaymentsYookassaWepps extends PaymentsWepps
 	public function __construct(array $settings = [], CartUtilsWepps $cartUtils)
 	{
 		parent::__construct($settings, $cartUtils);
-		$this->get = $_GET;
-		switch (@$this->get['action']) {
-			case 'form':
-				UtilsWepps::debug(1,1);
-				break;
-			default:
-				break;
-		}
 	}
 	public function getOperations($order): array
 	{
@@ -32,5 +30,17 @@ class PaymentsYookassaWepps extends PaymentsWepps
 				'order' => $order
 			]
 		];
+	}
+	public function form() {
+		UtilsWepps::debug('form',1);
+	}
+	public function return() {
+		UtilsWepps::debug('return',1);
+	}
+	public function check() {
+		UtilsWepps::debug('check',1);
+	}
+	public function test() {
+		UtilsWepps::debug('test',1);
 	}
 }
