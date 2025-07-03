@@ -14,7 +14,7 @@ class RequestYookassaWepps extends RequestWepps
     public function request($action = "")
     {
         $cartUtils = new CartUtilsWepps();
-        $yookassa = new PaymentsYookassaWepps([], $cartUtils);
+        $yookassa = new PaymentsYookassaWepps($this->get, $cartUtils);
         switch ($action) {
             case 'form':
                 $yookassa->form();
