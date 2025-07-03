@@ -1,9 +1,9 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery;
+namespace WeppsExtensions\Cart\Delivery\DeliveryPickup;
 
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryWepps;
 
 class DeliveryPickupWepps extends DeliveryWepps
 {
@@ -15,8 +15,8 @@ class DeliveryPickupWepps extends DeliveryWepps
 	{
 		$headers = $this->cartUtils->getHeaders();
 		#$headers->js("/ext/Cart/Delivery/OperationsNotice.{$headers::$rand}.js");
-		$headers->css("/ext/Cart/Delivery/OperationsNotice.{$headers::$rand}.css");
-		$tpl = 'OperationsNotice.tpl';
+		$headers->css("/ext/Cart/Delivery/DeliveryPickup/OperationsNotice.{$headers::$rand}.css");
+		$tpl = 'DeliveryPickup/OperationsNotice.tpl';
 		$data = [
 			'text' => $this->settings['Descr'],
 			'address' => ConnectWepps::$projectInfo['address'],

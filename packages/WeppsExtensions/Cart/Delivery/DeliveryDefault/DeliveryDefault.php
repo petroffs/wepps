@@ -1,7 +1,8 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery;
+namespace WeppsExtensions\Cart\Delivery\DeliveryDefault;
 
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryWepps;
 
 class DeliveryDefaultWepps extends DeliveryWepps
 {

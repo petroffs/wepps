@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery;
+namespace WeppsExtensions\Cart\Delivery\DeliveryCdek;
 
 use WeppsCore\Utils\CliWepps;
 use WeppsCore\Utils\UtilsWepps;
@@ -7,6 +7,7 @@ use WeppsCore\Connect\ConnectWepps;
 use Curl\Curl;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryWepps;
 
 class DeliveryCdekWepps extends DeliveryWepps
 {
@@ -107,11 +108,11 @@ class DeliveryCdekWepps extends DeliveryWepps
 		$cart = $this->cartUtils->getCart();
 		switch (@$jdata['tariff']) {
 			case 136:
-				$headers->css("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.css");
-				$headers->js("/ext/Cart/Delivery/OperationsPickpoints.{$headers::$rand}.js");
+				$headers->css("/ext/Cart/Delivery/DeliveryCdek/OperationsPickpoints.{$headers::$rand}.css");
+				$headers->js("/ext/Cart/Delivery/DeliveryCdek/OperationsPickpoints.{$headers::$rand}.js");
 				$headers->js("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.js");
 				$headers->css("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.css");
-				$tpl = 'OperationsPickpoints.tpl';
+				$tpl = 'DeliveryCdek/OperationsPickpoints.tpl';
 				$data = [];
 				#$from = ConnectWepps::$projectServices['cdek']['office']['sender'];
 				$to = $cart['citiesId'] ?? 0;
@@ -142,11 +143,11 @@ class DeliveryCdekWepps extends DeliveryWepps
 				break;
 			case 137:
 				$citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
-				$headers->js("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.js");
-				$headers->css("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.css");
+				$headers->js("/ext/Cart/Delivery/DeliveryAddress/OperationsAddress.{$headers::$rand}.js");
+				$headers->css("/ext/Cart/Delivery/DeliveryAddress/OperationsAddress.{$headers::$rand}.css");
 				$headers->css("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css");
 				$headers->js("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js");
-				$tpl = 'OperationsAddress.tpl';
+				$tpl = 'DeliveryAddress/OperationsAddress.tpl';
 				$data = [
 					'deliveryCtiy' => $citiesById[0],
 					'token' => ConnectWepps::$projectServices['dadata']['token']

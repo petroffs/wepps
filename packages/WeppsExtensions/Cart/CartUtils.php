@@ -481,7 +481,7 @@ class CartUtilsWepps
 			$row['Id'] = $id;
 			$row['EText'] = @$row2['EText'];
 			$text = $this->getOrderText($row);
-			$alias = UtilsWepps::guid($id.'_'.ConnectWepps::$projectServices['wepps']['sign']);
+			$alias = UtilsWepps::guid($id.'_'.time().'_'.ConnectWepps::$projectServices['wepps']['sign']);
 			ConnectWepps::$instance->query("update Orders set OText=?,Alias=? where Id=?",[$text,$alias,$id]);
 			$jdata = [
 				'id' => $id,

@@ -1,11 +1,13 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery;
+namespace WeppsExtensions\Cart\Delivery\DeliveryRussianPost;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use Curl\Curl;
+use WeppsExtensions\Cart\Delivery\DeliveryCdek\DeliveryCdekWepps;
+use WeppsExtensions\Cart\Delivery\DeliveryWepps;
 
 class DeliveryRussianPostWepps extends DeliveryWepps
 {
@@ -68,16 +70,15 @@ class DeliveryRussianPostWepps extends DeliveryWepps
     {
         $headers = $this->cartUtils->getHeaders();
         $jdata = json_decode($this->settings['JSettings'], true);
-        $tpl = 'OperationsNotice.tpl';
         $data = [];
         $allowBtn = false;
         $cart = $this->cartUtils->getCart();
         $citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
-        $headers->js("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.js");
-        $headers->css("/ext/Cart/Delivery/OperationsAddress.{$headers::$rand}.css");
+        $headers->js("/ext/Cart/Delivery/DeliveryCdek/OperationsAddress.{$headers::$rand}.js");
+        $headers->css("/ext/Cart/Delivery/DeliveryCdek/OperationsAddress.{$headers::$rand}.css");
         $headers->css("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css");
         $headers->js("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js");
-        $tpl = 'OperationsAddress.tpl';
+        $tpl = 'DeliveryAddress/OperationsAddress.tpl';
         $data = [
             'deliveryCtiy' => $citiesById[0],
             'token' => ConnectWepps::$projectServices['dadata']['token']
