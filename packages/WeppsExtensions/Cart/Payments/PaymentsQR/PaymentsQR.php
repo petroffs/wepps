@@ -1,7 +1,8 @@
 <?php
-namespace WeppsExtensions\Cart\Payments;
+namespace WeppsExtensions\Cart\Payments\PaymentsQR;
 
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Cart\Payments\PaymentsWepps;
 
 class PaymentsQRWepps extends PaymentsWepps
 {
@@ -14,7 +15,7 @@ class PaymentsQRWepps extends PaymentsWepps
 		#$headers = $this->cartUtils->getHeaders();
 		#$headers->js("/ext/Cart/Payments/PaymentsQR.{$headers::$rand}.js");
 		#$headers->css("/ext/Cart/Payments/PaymentsQR.{$headers::$rand}.css");
-		$tpl = 'PaymentsQR.tpl';
+		$tpl = 'PaymentsQR/PaymentsQR.tpl';
 		return [
 			'tpl' => $tpl,
 			'data' => [

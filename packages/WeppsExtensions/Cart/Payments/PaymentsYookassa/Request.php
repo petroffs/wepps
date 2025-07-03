@@ -1,13 +1,13 @@
 <?php
-namespace WeppsExtensions\Cart\Payments;
+namespace WeppsExtensions\Cart\Payments\PaymentsYookassa;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsCore\Utils\UtilsWepps;
 
-require_once '../../../../config.php';
-require_once '../../../../autoloader.php';
-require_once '../../../../configloader.php';
+require_once '../../../../../config.php';
+require_once '../../../../../autoloader.php';
+require_once '../../../../../configloader.php';
 
 class RequestYookassaWepps extends RequestWepps
 {

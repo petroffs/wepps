@@ -1,9 +1,9 @@
 <?php
-namespace WeppsExtensions\Cart\Payments;
+namespace WeppsExtensions\Cart\Payments\PaymentsDefault;
 
-use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Cart\Payments\PaymentsWepps;
 
 class PaymentsDefaultWepps extends PaymentsWepps
 {

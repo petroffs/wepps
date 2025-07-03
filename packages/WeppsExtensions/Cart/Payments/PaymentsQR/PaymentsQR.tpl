@@ -2,7 +2,7 @@
     <div class="content-block cart-total">
         {$operationsData.data.order.PaymentDescrFinish}
         <label class="pps pps_button pps_button_important">
-            <a href="/pay" class="pps_button">Оплатить заказ</a>
+            <a href="#/pay" class="pps_button">Оплатить заказ</a>
         </label>
     </div>
 </div>

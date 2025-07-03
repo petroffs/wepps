@@ -1,8 +1,9 @@
 <?php
-namespace WeppsExtensions\Cart\Payments;
+namespace WeppsExtensions\Cart\Payments\PaymentsYookassa;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsExtensions\Cart\Payments\PaymentsWepps;
 
 /* if (!function_exists('autoLoader')) {
 	throw new \RuntimeException(
@@ -21,9 +22,9 @@ class PaymentsYookassaWepps extends PaymentsWepps
 	public function getOperations($order): array
 	{
 		#$headers = $this->cartUtils->getHeaders();
-		#$headers->js("/ext/Cart/Payments/PaymentsQR.{$headers::$rand}.js");
-		#$headers->css("/ext/Cart/Payments/PaymentsQR.{$headers::$rand}.css");
-		$tpl = 'PaymentsYookassa.tpl';
+		#$headers->js("/path.{$headers::$rand}.js");
+		#$headers->css("/path.{$headers::$rand}.css");
+		$tpl = 'PaymentsYookassa/PaymentsYookassa.tpl';
 		return [
 			'tpl' => $tpl,
 			'data' => [
