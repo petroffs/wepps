@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Cart\Payments\PaymentsYookassa;
+namespace WeppsExtensions\Cart\Payments\Yookassa;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
@@ -14,7 +14,7 @@ class RequestYookassaWepps extends RequestWepps
     public function request($action = "")
     {
         $cartUtils = new CartUtilsWepps();
-        $yookassa = new PaymentsYookassaWepps($this->get, $cartUtils);
+        $yookassa = new YookassaWepps($this->get, $cartUtils);
         switch ($action) {
             case 'form':
                 $yookassa->form();

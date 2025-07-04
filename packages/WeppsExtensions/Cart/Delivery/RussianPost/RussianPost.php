@@ -1,15 +1,15 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery\DeliveryRussianPost;
+namespace WeppsExtensions\Cart\Delivery\RussianPost;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use Curl\Curl;
-use WeppsExtensions\Cart\Delivery\DeliveryCdek\DeliveryCdekWepps;
+use WeppsExtensions\Cart\Delivery\Cdek\CdekWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryWepps;
 
-class DeliveryRussianPostWepps extends DeliveryWepps
+class RussianPostWepps extends DeliveryWepps
 {
     public function __construct(array $settings, CartUtilsWepps $cartUtils)
     {
@@ -22,7 +22,7 @@ class DeliveryRussianPostWepps extends DeliveryWepps
             return [];
         }
         if (empty($this->settings['PostalCode'])) {
-            $obj = new DeliveryCdekWepps($this->settings,$this->cartUtils);
+            $obj = new CdekWepps($this->settings,$this->cartUtils);
             $this->settings['PostalCode'] = $obj->getPostalcodes();
             if (empty($this->settings['PostalCode'])) {
                 $output = [
@@ -74,11 +74,11 @@ class DeliveryRussianPostWepps extends DeliveryWepps
         $allowBtn = false;
         $cart = $this->cartUtils->getCart();
         $citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
-        $headers->js("/ext/Cart/Delivery/DeliveryCdek/OperationsAddress.{$headers::$rand}.js");
-        $headers->css("/ext/Cart/Delivery/DeliveryCdek/OperationsAddress.{$headers::$rand}.css");
+        $headers->js("/ext/Cart/Delivery/Address/Address.{$headers::$rand}.js");
+        $headers->css("/ext/Cart/Delivery/Address/Address.{$headers::$rand}.css");
         $headers->css("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css");
         $headers->js("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js");
-        $tpl = 'DeliveryAddress/OperationsAddress.tpl';
+        $tpl = 'Address/Address.tpl';
         $data = [
             'deliveryCtiy' => $citiesById[0],
             'token' => ConnectWepps::$projectServices['dadata']['token']

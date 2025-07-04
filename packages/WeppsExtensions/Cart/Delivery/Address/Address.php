@@ -1,12 +1,12 @@
 <?php
-namespace WeppsExtensions\Cart\Delivery\DeliveryAddress;
+namespace WeppsExtensions\Cart\Delivery\Address;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryWepps;
 
-class DeliveryAddressWepps extends DeliveryWepps
+class AddressWepps extends DeliveryWepps
 {
 	public function __construct(array $settings, CartUtilsWepps $cartUtils)
 	{
@@ -21,11 +21,11 @@ class DeliveryAddressWepps extends DeliveryWepps
 		$allowBtn = false;
 		$cart = $this->cartUtils->getCart();
 		$citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
-		$headers->js("/ext/Cart/Delivery/DeliveryAddress/OperationsAddress.{$headers::$rand}.js");
-		$headers->css("/ext/Cart/Delivery/DeliveryAddress/OperationsAddress.{$headers::$rand}.css");
+		$headers->js("/ext/Cart/Delivery/Address/Address.{$headers::$rand}.js");
+		$headers->css("/ext/Cart/Delivery/Address/Address.{$headers::$rand}.css");
 		$headers->css("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/css/suggestions.min.css");
 		$headers->js("https://cdn.jsdelivr.net/npm/suggestions-jquery@22.6.0/dist/js/jquery.suggestions.min.js");
-		$tpl = 'DeliveryAddress/OperationsAddress.tpl';
+		$tpl = 'Address/Address.tpl';
 		$data = [
 			'deliveryCtiy' => $citiesById[0],
 			'token' => ConnectWepps::$projectServices['dadata']['token']

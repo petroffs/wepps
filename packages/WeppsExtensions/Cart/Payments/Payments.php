@@ -62,7 +62,7 @@ class PaymentsWepps
 		#$headers = $this->cartUtils->getHeaders();
 		#$headers->js("/ext/Cart/Payments/PaymentsDefault.{$headers::$rand}.js");
 		#$headers->css("/ext/Cart/Payments/PaymentsDefault.{$headers::$rand}.css");
-		$tpl = 'PaymentsDefault/PaymentsDefault.tpl';
+		$tpl = 'Default/Default.tpl';
 		return [
 			'tpl' => $tpl,
 			'data' => [

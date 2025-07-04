@@ -1,11 +1,11 @@
 <?php
-namespace WeppsExtensions\Cart\Payments\PaymentsDefault;
+namespace WeppsExtensions\Cart\Payments\Default;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsWepps;
 
-class PaymentsDefaultWepps extends PaymentsWepps
+class DefaultWepps extends PaymentsWepps
 {
 	public function __construct(array $settings = [], CartUtilsWepps $cartUtils)
 	{

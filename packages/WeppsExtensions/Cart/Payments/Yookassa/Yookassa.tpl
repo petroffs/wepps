@@ -2,7 +2,7 @@
     <div class="content-block cart-total">
         {$operationsData.data.order.PaymentDescrFinish}
         <label class="pps pps_button pps_button_important">
-            <a href="/ext/Cart/Payments/PaymentsYookassa/Request.php?action=form&id={$operationsData.data.order.Alias}" class="pps_button">Оплатить заказ</a>
+            <a href="/ext/Cart/Payments/Yookassa/Request.php?action=form&id={$operationsData.data.order.Alias}" class="pps_button">Оплатить заказ</a>
         </label>
     </div>
 </div>

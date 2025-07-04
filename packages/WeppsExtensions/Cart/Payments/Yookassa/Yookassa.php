@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Cart\Payments\PaymentsYookassa;
+namespace WeppsExtensions\Cart\Payments\Yookassa;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -13,7 +13,7 @@ use WeppsExtensions\Cart\Payments\PaymentsWepps;
     );
 } */
 
-class PaymentsYookassaWepps extends PaymentsWepps
+class YookassaWepps extends PaymentsWepps
 {
 	public function __construct(array $settings = [], CartUtilsWepps $cartUtils)
 	{
@@ -25,7 +25,7 @@ class PaymentsYookassaWepps extends PaymentsWepps
 		#$headers = $this->cartUtils->getHeaders();
 		#$headers->js("/path.{$headers::$rand}.js");
 		#$headers->css("/path.{$headers::$rand}.css");
-		$tpl = 'PaymentsYookassa/PaymentsYookassa.tpl';
+		$tpl = 'Yookassa/Yookassa.tpl';
 		return [
 			'tpl' => $tpl,
 			'data' => [
