@@ -17,7 +17,11 @@ class RequestYookassaWepps extends RequestWepps
         $yookassa = new YookassaWepps($this->get, $cartUtils);
         switch ($action) {
             case 'form':
-                $yookassa->form();
+                $response = $yookassa->form();
+                if (!empty($response['url'])) {
+                    header("location: {$response['url']}");
+                    exit();
+                }
                 break;
             case 'return':
                 $yookassa->return();
