@@ -63,7 +63,7 @@ class YookassaWepps extends PaymentsWepps
 		$products = json_decode($order['JPositions'],true);
 		$cartUtils = new CartUtilsWepps();
 		$products = $cartUtils->getCartPositionsRecounter($products,$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
-		
+		//UtilsWepps::debug($products,1);
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=1 and IsProcessed=1";
 		$res = ConnectWepps::$instance->fetch($sql,[$order['Id']]);
 		

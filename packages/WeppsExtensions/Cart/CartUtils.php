@@ -290,7 +290,7 @@ class CartUtilsWepps
 			$sum = array_sum(array_column($items, 'sum'));
 		}
 		if ($sum==0) {
-			return $items;
+			//return $items;
 		}
 		if ($deliveryDiscount>0) {
 			foreach($items as $key=>$value) {
