@@ -19,6 +19,7 @@ class RequestYookassaWepps extends RequestWepps
             case 'form':
                 $response = $yookassa->form();
                 if (!empty($response['url'])) {
+                    UtilsWepps::debug($response['url'],1);
                     header("location: {$response['url']}");
                     exit();
                 }

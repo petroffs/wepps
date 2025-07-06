@@ -35,7 +35,7 @@
 					<div class="price price-current">
 						<span>{$element.Price}</span>
 					</div>
-					{if $element.PriceBefore}
+					{if $element.PriceBefore>0}
 					<div class="price price-before">
 						<span>{$element.PriceBefore}</span>
 					</div>

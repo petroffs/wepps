@@ -20,7 +20,7 @@
 			<div class="prices-wrapper pps_flex_12 pps_flex pps_flex_row">
 				<div class="prices">
 					<div class="price"><span>{$item.Price|money}</span></div>
-					{if $item.PriceBefore}
+					{if $item.PriceBefore>0}
 					<div class="price price-before"><span>{$item.PriceBefore|money}</span></div>
 					{/if}
 				</div>
