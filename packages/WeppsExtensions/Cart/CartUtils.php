@@ -323,7 +323,7 @@ class CartUtilsWepps
 			}
 		}
 		foreach($items as $key=>$value) {
-			$items[$key]['sumTotal']=$value['sum'] + $items[$key]['tariff'];
+			$items[$key]['sumTotal']=$value['sum'] + $items[$key]['tariff']??0;
 			$items[$key]['priceTotal']= UtilsWepps::round($items[$key]['sumTotal']/$value['quantity'],2);
 		}
 		return $items;
