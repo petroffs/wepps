@@ -22,8 +22,13 @@ class ExceptionWepps {
 				$error['line'] = $trace[1]['line'];
 				$error['args'] = @$trace[1]['args'];
 			}
-			UtilsWepps::debug($error,0);
-			UtilsWepps::debug($trace,1);
+			if (php_sapi_name() == 'cli') {
+				UtilsWepps::debug($error, 3);
+				UtilsWepps::debug($trace, 31);
+			} else {
+				UtilsWepps::debug($error, 0);
+				UtilsWepps::debug($trace, 1);
+			}
 		} else {
 			echo $e->getMessage();
 			exit();

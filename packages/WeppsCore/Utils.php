@@ -1044,3 +1044,25 @@ if (!function_exists('getallheaders')) {
 		return $headers;
 	}
 }
+
+class LogsWepps {
+	public function __construct() {
+
+	}
+	public function update(int $id,array $response,int $status=200) {
+		$row = [
+			'InProgress' => 1,
+			'IsProcessed' => 1,
+			'BResponse' => json_encode($response,JSON_UNESCAPED_UNICODE),
+			'SResponse' => $status,
+		];
+		$prepare = ConnectWepps::$instance->prepare($row);
+		$sql = "update s_LocalServicesLog {$prepare['update']} where Id = :Id";
+		ConnectWepps::$instance->query($sql,array_merge($prepare['row'],['Id'=>$id]));
+		return [
+			'id' => $id,
+			'response' => $response,
+			'status' => $status,
+		];
+	}
+}

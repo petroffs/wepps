@@ -4,7 +4,7 @@ namespace WeppsExtensions\Addons\Bot;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\CliWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
+use WeppsExtensions\Cart\Delivery\Cdek\CdekWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
@@ -27,12 +27,16 @@ class BotWepps {
 			/*
 			 * data operations
 			 */
-			case "feeds":
+			case 'tasks':
+				$obj = new BotSystemWepps();
+				$obj->tasks();
+				break;
+			case 'feeds':
 				$obj = new BotFeedsWepps();
 				$obj->setSitemap();
 				break;
 			case 'cdek':
-				$obj = new DeliveryCdekWepps([],new CartUtilsWepps());
+				$obj = new CdekWepps([],new CartUtilsWepps());
 				#$obj->setPoints();
 				/**
 				 * ! Индесы дописаны отдельно, при записи городов - индексы сотрутся

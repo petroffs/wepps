@@ -4,10 +4,12 @@ namespace WeppsExtensions\Cart;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
+use WeppsCore\Utils\LogsWepps;
 use WeppsCore\Utils\MemcachedWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Validator\ValidatorWepps;
+use WeppsExtensions\Addons\Mail\MailWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
@@ -594,5 +596,29 @@ class CartUtilsWepps
 		$obj->setConcat("if(s3.PaymentsExt!='',PaymentsExt,'PaymentsDefaultWepps') PaymentsExt,s3.DescrFinish PaymentDescrFinish");
 		$order = @$obj->fetch("t.Alias = ?")[0];
 		return $order;
+	}
+	public function processLog(array $request,LogsWepps $logs) {
+		$jdata = json_decode($request['BRequest'],true);
+		$order = $this->getOrder($jdata['id']);
+		if (empty($order)) {
+			return [
+
+			];
+		}
+
+		$mail = new MailWepps('html');
+		if (!empty($jdata['email'])) {
+			$mail->mail($order['Email'], "Новый заказ", $order['OText']);
+			return [
+
+			];
+		}
+		if (!empty($jdata['telegram'])) {
+			$mail->telegram();
+			return [
+
+			];
+		}
+
 	}
 }
