@@ -229,42 +229,38 @@ class YookassaWepps extends PaymentsWepps
 			$cartTemplates->page($data,__DIR__ .'/ReturnError.tpl');
 		}
 	}
-	public function check() {
-		$json = file_get_contents('php://input');
-		$jdata = json_decode($json,true);
+	public function check(array $request) {
+		$jdata = json_decode($request['BRequest'],true);
 		if (empty($id = $jdata['object']['id'])) {
-			ExceptionWepps::error(400);
+			$response = [
+				'message' => 'no object'
+			];
+			return $this->updateLog((int)$request['Id'],$response,400);
 		}
 		$sql = "select Id from Payments where MerchantId=?";
 		$res = ConnectWepps::$instance->fetch($sql,[$id]);
-
 		if (empty($payment = $res[0])) {
-			$row = [
-				'Name' => 'yookassa-error',
-				'LDate' => date('Y-m-d H:i:s'),
-				'IP' => $_SERVER['REMOTE_ADDR'],
-				'InProgress' => 1,
-				'IsProcessed' => 1,
-				'BRequest' => $json,
-				'TRequest' => 'post',
-				'BResponse' => '{"message":"no payment"}',
-				'SResponse' => '200',
+			$response = [
+				'message' => 'no payment'
 			];
-			$prepare = ConnectWepps::$instance->prepare($row);
-			$sql = "insert into s_LocalServicesLog {$prepare['insert']}";
-			ConnectWepps::$instance->query($sql,$prepare['row']);
-			ExceptionWepps::error(200);
+			return $this->updateLog((int)$request['Id'],$response,400);
 		}
 		$row = [
 			'IsProcessed' => 1,
-			'MerchantResponse' => $json,
-			'MerchantResponseDate' => ''
 		];
 		switch (@$jdata ['event']) {
 			case 'payment.succeeded':
 				$row['IsPaid'] = 1;
+				$response = [
+					'message' => 'payment ok'
+				];
+				$status = 200;
 				break;
 			default:
+				$response = [
+					'message' => 'payment fail'
+				];
+				$status = 400;
 				break;
 		}
 		$prepare = ConnectWepps::$instance->prepare($row,[
@@ -276,9 +272,45 @@ class YookassaWepps extends PaymentsWepps
 		$sql = "update Payments set {$prepare['update']} where Id=:Id";
 		$arr = array_merge($prepare['row'],['Id'=>$payment['Id']]);
 		ConnectWepps::$instance->query($sql,$arr);
+		return $this->updateLog((int)$request['Id'],$response,$status);
+	}
+	public function webhook() {
+		$json = file_get_contents('php://input');
+		$jdata = json_decode($json,true);
+		if (empty($id = $jdata['object']['id'])) {
+			ExceptionWepps::error(400);
+		}
+		$row = [
+			'Name' => 'yookassa',
+			'LDate' => date('Y-m-d H:i:s'),
+			'IP' => $_SERVER['REMOTE_ADDR'],
+			'Url' => $_SERVER['REQUEST_URI'],
+			'InProgress' => 0,
+			'IsProcessed' => 0,
+			'BRequest' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
+			'TRequest' => 'post',
+			'BResponse' => '{"message":"payment"}',
+			'SResponse' => '200',
+		];
+		$prepare = ConnectWepps::$instance->prepare($row);
+		$sql = "insert into s_LocalServicesLog {$prepare['insert']}";
+		ConnectWepps::$instance->query($sql,$prepare['row']);
 		ExceptionWepps::error(200);
 	}
-	public function test() {
-		UtilsWepps::debug('test',1);
+	private function updateLog(int $id,array $response,int $status=200) {
+		$row = [
+			'InProgress' => 1,
+			'IsProcessed' => 1,
+			'BResponse' => json_encode($response,JSON_UNESCAPED_UNICODE),
+			'SResponse' => $status,
+		];
+		$prepare = ConnectWepps::$instance->prepare($row);
+		$sql = "update s_LocalServicesLog {$prepare['update']} where Id = :Id";
+		ConnectWepps::$instance->query($sql,array_merge($prepare['row'],['Id'=>$id]));
+		return [
+			'id' => $id,
+			'response' => $response,
+			'status' => $status,
+		];
 	}
 }

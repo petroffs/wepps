@@ -27,6 +27,9 @@ class RequestYookassaWepps extends RequestWepps
             case 'return':
                 $yookassa->return();
                 break;
+            case 'webhook':
+                $yookassa->webhook();
+                break;    
             case 'check':
                 $yookassa->check();
                 break;
