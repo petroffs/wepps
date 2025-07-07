@@ -233,6 +233,16 @@ class UtilsWepps
 		}
 		return $output;
 	}
+	/**
+	 * Поиск элемента в массиве по значению
+	 * @param mixed $value
+	 * @param mixed $key
+	 * @param array $array
+	 * @return array
+	 */
+	public static function arrayFilter($value,$key='Id',array $array) {
+		return array_filter($array, fn($v) => $v[$key]===$value, ARRAY_FILTER_USE_BOTH);
+	}
 
 	public static function modal(string $message = '', CliWepps $cli = null)
 	{
