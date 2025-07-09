@@ -236,21 +236,8 @@ class YookassaWepps extends PaymentsWepps
 		if (empty($id = $jdata['object']['id'])) {
 			ExceptionWepps::error(400);
 		}
-		$row = [
-			'Name' => 'yookassa',
-			'LDate' => date('Y-m-d H:i:s'),
-			'IP' => $_SERVER['REMOTE_ADDR'],
-			'Url' => $_SERVER['REQUEST_URI'],
-			'InProgress' => 0,
-			'IsProcessed' => 0,
-			'BRequest' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
-			'TRequest' => 'post',
-			'BResponse' => '',
-			'SResponse' => '200',
-		];
-		$prepare = ConnectWepps::$instance->prepare($row);
-		$sql = "insert into s_LocalServicesLog {$prepare['insert']}";
-		ConnectWepps::$instance->query($sql,$prepare['row']);
+		$logs = new LogsWepps();
+		$logs->add('yookassa',$jdata,'','','post');
 		ExceptionWepps::error(200);
 	}
 	public function processLog(array $request,LogsWepps $logs) {
@@ -263,7 +250,7 @@ class YookassaWepps extends PaymentsWepps
 		}
 		$sql = "select Id from Payments where MerchantId=?";
 		$res = ConnectWepps::$instance->fetch($sql,[$id]);
-		if (empty($payment = $res[0])) {
+		if (empty($payment = @$res[0])) {
 			$response = [
 				'message' => 'no payment'
 			];
@@ -279,6 +266,13 @@ class YookassaWepps extends PaymentsWepps
 					'message' => 'payment ok'
 				];
 				$status = 200;
+				//UtilsWepps::debug($request,21);
+				$responsePayment = [
+					'id' => (int) $jdata['object']['metadata']['order_id'],
+					'email' => true,
+					'telegram' => true
+				];
+				$logs->add('order-payment',$responsePayment);
 				break;
 			default:
 				$response = [

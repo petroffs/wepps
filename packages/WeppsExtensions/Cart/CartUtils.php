@@ -408,15 +408,6 @@ class CartUtilsWepps
 		 * @var \WeppsExtensions\Cart\Delivery\DeliveryWepps $class
 		 */
         $class = new $className([],$this);
-
-		/**
-		 * errors check
-		 * 
-		 * Получить ошибки и вывести в методе, браузере
-		 * 
-		 * return - ошибки, html, etc
-		 * 
-		 */
 		$errors = $class->getErrors($get);
 		$errors = ValidatorWepps::setFormErrorsIndicate($errors, $get['form']);
 		if ($errors['count']>0) {
@@ -487,20 +478,12 @@ class CartUtilsWepps
 			$alias = UtilsWepps::guid($id.'_'.time().'_'.ConnectWepps::$projectServices['wepps']['sign']);
 			ConnectWepps::$instance->query("update Orders set OText=?,Alias=? where Id=?",[$text,$alias,$id]);
 			$jdata = [
-				'id' => $id,
+				'id' => (int) $id,
 				'email' => true,
+				'telegram' => true,
 			];
-			$row2 = [
-				'Name' => 'order-new',
-				'Alias' => '',
-				'LDate' => $row['ODate'],
-				'IP' => $row['UserIP'],
-				'BRequest' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
-				'TRequest' => 'cli',
-			];
-			$prepare = ConnectWepps::$instance->prepare($row2);
-			$insert = ConnectWepps::$db->prepare("insert s_LocalServicesLog {$prepare['insert']}");
-			$insert->execute($row2);
+			$logs = new LogsWepps();
+			$logs->add('order-new',$jdata,$row['ODate'],$row['UserIP']);
 			return [
 				'id' => $id,
 				'alias' => $alias,
@@ -509,7 +492,6 @@ class CartUtilsWepps
 		};
 		return ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
 	}
-
 	public function getOrderText(array $order) : string {
 		$sql = "select * from ServList where Categories='ШаблонЗаказНовый' order by Id desc limit 0,1";
 		$res = ConnectWepps::$instance->fetch($sql);
@@ -518,7 +500,7 @@ class CartUtilsWepps
 		}
 		$jdata = json_decode($order['JData'],true);
 		$jpositions = json_decode($order['JPositions'],true);
-		$positions = "<table width=\"100%\" cellpadding=\"10\" border=\"1\">";
+		$positions = "<table width=\"100%\" border=\"1\">";
 		$positions .= "<tr>";
 		$positions .= "<th width=\"50%\" align=\"left\">Наименование</th>";
 		$positions .= "<th width=\"25%\" align=\"center\">Кол-во</th>";
@@ -601,24 +583,70 @@ class CartUtilsWepps
 		$jdata = json_decode($request['BRequest'],true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
-			return [
-
+			$response = [
+				'message' => 'no order'
 			];
+			return $logs->update($request['Id'],$response,400);
 		}
-
 		$mail = new MailWepps('html');
+		$subject = 'Новый заказ';
+		$text = $order['OText'];
+		$outputMessage = "";
+		$mail->mail(ConnectWepps::$projectInfo['email'], $subject, $text);
 		if (!empty($jdata['email'])) {
-			$mail->mail($order['Email'], "Новый заказ", $order['OText']);
-			return [
-
-			];
+			$mail->mail($order['Email'], $subject, $text);
+			$outputMessage .= " email ok";
 		}
 		if (!empty($jdata['telegram'])) {
-			$mail->telegram();
-			return [
-
+			$text = "<b>НОВЫЙ ЗАКАЗ</b> №{$order['Id']} / {$order['OSum']} ₽\n🙋{$order['Name']}\n📞{$order['Phone']}\n✉️{$order['Email']}\n\n#сайт";
+			$data = [
+				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
+				'text' => $text
 			];
+			$res = $mail->telegram("sendMessage", $data);
+			$jdata = json_decode($res['response'],true);
+			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram false";
 		}
-
+		$outputMessage = trim($outputMessage);
+		$response = [
+			'message' => $outputMessage
+		];
+		return $logs->update($request['Id'],$response,200);
+	}
+	public function processPaymentLog(array $request,LogsWepps $logs) {
+		/**
+		 * ! СДЕЛАТЬ $request - унифицированным, для переиспользования
+		 */
+		$jdata = json_decode($request['BRequest'],true);
+		$order = $this->getOrder($jdata['id']);
+		if (empty($order)) {
+			$response = [
+				'message' => 'no order'
+			];
+			return $logs->update($request['Id'],$response,400);
+		}
+		$mail = new MailWepps('html');
+		$subject = 'Оплата прошла успешно';
+		$text = 'Статус оплаты: response';
+		$outputMessage = "";
+		if (!empty($jdata['email'])) {
+			
+			$mail->mail($order['Email'], $subject, $text);
+			$outputMessage .= " email ok";
+		}
+		if (!empty($jdata['telegram'])) {
+			$data = [
+				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
+				'text' => "<b>ЗАКАЗ ОПЛАТА</b> №{$order['Id']} / {$text}\n\n#сайт"
+			];
+			$res = $mail->telegram("sendMessage", $data);
+			$jdata = json_decode($res['response'],true);
+			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram false";
+		}
+		$outputMessage = trim($outputMessage);
+		$response = [
+			'message' => $outputMessage
+		];
+		return $logs->update($request['Id'],$response,200);
 	}
 }

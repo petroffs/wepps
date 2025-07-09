@@ -272,7 +272,7 @@ class ImagesWepps {
 			return;
 		}
 		if (empty($filename)) {
-			$filename = ConnectWepps::$projectDev['root'].ConnectWepps::$projectServices['wepps']['imagestamp'];
+			$filename = ConnectWepps::$projectDev['root'].ConnectWepps::$projectInfo['logopng'];
 		}	
 		$target = imagecreatefrompng($filename);
 		imagesavealpha($target, true);

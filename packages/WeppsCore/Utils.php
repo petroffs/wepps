@@ -1049,15 +1049,31 @@ class LogsWepps {
 	public function __construct() {
 
 	}
+	public function add(string $name, array $jdata, string $date = '', string $ip = '', string $type = 'cli')
+	{
+		$row = [
+			'Name' => $name,
+			'LDate' => ($date != '') ? $date : date('Y-m-d H:i:s'),
+			'IP' => ($ip != '') ? $ip : @$_SERVER['REMOTE_ADDR']??'',
+			'BRequest' => json_encode($jdata, JSON_UNESCAPED_UNICODE),
+			'TRequest' => $type,
+		];
+		if ($type=='post') {
+			$row['Url'] = @$_SERVER['REQUEST_URI'];
+		}
+		$prepare = ConnectWepps::$instance->prepare($row);
+		$insert = ConnectWepps::$db->prepare("insert into s_LocalServicesLog {$prepare['insert']}");
+		$insert->execute($row);
+	}
 	public function update(int $id,array $response,int $status=200) {
 		$row = [
-			'InProgress' => 1,
-			'IsProcessed' => 1,
+			'InProgress' => 0,
+			'IsProcessed' => 0,
 			'BResponse' => json_encode($response,JSON_UNESCAPED_UNICODE),
 			'SResponse' => $status,
 		];
 		$prepare = ConnectWepps::$instance->prepare($row);
-		$sql = "update s_LocalServicesLog {$prepare['update']} where Id = :Id";
+		$sql = "update s_LocalServicesLog set {$prepare['update']} where Id = :Id";
 		ConnectWepps::$instance->query($sql,array_merge($prepare['row'],['Id'=>$id]));
 		return [
 			'id' => $id,

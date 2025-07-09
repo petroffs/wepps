@@ -14,11 +14,12 @@ class BotSystemWepps extends BotWepps {
 		parent::__construct();
 	}
 	public function tasks() {
-		$sql = "select * from s_LocalServicesLog where InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 20";
+		$sql = "select * from s_LocalServicesLog where InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 1";
 		$res = ConnectWepps::$instance->fetch($sql);
 		if ($res[0]['InProgress']==1) {
 			return;
 		}
+		$ids = array_column($res,'Id');
 		new MemcachedWepps('no');
 		$logs = new LogsWepps();
 		$cartUtils = new CartUtilsWepps();
@@ -28,13 +29,22 @@ class BotSystemWepps extends BotWepps {
 				case 'order-new':
 					$cartUtils->processLog($value, $logs);
 					break;
+				case 'order-payment':
+					$cartUtils->processPaymentLog($value, $logs);
+					break;
 				case 'yookassa':
 					$yookassa->processLog($value,$logs);
 					break;
 				default:
-					$logs->update($value['Id'],['message'=>'fail'],404);
+					$logs->update($value['Id'],['message'=>'task fail'],404);
 					break;
 			}
 		}
+		/*
+		 * Реализовано в $logs->update
+		 */
+		#$in = ConnectWepps::$instance->in($ids);
+		#$sql = "update s_LocalServicesLog set InProgress=1,IsProcessed=1 where Id in ($in)";
+		#ConnectWepps::$instance->query($sql,$ids);
 	}
 }

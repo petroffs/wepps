@@ -176,31 +176,12 @@ class MailWepps {
 		$datalb .= $data;
 		return $datalb;
 	}
-	public function devinotele($destAddress,$message,$from="TITLE") {
-		$login = ConnectWepps::$projectServices['devinotele']['login'];
-		$passw = ConnectWepps::$projectServices['devinotele']['password'];
-		$url = "https://integrationapi.net/rest/user/sessionid?login=$login&password=$passw";
-		$message = preg_replace('~[\r\n\t]+~u', '', $message);
-		
-		$curl = new \Curl\Curl();
-		$obj = $curl->get($url);
-		$sessionId = str_replace("\"","",$obj->response);
-		$url = "https://integrationapi.net/rest/Sms/Send";
-		$params = array(
-				"SessionID"=>$sessionId,
-				"SourceAddress"=>$from,
-				"DestinationAddress"=>$destAddress,
-				"Data"=>$message
-		);
-		$obj = $curl->post($url,$params);
-		return $obj->response;
-	}
 	public function telegram ($method = "getUpdates", $data = []) {
 		$token = "bot" . ConnectWepps::$projectServices['telegram']['token'];
 		$proxy = ConnectWepps::$projectServices['telegram']['proxy'];
 		$params = http_build_query($data);
 		if (!empty($params)) {
-			$params = "?".$params;
+			$params = "?".$params."&parse_mode=html";
 		}
 		$curl = new Curl();
 		if (!empty($proxy)) {
@@ -216,4 +197,3 @@ class MailWepps {
 		return $output;
 	}
 }
-?>
