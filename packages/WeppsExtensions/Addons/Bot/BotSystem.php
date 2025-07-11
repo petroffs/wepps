@@ -14,7 +14,7 @@ class BotSystemWepps extends BotWepps {
 		parent::__construct();
 	}
 	public function tasks() {
-		$sql = "select * from s_LocalServicesLog where InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 1";
+		$sql = "select * from s_LocalServicesLog where InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 50";
 		$res = ConnectWepps::$instance->fetch($sql);
 		if (empty($res) || $res[0]['InProgress']==1) {
 			return;
