@@ -598,7 +598,7 @@ class CartUtilsWepps
 			$outputMessage .= " email ok";
 		}
 		if (!empty($jdata['telegram'])) {
-			$text = "<b>НОВЫЙ ЗАКАЗ</b> №{$order['Id']} / {$order['OSum']} ₽\n🙋{$order['Name']}\n📞{$order['Phone']}\n✉️{$order['Email']}\n\n#сайт";
+			$text = "<b>НОВЫЙ ЗАКАЗ</b> №{$order['Id']} / {$order['OSum']} ₽\n🙋{$order['Name']}\n📞{$order['Phone']}\n✉️{$order['Email']}\n\n#сайт_{$order['Id']}";
 			$data = [
 				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
 				'text' => $text
@@ -614,9 +614,6 @@ class CartUtilsWepps
 		return $logs->update($request['Id'],$response,200);
 	}
 	public function processPaymentLog(array $request,LogsWepps $logs) {
-		/**
-		 * ! СДЕЛАТЬ $request - унифицированным, для переиспользования
-		 */
 		$jdata = json_decode($request['BRequest'],true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
@@ -626,22 +623,34 @@ class CartUtilsWepps
 			return $logs->update($request['Id'],$response,400);
 		}
 		$mail = new MailWepps('html');
-		$subject = 'Оплата прошла успешно';
-		$text = 'Статус оплаты: response';
 		$outputMessage = "";
 		if (!empty($jdata['email'])) {
-			
-			$mail->mail($order['Email'], $subject, $text);
-			$outputMessage .= " email ok";
+			$sql = "select * from ServList where Categories='ШаблонЗаказОплата' order by Id desc limit 0,1";
+			$res = ConnectWepps::$instance->fetch($sql);
+			if (empty($text = $res[0]['Descr'])) {
+				$outputMessage .= " email fail";
+			} else {
+				$subject = ($jdata['status']=='succeeded')?'Заказ оплачен':'Заказ не оплачен - ошибка';
+				$text = str_replace('[ЗАКАЗ]',$order['Id'],$text);
+				$text = str_replace('[НАИМЕНОВАНИЕ]',$order['Name'],$text);
+				$text = str_replace('[ИМЯ]',$order['Name'],$text);
+				$text = str_replace('[ТЕКСТ]',$jdata['message'],$text);
+				$text = str_replace('[СТАТУС]',$jdata['status'],$text);
+				$text = str_replace('[СУММА]',$order['OSum'],$text);
+				$text = str_replace('[ПРОЕКТ]',ConnectWepps::$projectInfo['name'],$text);
+				$mail->mail($order['Email'], $subject, $text);
+				$outputMessage .= " email ok";
+			}
 		}
 		if (!empty($jdata['telegram'])) {
+			$text = "<b>ЗАКАЗ ОПЛАТА</b> №{$order['Id']}\n\n{$jdata['message']}\n\nстатус платежа: {$jdata['status']}\n\n#сайт_{$jdata['id']}";
 			$data = [
 				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
-				'text' => "<b>ЗАКАЗ ОПЛАТА</b> №{$order['Id']} / {$text}\n\n#сайт"
+				'text' => $text
 			];
 			$res = $mail->telegram("sendMessage", $data);
 			$jdata = json_decode($res['response'],true);
-			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram false";
+			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram fail";
 		}
 		$outputMessage = trim($outputMessage);
 		$response = [

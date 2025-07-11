@@ -30,12 +30,6 @@ class RequestYookassaWepps extends RequestWepps
             case 'webhook':
                 $yookassa->webhook();
                 break;    
-            case 'check':
-                $yookassa->check();
-                break;
-            case 'test':
-                $yookassa->test();
-                break;
             default:
                 http_response_code(404);
                 exit();

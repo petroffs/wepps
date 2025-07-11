@@ -1067,8 +1067,8 @@ class LogsWepps {
 	}
 	public function update(int $id,array $response,int $status=200) {
 		$row = [
-			'InProgress' => 0,
-			'IsProcessed' => 0,
+			'InProgress' => 1,
+			'IsProcessed' => 1,
 			'BResponse' => json_encode($response,JSON_UNESCAPED_UNICODE),
 			'SResponse' => $status,
 		];

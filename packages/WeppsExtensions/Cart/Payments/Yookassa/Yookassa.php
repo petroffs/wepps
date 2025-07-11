@@ -81,7 +81,6 @@ class YookassaWepps extends PaymentsWepps
 			];	
 			$cartTemplates->page($data,__DIR__ .'/ReturnSuccess.tpl');
 		}
-		
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=0 and IsProcessed=0";
 		$res = ConnectWepps::$instance->fetch($sql,[$order['Id']]);
 		if (empty($res)) {
@@ -259,27 +258,32 @@ class YookassaWepps extends PaymentsWepps
 		$row = [
 			'IsProcessed' => 1,
 		];
-		switch (@$jdata ['event']) {
-			case 'payment.succeeded':
+		switch (@$jdata['object']['status']) {
+			case 'succeeded':
 				$row['IsPaid'] = 1;
 				$response = [
-					'message' => 'payment ok'
+					'message' => 'payment ok',
+					'status' => $jdata['object']['status'],
 				];
 				$status = 200;
-				//UtilsWepps::debug($request,21);
-				$responsePayment = [
-					'id' => (int) $jdata['object']['metadata']['order_id'],
-					'email' => true,
-					'telegram' => true
-				];
-				$logs->add('order-payment',$responsePayment);
 				break;
 			default:
 				$response = [
-					'message' => 'payment fail'
+					'message' => 'payment fail',
+					'status' => @$jdata['object']['status']
 				];
 				$status = 400;
 				break;
+		}
+		if (!empty($jdata['object']['metadata']['order_id'])) {
+			$responsePayment = [
+				'id' => (int) $jdata['object']['metadata']['order_id'],
+				'message' => $this->getStatuses()[$response['status']],
+				'status' => $response['status'],
+				'email' => true,
+				'telegram' => true
+			];
+			$logs->add('order-payment', $responsePayment,'','','');
 		}
 		$prepare = ConnectWepps::$instance->prepare($row,[
 			'MerchantResponseDate' => [
@@ -291,5 +295,30 @@ class YookassaWepps extends PaymentsWepps
 		$arr = array_merge($prepare['row'],['Id'=>$payment['Id']]);
 		ConnectWepps::$instance->query($sql,$arr);
 		return $logs->update((int)$request['Id'],$response,$status);
+	}
+	private function getStatuses() {
+		return [
+			'succeeded' => 'Оплата прошла успешно!',
+			'3d_secure_failed' => 'Не пройдена аутентификация по 3-D Secure. При новой попытке оплаты вам следует использовать другое платежное средство или обратиться в банк за уточнениями.',
+			'call_issuer' => 'Оплата данным платежным средством отклонена по неизвестным причинам. Вам следует обратиться в организацию, выпустившую платежное средство.',
+			'canceled_by_merchant' => 'Платеж отменен по API при оплате в две стадии.',
+			'card_expired' => 'Истек срок действия банковской карты. При новой попытке оплаты вам следует использовать другое платежное средство.',
+			'country_forbidden' => 'Нельзя заплатить банковской картой, выпущенной в этой стране. При новой попытке оплаты вам следует использовать другое платежное средство.',
+			'deal_expired' => 'Закончился срок жизни сделки.',
+			'expired_on_capture' => 'Истек срок списания оплаты у двухстадийного платежа.',
+			'expired_on_confirmation' => 'Истек срок оплаты.',
+			'fraud_suspected' => 'Платеж заблокирован из-за подозрения в мошенничестве. При новой попытке оплаты вам следует использовать другое платежное средство',
+			'general_decline' => 'Причина не детализирована.',
+			'identification_required' => 'Превышены ограничения на платежи для кошелька ЮMoney.',
+			'insufficient_funds' => 'Не хватает средств для оплаты.',
+			'internal_timeout' => 'Технические неполадки на стороне ЮKassa: не удалось обработать запрос в течение 30 секунд.',
+			'invalid_card_number' => 'Неправильно указан номер карты. При новой попытке оплаты вам следует ввести корректные данные',
+			'invalid_csc' => 'Неправильно указан код CVV2 (CVC2, CID). При новой попытке оплаты вам следует ввести корректные данные.',
+			'issuer_unavailable' => 'Организация, выпустившая платежное средство, недоступна. При новой попытке оплаты вам следует использовать другое платежное средство или повторить оплату позже.',
+			'payment_method_limit_exceeded' => 'Исчерпан лимит платежей. При новой попытке оплаты вам следует использовать другое платежное средство или повторить оплату на следующий день.',
+			'payment_method_restricted' => 'Запрещены операции данным платежным средством (например, карта заблокирована из-за утери, кошелек — из-за взлома мошенниками). Вам следует обратиться в организацию, выпустившую платежное средство.',
+			'permission_revoked' => 'Нельзя провести безакцептное списание: вы отозвали разрешение на автоплатежи.',
+			'unsupported_mobile_operator' => 'Нельзя заплатить с номера телефона этого мобильного оператора. При новой попытке оплаты вам следует использовать другое платежное средство',
+		];
 	}
 }
