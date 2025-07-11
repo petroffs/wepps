@@ -48,9 +48,9 @@ class BotTestWepps extends BotWepps {
 	public function mail() {
 		$mail = new MailWepps("html");
 		$mail->mail(ConnectWepps::$projectInfo['email'], "Test subject", "Test text");
-		$output = $mail->getContent(false);
-		$this->cli->put($output, __DIR__ . '/files/mail.html');
-		echo $output;
+		#$output = $mail->getContent(false);
+		#$this->cli->put($output, __DIR__ . '/files/mail.html');
+		#echo $output;
 	}
 	public function testDB() {
 		$obj = new DataWepps("DataTbls");

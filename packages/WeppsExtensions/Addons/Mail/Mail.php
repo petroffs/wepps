@@ -4,6 +4,7 @@ namespace WeppsExtensions\Addons\Mail;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
 use Curl\Curl;
+use WeppsCore\Utils\UtilsWepps;
 
 class MailWepps {
 	private $attachment=[];
@@ -46,24 +47,25 @@ class MailWepps {
 				$smarty->assign('subject',$subject);
 				$smarty->assign('text',$text);
 				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailHtml.tpl');
+				self::getQuotedPrintable();
 				$this->contentAll .= "Content-Type: text/html; charset=\"utf-8\"\n";
-				$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
-				$this->contentAll .= $this->content."\r\n";
-				$this->contentAll = self::getImagesHtml($this->contentAll);
+				#$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
+				$this->contentAll .= "Content-Transfer-Encoding: quoted-printable\n\n";
+				$this->contentAll .= (string) $this->content."\r\n";
+				#$this->contentAll = self::getImagesHtml($this->contentAll);
 				$this->contentAll .= "\r\n";
 				break;
 			default:
 				$smarty->assign('text',$text);
 				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailPlain.tpl');
 				$this->contentAll .= "Content-Type: text/plain; charset=\"utf-8\"\n";
-				$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
-				#$this->contentAll = self::getImagesHtml($this->contentAll);
-				$this->contentAll .= $this->content."\n\n";
+				$this->contentAll .= "Content-Transfer-Encoding: quoted-printable\n\n";
+				$this->contentAll .= (string) $this->content."\n\n";
 				break;
 		}
 		$this->contentAll .= self::getAttach();
 		$this->contentAll .= self::getAttachInput();
-		$this->contentAll .= "--{$this->mime_boundary}--\n\n";
+		$this->contentAll .= "--{$this->mime_boundary}\n\n";
 		if ($this->debug==1) {
 			$to = ConnectWepps::$projectDev['email'];
 		}
@@ -129,10 +131,10 @@ class MailWepps {
 			foreach ($this->attachmentInput as $value) {
 				$f_contents = chunk_split(base64_encode($value['content']));
 				$msg .= "--{$this->mime_boundary}\n";
-				$msg .= "Content-Type: 	application/octet-stream; name=\"" . $value['title'] . "\"\n";
-				$msg .= "Content-Transfer-Encoding: base64" . "\n";
-				$msg .= "Content-Disposition: attachment; filename=\"" . $value['title'] . "\"\n\n";
-				$msg .= $f_contents . "\n\n";
+				$msg .= "Content-Type: 	application/octet-stream; name=\"{$value['title']}\"\n";
+				$msg .= "Content-Transfer-Encoding: base64\n";
+				$msg .= "Content-Disposition: attachment; filename=\"{$value['title']}\"\n\n";
+				$msg .= (string) $f_contents . "\n\n";
 			}
 		}
 		return $msg;
@@ -176,12 +178,16 @@ class MailWepps {
 		$datalb .= $data;
 		return $datalb;
 	}
+	private function getQuotedPrintable() {
+		$this->content = mb_convert_encoding($this->content, 'UTF-8');
+		$this->content = quoted_printable_encode($this->content);
+	}
 	public function telegram ($method = "getUpdates", $data = []) {
 		$token = "bot" . ConnectWepps::$projectServices['telegram']['token'];
 		$proxy = ConnectWepps::$projectServices['telegram']['proxy'];
 		$params = http_build_query($data);
 		if (!empty($params)) {
-			$params = "?".$params."&parse_mode=html";
+			$params = (string) "?".$params."&parse_mode=html";
 		}
 		$curl = new Curl();
 		if (!empty($proxy)) {
