@@ -23,9 +23,9 @@ div.accordion-items>section:last-child h2 {
 }
 
 div.accordion-items>section h2:after {
-	content: '\f055';
-	font-family: 'FontAwesome';
-	font-size: var(--step4);
+	content: '\F4F9';
+	font-family: 'bootstrap-icons';
+	font-size: var(--font-large);
 	color: var(--color-95);
 	position: absolute;
 	top: 50%;
@@ -34,7 +34,7 @@ div.accordion-items>section h2:after {
 }
 
 div.accordion-items>section.active h2:after {
-	content: '\f056';
+	content: '\F2E5';
 }
 
 div.accordion-items div.text {

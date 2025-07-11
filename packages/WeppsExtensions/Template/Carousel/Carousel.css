@@ -29,25 +29,27 @@ div.carousel.slick-slider {
 div.carousel .slick-prev {
 	left: var(--step4);
 	z-index: 1;
+	width: auto;
 	height: auto;
 }
 
 div.carousel .slick-next {
 	right: var(--step4);
 	z-index: 1;
+	width: auto;
 	height: auto;
 }
 
 div.carousel .slick-prev:before {
-	content: '\f104';
-	font-family: 'FontAwesome';
+	content: '\F284';
+	font-family: 'bootstrap-icons';
 	font-size: 50px;
 	line-height: 50%;
 }
 
 div.carousel .slick-next:before {
-	content: '\f105';
-	font-family: 'FontAwesome';
+	content: '\F285';
+	font-family: 'bootstrap-icons';
 	font-size: 50px;
 	line-height: 50%;
 }
