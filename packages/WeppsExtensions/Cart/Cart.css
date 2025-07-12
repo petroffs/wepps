@@ -13,9 +13,17 @@ div.page.cart div.cart-total h2 {
 }
 
 div.page.cart div.cart-total>div {
-	margin-bottom: var(--step2);
 	padding-bottom: var(--step2);
+	margin-bottom: var(--step2);
 	border-bottom: var(--border);
+}
+
+div.page.cart div.cart-total>div.warning {
+	background: var(--color-warning);
+	padding: var(--step);
+	margin: var(--step2) 0 0 0;
+	border-bottom: 0;
+	border-radius: var(--step);
 }
 
 div.page.cart div.cart-total>div div.title {

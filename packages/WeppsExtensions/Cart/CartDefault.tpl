@@ -65,8 +65,17 @@
 					<div class="price"><span>{$cartSummary.sumActive|money}</span></div>
 				</div>
 			</div>
-			<label class="pps pps_button pps_button_important"><button id="cart-btn-checkout"
-					{if $cartSummary.quantityActive==0}disabled="disabled" {/if}>Перейти к оформлению</button></label>
+			<label class="pps pps_button pps_button_important">
+				<button id="cart-btn-checkout"
+				{if $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0}disabled="disabled"{/if}>
+					Перейти к оформлению
+				</button>
+			</label>
+			{if $cartSummary.isSumActiveEnough==0}
+			<div class="warning">
+			⚠️ Минимальная сумма для&nbsp;заказа:&nbsp;{$cartMetrics.commerce.orderAmountMin}&nbsp;₽
+			</div>
+			{/if}
 		</div>
 	</div>
 </div>

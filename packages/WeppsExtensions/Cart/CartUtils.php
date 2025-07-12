@@ -74,7 +74,8 @@ class CartUtilsWepps
 	}
 	public function getCartMetrics() {
 		return [
-			'items' => array_sum(array_column($this->cart['items']??[], 'qu'))
+			'items' => array_sum(array_column($this->cart['items']??[], 'qu')),
+			'commerce' => ConnectWepps::$projectServices['commerce']
 		];
 	}
 	public function setCart(): void
@@ -216,12 +217,14 @@ class CartUtilsWepps
 			'date' => "",
 			'delivery' => [],
 			'payments' => [],
-			'favorites' => []
+			'favorites' => [],
+			'isSumActiveEnough' => 0,
 		];
 		if (empty($this->cart['items'])) {
 			return true;
 		}
 		$sql = "";
+		#UtilsWepps::debug($this->cart['items'],1);
 		foreach ($this->cart['items'] as $value) {
 			$this->summary['quantity'] += $value['qu'];
 			$sql .= "\n(select '{$value['id']}' `id`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
@@ -251,6 +254,9 @@ class CartUtilsWepps
 		$this->summary['sumActive'] = $this->summary['sumTotal'] = array_sum(array_column($this->summary['items'], 'sumActive'));
 		$this->summary['date'] = $this->cart['date'];
 		$this->summary['favorites'] = $this->getFavorites();
+		if ($this->summary['sumActive']>=ConnectWepps::$projectServices['commerce']['orderAmountMin']) {
+			$this->summary['isSumActiveEnough'] = 1;
+		}
 		if (!empty($this->cart['citiesId'])) {
 			$this->summary['delivery']['citiesId'] = $this->cart['citiesId'];
 		}
