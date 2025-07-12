@@ -1,5 +1,6 @@
 <?php
 namespace WeppsAdmin\Lists;
+use WeppsAdmin\Admin\AdminUtilsWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
@@ -708,7 +709,7 @@ class ListsWepps
 			'TableNameId' => $id,
 			'TableNameField' => $field,
 		);
-		$arr = UtilsWepps::query($row);
+		$arr = AdminUtilsWepps::query($row);
 		$str = "update s_PropertiesValues set DisplayOff2=1 where {$arr['condition']};\n";
 		$ex = explode(":::", $value);
 		foreach ($ex as $v) {
@@ -723,7 +724,7 @@ class ListsWepps
 				'PValue' => $v,
 				'DisplayOff2' => 0,
 			);
-			$arr2 = UtilsWepps::query($row);
+			$arr2 = AdminUtilsWepps::query($row);
 			$str .= "update s_PropertiesValues set {$arr2['update']} where HashValue = '{$hash}';\n";
 		}
 		return $str;
@@ -985,7 +986,7 @@ class ListsWepps
 					$rowData['Field2'] = "";
 					$rowData['Field3'] = "List::$tableName::$fieldName";
 					$rowData['DisplayOff2'] = 0;
-					$arr = UtilsWepps::query($rowData);
+					$arr = AdminUtilsWepps::query($rowData);
 					$md5 = md5($rowData['Name'] . "::" . $rowData['Field1'] . "::" . $rowData['Field2'] . "::" . $rowData['Field3']);
 					$str .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
 					$str .= "update s_SearchKeys set " . $arr['update'] . " where Alias = '$md5';\n";

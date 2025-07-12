@@ -1,6 +1,7 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Backup;
 
+use WeppsAdmin\Admin\AdminUtilsWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -227,9 +228,9 @@ class RequestBackupWepps extends RequestWepps {
 				$res = ConnectWepps::$instance->fetch($sql);
 				
 				unset($res[0]['Id']);
-				$arr = UtilsWepps::query($res[0]);
+				$arr = AdminUtilsWepps::query($res[0]);
 				$str .= "insert ignore into s_Config {$arr['insert']}\n\n";
-				
+
 				/*
 				 * Конфиг полей
 				 */
@@ -237,7 +238,7 @@ class RequestBackupWepps extends RequestWepps {
 				$res = ConnectWepps::$instance->fetch($sql);
 				
 				foreach ($res as $value) {
-					$arr = UtilsWepps::query($value);
+					$arr = AdminUtilsWepps::query($value);
 					$str .= "insert ignore into s_ConfigFields {$arr['insert']}\n";
 				}
 				

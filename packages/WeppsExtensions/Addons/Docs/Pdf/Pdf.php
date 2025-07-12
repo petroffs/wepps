@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Addons\Pdf;
+namespace WeppsExtensions\Addons\Docs\Pdf;
 
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -124,4 +124,3 @@ class PdfWepps {
 		exit();
 	}
 }
-?>

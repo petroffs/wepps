@@ -2,10 +2,9 @@
 namespace WeppsExtensions\Addons;
 
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\FilesWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Addons\Files\FilesWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';

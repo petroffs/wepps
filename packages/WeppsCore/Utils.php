@@ -8,14 +8,10 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use WeppsExtensions\Addons\Jwt\JwtWepps;
 
 /**
- * Утилиты
- * @author Petroffscom
- *
+ * Summary of UtilsWepps
  */
 class UtilsWepps
 {
@@ -81,7 +77,6 @@ class UtilsWepps
 				echo $output;
 				break;
 		}
-		return true;
 	}
 
 	/**
@@ -142,55 +137,6 @@ class UtilsWepps
 		}
 		return [];
 	}
-
-	/**
-	 * Компоновка SQL запроса на основе входного массива array('Row1'=>'ROW1','Row2'=>'ROW2');
-	 * @param array $row
-	 * @return array
-	 */
-	public static function query(array $row): array
-	{
-		$strCond = $strUpdate = $strInsert1 = $strInsert2 = $strSelect = "";
-		if (empty($row)) {
-			return [];
-		}
-		foreach ($row as $key => $value) {
-			$value = self::trim(str_replace(["&gt;", "&lt;", "&quot;"], [">", "<", "\""], $value));
-			$value1 = (empty($value)) ? "null" : "'{$value}'";
-			if (strstr($key, '@')) {
-				$key = str_replace('@', '', $key);
-				$value1 = $value;
-				$strUpdate .= "{$key}={$value}, ";
-				$strInsert2 .= "{$value},";
-			} elseif ($value1 == "null" && $key == "GUID") {
-				$value1 = "uuid()";
-				$strUpdate .= "{$key}=uuid(), ";
-				$strInsert2 .= "uuid(),";
-			} else {
-				$strUpdate .= "{$key}=" . ConnectWepps::$db->quote($value) . ", ";
-				$strInsert2 .= "" . ConnectWepps::$db->quote($value) . ",";
-			}
-			$strInsert1 .= "$key,";
-			$strCond .= "{$key}={$value1} and ";
-			$strSelect .= "{$value1} {$key}, ";
-		}
-		$strCond = ($strCond != "") ? trim($strCond, " and ") : "";
-		$strCond = str_replace("\n", "\\n", $strCond);
-		$strUpdate = ($strCond != "") ? trim($strUpdate, ", ") : "";
-		$strUpdate = str_replace("\r\n", "\\n", $strUpdate);
-		$strInsert = ($strCond != "") ? "(" . trim($strInsert1, ",") . ") values (" . trim($strInsert2, ",") . ")" : "";
-		$strInsert = str_replace("\n", "\\n", $strInsert) . ";";
-		$strSelect = ($strCond != "") ? trim($strSelect, ", ") : "";
-		$strSelect = str_replace("\r\n", "\\n", $strSelect);
-		$outer = ($strCond != "") ? [
-			"insert" => $strInsert,
-			"update" => $strUpdate,
-			"condition" => $strCond,
-			"select" => $strSelect
-		] : [];
-		return $outer;
-	}
-
 	/**
 	 * Установка массиву ключей по произвольному полю
 	 * @param array $value
@@ -243,44 +189,6 @@ class UtilsWepps
 	public static function arrayFilter($value,$key='Id',array $array) {
 		return array_filter($array, fn($v) => $v[$key]===$value, ARRAY_FILTER_USE_BOTH);
 	}
-
-	public static function modal(string $message = '', CliWepps $cli = null)
-	{
-		if (!empty($cli)) {
-			$cli->info($message);
-			ConnectWepps::$instance->close();
-			return;
-		}
-
-		$js = "
-			<script>
-				let dialogWidth = (window.screen.width<400) ? '90%' : 400;
-				$('#dialog').html('<p>{$message}</p>').dialog({
-					title:'Сообщение',
-					modal: true,
-					resizable: false,
-      				width: dialogWidth,
-   					buttons : [
-						{
-							text : 'ОК',
-							icon : 'ui-icon-check',
-							click : function() {
-								$(this).dialog('close');
-							}
-						},{
-							text : 'Обновить',
-							icon : 'ui-icon-refresh',
-							click : function() {
-								location.reload();
-							}
-						}]
-				});
-			</script>
-		";
-		echo $js;
-		ConnectWepps::$instance->close();
-		return;
-	}
 	public static function guid(string $string = ''): string
 	{
 		$charid = ($string == '') ? strtolower(md5(uniqid(rand(), true))) : strtolower(md5($string));
@@ -300,69 +208,6 @@ class UtilsWepps
 			return number_format($number, $scale, ".", " ");
 		}
 		return doubleval(number_format($number, $scale, ".", ""));
-	}
-	public static function setExcel(array $data, string $filename = '')
-	{
-		$spreadsheet = new Spreadsheet();
-		$spreadsheet->getProperties()->setCreator('Wepps')
-			->setLastModifiedBy('Wepps')
-			->setTitle('Office 2007 XLSX Document')
-			->setSubject('Office 2007 XLSX Document')
-			->setDescription('Test document for Office 2007 XLSX, generated using PHP classes.')
-			->setKeywords('office 2007 openxml php')
-			->setCategory('Wepps List result file');
-		$i = 1;
-		$j = 1;
-		$fields = $data[0];
-		foreach ($fields as $key => $value) {
-			$str = trim($key);
-			$spreadsheet->setActiveSheetIndex(0)
-				->setCellValueExplicit([$j, $i], $str, 's')
-				->getColumnDimensionByColumn($j)->setWidth(12);
-			$j++;
-		}
-
-		$i++;
-		foreach ($data as $v) {
-			$j = 1;
-			foreach ($fields as $key => $value) {
-				$str = trim($v[$key]);
-				$spreadsheet->setActiveSheetIndex(0)
-					->setCellValueExplicit([$j, $i], $str, 's');
-				$j++;
-			}
-			$i++;
-		}
-
-		$spreadsheet->getActiveSheet()
-			->getStyle('A1:AZ1')
-			->getFont()->setBold(2)
-			->getColor()
-			->setARGB('0080C0');
-
-		$spreadsheet->getActiveSheet()
-			->getStyle('A1:AZ1')
-			->getFill()
-			->setFillType('solid')->getStartColor()->setARGB('f1f1f1');
-
-		$spreadsheet->getActiveSheet()->setTitle("Data");
-		$spreadsheet->setActiveSheetIndex(0);
-		$writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-		if (!empty($filename)) {
-			/*
-			 * Записать в файл для проверки
-			 */
-			$writer->save($filename);
-			return;
-		}
-		ob_start();
-		$writer->save('php://output');
-		$content = ob_get_clean();
-		return $content;
-	}
-	public static function getExcel(string $filename)
-	{
-
 	}
 	public static function getAllHeaders(): array
 	{
@@ -626,110 +471,6 @@ class TemplateHeadersWepps
 	}
 }
 
-/**
- * Работа с файлами
- */
-class FilesWepps
-{
-	/**
-	 * Вывод указанного файла в браузер на сохранение или открытие на стороне клиента
-	 * @param string $file
-	 */
-	public static function output(string $filename)
-	{
-		$filenameFull = ConnectWepps::$projectDev['root'] . $filename;
-		if (!is_file($filenameFull)) {
-			http_response_code(404);
-			ConnectWepps::$instance->close();
-		}
-		$sql = "select * from s_Files where FileUrl='$filename' limit 1";
-		$res = ConnectWepps::$instance->fetch($sql);
-		if (count($res) == 0)
-			ExceptionWepps::error404();
-		$row = $res[0];
-		$filetitle = $row['Name'];
-
-		header("Content-type: application/octet-stream");
-		header("Content-Disposition: attachment; filename=\"$filetitle\"");
-		header("Content-Length: " . filesize($filenameFull));
-		header("Last-Modified: " . gmdate("D, d M Y H:i:s", mktime(0, 0, 0, 1, 1, 2000)) . " GMT"); // Дата в прошлом
-		header('Content-Transfer-Encoding: binary');
-		header('Expires: 0');
-		header('Cache-Control: must-revalidate');
-		header('Pragma: public');
-		readfile($filenameFull);
-		exit();
-	}
-
-	/**
-	 * Очистка файловой ситсемы от файлов, не указанных в s_Files
-	 */
-	public static function clear()
-	{
-
-	}
-
-	/**
-	 * Запись файлов в s_Files с физическим копировнием
-	 */
-	public static function save($file)
-	{
-
-	}
-
-	/**
-	 * Загрузка файлов из формы, расчитано что за один раз грузится 1 файл,
-	 * в дальнешем проработать возможность мультизагрузки (или вызывать этот
-	 * метод необходимое кол-во раз при таком случае.
-	 * 
-	 * @param array $myFiles Массив с загруженными файлами ($_FILES)
-	 * @param string $filesfield Наименование html-элемента input[type="file"]
-	 * @param string $myform Идентификатор формы
-	 * @return array
-	 */
-	public static function upload(array $myFiles, string $filesfield, string $myform): array
-	{
-		if (!isset($_SESSION)) {
-			@session_start();
-		}
-
-		$root = ConnectWepps::$projectDev['root'];
-		$errors = [];
-		/*
-		 * Не все изображения имеют эту метку, возможны ошибки
-		 * Переработать таким образом, чтобы была входная информация
-		 * о типе загруженного файла и в зависимости от этого делать
-		 * валидацию
-		 */
-		if (!strstr($myFiles[0]['type'], "image/")) {
-			$errors[$filesfield] = "Неверный тип файла";
-			$outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
-			return ['error' => $errors[$filesfield], 'js' => $outer['html']];
-		}
-		if ((int) $myFiles[0]['size'] > 10000000) {
-			#1 мегабайт = 1 000 000 байт
-			$errors[$filesfield] = "Слишком большой файл";
-			$outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
-			return ['error' => $errors[$filesfield], 'js' => $outer['html']];
-		}
-		$filepathinfo = pathinfo($myFiles[0]['name']);
-		$filepathinfo['filename'] = strtolower(TextTransformsWepps::translit($filepathinfo['filename'], 2));
-		$filedest = "{$root}/packages/WeppsExtensions/Addons/Forms/uploads/{$filepathinfo['filename']}-" . date("U") . ".{$filepathinfo['extension']}";
-		move_uploaded_file($myFiles[0]['tmp_name'], $filedest);
-		if (!isset($_SESSION['uploads'][$myform][$filesfield])) {
-			$_SESSION['uploads'][$myform][$filesfield] = [];
-		}
-		array_push($_SESSION['uploads'][$myform][$filesfield], $filedest);
-		$_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
-		$js = "	<script>
-		$('.fileadd').remove();
-		$('input[name=\"{$filesfield}\"]').parent().append($('<p class=\"pps_fileadd\">Загружен файл &laquo;{$myFiles[0]['name']}&raquo;</p>'));
-		$('label.{$filesfield}').siblings('.pps_error').trigger('click');
-		</script>";
-		$data = ['success' => 'Files uploaded', 'js' => $js];
-		return $data;
-	}
-}
 /**
  * Командная строка
  */

@@ -5,6 +5,10 @@ use Curl\Curl;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 
+/**
+ * Summary of RemoteServicesWepps
+ * ! Deprecated
+ */
 class RemoteServicesWepps {
 	public $curl;
 	public $settings;
@@ -61,15 +65,16 @@ class RemoteServicesWepps {
 	
 	private function addCache($url='',$body='',$response='') {
 	    $className = get_class($this);
-	    $arr = UtilsWepps::query([
+	    
+		$prepare = ConnectWepps::$instance->prepare([
 	        'Name' => substr($className, strrpos($className, '\\')+1),
 	        'Alias' => md5($url.$body),
 	        'Url' => $url,
 	        'Descr' => $body,
 	        'DescrResponse' => $response,
-	    ]);
-	    $sql = "insert ignore RemoteServicesCache {$arr['insert']}";
-	    ConnectWepps::$instance->query($sql);
+		]);
+	    $sql = "insert ignore RemoteServicesCache {$prepare['insert']}";
+	    ConnectWepps::$instance->query($sql,$prepare['row']);
 	    return 1;
 	}
 }

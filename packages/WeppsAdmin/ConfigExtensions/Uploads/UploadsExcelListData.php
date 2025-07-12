@@ -2,6 +2,7 @@
 
 namespace WeppsAdmin\ConfigExtensions\Uploads;
 
+use WeppsAdmin\Admin\AdminUtilsWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Core\DataWepps;
@@ -40,7 +41,7 @@ class UploadsExcelListDataWepps {
 						}
 						
 					}
-					$arr = UtilsWepps::query($row);
+					$arr = AdminUtilsWepps::query($row);
 					$str .= "insert ignore into {$this->tableName} (Id) values ('{$row['Id']}');\n";
 					$str .= "update {$this->tableName} set {$arr['update']} where Id='{$row['Id']}';\n";
 				}
