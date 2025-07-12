@@ -68,7 +68,7 @@ class CartWepps {
 		$('.cart-add').on('click', function(e) {
 			e.preventDefault();
 			let id = $(this).data('id');
-			console.log(id);
+			console.log('id: '+id);
 			layoutWepps.request({
 				data: 'action=add&id=' + id,
 				url: '/ext/Cart/Request.php'

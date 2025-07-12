@@ -48,6 +48,7 @@ class RequestCartWepps extends RequestWepps {
 				self::displayCart($cartUtils);
 				break;
 			case 'removeCart':
+				$cartUtils->removeCart();
 				break;
 			case 'favorites':
 				if (empty($this->get['id'])) {
@@ -112,15 +113,6 @@ class RequestCartWepps extends RequestWepps {
 				self::displayCheckoutCart($cartUtils);
 				break;
 			case 'addOrder':
-				/**
-				 * По доставке/оплате получить контекст и вызывать необходимые проверки
-				 * Если ошибки - выводим
-				 * Если нет ошибок - вызываем необходимые сценарии 
-				 * 	доставка - извлекаем нужные поля
-				 * 	оплата - формируем ссылки и др. на оплату если требуется
-				 * Оформляем заказ
-				 * Жетально через транзакции
-				 */
 				$response = $cartUtils->addOrder($this->get);
 				echo $response['html'];
 				exit();

@@ -190,6 +190,18 @@ class CartUtilsWepps
 		}
 		return $this->setCart();
 	}
+	public function removeCart()
+	{
+		if (empty($this->cart['items'])) {
+			return;
+		}
+		foreach($this->cart['items'] as $key=>$value) {
+			if ($value['ac']==1) {
+				unset($this->cart['items'][$key]);
+			}
+		}
+		return $this->setCart();
+	}
 	public function setCartSummary(): bool
 	{
 		$this->summary = [
@@ -484,10 +496,12 @@ class CartUtilsWepps
 			];
 			$logs = new LogsWepps();
 			$logs->add('order-new',$jdata,$row['ODate'],$row['UserIP']);
+			$this->removeCart();
 			return [
 				'id' => $id,
 				'alias' => $alias,
-				'html' => "<script>window.location.href='/cart/order.html?id={$alias}'</script>"
+				#'html' => "<script>window.location.href='/cart/order.html?id={$alias}'</script>"
+				'html' => "<script>console.log('{$alias}');</script>"
 			];
 		};
 		return ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
