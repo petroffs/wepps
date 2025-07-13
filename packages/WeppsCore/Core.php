@@ -243,7 +243,7 @@ class DataWepps
 		$arr = [];
 		$arr['current'] = $currentPage;
 		for ($i = 1; $i <= $dataPages; $i++) {
-			$arr['pages'][$i] = $i;
+			$arr['pages'][] = $i;
 		}
 		if ($currentPage < $dataPages) {
 			$arr['next'] = $currentPage + 1;
