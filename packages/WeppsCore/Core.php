@@ -236,7 +236,6 @@ class DataWepps
 		} else {
 			return [];
 		}
-		#UtilsWepps::debug($this->sqlCounter,1);
 		if (!empty($res[0]['Co'])) {
 			$dataPages = ceil($res[0]['Co'] / $onPage);
 			$this->count = $res[0]['Co'];

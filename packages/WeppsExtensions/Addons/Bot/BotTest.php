@@ -53,6 +53,11 @@ class BotTestWepps extends BotWepps {
 		#echo $output;
 	}
 	public function testDB() {
+		$obj = new DataWepps("Products");
+		$res = $obj->fetch('',20,1);	
+		#UtilsWepps::debug($res,21);
+		UtilsWepps::debug($obj->paginator,21);
+
 		$obj = new DataWepps("DataTbls");
 		$row = [
 				'Name' => 'Add Test2',
