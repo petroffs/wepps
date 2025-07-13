@@ -201,6 +201,7 @@ class CartUtilsWepps
 				unset($this->cart['items'][$key]);
 			}
 		}
+		$this->cart['items'] = array_values($this->cart['items']);
 		return $this->setCart();
 	}
 	public function setCartSummary(): bool
