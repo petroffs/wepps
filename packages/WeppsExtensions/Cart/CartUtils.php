@@ -507,8 +507,8 @@ class CartUtilsWepps
 			return [
 				'id' => $id,
 				'alias' => $alias,
-				#'html' => "<script>window.location.href='/cart/order.html?id={$alias}'</script>"
-				'html' => "<script>console.log('{$alias}');</script>"
+				'html' => "<script>window.location.href='/cart/order.html?id={$alias}'</script>"
+				#'html' => "<script>console.log('{$alias}');</script>"
 			];
 		};
 		return ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
