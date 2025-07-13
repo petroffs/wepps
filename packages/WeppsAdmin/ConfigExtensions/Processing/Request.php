@@ -1,6 +1,7 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
+use WeppsAdmin\Admin\AdminUtilsWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -11,14 +12,12 @@ require_once __DIR__ . '/../../../../config.php';
 require_once __DIR__ . '/../../../../autoloader.php';
 require_once __DIR__ . '/../../../../configloader.php';
 
-/**
- * @var \Smarty $smarty
- */
-
-class RequestProcessingWepps extends RequestWepps {
-	public function request($action="") {
+class RequestProcessingWepps extends RequestWepps
+{
+	public function request($action = "")
+	{
 		$this->tpl = '';
-		if (empty($this->cli) && @ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
+		if (empty($this->cli) && @ConnectWepps::$projectData['user']['ShowAdmin'] != 1) {
 			ExceptionWepps::error404();
 		}
 		switch ($action) {
@@ -42,13 +41,13 @@ class RequestProcessingWepps extends RequestWepps {
 				$obj->removeFiles();
 				break;
 			default:
-				UtilsWepps::debug('def1',1);
+				UtilsWepps::debug('def1', 1);
 				ExceptionWepps::error404();
 				break;
 		}
-		UtilsWepps::modal('Обработка завершена',$this->cli);
+		AdminUtilsWepps::modal('Обработка завершена', $this->cli);
 	}
 }
-$request = new RequestProcessingWepps (!empty($argv)?$argv:$_REQUEST);
-$smarty->assign('get',$request->get);
+$request = new RequestProcessingWepps(!empty($argv) ? $argv : $_REQUEST);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);
