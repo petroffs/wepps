@@ -1,0 +1,25 @@
+.swiper.w_hide {
+	display: none;
+}
+
+.swiper {
+	width: 100%;
+	height: 100%;
+}
+
+.swiper-slide img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+@media screen and (max-width: 480px) {
+	.swiper.w_block_view_small {
+		display: block;
+	}
+
+	.swiper.w_hide_view_small {
+		display: none;
+	}
+}
