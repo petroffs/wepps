@@ -5,10 +5,9 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
-use WeppsExtensions\Addons\Mail\MailWepps;
-use WeppsCore\Utils\CliWepps;
+use WeppsExtensions\Addons\Messages\Mail\MailWepps;
+use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
 
 class BotTestWepps extends BotWepps {
 	public $parent = 0;
@@ -37,13 +36,9 @@ class BotTestWepps extends BotWepps {
 		 * В группе - добавляем Бота в группу и тоже пишем /start и далее проверяем getUpdates
 		 * chat_id группы начинается с минуса
 		 */
-		$mail = new MailWepps();
-		$data = [
-				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
-				'text' => 'Hello from Bot (MailWepps)'
-		];
-		$tg = $mail->telegram("sendMessage",$data);
-		UtilsWepps::debug($tg,2);
+		$tg = new TelegramWepps();
+		$response = $tg->send(ConnectWepps::$projectServices['telegram']['dev'],'Hello from Bot (TelegramWepps)');
+		UtilsWepps::debug($response,2);
 	}
 	public function mail() {
 		$mail = new MailWepps("html");

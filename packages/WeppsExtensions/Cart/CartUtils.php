@@ -9,7 +9,8 @@ use WeppsCore\Utils\MemcachedWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Addons\Mail\MailWepps;
+use WeppsExtensions\Addons\Messages\Mail\MailWepps;
+use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
@@ -620,11 +621,8 @@ class CartUtilsWepps
 		}
 		if (!empty($jdata['telegram'])) {
 			$text = "<b>НОВЫЙ ЗАКАЗ</b> №{$order['Id']} / {$order['OSum']} ₽\n🙋{$order['Name']}\n📞{$order['Phone']}\n✉️{$order['Email']}\n\n#сайт_{$order['Id']}";
-			$data = [
-				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
-				'text' => $text
-			];
-			$res = $mail->telegram("sendMessage", $data);
+			$tg = new TelegramWepps();
+			$res = $tg->send(ConnectWepps::$projectServices['telegram']['dev'],$text);
 			$jdata = json_decode($res['response'],true);
 			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram false";
 		}
@@ -665,11 +663,8 @@ class CartUtilsWepps
 		}
 		if (!empty($jdata['telegram'])) {
 			$text = "<b>ЗАКАЗ ОПЛАТА</b> №{$order['Id']}\n\n{$jdata['message']}\n\nстатус платежа: {$jdata['status']}\n\n#сайт_{$jdata['id']}";
-			$data = [
-				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
-				'text' => $text
-			];
-			$res = $mail->telegram("sendMessage", $data);
+			$tg = new TelegramWepps();
+			$res = $tg->send(ConnectWepps::$projectServices['telegram']['dev'],$text);
 			$jdata = json_decode($res['response'],true);
 			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram fail";
 		}

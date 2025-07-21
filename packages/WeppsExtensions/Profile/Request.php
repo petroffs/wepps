@@ -5,7 +5,7 @@ use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Addons\Mail\MailWepps;
+use WeppsExtensions\Addons\Messages\Mail\MailWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -36,7 +36,6 @@ class RequestProfileWepps extends RequestWepps {
 				//$obj->mail($this->get['email'],"Обновление аккаунта",$mess);
 				$obj->mail(ConnectWepps::$projectDev['email'],"Обновление аккаунта",$mess);
 				$this->tpl = 'ProfileSettingsEmail.tpl';
-				break;
 				break;
 			default :
 				ExceptionWepps::error404();

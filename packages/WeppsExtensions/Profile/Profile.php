@@ -8,7 +8,7 @@ use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsExtensions\Addons\User\UserWepps;
-use WeppsExtensions\Addons\Mail\MailWepps;
+use WeppsExtensions\Addons\Messages\Mail\MailWepps;
 
 class ProfileWepps {
 	public $get;
