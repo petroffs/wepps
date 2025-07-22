@@ -46,7 +46,7 @@ class MailWepps {
 			case "html":
 				$smarty->assign('subject',$subject);
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailHtml.tpl');
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailHtml.tpl');
 				self::getQuotedPrintable();
 				$this->contentAll .= "Content-Type: text/html; charset=\"utf-8\"\n";
 				#$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
@@ -57,7 +57,7 @@ class MailWepps {
 				break;
 			default:
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailPlain.tpl');
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailPlain.tpl');
 				$this->contentAll .= "Content-Type: text/plain; charset=\"utf-8\"\n";
 				$this->contentAll .= "Content-Transfer-Encoding: quoted-printable\n\n";
 				$this->contentAll .= (string) $this->content."\n\n";
