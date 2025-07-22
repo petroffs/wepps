@@ -1,3 +1,12 @@
+:root {
+	--swiper-theme-color: var(--color-button);
+	--swiper-pagination-bottom: var(--step4);
+	--swiper-pagination-bullet-size: var(--step2);
+	--pagination-bullet-width: var(--step2);
+	--swiper-pagination-bullet-height: var(--step2);
+	--swiper-pagination-bullet-horizontal-gap: var(--step);
+}
+
 .swiper.w_hide {
 	display: none;
 }
@@ -12,6 +21,22 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+}
+
+.swiper-button-prev::after,
+.swiper-rtl .swiper-button-next::after {
+	content: '\F284';
+}
+
+.swiper-button-next::after,
+.swiper-rtl .swiper-button-prev::after {
+	content: '\F285';
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+	font-family: 'bootstrap-icons';
+	font-size: calc(var(--step) * 8);
 }
 
 @media screen and (max-width: 480px) {

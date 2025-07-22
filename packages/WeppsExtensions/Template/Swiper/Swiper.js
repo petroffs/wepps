@@ -22,7 +22,7 @@ $(document).ready(function () {
 			el: ".swiper-pagination",
 			dynamicBullets: true,
 		},
-		autoplay: true,
+		autoplay: false,
 		loop: true,
 	});
 	var swiperMobile = new Swiper(".swiper.swiper-mobile", {
