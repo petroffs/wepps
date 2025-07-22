@@ -48,11 +48,24 @@ class BotTestWepps extends BotWepps {
 		#echo $output;
 	}
 	public function testDB() {
-		$obj = new DataWepps("Products");
-		$res = $obj->fetch('',20,1);	
-		#UtilsWepps::debug($res,21);
-		UtilsWepps::debug($obj->paginator,21);
+		$row = [
+				'Name' => 'TEST1',
+				'Text' => 'test text',
+				'Priority'=>0
+		];
+		$settings = [];
+		$settings = [
+				'Text' => [
+						'fn' => 'md5(:Text)'
+				]
+		];
+		$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
+		
+		UtilsWepps::debug($t,21);
 
+		/* $obj = new DataWepps("Products");
+		$res = $obj->fetch('',20,1);	
+		UtilsWepps::debug($obj->paginator,21); */
 		$obj = new DataWepps("DataTbls");
 		$row = [
 				'Name' => 'Add Test2',
@@ -71,26 +84,14 @@ class BotTestWepps extends BotWepps {
 		]);
 		$res = $obj->fetch("t.DisplayOff=0 and t.Name = ?",5,1);
 		UtilsWepps::debug($res,21);
-		exit();
-		$row = [
-				'Name' => 'TEST1',
-				'BTest' => 'test text',
-				'Priority'=>0
-		];
-		$settings = [
-				'BTest' => [
-						'fn' => 'compress(:BTest)'
-				]
-		];
-		$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
-		UtilsWepps::debug($t,21);
-		$obj = new DataWepps("DataTbls");
+		
+		/* $obj = new DataWepps("DataTbls");
 		$t = $obj->add([
 				'Name'=>'TEST1',
 				'BTest'=>'test text',
 		],[
 				'BTest'=>['fn'=>'compress(:BTest)']
-		]);
+		]); */
 		
 		
 		$t = ListsWepps::setListItem(
