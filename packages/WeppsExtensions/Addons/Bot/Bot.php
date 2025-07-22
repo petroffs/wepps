@@ -37,12 +37,9 @@ class BotWepps {
 				break;
 			case 'cdek':
 				$obj = new CdekWepps([],new CartUtilsWepps());
-				#$obj->setPoints();
-				/**
-				 * ! Индесы дописаны отдельно, при записи городов - индексы сотрутся
-				 */
-				#$obj->setCities();
-				#$obj->setRegions();
+				$obj->setPoints();
+				$obj->setCities();
+				$obj->setRegions();
 				break;
 			/*
 			 * tests
@@ -82,10 +79,6 @@ class BotWepps {
 				$cartUtils = new CartUtilsWepps();
 				#$obj->getDeliveryTariffsByCitiesId(137);
 				$obj->getByDeliveryId("6", $cartUtils);
-				break;
-			case 'postalcodes':
-				$obj = new BotTestWepps();
-				$obj->postalcodes();
 				break;
 			case 'ordertext':
 				$obj = new BotTestWepps();

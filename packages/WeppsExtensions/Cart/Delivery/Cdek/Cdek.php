@@ -229,11 +229,9 @@ class CdekWepps extends DeliveryWepps
 	{
 		$func = function (array $args) {
 			$page = $args['page'] ?? 0;
-			//$response = $this->curl->get($this->url . '/v2/location/cities?country_codes=RU&size=1000&page='.(string)$page);
 			$url = $this->url . '/v2/location/cities?country_codes=RU&&size=1000&page=' . $page;
 			$cli = new CliWepps();
 			$cli->progress($page, 150);
-			#$cli->info(text: $url);
 			$response = $this->curl->get($url);
 			if (empty($response->response)) {
 				return [];
@@ -252,7 +250,6 @@ class CdekWepps extends DeliveryWepps
 				'Id' => '',
 				'Name' => '',
 				'RegionsId' => '',
-				//'JData' => '',
 			];
 			$prepare = ConnectWepps::$instance->prepare($row);
 			$insert = ConnectWepps::$db->prepare("insert into CitiesCdek {$prepare['insert']}");
@@ -261,7 +258,6 @@ class CdekWepps extends DeliveryWepps
 					'Id' => $value['code'],
 					'Name' => $value['city'],
 					'RegionsId' => $value['region_code'],
-					//'JData' => json_encode($value, JSON_UNESCAPED_UNICODE),
 				];
 				$insert->execute($row);
 			}

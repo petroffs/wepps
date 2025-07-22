@@ -33,6 +33,10 @@ class RussianPostWepps extends DeliveryWepps
                     'period' => '0'
                 ];
                 return $output;
+            } else {
+                /*
+                 * ? Записать PostalCode
+                 */
             }
         }
         $from = ConnectWepps::$projectServices['russianpost']['office']['sender'];
