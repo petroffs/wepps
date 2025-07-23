@@ -39,16 +39,16 @@ class ListsWepps
 		$fcond = "'" . implode("','", $perm['lists']) . "'";
 		$sql = "select * from s_Config as t where TableName in ($fcond) order by t.Category,t.Priority";
 		$res = ConnectWepps::$instance->fetch($sql);
-		$str = "";
+		/* $str = "";
 		foreach ($res as $value) {
 			$str .= "union (select '{$value['TableName']}' as TableName,count(*) as `Rows`,  (select count(*) from s_ConfigFields as cf where cf.TableName='{$value['TableName']}') as Fields from {$value['TableName']} as t)\n";
 		}
 		$str = trim($str, "union ");
-		$stat = ConnectWepps::$instance->fetch($str, array(), 'group');
+		$stat = ConnectWepps::$instance->fetch($str, array(), 'group'); */
 		$arr = [];
 		foreach ($res as $value) {
-			$value['RowsCount'] = $stat[$value['TableName']][0]['Rows'];
-			$value['FieldsCount'] = $stat[$value['TableName']][0]['Fields'];
+			/* $value['RowsCount'] = $stat[$value['TableName']][0]['Rows'];
+			$value['FieldsCount'] = $stat[$value['TableName']][0]['Fields']; */
 			$arr[$value['Category']][] = $value;
 		}
 		$smarty->assign('lists', $arr);
