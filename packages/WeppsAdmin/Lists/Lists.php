@@ -783,7 +783,7 @@ class ListsWepps
 				break;
 			default:
 				if (strstr($type, 'minitable::')) {
-					$typeReal = 'text COLLATE utf8mb4_unicode_ci';
+					$typeReal = 'mediumtext COLLATE utf8mb4_unicode_ci';
 					$alterDefault = "NULL default NULL";
 					break;
 				}

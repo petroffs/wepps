@@ -1,13 +1,10 @@
 <?php
 namespace WeppsExtensions\Profile;
 
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Addons\Mail\MailWepps;
 use WeppsExtensions\Addons\Jwt\JwtWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsExtensions\Products\ProductsWepps;
-use WeppsCore\Core\DataWepps;
 
 class ProfileUtilsWepps {
 	private $settings = [];

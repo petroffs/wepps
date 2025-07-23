@@ -1,4 +1,9 @@
 <div class="products-items-wrapper">
+	{if $paginatorTpl}
+	<div class="content-block">
+		{$paginatorTpl}
+	</div>
+	{/if}
 	<div class="products-items w_grid w_3col w_2col_view_medium w_gap_medium">
 		{foreach item="item" from=$products}
 		{assign var="images" value=$item.Images_FileUrl|strarr}

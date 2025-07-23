@@ -22,12 +22,18 @@ class HomeWepps extends ExtensionWepps {
 				$res = $obj->fetch("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
 				if (!empty($res[0]['Id'])) {
 					$smarty->assign('carousel',$res);
-					$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Carousel/Carousel.tpl');
+					/* $this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Carousel/Carousel.tpl');
 					$this->headers->css("/packages/vendor_local/slick/slick/slick.css");
 					$this->headers->css("/packages/vendor_local/slick/slick/slick-theme.css");
 					$this->headers->js("/packages/vendor_local/slick/slick/slick.min.js");
 					$this->headers->js("/ext/Template/Carousel/Carousel.{$this->rand}.js");
-					$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css");
+					$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css"); */
+					
+					$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Swiper/Swiper.tpl');
+					$this->headers->css("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.css");
+					$this->headers->js("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.js");
+					$this->headers->js("/ext/Template/Swiper/Swiper.{$this->rand}.js");
+					$this->headers->css("/ext/Template/Swiper/Swiper.{$this->rand}.css");
 				}
 
 				/*

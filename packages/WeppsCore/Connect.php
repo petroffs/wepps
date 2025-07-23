@@ -53,7 +53,7 @@ class ConnectWepps {
 		}
 		return self::$instance;
 	}
-	public function fetch($sql, $params=[], $group='') {
+	public function fetch($sql, $params=[], $group='') : array {
 		$this->count++;
 		try {
 			$isCache = 0;
@@ -78,6 +78,7 @@ class ConnectWepps {
 			return $res;
 		} catch (\Exception $e) {
 			ExceptionWepps::display($e);
+			return [];
 		}
 	}
 	public function query(string $sql,array $params=[]) {

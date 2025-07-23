@@ -5,10 +5,9 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Lists\ListsWepps;
-use WeppsExtensions\Addons\Mail\MailWepps;
-use WeppsCore\Utils\CliWepps;
+use WeppsExtensions\Addons\Messages\Mail\MailWepps;
+use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryCdekWepps;
 
 class BotTestWepps extends BotWepps {
 	public $parent = 0;
@@ -37,13 +36,9 @@ class BotTestWepps extends BotWepps {
 		 * В группе - добавляем Бота в группу и тоже пишем /start и далее проверяем getUpdates
 		 * chat_id группы начинается с минуса
 		 */
-		$mail = new MailWepps();
-		$data = [
-				'chat_id' => ConnectWepps::$projectServices['telegram']['dev'],
-				'text' => 'Hello from Bot (MailWepps)'
-		];
-		$tg = $mail->telegram("sendMessage",$data);
-		UtilsWepps::debug($tg,2);
+		$tg = new TelegramWepps();
+		$response = $tg->send(ConnectWepps::$projectServices['telegram']['dev'],'Hello from Bot (TelegramWepps)');
+		UtilsWepps::debug($response,2);
 	}
 	public function mail() {
 		$mail = new MailWepps("html");
@@ -53,11 +48,24 @@ class BotTestWepps extends BotWepps {
 		#echo $output;
 	}
 	public function testDB() {
-		$obj = new DataWepps("Products");
-		$res = $obj->fetch('',20,1);	
-		#UtilsWepps::debug($res,21);
-		UtilsWepps::debug($obj->paginator,21);
+		$row = [
+				'Name' => 'TEST1',
+				'Text' => 'test text',
+				'Priority'=>0
+		];
+		$settings = [];
+		$settings = [
+				'Text' => [
+						'fn' => 'md5(:Text)'
+				]
+		];
+		$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
+		
+		UtilsWepps::debug($t,21);
 
+		/* $obj = new DataWepps("Products");
+		$res = $obj->fetch('',20,1);	
+		UtilsWepps::debug($obj->paginator,21); */
 		$obj = new DataWepps("DataTbls");
 		$row = [
 				'Name' => 'Add Test2',
@@ -76,26 +84,14 @@ class BotTestWepps extends BotWepps {
 		]);
 		$res = $obj->fetch("t.DisplayOff=0 and t.Name = ?",5,1);
 		UtilsWepps::debug($res,21);
-		exit();
-		$row = [
-				'Name' => 'TEST1',
-				'BTest' => 'test text',
-				'Priority'=>0
-		];
-		$settings = [
-				'BTest' => [
-						'fn' => 'compress(:BTest)'
-				]
-		];
-		$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
-		UtilsWepps::debug($t,21);
-		$obj = new DataWepps("DataTbls");
+		
+		/* $obj = new DataWepps("DataTbls");
 		$t = $obj->add([
 				'Name'=>'TEST1',
 				'BTest'=>'test text',
 		],[
 				'BTest'=>['fn'=>'compress(:BTest)']
-		]);
+		]); */
 		
 		
 		$t = ListsWepps::setListItem(
@@ -130,9 +126,6 @@ class BotTestWepps extends BotWepps {
 		#UtilsWepps::debug('fail',31);
 		$this->cli->error('fail');
 		exit();
-	}
-	public function postalcodes() {
-		UtilsWepps::debug(1,21);
 	}
 	public function testOrderText() {
 		/*

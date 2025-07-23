@@ -2,6 +2,7 @@
 namespace WeppsExtensions\Cart;
 
 use Smarty;
+use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
@@ -30,7 +31,9 @@ class CartTemplatesWepps
 			$this->empty();
 			return;
 		}
+		$cartMetrics = $this->cartUtils->getCartMetrics();
 		$this->smarty->assign('cartSummary', $this->cartSummary);
+		$this->smarty->assign('cartMetrics', $cartMetrics);
 		$this->smarty->assign('cartText', [
 			'goodsCount' => TextTransformsWepps::ending2("товар", $this->cartSummary['quantityActive'])
 		]);

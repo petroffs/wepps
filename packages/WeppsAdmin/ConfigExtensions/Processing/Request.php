@@ -7,6 +7,7 @@ use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsAdmin\Lists\ListsWepps;
 use WeppsCore\Connect\ConnectWepps;
+use WeppsExtensions\Addons\Bot\BotSystemWepps;
 
 require_once __DIR__ . '/../../../../config.php';
 require_once __DIR__ . '/../../../../autoloader.php';
@@ -21,6 +22,10 @@ class RequestProcessingWepps extends RequestWepps
 			ExceptionWepps::error404();
 		}
 		switch ($action) {
+			case "tasks":
+				$obj = new BotSystemWepps();
+				$obj->tasks();
+				break;
 			case "searchindex":
 				$str = ListsWepps::setSearchIndex();
 				ConnectWepps::$db->exec($str);
@@ -28,13 +33,6 @@ class RequestProcessingWepps extends RequestWepps
 			case "resetproducts":
 				$obj = new ProcessingProductsWepps();
 				$obj->resetProducts();
-				break;
-			case "namesproducts":
-				/*
-				 * Не используется в UI
-				 */
-				$obj = new ProcessingProductsWepps();
-				$obj->changeProductsNames();
 				break;
 			case "removefiles":
 				$obj = new ProcessingTasksWepps();

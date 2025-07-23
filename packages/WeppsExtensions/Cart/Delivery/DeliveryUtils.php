@@ -36,9 +36,10 @@ class DeliveryUtilsWepps
         $sql = "select d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
                 d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.FreeLevel,d.Discount,d.IsDiscountPercentage,d.JSettings,
                 if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefault\DeliveryDefaultWepps') DeliveryExt,
-                c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName,c.PostalCode
+                c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName,pc.Name PostalCode
                 from OrdersDelivery d 
                 left join CitiesCdek c on c.Id=?
+                left join PostalCodes pc on pc.Id=c.Id
                 left join RegionsCdek r on r.Id = c.RegionsId
                 where $conditions group by d.Id";
         $res = ConnectWepps::$instance->fetch($sql, [$citiesId, $deliveryId]);

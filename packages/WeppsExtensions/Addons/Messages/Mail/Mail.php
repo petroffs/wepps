@@ -1,5 +1,5 @@
 <?php
-namespace WeppsExtensions\Addons\Mail;
+namespace WeppsExtensions\Addons\Messages\Mail;
 
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
@@ -46,7 +46,7 @@ class MailWepps {
 			case "html":
 				$smarty->assign('subject',$subject);
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailHtml.tpl');
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailHtml.tpl');
 				self::getQuotedPrintable();
 				$this->contentAll .= "Content-Type: text/html; charset=\"utf-8\"\n";
 				#$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
@@ -57,7 +57,7 @@ class MailWepps {
 				break;
 			default:
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Mail/MailPlain.tpl');
+				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailPlain.tpl');
 				$this->contentAll .= "Content-Type: text/plain; charset=\"utf-8\"\n";
 				$this->contentAll .= "Content-Transfer-Encoding: quoted-printable\n\n";
 				$this->contentAll .= (string) $this->content."\n\n";
@@ -181,25 +181,5 @@ class MailWepps {
 	private function getQuotedPrintable() {
 		$this->content = mb_convert_encoding($this->content, 'UTF-8');
 		$this->content = quoted_printable_encode($this->content);
-	}
-	public function telegram ($method = "getUpdates", $data = []) {
-		$token = "bot" . ConnectWepps::$projectServices['telegram']['token'];
-		$proxy = ConnectWepps::$projectServices['telegram']['proxy'];
-		$params = http_build_query($data);
-		if (!empty($params)) {
-			$params = (string) "?".$params."&parse_mode=html";
-		}
-		$curl = new Curl();
-		if (!empty($proxy)) {
-			$curl->setOpt(CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-			$curl->setOpt(CURLOPT_PROXY, $proxy);
-		}
-		$url = "https://api.telegram.org/{$token}/{$method}{$params}";
-		$res = $curl->get($url);
-		$output = [
-				'url' => $url,
-				'response' => $res->response
-		];
-		return $output;
 	}
 }

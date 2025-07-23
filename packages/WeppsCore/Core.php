@@ -260,6 +260,18 @@ class DataWepps
 		if ($dataPages == 1) {
 			return [];
 		}
+		$arr['count'] = count($arr['pages']);
+		
+		$visiblePages = 5;
+		$start = max(1, $currentPage - $visiblePages);
+		$end = min($arr['count'], $currentPage + $visiblePages);
+		if ($start > 1) {
+			$arr['hasStartDots'] = true;
+		}
+		if ($end < $arr['count']) {
+			$arr['hasEndDots'] = true;
+		}
+		$arr['pagesVisible'] = range($start, $end);
 		return $arr;
 	}
 	/**
