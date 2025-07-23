@@ -51,14 +51,18 @@ class ProcessingProductsWepps
 		if (ConnectWepps::$projectDev['debug'] == 0) {
 			return;
 		}
+		$sql = "truncate ProductsVariants";
+		$res = ConnectWepps::$instance->query($sql);
+
 		$sql = "select Id,Name,NavigatorId from Products";
 		$res = ConnectWepps::$instance->fetch($sql);
+		
+
 		$sth = ConnectWepps::$db->prepare("update Products set Variations = ? where Id = ?");
 		foreach ($res as $value) {
 			#$alias = TextTransformsWepps::translit($value['Name'], 2) . '-' . $value['Id'];
-			$product = self::_generateProductVariations($value);
-			UtilsWepps::debug($product,21);
-			#$sth->execute([$alias, $value['Id']]);
+			$variations = self::_generateProductVariations($value);
+			$sth->execute([$variations, $value['Id']]);
 		}
 	}
 	/**
@@ -66,41 +70,39 @@ class ProcessingProductsWepps
 	 * 
 	 * @return array Массив вариаций в формате ['color' => string, 'size' => int, ...]
 	 */
-	private function _generateProductVariations(array $product): array
+	private function _generateProductVariations(array $product): string
 	{
 		// Доступные цвета
 		$availableColors = ['Красный', 'Синий', 'Зеленый', 'Черный', 'Белый', 'Желтый', 'Фиолетовый', 'Розовый'];
 
-		// Выбираем 3 случайных цвета (без повторов)
+		// 3 случайных цвета (без повторов)
 		shuffle($availableColors);
 		$selectedColors = array_slice($availableColors, 0, rand(2, 4));
 
+		// размеры
+		$sizes = [42, 44, 46, 48];
+		if ($product['NavigatorId'] == 8) {
+			$sizes = [46, 48, 50, 52, 54, 56];
+		}
+		shuffle($sizes);
 		
 		// Генерируем все комбинации цветов и размеров
-		$variations = [];
+		##$variations = [];
+		$variations2 = '';
 		foreach ($selectedColors as $color) {
-			// Чётные размеры от 42 до 48
-			$sizes = [42, 44, 46, 48];
-			if ($product['NavigatorId'] == 8) {
-				$sizes = [46, 48, 50, 52, 54, 56];
-			}
-			
-			shuffle($sizes);
-			$sizes = array_slice($sizes, 0, rand(2, 3));
-			sort($sizes);
-			foreach ($sizes as $size) {
+			$selectedSizes = array_slice($sizes, 0, rand(2, 3));
+			sort($selectedSizes);
+			foreach ($selectedSizes as $size) {
+				$sku = 'S'.$product['Id'].'-' . mb_strtoupper(mb_substr($color, 0, 3)) . '-' . $size;
 				$variations[] = [
 					'color' => $color,
 					'size' => $size,
-					#'sku' => 'PROD-' . mb_strtoupper($color) . '-' . $size,
-					'sku' => 'PROD-' . mb_strtoupper(mb_substr($color, 0, 3)) . '-' . $size,
-					#'price' => rand(1000, 5000), // Случайная цена
-					// Другие поля...
+					'sku' => $sku,
 				];
-
+				$variations2 .= "{$color}:::{$size}:::{$sku}\n";
 			}
 		}
-
-		return $variations;
+		$variations2 = trim($variations2);
+		return $variations2;
 	}
 }
