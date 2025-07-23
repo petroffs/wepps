@@ -30,13 +30,21 @@ class RequestProcessingWepps extends RequestWepps
 				$str = ListsWepps::setSearchIndex();
 				ConnectWepps::$db->exec($str);
 				break;
+			case "removefiles":
+				$obj = new ProcessingTasksWepps();
+				$obj->removeFiles();
+				break;
 			case "resetproducts":
 				$obj = new ProcessingProductsWepps();
 				$obj->resetProducts();
 				break;
-			case "removefiles":
-				$obj = new ProcessingTasksWepps();
-				$obj->removeFiles();
+			case "resetproductsaliases":
+				$obj = new ProcessingProductsWepps();
+				$obj->resetProductsAliases();
+				break;
+			case "resetproductsvariations":
+				$obj = new ProcessingProductsWepps();
+				$obj->resetProductsVariations();
 				break;
 			default:
 				UtilsWepps::debug('def1', 1);
