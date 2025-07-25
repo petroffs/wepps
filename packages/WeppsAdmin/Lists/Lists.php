@@ -564,7 +564,7 @@ class ListsWepps
 		if (isset($listSettings['ActionModify']) && $listSettings['ActionModify'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionModify']);
 			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
-			$addActionRequest = new $addActionClass(array('listSettings' => $listSettings, 'listScheme' => $listScheme, 'element' => $row));
+			$addActionRequest = new $addActionClass(['listSettings' => $listSettings, 'listScheme' => $listScheme, 'element' => $row]);
 		}
 		$path = "/_wepps/lists/{$list}/{$id}/";
 		if ($data['pps_path'] == 'navigator') {

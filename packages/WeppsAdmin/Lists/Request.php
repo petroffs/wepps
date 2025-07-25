@@ -7,7 +7,6 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsAdmin\Admin\AdminWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -193,7 +192,6 @@ class RequestListsWepps extends RequestWepps {
 					} else {
 						$outer = ListsWepps::setListItem($this->get['pps_tablename'],$this->get['pps_tablename_id'],$this->get);
 					}
-					
 					echo $outer['html'];
 				}
 				break;

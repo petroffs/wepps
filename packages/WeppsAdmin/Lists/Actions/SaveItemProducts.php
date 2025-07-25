@@ -4,7 +4,7 @@ namespace WeppsAdmin\Lists\Actions;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
 
-class SaveItemExtensionsWepps extends RequestWepps {
+class SaveItemProductsWepps extends RequestWepps {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
