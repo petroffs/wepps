@@ -15,4 +15,3 @@ class ViewListWepps extends RequestWepps {
 		$this->scheme = $this->get['listScheme'];
 	}
 }
-?>

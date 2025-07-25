@@ -1,8 +1,8 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Core\SmartyWepps;
 
 class ViewItemWepps extends RequestWepps {
@@ -39,4 +39,3 @@ class ViewItemWepps extends RequestWepps {
 		];
 	}
 }
-?>

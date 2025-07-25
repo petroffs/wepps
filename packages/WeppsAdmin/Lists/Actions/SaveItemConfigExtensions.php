@@ -1,9 +1,8 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
+
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsAdmin\Lists\ListsWepps;
 use WeppsAdmin\Admin\AdminWepps;
 
 class SaveItemConfigExtensionsWepps extends RequestWepps {

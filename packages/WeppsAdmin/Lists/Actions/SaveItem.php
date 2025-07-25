@@ -1,8 +1,7 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
+
 use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 class SaveItemWepps extends RequestWepps {
 	public $noclose = 1;
@@ -17,4 +16,3 @@ class SaveItemWepps extends RequestWepps {
 	    #echo $this->listSettings['TableName'] . " - вывод тестовый - " . __FILE__;
 	}
 }
-?>

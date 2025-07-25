@@ -3,12 +3,11 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsAdmin\Lists\ListsWepps;
 
 class RemoveItemConfigFieldsWepps extends RequestWepps {
 	public $noclose = 1;
 	public $listSettings = [];
+	private $id;
 	public $element = [];
 	public function request($action="") {
 		$this->listSettings = $this->get['listSettings'];
@@ -24,4 +23,3 @@ class RemoveItemConfigFieldsWepps extends RequestWepps {
 		}
 	}
 }
-?>

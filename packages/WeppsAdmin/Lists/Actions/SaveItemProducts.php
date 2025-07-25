@@ -3,9 +3,8 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsAdmin\Lists\ListsWepps;
 
-class SaveItemConfigFieldsWepps extends RequestWepps {
+class SaveItemExtensionsWepps extends RequestWepps {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
@@ -15,11 +14,9 @@ class SaveItemConfigFieldsWepps extends RequestWepps {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
-	    if ($this->listSettings['TableName']=='s_ConfigFields') {
-	        $str = ListsWepps::addListField($this->element['Id'],$this->element['Type']);
-	        if ($str!="") {
-	            ConnectWepps::$instance->query($str);
-	        }
+	    $root = ConnectWepps::$projectDev['root'];
+	    if ($this->listSettings['TableName']=='Products') {
+	    	
 	    }
 	}
 }
