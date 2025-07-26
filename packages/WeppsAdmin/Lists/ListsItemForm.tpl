@@ -59,7 +59,7 @@
 				</div>
 			</div>
 			<div class="field pps_flex_23">
-				{if $item.0.$listMode=="disabled"}
+				{if $item.0.$listMode=="disabled" && $item.0.Type!='properties'}
 				{$element.$key}
 				{elseif $item.0.Type=="digit"}
 				<label class="pps pps_input list-item-int{if $item.0.Required==1} pps_require{/if}">
@@ -207,7 +207,7 @@
 				</div>
 				{elseif $item.0.Type|strstr:"properties"}
 				<label class="pps pps_select list-item-properties{if $item.0.Required==1} pps_require{/if}">
-					<select name="{$key}">
+					<select name="{$key}"{if $item.0.$listMode=="disabled"} disabled="disabled"{/if}>
 					{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 					</select>
 				</label>
@@ -223,21 +223,23 @@
 						<div class="labels2">
 							{if $i.PType=='select'}
 							<label class="pps pps_select pps_select_multi{if $item.0.Required==1} pps_require{/if}">
-								<select multiple="multiple" name="pps_property_{$key}_{$i.Id}[]">
+								<select multiple="multiple" name="pps_property_{$key}_{$i.Id}[]"{if $item.0.$listMode=="disabled"} disabled="disabled"{/if}>
 								<option>-</option>
 								{html_options options=$element[$key|cat:"_PropertiesOptions"][$i.Id] selected=$element[$key|cat:"_PropertiesSelected"][$i.Id] multiple="multiple"}
 								</select>
 							</label>
 							<div class="pps_interval"></div>
+							{if $item.0.$listMode!="disabled"}
 							<div class="pps_flex pps_flex_row pps_flex_end">
-							<label class="pps pps_input pps_flex_12">
-								<input type="text" placeholder="новая опция" data-id="{$i.Id}"/> 
-							</label>
-							<div class="pps_flex_fix"><a href="" class="pps_button properties-item-option-add"><i class="fa fa-plus"></i></a></div>
+								<label class="pps pps_input pps_flex_12">
+									<input type="text" placeholder="новая опция" data-id="{$i.Id}"/> 
+								</label>
+								<div class="pps_flex_fix"><a href="" class="pps_button properties-item-option-add"><i class="fa fa-plus"></i></a></div>
 							</div>
+							{/if}
 							{elseif $i.PType=='text-multi'}
 							<label class="pps pps_area">
-								<textarea name="pps_property_{$key}_{$i.Id}">{$element[$key|cat:"_PropertiesSelected"][$i.Id]}</textarea>
+								<textarea name="pps_property_{$key}_{$i.Id}"{if $item.0.$listMode=="disabled"} disabled="disabled"{/if}>{$element[$key|cat:"_PropertiesSelected"][$i.Id]}</textarea>
 							</label>
 							{/if}
 						</div>

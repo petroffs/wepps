@@ -134,6 +134,11 @@ class RestWepps
 	}
 	protected function setLogLocal()
 	{
+		/**
+		 * Использовать LogsWepps
+		 */
+		return;
+
 		$out = 0;
 		if ($this->log == 0) {
 			return $out;
@@ -169,12 +174,18 @@ class RestWepps
 		ConnectWepps::$instance->query($sql, $prepare['row']);
 
 
+
+
+
+
+
+
 		$id = ConnectWepps::$db->lastInsertId();
-		if (!empty($this->request)) {
+		/* if (!empty($this->request)) {
 			$fp = fopen(filename: __DIR__ . "/files/{$this->settings['method']}_{$id}.json", 'w');
 			fwrite($fp, $this->request);
 			fclose($fp);
-		}
+		} */
 		return true;
 	}
 	protected function setLogRemote()
