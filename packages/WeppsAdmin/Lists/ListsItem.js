@@ -1,9 +1,8 @@
-
 var readyListsItemInit = function() {
 	$('form.list-data').find('a.list-item-save').off('click');
 	$('form.list-data').find('a.list-item-save').on('click',function(event) {
 		event.preventDefault();
-		$('.minitable').each(function(i,e){
+		$('.minitable.minitable-active').each(function(i,e){
 			let rows = $(e).find('.minitable-body');
 			var str = '';
 			rows.each(function(k,v) {
@@ -15,10 +14,8 @@ var readyListsItemInit = function() {
 				str += "\n";
 			});
 			str = str.substring(0,str.length-1);
-			//console.log(str);
 			$('#formArea'+$(e).data('field')).val(str);
 		});
-		//return;
 		let element = $(this).closest('form');
 		element.submit();
 	});

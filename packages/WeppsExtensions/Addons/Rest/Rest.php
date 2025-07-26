@@ -86,7 +86,7 @@ class RestWepps
 			$this->response = ['message' => 'not found'];
 			$this->setResponse($this->response, $print);
 		}
-		return true;
+		return;
 	}
 	private function getSettings($settings = [])
 	{

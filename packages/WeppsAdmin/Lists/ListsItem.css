@@ -1,30 +1,38 @@
 form.list-data .item {
-	padding: var(--step) 0;	
+	padding: var(--step) 0;
 }
+
 form.list-data .item-before {
 	border-top: 1px solid var(--color-85);
 	height: var(--step);
 }
+
 form.list-data .item:hover {
 	background-color: var(--color-98);
 }
+
 form.list-data .item .title .title2 {
 	width: auto;
 	overflow: hidden;
 }
+
 form.list-data .item .title .descr {
 	font-weight: 300;
 }
+
 form.list-data .item .title .descr .field-file a {
 	margin-right: var(--step2);
 	display: inline-block;
 }
+
 form.list-data .item .title .descr .field-file .field-file-action.pps_hide {
 	display: none;
 }
+
 form.list-data .item .title .descr .field-file-select.active {
 	color: var(--color-attention);
 }
+
 form.list-data .item .field label.pps.pps_input,
 form.list-data .item .field label.pps.pps_area {
 	width: 100%;
@@ -33,7 +41,7 @@ form.list-data .item .field label.pps.pps_area {
 form.list-data .item .field .pps_area textarea {
 	min-width: 100%;
 	max-width: 100%;
-	min-height: 150px;  
+	min-height: 150px;
 }
 
 form.list-data .item .field .descr {
@@ -43,6 +51,7 @@ form.list-data .item .field .descr {
 form.list-data .item .field .list-item-int {
 	max-width: 250px;
 }
+
 form.list-data .item .field .list-item-date {
 	max-width: 250px;
 }
@@ -64,6 +73,7 @@ form.list-data .item .field .files>.files-item {
 	position: relative;
 	float: left;
 }
+
 form.list-data .item .field .files .descr {
 	position: absolute;
 	bottom: 5px;
@@ -72,15 +82,17 @@ form.list-data .item .field .files .descr {
 	height: 1px;
 	overflow: hidden;
 }
+
 form.list-data .item .field .files .descr.descr-fill {
 	padding: 5px 10px;
-	background: rgba(255,255,255,0.7);
-	box-shadow: 0 0 10px rgba(0,0,0,0.1);
+	background: rgba(255, 255, 255, 0.7);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	width: calc(100% - 16px);
 	max-width: calc(100% - 16px);
 	height: inherit;
-	
+
 }
+
 form.list-data .item .field .files .descr>.input {
 	width: 1px;
 	height: 1px;
@@ -90,63 +102,85 @@ form.list-data .item .field .files .descr>.input {
 form.list-data .item .field .files>.sortable-active {
 	background: #0080C0;
 }
+
 form.list-data .item .field .files .files-item:hover {
 	background-color: #f0f0f0;
 }
+
 form.list-data .item .field .files .files-item.active {
 	background-color: #f0f0f0;
 }
+
 form.list-data .item .field .files .files-item .files-controls {
 	font-weight: 300;
 	font-size: 1.2rem;
 	padding: 6px 6px;
 }
+
 form.list-data .item .field .files .files-item .files-controls a i.fa-remove {
 	color: var(--color-attention);
 }
+
 form.list-data .item .field .fileadd a.file-remove {
 	color: var(--color-attention);
 }
+
 form.list-data .item .field .properties {
 	padding: var(--step4);
 	margin: var(--step2) 0;
 }
+
 form.list-data .item .field .properties .title2 {
 	margin-bottom: 5px;
 	margin-top: 15px;
 }
+
 form.list-data .item .field .properties .title2 span {
 	font-weight: 300;
 }
+
 form.list-data .item .field .properties .descr2 {
 	font-weight: 300;
 }
+
 form.list-data .item .field .minitable {
-	outline: 1px solid #9a9a9a;
-	border-radius: 3px;
+	outline: var(--border);
+	border-radius: var(--stepHalf);
 	overflow: hidden;
 }
+
 form.list-data .item .field .minitable-row:not(:last-child) {
 	border-bottom: 1px solid #f0f0f0;
 }
+
 form.list-data .item .field .minitable-cell {
 	padding: var(--step);
 	overflow-wrap: break-word;
 }
+
 form.list-data .item .field .minitable-body-tpl {
 	display: none;
 }
+
 form.list-data .item .field .minitable-body .minitable-cell {
 	font-weight: 300;
 	color: #000;
 	padding: var(--step);
 }
+
 form.list-data .item .field .minitable-body .minitable-cell:focus {
 	background: #f0f0f0;
 }
+
 form.list-data .item .field .minitable-remove {
 	color: var(--color-attention);
 }
+
+form.list-data .item .field .minitable.minitable-disabled .minitable-add,
+form.list-data .item .field .minitable.minitable-disabled .minitable-remove  {
+	display: none;
+}
+
 form.list-data .item.item-controls {
 	background: transparent;
 }

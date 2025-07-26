@@ -7,7 +7,7 @@
 		<input type="hidden" name="pps_tablename_mode" value="{$listMode}"/>
 		<input type="hidden" name="pps_path" value="{$ppsPath}"/>
 		{foreach name="out" item="item" key="key" from=$listScheme}
-		{if $item.0.$listMode=="hidden" || $item.0.$listMode=="disabled"}
+		{if ($item.0.$listMode=="hidden" || $item.0.$listMode=="disabled") && !$item.0.Type|strstr:'minitable'}
 		<input type="hidden" name="{$key}" value="{$element.$key|escape:'html'}"/>
 		{/if}
 		{/foreach}
@@ -59,7 +59,7 @@
 				</div>
 			</div>
 			<div class="field pps_flex_23">
-				{if $item.0.$listMode=="disabled" && $item.0.Type!='properties'}
+				{if $item.0.$listMode=="disabled" && $item.0.Type!='properties' && !$item.0.Type|strstr:'minitable'}
 				{$element.$key}
 				{elseif $item.0.Type=="digit"}
 				<label class="pps pps_input list-item-int{if $item.0.Required==1} pps_require{/if}">
@@ -169,7 +169,7 @@
 				$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}/" })});
 				</script>
 				{elseif $item.0.Type|strstr:"minitable"}
-				<div class="minitable" data-field="{$key}">
+				<div class="minitable {if $item.0.$listMode=='disabled'}minitable-disabled{else}minitable-active{/if}" data-field="{$key}">
 					<div class="minitable-headers minitable-row pps_flex pps_flex_row pps_flex_start">
 						{foreach name="o" item="i" from=$element[$key|cat:"_Headers"]}
 						<div class="minitable-cell pps_flex_16 pps_flex_14_view_small">{$i}</div>
@@ -190,7 +190,7 @@
 					{foreach name="o1" item="i1" from=$element[$key|cat:"_Rows"]}
 					<div class="minitable-body minitable-row pps_flex pps_flex_row pps_flex_row_str pps_flex_start">
 						{foreach name="o" key="k" item="i" from=$element[$key|cat:"_Headers"]}
-						<div class="minitable-cell pps_flex_16 pps_flex_14_view_small" contenteditable="true">{$i1.$k}</div>
+						<div class="minitable-cell pps_flex_16 pps_flex_14_view_small"{if $item.0.$listMode!='disabled'} contenteditable="true"{/if}>{$i1.$k}</div>
 						{/foreach}
 						<div class="minitable-min minitable-cell pps_flex_fix">
 							<a class="minitable-remove" href="" title="Удалить"><i class="fa fa-remove"></i></a>
@@ -199,12 +199,14 @@
 					{/foreach}
 					{/if}
 				</div>
+				{if $item.0.$listMode!='disabled'}
 				<div class="pps_hide">
 					<div class="pps_interval"></div>
 					<label class="pps pps_area">
 						<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
 					</label>
 				</div>
+				{/if}
 				{elseif $item.0.Type|strstr:"properties"}
 				<label class="pps pps_select list-item-properties{if $item.0.Required==1} pps_require{/if}">
 					<select name="{$key}"{if $item.0.$listMode=="disabled"} disabled="disabled"{/if}>
