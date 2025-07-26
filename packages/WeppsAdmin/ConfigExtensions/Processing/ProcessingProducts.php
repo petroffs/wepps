@@ -1,6 +1,7 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
+use PDO;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\TextTransforms\TextTransformsWepps;
@@ -46,18 +47,15 @@ class ProcessingProductsWepps
 			$sth->execute([$alias, $value['Id']]);
 		}
 	}
-	public function resetProductsVariations()
+	public function generateProductsVariations()
 	{
 		if (ConnectWepps::$projectDev['debug'] == 0) {
 			return;
 		}
 		$sql = "truncate ProductsVariants";
 		$res = ConnectWepps::$instance->query($sql);
-
 		$sql = "select Id,Name,NavigatorId from Products";
 		$res = ConnectWepps::$instance->fetch($sql);
-		
-
 		$sth = ConnectWepps::$db->prepare("update Products set Variations = ? where Id = ?");
 		foreach ($res as $value) {
 			#$alias = TextTransformsWepps::translit($value['Name'], 2) . '-' . $value['Id'];
@@ -105,4 +103,60 @@ class ProcessingProductsWepps
 		$variations2 = trim($variations2);
 		return $variations2;
 	}
+	public function setProductsVariations(array $element) {
+		$fn = function(int $id,array $value) : string {
+			return md5($id.'_'.@$value[0].'_'.@$value[1].'_'.@$value[2]);
+		};
+		ConnectWepps::$instance->query("update ProductsVariants set DisplayOff=1 where ProductsId=?",[$element['Id']]);
+		$data = UtilsWepps::arrayFromString($element['Variations'],':::');
+		if (empty($data)) {
+			return;
+		}
+		foreach ($data as $value) {
+			$alias = $fn($element['Id'],$value);
+			$ids[] = $alias;
+		}
+		$in = ConnectWepps::$instance->in($ids);
+		$res = ConnectWepps::$instance->fetch("select Alias from ProductsVariants where Alias in ($in)",$ids);
+		$existing = array_column($res,'Alias');
+		$idsInsert = array_diff($ids, $existing);
+		#$idsUpdate = array_intersect($ids, $existing);
+		
+		if (!empty($idsInsert)) {
+			$stmt = ConnectWepps::$db->prepare("insert ignore into ProductsVariants (Alias) values (?)");
+			foreach($idsInsert as $value) {
+				$stmt->execute([$value]);
+			}
+		}
+		$row = [
+				'Name' => '',
+				'DisplayOff' => 0,
+				'ProductsId' => '',
+				'Field1' => '',
+				'Field2' => '',
+				'Field3' => ''
+			];
+		$prepare = ConnectWepps::$instance->prepare($row);
+		$stmt = ConnectWepps::$db->prepare("update ProductsVariants set {$prepare['update']} where Alias=:Alias");
+		foreach ($data as $value) {
+			$alias = $fn($element['Id'],$value);
+			$stmt->execute($row = [
+				'Name' => $value[2]??trim($element['Id'].'-'.@$value[0].'-'.@$value[1],'-'),
+				'DisplayOff' => 0,
+				'ProductsId' => $element['Id'],
+				'Field1' => @$value[0],
+				'Field2' => @$value[1],
+				'Field3' => @$value[2],
+				'Alias' => $alias
+			]);
+		}
+		return;
+	}
+	public function resetProductsVariationsAll() {
+		$res = ConnectWepps::$instance->fetch("select * from Products where Variations!=''");
+		foreach ($res as $value) {
+			$this->setProductsVariations($value);
+		}
+	}
+	
 }

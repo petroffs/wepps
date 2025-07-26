@@ -42,9 +42,13 @@ class RequestProcessingWepps extends RequestWepps
 				$obj = new ProcessingProductsWepps();
 				$obj->resetProductsAliases();
 				break;
+			case "generateproductsvariations":
+				$obj = new ProcessingProductsWepps();
+				$obj->generateProductsVariations();
+				break;
 			case "resetproductsvariations":
 				$obj = new ProcessingProductsWepps();
-				$obj->resetProductsVariations();
+				$obj->resetProductsVariationsAll();
 				break;
 			default:
 				UtilsWepps::debug('def1', 1);

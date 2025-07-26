@@ -1,8 +1,8 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
+use WeppsAdmin\ConfigExtensions\Processing\ProcessingProductsWepps;
 use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
 
 class SaveItemProductsWepps extends RequestWepps {
 	public $noclose = 1;
@@ -14,9 +14,9 @@ class SaveItemProductsWepps extends RequestWepps {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
-	    $root = ConnectWepps::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='Products') {
-	    	
+	    	$obj = new ProcessingProductsWepps();
+			$obj->setProductsVariations($this->element);
 	    }
 	}
 }
