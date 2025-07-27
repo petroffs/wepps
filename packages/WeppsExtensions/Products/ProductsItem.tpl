@@ -44,7 +44,6 @@
 						<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"/>
 					</label>
 				</div>
-				
 			</div>
 			{if $element.Descr}
 			<div class="product-text content-block">
