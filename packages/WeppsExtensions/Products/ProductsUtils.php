@@ -1,9 +1,12 @@
 <?php
 namespace WeppsExtensions\Products;
 
+use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\DataWepps;
+use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Template\Filters\FiltersWepps;
 
 class ProductsUtilsWepps {
 	private $navigator;
@@ -89,5 +92,29 @@ class ProductsUtilsWepps {
 				'paginator'=>$obj->paginator,
 				
 		];
+	}
+	public function getProductsItem(string|int $id) : array {
+		$conditions = '';
+		$conditions = (strlen((int)$id) == strlen($id)) ? "{$conditions} t.Id = ?" : " {$conditions} binary t.Alias = ?";
+		$settings = [
+					'pages'=>1,
+					'page'=>1,
+					'sorting'=>'',
+					'conditions'=>[
+						'params'=>[$id],
+						'conditions'=>$conditions,
+					]
+			];
+		$products = $this->getProducts($settings);
+		if (empty($el = &$products['rows'][0])) {
+			return [];
+		}
+		$filters = new FiltersWepps();
+		$el['W_Attributes'] = $filters->getFilters($settings['conditions']);
+		$el['W_Variants'] = [];
+		if (!empty($el['Variations'])) {
+			$el['W_Variants'] = ConnectWepps::$instance->fetch("select * from ProductsVariants v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority",[$el['Id']]);
+		}
+		return $el;
 	}
 }

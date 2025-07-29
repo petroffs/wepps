@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\Products;
 
+use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Core\DataWepps;
@@ -82,20 +83,7 @@ class ProductsWepps extends ExtensionWepps {
 	}
 	public function getItem($tableName, $condition='') {
 		$id = NavigatorWepps::$pathItem;
-		$prefix = ($condition!='') ? ' and ' : '';
-		$conditions = (strlen((int)$id) == strlen($id)) ? $condition." {$prefix} t.Id = ?" : $condition." {$prefix} binary t.Alias = ?";
-		$settings = [
-					'pages'=>1,
-					'page'=>1,
-					'sorting'=>'',
-					'conditions'=>[
-						'params'=>[$id],
-						'conditions'=>$conditions,
-					]
-			];
-		$products = $this->productsUtils->getProducts($settings);
-		$filters = $this->filters->getFilters($settings['conditions']);
-		if (empty($element = $products['rows'][0])) {
+		if (empty($element = $this->productsUtils->getProductsItem(NavigatorWepps::$pathItem))) {
 			ExceptionWepps::error404();
 		}
 		$this->extensionData['element'] = 1;
@@ -111,15 +99,6 @@ class ProductsWepps extends ExtensionWepps {
 		if (!empty($element['MetaDescription'])) {
 			$this->navigator->content['MetaDescription'] = $element['MetaDescription'];
 		}
-		$element['W_Attributes'] = $filters;
-		/* UtilsWepps::debug($filters,1);
-		UtilsWepps::debug($products,1); */
-		/**
-		 * ? Получить вариации товара
-		 * Возможно лучше в getProducts - исследовать
-		 */
-		$element['W_Variants'] = [];
 		return $element;
 	}
 }
-?>
