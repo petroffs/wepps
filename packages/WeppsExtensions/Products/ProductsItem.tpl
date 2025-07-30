@@ -40,9 +40,22 @@
 						<span>{$element.PriceBefore}</span>
 					</div>
 					{/if}
+					
+					{if $element.W_VariantsGroup}
+					{foreach from=$element.W_VariantsGroup item="item" key="key" name="out"}
+						<div>{$key}</div>
+						{foreach from=$item item="i" name="o"}
+						<div>--- {$i.Sku}</div>
+						{/foreach}
+					{/foreach}
+					<label class="pps pps_button">
+						<input type="button" value="Купить V" class="cart-vars-add" data-id="{$element.Id}"/>
+					</label>	
+					{else}
 					<label class="pps pps_button">
 						<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"/>
 					</label>
+					{/if}
 				</div>
 			</div>
 			{if $element.Descr}
