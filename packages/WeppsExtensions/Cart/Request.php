@@ -18,11 +18,21 @@ class RequestCartWepps extends RequestWepps {
 		$cartUtils = new CartUtilsWepps();
 		switch ($action) {
 			case 'add':
-				if (empty($this->get['id'])) {
+				if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
 					ExceptionWepps::error(400);
 				}
 				$this->tpl = 'RequestAddCart.tpl';
-				$cartUtils->add($this->get['id']);
+				if (!empty($this->get['idv'])) {
+					$ex = explode(',',$this->get['idv']);
+					foreach ($ex as $value) {
+						if (!is_numeric($value)) {
+							continue;
+						}
+						$cartUtils->add("{$this->get['id']}-{$value}");
+					}
+				} else {
+					$cartUtils->add($this->get['id']);
+				}
 				$cartSummary = $cartUtils->getCartSummary();
 				$this->assign('cartSummary', $cartSummary);
 				break;

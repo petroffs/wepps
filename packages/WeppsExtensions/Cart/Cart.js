@@ -79,6 +79,18 @@ class CartWepps {
 		$('.cart-add').on('click', function(e) {
 			e.preventDefault();
 			let id = $(this).data('id');
+			let idv = [];
+			let variations = $('.cart-add-v.active');
+			if (variations.length > 0) {
+				variations.each(function () {
+					idv.push($(this).data("id"));
+				});
+				layoutWepps.request({
+					data: 'action=add&id=' + id + '&idv=' + idv.toString(),
+					url: '/ext/Cart/Request.php'
+				});	
+				return;
+			}
 			layoutWepps.request({
 				data: 'action=add&id=' + id,
 				url: '/ext/Cart/Request.php'

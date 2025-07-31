@@ -134,7 +134,7 @@ class CartUtilsWepps
 		}
 		$this->setCart();
 	}
-	public function add(int $id, int $quantity = 1): void
+	public function add(string $id, int $quantity = 1): void
 	{
 		if (empty($this->cart['items'])) {
 			$this->cart['items'] = [];
