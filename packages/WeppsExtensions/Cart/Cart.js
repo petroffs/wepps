@@ -64,11 +64,21 @@ class CartWepps {
 			$('a#footer-cart').attr('data-metrics',obj.items);
 		}
 	};
+	addVariationsHandler() {
+		$('.cart-add-v').on('click', function (e) {
+			e.preventDefault();
+			$(this).toggleClass('active');
+			var disabled = true;
+			if ($('.cart-add-v.active').length > 0) {
+				disabled = false;
+			}
+			$('input.cart-add').prop('disabled', disabled);
+		});
+	};
 	addHandler() {
 		$('.cart-add').on('click', function(e) {
 			e.preventDefault();
 			let id = $(this).data('id');
-			console.log('id: '+id);
 			layoutWepps.request({
 				data: 'action=add&id=' + id,
 				url: '/ext/Cart/Request.php'

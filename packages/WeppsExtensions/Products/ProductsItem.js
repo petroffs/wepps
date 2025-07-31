@@ -1,5 +1,6 @@
 var productsItemInit = function() {
 	cart.addHandler();
+	cart.addVariationsHandler();
 	cart.favoritesHandler();
 	if ($('.fotos-container').eq(0).hasClass('slick-initialized')) $('.fotos-container').eq(0).slick('unslick');
 	var slickOptions = {

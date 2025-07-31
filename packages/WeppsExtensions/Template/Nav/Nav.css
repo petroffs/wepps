@@ -82,6 +82,11 @@ a#footer-cart::after {
 	padding: var(--step2);
 }
 
+a#header-cart[data-metrics="0"]::after,
+a#footer-cart[data-metrics="0"]::after {
+	display: none;
+}
+
 div.header-logo {
 	padding: var(--step2) 0;
 }

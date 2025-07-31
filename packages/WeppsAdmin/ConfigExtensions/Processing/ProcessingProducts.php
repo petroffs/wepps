@@ -52,7 +52,7 @@ class ProcessingProductsWepps
 		if (ConnectWepps::$projectDev['debug'] == 0) {
 			return;
 		}
-		$sql = "truncate ProductsVariants";
+		$sql = "truncate ProductsVariations";
 		$res = ConnectWepps::$instance->query($sql);
 		$sql = "select Id,Name,NavigatorId from Products";
 		$res = ConnectWepps::$instance->fetch($sql);
@@ -114,7 +114,7 @@ class ProcessingProductsWepps
 		$fn = function(int $id,array $value) : string {
 			return md5($id.'_'.@$value[0].'_'.@$value[1].'_'.@$value[2]);
 		};
-		ConnectWepps::$instance->query("update ProductsVariants set DisplayOff=1 where ProductsId=?",[$element['Id']]);
+		ConnectWepps::$instance->query("update ProductsVariations set DisplayOff=1 where ProductsId=?",[$element['Id']]);
 		$data = UtilsWepps::arrayFromString($element['Variations'],':::');
 		if (empty($data)) {
 			return;
@@ -124,13 +124,13 @@ class ProcessingProductsWepps
 			$ids[] = $alias;
 		}
 		$in = ConnectWepps::$instance->in($ids);
-		$res = ConnectWepps::$instance->fetch("select Alias from ProductsVariants where Alias in ($in)",$ids);
+		$res = ConnectWepps::$instance->fetch("select Alias from ProductsVariations where Alias in ($in)",$ids);
 		$existing = array_column($res,'Alias');
 		$idsInsert = array_diff($ids, $existing);
 		#$idsUpdate = array_intersect($ids, $existing);
 		
 		if (!empty($idsInsert)) {
-			$stmt = ConnectWepps::$db->prepare("insert ignore into ProductsVariants (Alias) values (?)");
+			$stmt = ConnectWepps::$db->prepare("insert ignore into ProductsVariations (Alias) values (?)");
 			foreach($idsInsert as $value) {
 				$stmt->execute([$value]);
 			}
@@ -146,7 +146,7 @@ class ProcessingProductsWepps
 				'Field4' => ''
 			];
 		$prepare = ConnectWepps::$instance->prepare($row);
-		$stmt = ConnectWepps::$db->prepare("update ProductsVariants set {$prepare['update']} where Alias=:Alias");
+		$stmt = ConnectWepps::$db->prepare("update ProductsVariations set {$prepare['update']} where Alias=:Alias");
 		$i=1;
 		foreach ($data as $value) {
 			$alias = $fn($element['Id'],$value);

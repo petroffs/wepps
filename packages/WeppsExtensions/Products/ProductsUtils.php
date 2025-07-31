@@ -119,15 +119,15 @@ class ProductsUtilsWepps
 		}
 		$filters = new FiltersWepps();
 		$el['W_Attributes'] = $filters->getFilters($settings['conditions']);
-		$el['W_Variants'] = [];
+		$el['W_Variations'] = [];
 		if (!empty($el['Variations'])) {
-			$res = ConnectWepps::$instance->fetch("select * from ProductsVariants v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority", [$el['Id']]);
-			$el['W_Variants'] = $res;
-			$el['W_VariantsGroup'] = self::getVariantsArray($res);
+			$res = ConnectWepps::$instance->fetch("select * from ProductsVariations v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority", [$el['Id']]);
+			$el['W_Variations'] = $res;
+			$el['W_VariationsGroup'] = self::getVariationsArray($res);
 		}
 		return $el;
 	}
-	public function getVariantsArray(array $variants): array
+	public function getVariationsArray(array $variants): array
 	{
 		$arr = [];
 		foreach ($variants as $value) {

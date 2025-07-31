@@ -61,10 +61,6 @@ class ProductsWepps extends ExtensionWepps {
 			$this->tpl = 'packages/WeppsExtensions/Products/ProductsItem.tpl';
 			$this->headers->css("/ext/Products/ProductsItem.{$rand}.css");
 			$this->headers->js("/ext/Products/ProductsItem.{$rand}.js");
-			$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick.css");
-			$this->headers->css("/packages/vendor/kenwheeler/slick/slick/slick-theme.css");
-			$this->headers->js("/packages/vendor/kenwheeler/slick/slick/slick.min.js");
-			$this->headers->css("/ext/Template/Carousel/Carousel.{$this->rand}.css");
 			$this->navigator->content['Text1'] = '';
 			$res = $this->getItem("Products");
 			$smarty->assign('element',$res);
