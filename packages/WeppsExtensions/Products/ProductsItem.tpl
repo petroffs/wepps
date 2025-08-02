@@ -40,18 +40,19 @@
 						<span>{$element.PriceBefore}</span>
 					</div>
 					{/if}
-					{if $element.W_Variations.0.Field3==$element.Article}
-						<a href="" class="pps_button cart-add-v active pps_hide" data-id="{$element.W_Variations.0.Id}">{$i.Size}</a>
+					{if $element.W_VariationsGroup.W_GROUP.0.Id}
+						{assign var="elementGroup" value=$element.W_VariationsGroup.W_GROUP.0}
+						<a href="" class="pps_button cart-add-v{if $elementGroup.Quantity<=0} pps_disabled{else} active{/if} pps_hide" data-id="{$elementGroup.Id}"></a>
 						<div class="pps_interval"></div>
 						<label class="pps pps_button">
-							<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"/>
+						<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"{if $elementGroup.Quantity<=0} disabled{/if} autocomplete="off"/>
 						</label>
 					{elseif $element.W_VariationsGroup}
 					{foreach from=$element.W_VariationsGroup item="item" key="key" name="out"}
 						<section>
 							<div class="price-title">{$key}</div>
 							{foreach from=$item item="i" name="o"}
-								<a href="" class="pps_button cart-add-v" data-id="{$i.Id}">{$i.Size} {$i.Quantity}</a>
+							<a href="" class="pps_button cart-add-v{if $i.Quantity<=0} pps_disabled{/if}" data-id="{$i.Id}">{$i.Size}</a>
 							{/foreach}
 						</section>
 					{/foreach}
