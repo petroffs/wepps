@@ -240,7 +240,7 @@ class CartUtilsWepps
 		$idv = implode(',',array_unique($idv));
 		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
 		
-		$sql = "select x.id,p.Name name,
+		$sql = "select x.id,if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) name,
 			(x.quantity*1) quantity,(x.active*1) active,(p.Price+0e0) price, (x.quantity*p.Price) `sum`,(p.PriceBefore+0e0) priceBefore, 
 			(x.quantity*p.PriceBefore) `sumBefore`,
 			(x.quantity*if(x.active=0,0,if(p.PriceBefore=0,p.Price,p.PriceBefore))) `sumBeforeTotal`,
