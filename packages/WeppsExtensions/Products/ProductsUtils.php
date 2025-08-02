@@ -121,7 +121,7 @@ class ProductsUtilsWepps
 		$el['W_Attributes'] = $filters->getFilters($settings['conditions']);
 		$el['W_Variations'] = [];
 		if (!empty($el['Variations'])) {
-			$res = ConnectWepps::$instance->fetch("select * from ProductsVariations v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority", [$el['Id']]);
+			$res = ConnectWepps::$instance->fetch("select Id,Name,ProductsId,if(Field1='','W_GROUP',Field1) Color,Field2 Size,Field3 Sku,Field4 Quantity from ProductsVariations v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority", [$el['Id']]);
 			$el['W_Variations'] = $res;
 			$el['W_VariationsGroup'] = self::getVariationsArray($res);
 		}
@@ -131,13 +131,7 @@ class ProductsUtilsWepps
 	{
 		$arr = [];
 		foreach ($variants as $value) {
-			$arr[$value['Field1']][] = [
-				'Id' => $value['Id'],
-				'Sku' => $value['Name'],
-				'Alias' => $value['Alias'],
-				'Size' => $value['Field2'],
-				'Quantity' => $value['Field4'],
-			];
+			$arr[$value['Color']][] = $value;
 		}
 		return $arr;
 	}

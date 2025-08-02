@@ -41,6 +41,7 @@
 					</div>
 					{/if}
 					{if $element.W_Variations.0.Field3==$element.Article}
+						<a href="" class="pps_button cart-add-v active pps_hide" data-id="{$element.W_Variations.0.Id}">{$i.Size}</a>
 						<div class="pps_interval"></div>
 						<label class="pps pps_button">
 							<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"/>
@@ -49,11 +50,9 @@
 					{foreach from=$element.W_VariationsGroup item="item" key="key" name="out"}
 						<section>
 							<div class="price-title">{$key}</div>
-							<label class="pps_button">
-								{foreach from=$item item="i" name="o"}
-									<a href="" class="pps_button cart-add-v" data-id="{$i.Id}">{$i.Size}</a>
-								{/foreach}
-							</label>
+							{foreach from=$item item="i" name="o"}
+								<a href="" class="pps_button cart-add-v" data-id="{$i.Id}">{$i.Size} {$i.Quantity}</a>
+							{/foreach}
 						</section>
 					{/foreach}
 					<div class="pps_interval"></div>

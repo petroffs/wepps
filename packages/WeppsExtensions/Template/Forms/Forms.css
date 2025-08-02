@@ -448,6 +448,20 @@ div.pps.pps_minmax>input[type="text"] {
 	min-height: var(--step6);
 }
 
+label.pps.pps_hide,
+label.pps.w_hide {
+	display: none;
+}
+
+label.pps>*.pps_hide,
+label.pps>*.w_hide,
+a.pps_button.pps_hide,
+a.pps_button.w_hide,
+span.pps_button.pps_hide,
+span.pps_button.w_hide {
+	display: none;
+}
+
 form {
 	width: auto;
 	margin: 0px;
