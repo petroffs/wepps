@@ -37,7 +37,7 @@
 	<footer>
 		<div class="page footer pps_flex pps_flex_col pps_flex_center">
 			<section>
-				<div class="footer-wrapper pps_overflow_auto">
+				<div class="footer-wrapper">
 					<div class="pps_flex pps_flex_row pps_flex_end pps_flex_margin pps_padding">
 						<div class="footer-logo pps_flex_fix pps_flex_12_view_small">
 							<a href="/"><img src="/ext/Template/files/wepps.svg" alt="logo"/></a>
