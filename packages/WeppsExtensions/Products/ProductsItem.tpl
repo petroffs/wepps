@@ -40,7 +40,12 @@
 						<span>{$element.PriceBefore}</span>
 					</div>
 					{/if}
-					{if $element.W_VariationsGroup}
+					{if $element.W_Variations.0.Field3==$element.Article}
+						<div class="pps_interval"></div>
+						<label class="pps pps_button">
+							<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"/>
+						</label>
+					{elseif $element.W_VariationsGroup}
 					{foreach from=$element.W_VariationsGroup item="item" key="key" name="out"}
 						<section>
 							<div class="price-title">{$key}</div>
@@ -55,11 +60,6 @@
 					<label class="pps pps_button">
 						<input type="button" value="Купить V" class="cart-add" data-id="{$element.Id}" disabled autocomplete="off"/>
 					</label>	
-					{else}
-					<div class="pps_interval"></div>
-					<label class="pps pps_button">
-						<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"/>
-					</label>
 					{/if}
 				</div>
 			</div>

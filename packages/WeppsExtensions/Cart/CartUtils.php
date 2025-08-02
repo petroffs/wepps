@@ -229,9 +229,11 @@ class CartUtilsWepps
 		#UtilsWepps::debug($this->cart['items'],1);
 		foreach ($this->cart['items'] as $value) {
 			$this->summary['quantity'] += $value['qu'];
-			$sql .= "\n(select '{$value['id']}' `id`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
+			$ex = explode('-',$value['id']);
+			$sql .= "\n(select '{$ex[0]}' `id`,'".($ex[1]??0)."' `idv`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
 		}
 		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
+		UtilsWepps::debug($sql,21);
 		$ids = implode(',', array_column($this->cart['items'], 'id'));
 		$sql = "select x.id,p.Name name,
 				(x.quantity*1) quantity,(x.active*1) active,(p.Price+0e0) price, (x.quantity*p.Price) `sum`,(p.PriceBefore+0e0) priceBefore, 
@@ -244,9 +246,11 @@ class CartUtilsWepps
 				f.FileUrl image
 				from Products p
 				join $sql x on x.id=p.Id
+				left join xv on xv.
 				join s_Navigator n on n.Id=p.NavigatorId
 				left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
 				where p.Id in ($ids)";
+			
 		$this->summary['items'] = ConnectWepps::$instance->fetch($sql);
 		$this->summary['quantity'] = array_sum(array_column($this->summary['items'], 'quantity'));
 		$this->summary['quantityActive'] = array_sum(array_column($this->summary['items'], 'quantityActive'));

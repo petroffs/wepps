@@ -111,16 +111,13 @@ class ProcessingProductsWepps
 		];
 	}
 	public function setProductsVariations(array $element) {
-		$fn = function(int $id,array $value) : string {
-			return md5($id.'_'.@$value[0].'_'.@$value[1].'_'.@$value[2]);
-		};
 		ConnectWepps::$instance->query("update ProductsVariations set DisplayOff=1 where ProductsId=?",[$element['Id']]);
 		$data = UtilsWepps::arrayFromString($element['Variations'],':::');
 		if (empty($data)) {
 			return;
 		}
 		foreach ($data as $value) {
-			$alias = $fn($element['Id'],$value);
+			$alias = self::getProductsVariationsHash($element['Id'],$value);
 			$ids[] = $alias;
 		}
 		$in = ConnectWepps::$instance->in($ids);
@@ -149,20 +146,23 @@ class ProcessingProductsWepps
 		$stmt = ConnectWepps::$db->prepare("update ProductsVariations set {$prepare['update']} where Alias=:Alias");
 		$i=1;
 		foreach ($data as $value) {
-			$alias = $fn($element['Id'],$value);
+			$alias = self::getProductsVariationsHash($element['Id'],$value);
 			$stmt->execute($row = [
 				'Name' => $value[2]??trim($element['Id'].'-'.@$value[0].'-'.@$value[1],'-'),
 				'DisplayOff' => 0,
 				'Priority' => $i++,
 				'ProductsId' => $element['Id'],
-				'Field1' => @$value[0],
-				'Field2' => @$value[1],
-				'Field3' => @$value[2],
-				'Field4' => @$value[3],
+				'Field1' => trim(@$value[0]),
+				'Field2' => trim(@$value[1]),
+				'Field3' => trim(@$value[2]),
+				'Field4' => trim(@$value[3]),
 				'Alias' => $alias
 			]);
 		}
 		return;
+	}
+	public function getProductsVariationsHash(int $id,array $value) : string {
+		return md5($id.'_'.@$value[0].'_'.@$value[1].'_'.@$value[2]);
 	}
 	public function resetProductsVariationsAll() {
 		$res = ConnectWepps::$instance->fetch("select * from Products where Variations!=''");

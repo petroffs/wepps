@@ -3,6 +3,7 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsAdmin\ConfigExtensions\Processing\ProcessingProductsWepps;
 use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Utils\UtilsWepps;
 
 class SaveItemProductsWepps extends RequestWepps {
 	public $noclose = 1;

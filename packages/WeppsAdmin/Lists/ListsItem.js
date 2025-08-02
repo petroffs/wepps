@@ -1,3 +1,6 @@
+var trimBr = function(str) {
+		return str.replace(/^(<br\s*\/?>)+|(<br\s*\/?>)+$/gi, ' ');
+	};
 var readyListsItemInit = function() {
 	$('form.list-data').find('a.list-item-save').off('click');
 	$('form.list-data').find('a.list-item-save').on('click',function(event) {
@@ -7,8 +10,8 @@ var readyListsItemInit = function() {
 			var str = '';
 			rows.each(function(k,v) {
 				let cells = $(v).find('[contenteditable]');
-				cells.each(function(k2,v2) {	
-					str += $(v2).html()+':::';
+				cells.each(function(k2,v2) {
+					str += trimBr($(v2).html())+':::';
 				});
 				str = str.substring(0,str.length-3);
 				str += "\n";
@@ -535,4 +538,5 @@ var getSelectRemote = function(obj) {
 		}
 	});
 	//console.log ($(id).select2("destroy"));
+	
 };
