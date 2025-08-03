@@ -93,11 +93,13 @@ class CartWepps {
 					url: '/ext/Cart/Request.php'
 				});	
 				return;
+			} else if ($(this).data('idv')>0) {
+				layoutWepps.request({
+					data: 'action=add&id=' + id + '&idv=' + $(this).data('idv'),
+					url: '/ext/Cart/Request.php'
+				});
 			}
-			layoutWepps.request({
-				data: 'action=add&id=' + id + '&idv=' + $(this).data('idv'),
-				url: '/ext/Cart/Request.php'
-			});
+			
 		});
 	};
 	checkHandler() {

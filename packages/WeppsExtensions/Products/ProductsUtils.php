@@ -85,13 +85,15 @@ class ProductsUtilsWepps
 	public function getProducts(array $settings): array
 	{
 		$obj = new DataWepps("Products");
-		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
+		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url,group_concat(distinct concat(pv.Id,';;',pv.Field1,';;',pv.Field2,';;',pv.Field3,';;',pv.Field4) order by pv.Priority separator ':::') W_Variations,count(pv.Id) W_VariationsCount");
+		$obj->setJoin("join ProductsVariations pv on pv.ProductsId=t.Id and pv.DisplayOff=0");
 		if (!empty($settings['conditions']['params'])) {
 			$obj->setParams($settings['conditions']['params']);
 		}
 		$settings['pages'] = (!empty($settings['pages'])) ? (int) $settings['pages'] : 20;
 		$settings['page'] = (!empty($settings['page'])) ? (int) $settings['page'] : 1;
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
+		$settings['sorting'] .= ",pv.Priority";
 		$res = $obj->fetch($settings['conditions']['conditions'], $settings['pages'], $settings['page'], $settings['sorting']);
 		return [
 			'rows' => $res,
@@ -119,20 +121,24 @@ class ProductsUtilsWepps
 		}
 		$filters = new FiltersWepps();
 		$el['W_Attributes'] = $filters->getFilters($settings['conditions']);
-		$el['W_Variations'] = [];
-		if (!empty($el['Variations'])) {
-			$res = ConnectWepps::$instance->fetch("select Id,Name,ProductsId,if(Field1='','W_GROUP',Field1) Color,Field2 Size,Field3 Sku,Field4 Stocks from ProductsVariations v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority", [$el['Id']]);
-			$el['W_Variations'] = $res;
-			$el['W_VariationsGroup'] = self::getVariationsArray($res);
+		if (!empty($el['W_Variations'])) {
+			$el['W_Variations'] = self::getVariationsArray($el['W_Variations']);
 		}
 		return $el;
 	}
-	public function getVariationsArray(array $variants): array
+	public function getVariationsArray(string $string): array
 	{
+		$arr = UtilsWepps::arrayFromString($string,';;',':::');
+		$keys = ['Id', 'Color', 'Size', 'Sku', 'Stocks'];
+		$variants = array_map(function($item) use ($keys) {
+			return array_combine($keys, $item);
+		}, $arr);
 		$arr = [];
 		foreach ($variants as $value) {
-			$arr[$value['Color']][] = $value;
+			$color = (empty($value['Color'])) ? 'W_GROUP' : $value['Color'];
+			$arr[$color][] = $value;
 		}
+		#UtilsWepps::debug($arr,0);
 		return $arr;
 	}
 }
