@@ -121,7 +121,7 @@ class ProductsUtilsWepps
 		$el['W_Attributes'] = $filters->getFilters($settings['conditions']);
 		$el['W_Variations'] = [];
 		if (!empty($el['Variations'])) {
-			$res = ConnectWepps::$instance->fetch("select Id,Name,ProductsId,if(Field1='','W_GROUP',Field1) Color,Field2 Size,Field3 Sku,Field4 Quantity from ProductsVariations v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority", [$el['Id']]);
+			$res = ConnectWepps::$instance->fetch("select Id,Name,ProductsId,if(Field1='','W_GROUP',Field1) Color,Field2 Size,Field3 Sku,Field4 Stocks from ProductsVariations v where v.ProductsId = ? and v.DisplayOff = 0 order by v.Priority", [$el['Id']]);
 			$el['W_Variations'] = $res;
 			$el['W_VariationsGroup'] = self::getVariationsArray($res);
 		}

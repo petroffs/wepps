@@ -95,7 +95,7 @@ class CartWepps {
 				return;
 			}
 			layoutWepps.request({
-				data: 'action=add&id=' + id,
+				data: 'action=add&id=' + id + '&idv=' + $(this).data('idv'),
 				url: '/ext/Cart/Request.php'
 			});
 		});

@@ -42,23 +42,22 @@
 					{/if}
 					{if $element.W_VariationsGroup.W_GROUP.0.Id}
 						{assign var="elementGroup" value=$element.W_VariationsGroup.W_GROUP.0}
-						<a href="" class="pps_button cart-add-v{if $elementGroup.Quantity<=0} pps_disabled{else} active{/if} pps_hide" data-id="{$elementGroup.Id}"></a>
 						<div class="pps_interval"></div>
 						<label class="pps pps_button">
-						<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}"{if $elementGroup.Quantity<=0} disabled{/if} autocomplete="off"/>
+							<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}" data-idv="{$elementGroup.Id}" {if $elementGroup.Stocks<=0} disabled{/if} autocomplete="off"/>
 						</label>
 					{elseif $element.W_VariationsGroup}
 					{foreach from=$element.W_VariationsGroup item="item" key="key" name="out"}
 						<section>
 							<div class="price-title">{$key}</div>
 							{foreach from=$item item="i" name="o"}
-							<a href="" class="pps_button cart-add-v{if $i.Quantity<=0} pps_disabled{/if}" data-id="{$i.Id}">{$i.Size}</a>
+							<a href="" class="pps_button cart-add-v{if $i.Stocks<=0} pps_disabled{/if}" data-id="{$i.Id}">{$i.Size}</a>
 							{/foreach}
 						</section>
 					{/foreach}
 					<div class="pps_interval"></div>
 					<label class="pps pps_button">
-						<input type="button" value="Купить V" class="cart-add" data-id="{$element.Id}" disabled autocomplete="off"/>
+						<input type="button" value="Купить V" class="cart-add" data-id="{$element.Id}" data-idv="-1" disabled autocomplete="off"/>
 					</label>	
 					{/if}
 				</div>

@@ -247,6 +247,7 @@ class CartUtilsWepps
 			if(p.PriceBefore=0,0,(x.quantity * if(x.active=0,0,(p.PriceBefore - p.Price)))) `sumSaving`,
 			if(x.active=0,0,x.quantity*1) `quantityActive`,
 			if(x.active=0,0,(x.quantity * p.Price)) `sumActive`,
+			#if(pv.Stocks)
 			concat(n.Url,if(p.Alias!='',p.Alias,p.Id),'.html') url,
 			f.FileUrl image
 			from $sql x
