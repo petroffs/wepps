@@ -44,7 +44,7 @@
 						{assign var="elementGroup" value=$element.W_Variations.W_GROUP.0}
 						<div class="pps_interval"></div>
 						<label class="pps pps_button">
-							<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}" data-idv="{$elementGroup.Id}" {if $elementGroup.Stocks<=0} disabled{/if} autocomplete="off"/>
+							<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="{$elementGroup.Id}" {if $elementGroup.Stocks<=0} disabled{/if} autocomplete="off"/>
 						</label>
 					{elseif $element.W_Variations}
 					{foreach from=$element.W_Variations item="item" key="key" name="out"}
@@ -57,7 +57,7 @@
 					{/foreach}
 					<div class="pps_interval"></div>
 					<label class="pps pps_button">
-						<input type="button" value="Купить" class="cart-add" data-id="{$element.Id}" data-idv="-1" disabled autocomplete="off"/>
+						<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="-1" disabled autocomplete="off"/>
 					</label>	
 					{/if}
 				</div>

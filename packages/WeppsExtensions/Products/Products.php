@@ -40,7 +40,7 @@ class ProductsWepps extends ExtensionWepps {
 					'conditions'=>$conditionsFilters,
 			];
 			$products = $this->productsUtils->getProducts($settings);
-			UtilsWepps::debug($products,21);
+			#UtilsWepps::debug($products,21);
 			$smarty->assign('products',$products['rows']);
 			$smarty->assign('productsCount', $products['count'] . ' ' . TextTransformsWepps::ending2("товар",$products['count']));
 			$smarty->assign('productsSorting',$sorting['rows']);

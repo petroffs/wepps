@@ -1,0 +1,2 @@
+cart.addHandler();
+cart.addVariationsHandler();

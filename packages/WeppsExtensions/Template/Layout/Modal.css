@@ -65,7 +65,9 @@
 	justify-content: center;
 	align-items: center;
 }
-
+.w_modal_content>h1:first-child {
+	margin-top: 0;
+}
 .w_modal_content h1,
 .w_modal_content h2 {
 	font-size: var(--font-medium);

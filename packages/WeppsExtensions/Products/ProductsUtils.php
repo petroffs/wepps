@@ -85,7 +85,7 @@ class ProductsUtilsWepps
 	public function getProducts(array $settings): array
 	{
 		$obj = new DataWepps("Products");
-		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url,group_concat(distinct concat(pv.Id,';;',pv.Field1,';;',pv.Field2,';;',pv.Field3,';;',pv.Field4) order by pv.Priority separator ':::') W_Variations,count(pv.Id) W_VariationsCount");
+		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url,group_concat(distinct concat(pv.Id,':::',pv.Field1,':::',pv.Field2,':::',pv.Field3,':::',pv.Field4) order by pv.Priority separator '\\n') W_Variations,count(pv.Id) W_VariationsCount");
 		$obj->setJoin("join ProductsVariations pv on pv.ProductsId=t.Id and pv.DisplayOff=0");
 		if (!empty($settings['conditions']['params'])) {
 			$obj->setParams($settings['conditions']['params']);
@@ -128,7 +128,7 @@ class ProductsUtilsWepps
 	}
 	public function getVariationsArray(string $string): array
 	{
-		$arr = UtilsWepps::arrayFromString($string,';;',':::');
+		$arr = UtilsWepps::arrayFromString($string,':::',"\n");
 		$keys = ['Id', 'Color', 'Size', 'Sku', 'Stocks'];
 		$variants = array_map(function($item) use ($keys) {
 			return array_combine($keys, $item);

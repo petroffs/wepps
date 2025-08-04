@@ -8,6 +8,7 @@ use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
+use WeppsExtensions\Products\ProductsUtilsWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -35,6 +36,9 @@ class RequestCartWepps extends RequestWepps {
 				}
 				$cartSummary = $cartUtils->getCartSummary();
 				$this->assign('cartSummary', $cartSummary);
+				break;
+			case 'variations':
+				self::displayVariations($cartUtils);
 				break;
 			case 'edit':
 				if (empty($this->get['id'])) {
@@ -145,6 +149,17 @@ class RequestCartWepps extends RequestWepps {
 		$smarty = SmartyWepps::getSmarty();
 		$template = new CartTemplatesWepps($smarty,$cartUtils);
 		$template->checkout();
+		return;
+	}
+	private function displayVariations(CartUtilsWepps $cartUtils) {
+		$this->tpl = 'RequestVariations.tpl';
+		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
+			ExceptionWepps::error(400);
+		}
+		$productsUtils = new ProductsUtilsWepps();
+		$el = $productsUtils->getProductsItem($this->get['id']);
+		#UtilsWepps::debug($el,2);
+		$this->assign('element',$el);
 		return;
 	}
 }

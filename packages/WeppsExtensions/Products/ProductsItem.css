@@ -58,7 +58,7 @@
 	border-color: var(--color-active);
 }
 
-.product-price>.prices>section div.price-title{
+.product-price>.prices>section div.price-title {
 	font-weight: 600;
 	letter-spacing: 1px;
 	margin-bottom: var(--step);
@@ -109,14 +109,14 @@
 
 @media screen and (max-width: 480px) {
 	.product-wrapper {
-			grid-template-columns: 1fr;
-			grid-template-rows: auto;
-			grid-template-areas:
-				"media"
-				"title"
-				"price"
-				"attributes"
-				"text"
-			;
-		}
+		grid-template-columns: 1fr;
+		grid-template-rows: auto;
+		grid-template-areas:
+			"media"
+			"title"
+			"price"
+			"attributes"
+			"text"
+		;
+	}
 }

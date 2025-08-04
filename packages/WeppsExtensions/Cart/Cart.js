@@ -98,8 +98,13 @@ class CartWepps {
 					data: 'action=add&id=' + id + '&idv=' + $(this).data('idv'),
 					url: '/ext/Cart/Request.php'
 				});
+			} else if ($(this).data('popup-v')==1) {
+				layoutWepps.modal({
+					size: 'medium',
+					data: 'action=variations&id=' + id,
+					url: '/ext/Cart/Request.php'
+				});
 			}
-			
 		});
 	};
 	checkHandler() {

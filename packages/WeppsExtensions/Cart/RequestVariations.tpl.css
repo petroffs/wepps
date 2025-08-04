@@ -1,0 +1,27 @@
+.product-price>.prices>section {
+	border-radius: var(--step2);
+	padding: var(--step2);
+	margin-top: var(--step4);
+	border: var(--border);
+}
+
+.product-price>.prices>section:hover {
+	border-color: var(--color-active);
+}
+
+.product-price>.prices>section div.price-title {
+	font-weight: 600;
+	letter-spacing: 1px;
+	margin-bottom: var(--step);
+}
+
+.product-price>.prices>section a.pps_button {
+	color: var(--color-05);
+	background-color: var(--color-100);
+	margin-bottom: var(--stepHalf);
+}
+
+.product-price>.prices>section a.pps_button.active {
+	color: var(--color-100);
+	background-color: var(--color-active);
+}
