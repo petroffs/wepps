@@ -59,9 +59,9 @@ class CartWepps {
 		}
 	};
 	metrics(obj) {
-		if (obj.items) {
-			$('a#header-cart').attr('data-metrics',obj.items);
-			$('a#footer-cart').attr('data-metrics',obj.items);
+		if (obj.quantity) {
+			$('a#header-cart').attr('data-metrics',obj.quantity);
+			$('a#footer-cart').attr('data-metrics',obj.quantity);
 		}
 	};
 	addVariationsHandler() {
@@ -75,7 +75,8 @@ class CartWepps {
 			if ($('.cart-add-v.active').length > 0) {
 				disabled = false;
 			}
-			$('input.cart-add').prop('disabled', disabled);
+			$(this).closest($('.prices')).find('input.cart-add').prop('disabled', disabled);
+			//$('input.cart-add').prop('disabled', disabled);
 		});
 	};
 	addHandler() {
@@ -243,6 +244,12 @@ class CartWepps {
 				data: 'action=addOrder&context=cart&'+serialize,
 				url: '/ext/Cart/Request.php'
 			});
+		});
+	}
+	displayExists() {
+		$('input.cart-add').val('В Корзину');
+		$('a.cart-exists').each(function(i,e) {
+			$(e).siblings('input').val('В Корзине')
 		});
 	}
 };

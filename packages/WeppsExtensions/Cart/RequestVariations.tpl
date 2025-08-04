@@ -13,6 +13,9 @@
         {/foreach}
         <div class="pps_interval"></div>
         <label class="pps pps_button">
+            {if $element.Id|in_array:$cartMetrics.items}
+                <a href="/cart/" class="cart-exists"></a>
+            {/if}
             <input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="-1" disabled
                 autocomplete="off" />
         </label>

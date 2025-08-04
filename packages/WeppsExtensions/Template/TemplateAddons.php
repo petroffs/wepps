@@ -4,6 +4,7 @@ namespace WeppsExtensions\Template;
 use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 
 if (!class_exists('WeppsExtensions\Template\TemplateAddonsWepps')) {

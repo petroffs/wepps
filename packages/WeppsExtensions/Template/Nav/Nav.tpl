@@ -11,7 +11,7 @@
 				</label>
 			</form>
 			<a href="/profile/" id="header-profile"><i class="bi bi-person"></i><span>Войти</span></a>
-			<a href="/cart/" id="header-cart" data-metrics="{$cartMetrics.items}"><i class="bi bi-cart2"></i><span>Корзина</span></a>
+			<a href="/cart/" id="header-cart" data-metrics="{$cartMetrics.count}"><i class="bi bi-cart2"></i><span>Корзина</span></a>
 		</section>
 		<section class="header-wrapper">
 			<nav class="header-nav-wrapper w_hide_view_small">
@@ -39,7 +39,7 @@
 		<a href="/"><i class="bi bi-house-door"></i></a>
 		<a href="" id="footer-nav"><i class="bi bi-list"></i></a>
 		<a href="/profile/fav.html"><i class="bi bi-heart"></i></a>
-		<a href="/cart/" id="footer-cart" data-metrics="{$cartMetrics.items}"><i class="bi bi-cart2"></i></a>
+		<a href="/cart/" id="footer-cart" data-metrics="{$cartMetrics.count}"><i class="bi bi-cart2"></i></a>
 		<a href="/profile/"><i class="bi bi-person"></i></a>
 	</section>
 </div>

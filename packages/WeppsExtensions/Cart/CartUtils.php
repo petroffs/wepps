@@ -75,7 +75,10 @@ class CartUtilsWepps
 	}
 	public function getCartMetrics() {
 		return [
-			'items' => array_sum(array_column($this->cart['items']??[], 'qu')),
+			'count' => array_sum(array_column($this->cart['items']??[], 'qu')),
+			'items' => array_values(array_unique(array_map(function($i) : int {
+    			return (int) explode('-', $i['id'])[0];
+			}, $this->cart['items']??[]))),
 			'commerce' => ConnectWepps::$projectServices['commerce']
 		];
 	}
@@ -147,9 +150,12 @@ class CartUtilsWepps
 				'qu' => $quantity
 			]);
 		} else {
+			if ($quantity==1) {
+				$quantity++;
+			}
 			$index = array_search($id, $keys);
 			if (intval($index) >= 0) {
-				$this->cart['items'][$index]['qu'] += $quantity;
+				$this->cart['items'][$index]['qu'] = $quantity;
 			}
 		}
 		$this->setCart();

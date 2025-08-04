@@ -44,6 +44,9 @@
 						{assign var="elementGroup" value=$element.W_Variations.W_GROUP.0}
 						<div class="pps_interval"></div>
 						<label class="pps pps_button">
+							{if $element.Id|in_array:$cartMetrics.items}
+								<a href="/cart/" class="cart-exists"></a>
+							{/if}
 							<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="{$elementGroup.Id}" {if $elementGroup.Stocks<=0} disabled{/if} autocomplete="off"/>
 						</label>
 					{elseif $element.W_Variations}
@@ -57,6 +60,9 @@
 					{/foreach}
 					<div class="pps_interval"></div>
 					<label class="pps pps_button">
+						{if $element.Id|in_array:$cartMetrics.items}
+							<a href="/cart/" class="cart-exists"></a>
+						{/if}
 						<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="-1" disabled autocomplete="off"/>
 					</label>	
 					{/if}

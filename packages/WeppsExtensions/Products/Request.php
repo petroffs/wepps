@@ -3,17 +3,13 @@ namespace WeppsExtensions\Products;
 
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Core\NavigatorWepps;
+use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Template\Filters\FiltersWepps;
 use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
-
-/**
- * @var \Smarty $smarty
- */
 
 class RequestProductsWepps extends RequestWepps {
 	private $navigator;
@@ -68,13 +64,16 @@ class RequestProductsWepps extends RequestWepps {
 				];
 				$products = $productsUtils->getProducts($settings);
 				$filtersActive = $filters->getFilters($settings['conditions']);
+				$cartUtils = new CartUtilsWepps();
+				$cartMetrics = $cartUtils->getCartMetrics();
+				$this->assign('cartMetrics',$cartMetrics);
 				$this->assign('products',$products['rows']);
 				$this->assign('paginator',$products['paginator']);
 				$this->fetch('paginatorTpl','../Template/Paginator/Paginator.tpl');
 				$this->fetch('productsTpl','ProductsItems.tpl');
 				$js = $filters->getFiltersCodeJS($filtersActive,$products['count']);
 				$js .= $filters->setBrowserStateCodeJS($this->navigator->content['Name']);
-				$js .= "cartInit();\n";
+				$js .= "cartInit();productsInit();\n";
 				$this->assign('js', $js);
 				break;
 			default:
