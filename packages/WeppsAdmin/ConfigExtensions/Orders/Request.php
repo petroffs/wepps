@@ -59,8 +59,10 @@ class RequestOrdersWepps extends RequestWepps {
 				}
 				$order = $this->getOrder($this->get['id']);
 				$jdata = json_decode($order['order']['JPositions'],true);
+				$ex = explode('-',$this->get['products']);
 				$jdata[] = [
-						'id' => (int) $this->get['products'],
+						'id' => (int) $ex[0],
+						'idv' => (int) $ex[1],
 						'name' => (string) $this->get['name'],
 						'quantity' => (int) $this->get['quantity'],
 						'price' => (float) $this->get['price'],
@@ -234,10 +236,14 @@ class RequestOrdersWepps extends RequestWepps {
 			$term = $text;
 			$limit = 10;
 			$offset = ($page - 1) * $limit;
-			$sql = "select t.Id `id`,t.Name `text`,t.Name `name`,t.Price `price` from Products t
-				where t.DisplayOff=0 and (t.Name like ? or t.Article like ?)
-				group by t.Id order by t.Name asc limit $offset,$limit";
-			$res = ConnectWepps::$instance->fetch($sql,["%{$term}%","%{$term}%"]);
+			$sql = "select concat(p.Id,'-',pv.Id) `id`,p.Id `pid`,pv.Id `idv`,
+				if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) `text`,
+				if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) `name`,
+				p.Price `price` from Products p
+				join ProductsVariations pv on pv.ProductsId=p.Id and pv.DisplayOff=0 and pv.Field4>0
+				where p.DisplayOff=0 and (p.Name like ? or p.Article like ? or concat(pv.Field1,', ',pv.Field2) like ? or pv.Field3 like ?)
+				group by p.Id order by p.Name asc limit $offset,$limit";
+			$res = ConnectWepps::$instance->fetch($sql,["%{$term}%","%{$term}%","%{$term}%","%{$term}%"]);
 		}
 		$pagination = false;
 		if (!empty($res)) {
