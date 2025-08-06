@@ -14,10 +14,10 @@
 					<div class="cart-image"><img src="/pic/lists{$item.image}" /></div>
 					<div class="cart-title">
 						<a href="{$item.url}" class="title">{$item.name}</a>
-						{if $item.stocks==0}
+						{if $item.stocks<=0}
 							<div class="warning">⚠️ Нет товара для заказа</div>
 						{elseif $item.stocks<$item.quantity}
-							<div class="warning">⚠️ Превышен лимит {$item.stocks} шт. для заказа</div>
+							<div class="warning">⚠️ Превышен лимит ({$item.stocks} шт.) для заказа</div>
 						{/if}
 						<div class="btn"><a href="" class="cart-remove"><i class="bi bi-trash3"></i> <span>Удалить</span></a></div>
 						<div class="btn"><a href="" class="cart-favorite{if $item.id|in_array:$cartFavorites} active{/if}"><i class="bi bi-bookmarks"></i> <span>Избранное</span></a></div>
@@ -36,7 +36,7 @@
 						</div>
 						<div class="cart-price">
 							<span class="price"><span>{$item.price|money}</span>
-								за&nbsp;1&nbsp;шт.</span>{*<span> за 1 шт.</span>*}
+								за&nbsp;1&nbsp;шт.</span>
 						</div>
 						{/if}
 					</div>
@@ -75,7 +75,7 @@
 			</div>
 			<label class="pps pps_button pps_button_important">
 				<button id="cart-btn-checkout"
-				{if $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0}disabled="disabled"{/if}>
+				{if $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0 || $cartSummary.stocksErrors==1}disabled="disabled"{/if}>
 					Перейти к оформлению
 				</button>
 			</label>

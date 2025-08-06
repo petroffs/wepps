@@ -244,7 +244,7 @@ class CartUtilsWepps
 		foreach ($this->cart['items'] as $value) {
 			$this->summary['quantity'] += $value['qu'];
 			$ex = explode('-',$value['id']);
-			$sql .= "\n(select '{$ex[0]}' `id`,'".($ex[1]??0)."' `idv`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
+			$sql .= "\n(select '{$ex[0]}'*1 `id`,'".($ex[1]??0)."'*1 `idv`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
 			$ids[] = $ex[0];
 			$idv[] = $ex[1]??0;
 		}
@@ -269,12 +269,33 @@ class CartUtilsWepps
 			left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
 			group by x.idv";
 		$this->summary['items'] = ConnectWepps::$instance->fetch($sql);
-		$this->summary['quantity'] = array_sum(array_column($this->summary['items'], 'quantity'));
+		$this->summary['quantity'] = 0;
+		$this->summary['quantityActive'] = 0;
+		$this->summary['sum'] = 0;
+		$this->summary['sumSaving'] = 0;
+		$this->summary['sumBefore'] = 0;
+		$this->summary['sumActive'] = 0;
+		$this->summary['sumTotal'] = 0;
+		$this->summary['stocksErrors'] = 0;
+		foreach($this->summary['items'] as $value) {
+			$this->summary['quantity'] += $value['quantity'];
+			$this->summary['quantityActive'] += $value['quantityActive'];
+			$this->summary['sum'] += $value['sum'];
+			$this->summary['sumSaving'] += $value['sumSaving'];
+			$this->summary['sumBefore'] += $value['sumBeforeTotal'];
+			$this->summary['sumActive'] += $value['sumActive'];
+			$this->summary['sumTotal'] += $value['sumActive'];
+			if ($value['stocks']<=0 || $value['stocks']<$value['quantity']) {
+				$this->summary['stocksErrors'] = 1;
+			}
+		}
+		/* $this->summary['quantity'] = array_sum(array_column($this->summary['items'], 'quantity'));
 		$this->summary['quantityActive'] = array_sum(array_column($this->summary['items'], 'quantityActive'));
 		$this->summary['sum'] = array_sum(array_column($this->summary['items'], 'sum'));
 		$this->summary['sumSaving'] = array_sum(array_column($this->summary['items'], 'sumSaving'));
 		$this->summary['sumBefore'] = array_sum(array_column($this->summary['items'], 'sumBeforeTotal'));
-		$this->summary['sumActive'] = $this->summary['sumTotal'] = array_sum(array_column($this->summary['items'], 'sumActive'));
+		$this->summary['sumActive'] = $this->summary['sumTotal'] = array_sum(array_column($this->summary['items'], 'sumActive')); */
+			
 		$this->summary['date'] = $this->cart['date'];
 		$this->summary['favorites'] = $this->getFavorites();
 		if ($this->summary['sumActive']>=ConnectWepps::$projectServices['commerce']['orderAmountMin']) {
@@ -463,6 +484,7 @@ class CartUtilsWepps
 			}
 			$positions[] = [
 				'id' => $value['id'],
+				'idv' => $value['idv'],
 				'name' => $value['name'],
 				'quantity' => $value['quantity'],
 				'price' => $value['price'],
