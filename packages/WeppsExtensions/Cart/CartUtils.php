@@ -153,9 +153,9 @@ class CartUtilsWepps
 				'qu' => $quantity
 			]);
 		} else {
-			if ($quantity==1) {
+			/* if ($quantity==1) {
 				$quantity++;
-			}
+			} */
 			$index = array_search($id, $keys);
 			if (intval($index) >= 0) {
 				$this->cart['items'][$index]['qu'] = $quantity;
@@ -165,7 +165,7 @@ class CartUtilsWepps
 		$this->setCart();
 		return;
 	}
-	public function edit(int $id, int $quantity = 1): void
+	public function edit(string $id, int $quantity = 1): void
 	{
 		$keys = array_column($this->cart['items'], 'id');
 		if (!in_array($id, $keys)) {
@@ -176,6 +176,7 @@ class CartUtilsWepps
 			]);
 		} else {
 			$index = array_search($id, $keys);
+			#UtilsWepps::debug($keys);
 			if (intval($index) >= 0) {
 				$this->cart['items'][$index]['qu'] = $quantity;
 				$this->cart['items'][$index]['ac'] = 1;
@@ -192,7 +193,7 @@ class CartUtilsWepps
 		}
 		return $this->setCart();
 	}
-	public function remove(int $id)
+	public function remove(string $id)
 	{
 		$keys = array_column($this->cart['items'], 'id');
 		$index = array_search($id, $keys);
@@ -217,6 +218,7 @@ class CartUtilsWepps
 	}
 	public function setCartSummary(): bool
 	{
+		ConnectWepps::$instance->cached('no');
 		$this->summary = [
 			'items' => [],
 			'quantity' => 0,
@@ -250,8 +252,8 @@ class CartUtilsWepps
 		$idv = implode(',',array_unique($idv));
 		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
 		
-		$sql = "select x.id,if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) name,
-			(x.quantity*1) quantity,(x.active*1) active,(p.Price+0e0) price, (x.quantity*p.Price) `sum`,(p.PriceBefore+0e0) priceBefore, 
+		$sql = "select x.id,x.idv,if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) name,
+			(x.quantity*1) quantity,if(pv.Field4>0,pv.Field4+0e0,0) stocks,(x.active*1) active,(p.Price+0e0) price, (x.quantity*p.Price) `sum`,(p.PriceBefore+0e0) priceBefore, 
 			(x.quantity*p.PriceBefore) `sumBefore`,
 			(x.quantity*if(x.active=0,0,if(p.PriceBefore=0,p.Price,p.PriceBefore))) `sumBeforeTotal`,
 			if(p.PriceBefore=0,0,(x.quantity * if(x.active=0,0,(p.PriceBefore - p.Price)))) `sumSaving`,
@@ -266,7 +268,6 @@ class CartUtilsWepps
 			join s_Navigator n on n.Id=p.NavigatorId
 			left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
 			group by x.idv";
-		#UtilsWepps::debug($sql,21);
 		$this->summary['items'] = ConnectWepps::$instance->fetch($sql);
 		$this->summary['quantity'] = array_sum(array_column($this->summary['items'], 'quantity'));
 		$this->summary['quantityActive'] = array_sum(array_column($this->summary['items'], 'quantityActive'));

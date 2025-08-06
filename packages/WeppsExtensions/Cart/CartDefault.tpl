@@ -7,23 +7,28 @@
 		</div>
 		<div class="content-block cart-items">
 			{foreach item="item" from=$cartSummary.items}
-				<section data-id="{$item.id}">
+				<section data-id="{$item.id}-{$item.idv}">
 					<div class="cart-checkbox"><label class="pps pps_checkbox"><input type="checkbox" name="cart-check"
 								value="{$item.id}" {if $item.active==1}checked {/if}
 								autocomplete="off" /><span></span></label></div>
 					<div class="cart-image"><img src="/pic/lists{$item.image}" /></div>
 					<div class="cart-title">
 						<a href="{$item.url}" class="title">{$item.name}</a>
-						<a href="" class="cart-remove"><i class="bi bi-trash3"></i> <span>Удалить</span></a>
-						<a href="" class="cart-favorite{if $item.id|in_array:$cartFavorites} active{/if}"><i
-								class="bi bi-bookmarks"></i> <span>Избранное</span></a>
+						{if $item.stocks==0}
+							<div class="warning">⚠️ Нет товара для заказа</div>
+						{elseif $item.stocks<$item.quantity}
+							<div class="warning">⚠️ Превышен лимит {$item.stocks} шт. для заказа</div>
+						{/if}
+						<div class="btn"><a href="" class="cart-remove"><i class="bi bi-trash3"></i> <span>Удалить</span></a></div>
+						<div class="btn"><a href="" class="cart-favorite{if $item.id|in_array:$cartFavorites} active{/if}"><i class="bi bi-bookmarks"></i> <span>Избранное</span></a></div>
 					</div>
 					<div class="cart-quantity">
+						{if $item.stocks>0}
 						<div class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
 							<button class="sub">
 								<span></span>
 							</button>
-							<input type="text" name="quantity" value="{$item.quantity}" maxlength="3" min="1" max="20"
+							<input type="text" name="quantity" value="{$item.quantity}" maxlength="3" min="1" max="{$item.stocks}"
 								autocomplete="off" />
 							<button class="add">
 								<span></span>
@@ -33,12 +38,15 @@
 							<span class="price"><span>{$item.price|money}</span>
 								за&nbsp;1&nbsp;шт.</span>{*<span> за 1 шт.</span>*}
 						</div>
+						{/if}
 					</div>
 					<div class="cart-sum">
+						{if $item.stocks>0}
 						<div class="price"><span>{$item.sum|money}</span></div>
 						{if $item.sumBefore>0}
 							<div class="price price-before"><span>{$item.sumBefore|money}</span></div>
 						{/if}
+					{/if}
 					</div>
 				</section>
 			{/foreach}

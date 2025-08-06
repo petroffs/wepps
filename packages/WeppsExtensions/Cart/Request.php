@@ -44,7 +44,7 @@ class RequestCartWepps extends RequestWepps
 				if (empty($this->get['id'])) {
 					ExceptionWepps::error(400);
 				}
-				$cartUtils->remove((int) $this->get['id']);
+				$cartUtils->remove($this->get['id']);
 				self::displayCart($cartUtils);
 				break;
 			case 'removeCart':
@@ -132,7 +132,6 @@ class RequestCartWepps extends RequestWepps
 		$productsUtils = new ProductsUtilsWepps();
 		$element = $productsUtils->getProductsItem($this->get['id']);
 		if (!empty($this->get['idv'])) {
-			#UtilsWepps::debug($this->get,1);
 			$ex = explode(',', $this->get['idv']);
 			foreach ($ex as $value) {
 				if (!is_numeric($value)) {
@@ -147,17 +146,15 @@ class RequestCartWepps extends RequestWepps
 				];
 				$elementVariationInCart = self::findById($arr, $this->get['id'] . '-' . $value, 'id');
 				$quantity = 1;
-				$inCart = (int) ($elementVariationInCart['qu'] ?? 0);
+				/* $inCart = (int) ($elementVariationInCart['qu'] ?? 0);
 				$inStocks = (int) ($elementVariation['Stocks'] ?? 0);
 				if ($inCart > 0) {
 					$inCart++;
 					$quantity = $inCart;
 				}
-				;
-
 				if ($inCart >= $inStocks) {
 					$quantity = $inStocks;
-				}
+				} */
 				$cartUtils->add("{$this->get['id']}-{$value}", $quantity);
 			}
 		} else {

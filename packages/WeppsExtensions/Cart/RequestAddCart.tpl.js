@@ -7,8 +7,6 @@ if (cartBtn.siblings('a.cart-exists').length==0) {
     cartBtn.val('В Корзине');
 }
 var arr = "{$get.idv}".split(',');
-console.log(arr);
 $.each(arr,function(i,e) {
-    console.log(e);
     $('a.cart-add-v[data-id="'+e+'"]').addClass('cart-add-v-exists');
 });

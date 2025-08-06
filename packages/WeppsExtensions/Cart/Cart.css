@@ -18,12 +18,18 @@ div.page.cart div.cart-total>div {
 	border-bottom: var(--border);
 }
 
-div.page.cart div.cart-total>div.warning {
+div.page.cart div.warning {
 	background: var(--color-warning);
-	padding: var(--step);
+	padding: var(--step) var(--step2);
+	margin: 0 0 var(--step2) 0;
+	width: max-content;
+	max-width: 100%;
+	border-radius: var(--step);
+}
+div.page.cart div.cart-total > div.warning {
+	padding: var(--step) var(--step2);
 	margin: var(--step2) 0 0 0;
 	border-bottom: 0;
-	border-radius: var(--step);
 }
 
 div.page.cart div.cart-total>div div.title {
@@ -88,6 +94,10 @@ div.page.cart div.cart-title {
 	grid-area: title;
 }
 
+div.page.cart div.cart-title div.btn {
+	margin-top: var(--step);
+}
+
 div.page.cart div.cart-title a.title {
 	font-weight: 600;
 	text-decoration: none;
@@ -97,7 +107,8 @@ div.page.cart div.cart-title a.title {
 	display: block;
 }
 
-div.page.cart div.cart-title a:not(:first-child) {
+div.page.cart div.cart-title a.cart-remove,
+div.page.cart div.cart-title a.cart-favorite {
 	font-size: var(--font-small);
 	font-weight: normal;
 	text-decoration: none;
