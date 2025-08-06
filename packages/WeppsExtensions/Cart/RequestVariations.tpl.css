@@ -18,10 +18,28 @@
 .product-price>.prices>section a.pps_button {
 	color: var(--color-05);
 	background-color: var(--color-100);
-	margin-bottom: var(--stepHalf);
+	margin-bottom: var(--step);
+	margin-right: var(--step);
 }
 
 .product-price>.prices>section a.pps_button.active {
 	color: var(--color-100);
 	background-color: var(--color-active);
+}
+
+.product-price>.prices>section a.pps_button.cart-add-v-exists::after {
+	content: '\f243';
+	font-family: "bootstrap-icons";
+	font-size: var(--font-small);
+	color: var(--color-100);
+	background-color: var(--color-active);
+	border-radius: 50%;
+	border: var(--stepHalf) solid var(--color-100);
+	position: absolute;
+	right: calc(-1 * var(--step2));
+	width: var(--step5);
+	height: var(--step5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }

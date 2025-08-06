@@ -54,7 +54,7 @@
 						<section>
 							<div class="price-title">{$key}</div>
 							{foreach from=$item item="i" name="o"}
-							<a href="" class="pps_button cart-add-v{if $i.Stocks<=0} pps_disabled{/if}" data-id="{$i.Id}">{$i.Size}</a>
+							<a href="" class="pps_button cart-add-v{if $i.Stocks<=0} pps_disabled{/if}{if $i.Id|in_array:$cartMetrics.itemsv} cart-add-v-exists{/if}" data-id="{$i.Id}">{$i.Size}</a>
 							{/foreach}
 						</section>
 					{/foreach}

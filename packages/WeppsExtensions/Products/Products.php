@@ -96,7 +96,6 @@ class ProductsWepps extends ExtensionWepps {
 		if (!empty($element['MetaDescription'])) {
 			$this->navigator->content['MetaDescription'] = $element['MetaDescription'];
 		}
-		#UtilsWepps::debug($element,21);
 		return $element;
 	}
 }

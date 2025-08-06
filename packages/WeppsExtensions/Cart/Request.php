@@ -21,41 +21,7 @@ class RequestCartWepps extends RequestWepps
 		$cartUtils = new CartUtilsWepps();
 		switch ($action) {
 			case 'add':
-				if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
-					ExceptionWepps::error(400);
-				}
-				$this->tpl = 'RequestAddCart.tpl';
-				$productsUtils = new ProductsUtilsWepps();
-				$element = $productsUtils->getProductsItem($this->get['id']);
-				if (!empty($this->get['idv'])) {
-					$ex = explode(',', $this->get['idv']);
-					foreach ($ex as $value) {
-						if (!is_numeric($value)) {
-							continue;
-						}
-						$elementVariation = self::findById($element['W_Variations'], $value);
-						if (empty($elementVariation)) {
-							continue;
-						}
-						$arr = [
-							'items' => $cartUtils->getCart()['items']
-						];
-						$elementVariationInCart = self::findById($arr, $this->get['id'].'-'.$value, 'id');
-						#UtilsWepps::debug($elementVariationInCart, 1);
-						$quantity = 1;
-						if ($elementVariationInCart['qu']??0>=$elementVariation['Stocks']??0) {
-							$quantity = $elementVariation['Stocks'];
-						}
-						#exit();
-						#UtilsWepps::debug($quantity, 1);
-						$cartUtils->add("{$this->get['id']}-{$value}",$quantity);
-					}
-				} else {
-					$cartUtils->add($this->get['id']);
-				}
-				$cartSummary = $cartUtils->getCartSummary();
-				$this->assign('cartSummary', $cartSummary);
-				$this->assign('get', $this->get);
+				self::add($cartUtils);
 				break;
 			case 'variations':
 				self::displayVariations($cartUtils);
@@ -156,6 +122,50 @@ class RequestCartWepps extends RequestWepps
 				ExceptionWepps::error404();
 				break;
 		}
+	}
+	private function add(CartUtilsWepps $cartUtils)
+	{
+		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
+			ExceptionWepps::error(400);
+		}
+		$this->tpl = 'RequestAddCart.tpl';
+		$productsUtils = new ProductsUtilsWepps();
+		$element = $productsUtils->getProductsItem($this->get['id']);
+		if (!empty($this->get['idv'])) {
+			#UtilsWepps::debug($this->get,1);
+			$ex = explode(',', $this->get['idv']);
+			foreach ($ex as $value) {
+				if (!is_numeric($value)) {
+					continue;
+				}
+				$elementVariation = self::findById($element['W_Variations'], $value);
+				if (empty($elementVariation)) {
+					continue;
+				}
+				$arr = [
+					'items' => $cartUtils->getCart()['items']
+				];
+				$elementVariationInCart = self::findById($arr, $this->get['id'] . '-' . $value, 'id');
+				$quantity = 1;
+				$inCart = (int) ($elementVariationInCart['qu'] ?? 0);
+				$inStocks = (int) ($elementVariation['Stocks'] ?? 0);
+				if ($inCart > 0) {
+					$inCart++;
+					$quantity = $inCart;
+				}
+				;
+
+				if ($inCart >= $inStocks) {
+					$quantity = $inStocks;
+				}
+				$cartUtils->add("{$this->get['id']}-{$value}", $quantity);
+			}
+		} else {
+			$cartUtils->add($this->get['id']);
+		}
+		$cartSummary = $cartUtils->getCartSummary();
+		$this->assign('cartSummary', $cartSummary);
+		$this->assign('get', $this->get);
 	}
 	private function displayCart(CartUtilsWepps $cartUtils)
 	{

@@ -65,6 +65,7 @@ class CartWepps {
 		}
 	};
 	addVariationsHandler() {
+		$('.cart-add-v').off('click');
 		$('.cart-add-v').on('click', function (e) {
 			e.preventDefault();
 			if ($(this).hasClass('pps_disabled')) {
@@ -80,6 +81,7 @@ class CartWepps {
 		});
 	};
 	addHandler() {
+		$('.cart-add').off('click');
 		$('.cart-add').on('click', function(e) {
 			e.preventDefault();
 			let id = $(this).data('id');

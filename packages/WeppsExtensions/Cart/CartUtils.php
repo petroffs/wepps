@@ -79,6 +79,9 @@ class CartUtilsWepps
 			'items' => array_values(array_unique(array_map(function($i) : int {
     			return (int) explode('-', $i['id'])[0];
 			}, $this->cart['items']??[]))),
+			'itemsv' => array_values(array_unique(array_map(function($i) : int {
+    			return (int) @explode('-', $i['id'])[1];
+			}, $this->cart['items']??[]))),
 			'commerce' => ConnectWepps::$projectServices['commerce']
 		];
 	}
@@ -157,6 +160,7 @@ class CartUtilsWepps
 			if (intval($index) >= 0) {
 				$this->cart['items'][$index]['qu'] = $quantity;
 			}
+			#UtilsWepps::debug($this->cart['items'][$index]);
 		}
 		$this->setCart();
 		return;
