@@ -20,7 +20,7 @@ class ProfileWepps extends ExtensionWepps {
 		}
 		$profileUtils = new ProfileUtilsWepps($this->user);
 		$profileNav = $profileUtils->getNav();
-		#UtilsWepps::debug($profileNav,1);
+		#UtilsWepps::debug($profileNav,21);
 		$this->headers->js ("/ext/Profile/Profile.{$this->rand}.js");
 		$this->headers->css ("/ext/Profile/Profile.{$this->rand}.css");
 
@@ -29,8 +29,8 @@ class ProfileWepps extends ExtensionWepps {
 		$smarty->assign ('pathItem',NavigatorWepps::$pathItem);
 		$smarty->assign ('get',$this->get);
 		$smarty->assign('profileNav',$profileNav);
-
 		if (empty($this->user)) {
+			
 			switch (NavigatorWepps::$pathItem) {
 				case '':
 					$this->profileTpl = 'ProfileSignIn.tpl';
@@ -47,6 +47,7 @@ class ProfileWepps extends ExtensionWepps {
 			}
 			$smarty->assign('profileTpl',$smarty->fetch(__DIR__ . '/' . $this->profileTpl));
 			$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+			return;
 		}
 		switch (NavigatorWepps::$pathItem) {
 				case '':
@@ -67,5 +68,6 @@ class ProfileWepps extends ExtensionWepps {
 			}
 		$smarty->assign('profileTpl',$smarty->fetch(__DIR__ . '/' . $this->profileTpl));
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+		return;
 	}
 }

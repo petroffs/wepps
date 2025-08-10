@@ -1,0 +1,13 @@
+div.page.profile {
+    overflow: auto;
+    padding-bottom: var(--step4);
+    padding-top: var(--step4);
+}
+
+div.profile-wrapper {
+    margin-top: var(--step4);
+}
+
+div#pps-option-nav {
+    cursor: pointer;
+}

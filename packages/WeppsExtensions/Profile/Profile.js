@@ -1,4 +1,15 @@
 var profileInit = function() {
-	
+	$('div.pps-option-nav').off('click');
+    $('div#pps-option-nav').on('click',function(e) {
+        e.preventDefault();
+        let sidebar = $('section.sidebar');
+        sidebar.toggleClass('w_hide_view_medium');
+        $('#sidebar-medium').toggleClass('w_hide');
+        if (!sidebar.hasClass('w_hide_view_medium')) {
+            sidebar.detach().appendTo('#sidebar-medium');
+        } else {
+            sidebar.detach().prependTo('#content-wrapper');
+        }
+    });
 }
 $(document).ready(profileInit);
