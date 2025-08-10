@@ -12,7 +12,7 @@ Wepps - Платформа для построения веб-проектов. 
 **PHP- и Apache-модули**
 
 ```
-$ sudo apt install php8.4-{curl,xml,mbstring,zip,pdo,gd,imagick,memcached} && sudo service php8.4-fpm restart
+$ sudo apt install php8.4-{curl,xml,mbstring,zip,pdo,gd,memcached} && sudo service php8.4-fpm restart
 $ sudo a2enmod rewrite && sudo service apache2 restart
 ```
 

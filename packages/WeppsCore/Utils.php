@@ -5,9 +5,6 @@ use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Addons\Jwt\JwtWepps;
 
 /**

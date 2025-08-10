@@ -76,7 +76,7 @@ class DeliveryWepps
     }
     public function getOperationsActive(array $cart) {
         $operations = [];
-		$key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations'], 'id'));
+		$key = array_search($cart['deliveryId'], array_column(($cart['deliveryOperations']??[]), 'id'));
 		 if ($key !== false) {
 			$operations = $cart['deliveryOperations'][$key]['data'];
         }

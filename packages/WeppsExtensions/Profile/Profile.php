@@ -1,147 +1,71 @@
 <?php
 namespace WeppsExtensions\Profile;
 
+use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Core\DataWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Addons\User\UserWepps;
-use WeppsExtensions\Addons\Messages\Mail\MailWepps;
+use WeppsCore\Utils\UtilsWepps;
 
-class ProfileWepps {
-	public $get;
-	public $tpl;
-	public $outer;
-	public $pathItem;
-	function __construct(NavigatorWepps $navigator, $ppsUrl,$get = array()) {
-		if (count($get)) {
-			foreach ( $get as $key => $value ) {
-				$this->get [$key] = UtilsWepps::trim ( $value );
+class ProfileWepps extends ExtensionWepps {
+	private $profileTpl = '';
+	private $user;
+	public function request()
+	{
+		$this->tpl = __DIR__ . '/Profile.tpl';
+		$this->user = ConnectWepps::$projectData['user']??[];
+		if (!empty(NavigatorWepps::$pathItem)) {
+			$this->extensionData['element'] = 1;
+		}
+		$profileUtils = new ProfileUtilsWepps($this->user);
+		$profileNav = $profileUtils->getNav();
+		#UtilsWepps::debug($profileNav,1);
+		$this->headers->js ("/ext/Profile/Profile.{$this->rand}.js");
+		$this->headers->css ("/ext/Profile/Profile.{$this->rand}.css");
+
+		$smarty = SmartyWepps::getSmarty();
+		$smarty->assign ('normalView',0);
+		$smarty->assign ('pathItem',NavigatorWepps::$pathItem);
+		$smarty->assign ('get',$this->get);
+		$smarty->assign('profileNav',$profileNav);
+
+		if (empty($this->user)) {
+			switch (NavigatorWepps::$pathItem) {
+				case '':
+					$this->profileTpl = 'ProfileSignIn.tpl';
+					break;
+				case 'reg':
+					$this->profileTpl = 'ProfileReg.tpl';
+					break;
+				case 'password':
+					$this->profileTpl = 'ProfilePassword.tpl';
+					break;
+				default:
+					ExceptionWepps::error404();
+					break;
 			}
+			$smarty->assign('profileTpl',$smarty->fetch(__DIR__ . '/' . $this->profileTpl));
+			$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		}
-		$smarty = SmartyWepps::getSmarty ();
-		$this->pathItem = $ppsUrl;
-		$users = new DataWepps("s_Users");
-		$user = [];
-		if (isset($_SESSION['user']['Id'])) {
-			$users->setJoin("left outer join GeoCities as c on c.Id = t.City");
-			$users->setConcat("c.Name as City_Name");
-			$user = $users->fetch($_SESSION['user']['Id'])[0];
-			$smarty->assign('user',$user);
-			$this->get['user'] = $user;
-			$this->get['title'] = 'Личный кабинет';
-			$this->tpl = 'packages/WeppsExtensions/Profile/ProfileSummary.tpl';
-		} else {
-			$this->tpl = 'packages/WeppsExtensions/Profile/ProfileWelcome.tpl';
-		}
-		switch ($ppsUrl) {
-			case "/profile/reg.html" :
-				$this->get['title'] = 'Регистрация';
-				if (!isset($user['Id'])) {
-					$this->tpl = 'packages/WeppsExtensions/Profile/ProfileRegistration.tpl';
-				}
-				break;
-			case "/profile/passback.html":
-				$this->get['title'] = 'Обновление аккаунта';
-				//if (!isset($user['Id'])) {
-					if (isset($get['key1']) && isset($get['key2'])) {
-						$login = UtilsWepps::trim($get['key1']);
-						$loginKey = UtilsWepps::trim($get['key2']);
-						$user = $users->fetch("binary t.Login = '{$login}' and t.FieldChangeKey='{$loginKey}'")[0];
-						if (isset($user['Id'])) {
-							$this->get['title'] = 'Личный кабинет';
-							$change = UserWepps::setValue($user);
-							$user = $users->fetch($user['Id'])[0];
-							if ($change['status'] == true) {
-								$mess = "";
-								$mess .= "дата: ".date("d.m.Y")." время: ".date("H:i")."\n\n";
-								$mess .= "---------------\n";
-								$mess .= "День добрый!\nНастройки вашего аккаунта на сайте http://".$_SERVER['HTTP_HOST']." обновлены.\n\n";
-								$mess .= "Ваши текущие данные:\n";
-								$mess .= "Контактный телефон: ".$user['Phone']."\n";
-								$mess .= "Электронная почта: ".$user['Email']."\n";
-								$mess .= "---------------\n\n";
-								$mess .= "ДОСТУП НА САЙТЕ:"."\n";
-								$mess .= "http://".$_SERVER['HTTP_HOST']."\n";
-								$mess .= "логин: ".$user['Email']."\n";
-								if ($change['value'][0]=='Password') $mess .= "пароль: ".$change['value'][1]."\n";
-								$mess.= "\nС уважением, ".ConnectWepps::$projectInfo['name']."\n";
-								$mess = nl2br($mess);
-								$obj = new MailWepps('html');
-								$obj->setDebug();
-								$obj->mail($user['Email'],"Обновление аккаунта",$mess);
-							}
-							$this->tpl = 'packages/WeppsExtensions/Profile/ProfilePassbackConfirm.tpl';
-						} else {
-							ExceptionWepps::error404();
-						}
-					} else {
-						$this->get['title'] = 'Восстановление доступа';
-						$this->tpl = 'packages/WeppsExtensions/Profile/ProfilePassback.tpl';
-					}
-				//}
-				break;
-			case "/profile/orders.html" :
-				$this->get['title'] = 'Мои заказы';
-				if (isset($user['Id'])) {
-					$obj = new DataWepps("TradeOrders");
-					$page = (isset($get['page'])) ? $get['page'] : 1;
-					$orders = $obj->fetch("t.DisplayOff=0 and t.UserId = '{$user['Id']}'",20,$page,"t.Id desc");
-					
-					if (isset($orders[0]['Id'])) {
-						$smarty->assign("orders",$orders);
-						//$smarty->assign("paginator",$obj->paginator);
-					}
-					$this->tpl = 'packages/WeppsExtensions/Profile/ProfileOrders.tpl';
-				}
-				break;
-			case "/profile/settings.html" :
-				if (isset($_SESSION['userAddons'])) unset($_SESSION['userAddons']);
-				$this->get['title'] = 'Настройки';
-				if (isset($user['Id'])) {
-					$this->tpl = 'packages/WeppsExtensions/Profile/ProfileSettings.tpl';
-				}
-				break;
-			case "/profile/personal.html" :
-				$this->get['title'] = 'Личные данные';
-				if (isset($user['Id'])) {
-// 					UtilsWepps::debug($user);
-					$this->tpl = 'packages/WeppsExtensions/Profile/ProfilePersonal.tpl';
-				}
-				break;
-			case "/profile/" :
-				break;
-			default:
-				$this->pathItem = '';
-				break;
-		}
-		$this->outer = $smarty->fetch($this->tpl);
-		return;
+		switch (NavigatorWepps::$pathItem) {
+				case '':
+					$this->profileTpl = 'ProfileHome.tpl';
+					break;
+				case 'orders':
+					$this->profileTpl = 'ProfileOrders.tpl';
+					break;
+				case 'favorites':
+					$this->profileTpl = 'ProfileFavorites.tpl';
+					break;
+				case 'settings':
+					$this->profileTpl = 'ProfileSettings.tpl';
+					break;
+				default:
+					ExceptionWepps::error404();
+					break;
+			}
+		$smarty->assign('profileTpl',$smarty->fetch(__DIR__ . '/' . $this->profileTpl));
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 	}
 }
-
-if (isset ( $navigator )) {
-	$smarty->assign ( 'way', $navigator->way );
-	$obj = new ProfileWepps($navigator,$ppsUrl,$_GET);
-	if ($obj->pathItem!='') {
-		$extension->extensionData['element'] = [];
-	}
-	$smarty->assign('get',$obj->get);
-	$smarty->assign('tpl',$obj->outer);
-	$headers->css ( "/ext/Profile/Profile.{$this->rand}.css" );
-	$headers->js ( "/ext/Profile/Profile.{$this->rand}.js" );
-	$headers->js('/packages/vendor/components/jqueryui/jquery-ui.min.js');
-	$headers->css('/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css');
-	$headers->js ( "https://www.google.com/recaptcha/api.js" );
-	/**
-	 * Нормальное представление
-	 */
-	$smarty->assign ( 'normalHeader1', 0 );
-	$smarty->assign ( 'normalView', 0 );
-	$navigator->content ['Text'] = '';
-}
-
-
-?>

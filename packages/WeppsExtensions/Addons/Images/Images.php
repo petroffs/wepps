@@ -81,7 +81,6 @@ class ImagesWepps {
 			default :
 				ExceptionWepps::error(404);
 				exit();
-				break;
 		}
 		/*
 		 * Директория и файл для записи в файловую систему
@@ -102,22 +101,21 @@ class ImagesWepps {
 			$this->widthDst = ($this->ratio >= 1) ? $side : $side * $this->ratio;
 			$this->heightDst = ($this->ratio >= 1) ? $side / $this->ratio : $side;
 		}
-		
+
 		switch ($this->mime) {
-			case "image/gif" : // IMAGETYPE_GIF
+			case "image/gif":
 				$source = imagecreatefromgif($rootfilename) or die('die gif');
 				break;
-			case "image/jpeg" : // IMAGETYPE_JPEG
+			case "image/jpeg":
 				$source = imagecreatefromjpeg($rootfilename) or die('die jpeg');
 				break;
-			case "image/png" : // IMAGETYPE_PNG
+			case "image/png":
 				$source = imagecreatefrompng($rootfilename) or die('die png');
-				imagealphablending($source,false);
+				imagealphablending($source, false);
 				imagesavealpha($source, true);
 				break;
-			default :
-				ExceptionWepps::error(404);
-				exit();
+			default:
+				$source = imagecreatefromstring(file_get_contents($rootfilename)) or die('die');
 				break;
 		}
 		
@@ -274,7 +272,7 @@ class ImagesWepps {
 		if (empty($filename)) {
 			$filename = ConnectWepps::$projectDev['root'].ConnectWepps::$projectInfo['logopng'];
 		}	
-		$target = imagecreatefrompng($filename);
+		$target = imagecreatefrompng($filename) or die ($filename);
 		imagesavealpha($target, true);
 		$size = getimagesize($filename);
 		$ratio = $size[0]/$size[1];
@@ -282,14 +280,16 @@ class ImagesWepps {
 		/*
 		 * Уменьшить штамп
 		 */
-		$width = $this->widthDst * 0.15;
+		$width = $size[0];
 		$height = $width / $ratio;
 		$thumb = imagecreatetruecolor($width, $height);
 		$background = imagecolorallocatealpha($thumb, 255, 255, 255, 127);
 		imagecolortransparent($thumb, $background);
 		imagealphablending($thumb, false);
 		imagesavealpha($thumb, true);
-		imagecopyresized($thumb,$target,0,0,0,0,$width,$height,$size[0],$size[1]);
+		$width = $this->widthDst * 0.15;
+		$height = $width / $ratio;
+		imagecopyresampled($thumb, $target, 0, 0, 0, 0, $width, $height, $size[0], $size[1]);
 		$target = $thumb;
 		$gap = $width*$gap;
 		switch ($x) {

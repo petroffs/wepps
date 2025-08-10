@@ -306,8 +306,8 @@ class CartUtilsWepps
 		}
 		$this->summary['delivery']['deliveryId'] = $this->cart['deliveryId'] ?? '0';
 		if (!empty($this->cart['deliveryId'])) {
-			$this->summary['delivery']['extension'] = $this->cart['deliveryExtension'];
-			$this->summary['delivery']['settings'] = $this->cart['deliverySettings'];
+			$this->summary['delivery']['extension'] = @$this->cart['deliveryExtension'];
+			$this->summary['delivery']['settings'] = @$this->cart['deliverySettings'];
 		}
 		if (!empty($this->cart['deliveryTariff'])) {
 			$this->summary['delivery']['tariff'] = $this->cart['deliveryTariff'];

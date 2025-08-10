@@ -8,7 +8,7 @@
 	</ul>
 	<div class="pps_flex pps_flex_row pps_flex_start pps_flex_center">
 	<div class="pps_flex_13">
-		<h1>{$get.title}</h1>
+		<h1>{$get.title}898</h1>
 		</div>
 		{if $get.user.Name}
 		<div class="personalInfo pps_flex_13 pps_flex pps_flex_row pps_flex_start">
@@ -18,6 +18,6 @@
 		{/if}
 	</div>
 	<div class="profile-wrapper pps_flex_11">
-		{$tpl}
+		!{$profileTpl}
 	</div>
 </div>

@@ -17,7 +17,6 @@ class ProductsWepps extends ExtensionWepps {
 	private $productsUtils;
 	public function request() {
 		$smarty = SmartyWepps::getSmarty ();
-		$rand = $this->rand;
 		$this->productsUtils = new ProductsUtilsWepps();
 		$this->productsUtils->setNavigator($this->navigator,'Products');
 		$this->filters = new FiltersWepps($_GET);
@@ -27,9 +26,9 @@ class ProductsWepps extends ExtensionWepps {
 		}
 		if (NavigatorWepps::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
-			$this->headers->css("/ext/Products/ProductsItems.{$rand}.css");
-			$this->headers->css("/ext/Template/Filters/Filters.{$rand}.css");
-			$this->headers->js("/ext/Template/Filters/Filters.{$rand}.js");
+			$this->headers->css("/ext/Products/ProductsItems.{$this->rand}.css");
+			$this->headers->css("/ext/Template/Filters/Filters.{$this->rand}.css");
+			$this->headers->js("/ext/Template/Filters/Filters.{$this->rand}.js");
 			$sorting = $this->productsUtils->getSorting();
 			$conditions = $this->productsUtils->getConditions($params,false);
 			$conditionsFilters = $this->productsUtils->getConditions($params,true);
@@ -56,12 +55,12 @@ class ProductsWepps extends ExtensionWepps {
 				$filtersJS = $this->filters->getFiltersCodeJS($filtersActive,$products['count']);
 				$smarty->assign('filtersJS',$filtersJS);
 			}
-			$this->headers->js("/ext/Products/Products.{$rand}.js");
-			$this->headers->css("/ext/Template/Paginator/Paginator.{$rand}.css" );
+			$this->headers->js("/ext/Products/Products.{$this->rand}.js");
+			$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css" );
 		} else {
 			$this->tpl = 'packages/WeppsExtensions/Products/ProductsItem.tpl';
-			$this->headers->css("/ext/Products/ProductsItem.{$rand}.css");
-			$this->headers->js("/ext/Products/ProductsItem.{$rand}.js");
+			$this->headers->css("/ext/Products/ProductsItem.{$this->rand}.css");
+			$this->headers->js("/ext/Products/ProductsItem.{$this->rand}.js");
 			$this->navigator->content['Text1'] = '';
 			$res = $this->getItem("Products");
 			$smarty->assign('element',$res);
@@ -72,8 +71,8 @@ class ProductsWepps extends ExtensionWepps {
 			$smarty->assign('elements',$res);
 		}
 		$smarty->assign('normalView',0);
-		$this->headers->js("/ext/Cart/Cart.{$rand}.js");
-		$this->headers->css("/ext/Products/Products.{$rand}.css");
+		$this->headers->js("/ext/Cart/Cart.{$this->rand}.js");
+		$this->headers->css("/ext/Products/Products.{$this->rand}.css");
 		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js" );
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
