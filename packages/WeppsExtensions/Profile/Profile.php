@@ -6,7 +6,6 @@ use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\UtilsWepps;
 
 class ProfileWepps extends ExtensionWepps {
 	private $profileTpl = '';

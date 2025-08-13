@@ -3,7 +3,6 @@ namespace WeppsExtensions\Cart;
 
 use WeppsCore\Core\DataWepps;
 use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
 use WeppsCore\Utils\LogsWepps;
 use WeppsCore\Utils\MemcachedWepps;
 use WeppsCore\Utils\TemplateHeadersWepps;
