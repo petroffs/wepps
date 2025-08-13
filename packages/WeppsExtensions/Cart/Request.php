@@ -144,9 +144,9 @@ class RequestCartWepps extends RequestWepps
 				$arr = [
 					'items' => $cartUtils->getCart()['items']
 				];
-				$elementVariationInCart = self::findById($arr, $this->get['id'] . '-' . $value, 'id');
 				$quantity = 1;
-				/* $inCart = (int) ($elementVariationInCart['qu'] ?? 0);
+				/* $elementVariationInCart = self::findById($arr, $this->get['id'] . '-' . $value, 'id');
+				$inCart = (int) ($elementVariationInCart['qu'] ?? 0);
 				$inStocks = (int) ($elementVariation['Stocks'] ?? 0);
 				if ($inCart > 0) {
 					$inCart++;
