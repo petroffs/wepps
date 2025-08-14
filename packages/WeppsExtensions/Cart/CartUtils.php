@@ -13,7 +13,6 @@ use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
 use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
 use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
 
-
 class CartUtilsWepps
 {
 	private $user = [];
