@@ -195,7 +195,6 @@ class RequestCartWepps extends RequestWepps
 	{
 		foreach ($array as $group) {
 			foreach ($group as $item) {
-				#UtilsWepps::debug($item,0);
 				if ($item[$key] == $id) {
 					return $item;
 				}
@@ -204,7 +203,6 @@ class RequestCartWepps extends RequestWepps
 		return [];
 	}
 }
-
 $request = new RequestCartWepps($_REQUEST);
 $smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

@@ -37,7 +37,7 @@ class RequestAdminWepps extends RequestWepps {
 				$users->removeAuth();
 				$js = "
 						<script>
-						location.reload();
+						location.href='/profile/';
 						</script>
 					";
 				echo $js;

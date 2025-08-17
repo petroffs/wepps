@@ -11,5 +11,17 @@ var profileInit = function() {
             sidebar.detach().prependTo('#content-wrapper');
         }
     });
-}
+    $('a[data-event]').off('click');
+    $('a[data-event]').on('click',function(e) {
+        e.preventDefault();
+        switch ($(this).data('event')) {
+            case 'sign-out':
+                layoutWepps.request({
+                    data: 'action=sign-out',
+                    url: '/ext/Profile/Request.php'
+                });
+                break;
+        };
+    });
+};
 $(document).ready(profileInit);

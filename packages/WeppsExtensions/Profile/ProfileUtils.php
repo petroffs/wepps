@@ -47,7 +47,7 @@ class ProfileUtilsWepps
 					'title' => 'Выход',
 					'alias' => 'signout',
 					'url' => '/profile/',
-					'event' => 'signOut',
+					'event' => 'sign-out',
 				],
 			];
 			return $nav;
@@ -57,19 +57,19 @@ class ProfileUtilsWepps
 				'title' => 'Войти',
 				'alias' => '',
 				'url' => '/profile/',
-				'event' => 'win:popup:signIn',
+				'event' => '',
 			],
 			[
 				'title' => 'Регистрация',
 				'alias' => 'reg',
 				'url' => '/profile/reg.html',
-				'event' => 'win:popup:registration',
+				'event' => '',
 			],
 			[
 				'title' => 'Восстановить доступ',
 				'alias' => 'password',
 				'url' => '/profile/password.html',
-				'event' => 'win:popup:passwordReset',
+				'event' => '',
 			],
 		];
 		return $nav;

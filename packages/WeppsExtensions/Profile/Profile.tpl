@@ -5,7 +5,7 @@
 				<ul>
 					{foreach name="out" item="item" from=$profileNav}
 					<li class="{if $pathItem==$item.alias}active{/if}">
-						<a href="{$item.url}">{$item.title}</a>
+					<a href="{$item.url}"{if $item.event} data-event="{$item.event}"{/if}>{$item.title}</a>
 					</li>
 					{/foreach}
 				</ul>		
