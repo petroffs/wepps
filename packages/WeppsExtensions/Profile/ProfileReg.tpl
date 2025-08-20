@@ -32,7 +32,7 @@
             <section>
                 <div class="title">Отчество</div>
                 <label class="pps pps_input">
-                    <input type="text" name="patrrrrrr" placeholder="" />
+                    <input type="text" name="patronymic" placeholder="" />
                 </label>
             </section>
         </fieldset>

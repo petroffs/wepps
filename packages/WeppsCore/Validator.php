@@ -1,7 +1,8 @@
 <?php
 namespace WeppsCore\Validator;
 
-class ValidatorWepps {
+class ValidatorWepps
+{
 	/**
 	 * Проверка на непустую переменную
 	 *
@@ -10,20 +11,23 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isNotEmpty($variable,$errorMessage) {
+	public static function isNotEmpty($variable, $errorMessage)
+	{
 		$tmp = '';
 		if (is_array($variable)) {
 			foreach ($variable as $value) {
 				$value = trim($value);
-				if (!empty($value)) return $tmp;
+				if (!empty($value))
+					return $tmp;
 			}
 		} else {
 			$variable = trim($variable);
-			if (!empty($variable)) return $tmp;
+			if (!empty($variable))
+				return $tmp;
 		}
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверка на число
 	 *
@@ -32,12 +36,14 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isInt($variable,$errorMessage) {
+	public static function isInt($variable, $errorMessage)
+	{
 		$tmp = '';
-		if (preg_match("/^[\d]+$/",$variable)) return $tmp;
+		if (preg_match("/^[\d]+$/", $variable))
+			return $tmp;
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверка на латиницу и символы '_', '-'
 	 *
@@ -46,12 +52,14 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isLat($variable,$errorMessage) {
+	public static function isLat($variable, $errorMessage)
+	{
 		$tmp = '';
-		if (preg_match("/^[\da-zA-Z\_\-\.]+$/",$variable)) return $tmp;
+		if (preg_match("/^[\da-zA-Z\_\-\.]+$/", $variable))
+			return $tmp;
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверка на урл (http://some-addres/?me=valid', http://www.some-addres/hi_world/?me=valid')
 	 *
@@ -60,12 +68,14 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isUrl($variable,$errorMessage) {
+	public static function isUrl($variable, $errorMessage)
+	{
 		$tmp = '';
-		if (preg_match("/^(http\:\/\/)[\da-zA-Z\.\-\_\/]+\.[a-zA-Z]{2,5}(\/.+)*$/",$variable)) return $tmp;
+		if (preg_match("/^(http\:\/\/)[\da-zA-Z\.\-\_\/]+\.[a-zA-Z]{2,5}(\/.+)*$/", $variable))
+			return $tmp;
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверка на электронный адрес (mail@petroffs.com, mail@corp.petroffs.com)
 	 *
@@ -74,12 +84,14 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isEmail($variable,$errorMessage) {
+	public static function isEmail($variable, $errorMessage)
+	{
 		$tmp = '';
-		if (preg_match("/^[\da-zA-Z\.\_\-]+\@[\da-zA-Z\.\-]+\.[a-zA-Z]{2,5}$/",$variable)) return $tmp;
+		if (preg_match("/^[\da-zA-Z\.\_\-]+\@[\da-zA-Z\.\-]+\.[a-zA-Z]{2,5}$/", $variable))
+			return $tmp;
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверка на дату (ГГГГ-ММ-ДД)
 	 *
@@ -88,17 +100,20 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isDate($variable,$errorMessage) {
+	public static function isDate($variable, $errorMessage)
+	{
 		$tmp = '';
-		if (preg_match("/^\d{4}-\d{1,2}-\d{1,2}$/",$variable)) {
-			$exp = explode('-',$variable);
-			if ($exp[1]>12) return $errorMessage;
-			if ($exp[2]>31) return $errorMessage;
+		if (preg_match("/^\d{4}-\d{1,2}-\d{1,2}$/", $variable)) {
+			$exp = explode('-', $variable);
+			if ($exp[1] > 12)
+				return $errorMessage;
+			if ($exp[2] > 31)
+				return $errorMessage;
 			return $tmp;
 		}
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверка на время (ЧЧ:ММ:СС)
 	 *
@@ -107,18 +122,22 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isTime($variable,$errorMessage) {
+	public static function isTime($variable, $errorMessage)
+	{
 		$tmp = '';
-		if (preg_match("/^\d{1,2}\:\d{1,2}\:\d{1,2}$/",$variable)) {
-			$exp = explode(':',$variable);
-			if ($exp[0]>24) return $errorMessage;
-			if ($exp[1]>59) return $errorMessage;
-			if ($exp[2]>59) return $errorMessage;
+		if (preg_match("/^\d{1,2}\:\d{1,2}\:\d{1,2}$/", $variable)) {
+			$exp = explode(':', $variable);
+			if ($exp[0] > 24)
+				return $errorMessage;
+			if ($exp[1] > 59)
+				return $errorMessage;
+			if ($exp[2] > 59)
+				return $errorMessage;
 			return $tmp;
 		}
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверка на тип датавремя (ГГГГ-ММ-ДД ЧЧ:ММ:СС)
 	 *
@@ -127,24 +146,26 @@ class ValidatorWepps {
 	 * @return string - сообщение, в случае ошибки / пустую строку в случае успеха
 	 *
 	 */
-	public static function isDateTime($variable,$errorMessage) {
+	public static function isDateTime($variable, $errorMessage)
+	{
 		$tmp = '';
-		$exp = explode(' ',$variable);
-		$tmp  = self::isDate($exp[0],$errorMessage);
+		$exp = explode(' ', $variable);
+		$tmp = self::isDate($exp[0], $errorMessage);
 		if (isset($exp[1])) {
-			$tmp .= self::isTime($exp[1],$errorMessage);
+			$tmp .= self::isTime($exp[1], $errorMessage);
 		}
-		return ($tmp=='')?'':$errorMessage;
+		return ($tmp == '') ? '' : $errorMessage;
 	}
-	
+
 	/**
 	 * Индикация ошибок формы
 	 */
-	public static function setFormErrorsIndicate($errors,$form) {
-	    $str = "<script>\n";
-	    foreach ($errors as $key => $value) {
-	        if ($value!="") {
-	            $str .= "
+	public static function setFormErrorsIndicate($errors, $form)
+	{
+		$str = "<script>\n";
+		foreach ($errors as $key => $value) {
+			if ($value != "") {
+				$str .= "
 				var elem = $('#{$form}').find('[name=\"{$key}\"]');
                 if (elem.length==0) {
                     var elem = $('#{$form}').find('[name=\"{$key}[]\"]');
@@ -158,11 +179,11 @@ class ValidatorWepps {
 						$(this).remove();
 					});
 				}\n";
-	        } else {
-	            $str .= "$('.pps_error_{$key}').trigger('click');";
-	        }
-	    }
-	    $str .= "
+			} else {
+				$str .= "$('.pps_error_{$key}').trigger('click');";
+			}
+		}
+		$str .= "
 				$('.pps_error_parent').children().on('focus',function() {
                     var attr = $(this).attr('name').replace('[]','');
 					$('.pps_error_'+attr).trigger('click');
@@ -172,19 +193,21 @@ class ValidatorWepps {
 					$('.pps_error_'+attr).trigger('click');
 				});
 		";
-	    $str .= "</script>";
-		$errors = array_filter($errors, function ($value) {return !empty($value);});
-	    return [
-			'errors'=>$errors,
-			'count'=>count($errors),
-			'html'=>$str,
+		$str .= "</script>";
+		$errors = array_filter($errors, function ($value) {
+			return !empty($value); });
+		return [
+			'errors' => $errors,
+			'count' => count($errors),
+			'html' => $str,
 		];
 	}
-	
+
 	/**
 	 * Сообщение об успхе отправки формы
 	 */
-	public static function setFormSuccess ($message,$form,$js="") {
+	public static function setFormSuccess($message, $form, $js = "")
+	{
 		$str = "
 			<script>
 			$('#{$form}').html('{$message}');
@@ -193,9 +216,6 @@ class ValidatorWepps {
 			$js
 			</script>
 				";
-		return array('html'=>$str);
+		return ['html' => $str];
 	}
 }
-
-
-?>

@@ -24,7 +24,7 @@ class MailWepps {
 			$this->debug = 1;
 		}
 	}
-	public function mail($to,$subject,$text) {
+	public function mail(string $to,string $subject,string $text) {
 		$from = $this->from;
 		$subj = "=?utf-8?B?" . base64_encode($subject) . "?=";
 		$headers =  "";

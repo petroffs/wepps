@@ -5,13 +5,13 @@
         <fieldset>
             <section>
                 <div class="title">E-mail</div>
-                <label class="pps pps_input pps_require">
-                    <input type="email" name="email" placeholder="" />
+                <label class="pps pps_input">
+                    <input type="email" name="login" placeholder="" />
                 </label>
             </section>
             <section>
                 <div class="title">Пароль</div>
-                <label class="pps pps_input pps_require">
+                <label class="pps pps_input">
                     <input type="password" name="password" placeholder="" />
                 </label>
             </section>

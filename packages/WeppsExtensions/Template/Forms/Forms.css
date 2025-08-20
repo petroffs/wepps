@@ -88,7 +88,7 @@ label.pps.pps_require:after {
 	font-size: 9px;
 	position: absolute;
 	left: calc(-1 * var(--step3));
-	top: var(--step2);
+	top: var(--step3);
 	color: var(--color-attention);
 }
 

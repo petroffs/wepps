@@ -54,7 +54,7 @@ class ProfileUtilsWepps
 		}
 		$nav = [
 			[
-				'title' => 'Войти',
+				'title' => 'Вход',
 				'alias' => '',
 				'url' => '/profile/',
 				'event' => '',
@@ -66,7 +66,7 @@ class ProfileUtilsWepps
 				'event' => '',
 			],
 			[
-				'title' => 'Восстановить доступ',
+				'title' => 'Восстановление доступа',
 				'alias' => 'password',
 				'url' => '/profile/password.html',
 				'event' => '',
