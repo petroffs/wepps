@@ -35,11 +35,11 @@ var formsInit = function() {
 	});
 	var approveform = function() {
 		$('input[name="approve"]').on('change',function() {
+			var val = true;
 			if ($(this).prop('checked')==true) {
-				$(this).closest('form').find('input[type="submit"]').eq(0).prop('disabled',false);
-			} else {
-				$(this).closest('form').find('input[type="submit"]').eq(0).prop('disabled','disabled');
+				val = false;
 			}
+			$(this).closest('form').find('input[type="submit"]').eq(0).prop('disabled',val);
 		});
 	};
 	approveform();

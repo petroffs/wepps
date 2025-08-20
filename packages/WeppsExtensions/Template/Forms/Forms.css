@@ -1,3 +1,28 @@
+form.pps_form fieldset {
+	background-color: var(--color-98);
+	padding: var(--step2);
+	margin-top: var(--step2);
+	border-width: 0;
+	border-radius: var(--step2);
+}
+form.pps_form fieldset>section {
+	padding: var(--step2) var(--step4);
+}
+form.pps_form fieldset>section div.title {
+	font-weight: 600;
+	margin-bottom: var(--step);
+	width: max-content;
+	max-width: 100%;
+	display: block;
+}
+form.pps_form fieldset>section div.text {
+	color: var(--color-50);
+	margin-bottom: var(--step);
+	width: max-content;
+	max-width: 100%;
+	display: block;
+}
+
 div.pps_error {
 	color: var(--color-100);
 	background: var(--color-attention);
@@ -123,7 +148,6 @@ label.pps select {
 }
 
 label.pps.pps_checkbox {
-	width: max-content;
 	max-width: 100%;
 }
 

@@ -31,9 +31,6 @@ class ProfileWepps extends ExtensionWepps {
 		if (empty($this->user)) {
 			
 			switch (NavigatorWepps::$pathItem) {
-				case '':
-					$this->profileTpl = 'ProfileSignIn.tpl';
-					break;
 				case 'reg':
 					$this->profileTpl = 'ProfileReg.tpl';
 					break;
@@ -41,7 +38,7 @@ class ProfileWepps extends ExtensionWepps {
 					$this->profileTpl = 'ProfilePassword.tpl';
 					break;
 				default:
-					ExceptionWepps::error404();
+					$this->profileTpl = 'ProfileSignIn.tpl';
 					break;
 			}
 			$smarty->assign('profileTpl',$smarty->fetch(__DIR__ . '/' . $this->profileTpl));
@@ -50,6 +47,8 @@ class ProfileWepps extends ExtensionWepps {
 		}
 		switch (NavigatorWepps::$pathItem) {
 				case '':
+				case 'reg':
+				case 'password':
 					$this->profileTpl = 'ProfileHome.tpl';
 					break;
 				case 'orders':
