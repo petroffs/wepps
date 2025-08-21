@@ -6,6 +6,8 @@ use WeppsCore\Core\ExtensionWepps;
 use WeppsCore\Core\NavigatorWepps;
 use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\UtilsWepps;
+use WeppsExtensions\Addons\Jwt\JwtWepps;
 
 class ProfileWepps extends ExtensionWepps {
 	private $profileTpl = '';
@@ -28,14 +30,28 @@ class ProfileWepps extends ExtensionWepps {
 		$smarty->assign ('pathItem',NavigatorWepps::$pathItem);
 		$smarty->assign ('get',$this->get);
 		$smarty->assign('profileNav',$profileNav);
+		
 		if (empty($this->user)) {
-			
 			switch (NavigatorWepps::$pathItem) {
 				case 'reg':
 					$this->profileTpl = 'ProfileReg.tpl';
 					break;
 				case 'password':
 					$this->profileTpl = 'ProfilePassword.tpl';
+					if (!empty($this->get['token'])) {
+						$jwt = new JwtWepps();
+						$payload = $jwt->token_decode($this->get['token']);
+						if ($payload['payload']['typ']=='pass') {
+							$user = @ConnectWepps::$instance->fetch('SELECT * from s_Users where Id=? and DisplayOff=0',[$payload['payload']['id']])[0];
+							if (empty($user)) {
+								$this->profileTpl = 'ProfilePasswordError.tpl';
+								break;
+							}
+							$this->profileTpl = 'ProfilePasswordConfirm.tpl';
+							break;
+						}
+						$this->profileTpl = 'ProfilePasswordError.tpl';
+					}
 					break;
 				default:
 					$this->profileTpl = 'ProfileSignIn.tpl';

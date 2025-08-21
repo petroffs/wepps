@@ -21,4 +21,3 @@ function autoLoader($name) {
     require_once __DIR__ . '/packages/vendor/autoload.php';
 }
 spl_autoload_register('autoLoader');
-?>

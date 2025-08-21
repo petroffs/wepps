@@ -49,6 +49,15 @@ class RequestProfileWepps extends RequestWepps {
 					echo $outer['html'];
 				}
 				break;
+			case 'password-confirm':
+				$this->confirmPassword();
+				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
+				echo $outer['html'];
+				if ($outer['count']==0) {
+					$outer = ValidatorWepps::setFormSuccess("Пароль установлен",$this->get['form']);
+					echo $outer['html'];
+				}
+				break;
 			case 'reg':
 				break;
 			default :
@@ -107,10 +116,50 @@ class RequestProfileWepps extends RequestWepps {
 		], $lifetime);
 		$url = 'https://'.ConnectWepps::$projectDev['host']."/profile/password.html?token={$token}";
 		$text = "<b>Добрый день, {$user['NameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
-		$text.= "<br/><br/>Для изменения пароля перейдите по ссылке::";
+		$text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
 		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
 		$mail = new MailWepps('html');
-		$mail->mail($user['Email'],"Восстановление доступа к сайту",$text);
+		$mail->mail($user['Email'],"Восстановление доступа",$text);
+		#UtilsWepps::cookies('wepps_token', $token, $lifetime);
+		#ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
+		return true;
+	}
+	private function confirmPassword() {
+		UtilsWepps::cookies('wepps_token','');
+
+
+		
+
+
+
+
+		$sql = "select * from s_Users where Login=? and DisplayOff=0";
+		$res = ConnectWepps::$instance->fetch($sql, [$this->get['login']]);
+		$this->errors = [];
+		if (empty($user = $res[0])) {
+			$this->errors['login'] = 'Неверный логин';
+		}
+		
+		/*
+		 * Добавить проверку на рекапчу
+		 */
+
+		if (!empty($this->errors)) {
+			return false;
+		}
+		
+		$lifetime = 3600 * 24;
+		$jwt = new JwtWepps();
+		$token = $jwt->token_encode([
+			'typ' => 'pass',
+			'id' => $user['Id']
+		], $lifetime);
+		$url = 'https://'.ConnectWepps::$projectDev['host']."/profile/password.html?token={$token}";
+		$text = "<b>Добрый день, {$user['NameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
+		$text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
+		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
+		$mail = new MailWepps('html');
+		$mail->mail($user['Email'],"Восстановление доступа",$text);
 		#UtilsWepps::cookies('wepps_token', $token, $lifetime);
 		#ConnectWepps::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		return true;

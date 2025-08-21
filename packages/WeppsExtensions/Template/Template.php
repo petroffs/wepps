@@ -22,14 +22,14 @@ class TemplateWepps extends ExtensionWepps {
 		/*
 		 * Дополнительный глобальный функционал
 		 */
-		new TemplateAddonsWepps($this->navigator,$this->headers);
+		new TemplateAddonsWepps($this->navigator,$this->headers, $_GET);
 		
 		/*
 		 * Раширение
 		 */
 		if ($this->navigator->content['Extension_FileExt']) {
 			$extensionClass = "\WeppsExtensions\\{$this->navigator->content['Extension_FileExt']}\\{$this->navigator->content['Extension_FileExt']}Wepps";
-			$extension = new $extensionClass($this->navigator,$this->headers);
+			$extension = new $extensionClass($this->navigator,$this->headers,$_GET);
 		}
 		$navigator = &$this->navigator;
 		if ($navigator::$pathItem!='' && !isset($extension->extensionData['element'])) {
@@ -40,7 +40,7 @@ class TemplateWepps extends ExtensionWepps {
 		 * Панели и блоки
 		 */
 		if ($this->navigator->content['IsBlocksActive']==1) {
-			new BlocksWepps($this->navigator, $this->headers);
+			new BlocksWepps($this->navigator, $this->headers, $_GET);
 		}
 		
 		/*
