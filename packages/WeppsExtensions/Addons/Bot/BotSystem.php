@@ -7,6 +7,7 @@ use WeppsCore\Utils\MemcachedWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Cart\CartUtilsWepps;
 use WeppsExtensions\Cart\Payments\Yookassa\YookassaWepps;
+use WeppsExtensions\Profile\ProfileUtilsWepps;
 
 class BotSystemWepps extends BotWepps {
 	public $parent = 0;
@@ -24,6 +25,7 @@ class BotSystemWepps extends BotWepps {
 		$logs = new LogsWepps();
 		$cartUtils = new CartUtilsWepps();
 		$yookassa = new YookassaWepps([],$cartUtils);
+		$profileUtils = new ProfileUtilsWepps([]);
 		foreach ($res as $value) {
 			switch($value['Name']) {
 				case 'order-new':
@@ -34,6 +36,9 @@ class BotSystemWepps extends BotWepps {
 					break;
 				case 'yookassa':
 					$yookassa->processLog($value,$logs);
+					break;
+				case 'password':
+					$profileUtils->processPasswordLog($value,$logs);
 					break;
 				default:
 					$logs->update($value['Id'],['message'=>'task fail'],404);

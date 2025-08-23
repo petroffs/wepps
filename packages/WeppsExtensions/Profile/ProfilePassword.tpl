@@ -10,7 +10,15 @@
                 </label>
             </section>
             <section>
-                Рекапча
+                <script>
+  function onClick(e) {
+    e.preventDefault();
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute('6Lc3Ea8rAAAAAH2oJcGzrbVV-9i6Rw-3fduxtL1Y', { action: 'LOGIN'});
+    });
+  }
+</script>
+
             </section>
         </fieldset>
         <fieldset>

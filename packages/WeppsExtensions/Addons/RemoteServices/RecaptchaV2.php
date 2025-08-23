@@ -5,16 +5,17 @@ use Curl\Curl;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 
-class RecaptchaV2Wepps extends RemoteServicesWepps {
-	
+class RecaptchaV2Wepps extends RemoteServicesWepps
+{
+
 	private $sitekey;
 	private $secret;
-	
-	public function __construct($settings=[]) {
+
+	public function __construct($settings = [])
+	{
 		$this->curl = new Curl();
 		$this->curl->setHeader('Content-Type', 'application/json;charset=UTF-8');
 		$this->settings = $settings;
-		
 		$this->sitekey = ConnectWepps::$projectServices['recaptcha']['sitekey'];
 		$this->secret = ConnectWepps::$projectServices['recaptcha']['secret'];
 	}
@@ -22,30 +23,34 @@ class RecaptchaV2Wepps extends RemoteServicesWepps {
 	/*
 	 * Получить ответ V2
 	 */
-	public function check($response) {
+	public function check($response)
+	{
 		$url = "https://www.google.com/recaptcha/api/siteverify";
 		$body = array(
-		    'secret' => $this->secret,
-				'response' => $response
+			'secret' => $this->secret,
+			'response' => $response
 		);
 		$this->curl = new Curl();
 		$this->cache = 0;
-		return $this->getResponse($url,$body);
+		return $this->getResponse($url, $body);
 	}
-	
-	public function getSitekey() {
+
+	public function getSitekey()
+	{
 		return $this->sitekey;
 	}
-	
-	public function render($gwidgetId='gwidgetId',$id='greacptchaV2',$recaptchadub='recaptchadub') {
+
+	public function render($gwidgetId = 'gwidgetId', $id = 'greacptchaV2', $recaptchadub = 'recaptchadub')
+	{
 		$html = "
 		<label class=\"pps pps_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
 		<div class=\"g-recaptcha\" id=\"{$id}\"></div>
 		<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit\" async defer></script>		
+		<script src=\"https://www.google.com/recaptcha/enterprise.js?render='.$this->sitekey.'\"></script>
 		<script>
 		var onloadRecapchaV2 = function() {
 			{$gwidgetId} = grecaptcha.render('{$id}', {
-				'sitekey' : '".$this->sitekey."'
+				'sitekey' : '" . $this->sitekey . "'
 			});
 		};
 		</script>
@@ -53,13 +58,13 @@ class RecaptchaV2Wepps extends RemoteServicesWepps {
 		";
 		return $html;
 	}
-	public function reset($gwidgetId='gwidgetId') {
-	    $html = "
+	public function reset($gwidgetId = 'gwidgetId')
+	{
+		$html = "
         <script>
             grecaptcha.reset($gwidgetId);
         </script>
         ";
-	    return $html;
+		return $html;
 	}
 }
-?>

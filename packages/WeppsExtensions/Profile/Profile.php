@@ -8,6 +8,7 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsCore\Exception\ExceptionWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsExtensions\Addons\Jwt\JwtWepps;
+use WeppsExtensions\Addons\RemoteServices\RecaptchaV2Wepps;
 
 class ProfileWepps extends ExtensionWepps {
 	private $profileTpl = '';
@@ -51,7 +52,12 @@ class ProfileWepps extends ExtensionWepps {
 							break;
 						}
 						$this->profileTpl = 'ProfilePasswordError.tpl';
+						break;
 					}
+					$recaptcha = new RecaptchaV2Wepps();
+					$response = $recaptcha->render();
+					$smarty->assign('recaptcha',$response);
+					#UtilsWepps::debug($response,21);
 					break;
 				default:
 					$this->profileTpl = 'ProfileSignIn.tpl';

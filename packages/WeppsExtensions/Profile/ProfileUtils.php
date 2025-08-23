@@ -2,8 +2,11 @@
 namespace WeppsExtensions\Profile;
 
 use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils\LogsWepps;
 use WeppsExtensions\Addons\Jwt\JwtWepps;
 use WeppsCore\Core\NavigatorWepps;
+use WeppsExtensions\Addons\Messages\Mail\MailWepps;
+use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
 use WeppsExtensions\Products\ProductsWepps;
 
 class ProfileUtilsWepps
@@ -98,5 +101,21 @@ class ProfileUtilsWepps
 	public function getOrders($id = 0)
 	{
 
+	}
+	public function processPasswordLog(array $request,LogsWepps $logs) {
+		$jdata = json_decode($request['BRequest'],true);
+		$url = 'https://'.ConnectWepps::$projectDev['host']."/profile/password.html?token={$jdata['token']}";
+		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
+		$text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
+		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
+		$mail = new MailWepps('html');
+		$outputMessage = "email fail";
+		if ($mail->mail($jdata['email'],"Восстановление доступа",$text)) {
+			$outputMessage = "email ok";
+		}
+		$response = [
+			'message' => $outputMessage
+		];
+		return $logs->update($request['Id'],$response,200);
 	}
 }
