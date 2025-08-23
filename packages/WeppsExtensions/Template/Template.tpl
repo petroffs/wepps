@@ -5,7 +5,6 @@
 <meta name="keywords" content="{$content.MetaKeyword|strip_tags}" />
 <meta name="description" content="{$content.MetaDescription|strip_tags}" />
 <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
-<script src="https://www.google.com/recaptcha/enterprise.js?render=6Lc3Ea8rAAAAAH2oJcGzrbVV-9i6Rw-3fduxtL1Y"></script>
 {$headers.meta}
 {$headers.cssjs}
 </head>

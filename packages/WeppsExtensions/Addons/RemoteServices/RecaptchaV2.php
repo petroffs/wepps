@@ -2,6 +2,7 @@
 namespace WeppsExtensions\Addons\RemoteServices;
 
 use Curl\Curl;
+use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Connect\ConnectWepps;
 
@@ -10,12 +11,13 @@ class RecaptchaV2Wepps extends RemoteServicesWepps
 
 	private $sitekey;
 	private $secret;
+	private $headers;
 
-	public function __construct($settings = [])
+	public function __construct(TemplateHeadersWepps $headers)
 	{
 		$this->curl = new Curl();
 		$this->curl->setHeader('Content-Type', 'application/json;charset=UTF-8');
-		$this->settings = $settings;
+		$this->headers = $headers;
 		$this->sitekey = ConnectWepps::$projectServices['recaptcha']['sitekey'];
 		$this->secret = ConnectWepps::$projectServices['recaptcha']['secret'];
 	}
@@ -23,13 +25,13 @@ class RecaptchaV2Wepps extends RemoteServicesWepps
 	/*
 	 * Получить ответ V2
 	 */
-	public function check($response)
+	public function check($response) : array
 	{
 		$url = "https://www.google.com/recaptcha/api/siteverify";
-		$body = array(
+		$body = [
 			'secret' => $this->secret,
 			'response' => $response
-		);
+		];
 		$this->curl = new Curl();
 		$this->cache = 0;
 		return $this->getResponse($url, $body);
@@ -42,11 +44,11 @@ class RecaptchaV2Wepps extends RemoteServicesWepps
 
 	public function render($gwidgetId = 'gwidgetId', $id = 'greacptchaV2', $recaptchadub = 'recaptchadub')
 	{
+		#<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit\" async defer></script>
+		$this->headers->js("https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit");
 		$html = "
 		<label class=\"pps pps_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
 		<div class=\"g-recaptcha\" id=\"{$id}\"></div>
-		<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit\" async defer></script>		
-		<script src=\"https://www.google.com/recaptcha/enterprise.js?render='.$this->sitekey.'\"></script>
 		<script>
 		var onloadRecapchaV2 = function() {
 			{$gwidgetId} = grecaptcha.render('{$id}', {
@@ -54,7 +56,6 @@ class RecaptchaV2Wepps extends RemoteServicesWepps
 			});
 		};
 		</script>
-		
 		";
 		return $html;
 	}

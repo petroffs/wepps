@@ -23,7 +23,8 @@ class RemoteServicesWepps {
 	/*
 	 * Настроить кэширование в БД, чтобы изначально проверять кэш, а потом только обращаться к Remote API
 	 */
-	public function getResponse($url,$body="") {
+	public function getResponse($url,$body="") : array
+	{
 	    $cache = ($this->cache==1) ? self::getCache(md5($url.$body)) : null;
 	    if (!empty($cache)) {
 	        return $cache;

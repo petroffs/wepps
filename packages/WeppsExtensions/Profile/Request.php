@@ -5,11 +5,13 @@ use WeppsCore\Connect\ConnectWepps;
 use WeppsCore\Utils\LogsWepps;
 use WeppsCore\Utils\RequestWepps;
 use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Utils\TemplateHeadersWepps;
 use WeppsCore\Utils\UsersWepps;
 use WeppsCore\Utils\UtilsWepps;
 use WeppsCore\Validator\ValidatorWepps;
 use WeppsExtensions\Addons\Jwt\JwtWepps;
 use WeppsExtensions\Addons\Messages\Mail\MailWepps;
+use WeppsExtensions\Addons\RemoteServices\RecaptchaV2Wepps;
 
 require_once '../../../config.php';
 require_once '../../../autoloader.php';
@@ -100,11 +102,11 @@ class RequestProfileWepps extends RequestWepps {
 		if (empty($user = $res[0])) {
 			$this->errors['login'] = 'Неверный логин';
 		}
-		
-		/*
-		 * Добавить проверку на рекапчу
-		 */
-
+		$recaptcha = new RecaptchaV2Wepps(new TemplateHeadersWepps());
+		$response = $recaptcha->check($this->get['g-recaptcha-response']);
+		if ($response['response']['success'] !== true) {
+		    $this->errors['g-recaptcha-response'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
+		}
 		if (!empty($this->errors)) {
 			return false;
 		}

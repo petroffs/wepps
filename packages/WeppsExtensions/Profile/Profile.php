@@ -54,7 +54,7 @@ class ProfileWepps extends ExtensionWepps {
 						$this->profileTpl = 'ProfilePasswordError.tpl';
 						break;
 					}
-					$recaptcha = new RecaptchaV2Wepps();
+					$recaptcha = new RecaptchaV2Wepps($this->headers);
 					$response = $recaptcha->render();
 					$smarty->assign('recaptcha',$response);
 					#UtilsWepps::debug($response,21);
