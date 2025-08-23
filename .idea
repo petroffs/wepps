@@ -5,7 +5,7 @@ remote
 	mysql --defaults-extra-file=/var/www/config.cnf wepps_platformdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.sql
 local
 	mysql --defaults-extra-file=/d/var/home/config.cnf wepps_platformdb < /d/var/home/wepps.platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.sql
-	php /d/var/home/wepps.platform/packages/WeppsExtensions/Addons/Bot/Request.php tasks
+	php8 /d/var/home/wepps.platform/packages/WeppsExtensions/Addons/Bot/Request.php tasks
 wsl	
 	mysql --defaults-extra-file=/var/www/config.cnf wepps_platformdb < /var/www/wepps/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.sql
 	php8 /var/www.wepps/platform/packages/WeppsExtensions/Addons/Bot/Request.php tasks

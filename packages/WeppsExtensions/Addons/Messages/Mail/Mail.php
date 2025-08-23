@@ -6,6 +6,13 @@ use WeppsCore\Core\SmartyWepps;
 use Curl\Curl;
 use WeppsCore\Utils\UtilsWepps;
 
+/**
+ * MailWepps handles the creation and sending of emails with support for HTML and plain text formats,
+ * attachments, and debug mode for the Wepps platform.
+ * 
+ * Класс MailWepps представляет собой модуль для отправки электронных писем с поддержкой 
+ * HTML/Plain текста, вложений, встроенных изображений и отладки
+ */
 class MailWepps {
 	private $attachment=[];
 	private $attachmentInput=[];

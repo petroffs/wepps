@@ -108,6 +108,7 @@ class RequestProfileWepps extends RequestWepps {
 		    $this->errors['g-recaptcha-response'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
 		}
 		if (!empty($this->errors)) {
+			echo $recaptcha->reset();
 			return false;
 		}
 		UtilsWepps::cookies('wepps_token','');
