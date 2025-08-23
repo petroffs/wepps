@@ -8,7 +8,9 @@ use WeppsCore\Core\SmartyWepps;
 use WeppsExtensions\Addons\Jwt\JwtWepps;
 
 /**
- * Summary of UtilsWepps
+ * Класс UtilsWepps представляет собой набор вспомогательных функций для 
+ * обработки данных, форматирования, отладки и работы 
+ * с HTTP-заголовками/куками.
  */
 class UtilsWepps
 {
@@ -782,11 +784,35 @@ if (!function_exists('getallheaders')) {
 		return $headers;
 	}
 }
-
+/**
+ * Класс служит для трекинга выполнения локальных сервисов, включая:
+ * 
+ * Регистрацию входящих запросов (CLI/HTTP).
+ * Хранение метаданных (IP, дата, URL).
+ * Отслеживание статуса обработки и результатов.
+ * Использует паттерн подготовки SQL-запросов через ConnectWepps для обеспечения безопасности и гибкости.
+ * 
+ * @return true;
+ */
 class LogsWepps {
 	public function __construct() {
 
 	}
+	/**
+	 * Класс служит для трекинга выполнения локальных сервисов, включая:
+	 * 
+	 * Регистрацию входящих запросов (CLI/HTTP).
+	 * Хранение метаданных (IP, дата, URL).
+	 * Отслеживание статуса обработки и результатов.
+	 * Использует паттерн подготовки SQL-запросов через ConnectWepps для обеспечения безопасности и гибкости.
+	 * 
+	 * @param string $name
+	 * @param array $jdata
+	 * @param string $date
+	 * @param string $ip
+	 * @param string $type
+	 * @return void
+	 */
 	public function add(string $name, array $jdata, string $date = '', string $ip = '', string $type = 'cli')
 	{
 		$row = [
