@@ -1,12 +1,12 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Request;
+use WeppsCore\Smarty;
+use WeppsCore\Exception;
+use WeppsCore\TemplateHeaders;
 
-class ProcessingWepps extends RequestWepps {
+class Processing extends Request {
 	public $way;
 	public $title;
 	public $headers;
@@ -18,8 +18,8 @@ class ProcessingWepps extends RequestWepps {
 				'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/",
 				'Name'=>$this->title
 		]);
-		$this->headers = new TemplateHeadersWepps();
-		$smarty = SmartyWepps::getSmarty();
+		$this->headers = new TemplateHeaders();
+		$smarty = Smarty::getSmarty();
 		$smarty->assign('url','/packages/WeppsAdmin/ConfigExtensions/Processing/Request.php');
 		if ($action=="") {
 			return;
@@ -35,7 +35,7 @@ class ProcessingWepps extends RequestWepps {
 				break;
 			default:
 				if ($action!="") {
-					ExceptionWepps::error404();
+					Exception::error404();
 				}
 				break;
 		}

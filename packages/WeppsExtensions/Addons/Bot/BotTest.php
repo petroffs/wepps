@@ -1,22 +1,22 @@
 <?php
 namespace WeppsExtensions\Addons\Bot;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsAdmin\Lists\ListsWepps;
-use WeppsExtensions\Addons\Messages\Mail\MailWepps;
-use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
+use WeppsCore\Data;
+use WeppsAdmin\Lists\Lists;
+use WeppsExtensions\Addons\Messages\Mail\Mail;
+use WeppsExtensions\Addons\Messages\Telegram\Telegram;
+use WeppsExtensions\Cart\CartUtils;
 
-class BotTestWepps extends BotWepps {
+class BotTest extends Bot {
 	public $parent = 0;
 	public function __construct() {
 		parent::__construct();
 	}
 	public function setHashes() {
 		$sql = "select * from s_PropertiesValues;";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		$str = "";
 		foreach ($res as $value) {
 			$list = $value['TableName'];
@@ -27,7 +27,7 @@ class BotTestWepps extends BotWepps {
 			$hash = md5($list . $field . $id . $prop . $v);
 			$str .= "update s_PropertiesValues set HashValue='{$hash}' where Id='{$value['Id']}';\n";
 		}
-		UtilsWepps::debug($str,2);
+		Utils::debug($str,2);
 	}
 	public function telegram() {
 		/*
@@ -36,13 +36,13 @@ class BotTestWepps extends BotWepps {
 		 * В группе - добавляем Бота в группу и тоже пишем /start и далее проверяем getUpdates
 		 * chat_id группы начинается с минуса
 		 */
-		$tg = new TelegramWepps();
-		$response = $tg->send(ConnectWepps::$projectServices['telegram']['dev'],'Hello from Bot (TelegramWepps)');
-		UtilsWepps::debug($response,2);
+		$tg = new Telegram();
+		$response = $tg->send(Connect::$projectServices['telegram']['dev'],'Hello from Bot (Telegram)');
+		Utils::debug($response,2);
 	}
 	public function mail() {
-		$mail = new MailWepps("html");
-		$mail->mail(ConnectWepps::$projectInfo['email'], "Test subject", "Test text");
+		$mail = new Mail("html");
+		$mail->mail(Connect::$projectInfo['email'], "Test subject", "Test text");
 	}
 	public function testDB() {
 		$row = [
@@ -56,14 +56,14 @@ class BotTestWepps extends BotWepps {
 						'fn' => 'md5(:Text)'
 				]
 		];
-		$t = ConnectWepps::$instance->insert('DataTbls',$row,$settings);
+		$t = Connect::$instance->insert('DataTbls',$row,$settings);
 		
-		UtilsWepps::debug($t,21);
+		Utils::debug($t,21);
 
-		/* $obj = new DataWepps("Products");
+		/* $obj = new Data("Products");
 		$res = $obj->fetch('',20,1);	
-		UtilsWepps::debug($obj->paginator,21); */
-		$obj = new DataWepps("DataTbls");
+		Utils::debug($obj->paginator,21); */
+		$obj = new Data("DataTbls");
 		$row = [
 				'Name' => 'Add Test2',
 				'Text' => 'Text Test',
@@ -73,16 +73,16 @@ class BotTestWepps extends BotWepps {
 				'Alias' => 'AliasTest',
 		];
 		$id = $obj->add($row,1);
-		UtilsWepps::debug($id,31);
+		Utils::debug($id,31);
 		
-		$obj = new DataWepps("Products");
+		$obj = new Data("Products");
 		$obj->setParams([
 				'Брюки Armani Junior'
 		]);
 		$res = $obj->fetch("t.DisplayOff=0 and t.Name = ?",5,1);
-		UtilsWepps::debug($res,21);
+		Utils::debug($res,21);
 		
-		/* $obj = new DataWepps("DataTbls");
+		/* $obj = new Data("DataTbls");
 		$t = $obj->add([
 				'Name'=>'TEST1',
 				'BTest'=>'test text',
@@ -91,7 +91,7 @@ class BotTestWepps extends BotWepps {
 		]); */
 		
 		
-		$t = ListsWepps::setListItem(
+		$t = Lists::setListItem(
 				"DataTbls",
 				55,
 				[
@@ -100,7 +100,7 @@ class BotTestWepps extends BotWepps {
 						'BTest' => 'test text'
 				]
 				);
-		UtilsWepps::debug($t,21);
+		Utils::debug($t,21);
 	}
 	public function cli() {
 		$this->cli->text("simle text");
@@ -116,11 +116,11 @@ class BotTestWepps extends BotWepps {
 		#$password2 = "556";
 		#$hash = password_hash($password2,PASSWORD_BCRYPT);
 		if (password_verify($password,$hash)) {
-			#UtilsWepps::debug('ok',31);
+			#Utils::debug('ok',31);
 			$this->cli->success('ok');
 			exit();
 		}
-		#UtilsWepps::debug('fail',31);
+		#Utils::debug('fail',31);
 		$this->cli->error('fail');
 		exit();
 	}
@@ -128,16 +128,16 @@ class BotTestWepps extends BotWepps {
 		/*
 		 * EText - комментарий
 		 */
-		$cartUtils = new CartUtilsWepps();
+		$cartUtils = new CartUtils();
 		$id = 41;
 		$sql = "select o.Id,o.Name,o.JData,o.JPositions,o.Address,o.PostalCode,o.Phone,o.Email,e.EText from Orders o
 		left join OrdersEvents e on e.OrderId=o.Id and e.EType='Msg' where o.Id=? order by e.Id";
-		$res = ConnectWepps::$instance->fetch($sql,[$id])[0];
+		$res = Connect::$instance->fetch($sql,[$id])[0];
 		$str = $cartUtils->getOrderText($res);
 		
 		$sql = "update Orders set OText=? where Id=?";
-		ConnectWepps::$instance->query($sql,[$str,$id]);
-		#UtilsWepps::debug($str,21);
+		Connect::$instance->query($sql,[$str,$id]);
+		#Utils::debug($str,21);
 	}
 }
 ?>

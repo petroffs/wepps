@@ -1,20 +1,20 @@
 <?php
 namespace WeppsExtensions\_Example10;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class _Example10Wepps extends ExtensionWepps {
+class _Example10 extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/_Example10/_Example10.tpl';
 				$conditions = 't.DisplayOff=0';
-				$obj = new DataWepps("News");
+				$obj = new Data("News");
 				$res = $obj->fetch($conditions,6,$this->page,'t.Priority desc');
 				$smarty->assign('elements',$res);
 				$smarty->assign('paginator',$obj->paginator);
@@ -22,7 +22,7 @@ class _Example10Wepps extends ExtensionWepps {
 				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		$this->headers->css("/ext/_Example10/_Example10.{$this->rand}.css");

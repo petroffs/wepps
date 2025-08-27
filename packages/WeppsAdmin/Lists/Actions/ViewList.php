@@ -1,11 +1,11 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
 
-class ViewListWepps extends RequestWepps {
+class ViewList extends Request {
 	public $noclose = 1;
 	public $condition = "";
 	public $scheme = [];

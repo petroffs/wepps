@@ -1,33 +1,29 @@
 <?php
-namespace WeppsAdmin\ConfigExtensions\Orders;
-
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-
-require_once '../../../../config.php';
-require_once '../../../../autoloader.php';
 require_once '../../../../configloader.php';
 
-class RequestOrdersWepps extends RequestWepps {
+use WeppsCore\Request;
+use WeppsCore\Utils;
+use WeppsCore\Exception;
+use WeppsCore\Connect;
+use WeppsCore\Data;
+use WeppsCore\TextTransforms;
+use WeppsExtensions\Cart\CartUtils;
+
+class RequestOrders extends Request {
 	public function request($action="") {
 		$this->tpl = '';
-		if (@ConnectWepps::$projectData['user']['ShowAdmin']!=1) {
-			ExceptionWepps::error(404);
+		if (@Connect::$projectData['user']['ShowAdmin']!=1) {
+			Exception::error(404);
 		}
-		ConnectWepps::$instance->cached('no');
+		Connect::$instance->cached('no');
 		switch ($action) {
 			case "test":
-				UtilsWepps::debug('test1',1);
+				Utils::debug('test1',1);
 				break;
 			case 'viewOrder':
 			    $this->tpl = "RequestViewOrder.tpl";
 			    if (empty($this->get['id'])) {
-			    	ExceptionWepps::error(400);
+			    	Exception::error(400);
 			    }
 			    $order = $this->getOrder($this->get['id']);
 			    break;
@@ -35,27 +31,27 @@ class RequestOrdersWepps extends RequestWepps {
 			case 'setProducts':
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id'])) {
-					ExceptionWepps::error(404);
+					Exception::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
 				$jdata = json_decode($order['order']['JPositions'],true);
 				if (empty($jdata[$this->get['index']])) {
-					ExceptionWepps::error(400);
+					Exception::error(400);
 				}
 				
 				$jdata[$this->get['index']]['quantity'] = (int) $this->get['quantity'];
 				$jdata[$this->get['index']]['price'] = (float) $this->get['price'];
-				$jdata[$this->get['index']]['sum'] = UtilsWepps::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'],2);
+				$jdata[$this->get['index']]['sum'] = Utils::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'],2);
 				
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
-				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
+				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case 'addProducts':
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id']) || empty($this->get['products']) || empty($this->get['name']) || empty($this->get['quantity']) || empty($this->get['price'])) {
-					ExceptionWepps::error(404);
+					Exception::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
 				$jdata = json_decode($order['order']['JPositions'],true);
@@ -66,53 +62,53 @@ class RequestOrdersWepps extends RequestWepps {
 						'name' => (string) $this->get['name'],
 						'quantity' => (int) $this->get['quantity'],
 						'price' => (float) $this->get['price'],
-						'sum' => UtilsWepps::round((float) $this->get['price'] * (int) $this->get['quantity'],2),
+						'sum' => Utils::round((float) $this->get['price'] * (int) $this->get['quantity'],2),
 				];
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
-				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
+				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "removeProducts":
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id'])) {
-					ExceptionWepps::error(404);
+					Exception::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
 				$jdata = json_decode($order['order']['JPositions'],true);
 				if (empty($jdata[$this->get['index']])) {
-					ExceptionWepps::error(400);
+					Exception::error(400);
 				}
 				unset($jdata[$this->get['index']]);
 				$jdata = array_merge([],$jdata);
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
-				ConnectWepps::$instance->query($sql,[$json,$order['order']['Id']]);
+				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "searchProducts":
-				#UtilsWepps::debug($this->get,31);
+				#Utils::debug($this->get,31);
 				$jdata = self::searchProducts(@$this->get['search'],$this->get['page']);
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				header ( 'Content-type:application/json;charset=utf-8' );
 				echo $json;
-				ConnectWepps::$instance->close();
+				Connect::$instance->close();
 				break;
 			case "setStatus":
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id']) || empty($this->get['status'])) {
-					ExceptionWepps::error(404);
+					Exception::error(404);
 				}
 				$sql = "update Orders set OStatus=? where Id=?";
-				ConnectWepps::$instance->query($sql,[$this->get['status'],$this->get['id']]);
+				Connect::$instance->query($sql,[$this->get['status'],$this->get['id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "addPayments":
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id']) || empty($this->get['payments'])) {
-					ExceptionWepps::error(404);
+					Exception::error(404);
 				}
-				$arr = ConnectWepps::$instance->prepare([
+				$arr = Connect::$instance->prepare([
 						'Name' => 'Оплата Сайт',
 						'PriceTotal' => (float) $this->get['payments'],
 						'IsPaid' => 1,
@@ -123,29 +119,29 @@ class RequestOrdersWepps extends RequestWepps {
 						'Priority' => 0
 				]);
 				$sql = "insert into Payments {$arr['insert']}";
-				ConnectWepps::$instance->query($sql,$arr['row']);
+				Connect::$instance->query($sql,$arr['row']);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "addMessages":
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id']) || empty($this->get['messages'])) {
-					ExceptionWepps::error(404);
+					Exception::error(404);
 				}
 				/* $jdata = [
 						'date' => date('Y-m-d H:i:s'),
 						'text' => $this->get['messages']
 				]; */
-				$arr = ConnectWepps::$instance->prepare([
+				$arr = Connect::$instance->prepare([
 						'Name' => 'Msg',
 						'OrderId' => $this->get['id'],
-						'UserId' => ConnectWepps::$projectData['user']['Id'],
+						'UserId' => Connect::$projectData['user']['Id'],
 						'EType' => 'msg',
 						'EDate' => date('Y-m-d H:i:s'),
 						'EText' => trim(strip_tags($this->get['messages']))
 						#'JData' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
 				]);
 				$sql = "insert into OrdersEvents {$arr['insert']}";
-				ConnectWepps::$instance->query($sql,$arr['row']);
+				Connect::$instance->query($sql,$arr['row']);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case 'setTariff':
@@ -172,32 +168,32 @@ class RequestOrdersWepps extends RequestWepps {
 						exit();
 				}
 				$sql = "update Orders set $field = ? where Id = ?";
-				ConnectWepps::$instance->query($sql,[(float) $this->get['value'],(int) $this->get['id']]);
+				Connect::$instance->query($sql,[(float) $this->get['value'],(int) $this->get['id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			default:
-				ExceptionWepps::error(404);
+				Exception::error(404);
 				break;
 		}
 	}
 	private function getOrder($id) {
-		$obj = new DataWepps("Orders");
+		$obj = new Data("Orders");
 		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
 		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
 		$obj->setParams([$id]);
 		$order = @$obj->fetch("t.Id=?")[0];
-		#UtilsWepps::debug($obj->sql,2);
+		#Utils::debug($obj->sql,2);
 		if (empty($order)) {
-			ExceptionWepps::error(404);
+			Exception::error(404);
 		}
 		$sql = "select ts.Id,ts.Name from OrdersStatuses ts group by ts.Id order by ts.Priority";
-		$statuses = ConnectWepps::$instance->fetch($sql);
+		$statuses = Connect::$instance->fetch($sql);
 		$this->assign('statuses',$statuses);
 		$this->assign('statusesActive',$order['OStatus']);
 		$products = json_decode($order['JPositions'],true);
 		$sql = '';
 		$sum = 0;
-		$cartUtils = new CartUtilsWepps();
+		$cartUtils = new CartUtils();
 		$products = $cartUtils->getCartPositionsRecounter($products,$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
 		foreach ($products as $value) {
 			$sum += $value['sum'];
@@ -206,7 +202,7 @@ class RequestOrdersWepps extends RequestWepps {
 		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
 		$ids = implode(',', array_column($products, 'id'));
 		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum,x.priceTotal,x.sumTotal from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
-		$products = ConnectWepps::$instance->fetch($sql);
+		$products = Connect::$instance->fetch($sql);
 		$this->assign('products', $products);
 
 		$sum += $order['ODeliveryTariff'];
@@ -214,11 +210,11 @@ class RequestOrdersWepps extends RequestWepps {
 		$sum += $order['OPaymentTariff'];
 		$sum -= $order['OPaymentDiscount'];
 
-		$order['OSum'] = UtilsWepps::round($sum);
+		$order['OSum'] = Utils::round($sum);
 		#$order['OSumPay'] = $sum - $order['PricePaid'];
 		$sql = "update Orders set OSum=? where Id=?";
-		ConnectWepps::$instance->query($sql,[$sum,$id]);
-		$obj = new DataWepps("OrdersEvents");
+		Connect::$instance->query($sql,[$sum,$id]);
+		$obj = new Data("OrdersEvents");
 		$obj->setParams([$id]);
 		$obj->setJoin("join s_Users u on u.Id=t.UserId");
 		$obj->setConcat("u.Name UsersName");
@@ -243,7 +239,7 @@ class RequestOrdersWepps extends RequestWepps {
 				join ProductsVariations pv on pv.ProductsId=p.Id and pv.DisplayOff=0 and pv.Field4>0
 				where p.DisplayOff=0 and (p.Name like ? or p.Article like ? or concat(pv.Field1,', ',pv.Field2) like ? or pv.Field3 like ?)
 				group by p.Id order by p.Name asc limit $offset,$limit";
-			$res = ConnectWepps::$instance->fetch($sql,["%{$term}%","%{$term}%","%{$term}%","%{$term}%"]);
+			$res = Connect::$instance->fetch($sql,["%{$term}%","%{$term}%","%{$term}%","%{$term}%"]);
 		}
 		$pagination = false;
 		if (!empty($res)) {
@@ -294,13 +290,13 @@ class RequestOrdersWepps extends RequestWepps {
 					<strong>{$value['Name']}</strong>{$optionsText}
 				</td>
 				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".TextTransformsWepps::money($value['Price'])." Р.
+					".TextTransforms::money($value['Price'])." Р.
 				</td>
 				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
 					{$value['ItemQty']}
 				</td>
 				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".TextTransformsWepps::money($value['Summ'])." Р.
+					".TextTransforms::money($value['Summ'])." Р.
 				</td>
 			</tr>
 			";
@@ -308,13 +304,13 @@ class RequestOrdersWepps extends RequestWepps {
 		$text .= "
 		<tr>
 			<td colspan=\"3\" align=\"right\"><strong>ИТОГО: </strong></td>
-			<td align=\"right\">".TextTransformsWepps::money($order['order']['Summ'])." Р.</td>
+			<td align=\"right\">".TextTransforms::money($order['order']['Summ'])." Р.</td>
 		</tr>
 		";
 		$text .= "</table>\n";
 		return $text;
 	}
 }
-$request = new RequestOrdersWepps ($_REQUEST);
+$request = new RequestOrders ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

@@ -1,30 +1,30 @@
 <?php
 namespace WeppsExtensions\Products;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsExtensions\Template\Filters\FiltersWepps;
-use WeppsExtensions\Childs\ChildsWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
+use WeppsExtensions\Template\Filters\Filters;
+use WeppsExtensions\Childs\Childs;
+use WeppsCore\Exception;
+use WeppsCore\TextTransforms;
+use WeppsCore\Utils;
 
-class ProductsWepps extends ExtensionWepps {
+class Products extends Extension {
 	private $filters;
 	private $productsUtils;
 	public function request() {
-		$smarty = SmartyWepps::getSmarty ();
-		$this->productsUtils = new ProductsUtilsWepps();
+		$smarty = Smarty::getSmarty ();
+		$this->productsUtils = new ProductsUtils();
 		$this->productsUtils->setNavigator($this->navigator,'Products');
-		$this->filters = new FiltersWepps($_GET);
+		$this->filters = new Filters($_GET);
 		$params = $this->filters->getParams();
 		if ($this->navigator->content['Id']==3 && empty($params['text'])) {
-			return new ChildsWepps($this->navigator, $this->headers);
+			return new Childs($this->navigator, $this->headers);
 		}
-		if (NavigatorWepps::$pathItem == '') {
+		if (Navigator::$pathItem == '') {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Filters/Filters.{$this->rand}.css");
@@ -39,9 +39,9 @@ class ProductsWepps extends ExtensionWepps {
 					'conditions'=>$conditionsFilters,
 			];
 			$products = $this->productsUtils->getProducts($settings);
-			#UtilsWepps::debug($products,21);
+			#Utils::debug($products,21);
 			$smarty->assign('products',$products['rows']);
-			$smarty->assign('productsCount', $products['count'] . ' ' . TextTransformsWepps::ending2("товар",$products['count']));
+			$smarty->assign('productsCount', $products['count'] . ' ' . TextTransforms::ending2("товар",$products['count']));
 			$smarty->assign('productsSorting',$sorting['rows']);
 			$smarty->assign('productsSortingActive',$sorting['active']);
 			$smarty->assign('paginator',$products['paginator']);
@@ -65,7 +65,7 @@ class ProductsWepps extends ExtensionWepps {
 			$res = $this->getItem("Products");
 			$smarty->assign('element',$res);
 			$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
-			$obj = new DataWepps("Products");
+			$obj = new Data("Products");
 			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 			$res = $obj->fetch($conditions,3,1,"t.Priority");
 			$smarty->assign('elements',$res);
@@ -78,9 +78,9 @@ class ProductsWepps extends ExtensionWepps {
 		return;
 	}
 	public function getItem($tableName, $condition='') {
-		$id = NavigatorWepps::$pathItem;
-		if (empty($element = $this->productsUtils->getProductsItem(NavigatorWepps::$pathItem))) {
-			ExceptionWepps::error404();
+		$id = Navigator::$pathItem;
+		if (empty($element = $this->productsUtils->getProductsItem(Navigator::$pathItem))) {
+			Exception::error404();
 		}
 		$this->extensionData['element'] = 1;
 		$this->navigator->content['Name'] = $element['Name'];

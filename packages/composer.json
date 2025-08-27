@@ -1,22 +1,29 @@
 {
-	"require" : {
-		"smarty/smarty" : "*",
-		"components/jquery" : "*",
-		"components/jqueryui" : "*",
-		"tinymce/tinymce" : "5.9.1",
-		"curl/curl" : "*",
-		"mpdf/mpdf" : "*",
-		"fortawesome/font-awesome" : "^4.7",
-		"components/masonry" : "*",
-		"robinherbots/jquery.inputmask" : "*",
-		"dimsemenov/magnific-popup" : "*",
-		"kenwheeler/slick" : "*",
-		"phpoffice/phpspreadsheet" : "*",
-		"harvesthq/chosen" : "*",
-		"select2/select2" : "*",
-		"adhocore/jwt" : "*",
+	"autoload": {
+		"psr-4": {
+			"WeppsCore\\": "WeppsCore/",
+			"WeppsAdmin\\": "WeppsAdmin/",
+			"WeppsExtensions\\": "WeppsExtensions/"
+		}
+	},
+	"require": {
+		"smarty/smarty": "*",
+		"components/jquery": "*",
+		"components/jqueryui": "*",
+		"tinymce/tinymce": "5.9.1",
+		"curl/curl": "*",
+		"mpdf/mpdf": "*",
+		"fortawesome/font-awesome": "^4.7",
+		"components/masonry": "*",
+		"robinherbots/jquery.inputmask": "*",
+		"dimsemenov/magnific-popup": "*",
+		"kenwheeler/slick": "*",
+		"phpoffice/phpspreadsheet": "*",
+		"harvesthq/chosen": "*",
+		"select2/select2": "*",
+		"adhocore/jwt": "*",
 		"twbs/bootstrap-icons": "*",
 		"matthiasmullie/minify": "*",
-		"yoomoney/yookassa-sdk-php" : "*"
+		"yoomoney/yookassa-sdk-php": "*"
 	}
 }

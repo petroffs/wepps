@@ -1,12 +1,12 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Connect;
 
-class ProcessingTasksWepps {
+class ProcessingTasks {
 	private $root;
 	public function __construct() {
-		$this->root = ConnectWepps::$projectDev['root'];
+		$this->root = Connect::$projectDev['root'];
 	}
 	public function removeFiles() {
 		/*
@@ -35,7 +35,7 @@ class ProcessingTasksWepps {
 		 * Данные в базе
 		 */
 		$sql = "select Id,FileUrl from s_Files";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		$arr2 = [];
 		foreach ($res as $value) {
 			$arr2[] = $value['FileUrl'];

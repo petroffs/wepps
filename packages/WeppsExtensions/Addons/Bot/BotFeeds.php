@@ -1,10 +1,10 @@
 <?php
 namespace WeppsExtensions\Addons\Bot;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
+use WeppsCore\Connect;
+use WeppsCore\Data;
 
-class BotFeedsWepps extends BotWepps {
+class BotFeeds extends Bot {
 	public $parent = 0;
 	public function __construct() {
 		parent::__construct();
@@ -17,7 +17,7 @@ class BotFeedsWepps extends BotWepps {
 		 * Структура
 		 */
 		$sql = "select Id,Name,NameMenu,if(UrlMenu!='',UrlMenu,Url) as Url from s_Navigator where DisplayOff=0 and (NGroup!=1 or (Id=1))";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";
 		}
@@ -25,7 +25,7 @@ class BotFeedsWepps extends BotWepps {
 		/*
 		 * Данные в структуре
 		 */
-		$obj = new DataWepps("News");
+		$obj = new Data("News");
 		$obj->setFields("Name,Alias,Id");
 		$obj->setConcat ( "concat('/novosti/',if(Alias!='',Alias,Id),'.html') as Url" );
 		$res = $obj->fetchmini("DisplayOff=0",50000,1);
@@ -35,7 +35,7 @@ class BotFeedsWepps extends BotWepps {
 		
 		/*
 		 $sql = "select Id,Name,concat('/blog/',if(Alias!='',Alias,Id),'.html') as Url from Blog where DisplayOff=0";
-		 $res = ConnectWepps::$instance->fetch($sql);
+		 $res = Connect::$instance->fetch($sql);
 		 foreach ($res as $value) {
 		 $arr[$value['Url']] = "<url><loc>http://izburg.ru{$value['Url']}</loc></url>";
 		 }

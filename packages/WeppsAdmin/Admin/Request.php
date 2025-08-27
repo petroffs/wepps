@@ -1,27 +1,23 @@
 <?php
-namespace WeppsAdmin\Admin;
-
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Validator\ValidatorWepps;
-use WeppsCore\Utils\UsersWepps;
-use WeppsCore\Utils\UtilsWepps;
-
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestAdminWepps extends RequestWepps {
+use WeppsCore\Request;
+use WeppsCore\Exception;
+use WeppsCore\Connect;
+use WeppsCore\Validator;
+use WeppsCore\Users;
+use WeppsCore\Utils;
+
+class RequestAdmin extends Request {
 	public function request($action="") {
 		$this->tpl = '';
-		#$translate = AdminWepps::getTranslate();
+		#$translate = Admin::getTranslate();
 		switch ($action) {
 			case "sign-in":
-				$users = new UsersWepps($this->get);
+				$users = new Users($this->get);
 				$users->signIn();
 				$this->errors = $users->errors();
-				$outer = ValidatorWepps::setFormErrorsIndicate($this->errors, $this->get['form']);
+				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['html'];
 				if ($outer['count']==0) {
 					$js = "
@@ -33,7 +29,7 @@ class RequestAdminWepps extends RequestWepps {
 				}
 				break;
 			case "sign-out":
-				$users = new UsersWepps();
+				$users = new Users();
 				$users->removeAuth();
 				$js = "
 						<script>
@@ -43,8 +39,8 @@ class RequestAdminWepps extends RequestWepps {
 				echo $js;
 				break;
 			case "logoff":
-				if (isset(ConnectWepps::$projectData['user']['Id'])) {
-					UtilsWepps::debug('remove auth');
+				if (isset(Connect::$projectData['user']['Id'])) {
+					Utils::debug('remove auth');
 					$js = "
 						<script>
 						location.reload()
@@ -54,12 +50,12 @@ class RequestAdminWepps extends RequestWepps {
 				}
 				break;
 			case "hook":
-				if (empty(ConnectWepps::$projectServices['wepps']['git']) || ConnectWepps::$projectServices['wepps']['git'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {
+				if (empty(Connect::$projectServices['wepps']['git']) || Connect::$projectServices['wepps']['git'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {
 					http_response_code(401);
 					echo "FAIL";
 					exit();
 				}
-				$dir = ConnectWepps::$projectDev['root'];
+				$dir = Connect::$projectDev['root'];
 				$git = "{$dir}/.git";
 				$json = file_get_contents('php://input');
 				$body = json_decode($json, true);
@@ -77,13 +73,13 @@ class RequestAdminWepps extends RequestWepps {
 				exit();
 			case "git":
 				$json = file_get_contents('php://input');
-				$token = ConnectWepps::$projectServices['wepps']['git'];
+				$token = Connect::$projectServices['wepps']['git'];
 				if (empty($token) || $token!=$_SERVER['HTTP_CLIENTTOKEN']) {
 					http_response_code(401);
 					echo "FAIL";
 					exit();
 				}
-				$dir = ConnectWepps::$projectDev['root'];
+				$dir = Connect::$projectDev['root'];
 				$git = "{$dir}/.git";
 				$branch = 'master';
 				echo "git start\n";
@@ -92,11 +88,11 @@ class RequestAdminWepps extends RequestWepps {
 				echo "\n";
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 	}
 }
-$request = new RequestAdminWepps ($_REQUEST);
+$request = new RequestAdmin ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

@@ -1,15 +1,12 @@
 <?php
+use WeppsAdmin\Admin\Admin;
 
-use WeppsAdmin\Admin\AdminWepps;
-
-require_once '../config.php';
-$projectSettings['Services']['memcached']['active'] = false;
-require_once '../autoloader.php';
 require_once '../configloader.php';
+$projectSettings['Services']['memcached']['active'] = false;
 
 if (!session_id()) {
     session_start();
 }
 
-$obj = new AdminWepps($_GET['ppsUrl'],$headers);
+$obj = new Admin($_GET['ppsUrl'],$headers);
 unset($obj);

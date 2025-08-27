@@ -1,14 +1,14 @@
 <?php
 namespace WeppsExtensions\Products;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Template\Filters\FiltersWepps;
+use WeppsCore\Connect;
+use WeppsCore\Navigator;
+use WeppsCore\Data;
+use WeppsCore\Exception;
+use WeppsCore\Utils;
+use WeppsExtensions\Template\Filters\Filters;
 
-class ProductsUtilsWepps
+class ProductsUtils
 {
 	private $navigator;
 	private $list;
@@ -17,7 +17,7 @@ class ProductsUtilsWepps
 	{
 
 	}
-	public function setNavigator(NavigatorWepps $navigator, string $list)
+	public function setNavigator(Navigator $navigator, string $list)
 	{
 		$this->navigator = &$navigator;
 		$this->list = $list;
@@ -84,7 +84,7 @@ class ProductsUtilsWepps
 	}
 	public function getProducts(array $settings): array
 	{
-		$obj = new DataWepps("Products");
+		$obj = new Data("Products");
 		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url,group_concat(distinct concat(pv.Id,':::',pv.Field1,':::',pv.Field2,':::',pv.Field3,':::',pv.Field4) order by pv.Priority separator '\\n') W_Variations,count(pv.Id) W_VariationsCount");
 		$obj->setJoin("join ProductsVariations pv on pv.ProductsId=t.Id and pv.DisplayOff=0");
 		if (!empty($settings['conditions']['params'])) {
@@ -119,7 +119,7 @@ class ProductsUtilsWepps
 		if (empty($el = &$products['rows'][0])) {
 			return [];
 		}
-		$filters = new FiltersWepps();
+		$filters = new Filters();
 		$el['W_Attributes'] = $filters->getFilters($settings['conditions']);
 		if (!empty($el['W_Variations'])) {
 			$el['W_Variations'] = self::getVariationsArray($el['W_Variations']);
@@ -128,7 +128,7 @@ class ProductsUtilsWepps
 	}
 	public function getVariationsArray(string $string): array
 	{
-		$arr = UtilsWepps::arrayFromString($string,':::',"\n");
+		$arr = Utils::arrayFromString($string,':::',"\n");
 		$keys = ['Id', 'Color', 'Size', 'Sku', 'Stocks'];
 		$variants = array_map(function($item) use ($keys) {
 			return array_combine($keys, $item);
@@ -138,7 +138,7 @@ class ProductsUtilsWepps
 			$color = (empty($value['Color'])) ? 'W_GROUP' : $value['Color'];
 			$arr[$color][] = $value;
 		}
-		#UtilsWepps::debug($arr,0);
+		#Utils::debug($arr,0);
 		return $arr;
 	}
 }

@@ -2,11 +2,11 @@
 
 namespace WeppsAdmin\ConfigExtensions\Uploads;
 
-use WeppsAdmin\Lists\ListsWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsAdmin\Lists\Lists;
+use WeppsCore\Data;
+use WeppsCore\Connect;
 
-class UploadsExcelFieldsWepps {
+class UploadsExcelFields {
 	private $settings;
 	private $validator;
 	private $tableName = 's_ConfigFields';
@@ -21,7 +21,7 @@ class UploadsExcelFieldsWepps {
 			/*
 			 * Запись/обновление данных
 			 */
-			$obj = new DataWepps($this->tableName);
+			$obj = new Data($this->tableName);
 			$str = "";
 			unset($this->settings['data'][1]);
 			foreach ($this->settings['data'] as $value) {
@@ -35,19 +35,19 @@ class UploadsExcelFieldsWepps {
 							"FGroup"=>$value['E'],
 					);
 					$sql = "delete from s_ConfigFields where TableName='' and Field=''";
-					ConnectWepps::$instance->query($sql);
+					Connect::$instance->query($sql);
 					$res = $obj->fetchmini("TableName = '{$row1['TableName']}' and Field = '{$row1['Field']}'");
-					#UtilsWepps::debug($res);
+					#Utils::debug($res);
 					if (!isset($res[0]['Id'])) {
 						$id = $obj->add($row1);
 						if ((int)$id!=0) {
-							$str .= ListsWepps::addListField($id,$row1['Type']).";\n";
+							$str .= Lists::addListField($id,$row1['Type']).";\n";
 						}
 					}
 				}
 			}
 			if ($str != "") {
-				ConnectWepps::$db->exec($str);
+				Connect::$db->exec($str);
 				return [
 						'status'=>0,
 						'message'=>'Новые поля добавлены'

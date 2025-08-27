@@ -1,12 +1,9 @@
 <?php
-namespace WeppsCore\Connect;
+namespace WeppsCore;
 
 use PDO;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\MemcachedWepps;
-use WeppsCore\Utils\UtilsWepps;
 
-class ConnectWepps {
+class Connect {
 	public static $db;
 	public static $instance;
 	public static $projectInfo;
@@ -35,21 +32,21 @@ class ConnectWepps {
 			if (php_sapi_name()=='cli') {
 				$s = 3;	
 			}
-			if (ConnectWepps::$projectDev['debug']==1) {
-				UtilsWepps::debug($e->getMessage(),$s);
+			if (Connect::$projectDev['debug']==1) {
+				Utils::debug($e->getMessage(),$s);
 			} else {
-				UtilsWepps::debug("connect error",$s);
+				Utils::debug("connect error",$s);
 			}
 			exit();
 		}
-		$this->memcached = new MemcachedWepps();
+		$this->memcached = new Memcached();
 	}
 	function __destruct() {
 		self::$db = null;
 	}
 	public static function getInstance($projectSettings) {
 		if (empty ( self::$instance )) {
-			self::$instance = new ConnectWepps( $projectSettings );
+			self::$instance = new Connect( $projectSettings );
 		}
 		return self::$instance;
 	}
@@ -57,7 +54,7 @@ class ConnectWepps {
 		$this->count++;
 		try {
 			$isCache = 0;
-			$cacheExpire = ConnectWepps::$projectServices['memcached']['expire'];
+			$cacheExpire = Connect::$projectServices['memcached']['expire'];
 			if (strstr($sql,'join ')) {
 				$isCache = 1;
 			}
@@ -77,7 +74,7 @@ class ConnectWepps {
 			}
 			return $res;
 		} catch (\Exception $e) {
-			ExceptionWepps::display($e);
+			Exception::display($e);
 			return [];
 		}
 	}
@@ -93,7 +90,7 @@ class ConnectWepps {
 				return $this->sth->rowCount();
 			}
 		} catch (\Exception $e) {
-			ExceptionWepps::display($e);
+			Exception::display($e);
 		}
 	}
 	public function insert($tableName,$row,$settings=[]) {
@@ -152,23 +149,23 @@ class ConnectWepps {
 		return str_repeat('?,', count($in) - 1) . '?';
 	}
 	public function transaction(callable $func, array $args): array {
-		ConnectWepps::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+		Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
 		try {
-			ConnectWepps::$db->beginTransaction();
-			if (ConnectWepps::$db->inTransaction()) {
+			Connect::$db->beginTransaction();
+			if (Connect::$db->inTransaction()) {
 				$response = $func($args);
 			}
-			ConnectWepps::$db->commit();
-			ConnectWepps::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
+			Connect::$db->commit();
+			Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
 			return $response;
 		} catch (\Exception $e) {
-			ConnectWepps::$db->rollBack();
+			Connect::$db->rollBack();
 			echo "Error. See debug.conf";
-			UtilsWepps::debug($e,21);
+			Utils::debug($e,21);
 			return [];
 		}
 	}
 	public function cached($isActive='auto') {
-		$this->memcached = new MemcachedWepps($isActive);
+		$this->memcached = new Memcached($isActive);
 	}
 }

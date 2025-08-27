@@ -1,19 +1,19 @@
 <?php
 namespace WeppsExtensions\Cart;
 
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\LogsWepps;
-use WeppsCore\Utils\MemcachedWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Addons\Messages\Mail\MailWepps;
-use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
-use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
+use WeppsCore\Data;
+use WeppsCore\Connect;
+use WeppsCore\Logs;
+use WeppsCore\Memcached;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\Utils;
+use WeppsCore\Validator;
+use WeppsExtensions\Addons\Messages\Mail\Mail;
+use WeppsExtensions\Addons\Messages\Telegram\Telegram;
+use WeppsExtensions\Cart\Delivery\DeliveryUtils;
+use WeppsExtensions\Cart\Payments\PaymentsUtils;
 
-class CartUtilsWepps
+class CartUtils
 {
 	private $user = [];
 	private $cart = [];
@@ -23,23 +23,23 @@ class CartUtilsWepps
 	private $memcached;
 	public function __construct()
 	{
-		if (empty(ConnectWepps::$projectData['user'])) {
+		if (empty(Connect::$projectData['user'])) {
 			$this->user['JCart'] = $this->_getCartFromCookies();
 		} else {
 			$cart = $this->_getCartFromCookies(false);
 			$jdata = json_decode($cart, true);
 			if (!empty($jdata['items'])) {
-				$jdata2 = json_decode(ConnectWepps::$projectData['user']['JCart'], true);
+				$jdata2 = json_decode(Connect::$projectData['user']['JCart'], true);
 				$jdata2['items'] += $jdata['items'];
-				UtilsWepps::cookies('wepps_cart');
-				UtilsWepps::cookies('wepps_cart_guid');
+				Utils::cookies('wepps_cart');
+				Utils::cookies('wepps_cart_guid');
 				$this->setCart();
 			}
-			$this->user = $this->getUser(ConnectWepps::$projectData['user']);
+			$this->user = $this->getUser(Connect::$projectData['user']);
 			$this->favorites = json_decode($this->user['JFav'], true);
 		}
 		$this->cart = json_decode($this->user['JCart'] ?? '', true) ?? [];
-		$this->memcached = new MemcachedWepps();
+		$this->memcached = new Memcached();
 	}
 	public function getUser(array $user): array
 	{
@@ -60,7 +60,7 @@ class CartUtilsWepps
 		}
 		$this->favorites['date'] = date('Y-m-d H:i:s');
 		$json = json_encode($this->favorites);
-		ConnectWepps::$instance->query("update s_Users set JFav=? where Id=?", [$json, @$this->user['Id']]);
+		Connect::$instance->query("update s_Users set JFav=? where Id=?", [$json, @$this->user['Id']]);
 		return $this->favorites;
 	}
 	public function getFavorites(): array
@@ -80,20 +80,20 @@ class CartUtilsWepps
 			'itemsv' => array_values(array_unique(array_map(function($i) : int {
     			return (int) @explode('-', $i['id'])[1];
 			}, $this->cart['items']??[]))),
-			'commerce' => ConnectWepps::$projectServices['commerce']
+			'commerce' => Connect::$projectServices['commerce']
 		];
 	}
 	public function setCart(): void
 	{
 		$this->cart['date'] = date('Y-m-d H:i:s');
 		$json = json_encode($this->cart, JSON_UNESCAPED_UNICODE);
-		if (empty(ConnectWepps::$projectData['user'])) {
-			UtilsWepps::cookies('wepps_cart', $json);
-			UtilsWepps::cookies('wepps_cart_guid', UtilsWepps::guid($json . ConnectWepps::$projectServices['jwt']['secret']));
+		if (empty(Connect::$projectData['user'])) {
+			Utils::cookies('wepps_cart', $json);
+			Utils::cookies('wepps_cart_guid', Utils::guid($json . Connect::$projectServices['jwt']['secret']));
 			return;
 		}
 		$this->setCartSummary();
-		ConnectWepps::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$this->user['Id']]);
+		Connect::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$this->user['Id']]);
 		return;
 	}
 	public function setCartCitiesId(string $citiesId): void
@@ -107,7 +107,7 @@ class CartUtilsWepps
 	{
 		$this->cart['deliveryId'] = $deliveryId;
 		unset($this->cart['paymentsId']);
-		$deliveryUtils = new DeliveryUtilsWepps();
+		$deliveryUtils = new DeliveryUtils();
 		$this->setCart();
 		$this->setCartSummary();
 		$tariffs = $deliveryUtils->getTariffsByCitiesId($this->cart['citiesId'], $this, $deliveryId);
@@ -127,7 +127,7 @@ class CartUtilsWepps
 	public function setCartPayments(string $paymentsId): void
 	{
 		$this->cart['paymentsId'] = $paymentsId;
-		$paymentsUtils = new PaymentsUtilsWepps();
+		$paymentsUtils = new PaymentsUtils();
 		$this->setCart();
 		$this->setCartSummary();
 		$tariffs = $paymentsUtils->getByDeliveryId($this->cart['deliveryId'], $this, $paymentsId);
@@ -158,7 +158,7 @@ class CartUtilsWepps
 			if (intval($index) >= 0) {
 				$this->cart['items'][$index]['qu'] = $quantity;
 			}
-			#UtilsWepps::debug($this->cart['items'][$index]);
+			#Utils::debug($this->cart['items'][$index]);
 		}
 		$this->setCart();
 		return;
@@ -174,7 +174,7 @@ class CartUtilsWepps
 			]);
 		} else {
 			$index = array_search($id, $keys);
-			#UtilsWepps::debug($keys);
+			#Utils::debug($keys);
 			if (intval($index) >= 0) {
 				$this->cart['items'][$index]['qu'] = $quantity;
 				$this->cart['items'][$index]['ac'] = 1;
@@ -216,7 +216,7 @@ class CartUtilsWepps
 	}
 	public function setCartSummary(): bool
 	{
-		ConnectWepps::$instance->cached('no');
+		Connect::$instance->cached('no');
 		$this->summary = [
 			'items' => [],
 			'quantity' => 0,
@@ -236,7 +236,7 @@ class CartUtilsWepps
 			return true;
 		}
 		$sql = "";
-		#UtilsWepps::debug($this->cart['items'],1);
+		#Utils::debug($this->cart['items'],1);
 		$ids = [];
 		$idv = [];
 		foreach ($this->cart['items'] as $value) {
@@ -266,7 +266,7 @@ class CartUtilsWepps
 			join s_Navigator n on n.Id=p.NavigatorId
 			left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
 			group by x.idv";
-		$this->summary['items'] = ConnectWepps::$instance->fetch($sql);
+		$this->summary['items'] = Connect::$instance->fetch($sql);
 		$this->summary['quantity'] = 0;
 		$this->summary['quantityActive'] = 0;
 		$this->summary['sum'] = 0;
@@ -296,7 +296,7 @@ class CartUtilsWepps
 			
 		$this->summary['date'] = $this->cart['date'];
 		$this->summary['favorites'] = $this->getFavorites();
-		if ($this->summary['sumActive']>=ConnectWepps::$projectServices['commerce']['orderAmountMin']) {
+		if ($this->summary['sumActive']>=Connect::$projectServices['commerce']['orderAmountMin']) {
 			$this->summary['isSumActiveEnough'] = 1;
 		}
 		if (!empty($this->cart['citiesId'])) {
@@ -328,7 +328,7 @@ class CartUtilsWepps
 			$this->summary['sumTotal'] -= $this->cart['paymentsDiscount']['price'];
 		}
 		#$json = json_encode($this->summary,JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
-		#UtilsWepps::debug($json,1);
+		#Utils::debug($json,1);
 		return true;
 	}
 	public function getCartSummary(): array
@@ -341,10 +341,10 @@ class CartUtilsWepps
 			if ($value['active']!=1) {
 				continue;
 			}
-			$sum += UtilsWepps::round(($value['price'] - $value['price']*$percentage/100)*$value['quantity']);
+			$sum += Utils::round(($value['price'] - $value['price']*$percentage/100)*$value['quantity']);
 		}
 		$sum = $this->summary['sumActive'] - $sum;
-		return UtilsWepps::round($sum);
+		return Utils::round($sum);
 	}
 	public function getCartPositionsRecounter(array $items=[],float $deliveryDiscount=0,float $paymentTariff=0,float $paymentDiscount=0) : array {
 		$sum = 0;
@@ -356,8 +356,8 @@ class CartUtilsWepps
 		}
 		if ($deliveryDiscount>0) {
 			foreach($items as $key=>$value) {
-				$rate = UtilsWepps::round($value['sum']/$sum,6);
-				$tariffRecount = - UtilsWepps::round($rate*$deliveryDiscount);
+				$rate = Utils::round($value['sum']/$sum,6);
+				$tariffRecount = - Utils::round($rate*$deliveryDiscount);
 				if (empty($items[$key]['tariff'])) {
 					$items[$key]['tariff'] = 0;
 				}
@@ -366,8 +366,8 @@ class CartUtilsWepps
 		}
 		if ($paymentTariff>0) {
 			foreach($items as $key=>$value) {
-				$rate = UtilsWepps::round($value['sum']/$sum,6);
-				$tariffRecount = UtilsWepps::round($rate*$paymentTariff);
+				$rate = Utils::round($value['sum']/$sum,6);
+				$tariffRecount = Utils::round($rate*$paymentTariff);
 				if (empty($items[$key]['tariff'])) {
 					$items[$key]['tariff'] = 0;
 				}
@@ -376,8 +376,8 @@ class CartUtilsWepps
 		}
 		if ($paymentDiscount>0) {
 			foreach($items as $key=>$value) {
-				$rate = UtilsWepps::round($value['sum']/$sum,6);
-				$tariffRecount = - UtilsWepps::round($rate*$paymentDiscount);
+				$rate = Utils::round($value['sum']/$sum,6);
+				$tariffRecount = - Utils::round($rate*$paymentDiscount);
 				if (empty($items[$key]['tariff'])) {
 					$items[$key]['tariff'] = 0;
 				}
@@ -387,13 +387,13 @@ class CartUtilsWepps
 		foreach($items as $key=>$value) {
 			$tariff = (!empty($items[$key]['tariff']))?$items[$key]['tariff']:0;
 			$items[$key]['sumTotal']=$value['sum'] + $tariff;
-			$items[$key]['priceTotal']= UtilsWepps::round($items[$key]['sumTotal']/$value['quantity'],2);
+			$items[$key]['priceTotal']= Utils::round($items[$key]['sumTotal']/$value['quantity'],2);
 		}
 		return $items;
 	}
 	private function _getCartHash(string $jcart = '')
 	{
-		return UtilsWepps::guid($jcart . ConnectWepps::$projectServices['jwt']['secret']);
+		return Utils::guid($jcart . Connect::$projectServices['jwt']['secret']);
 	}
 	private function _getCartFromCookies(bool $shouldCreate = true)
 	{
@@ -402,15 +402,15 @@ class CartUtilsWepps
 			$cart = $_COOKIE['wepps_cart'];
 		} elseif ($shouldCreate == true) {
 			$cart = '{"items":null}';
-			UtilsWepps::cookies('wepps_cart', $this->user['JCart'] ?? '');
-			UtilsWepps::cookies('wepps_cart_guid', self::_getCartHash($this->user['JCart'] ?? ''));
+			Utils::cookies('wepps_cart', $this->user['JCart'] ?? '');
+			Utils::cookies('wepps_cart_guid', self::_getCartHash($this->user['JCart'] ?? ''));
 		}
 		return $cart;
 	}
 	public function getCheckoutData()
 	{
-		$deliveryUtils = new DeliveryUtilsWepps();
-		$paymentsUtils = new PaymentsUtilsWepps();
+		$deliveryUtils = new DeliveryUtils();
+		$paymentsUtils = new PaymentsUtils();
 		$cartSummary = $this->getCartSummary();
 		$delivery = [];
 		$deliveryOperations = [];
@@ -443,14 +443,14 @@ class CartUtilsWepps
 			'paymentsActive' => $paymentsActive,
 		];
 	}
-	public function setHeaders(TemplateHeadersWepps $headers): void
+	public function setHeaders(TemplateHeaders $headers): void
 	{
 		$this->headers = $headers;
 	}
-	public function getHeaders(): TemplateHeadersWepps
+	public function getHeaders(): TemplateHeaders
 	{
 		if (empty($this->headers)) {
-			$this->headers = new TemplateHeadersWepps();
+			$this->headers = new TemplateHeaders();
 		}
 		return $this->headers;
 	}
@@ -465,16 +465,16 @@ class CartUtilsWepps
 		}
 		$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}";
 		/**
-		 * @var \WeppsExtensions\Cart\Delivery\DeliveryWepps $class
+		 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
 		 */
         $class = new $className([],$this);
 		$errors = $class->getErrors($get);
-		$errors = ValidatorWepps::setFormErrorsIndicate($errors, $get['form']);
+		$errors = Validator::setFormErrorsIndicate($errors, $get['form']);
 		if ($errors['count']>0) {
 			echo $errors['html'];
 			exit();
 		}
-		$profile = ConnectWepps::$projectData['user'];
+		$profile = Connect::$projectData['user'];
 		$positions = [];
 		foreach ($cartSummary['items'] as $value) {
 			if (empty($value['active'])) {
@@ -516,10 +516,10 @@ class CartUtilsWepps
 		$func = function (array $args) {
 			$row = $args['row'];
 			$get = $args['get'];
-			$prepare = ConnectWepps::$instance->prepare($row);
-			$insert = ConnectWepps::$db->prepare("insert Orders {$prepare['insert']}");
+			$prepare = Connect::$instance->prepare($row);
+			$insert = Connect::$db->prepare("insert Orders {$prepare['insert']}");
 			$insert->execute($row);
-			$id = ConnectWepps::$db->lastInsertId();
+			$id = Connect::$db->lastInsertId();
 			if (!empty($get['comment'])) {
 				$row2 = [
 					'Name' => 'Msg',
@@ -529,21 +529,21 @@ class CartUtilsWepps
 					'EDate' => $row['ODate'],
 					'EText' => trim(strip_tags($get['comment']))
 				];
-				$prepare = ConnectWepps::$instance->prepare($row2);
-				$insert = ConnectWepps::$db->prepare("insert OrdersEvents {$prepare['insert']}");
+				$prepare = Connect::$instance->prepare($row2);
+				$insert = Connect::$db->prepare("insert OrdersEvents {$prepare['insert']}");
 				$insert->execute($row2);
 			}
 			$row['Id'] = $id;
 			$row['EText'] = @$row2['EText'];
 			$text = $this->getOrderText($row);
-			$alias = UtilsWepps::guid($id.'_'.time().'_'.ConnectWepps::$projectServices['wepps']['sign']);
-			ConnectWepps::$instance->query("update Orders set OText=?,Alias=? where Id=?",[$text,$alias,$id]);
+			$alias = Utils::guid($id.'_'.time().'_'.Connect::$projectServices['wepps']['sign']);
+			Connect::$instance->query("update Orders set OText=?,Alias=? where Id=?",[$text,$alias,$id]);
 			$jdata = [
 				'id' => (int) $id,
 				'email' => true,
 				'telegram' => true,
 			];
-			$logs = new LogsWepps();
+			$logs = new Logs();
 			$logs->add('order-new',$jdata,$row['ODate'],$row['UserIP']);
 			$this->removeCart();
 			return [
@@ -553,11 +553,11 @@ class CartUtilsWepps
 				#'html' => "<script>console.log('{$alias}');</script>"
 			];
 		};
-		return ConnectWepps::$instance->transaction($func, ['row' => $row,'get'=>$get]);
+		return Connect::$instance->transaction($func, ['row' => $row,'get'=>$get]);
 	}
 	public function getOrderText(array $order) : string {
 		$sql = "select * from ServList where Categories='ШаблонЗаказНовый' order by Id desc limit 0,1";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		if (empty($text = $res[0]['Descr'])) {
 			return '';
 		}
@@ -573,40 +573,40 @@ class CartUtilsWepps
 			$positions .= '<tr>';
 			$positions .= '<td align="left">'.$value['name'].'</td>';
 			$positions .= '<td align="center">'.$value['quantity'].'</td>';
-			$positions .= '<td align="right">'.UtilsWepps::round($value['sum'],2,'str').'</td>';
+			$positions .= '<td align="right">'.Utils::round($value['sum'],2,'str').'</td>';
 			$positions .= '</tr>';
 		}
 		$deliveryAddress = (!empty($order['Address'])) ? '<br/>'.$order['PostalCode'] . ', ' . $order['Address'] : '';
 		$positions .= '<tr>';
 		$positions .= '<td align="left">'.$jdata['delivery']['tariff']['title'].$deliveryAddress.'</td>';
 		$positions .= '<td align="center"></td>';
-		$positions .= '<td align="right">'.UtilsWepps::round($jdata['delivery']['tariff']['price'],2,'str').'</td>';
+		$positions .= '<td align="right">'.Utils::round($jdata['delivery']['tariff']['price'],2,'str').'</td>';
 		$positions .= '</tr>';
 		if (!empty($jdata['delivery']['discount']['price'])) {
 			$positions .= '<tr>';
 			$positions .= '<td align="left">'.$jdata['delivery']['discount']['text'].'</td>';
 			$positions .= '<td align="center"></td>';
-			$positions .= '<td align="right">- '.UtilsWepps::round($jdata['delivery']['discount']['price'],2,'str').'</td>';
+			$positions .= '<td align="right">- '.Utils::round($jdata['delivery']['discount']['price'],2,'str').'</td>';
 			$positions .= '</tr>';
 		}
 		if (!empty($jdata['payments']['tariff']['price'])) {
 			$positions .= '<tr>';
 			$positions .= '<td align="left">'.$jdata['payments']['tariff']['text'].'</td>';
 			$positions .= '<td align="center"></td>';
-			$positions .= '<td align="right">- '.UtilsWepps::round($jdata['payments']['tariff']['price'],2,'str').'</td>';
+			$positions .= '<td align="right">- '.Utils::round($jdata['payments']['tariff']['price'],2,'str').'</td>';
 			$positions .= '</tr>';
 		}
 		if (!empty($jdata['payments']['discount']['price'])) {
 			$positions .= '<tr>';
 			$positions .= '<td align="left">'.$jdata['payments']['discount']['text'].'</td>';
 			$positions .= '<td align="center"></td>';
-			$positions .= '<td align="right">- '.UtilsWepps::round($jdata['payments']['discount']['price'],2,'str').'</td>';
+			$positions .= '<td align="right">- '.Utils::round($jdata['payments']['discount']['price'],2,'str').'</td>';
 			$positions .= '</tr>';
 		}
 		$positions .= '<tr>';
 		$positions .= '<td align="left"></td>';
 		$positions .= '<td align="center">ИТОГО: </td>';
-		$positions .= '<td align="right"><b>'.UtilsWepps::round($jdata['sumTotal'],2,'str').'</b></td>';
+		$positions .= '<td align="right"><b>'.Utils::round($jdata['sumTotal'],2,'str').'</b></td>';
 		$positions .= '</tr>';
 		$positions .= "</table>";
 
@@ -622,12 +622,12 @@ class CartUtilsWepps
 		$text = str_replace('[ИМЯ]',$order['Name'],$text);
 		$text = str_replace('[ТОВАРЫ]',$positions,$text);
 		$text = str_replace('[ДОПОЛНИТЕЛЬНО]',$addons,$text);
-		$text = str_replace('[ПРОЕКТ]',ConnectWepps::$projectInfo['name'],$text);
+		$text = str_replace('[ПРОЕКТ]',Connect::$projectInfo['name'],$text);
 		return $text;
 	}
 	public function getOrder(int $id)
 	{
-		$obj = new DataWepps("Orders");
+		$obj = new Data("Orders");
 		$order = $obj->fetch($id)[0];
 		return $order;
 	}
@@ -636,13 +636,13 @@ class CartUtilsWepps
 		if (strlen($guid)!=36) {
 			return [];
 		}
-		$obj = new DataWepps("Orders");
+		$obj = new Data("Orders");
 		$obj->setParams([$guid]);
-		$obj->setConcat("if(s3.PaymentsExt!='',PaymentsExt,'PaymentsDefaultWepps') PaymentsExt,s3.DescrFinish PaymentDescrFinish");
+		$obj->setConcat("if(s3.PaymentsExt!='',PaymentsExt,'PaymentsDefault') PaymentsExt,s3.DescrFinish PaymentDescrFinish");
 		$order = @$obj->fetch("t.Alias = ?")[0];
 		return $order;
 	}
-	public function processLog(array $request,LogsWepps $logs) {
+	public function processLog(array $request,Logs $logs) {
 		$jdata = json_decode($request['BRequest'],true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
@@ -651,19 +651,19 @@ class CartUtilsWepps
 			];
 			return $logs->update($request['Id'],$response,400);
 		}
-		$mail = new MailWepps('html');
+		$mail = new Mail('html');
 		$subject = 'Новый заказ';
 		$text = $order['OText'];
 		$outputMessage = "";
-		$mail->mail(ConnectWepps::$projectInfo['email'], $subject, $text);
+		$mail->mail(Connect::$projectInfo['email'], $subject, $text);
 		if (!empty($jdata['email'])) {
 			$mail->mail($order['Email'], $subject, $text);
 			$outputMessage .= " email ok";
 		}
 		if (!empty($jdata['telegram'])) {
 			$text = "<b>НОВЫЙ ЗАКАЗ</b> №{$order['Id']} / {$order['OSum']} ₽\n🙋{$order['Name']}\n📞{$order['Phone']}\n✉️{$order['Email']}\n\n#сайт_{$order['Id']}";
-			$tg = new TelegramWepps();
-			$res = $tg->send(ConnectWepps::$projectServices['telegram']['dev'],$text);
+			$tg = new Telegram();
+			$res = $tg->send(Connect::$projectServices['telegram']['dev'],$text);
 			$jdata = json_decode($res['response'],true);
 			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram false";
 		}
@@ -673,7 +673,7 @@ class CartUtilsWepps
 		];
 		return $logs->update($request['Id'],$response,200);
 	}
-	public function processPaymentLog(array $request,LogsWepps $logs) {
+	public function processPaymentLog(array $request,Logs $logs) {
 		$jdata = json_decode($request['BRequest'],true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
@@ -682,11 +682,11 @@ class CartUtilsWepps
 			];
 			return $logs->update($request['Id'],$response,400);
 		}
-		$mail = new MailWepps('html');
+		$mail = new Mail('html');
 		$outputMessage = "";
 		if (!empty($jdata['email'])) {
 			$sql = "select * from ServList where Categories='ШаблонЗаказОплата' order by Id desc limit 0,1";
-			$res = ConnectWepps::$instance->fetch($sql);
+			$res = Connect::$instance->fetch($sql);
 			if (empty($text = $res[0]['Descr'])) {
 				$outputMessage .= " email fail";
 			} else {
@@ -697,15 +697,15 @@ class CartUtilsWepps
 				$text = str_replace('[ТЕКСТ]',$jdata['message'],$text);
 				$text = str_replace('[СТАТУС]',$jdata['status'],$text);
 				$text = str_replace('[СУММА]',$order['OSum'],$text);
-				$text = str_replace('[ПРОЕКТ]',ConnectWepps::$projectInfo['name'],$text);
+				$text = str_replace('[ПРОЕКТ]',Connect::$projectInfo['name'],$text);
 				$mail->mail($order['Email'], $subject, $text);
 				$outputMessage .= " email ok";
 			}
 		}
 		if (!empty($jdata['telegram'])) {
 			$text = "<b>ЗАКАЗ ОПЛАТА</b> №{$order['Id']}\n\n{$jdata['message']}\n\nстатус платежа: {$jdata['status']}\n\n#сайт_{$jdata['id']}";
-			$tg = new TelegramWepps();
-			$res = $tg->send(ConnectWepps::$projectServices['telegram']['dev'],$text);
+			$tg = new Telegram();
+			$res = $tg->send(Connect::$projectServices['telegram']['dev'],$text);
 			$jdata = json_decode($res['response'],true);
 			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram fail";
 		}

@@ -1,12 +1,12 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsAdmin\Lists\ListsWepps;
-use WeppsAdmin\Admin\AdminWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
+use WeppsAdmin\Lists\Lists;
+use WeppsAdmin\Admin\Admin;
 
-class SaveItemConfigWepps extends RequestWepps {
+class SaveItemConfig extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
@@ -17,13 +17,13 @@ class SaveItemConfigWepps extends RequestWepps {
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
 	    if ($this->listSettings['TableName']=='s_Config') {
-	        $str = ListsWepps::addList($this->element['TableName']);
+	        $str = Lists::addList($this->element['TableName']);
 	        if ($str!="") {
-	            ConnectWepps::$db->exec($str);
-	            $perm = AdminWepps::getPermissions(1,array('list'=>'s_Config'));
+	            Connect::$db->exec($str);
+	            $perm = Admin::getPermissions(1,array('list'=>'s_Config'));
 	            if ($perm['status']==1) {
 	                $sql = "update s_Permissions set TableName = concat(TableName,',','{$this->element['TableName']}') where Id = 1";
-	                ConnectWepps::$instance->query($sql);
+	                Connect::$instance->query($sql);
 	            }
 	        }
 	    }

@@ -1,25 +1,21 @@
 <?php
-namespace WeppsExtensions\Cart\Payments\Yookassa;
-
-use WeppsCore\Utils\RequestWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsCore\Utils\UtilsWepps;
-
-require_once '../../../../../config.php';
-require_once '../../../../../autoloader.php';
 require_once '../../../../../configloader.php';
 
-class RequestYookassaWepps extends RequestWepps
+use WeppsCore\Request;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsCore\Utils;
+
+class RequestYookassa extends Request
 {
     public function request($action = "")
     {
-        $cartUtils = new CartUtilsWepps();
-        $yookassa = new YookassaWepps($this->get, $cartUtils);
+        $cartUtils = new CartUtils();
+        $yookassa = new Yookassa($this->get, $cartUtils);
         switch ($action) {
             case 'form':
                 $response = $yookassa->form();
                 if (!empty($response['url'])) {
-                    #UtilsWepps::debug($response['url'],1);
+                    #Utils::debug($response['url'],1);
                     header("location: {$response['url']}");
                     exit();
                 }
@@ -37,6 +33,6 @@ class RequestYookassaWepps extends RequestWepps
     }
 }
 
-$request = new RequestYookassaWepps($_REQUEST);
+$request = new RequestYookassa($_REQUEST);
 $smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

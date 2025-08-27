@@ -1,32 +1,26 @@
 <?php
-namespace WeppsExtensions\Popups;
-
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\RequestWepps;
-use WeppsExtensions\Addons\Bot\BotTestWepps;
-
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-/**
- * @var Smarty $smarty
- */
+use WeppsCore\Exception;
+use WeppsCore\Request;
+use WeppsExtensions\Addons\Bot\BotTest;
 
-class RequestPopupsWepps extends RequestWepps {
+class RequestPopups extends Request {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
-				$obj = new BotTestWepps();
+				$obj = new BotTest();
 				$obj->mail();
+				sleep(5);
+				echo '<h1>Hello, world</h1>';
 				break;
 			default:
-				ExceptionWepps::error(404);
+				Exception::error(404);
 				break;
 		}
 	}
 }
 
-$request = new RequestPopupsWepps($_REQUEST);
+$request = new RequestPopups($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

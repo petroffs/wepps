@@ -1,10 +1,10 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
 
-class RemoveItemConfigFieldsWepps extends RequestWepps {
+class RemoveItemConfigFields extends Request {
 	public $noclose = 1;
 	public $listSettings = [];
 	private $id;
@@ -14,11 +14,11 @@ class RemoveItemConfigFieldsWepps extends RequestWepps {
 		$this->id = (int) $this->get['id'];
 		if ($this->listSettings['TableName']=='s_ConfigFields') {
 			$sql = "select * from s_ConfigFields where Id = '{$this->id}'";
-			$res = ConnectWepps::$instance->fetch($sql); 
+			$res = Connect::$instance->fetch($sql); 
 			if (isset($res[0]['Id'])) {
 				$this->element = $res[0];
 				$sql = "alter table {$this->element['TableName']} drop column {$this->element['Field']};\n";
-				ConnectWepps::$instance->query($sql);
+				Connect::$instance->query($sql);
 			}
 		}
 	}

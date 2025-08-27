@@ -1,17 +1,17 @@
 <?php
 namespace WeppsAdmin\Home;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
+use WeppsCore\Connect;
+use WeppsCore\Smarty;
+use WeppsCore\TemplateHeaders;
 
-class HomeWepps {
-	function __construct(TemplateHeadersWepps &$headers,$nav) {
-		$smarty = SmartyWepps::getSmarty();
+class Home {
+	function __construct(TemplateHeaders &$headers,$nav) {
+		$smarty = Smarty::getSmarty();
 		$headers->js ("/packages/WeppsAdmin/Home/Home.{$headers::$rand}.js");
 		$headers->css ("/packages/WeppsAdmin/Home/Home.{$headers::$rand}.css");
 		$tpl = "Home.tpl";
-		if (!empty(ConnectWepps::$projectData['user']) && ConnectWepps::$projectData['user']['ShowAdmin']==1) {
+		if (!empty(Connect::$projectData['user']) && Connect::$projectData['user']['ShowAdmin']==1) {
 			$content = [
 					'MetaTitle' => 'Wepps',
 					'Name' => 'Главная',

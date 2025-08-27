@@ -1,28 +1,24 @@
 <?php
-namespace WeppsAdmin\ConfigExtensions\Backup;
-
-use WeppsAdmin\Admin\AdminUtilsWepps;
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-
-require_once __DIR__ . '/../../../../config.php';
-require_once __DIR__ . '/../../../../autoloader.php';
 require_once __DIR__ . '/../../../../configloader.php';
 
-class RequestBackupWepps extends RequestWepps
+use WeppsAdmin\Admin\AdminUtils;
+use WeppsCore\Request;
+use WeppsCore\Exception;
+use WeppsCore\Connect;
+use WeppsCore\TextTransforms;
+
+class RequestBackup extends Request
 {
 	public function request($action = "")
 	{
 		$this->tpl = '';
-		if (empty($this->cli) && @ConnectWepps::$projectData['user']['ShowAdmin'] != 1) {
-			ExceptionWepps::error404();
+		if (empty($this->cli) && @Connect::$projectData['user']['ShowAdmin'] != 1) {
+			Exception::error404();
 		}
-		$cnf = ConnectWepps::$projectDB['cnf'];
-		$db = ConnectWepps::$projectDB['dbname'];
-		$root = ConnectWepps::$projectDev['root'];
-		$host = ConnectWepps::$projectDev['host'];
+		$cnf = Connect::$projectDB['cnf'];
+		$db = Connect::$projectDB['dbname'];
+		$root = Connect::$projectDev['root'];
+		$host = Connect::$projectDev['host'];
 		$backupPath = '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
 		switch ($action) {
 			case "database":
@@ -32,7 +28,7 @@ class RequestBackupWepps extends RequestWepps
 				$table = (!empty($this->get['list'])) ? $this->get['list'] : '';
 				$path = $root . $backupPath;
 				$type = 1;
-				$comment = (!empty($this->get['comment'])) ? "-" . TextTransformsWepps::translit($this->get['comment'], 2) : "";
+				$comment = (!empty($this->get['comment'])) ? "-" . TextTransforms::translit($this->get['comment'], 2) : "";
 				$filename = $path . $host . "-" . date("Ymd-His") . $comment . ".sql";
 
 				/*
@@ -56,14 +52,14 @@ class RequestBackupWepps extends RequestWepps
 				 * Вывод финального сообщения
 				 */
 				if ($cmd == "ОК") {
-					AdminUtilsWepps::modal("<p>Бекап базы данных: {$cmd}</p>");
+					AdminUtils::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
-					AdminUtilsWepps::modal("<p>Ошибка запроса: {$str}</p>");
+					AdminUtils::modal("<p>Ошибка запроса: {$str}</p>");
 				}
 				break;
 			case "database-restore":
 				if (!isset($this->get['form']) || !isset($this->get['id'])) {
-					ConnectWepps::$instance->close();
+					Connect::$instance->close();
 				}
 				/*
 				 * Восстановить из бекапа
@@ -82,15 +78,15 @@ class RequestBackupWepps extends RequestWepps
 				 * Вывод финального сообщения
 				 */
 				if ($cmd == "ОК") {
-					AdminUtilsWepps::modal("<p>Бекап базы данных: {$cmd}</p>");
+					AdminUtils::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
 					echo $str;
-					AdminUtilsWepps::modal("<p>Бекап базы данных: {$str}</p>");
+					AdminUtils::modal("<p>Бекап базы данных: {$str}</p>");
 				}
 				break;
 			case "database-remove":
 				if (!isset($this->get['form']) || !isset($this->get['id'])) {
-					ConnectWepps::$instance->close();
+					Connect::$instance->close();
 				}
 				/*
 				 * Удалить файл бекапа
@@ -101,7 +97,7 @@ class RequestBackupWepps extends RequestWepps
 				if (is_file($filename)) {
 					unlink($filename);
 				}
-				AdminUtilsWepps::modal('<p>Бекап базы данных: удален</p>');
+				AdminUtils::modal('<p>Бекап базы данных: удален</p>');
 				break;
 			case "files":
 				if (isset($this->get['add']) && (int) $this->get['add'] == 1) {
@@ -151,7 +147,7 @@ class RequestBackupWepps extends RequestWepps
 				$filename = $path . $this->get['id'];
 
 				if (!is_file($filename)) {
-					ExceptionWepps::error404();
+					Exception::error404();
 				}
 
 				$path = './' . $backupPath;
@@ -188,7 +184,7 @@ class RequestBackupWepps extends RequestWepps
 				break;
 			case "files-remove":
 				if (!isset($this->get['form']) || !isset($this->get['id'])) {
-					ConnectWepps::$instance->close();
+					Connect::$instance->close();
 				}
 				/*
 				 * Удалить файл бекапа
@@ -202,7 +198,7 @@ class RequestBackupWepps extends RequestWepps
 				/*
 				 * Вывод финального сообщения
 				 */
-				AdminUtilsWepps::modal('<p>Бекап файлов: удален</p>');
+				AdminUtils::modal('<p>Бекап файлов: удален</p>');
 				break;
 			case "list":
 				/*
@@ -215,27 +211,27 @@ class RequestBackupWepps extends RequestWepps
 				 * Структура бд
 				 */
 				$sql = "SHOW CREATE TABLE $table";
-				$res = ConnectWepps::$instance->fetch($sql);
+				$res = Connect::$instance->fetch($sql);
 				$str = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $res[0]['Create Table']) . ";\n\n";
 
 				/*
 				 * Конфиг
 				 */
 				$sql = "select * from s_Config where TableName = '$table'";
-				$res = ConnectWepps::$instance->fetch($sql);
+				$res = Connect::$instance->fetch($sql);
 
 				unset($res[0]['Id']);
-				$arr = AdminAdminUtilsWepps::query($res[0]);
+				$arr = AdminAdminUtils::query($res[0]);
 				$str .= "insert ignore into s_Config {$arr['insert']}\n\n";
 
 				/*
 				 * Конфиг полей
 				 */
 				$sql = "select * from s_ConfigFields where TableName = '$table'";
-				$res = ConnectWepps::$instance->fetch($sql);
+				$res = Connect::$instance->fetch($sql);
 
 				foreach ($res as $value) {
-					$arr = AdminAdminUtilsWepps::query($value);
+					$arr = AdminAdminUtils::query($value);
 					$str .= "insert ignore into s_ConfigFields {$arr['insert']}\n";
 				}
 
@@ -249,23 +245,23 @@ class RequestBackupWepps extends RequestWepps
 			 * Не используется в UI
 			 */
 			case "addBackupIgnored":
-				$obj = new BackupFilesWepps();
+				$obj = new BackupFiles();
 				$obj->addBackupIgnoredByGit();
 				break;
 			case "addBackup":
-				$obj = new BackupFilesWepps();
+				$obj = new BackupFiles();
 				$obj->addBackup();
 				break;
 			case "addBackupDB":
-				$obj = new BackupFilesWepps();
+				$obj = new BackupFiles();
 				$obj->addBackupDB(false);
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 	}
 }
-$request = new RequestBackupWepps(!empty($argv) ? $argv : $_REQUEST);
+$request = new RequestBackup(!empty($argv) ? $argv : $_REQUEST);
 $smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

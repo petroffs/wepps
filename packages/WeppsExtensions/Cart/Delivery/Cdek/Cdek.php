@@ -1,15 +1,25 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery\Cdek;
 
-use WeppsCore\Utils\CliWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Cli;
+use WeppsCore\Utils;
+use WeppsCore\Connect;
 use Curl\Curl;
-use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryWepps;
+use WeppsCore\Validator;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Delivery\Delivery;
 
-class CdekWepps extends DeliveryWepps
+/**
+ * Класс интеграции с API CDEK для расчета доставки и управления способами получения.
+ * 
+ * Использует OAuth 2.0 для аутентификации, кэширует результаты API-запросов и синхронизирует 
+ * данные о пунктах выдачи, городах и регионах.
+ * 
+ * @package Delivery
+ * @author Ваше имя
+ * @version 1.0
+ */
+class Cdek extends Delivery
 {
 	private $account;
 	private $password;
@@ -19,13 +29,13 @@ class CdekWepps extends DeliveryWepps
 	private $token;
 	private $curl;
 	private $counter = 0;
-	public function __construct(array $settings, CartUtilsWepps $cartUtils)
+	public function __construct(array $settings, CartUtils $cartUtils)
 	{
 		parent::__construct($settings, $cartUtils);
-		$this->url = ConnectWepps::$projectServices['cdek']['url'];
-		$this->account = ConnectWepps::$projectServices['cdek']['account'];
-		$this->password = ConnectWepps::$projectServices['cdek']['password'];
-		$this->office = ConnectWepps::$projectServices['cdek']['office'];
+		$this->url = Connect::$projectServices['cdek']['url'];
+		$this->account = Connect::$projectServices['cdek']['account'];
+		$this->password = Connect::$projectServices['cdek']['password'];
+		$this->office = Connect::$projectServices['cdek']['office'];
 		$this->tokenFilename = __DIR__ . '/files/cdek.conf';
 		$this->settings = $settings;
 		$f = file_get_contents($this->tokenFilename);
@@ -35,7 +45,7 @@ class CdekWepps extends DeliveryWepps
 		} elseif (!empty($jdata['access_token'])) {
 			$this->token = $jdata['access_token'];
 		} else {
-			UtilsWepps::debug('token error', 31);
+			Utils::debug('token error', 31);
 			exit();
 		}
 		$this->curl = new Curl();
@@ -54,7 +64,7 @@ class CdekWepps extends DeliveryWepps
 		$jdata = [
 			'tariff_code' => (int) $jsettings['tariff'],
 			'from_location' => [
-				'code' => (int) ConnectWepps::$projectServices['cdek']['office']['sender']
+				'code' => (int) Connect::$projectServices['cdek']['office']['sender']
 			],
 			'to_location' => [
 				'code' => (int) $this->settings['CitiesId']
@@ -78,7 +88,7 @@ class CdekWepps extends DeliveryWepps
 		$json = json_encode($jdata, JSON_UNESCAPED_UNICODE);
 		$hash = md5($json);
 		if (empty($response = $this->cartUtils->getMemcached()->get($hash))) {
-			$url = ConnectWepps::$projectServices['cdek']['url'] . "/v2/calculator/tariff";
+			$url = Connect::$projectServices['cdek']['url'] . "/v2/calculator/tariff";
 			$response = $this->curl->post($url, $json)->response;
 			$response = json_decode($response, true);
 			$this->cartUtils->getMemcached()->set($hash, $response, 86400);
@@ -94,7 +104,7 @@ class CdekWepps extends DeliveryWepps
 		return [
 			'status' => 200,
 			'title' => $this->settings['Name'],
-			'price' => UtilsWepps::round($price),
+			'price' => Utils::round($price),
 			'period' => $period
 		];
 	}
@@ -114,10 +124,10 @@ class CdekWepps extends DeliveryWepps
 				$headers->css("/ext/Addons/YandexMaps/YandexMaps.{$headers::$rand}.css");
 				$tpl = 'Cdek/Pickpoints.tpl';
 				$data = [];
-				#$from = ConnectWepps::$projectServices['cdek']['office']['sender'];
+				#$from = Connect::$projectServices['cdek']['office']['sender'];
 				$to = $cart['citiesId'] ?? 0;
 				$sql = "select * from PointsCdek where CitiesId = ? limit 1000";
-				$res = ConnectWepps::$instance->fetch($sql, [$to]);
+				$res = Connect::$instance->fetch($sql, [$to]);
 				if (empty($res)) {
 					break;
 				}
@@ -150,7 +160,7 @@ class CdekWepps extends DeliveryWepps
 				$tpl = 'Address/Address.tpl';
 				$data = [
 					'deliveryCtiy' => $citiesById[0],
-					'token' => ConnectWepps::$projectServices['dadata']['token']
+					'token' => Connect::$projectServices['dadata']['token']
 				];
 				$allowBtn = true;
 				break;
@@ -173,17 +183,17 @@ class CdekWepps extends DeliveryWepps
 		$errors = [];
 		switch (@$cartSummary['delivery']['settings']['tariff']) {
 			case 136:
-				$errors['operations-id'] = ValidatorWepps::isNotEmpty($get['operations-id'], "Не заполнено");
-				$errors['operations-title'] = ValidatorWepps::isNotEmpty($get['operations-title'], "Не заполнено");
-				$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
-				$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
-				$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+				$errors['operations-id'] = Validator::isNotEmpty($get['operations-id'], "Не заполнено");
+				$errors['operations-title'] = Validator::isNotEmpty($get['operations-title'], "Не заполнено");
+				$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'], "Не заполнено");
+				$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'], "Не заполнено");
+				$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'], "Не заполнено");
 				break;
 			case 137:
 			default:
-				$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
-				$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
-				$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+				$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'], "Не заполнено");
+				$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'], "Не заполнено");
+				$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'], "Не заполнено");
 				break;
 		}
 		return $errors;
@@ -202,15 +212,15 @@ class CdekWepps extends DeliveryWepps
 			if (empty($jdata)) {
 				return [];
 			}
-			ConnectWepps::$instance->query('truncate PointsCdek');
+			Connect::$instance->query('truncate PointsCdek');
 			$row = [
 				'Name' => '',
 				'Alias' => '',
 				'JData' => '',
 				'CitiesId' => '',
 			];
-			$prepare = ConnectWepps::$instance->prepare($row);
-			$insert = ConnectWepps::$db->prepare("insert into PointsCdek {$prepare['insert']}");
+			$prepare = Connect::$instance->prepare($row);
+			$insert = Connect::$db->prepare("insert into PointsCdek {$prepare['insert']}");
 			foreach ($jdata as $value) {
 				$row = [
 					'Name' => $value['name'],
@@ -222,7 +232,7 @@ class CdekWepps extends DeliveryWepps
 			}
 			return [];
 		};
-		ConnectWepps::$instance->transaction($func, []);
+		Connect::$instance->transaction($func, []);
 		return true;
 	}
 	public function setCities(int $page = 0)
@@ -230,7 +240,7 @@ class CdekWepps extends DeliveryWepps
 		$func = function (array $args) {
 			$page = $args['page'] ?? 0;
 			$url = $this->url . '/v2/location/cities?country_codes=RU&&size=1000&page=' . $page;
-			$cli = new CliWepps();
+			$cli = new Cli();
 			$cli->progress($page, 150);
 			$response = $this->curl->get($url);
 			if (empty($response->response)) {
@@ -244,15 +254,15 @@ class CdekWepps extends DeliveryWepps
 				return [];
 			}
 			if ($page == 0) {
-				ConnectWepps::$instance->query('truncate CitiesCdek');
+				Connect::$instance->query('truncate CitiesCdek');
 			}
 			$row = [
 				'Id' => '',
 				'Name' => '',
 				'RegionsId' => '',
 			];
-			$prepare = ConnectWepps::$instance->prepare($row);
-			$insert = ConnectWepps::$db->prepare("insert into CitiesCdek {$prepare['insert']}");
+			$prepare = Connect::$instance->prepare($row);
+			$insert = Connect::$db->prepare("insert into CitiesCdek {$prepare['insert']}");
 			foreach ($jdata as $value) {
 				$row = [
 					'Id' => $value['code'],
@@ -263,7 +273,7 @@ class CdekWepps extends DeliveryWepps
 			}
 			return [];
 		};
-		ConnectWepps::$instance->transaction($func, ['page' => $page]);
+		Connect::$instance->transaction($func, ['page' => $page]);
 		$page++;
 		if ($page <= 150) {
 			return self::setCities($page);
@@ -284,14 +294,14 @@ class CdekWepps extends DeliveryWepps
 			if (empty($jdata)) {
 				return [];
 			}
-			ConnectWepps::$instance->query('truncate RegionsCdek');
+			Connect::$instance->query('truncate RegionsCdek');
 			$row = [
 				'Id' => '',
 				'Name' => '',
 				'JData' => '',
 			];
-			$prepare = ConnectWepps::$instance->prepare($row);
-			$insert = ConnectWepps::$db->prepare("insert into RegionsCdek {$prepare['insert']}");
+			$prepare = Connect::$instance->prepare($row);
+			$insert = Connect::$db->prepare("insert into RegionsCdek {$prepare['insert']}");
 			foreach ($jdata as $value) {
 				$row = [
 					'Id' => $value['region_code'],
@@ -302,7 +312,7 @@ class CdekWepps extends DeliveryWepps
 			}
 			return [];
 		};
-		ConnectWepps::$instance->transaction($func, []);
+		Connect::$instance->transaction($func, []);
 		return true;
 	}
 	public function getPostalcodes()

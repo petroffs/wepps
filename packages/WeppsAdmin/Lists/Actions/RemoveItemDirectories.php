@@ -1,11 +1,11 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\NavigatorDataWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
+use WeppsCore\NavigatorData;
 
-class RemoveItemDirectoriesWepps extends RequestWepps {
+class RemoveItemDirectories extends Request {
 	public $noclose = 1;
 	public $listSettings = [];
 	private $id;
@@ -15,14 +15,14 @@ class RemoveItemDirectoriesWepps extends RequestWepps {
 		$this->id = (int) $this->get['id'];
 		if ($this->listSettings['TableName']=='s_Navigator') {
 			if ($this->id==1) {
-				ConnectWepps::$instance->close();
+				Connect::$instance->close();
 			}
-			$nav2 = new NavigatorDataWepps("s_Navigator");
+			$nav2 = new NavigatorData("s_Navigator");
 			$child = $nav2->getRChild($this->id);
 			if (count($child)!=0) {
 				$str = "0,".implode(",", $child);
 				$sql = "delete from s_Navigator where Id in ($str)";
-				ConnectWepps::$db->query($sql);
+				Connect::$db->query($sql);
 			}
 			return;
 		}

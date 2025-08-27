@@ -1,17 +1,17 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery\RussianPost;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
+use WeppsCore\Validator;
+use WeppsExtensions\Cart\CartUtils;
 use Curl\Curl;
-use WeppsExtensions\Cart\Delivery\Cdek\CdekWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryWepps;
+use WeppsExtensions\Cart\Delivery\Cdek\Cdek;
+use WeppsExtensions\Cart\Delivery\Delivery;
 
-class RussianPostWepps extends DeliveryWepps
+class RussianPost extends Delivery
 {
-    public function __construct(array $settings, CartUtilsWepps $cartUtils)
+    public function __construct(array $settings, CartUtils $cartUtils)
     {
         parent::__construct($settings, $cartUtils);
     }
@@ -22,7 +22,7 @@ class RussianPostWepps extends DeliveryWepps
             return [];
         }
         if (empty($this->settings['PostalCode'])) {
-            $obj = new CdekWepps($this->settings,$this->cartUtils);
+            $obj = new Cdek($this->settings,$this->cartUtils);
             $this->settings['PostalCode'] = $obj->getPostalcodes();
             if (empty($this->settings['PostalCode'])) {
                 $output = [
@@ -39,7 +39,7 @@ class RussianPostWepps extends DeliveryWepps
                  */
             }
         }
-        $from = ConnectWepps::$projectServices['russianpost']['office']['sender'];
+        $from = Connect::$projectServices['russianpost']['office']['sender'];
         $to = $this->settings['PostalCode'];
         $weight = "1000";
         $sum = $cartSummary['sumActive'] * 100;
@@ -65,7 +65,7 @@ class RussianPostWepps extends DeliveryWepps
             'status' => 200,
             'title' => $this->settings['Name'],
             'text' => 'Тариф способа доставки',
-            'price' => UtilsWepps::round($price),
+            'price' => Utils::round($price),
             'period' => $period
         ];
         return $output;
@@ -85,7 +85,7 @@ class RussianPostWepps extends DeliveryWepps
         $tpl = 'Address/Address.tpl';
         $data = [
             'deliveryCtiy' => $citiesById[0],
-            'token' => ConnectWepps::$projectServices['dadata']['token']
+            'token' => Connect::$projectServices['dadata']['token']
         ];
         $allowBtn = true;
         return [
@@ -101,9 +101,9 @@ class RussianPostWepps extends DeliveryWepps
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();
 		$errors = [];
-		$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
-		$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
-		$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+		$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'], "Не заполнено");
+		$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'], "Не заполнено");
+		$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'], "Не заполнено");
 		return $errors;
 	}
 }

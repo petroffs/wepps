@@ -1,22 +1,22 @@
 <?php
 namespace WeppsExtensions\Alignment1;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class Alignment1Wepps extends ExtensionWepps {
+class Alignment1 extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Alignment1/Alignment1.tpl';
 				$smarty->assign('element',$this->navigator->content);
 				$this->navigator->content['Text1'] = '';
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		$this->headers->css("/ext/Alignment1/Alignment1.{$this->rand}.css");

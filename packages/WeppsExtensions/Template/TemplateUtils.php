@@ -1,9 +1,9 @@
 <?php
 namespace WeppsExtensions\Template;
 
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Utils;
 
-class TemplateUtilsWepps extends UtilsWepps {
+class TemplateUtils extends Utils {
 	public static function test() {
 		self::debug(1,21);
 	}

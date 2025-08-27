@@ -1,20 +1,20 @@
 <?php
 namespace WeppsAdmin\Admin;
 
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Smarty;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\Utils;
+use WeppsCore\Exception;
+use WeppsCore\Data;
+use WeppsCore\Connect;
 
-class AdminWepps {
+class Admin {
 	private $headers;
 	private $nav;
 	private $page;
 	public static $pathItem;
 	public static $path;
-	public function __construct(string $ppsUrl,TemplateHeadersWepps &$headers) {
+	public function __construct(string $ppsUrl,TemplateHeaders &$headers) {
 		/*
 		 * Если не залогинен - вывести форму авторизации
 		 */
@@ -44,19 +44,19 @@ class AdminWepps {
 				)
 		);
 		$this->request();
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$smarty->display( __DIR__ . '/Admin.tpl');
-		ConnectWepps::$instance->close();
+		Connect::$instance->close();
 	}
 	public function request() {
 		$headers = &$this->headers;
 		$path = (self::$path[0]=='') ? 'home' : self::$path[0];
-		if (@ConnectWepps::$projectData['user']['ShowAdmin'] != 1) {
+		if (@Connect::$projectData['user']['ShowAdmin'] != 1) {
         	$path = 'home';
 		}
 		
 		if (!isset($this->nav[$path])) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
 		$navItem = $this->nav[$path];
 		$this->headers->js("/packages/vendor/components/jquery/jquery.min.js");
@@ -75,20 +75,20 @@ class AdminWepps {
 		$this->headers->css("/packages/WeppsAdmin/Admin/Forms/Forms.{$headers::$rand}.css");
 		$this->headers->js("/packages/WeppsAdmin/Admin/AdminWepps.{$headers::$rand}.js");
 		$this->headers->css("/packages/WeppsAdmin/Admin/AdminWepps.{$headers::$rand}.css");
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$smarty->assign('navtop',$this->nav);
 		$smarty->assign('contenttop',$navItem);
 		//$smarty->assign('navTpl',$smarty->fetch( __DIR__ . '/AdminNav.tpl'));
 		
-		if (ConnectWepps::$projectServices['wepps']['multilang']==1) {
+		if (Connect::$projectServices['wepps']['multilang']==1) {
 			$sql = "select * from s_NGroupsLang where DisplayOff=0 order by Priority";
-			$language = ConnectWepps::$instance->fetch($sql);
+			$language = Connect::$instance->fetch($sql);
 			$smarty->assign('language',$language);
 			$sql = "select * from s_Lang where Category='back' order by Priority";
-			$multilang = ConnectWepps::$instance->fetch($sql);
+			$multilang = Connect::$instance->fetch($sql);
 			$smarty->assign('multilang',$multilang);
 		}
-		$className = "WeppsAdmin\\{$navItem['Extension']}\\{$navItem['Extension']}Wepps";
+		$className = "WeppsAdmin\\{$navItem['Extension']}\\{$navItem['Extension']}";
 		if(class_exists($className)) {
 			$obj = new $className($this->headers,$this->nav);
 			$smarty->assign('headers', $this->headers->get());
@@ -99,7 +99,7 @@ class AdminWepps {
 		}
 	}
 	private function getNavigateUrl($url) {
-		//UtilsWepps::debug($url,1);
+		//Utils::debug($url,1);
 		$match = [];
 		$m = preg_match ( "/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match );
 		if (strstr($url, "home/")) {
@@ -120,7 +120,7 @@ class AdminWepps {
 		} elseif (isset($match[1])) {
 			self::$pathItem = $match[1];
 		}
-		$url = (empty ( $url )) ? '/' : UtilsWepps::trim ( $url );
+		$url = (empty ( $url )) ? '/' : Utils::trim ( $url );
 		$url = substr ( $url, 0, strrpos ( $url, "/", - 1 ) + 1 );
 		
 		if (preg_match("/(\/{2,10})/",  $_SERVER['REQUEST_URI'])) {
@@ -134,7 +134,7 @@ class AdminWepps {
 	
 	public static function getPermissions($permId=0,$check=[]) {
 		if ($permId==0 || (int) $permId==0) return array('status'=>0);
-		$obj = new DataWepps("s_Permissions");
+		$obj = new Data("s_Permissions");
 		$res = $obj->fetch($permId)[0];
 		if (!isset($res['Id'])) return array('status'=>0);
 
@@ -162,7 +162,7 @@ class AdminWepps {
 	
 	public static function getTranslate() {
 		$sql = "select Name,LangRu,LangEn from s_Lang where Category='back'";
-		$res = ConnectWepps::$instance->fetch($sql,[],'group');
+		$res = Connect::$instance->fetch($sql,[],'group');
 		$translate = [];
 		foreach ($res as $key=>$value) {
 			$translate[$key] = $value[0]['LangRu'];
@@ -170,4 +170,3 @@ class AdminWepps {
 		return $translate;
 	}
 }
-?>

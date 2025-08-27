@@ -1,7 +1,7 @@
 <?php
 namespace WeppsExtensions\Reviews;
 
-class ReviewsWepps {
+class Reviews {
 	function __construct() {
 	}
 }

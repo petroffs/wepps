@@ -1,19 +1,19 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Utils;
+use WeppsExtensions\Cart\CartUtils;
 
-class DeliveryWepps
+class Delivery
 {
     protected $settings;
     protected $cartUtils;
     protected $deliveryUtils;
-    public function __construct(array $settings, CartUtilsWepps $cartUtils)
+    public function __construct(array $settings, CartUtils $cartUtils)
     {
         $this->settings = $settings;
         $this->cartUtils = $cartUtils;
-        $this->deliveryUtils = new DeliveryUtilsWepps();
+        $this->deliveryUtils = new DeliveryUtils();
     }
     public function getTariff(): array
     {
@@ -33,11 +33,11 @@ class DeliveryWepps
             'period' => '1-3'
         ];
         if (@$this->settings['IsTariffPercentage'] == 1) {
-            $output['price'] = UtilsWepps::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100, 0);
+            $output['price'] = Utils::round($this->settings['Tariff'] * $cartSummary['sumActive'] / 100, 0);
         }
         return $output;
     }
-    public function getDiscount(CartUtilsWepps $cartUtils): array
+    public function getDiscount(CartUtils $cartUtils): array
     {
         $cartSummary = $cartUtils->getCartSummary();
         if (empty($cartSummary)) {
@@ -53,7 +53,7 @@ class DeliveryWepps
                 $output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Discount']);
             break;
             default:
-                $output['price'] = UtilsWepps::round($this->settings['Discount']);
+                $output['price'] = Utils::round($this->settings['Discount']);
             break;
         }
         return $output;

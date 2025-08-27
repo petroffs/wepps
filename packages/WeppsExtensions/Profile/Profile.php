@@ -1,49 +1,51 @@
 <?php
 namespace WeppsExtensions\Profile;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Addons\Jwt\JwtWepps;
-use WeppsExtensions\Addons\RemoteServices\RecaptchaV2Wepps;
+use WeppsCore\Connect;
+use WeppsCore\Extension;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Exception;
+use WeppsCore\Utils;
+use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 
-class ProfileWepps extends ExtensionWepps {
+class Profile extends Extension {
 	private $profileTpl = '';
 	private $user;
 	public function request()
 	{
 		$this->tpl = __DIR__ . '/Profile.tpl';
-		$this->user = ConnectWepps::$projectData['user']??[];
-		if (!empty(NavigatorWepps::$pathItem)) {
+		$this->user = Connect::$projectData['user']??[];
+		if (!empty(Navigator::$pathItem)) {
 			$this->extensionData['element'] = 1;
 		}
-		$profileUtils = new ProfileUtilsWepps($this->user);
+		$profileUtils = new ProfileUtils($this->user);
 		$profileNav = $profileUtils->getNav();
-		#UtilsWepps::debug($profileNav,21);
+		#Utils::debug($profileNav,21);
 		$this->headers->js ("/ext/Profile/Profile.{$this->rand}.js");
 		$this->headers->css ("/ext/Profile/Profile.{$this->rand}.css");
 
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$smarty->assign ('normalView',0);
-		$smarty->assign ('pathItem',NavigatorWepps::$pathItem);
+		$smarty->assign ('pathItem',Navigator::$pathItem);
 		$smarty->assign ('get',$this->get);
 		$smarty->assign('profileNav',$profileNav);
 		
 		if (empty($this->user)) {
-			switch (NavigatorWepps::$pathItem) {
+			switch (Navigator::$pathItem) {
 				case 'reg':
 					$this->profileTpl = 'ProfileReg.tpl';
 					break;
 				case 'password':
 					$this->profileTpl = 'ProfilePassword.tpl';
 					if (!empty($this->get['token'])) {
-						$jwt = new JwtWepps();
+						Utils::cookies('wepps_token');
+						$jwt = new Jwt();
 						$payload = $jwt->token_decode($this->get['token']);
-						if ($payload['payload']['typ']=='pass') {
-							$user = @ConnectWepps::$instance->fetch('SELECT * from s_Users where Id=? and DisplayOff=0',[$payload['payload']['id']])[0];
+						#Utils::debug($payload,21);
+						if ($payload['payload']['status']=200 && @$payload['payload']['typ']=='pass') {
+							$user = @Connect::$instance->fetch('SELECT * from s_Users where Id=? and DisplayOff=0',[$payload['payload']['id']])[0];
 							if (empty($user)) {
 								$this->profileTpl = 'ProfilePasswordError.tpl';
 								break;
@@ -54,10 +56,9 @@ class ProfileWepps extends ExtensionWepps {
 						$this->profileTpl = 'ProfilePasswordError.tpl';
 						break;
 					}
-					$recaptcha = new RecaptchaV2Wepps($this->headers);
+					$recaptcha = new RecaptchaV2($this->headers);
 					$response = $recaptcha->render();
 					$smarty->assign('recaptcha',$response);
-					#UtilsWepps::debug($response,21);
 					break;
 				default:
 					$this->profileTpl = 'ProfileSignIn.tpl';
@@ -67,7 +68,7 @@ class ProfileWepps extends ExtensionWepps {
 			$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 			return;
 		}
-		switch (NavigatorWepps::$pathItem) {
+		switch (Navigator::$pathItem) {
 				case '':
 				case 'reg':
 				case 'password':
@@ -83,7 +84,7 @@ class ProfileWepps extends ExtensionWepps {
 					$this->profileTpl = 'ProfileSettings.tpl';
 					break;
 				default:
-					ExceptionWepps::error404();
+					Exception::error404();
 					break;
 			}
 		$smarty->assign('profileTpl',$smarty->fetch(__DIR__ . '/' . $this->profileTpl));

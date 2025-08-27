@@ -1,36 +1,36 @@
 <?php
 namespace WeppsAdmin\Lists;
-use WeppsAdmin\Admin\AdminUtilsWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsAdmin\Admin\AdminWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsCore\Validator\ValidatorWepps;
+use WeppsAdmin\Admin\AdminUtils;
+use WeppsCore\Smarty;
+use WeppsCore\Utils;
+use WeppsCore\Connect;
+use WeppsCore\Exception;
+use WeppsCore\TemplateHeaders;
+use WeppsAdmin\Admin\Admin;
+use WeppsCore\Data;
+use WeppsCore\TextTransforms;
+use WeppsCore\Validator;
 
 if (!isset($_SESSION)) {
 	@session_start();
 }
 
-class ListsWepps
+class Lists
 {
 	private $content;
 	private $get;
 	public $headers;
-	public function __construct(TemplateHeadersWepps &$headers)
+	public function __construct(TemplateHeaders &$headers)
 	{
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$headers->js("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.js");
 		$headers->css("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.css");
-		$this->get = UtilsWepps::trim($_GET);
+		$this->get = Utils::trim($_GET);
 		$ppsUrl = "/" . $_GET['ppsUrl'];
 		$ppsUrlEx = explode("/", trim($ppsUrl, '/'));
 		$tpl2 = "../Admin/AdminError.tpl";
-		$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions']);
-		$translate = AdminWepps::getTranslate();
+		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
+		$translate = Admin::getTranslate();
 		$smarty->assign('translate', $translate);
 
 		/*
@@ -38,13 +38,13 @@ class ListsWepps
 		 */
 		$fcond = "'" . implode("','", $perm['lists']) . "'";
 		$sql = "select * from s_Config as t where TableName in ($fcond) order by t.Category,t.Priority";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		/* $str = "";
 		foreach ($res as $value) {
 			$str .= "union (select '{$value['TableName']}' as TableName,count(*) as `Rows`,  (select count(*) from s_ConfigFields as cf where cf.TableName='{$value['TableName']}') as Fields from {$value['TableName']} as t)\n";
 		}
 		$str = trim($str, "union ");
-		$stat = ConnectWepps::$instance->fetch($str, array(), 'group'); */
+		$stat = Connect::$instance->fetch($str, array(), 'group'); */
 		$arr = [];
 		foreach ($res as $value) {
 			/* $value['RowsCount'] = $stat[$value['TableName']][0]['Rows'];
@@ -52,7 +52,7 @@ class ListsWepps
 			$arr[$value['Category']][] = $value;
 		}
 		$smarty->assign('lists', $arr);
-		$smarty->assign('listsNavTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
+		$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
 		if ($ppsUrl == '/lists/') {
 			/*
 			 * Список списков
@@ -62,19 +62,19 @@ class ListsWepps
 			$content['Name'] = "Все списки";
 			$content['NameNavItem'] = "Списки данных";
 			$smarty->assign('content', $content);
-			$smarty->assign('listsNavTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
+			$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
 		} elseif (count($ppsUrlEx) == 2 && in_array($ppsUrlEx[1], $perm['lists'])) {
 			/*
 			 * Элементы списка
 			 */
-			$permConfig = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'], array('list' => "s_Config"));
+			$permConfig = Admin::getPermissions(Connect::$projectData['user']['UserPermissions'], array('list' => "s_Config"));
 			$smarty->assign('permConfig', $permConfig['status']);
 			/*
 			 * Свойства списка (Конфигурация и поля)
 			 */
 			$sql = "select * from s_Config as t where TableName in ('{$ppsUrlEx[1]}') order by t.Category";
-			$listSettings = ConnectWepps::$instance->fetch($sql)[0];
-			$listObj = new DataWepps($ppsUrlEx[1]);
+			$listSettings = Connect::$instance->fetch($sql)[0];
+			$listObj = new Data($ppsUrlEx[1]);
 			if (!empty($listSettings['ItemsFields'])) {
 				$listObj->setFields($listSettings['ItemsFields']);
 			}
@@ -131,7 +131,7 @@ class ListsWepps
 					/*
 					 * Затем подсветка иконки, чтобы было ясно что данные отфильтрованы
 					 */
-					$listCondition = "t.{$this->get['field']} regexp '" . ConnectWepps::$instance->selectRegx($this->get['filter']) . "'";
+					$listCondition = "t.{$this->get['field']} regexp '" . Connect::$instance->selectRegx($this->get['filter']) . "'";
 				} else {
 					$listCondition = "t.{$this->get['field']} = '{$this->get['filter']}'";
 				}
@@ -143,11 +143,11 @@ class ListsWepps
 				$smarty->assign('listItems', $listItems);
 				$smarty->assign('paginator', $listObj->paginator);
 				$smarty->assign('paginatorUrl', "/_wepps/lists/{$ppsUrlEx[1]}/");
-				$smarty->assign('paginatorTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Admin/Paginator/PaginatorLists.tpl'));
+				$smarty->assign('paginatorTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Admin/Paginator/PaginatorLists.tpl'));
 				$smarty->assign('orderField', $orderField);
 				$headers->css("/packages/WeppsAdmin/Admin/Paginator/Paginator.{$headers::$rand}.css");
 			}
-			$smarty->assign('listsNavTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
+			$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
 		} elseif (count($ppsUrlEx) == 3) {
 			/*
 			 * Элемент списка
@@ -175,7 +175,7 @@ class ListsWepps
 				$content['NameNavItem'] = "Списки данных";
 				$smarty->assign('listMode', 'ModifyMode');
 			} else {
-				ExceptionWepps::error404();
+				Exception::error404();
 			}
 
 			/*
@@ -188,34 +188,34 @@ class ListsWepps
 			$smarty->assign('listScheme', $listForm['listScheme']);
 			$smarty->assign('listSettings', $listForm['listSettings']);
 			$smarty->assign('tabs', $listForm['tabs']);
-			$smarty->assign('controlsTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemControls.tpl'));
+			$smarty->assign('controlsTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemControls.tpl'));
 			if (isset($_SESSION['uploads']['list-data-form'])) {
 				$smarty->assign('uploaded', $_SESSION['uploads']['list-data-form']);
 			}
-			$smarty->assign('listItemFormTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemForm.tpl'));
-			$smarty->assign('listsNavTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
+			$smarty->assign('listItemFormTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsItemForm.tpl'));
+			$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
 		} else {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
 		$tpl = $smarty->fetch(__DIR__ . '/' . $tpl2);
 		$smarty->assign('extension', $tpl);
 	}
 
-	public static function getListItemForm(TemplateHeadersWepps &$headers, $list, $id)
+	public static function getListItemForm(TemplateHeaders &$headers, $list, $id)
 	{
-		$translate = AdminWepps::getTranslate();
-		$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'], array('list' => $list));
+		$translate = Admin::getTranslate();
+		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions'], array('list' => $list));
 		if ($perm['status'] == 0) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
-		$permFields = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions'], array('list' => "s_ConfigFields"));
+		$permFields = Admin::getPermissions(Connect::$projectData['user']['UserPermissions'], array('list' => "s_ConfigFields"));
 
 		/*
 		 * Свойства списка (Конфигурация и поля)
 		 */
 		$sql = "select * from s_Config as t where TableName in ('{$list}') order by t.Category,t.Priority";
-		$listSettings = ConnectWepps::$instance->fetch($sql)[0];
-		$listObj = new DataWepps($listSettings['TableName']);
+		$listSettings = Connect::$instance->fetch($sql)[0];
+		$listObj = new Data($listSettings['TableName']);
 		$listScheme = $listObj->getScheme();
 
 		/*
@@ -245,7 +245,7 @@ class ListsWepps
 		 */
 		if (isset($listSettings['ActionShowId']) && $listSettings['ActionShowId'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionShowId']);
-			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
+			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
 			new $addActionClass(array('listSettings' => &$listSettings, 'listScheme' => &$listScheme, 'element' => &$element, 'headers' => &$headers));
 		}
 		return [
@@ -265,12 +265,12 @@ class ListsWepps
 			$arr['Name'] = "Новый элемент";
 			$element = array(0 => $arr);
 		} elseif ((int) $id == 0) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		} else {
 			$element = $obj->fetch($id);
 		}
 		if (!isset($element[0]['Id'])) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
 
 		/*
@@ -279,7 +279,7 @@ class ListsWepps
 		$sql = "select TableNameField,Id,Name,FileDescription,Priority,TableNameId,InnerName,TableName,FileDate,FileSize,FileExt,FileType,FileUrl
 				from s_Files where TableName = '{$obj->tableName}' and TableNameId = '{$id}'
 				order by Priority";
-		$files = ConnectWepps::$instance->fetch($sql, [], 'group');
+		$files = Connect::$instance->fetch($sql, [], 'group');
 		if (count($files) != 0) {
 			$element[0] = array_merge($element[0], $files);
 		}
@@ -298,7 +298,7 @@ class ListsWepps
 				 */
 				$where = (!empty($element[0][$key])) ? "where Id in ({$element[0][$key]})" : "where Id in (0)";
 				$sql = "select Id,{$ex[2]} from {$tablename} {$where} order by {$ex[2]}";
-				$res = ConnectWepps::$instance->fetch($sql);
+				$res = Connect::$instance->fetch($sql);
 				$selected = [];
 				foreach ($res as $k => $v) {
 					$selected[$v['Id']] = "{$v[$ex[2]]} ({$v['Id']})";
@@ -314,7 +314,7 @@ class ListsWepps
 				 */
 				$where = (!empty($element[0][$key])) ? "where Id in ({$element[0][$key]})" : "where Id in (0)";
 				$sql = "select Id,{$ex[2]} from {$tablename} {$where} order by {$ex[2]}";
-				$res = ConnectWepps::$instance->fetch($sql);
+				$res = Connect::$instance->fetch($sql);
 				$selected = [];
 
 				foreach ($res as $k => $v) {
@@ -332,7 +332,7 @@ class ListsWepps
 					$sql = "select {$recurciveId}t.Id,concat(t.{$ex[2]},' (',t.Id,') ') as {$ex[2]} from {$tablename} as t
 					left join {$ex[1]} as t2 on t2.Id = t.{$ex[4]}
 					{$where} group by t.{$ex[2]} order by t2.Priority,{$ex[2]}";
-					$res = ConnectWepps::$instance->fetch($sql, [], 'group');
+					$res = Connect::$instance->fetch($sql, [], 'group');
 					$options = [];
 					$options[0] = "-";
 					foreach ($res as $k => $v) {
@@ -345,7 +345,7 @@ class ListsWepps
 				} else {
 					$sql = "select t.Id,concat(t.{$ex[2]},' (',t.Id,') ') as {$ex[2]} from {$tablename} as t
 					{$where} order by {$ex[2]}";
-					$res = ConnectWepps::$instance->fetch($sql);
+					$res = Connect::$instance->fetch($sql);
 					$options = [];
 					$options[0] = "-";
 					foreach ($res as $k => $v) {
@@ -367,7 +367,7 @@ class ListsWepps
 
 			} elseif (strstr($value[0]['Type'], 'dbtable')) {
 				$sql = "select TableName,Name from s_ConfigFields order by TableName";
-				$res = ConnectWepps::$instance->fetch($sql, [], 'group');
+				$res = Connect::$instance->fetch($sql, [], 'group');
 				$options = [];
 				$options[0] = "-";
 				foreach ($res as $k => $v) {
@@ -402,7 +402,7 @@ class ListsWepps
 				 * Характеристики (s_Properties)
 				 */
 				$sql = "select Id,Name from s_PropertiesGroups where DisplayOff=0 $condition order by Priority";
-				$res = ConnectWepps::$instance->fetch($sql);
+				$res = Connect::$instance->fetch($sql);
 				$options = [];
 				$options[0] = "-";
 				foreach ($res as $k => $v) {
@@ -418,13 +418,13 @@ class ListsWepps
 					 * Свойства выбранной группы
 					 */
 					$sql = "select * from s_Properties where DisplayOff=0 and PGroup in (0,'',{$element[0][$key]}) order by Priority";
-					$res = ConnectWepps::$instance->fetch($sql);
+					$res = Connect::$instance->fetch($sql);
 					if (isset($res[0]['Id'])) {
 						/*
 						 * Значения полей
 						 */
 						$sql = "select Name,Id,PValue from s_PropertiesValues where DisplayOff=0 and TableName = '{$value[0]['TableName']}' and TableNameId = '{$element[0]['Id']}' and TableNameField = '{$key}'";
-						$res2 = ConnectWepps::$instance->fetch($sql, [], 'group');
+						$res2 = Connect::$instance->fetch($sql, [], 'group');
 						//$selected2 = [];
 						foreach ($res as $k => $v) {
 							if ($v['PType'] == 'select') {
@@ -458,7 +458,7 @@ class ListsWepps
 				$element[0]["{$key}_Headers"] = explode(';', $ex[1]);
 				$element[0]["{$key}_Rows"] = [];
 				if (!empty($element[0][$key])) {
-					$element[0]["{$key}_Rows"] = UtilsWepps::arrayFromString($element[0][$key], ':::');
+					$element[0]["{$key}_Rows"] = Utils::arrayFromString($element[0][$key], ':::');
 				}
 			}
 		}
@@ -467,7 +467,7 @@ class ListsWepps
 
 	public static function setListItem($list, $id, $data)
 	{
-		$obj = new DataWepps($list);
+		$obj = new Data($list);
 		$listScheme = $obj->getScheme();
 		$settings = [];
 		$row = [];
@@ -507,8 +507,8 @@ class ListsWepps
 			return 0;
 		if (isset($_SESSION['uploads']['list-data-form'])) {
 			$sql = "delete from s_Files where Name = ''";
-			ConnectWepps::$instance->query($sql);
-			$objFile = new DataWepps("s_Files");
+			Connect::$instance->query($sql);
+			$objFile = new Data("s_Files");
 			foreach ($_SESSION['uploads']['list-data-form'] as $key => $value) {
 				foreach ($value as $k => $v) {
 					$file = self::getUploadFileName($v, $list, $key, $id);
@@ -540,7 +540,7 @@ class ListsWepps
 			}
 			if ($str != "") {
 				$str .= "update s_PropertiesValues set DisplayOff=DisplayOff2;\n";
-				ConnectWepps::$db->exec($str);
+				Connect::$db->exec($str);
 			}
 		}
 		/*
@@ -551,16 +551,16 @@ class ListsWepps
 		/*
 		 * Индексирование
 		 */
-		$str = ListsWepps::setSearchIndex($list, $id);
+		$str = Lists::setSearchIndex($list, $id);
 		if (!empty($str)) {
-			ConnectWepps::$db->exec($str);
+			Connect::$db->exec($str);
 		}
 
 		/*
 		 * Дополнения Actions
 		 */
 		$sql = "select * from s_Config as t where TableName in ('{$list}') order by t.Category";
-		$listSettings = ConnectWepps::$instance->fetch($sql)[0];
+		$listSettings = Connect::$instance->fetch($sql)[0];
 		if (isset($listSettings['ActionModify']) && $listSettings['ActionModify'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionModify']);
 			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
@@ -595,7 +595,7 @@ class ListsWepps
 	public static function getUploadFileName($upload, $list, $field, $id)
 	{
 		$pathinfo = pathinfo($upload['path']);
-		$translit = TextTransformsWepps::translit($upload['title']);
+		$translit = TextTransforms::translit($upload['title']);
 		$prefix = sprintf("%06d", $id) . "_{$field}_" . date("U") . "_";
 		$lengthMax = 36;
 		$translitPos = strrpos($translit, '.');
@@ -610,11 +610,11 @@ class ListsWepps
 		$upload['ext'] = strtolower($pathinfo['extension']);
 		$upload['inner'] = $destination;
 		$upload['url'] = $url;
-		if (!is_dir(ConnectWepps::$projectDev['root'] . $folder)) {
-			mkdir(ConnectWepps::$projectDev['root'] . $folder, 0777);
+		if (!is_dir(Connect::$projectDev['root'] . $folder)) {
+			mkdir(Connect::$projectDev['root'] . $folder, 0777);
 		}
-		if (!is_file(ConnectWepps::$projectDev['root'] . $url)) {
-			copy($upload['path'], ConnectWepps::$projectDev['root'] . $url);
+		if (!is_file(Connect::$projectDev['root'] . $url)) {
+			copy($upload['path'], Connect::$projectDev['root'] . $url);
 		}
 		return $upload;
 	}
@@ -636,7 +636,7 @@ class ListsWepps
 		$js = '';
 
 		$sql = "delete from s_Files where InnerName=''";
-		ConnectWepps::$instance->query($sql);
+		Connect::$instance->query($sql);
 		//self::uploadRemove($filesfield);
 		foreach ($myFiles as $value) {
 			/*if (!stristr($value['name'],"jpg") && !stristr($value['name'],"jpeg") && !stristr($value['name'],"png")) {
@@ -649,12 +649,12 @@ class ListsWepps
 				 * 1 мегабайт = 1 000 000 байт
 				 */
 				$errors[$filesfield] = "Слишком большой файл";
-				$outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
+				$outer = Validator::setFormErrorsIndicate($errors, $myform);
 				return array('error' => $errors[$filesfield], 'js' => $outer['html']);
 			}
 
 			$filepathinfo = pathinfo($value['name']);
-			$filepathinfo['filename'] = strtolower(TextTransformsWepps::translit($filepathinfo['filename'], 2));
+			$filepathinfo['filename'] = strtolower(TextTransforms::translit($filepathinfo['filename'], 2));
 			$fileurl = "/packages/WeppsAdmin/Admin/Forms/uploads/{$filepathinfo['filename']}-" . date("U") . ".{$filepathinfo['extension']}";
 			$filedest = "{$root}{$fileurl}";
 			move_uploaded_file($value['tmp_name'], $filedest);
@@ -709,7 +709,7 @@ class ListsWepps
 			'TableNameId' => $id,
 			'TableNameField' => $field,
 		);
-		$arr = AdminUtilsWepps::query($row);
+		$arr = AdminUtils::query($row);
 		$str = "update s_PropertiesValues set DisplayOff2=1 where {$arr['condition']};\n";
 		$ex = explode(":::", $value);
 		foreach ($ex as $v) {
@@ -720,11 +720,11 @@ class ListsWepps
 				'TableName' => $list,
 				'TableNameId' => $id,
 				'TableNameField' => $field,
-				'Alias' => TextTransformsWepps::translit($v, 2),
+				'Alias' => TextTransforms::translit($v, 2),
 				'PValue' => $v,
 				'DisplayOff2' => 0,
 			);
-			$arr2 = AdminUtilsWepps::query($row);
+			$arr2 = AdminUtils::query($row);
 			$str .= "update s_PropertiesValues set {$arr2['update']} where HashValue = '{$hash}';\n";
 		}
 		return $str;
@@ -736,7 +736,7 @@ class ListsWepps
 			return "";
 		}
 		$sql = "select Id,TableName,Field,Type from s_ConfigFields where Id='$id'";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		if (!isset($res[0]['Id'])) {
 			return "";
 		}
@@ -744,10 +744,10 @@ class ListsWepps
 		$list = $element['TableName'];
 		$field = $element['Field'];
 		$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE TABLE_SCHEMA = '" . ConnectWepps::$projectDB['dbname'] . "' and TABLE_NAME = '$list'
+                WHERE TABLE_SCHEMA = '" . Connect::$projectDB['dbname'] . "' and TABLE_NAME = '$list'
                 and COLUMN_NAME = '$field'
                 ";
-		$schemeReal = ConnectWepps::$instance->fetch($sql);
+		$schemeReal = Connect::$instance->fetch($sql);
 
 		$alterDefault = "";
 		if ($field == 'LanguageId' || $field == 'TableId') {
@@ -810,9 +810,9 @@ class ListsWepps
 			return "";
 		}
 		$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS
-                    WHERE TABLE_SCHEMA = '" . ConnectWepps::$projectDB['dbname'] . "' and TABLE_NAME = '$list'
+                    WHERE TABLE_SCHEMA = '" . Connect::$projectDB['dbname'] . "' and TABLE_NAME = '$list'
                 ";
-		$schemeReal = ConnectWepps::$instance->fetch($sql);
+		$schemeReal = Connect::$instance->fetch($sql);
 		if (count($schemeReal) > 0) {
 			return "";
 		}
@@ -841,10 +841,10 @@ class ListsWepps
 			return array('status' => '0', 'output' => "");
 		}
 		$sql = "select * from $list where Id='$id'";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		if (!empty($res[0])) {
 			$source = $res[0];
-			$obj = new DataWepps($list);
+			$obj = new Data($list);
 			if ($path == 'navigator') {
 				$source['Url'] = "/rand" . date("u") . "-" . rand(101, 999) . "/";
 			}
@@ -862,10 +862,10 @@ class ListsWepps
 			 * Копирование файлов
 			 */
 			$sql = "select * from s_Files where TableName='$list' and TableNameId='$id'";
-			$res = ConnectWepps::$instance->fetch($sql);
+			$res = Connect::$instance->fetch($sql);
 
 			if (!empty($res[0])) {
-				$objFiles = new DataWepps("s_Files");
+				$objFiles = new Data("s_Files");
 				foreach ($res as $value) {
 					$file = $value;
 					unset($file['Id']);
@@ -874,8 +874,8 @@ class ListsWepps
 					$file['FileDate'] = date('Y-m-d H:i:s');
 					$file['TableNameId'] = $newId;
 
-					if (is_file(ConnectWepps::$projectDev['root'] . $value['FileUrl'])) {
-						copy(ConnectWepps::$projectDev['root'] . $value['FileUrl'], ConnectWepps::$projectDev['root'] . $file['FileUrl']);
+					if (is_file(Connect::$projectDev['root'] . $value['FileUrl'])) {
+						copy(Connect::$projectDev['root'] . $value['FileUrl'], Connect::$projectDev['root'] . $file['FileUrl']);
 						$objFiles->add($file);
 					}
 				}
@@ -885,10 +885,10 @@ class ListsWepps
 			 * Копироваине свойств
 			 */
 			$sql = "select * from s_PropertiesValues where TableName='$list' and TableNameId='$id'";
-			$res = ConnectWepps::$instance->fetch($sql);
+			$res = Connect::$instance->fetch($sql);
 
 			if (!empty($res[0])) {
-				$objProps = new DataWepps("s_PropertiesValues");
+				$objProps = new Data("s_PropertiesValues");
 				foreach ($res as $value) {
 					$pv = $value;
 					unset($pv['Id']);
@@ -925,7 +925,7 @@ class ListsWepps
 		 * Дополнения Actions
 		 */
 		$sql = "select * from s_Config as t where TableName in ('{$list}') order by t.Category";
-		$listSettings = ConnectWepps::$instance->fetch($sql)[0];
+		$listSettings = Connect::$instance->fetch($sql)[0];
 		if (isset($listSettings['ActionDrop']) && $listSettings['ActionDrop'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionDrop']);
 			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
@@ -935,7 +935,7 @@ class ListsWepps
 		$href = "'/_wepps/lists/{$list}/'";
 		if ($path == 'navigator') {
 			$sql = "select d1.Id,d1.Url,d1.ParentDir,(select d2.Url from s_Navigator as d2 where d2.Id = d1.ParentDir) as ParentUrl from s_Navigator as d1 where d1.Id = '{$id}'";
-			$res = ConnectWepps::$instance->fetch($sql);
+			$res = Connect::$instance->fetch($sql);
 			$href = "'/_wepps/navigator/{$res[0]['ParentUrl']}/'";
 		}
 
@@ -944,7 +944,7 @@ class ListsWepps
 		$sql .= "delete from s_Files where TableName='{$list}' and TableNameId='{$id}';\n";
 		$sql .= "delete from s_SearchKeys where Name='{$id}' and Field3 like 'List::{$list}%';\n";
 		$sql .= "delete from s_PropertiesValues where TableName = '{$list}' and  TableNameId='{$id}';\n";
-		ConnectWepps::$db->exec($sql);
+		Connect::$db->exec($sql);
 
 		$js = "
 			<script>
@@ -968,12 +968,12 @@ class ListsWepps
 				break;
 		}
 		$sql = "select * from s_ConfigFields where Type like 'select_multi%' $conditions order by TableName,Priority";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		foreach ($res as $value) {
 			$tableName = $value['TableName'];
 			$fieldName = $value['Field'];
 			$sql = "select Id,$fieldName as FieldName from $tableName $conditions2";
-			$t = ConnectWepps::$instance->fetch($sql);
+			$t = Connect::$instance->fetch($sql);
 			foreach ($t as $v) {
 				$ex2 = explode(",", $v['FieldName']);
 				foreach ($ex2 as $v2) {
@@ -986,7 +986,7 @@ class ListsWepps
 					$rowData['Field2'] = "";
 					$rowData['Field3'] = "List::$tableName::$fieldName";
 					$rowData['DisplayOff2'] = 0;
-					$arr = AdminUtilsWepps::query($rowData);
+					$arr = AdminUtils::query($rowData);
 					$md5 = md5($rowData['Name'] . "::" . $rowData['Field1'] . "::" . $rowData['Field2'] . "::" . $rowData['Field3']);
 					$str .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
 					$str .= "update s_SearchKeys set " . $arr['update'] . " where Alias = '$md5';\n";

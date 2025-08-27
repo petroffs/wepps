@@ -1,14 +1,14 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery\Address;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Validator\ValidatorWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryWepps;
+use WeppsCore\Connect;
+use WeppsCore\Validator;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Delivery\Delivery;
 
-class AddressWepps extends DeliveryWepps
+class Address extends Delivery
 {
-	public function __construct(array $settings, CartUtilsWepps $cartUtils)
+	public function __construct(array $settings, CartUtils $cartUtils)
 	{
 		parent::__construct($settings, $cartUtils);
 	}
@@ -28,7 +28,7 @@ class AddressWepps extends DeliveryWepps
 		$tpl = 'Address/Address.tpl';
 		$data = [
 			'deliveryCtiy' => $citiesById[0],
-			'token' => ConnectWepps::$projectServices['dadata']['token']
+			'token' => Connect::$projectServices['dadata']['token']
 		];
 		$allowBtn = true;
 		return [
@@ -44,9 +44,9 @@ class AddressWepps extends DeliveryWepps
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();
 		$errors = [];
-		$errors['operations-city'] = ValidatorWepps::isNotEmpty($get['operations-city'], "Не заполнено");
-		$errors['operations-address-short'] = ValidatorWepps::isNotEmpty($get['operations-address-short'], "Не заполнено");
-		$errors['operations-postal-code'] = ValidatorWepps::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+		$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'], "Не заполнено");
+		$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'], "Не заполнено");
+		$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'], "Не заполнено");
 		return $errors;
 	}
 }

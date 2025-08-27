@@ -1,27 +1,27 @@
 <?php
 namespace WeppsExtensions\Contacts;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
 
-class ContactsWepps extends ExtensionWepps {
+class Contacts extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Contacts/Contacts.tpl';
-				$obj = new DataWepps("Contacts");
+				$obj = new Data("Contacts");
 				$res = $obj->fetch("t.DisplayOff=0");
-				#UtilsWepps::debug($res,1);
+				#Utils::debug($res,1);
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		
@@ -30,7 +30,7 @@ class ContactsWepps extends ExtensionWepps {
 		 */
 		$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.js");
 		$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.css");
-		$apikey = ConnectWepps::$projectServices['yandexmaps']['apikey'];
+		$apikey = Connect::$projectServices['yandexmaps']['apikey'];
 		$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
 		$this->headers->css("/ext/Contacts/Contacts.{$this->rand}.css");
 		$this->headers->js("/ext/Contacts/Contacts.{$this->rand}.js");

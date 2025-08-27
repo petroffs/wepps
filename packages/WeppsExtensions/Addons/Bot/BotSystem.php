@@ -1,31 +1,31 @@
 <?php
 namespace WeppsExtensions\Addons\Bot;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\LogsWepps;
-use WeppsCore\Utils\MemcachedWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Payments\Yookassa\YookassaWepps;
-use WeppsExtensions\Profile\ProfileUtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Logs;
+use WeppsCore\Memcached;
+use WeppsCore\Utils;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Payments\Yookassa\Yookassa;
+use WeppsExtensions\Profile\ProfileUtils;
 
-class BotSystemWepps extends BotWepps {
+class BotSystem extends Bot {
 	public $parent = 0;
 	public function __construct() {
 		parent::__construct();
 	}
 	public function tasks() {
 		$sql = "select * from s_LocalServicesLog where InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 50";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		if (empty($res) || $res[0]['InProgress']==1) {
 			return;
 		}
 		$ids = array_column($res,'Id');
-		new MemcachedWepps('no');
-		$logs = new LogsWepps();
-		$cartUtils = new CartUtilsWepps();
-		$yookassa = new YookassaWepps([],$cartUtils);
-		$profileUtils = new ProfileUtilsWepps([]);
+		new Memcached('no');
+		$logs = new Logs();
+		$cartUtils = new CartUtils();
+		$yookassa = new Yookassa([],$cartUtils);
+		$profileUtils = new ProfileUtils([]);
 		foreach ($res as $value) {
 			switch($value['Name']) {
 				case 'order-new':
@@ -48,8 +48,8 @@ class BotSystemWepps extends BotWepps {
 		/*
 		 * Реализовано в $logs->update
 		 */
-		#$in = ConnectWepps::$instance->in($ids);
+		#$in = Connect::$instance->in($ids);
 		#$sql = "update s_LocalServicesLog set InProgress=1,IsProcessed=1 where Id in ($in)";
-		#ConnectWepps::$instance->query($sql,$ids);
+		#Connect::$instance->query($sql,$ids);
 	}
 }

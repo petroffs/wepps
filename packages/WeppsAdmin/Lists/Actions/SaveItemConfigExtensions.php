@@ -1,11 +1,11 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsAdmin\Admin\AdminWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
+use WeppsAdmin\Admin\Admin;
 
-class SaveItemConfigExtensionsWepps extends RequestWepps {
+class SaveItemConfigExtensions extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
@@ -14,7 +14,7 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
-	    $root = ConnectWepps::$projectDev['root'];
+	    $root = Connect::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='s_ConfigExtensions') {
 	    	if ($this->element['CopyFiles'] == '1.0') {
 	    		$this->copyExts($this->element['Alias'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
@@ -25,10 +25,10 @@ class SaveItemConfigExtensionsWepps extends RequestWepps {
 	    		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
 	    	}
 	    }
-	    $perm = AdminWepps::getPermissions(1,array('list'=>'s_ConfigExtensions'));
+	    $perm = Admin::getPermissions(1,array('list'=>'s_ConfigExtensions'));
 	    if ($perm['status']==1) {
 	    	$sql = "update s_Permissions set SystemExt = concat(SystemExt,',','{$this->element['Id']}') where Id = 1";
-	    	ConnectWepps::$instance->query($sql);
+	    	Connect::$instance->query($sql);
 	    }
 	    
 	    /*

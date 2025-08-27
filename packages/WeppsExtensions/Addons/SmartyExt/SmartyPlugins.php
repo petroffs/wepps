@@ -2,9 +2,9 @@
 namespace WeppsExtensions\Addons\SmartyExt;
 
 use Smarty\Smarty;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Connect;
 
-class SmartyPluginsWepps
+class SmartyPlugins
 {
     public function __construct(Smarty $smarty)
     {
@@ -54,7 +54,7 @@ class SmartyPluginsWepps
         });
         $smarty->registerPlugin('modifier', 'wepps', function ($id,string $tablename,string $panel='') {
             $str = '';
-            $user = @ConnectWepps::$projectData['user']['ShowAdmin'];
+            $user = @Connect::$projectData['user']['ShowAdmin'];
             if ($user!=1) {
                 return $str;
             }

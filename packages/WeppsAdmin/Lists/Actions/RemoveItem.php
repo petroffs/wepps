@@ -1,9 +1,9 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Request;
 
-class RemoveItemWepps extends RequestWepps {
+class RemoveItem extends Request {
 	public $noclose = 1;
 	public function request($action="") {
 		

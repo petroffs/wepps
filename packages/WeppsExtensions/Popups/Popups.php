@@ -1,19 +1,19 @@
 <?php
 namespace WeppsExtensions\Popups;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class PopupsWepps extends ExtensionWepps {
+class Popups extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Popups/Popups.tpl';
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 

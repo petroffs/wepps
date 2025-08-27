@@ -2,24 +2,24 @@
 namespace WeppsExtensions\Addons\RemoteServices;
 
 use Curl\Curl;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\Utils;
+use WeppsCore\Connect;
 
-class RecaptchaV2Wepps extends RemoteServicesWepps
+class RecaptchaV2 extends RemoteServices
 {
 
 	private $sitekey;
 	private $secret;
 	private $headers;
 
-	public function __construct(TemplateHeadersWepps $headers)
+	public function __construct(TemplateHeaders $headers)
 	{
 		$this->curl = new Curl();
 		$this->curl->setHeader('Content-Type', 'application/json;charset=UTF-8');
 		$this->headers = $headers;
-		$this->sitekey = ConnectWepps::$projectServices['recaptcha']['sitekey'];
-		$this->secret = ConnectWepps::$projectServices['recaptcha']['secret'];
+		$this->sitekey = Connect::$projectServices['recaptcha']['sitekey'];
+		$this->secret = Connect::$projectServices['recaptcha']['secret'];
 	}
 
 	/*

@@ -1,22 +1,22 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\_Example10;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Request;
+use WeppsCore\Smarty;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\Exception;
 
-class _Example10Wepps extends RequestWepps {
+class _Example10 extends Request {
 	private $title;
 	public function request($action="") {
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$this->tpl = '_Example10.tpl';
 		$this->title = $this->get['ext']['Name'];
 		$this->way = [[	'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/",
 						'Name'=>$this->title]];
 		$smarty->assign('test1','test1');
 		$smarty->assign('url','/packages/WeppsAdmin/ConfigExtensions/_Example10/Request.php');
-		$headers = new TemplateHeadersWepps();
+		$headers = new TemplateHeaders();
 		$headers->js ("/packages/WeppsAdmin/ConfigExtensions/_Example10/_Example10.{$headers::$rand}.js");
 		$headers->css ("/packages/WeppsAdmin/ConfigExtensions/_Example10/_Example10.{$headers::$rand}.css");
 		switch ($action) {
@@ -26,7 +26,7 @@ class _Example10Wepps extends RequestWepps {
 				break;
 			default:
 				if ($action!="") {
-					ExceptionWepps::error404();
+					Exception::error404();
 				}
 				break;
 		}

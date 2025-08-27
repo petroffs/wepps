@@ -1,36 +1,36 @@
 <?php
 namespace WeppsExtensions\Cart\Payments;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Connect;
+use WeppsExtensions\Cart\CartUtils;
 
-class PaymentsUtilsWepps
+class PaymentsUtils
 {
     public function __construct()
     {
 
     }
     
-    public function getByDeliveryId(string $deliveryId,CartUtilsWepps $cartUtils,string $paymentsId=''): array
+    public function getByDeliveryId(string $deliveryId,CartUtils $cartUtils,string $paymentsId=''): array
     {
         $conditions = "p.DisplayOff=0 and p.Id != ?";
         if (!empty($paymentsId)) {
             $conditions = "p.DisplayOff=0 and p.Id = ?";
         }
-        $sql = "select p.Id,p.Name,p.Priority,p.DisplayOff,
+        $sql = "SELECT p.Id,p.Name,p.Priority,p.DisplayOff,
                 p.Tariff,p.IsTariffPercentage,p.Discount,p.IsDiscountPercentage,
-                if (p.PaymentsExt!='',p.PaymentsExt,'PaymentsDefault\PaymentsDefaultWepps') PaymentsExt
+                if (p.PaymentsExt!='',p.PaymentsExt,'PaymentsDefault') PaymentsExt
                 from OrdersPayments p
                 join s_SearchKeys sk on sk.Name = p.Id and sk.Field3 = 'List::OrdersPayments::Delivery'
                 join OrdersDelivery d on d.Id = sk.Field1
                 where $conditions and d.Id=?
                 group by p.Id
                 order by p.Priority";
-        $res = ConnectWepps::$instance->fetch($sql, [$paymentsId,$deliveryId]);
+        $res = Connect::$instance->fetch($sql, [$paymentsId,$deliveryId]);
         foreach ($res as $key => $value) {
-            $className = "\WeppsExtensions\\Cart\\Payments\\{$value['PaymentsExt']}";
+            $className = "\WeppsExtensions\\Cart\\Payments\\{$value['PaymentsExt']}\\{$value['PaymentsExt']}";
             /**
-             * @var \WeppsExtensions\Cart\Payments\PaymentsWepps $class
+             * @var \WeppsExtensions\Cart\Payments\Payments $class
              */
 		    $class = new $className($value,$cartUtils);
             $res[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);

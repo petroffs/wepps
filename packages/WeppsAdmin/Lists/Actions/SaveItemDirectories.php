@@ -1,11 +1,11 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
+use WeppsCore\TextTransforms;
 
-class SaveItemDirectoriesWepps extends RequestWepps {
+class SaveItemDirectories extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
@@ -16,14 +16,14 @@ class SaveItemDirectoriesWepps extends RequestWepps {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
-	    $root = ConnectWepps::$projectDev['root'];
+	    $root = Connect::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='s_Navigator') {
 	    	if ($this->element['Url']=='') {
-	    		$url = "/".TextTransformsWepps::translit($this->element['Name'],2)."/";
+	    		$url = "/".TextTransforms::translit($this->element['Name'],2)."/";
 	    		$sql = "update s_Navigator set Url='{$url}' where Id='{$this->element['Id']}'";
-	    		ConnectWepps::$instance->query($sql);
+	    		Connect::$instance->query($sql);
 	    		$this->element['Url'] = $url;
-	    		//UtilsWepps::debug($this->element);
+	    		//Utils::debug($this->element);
 	    	}
 	    }
 	}	

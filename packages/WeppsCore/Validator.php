@@ -1,7 +1,7 @@
 <?php
-namespace WeppsCore\Validator;
+namespace WeppsCore;
 
-class ValidatorWepps
+class Validator
 {
 	/**
 	 * Проверка на непустую переменную

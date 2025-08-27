@@ -1,24 +1,15 @@
 <?php
-namespace WeppsExtensions\Blocks;
-
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\RequestWepps;
-
-require_once __DIR__ . '/../../../../config.php';
-require_once __DIR__ . '/../../../../autoloader.php';
 require_once __DIR__ . '/../../../../configloader.php';
 
-/**
- * @var \Smarty $smarty
- */
+use WeppsCore\Exception;
+use WeppsCore\Connect;
+use WeppsCore\Request;
 
-
-class RequestBlocksWepps extends RequestWepps {
+class RequestBlocks extends Request {
 	public function request($action="") {
 		switch ($action) {
 			case 'sortable':
-				if (@ConnectWepps::$projectData['user']['ShowAdmin']==1 && !empty($this->get['items'])) {
+				if (@Connect::$projectData['user']['ShowAdmin']==1 && !empty($this->get['items'])) {
 					$ex = explode(",", $this->get['items']);
 					$co = 50;
 					$str = "";
@@ -26,18 +17,17 @@ class RequestBlocksWepps extends RequestWepps {
 						$str .= "update s_Blocks set Priority='{$co}' where Id='{$value}';\n";
 						$co += 5;
 					}
-					ConnectWepps::$db->exec($str);
+					Connect::$db->exec($str);
 				} else {
 					exit();
 				}
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 	}
 }
-$request = new RequestBlocksWepps ($_REQUEST);
+$request = new RequestBlocks ($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

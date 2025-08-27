@@ -1,12 +1,12 @@
 <?php
 namespace WeppsExtensions\Cart\Payments\Qrcode;
 
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Payments\PaymentsWepps;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Payments\Payments;
 
-class QrcodeWepps extends PaymentsWepps
+class Qrcode extends Payments
 {
-	public function __construct(array $settings = [], CartUtilsWepps $cartUtils)
+	public function __construct(array $settings = [], CartUtils $cartUtils)
 	{
 		parent::__construct($settings, $cartUtils);
 	}

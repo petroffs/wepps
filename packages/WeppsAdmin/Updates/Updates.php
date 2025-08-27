@@ -2,34 +2,34 @@
 
 namespace WeppsAdmin\Updates;
 
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Utils\CliWepps;
+use WeppsCore\Utils;
+use WeppsCore\Cli;
 
-class UpdatesWepps {
+class Updates {
 	public $parent = 1;
 	public $settings;
 	public $cli;
 	public function __construct($settings=[]) {
 		$this->settings = $settings;
-		$this->cli = new CliWepps();
+		$this->cli = new Cli();
 		if ($this->parent==0) {
 			return;
 		}
 		$output = "";
 		switch ($this->settings[1]) {
 			case 'version':
-				$obj = new UpdatesMethodsWepps();
+				$obj = new UpdatesMethods();
 				$output = $obj->getReleaseCurrentVersion();
 				break;
 			case 'modified':
-				$obj = new UpdatesMethodsWepps();
+				$obj = new UpdatesMethods();
 				$output = $obj->getReleaseCurrentModified()['output'];
 				if (empty($output)) {
 					$output = "The project has no modified files";
 				}
 				break;
 			case 'list':
-				$obj = new UpdatesMethodsWepps();
+				$obj = new UpdatesMethods();
 				$output = $obj->getReleasesList()['output'];
 				break;
 			case 'update':
@@ -37,7 +37,7 @@ class UpdatesWepps {
 				 * Предусмотреть
 				 * -f - для обновления измененных файлов
 				 */
-				$obj = new UpdatesMethodsWepps();
+				$obj = new UpdatesMethods();
 				if (empty($this->settings[2])) {
 					$output = "release tag is empty, see list";
 					$this->cli->br();
@@ -49,7 +49,7 @@ class UpdatesWepps {
 				break;
 			
 			case 'test':
-				$obj = new UpdatesMethodsWepps();
+				$obj = new UpdatesMethods();
 				$obj->getCliProgress(10, 100,"копирование 1");
 				sleep(2);
 				$obj->getCliProgress(20, 100,"копирование 2");

@@ -1,23 +1,21 @@
 <?php
 namespace WeppsExtensions\Cart;
 
-use Smarty;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Template\TemplateWepps;
+use Smarty\Smarty as VendorSmarty;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Exception;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\TextTransforms;
+use WeppsExtensions\Template\Template;
 
-class CartTemplatesWepps
+class CartTemplates
 {
 	private $smarty;
 	private $cartUtils;
 	private $cartSummary;
 	private $headers;
-	public function __construct(Smarty\Smarty $smarty, CartUtilsWepps $cartUtils)
+	public function __construct(VendorSmarty $smarty, CartUtils $cartUtils)
 	{
 		$this->smarty = &$smarty;
 		$this->cartUtils = &$cartUtils;
@@ -35,7 +33,7 @@ class CartTemplatesWepps
 		$this->smarty->assign('cartSummary', $this->cartSummary);
 		$this->smarty->assign('cartMetrics', $cartMetrics);
 		$this->smarty->assign('cartText', [
-			'goodsCount' => TextTransformsWepps::ending2("товар", $this->cartSummary['quantityActive'])
+			'goodsCount' => TextTransforms::ending2("товар", $this->cartSummary['quantityActive'])
 		]);
 		if (!empty($this->cartSummary['favorites']['items'])) {
 			$this->smarty->assign('cartFavorites', array_column($this->cartSummary['favorites']['items'], 'id'));
@@ -50,7 +48,7 @@ class CartTemplatesWepps
 		}
 		$this->smarty->assign('cartSummary', $this->cartSummary);
 		$this->smarty->assign('cartText', [
-			'goodsCount' => TextTransformsWepps::ending2("товар", $this->cartSummary['quantityActive'])
+			'goodsCount' => TextTransforms::ending2("товар", $this->cartSummary['quantityActive'])
 		]);
 		$checkout = $this->cartUtils->getCheckoutData();
 		if (!empty($checkout['deliveryOperations']['tpl'])) {
@@ -70,11 +68,11 @@ class CartTemplatesWepps
 	{
 		$order = $this->cartUtils->getOrderByGuid(@$_GET['id']);
 		if (empty($order)) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
 		$className = "\WeppsExtensions\\Cart\\Payments\\{$order['PaymentsExt']}";
 		/**
-		 * @var \WeppsExtensions\Cart\Payments\PaymentsWepps $class
+		 * @var \WeppsExtensions\Cart\Payments\Payments $class
 		 */
         $class = new $className([],$this->cartUtils);
 		$result = $class->getOperations($order);
@@ -96,11 +94,11 @@ class CartTemplatesWepps
 	public function page(array $data,string $tpl): void
 	{
 		http_response_code($data['status']);
-		$navigator = new NavigatorWepps('/cart/notice.html');
-		$smarty = SmartyWepps::getSmarty();
+		$navigator = new Navigator('/cart/notice.html');
+		$smarty = Smarty::getSmarty();
 		$smarty->assign('data',$data);
 		$smarty->assign('cartDefaultTpl', $smarty->fetch($tpl));
-		$headers = new TemplateHeadersWepps();
+		$headers = new TemplateHeaders();
 		if (is_file($filename = $tpl.'.css')) {
 			$filename = '/ext'.substr($filename,strpos($filename,'/Cart/'));
 			$filename = str_replace('.tpl.css','.tpl.'.$headers::$rand.'.css',$filename);
@@ -111,7 +109,7 @@ class CartTemplatesWepps
 			$filename = str_replace('.tpl.js','.tpl.'.$headers::$rand.'.js',$filename);
 			$headers->js($filename);
 		}
-		$obj = new TemplateWepps($navigator, $headers);
+		$obj = new Template($navigator, $headers);
 		unset($obj);
 		exit();
 	}

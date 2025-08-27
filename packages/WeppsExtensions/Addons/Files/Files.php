@@ -1,12 +1,12 @@
 <?php
 namespace WeppsExtensions\Addons\Files;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsCore\Validator\ValidatorWepps;
+use WeppsCore\Connect;
+use WeppsCore\Exception;
+use WeppsCore\TextTransforms;
+use WeppsCore\Validator;
 
-class FilesWepps
+class Files
 {
     public function __construct()
     {
@@ -17,15 +17,15 @@ class FilesWepps
      */
     public static function output(string $filename)
     {
-        $filenameFull = ConnectWepps::$projectDev['root'] . $filename;
+        $filenameFull = Connect::$projectDev['root'] . $filename;
         if (!is_file($filenameFull)) {
             http_response_code(404);
-            ConnectWepps::$instance->close();
+            Connect::$instance->close();
         }
         $sql = "select * from s_Files where FileUrl='$filename' limit 1";
-        $res = ConnectWepps::$instance->fetch($sql);
+        $res = Connect::$instance->fetch($sql);
         if (count($res) == 0)
-            ExceptionWepps::error404();
+            Exception::error404();
         $row = $res[0];
         $filetitle = $row['Name'];
 
@@ -73,7 +73,7 @@ class FilesWepps
             @session_start();
         }
 
-        $root = ConnectWepps::$projectDev['root'];
+        $root = Connect::$projectDev['root'];
         $errors = [];
         /*
          * Не все изображения имеют эту метку, возможны ошибки
@@ -83,17 +83,17 @@ class FilesWepps
          */
         if (!strstr($myFiles[0]['type'], "image/")) {
             $errors[$filesfield] = "Неверный тип файла";
-            $outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
+            $outer = Validator::setFormErrorsIndicate($errors, $myform);
             return ['error' => $errors[$filesfield], 'js' => $outer['html']];
         }
         if ((int) $myFiles[0]['size'] > 10000000) {
             #1 мегабайт = 1 000 000 байт
             $errors[$filesfield] = "Слишком большой файл";
-            $outer = ValidatorWepps::setFormErrorsIndicate($errors, $myform);
+            $outer = Validator::setFormErrorsIndicate($errors, $myform);
             return ['error' => $errors[$filesfield], 'js' => $outer['html']];
         }
         $filepathinfo = pathinfo($myFiles[0]['name']);
-        $filepathinfo['filename'] = strtolower(TextTransformsWepps::translit($filepathinfo['filename'], 2));
+        $filepathinfo['filename'] = strtolower(TextTransforms::translit($filepathinfo['filename'], 2));
         $filedest = "{$root}/packages/WeppsExtensions/Addons/Forms/uploads/{$filepathinfo['filename']}-" . date("U") . ".{$filepathinfo['extension']}";
         move_uploaded_file($myFiles[0]['tmp_name'], $filedest);
         if (!isset($_SESSION['uploads'][$myform][$filesfield])) {

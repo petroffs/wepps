@@ -1,9 +1,7 @@
 <?php
-namespace WeppsCore\TextTransforms;
+namespace WeppsCore;
 
-use WeppsCore\Utils\UtilsWepps;
-
-class TextTransformsWepps {
+class TextTransforms {
 
 	/**
 	 * Корректные окончания для существительных
@@ -290,5 +288,3 @@ class TextTransformsWepps {
 		return trim($str);
 	}
 }
-
-?>

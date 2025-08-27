@@ -1,7 +1,7 @@
 <?php 
 namespace WeppsExtensions\Addons\Rest;
 
-class RestUtilsWepps {
+class RestUtils {
     public static function _json_validate($string)
     {
         $string = self::_removeBOM($string);

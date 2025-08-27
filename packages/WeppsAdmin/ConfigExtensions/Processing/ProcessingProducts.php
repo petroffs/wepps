@@ -2,11 +2,11 @@
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
 use PDO;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
+use WeppsCore\TextTransforms;
 
-class ProcessingProductsWepps
+class ProcessingProducts
 {
 	public function __construct()
 	{
@@ -14,51 +14,51 @@ class ProcessingProductsWepps
 	}
 	public function resetProducts()
 	{
-		if (ConnectWepps::$projectDev['debug'] == 0) {
+		if (Connect::$projectDev['debug'] == 0) {
 			return;
 		}
 		try {
-			ConnectWepps::$db->beginTransaction();
+			Connect::$db->beginTransaction();
 			$sql = "delete from s_PropertiesValues where TableName='Products' and TableNameId in (select p.Id from Products p where p.NavigatorId in (12,9))";
-			ConnectWepps::$instance->query($sql);
+			Connect::$instance->query($sql);
 			$sql = "delete from s_Files where TableName='Products' and TableNameId in (select p.Id from Products p where p.NavigatorId in (12,9))";
-			ConnectWepps::$instance->query($sql);
+			Connect::$instance->query($sql);
 			$sql = "delete from Products where NavigatorId in (12,9)";
-			ConnectWepps::$instance->query($sql);
-			ConnectWepps::$db->commit();
-			$obj = new ProcessingTasksWepps();
+			Connect::$instance->query($sql);
+			Connect::$db->commit();
+			$obj = new ProcessingTasks();
 			$obj->removeFiles();
 		} catch (\Exception $e) {
-			ConnectWepps::$db->rollBack();
+			Connect::$db->rollBack();
 			echo "Error. See debug.conf";
-			UtilsWepps::debug($e, 21);
+			Utils::debug($e, 21);
 		}
 	}
 	public function resetProductsAliases()
 	{
-		if (ConnectWepps::$projectDev['debug'] == 0) {
+		if (Connect::$projectDev['debug'] == 0) {
 			return;
 		}
 		$sql = "select Id,Name,NavigatorId from Products";
-		$res = ConnectWepps::$instance->fetch($sql);
-		$sth = ConnectWepps::$db->prepare("update Products set Alias = ? where Id = ?");
+		$res = Connect::$instance->fetch($sql);
+		$sth = Connect::$db->prepare("update Products set Alias = ? where Id = ?");
 		foreach ($res as $value) {
-			$alias = TextTransformsWepps::translit($value['Name'], 2) . '-' . $value['Id'];
+			$alias = TextTransforms::translit($value['Name'], 2) . '-' . $value['Id'];
 			$sth->execute([$alias, $value['Id']]);
 		}
 	}
 	public function generateProductsVariations()
 	{
-		if (ConnectWepps::$projectDev['debug'] == 0) {
+		if (Connect::$projectDev['debug'] == 0) {
 			return;
 		}
 		$sql = "truncate ProductsVariations";
-		$res = ConnectWepps::$instance->query($sql);
+		$res = Connect::$instance->query($sql);
 		$sql = "select Id,Name,NavigatorId from Products";
-		$res = ConnectWepps::$instance->fetch($sql);
-		$sth = ConnectWepps::$db->prepare("update Products set Variations = ?,Quantity = ? where Id = ?");
+		$res = Connect::$instance->fetch($sql);
+		$sth = Connect::$db->prepare("update Products set Variations = ?,Quantity = ? where Id = ?");
 		foreach ($res as $value) {
-			#$alias = TextTransformsWepps::translit($value['Name'], 2) . '-' . $value['Id'];
+			#$alias = TextTransforms::translit($value['Name'], 2) . '-' . $value['Id'];
 			$variations = self::_generateProductVariations($value);
 			$sth->execute([$variations['variations'],$variations['quantitiy'], $value['Id']]);
 		}
@@ -111,8 +111,8 @@ class ProcessingProductsWepps
 		];
 	}
 	public function setProductsVariations(array $element) {
-		ConnectWepps::$instance->query("update ProductsVariations set DisplayOff=1 where ProductsId=?",[$element['Id']]);
-		$data = UtilsWepps::arrayFromString($element['Variations'],':::');
+		Connect::$instance->query("update ProductsVariations set DisplayOff=1 where ProductsId=?",[$element['Id']]);
+		$data = Utils::arrayFromString($element['Variations'],':::');
 		if (empty($data)) {
 			return;
 		}
@@ -120,14 +120,14 @@ class ProcessingProductsWepps
 			$alias = self::getProductsVariationsHash($element['Id'],$value);
 			$ids[] = $alias;
 		}
-		$in = ConnectWepps::$instance->in($ids);
-		$res = ConnectWepps::$instance->fetch("select Alias from ProductsVariations where Alias in ($in)",$ids);
+		$in = Connect::$instance->in($ids);
+		$res = Connect::$instance->fetch("select Alias from ProductsVariations where Alias in ($in)",$ids);
 		$existing = array_column($res,'Alias');
 		$idsInsert = array_diff($ids, $existing);
 		#$idsUpdate = array_intersect($ids, $existing);
 		
 		if (!empty($idsInsert)) {
-			$stmt = ConnectWepps::$db->prepare("insert ignore into ProductsVariations (Alias) values (?)");
+			$stmt = Connect::$db->prepare("insert ignore into ProductsVariations (Alias) values (?)");
 			foreach($idsInsert as $value) {
 				$stmt->execute([$value]);
 			}
@@ -142,8 +142,8 @@ class ProcessingProductsWepps
 				'Field3' => '',
 				'Field4' => ''
 			];
-		$prepare = ConnectWepps::$instance->prepare($row);
-		$stmt = ConnectWepps::$db->prepare("update ProductsVariations set {$prepare['update']} where Alias=:Alias");
+		$prepare = Connect::$instance->prepare($row);
+		$stmt = Connect::$db->prepare("update ProductsVariations set {$prepare['update']} where Alias=:Alias");
 		$i=1;
 		foreach ($data as $value) {
 			$alias = self::getProductsVariationsHash($element['Id'],$value);
@@ -165,7 +165,7 @@ class ProcessingProductsWepps
 		return md5($id.'_'.@$value[0].'_'.@$value[1].'_'.@$value[2]);
 	}
 	public function resetProductsVariationsAll() {
-		$res = ConnectWepps::$instance->fetch("select * from Products where Variations!=''");
+		$res = Connect::$instance->fetch("select * from Products where Variations!=''");
 		foreach ($res as $value) {
 			$this->setProductsVariations($value);
 		}

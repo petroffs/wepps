@@ -1,10 +1,10 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Backup;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
 
-class BackupFilesWepps {
+class BackupFiles {
 	private $root;
 	private $host;
 	private $backupPath;
@@ -13,11 +13,11 @@ class BackupFilesWepps {
 	private $dateMask;
 	
 	public function __construct() {
-		$this->root = ConnectWepps::$projectDev['root'];
-		$this->host = ConnectWepps::$projectDev['host'];
+		$this->root = Connect::$projectDev['root'];
+		$this->host = Connect::$projectDev['host'];
 		$this->backupPath = '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
-		$this->db = ConnectWepps::$projectDB['dbname'];
-		$this->cnf = ConnectWepps::$projectDB['cnf'];
+		$this->db = Connect::$projectDB['dbname'];
+		$this->cnf = Connect::$projectDB['cnf'];
 		$this->dateMask = date("Ymd-His");
 	}
 	

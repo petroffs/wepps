@@ -1,33 +1,33 @@
 <?php
 namespace WeppsExtensions\Cart\Payments\Yookassa;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\LogsWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Addons\Jwt\JwtWepps;
-use WeppsExtensions\Cart\CartTemplatesWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Payments\PaymentsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Smarty;
+use WeppsCore\Exception;
+use WeppsCore\Logs;
+use WeppsCore\Utils;
+use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsExtensions\Cart\CartTemplates;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Payments\Payments;
 use YooKassa\Client;
 
-class YookassaWepps extends PaymentsWepps
+class Yookassa extends Payments
 {
 	private $client;
 	private $shopId;
 	private $secretKey;
 	private $currency;
 	private $vatCode;
-	public function __construct(array $settings = [], CartUtilsWepps $cartUtils)
+	public function __construct(array $settings = [], CartUtils $cartUtils)
 	{
-		$alias = (ConnectWepps::$projectDev['debug']==1) ? 'dev':'pro';
+		$alias = (Connect::$projectDev['debug']==1) ? 'dev':'pro';
 		parent::__construct($settings, $cartUtils);
 		$this->settings = $settings;
-		$this->shopId = ConnectWepps::$projectServices['yookassa'][$alias]['shopId'];
-		$this->secretKey = ConnectWepps::$projectServices['yookassa'][$alias]['secretKey'];
-		$this->currency = ConnectWepps::$projectServices['yookassa'][$alias]['currency'];
-		$this->vatCode = ConnectWepps::$projectServices['yookassa'][$alias]['vatCode'];
+		$this->shopId = Connect::$projectServices['yookassa'][$alias]['shopId'];
+		$this->secretKey = Connect::$projectServices['yookassa'][$alias]['secretKey'];
+		$this->currency = Connect::$projectServices['yookassa'][$alias]['currency'];
+		$this->vatCode = Connect::$projectServices['yookassa'][$alias]['vatCode'];
 		$this->client = new Client();
 		$this->client->setAuth($this->shopId, $this->secretKey);
 	}
@@ -37,7 +37,7 @@ class YookassaWepps extends PaymentsWepps
 		#$headers->js("/path.{$headers::$rand}.js");
 		#$headers->css("/path.{$headers::$rand}.css");
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=1 and IsProcessed=1";
-		$res = ConnectWepps::$instance->fetch($sql,[$order['Id']]);
+		$res = Connect::$instance->fetch($sql,[$order['Id']]);
 		$tpl = 'Yookassa/Yookassa.tpl';
 		return [
 			'tpl' => $tpl,
@@ -50,28 +50,28 @@ class YookassaWepps extends PaymentsWepps
 	public function form()
 	{
 		if (empty($this->settings['id'])) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
 		$sql = "select * from Orders where Alias=?";
-		$res = ConnectWepps::$instance->fetch($sql,[$this->settings['id']]);
+		$res = Connect::$instance->fetch($sql,[$this->settings['id']]);
 		## https://platform.wepps/cart/order.html?id=48cf279e-17c7-54bc-4999-499eb6feb56c
 		## https://platform.wepps/ext/Cart/Payments/Yookassa/Request.php?action=form&id=48cf279e-17c7-54bc-4999-499eb6feb56c
 		## https://platform.wepps/ext/Cart/Payments/Yookassa/Request.php?action=return&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXAiOiJvcmQiLCJpZCI6NTIsInBheSI6MywiZXhwIjoxNzUxNjY5ODQ2fQ.y6K8Hk0nUbTqJAQFqR3KkY6_tq89wS9_OwkdQQRyLKw
 		if (!isset($res[0]['Id'])) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
 		$order = $res[0];
 		$products = json_decode($order['JPositions'],true);
-		$cartUtils = new CartUtilsWepps();
+		$cartUtils = new CartUtils();
 		$products = $cartUtils->getCartPositionsRecounter($products,$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
-		//UtilsWepps::debug($products,1);
+		//Utils::debug($products,1);
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=1 and IsProcessed=1";
-		$res = ConnectWepps::$instance->fetch($sql,[$order['Id']]);
+		$res = Connect::$instance->fetch($sql,[$order['Id']]);
 		
 		if (!empty($res[0])) {
-			$smarty = SmartyWepps::getSmarty();
-			$cartUtils = new CartUtilsWepps();
-			$cartTemplates = new CartTemplatesWepps($smarty,$cartUtils);
+			$smarty = Smarty::getSmarty();
+			$cartUtils = new CartUtils();
+			$cartTemplates = new CartTemplates($smarty,$cartUtils);
 			$data = [
 				'status' => 200,
 				'title' => 'Оплата уже проведена ранее!',
@@ -82,7 +82,7 @@ class YookassaWepps extends PaymentsWepps
 			$cartTemplates->page($data,__DIR__ .'/ReturnSuccess.tpl');
 		}
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=0 and IsProcessed=0";
-		$res = ConnectWepps::$instance->fetch($sql,[$order['Id']]);
+		$res = Connect::$instance->fetch($sql,[$order['Id']]);
 		if (empty($res)) {
 			$row = [
 				'Name' => 'Yookassa',
@@ -96,14 +96,14 @@ class YookassaWepps extends PaymentsWepps
 				'MerchantRequest' => '',
 				'MerchantDate' => date('Y-m-d H:i:s'),
 			];
-			$prepare = ConnectWepps::$instance->prepare($row);
+			$prepare = Connect::$instance->prepare($row);
 			$sql = "insert into Payments {$prepare['insert']}";
-			ConnectWepps::$instance->query($sql,$prepare['row']);
-			$id = ConnectWepps::$db->lastInsertId();
+			Connect::$instance->query($sql,$prepare['row']);
+			$id = Connect::$db->lastInsertId();
 		} else {
 			$id = $res[0]['Id'];
 		}
-		$jwt = new JwtWepps();
+		$jwt = new Jwt();
 		$token = $jwt->token_encode([
 			'typ' => 'ord',
 			'id' => $order['Id'],
@@ -147,7 +147,7 @@ class YookassaWepps extends PaymentsWepps
 			],
 			'confirmation' => [
 				'type' => 'redirect',
-				'return_url' => ConnectWepps::$projectDev['protocol'] . ConnectWepps::$projectDev['host'] . '/ext/Cart/Payments/Yookassa/Request.php?action=return&token=' . $token,
+				'return_url' => Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/ext/Cart/Payments/Yookassa/Request.php?action=return&token=' . $token,
 			],
 			/* "payment_method_data" => [
 				"type" => "bank_card"
@@ -171,19 +171,19 @@ class YookassaWepps extends PaymentsWepps
 		$url = $jdata['confirmation']['confirmation_url'];
 		$mid = $jdata['id'];
 		$sql = "update Payments set MerchantId=?,MerchantRequest=?,MerchantResponse=? where Id=?";
-		ConnectWepps::$instance->query($sql,[$mid,json_encode($paymentData,JSON_UNESCAPED_UNICODE),json_encode($jdata,JSON_UNESCAPED_UNICODE),$id]);
+		Connect::$instance->query($sql,[$mid,json_encode($paymentData,JSON_UNESCAPED_UNICODE),json_encode($jdata,JSON_UNESCAPED_UNICODE),$id]);
 		return [
 			'url' => $url
 		];
 	}
 	public function return() {
 		if (empty($this->settings['token'])) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
-		$smarty = SmartyWepps::getSmarty();
-		$cartUtils = new CartUtilsWepps();
-		$cartTemplates = new CartTemplatesWepps($smarty,$cartUtils);
-		$jwt = new JwtWepps();
+		$smarty = Smarty::getSmarty();
+		$cartUtils = new CartUtils();
+		$cartTemplates = new CartTemplates($smarty,$cartUtils);
+		$jwt = new Jwt();
 		$payload = $jwt->token_decode($this->settings['token']);		
 		if ($payload['status']!=200) {
 			$data = [
@@ -194,7 +194,7 @@ class YookassaWepps extends PaymentsWepps
 			$cartTemplates->page($data,__DIR__ .'/ReturnError.tpl');
 		}
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Id=?";
-		$res = ConnectWepps::$instance->fetch($sql,[$payload['payload']['id'],$payload['payload']['pay']]);
+		$res = Connect::$instance->fetch($sql,[$payload['payload']['id'],$payload['payload']['pay']]);
 		if (empty($res[0])) {
 			$data = [
 				'status' => 404,
@@ -213,7 +213,7 @@ class YookassaWepps extends PaymentsWepps
 		$paymentInfo = $this->client->getPaymentInfo($res[0]['MerchantId']);
 		if ($paymentInfo->status=='succeeded') {
 			$sql = "update Payments set IsPaid=1,IsProcessed=1,MerchantResponseDate=now() where Id=?";
-			ConnectWepps::$instance->query($sql,[$res[0]['Id']]);
+			Connect::$instance->query($sql,[$res[0]['Id']]);
 			$data = [
 				'status' => 200,
 				'title' => 'Оплата прошла успешно!',
@@ -233,13 +233,13 @@ class YookassaWepps extends PaymentsWepps
 		$json = file_get_contents('php://input');
 		$jdata = json_decode($json,true);
 		if (empty($id = $jdata['object']['id'])) {
-			ExceptionWepps::error(400);
+			Exception::error(400);
 		}
-		$logs = new LogsWepps();
+		$logs = new Logs();
 		$logs->add('yookassa',$jdata,'','','post');
-		ExceptionWepps::error(200);
+		Exception::error(200);
 	}
-	public function processLog(array $request,LogsWepps $logs) {
+	public function processLog(array $request,Logs $logs) {
 		$jdata = json_decode($request['BRequest'],true);
 		if (empty($id = $jdata['object']['id'])) {
 			$response = [
@@ -248,7 +248,7 @@ class YookassaWepps extends PaymentsWepps
 			return $logs->update((int)$request['Id'],$response,400);
 		}
 		$sql = "select Id from Payments where MerchantId=?";
-		$res = ConnectWepps::$instance->fetch($sql,[$id]);
+		$res = Connect::$instance->fetch($sql,[$id]);
 		if (empty($payment = @$res[0])) {
 			$response = [
 				'message' => 'no payment'
@@ -285,7 +285,7 @@ class YookassaWepps extends PaymentsWepps
 			];
 			$logs->add('order-payment', $responsePayment,'','','');
 		}
-		$prepare = ConnectWepps::$instance->prepare($row,[
+		$prepare = Connect::$instance->prepare($row,[
 			'MerchantResponseDate' => [
 				'fn' => 'now()',
 				'rm' => 1
@@ -293,7 +293,7 @@ class YookassaWepps extends PaymentsWepps
 		]);
 		$sql = "update Payments set {$prepare['update']} where Id=:Id";
 		$arr = array_merge($prepare['row'],['Id'=>$payment['Id']]);
-		ConnectWepps::$instance->query($sql,$arr);
+		Connect::$instance->query($sql,$arr);
 		return $logs->update((int)$request['Id'],$response,$status);
 	}
 	private function getStatuses() {

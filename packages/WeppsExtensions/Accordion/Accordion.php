@@ -1,24 +1,24 @@
 <?php
 namespace WeppsExtensions\Accordion;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class AccordionWepps extends ExtensionWepps {
+class Accordion extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Accordion/Accordion.tpl';
-				$obj = new DataWepps("Services");
+				$obj = new Data("Services");
 				$res = $obj->fetch("t.DisplayOff=0");
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		$this->headers->css("/ext/Accordion/Accordion.{$this->rand}.css");

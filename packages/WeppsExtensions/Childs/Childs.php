@@ -1,23 +1,23 @@
 <?php
 namespace WeppsExtensions\Childs;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
+use WeppsCore\Utils;
 
-class ChildsWepps extends ExtensionWepps {
+class Childs extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Childs/Childs.tpl';
-				#UtilsWepps::debug($this->navigator->child,1);
+				#Utils::debug($this->navigator->child,1);
 				$smarty->assign('elements',$this->navigator->child);
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 

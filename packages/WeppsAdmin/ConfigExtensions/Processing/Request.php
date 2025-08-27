@@ -1,63 +1,59 @@
 <?php
-namespace WeppsAdmin\ConfigExtensions\Processing;
-
-use WeppsAdmin\Admin\AdminUtilsWepps;
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsAdmin\Lists\ListsWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Addons\Bot\BotSystemWepps;
-
-require_once __DIR__ . '/../../../../config.php';
-require_once __DIR__ . '/../../../../autoloader.php';
 require_once __DIR__ . '/../../../../configloader.php';
 
-class RequestProcessingWepps extends RequestWepps
+use WeppsAdmin\Admin\AdminUtils;
+use WeppsCore\Request;
+use WeppsCore\Utils;
+use WeppsCore\Exception;
+use WeppsAdmin\Lists\Lists;
+use WeppsCore\Connect;
+use WeppsExtensions\Addons\Bot\BotSystem;
+
+class RequestProcessing extends Request
 {
 	public function request($action = "")
 	{
 		$this->tpl = '';
-		if (empty($this->cli) && @ConnectWepps::$projectData['user']['ShowAdmin'] != 1) {
-			ExceptionWepps::error404();
+		if (empty($this->cli) && @Connect::$projectData['user']['ShowAdmin'] != 1) {
+			Exception::error404();
 		}
 		switch ($action) {
 			case "tasks":
-				$obj = new BotSystemWepps();
+				$obj = new BotSystem();
 				$obj->tasks();
 				break;
 			case "searchindex":
-				$str = ListsWepps::setSearchIndex();
-				ConnectWepps::$db->exec($str);
+				$str = Lists::setSearchIndex();
+				Connect::$db->exec($str);
 				break;
 			case "removefiles":
-				$obj = new ProcessingTasksWepps();
+				$obj = new ProcessingTasks();
 				$obj->removeFiles();
 				break;
 			case "resetproducts":
-				$obj = new ProcessingProductsWepps();
+				$obj = new ProcessingProducts();
 				$obj->resetProducts();
 				break;
 			case "resetproductsaliases":
-				$obj = new ProcessingProductsWepps();
+				$obj = new ProcessingProducts();
 				$obj->resetProductsAliases();
 				break;
 			case "generateproductsvariations":
-				$obj = new ProcessingProductsWepps();
+				$obj = new ProcessingProducts();
 				$obj->generateProductsVariations();
 				break;
 			case "resetproductsvariations":
-				$obj = new ProcessingProductsWepps();
+				$obj = new ProcessingProducts();
 				$obj->resetProductsVariationsAll();
 				break;
 			default:
-				UtilsWepps::debug('def1', 1);
-				ExceptionWepps::error404();
+				Utils::debug('def1', 1);
+				Exception::error404();
 				break;
 		}
-		AdminUtilsWepps::modal('Обработка завершена', $this->cli);
+		AdminUtils::modal('Обработка завершена', $this->cli);
 	}
 }
-$request = new RequestProcessingWepps(!empty($argv) ? $argv : $_REQUEST);
+$request = new RequestProcessing(!empty($argv) ? $argv : $_REQUEST);
 $smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

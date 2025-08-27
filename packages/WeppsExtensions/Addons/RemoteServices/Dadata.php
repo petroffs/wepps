@@ -1,9 +1,9 @@
 <?php
 namespace WeppsExtensions\Addons\RemoteServices;
 use Curl\Curl;
-use WeppsExtensions\Addons\RemoteServices\RemoteServicesWepps;
+use WeppsExtensions\Addons\RemoteServices\RemoteServices;
 
-class DadataWepps extends RemoteServicesWepps {
+class Dadata extends RemoteServices {
 	private $token = '';
 	private $secret = '';
 	

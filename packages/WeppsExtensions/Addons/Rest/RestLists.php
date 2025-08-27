@@ -1,12 +1,12 @@
 <?php
 namespace WeppsExtensions\Addons\Rest;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Connect;
+use WeppsCore\Data;
+use WeppsCore\Utils;
+use WeppsCore\Exception;
 
-class RestListsWepps extends RestWepps {
+class RestLists extends Rest {
 	public $parent = 0;
 	public function __construct($settings=[]) {
 		parent::__construct($settings);
@@ -22,9 +22,9 @@ class RestListsWepps extends RestWepps {
 		 * Условие поля извлечь из схемы
 		 */
 		$sql = "select * from s_ConfigFields where TableName='{$list}' and Id='{$field}'";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		if (empty($res)) {
-			ExceptionWepps::error(404);
+			Exception::error(404);
 		}
 		$ex = explode('::', $res[0]['Type']);
 		$list = $ex[1];
@@ -37,8 +37,8 @@ class RestListsWepps extends RestWepps {
 		$limit = 10;
 		$offset = ($page-1)*$limit;
 		$sql = "select t.Id id,concat(t.{$field},' (',t.Id,')') text from $list t where $condition order by t.{$field} limit $offset,$limit";
-		$res = ConnectWepps::$instance->fetch($sql);
-		#UtilsWepps::debug($res,1);
+		$res = Connect::$instance->fetch($sql);
+		#Utils::debug($res,1);
 		$pagination = false;
 		if (!empty($res)) {
 			$pagination = true;

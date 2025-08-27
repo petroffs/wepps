@@ -1,9 +1,9 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Request;
 
-class ViewItemDirectoriesWepps extends RequestWepps {
+class ViewItemDirectories extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $element = [];

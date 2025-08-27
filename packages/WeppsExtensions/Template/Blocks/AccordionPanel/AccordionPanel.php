@@ -1,12 +1,12 @@
 <?php
 namespace WeppsExtensions\Template\Blocks\AccordionPanel;
 
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Extension;
+use WeppsCore\Smarty;
 
-class AccordionPanelWepps extends ExtensionWepps {
+class AccordionPanel extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Blocks/AccordionPanel/AccordionPanel.tpl');
 		$this->headers->css("/ext/Template/Blocks/AccordionPanel/AccordionPanel.{$this->rand}.css");
 		$this->headers->js("/ext/Template/Blocks/AccordionPanel/AccordionPanel.{$this->rand}.js");

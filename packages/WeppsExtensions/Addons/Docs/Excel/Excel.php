@@ -4,7 +4,7 @@ namespace WeppsExtensions\Addons\Docs\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-class ExcelWepps
+class Excel
 {
 	private $get;
 	private $filename = 'excel.xlsx';

@@ -1,20 +1,23 @@
 <?php
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UsersWepps;
+use WeppsCore\Connect;
+use WeppsCore\Smarty;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\Users;
+
+require_once 'config.php';
+require_once 'packages/vendor/autoload.php';
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 setlocale(LC_NUMERIC, 'en_US.UTF-8');
 
-ConnectWepps::getInstance($projectSettings);
-$smarty = SmartyWepps::getSmarty();
-$users = new UsersWepps();
+Connect::getInstance($projectSettings);
+$smarty = Smarty::getSmarty();
+$users = new Users();
 $users->getAuth();
-$smarty->assign('user',@ConnectWepps::$projectData['user']);
-$headers = new TemplateHeadersWepps();
+$smarty->assign('user',@Connect::$projectData['user']);
+$headers = new TemplateHeaders();
 $headers::$rand = "dev-1";
-if (ConnectWepps::$projectDev['debug']==1) {
+if (Connect::$projectDev['debug']==1) {
 	$headers::$rand .= "-".rand(100,10000000);
 }

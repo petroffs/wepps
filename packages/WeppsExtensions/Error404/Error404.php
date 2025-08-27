@@ -1,14 +1,14 @@
 <?php
 namespace WeppsExtensions\Error404;
 
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Smarty;
+use WeppsCore\Extension;
 
-class Error404Wepps extends ExtensionWepps {
+class Error404 extends Extension {
 	public function request() {
 		$root = $_SERVER['DOCUMENT_ROOT'];
 		$this->tpl = $root.'/packages/WeppsExtensions/Error404/Error404.tpl';
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$this->headers->css("/ext/Error404/Error404.{$this->rand}.css");
 		$this->headers->js("/ext/Error404/Error404.{$this->rand}.js");
 		$smarty->assign('normalView',0);

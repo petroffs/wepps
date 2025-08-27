@@ -1,17 +1,9 @@
 <?php
-namespace WeppsExtensions\Services;
-
-use WeppsCore\Utils\RequestWepps;
-
-/**
- * @var \Smarty $smarty
- */
-
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestServicesWepps extends RequestWepps {
+use WeppsCore\Request;
+
+class RequestServices extends Request {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
@@ -23,6 +15,6 @@ class RequestServicesWepps extends RequestWepps {
 		}
 	}
 }
-$request = new RequestServicesWepps($_REQUEST);
+$request = new RequestServices($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

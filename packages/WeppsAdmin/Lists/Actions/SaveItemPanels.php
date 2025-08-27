@@ -1,10 +1,10 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
 
-class SaveItemExtensionsWepps extends RequestWepps {
+class SaveItemExtensions extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
@@ -16,7 +16,7 @@ class SaveItemExtensionsWepps extends RequestWepps {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
-	    $root = ConnectWepps::$projectDev['root'];
+	    $root = Connect::$projectDev['root'];
 	    if ($this->listSettings['TableName']=='s_Extensions') {
 	    	if ($this->element['CopyFiles'] == '1.0') {
 	    		$this->copyExts($this->element['FileExt'], ".php", "{$root}/packages/WeppsExtensions", '1.0');

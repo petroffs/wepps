@@ -1,27 +1,21 @@
 <?php
-namespace WeppsAdmin\ConfigExtensions\Uploads;
-
-use WeppsAdmin\Admin\AdminUtilsWepps;
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsAdmin\Lists\ListsWepps;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-
-require_once '../../../../config.php';
-require_once '../../../../autoloader.php';
 require_once '../../../../configloader.php';
 
-//http://host/packages/WeppsAdmin/ConfigExtensions/Processing/Request.php?id=5
+use WeppsAdmin\Admin\AdminUtils;
+use WeppsCore\Request;
+use WeppsCore\Exception;
+use WeppsCore\Connect;
+use WeppsCore\Data;
+use WeppsAdmin\Lists\Lists;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
-class RequestUploadsWepps extends RequestWepps
+class RequestUploads extends Request
 {
 	public function request($action = "")
 	{
 		$this->tpl = '';
-		if (@ConnectWepps::$projectData['user']['ShowAdmin'] != 1) {
-			ExceptionWepps::error404();
+		if (@Connect::$projectData['user']['ShowAdmin'] != 1) {
+			Exception::error404();
 		}
 		switch ($action) {
 			case "excel":
@@ -30,11 +24,11 @@ class RequestUploadsWepps extends RequestWepps
 				}
 				$list = "s_UploadsSource";
 				$id = (int) $this->get['source'];
-				$objFile = new DataWepps("s_Files");
+				$objFile = new Data("s_Files");
 				if (isset($_SESSION['uploads']['list-data-form'])) {
 					foreach ($_SESSION['uploads']['list-data-form'] as $value) {
 						foreach ($value as $v) {
-							$file = ListsWepps::getUploadFileName($v, $list, "Files", $id);
+							$file = Lists::getUploadFileName($v, $list, "Files", $id);
 							$rowFile = array(
 								'Name' => $file['title'],
 								'TableNameId' => $id,
@@ -49,7 +43,7 @@ class RequestUploadsWepps extends RequestWepps
 								'FileDescription' => json_encode(['source' => $id], JSON_UNESCAPED_UNICODE),
 							);
 							$objFile->add($rowFile);
-							ListsWepps::removeUpload("upload", $v['url']);
+							Lists::removeUpload("upload", $v['url']);
 							break;
 						}
 					}
@@ -59,23 +53,23 @@ class RequestUploadsWepps extends RequestWepps
 				 * Выбор последнего файла и его обработка PHPEXCEL
 				 *  and Name like '%addfields%'
 				 */
-				$obj = new DataWepps("s_UploadsSource");
+				$obj = new Data("s_UploadsSource");
 				$source = $obj->fetchmini($id)[0];
 
 				if (!isset($source['Id']) || $id == 0) {
-					AdminUtilsWepps::modal('Ошибка : Укажите источник');
+					AdminUtils::modal('Ошибка : Укажите источник');
 				}
 
-				$obj = new DataWepps("s_Files");
+				$obj = new Data("s_Files");
 				$files = $obj->fetch("TableName='{$list}' and t.FileDescription!='' and JSON_EXTRACT(t.FileDescription, '$.source') = {$id}", 1, 1, "t.Id desc");
 				if (!isset($files[0]['Id'])) {
-					AdminUtilsWepps::modal('Ошибка : Файл не найден');
+					AdminUtils::modal('Ошибка : Файл не найден');
 				}
 
 				/*
 				 * Получить содержимое файла для дальнейшей обработки
 				 */
-				$inputFileName = ConnectWepps::$projectDev['root'] . $files[0]['FileUrl'];
+				$inputFileName = Connect::$projectDev['root'] . $files[0]['FileUrl'];
 				$spreadsheet = IOFactory::load($inputFileName);
 				$sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 				$sheetTitle = $spreadsheet->getActiveSheet()->getTitle();
@@ -93,14 +87,14 @@ class RequestUploadsWepps extends RequestWepps
 						'message' => 'Шаблон для источника не задан'
 					];
 				}
-				AdminUtilsWepps::modal($response['message']);
+				AdminUtils::modal($response['message']);
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 	}
 }
-$request = new RequestUploadsWepps($_REQUEST);
+$request = new RequestUploads($_REQUEST);
 $smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

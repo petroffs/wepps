@@ -1,20 +1,20 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions;
 
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsAdmin\Admin\AdminWepps;
+use WeppsCore\Smarty;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\Utils;
+use WeppsCore\Connect;
+use WeppsCore\Data;
+use WeppsCore\Exception;
+use WeppsAdmin\Admin\Admin;
 
-class ConfigExtensionsWepps
+class ConfigExtensions
 {
 	private $extensions;
-	public function __construct(TemplateHeadersWepps &$headers)
+	public function __construct(TemplateHeaders &$headers)
 	{
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$headers->js("/packages/WeppsAdmin/ConfigExtensions/ConfigExtensions.{$headers::$rand}.js");
 		$headers->css("/packages/WeppsAdmin/ConfigExtensions/ConfigExtensions.{$headers::$rand}.css");
 		$tpl2 = "ConfigExtensions.tpl";
@@ -45,11 +45,11 @@ class ConfigExtensionsWepps
 				$smarty->assign('extsActive', $action);
 			}
 			if ($action == "" && $_GET['ppsUrl'] != "extensions/{$ext['Alias']}/") {
-				ExceptionWepps::error404();
+				Exception::error404();
 			}
 			$request = ['action' => $action];
 			$request = array_merge($request, $_REQUEST, array('ext' => $ext));
-			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['Alias']}\\{$ext['Alias']}Wepps";
+			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['Alias']}\\{$ext['Alias']}";
 			$extResult = new $extClass($request);
 			$smarty->assign('ext', $ext);
 			$smarty->assign('extNavSubTpl', $smarty->fetch(__DIR__ . '/' . 'ConfigExtensionsNavSub.tpl'));
@@ -60,23 +60,23 @@ class ConfigExtensionsWepps
 				$headers->join($extResult->headers);
 			}
 		} elseif (isset($ppsUrlEx[1])) {
-			ExceptionWepps::error404();
+			Exception::error404();
 		}
 		$smarty->assign('exts', $this->extensions);
-		$smarty->assign('extsNavTpl', $smarty->fetch(ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/ConfigExtensionsNav.tpl'));
+		$smarty->assign('extsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/ConfigExtensionsNav.tpl'));
 		$smarty->assign('content', $content);
 		$tpl = $smarty->fetch(__DIR__ . '/' . $tpl2);
 		$smarty->assign('extension', $tpl);
 	}
 	private function getExtensionsEnv()
 	{
-		$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions']);
+		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
 		$fcond = "'" . implode("','", $perm['extensions']) . "'";
-		$objExt = new DataWepps("s_ConfigExtensions");
+		$objExt = new Data("s_ConfigExtensions");
 		$extensions = $objExt->fetch("t.DisplayOff=0 and t.Id in ($fcond)", 2000);
 		$this->extensions = [];
 		foreach ($extensions as $value) {
-			$value['ENavArr'] = UtilsWepps::arrayFromString($value['ENav'], ":::");
+			$value['ENavArr'] = Utils::arrayFromString($value['ENav'], ":::");
 			$this->extensions[$value['Alias']] = $value;
 		}
 	}

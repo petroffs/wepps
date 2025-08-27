@@ -2,14 +2,14 @@
 namespace WeppsExtensions\Addons\SmartyExt;
 
 use Smarty\Compile\Modifier\Base;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Connect;
 
-class AdModifierCompilerWepps extends Base {
+class AdModifierCompiler extends Base {
 	public function compile($params, \Smarty\Compiler\Template $compiler) : string {
 		$id = $params[0];
 		$tablename = $params[1];
 		$panel = $params[2];
-		$user = @ConnectWepps::$projectData['user']['ShowAdmin'];
+		$user = @Connect::$projectData['user']['ShowAdmin'];
         if ($user!=1) {
             return '(\'\')';
         }

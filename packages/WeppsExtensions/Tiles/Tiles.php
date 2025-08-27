@@ -1,24 +1,24 @@
 <?php
 namespace WeppsExtensions\Tiles;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class TilesWepps extends ExtensionWepps {
+class Tiles extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Tiles/Tiles.tpl';
-				$obj = new DataWepps("Services");
+				$obj = new Data("Services");
 				$res = $obj->fetch("t.DisplayOff=0");
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		$this->headers->css("/ext/Tiles/Tiles.{$this->rand}.css");

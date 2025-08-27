@@ -1,15 +1,15 @@
 <?php
 namespace WeppsExtensions\Profile;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\LogsWepps;
-use WeppsExtensions\Addons\Jwt\JwtWepps;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsExtensions\Addons\Messages\Mail\MailWepps;
-use WeppsExtensions\Addons\Messages\Telegram\TelegramWepps;
-use WeppsExtensions\Products\ProductsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Logs;
+use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsCore\Navigator;
+use WeppsExtensions\Addons\Messages\Mail\Mail;
+use WeppsExtensions\Addons\Messages\Telegram\Telegram;
+use WeppsExtensions\Products\Products;
 
-class ProfileUtilsWepps
+class ProfileUtils
 {
 	private $settings = [];
 	private $navigator = [];
@@ -18,7 +18,7 @@ class ProfileUtilsWepps
 	{
 		$this->user = $user;
 	}
-	public function setNavigator(NavigatorWepps $navigator)
+	public function setNavigator(Navigator $navigator)
 	{
 		$this->navigator = $navigator;
 	}
@@ -94,7 +94,7 @@ class ProfileUtilsWepps
 			'conditionSelf' => $conditions,
 			'orderBy' => "FIELD(t.Id,$ids)"
 		];
-		$products = ProductsWepps::getProducts($settings);
+		$products = Products::getProducts($settings);
 		return $products;
 	}
 
@@ -102,13 +102,13 @@ class ProfileUtilsWepps
 	{
 
 	}
-	public function processPasswordLog(array $request,LogsWepps $logs) {
+	public function processPasswordLog(array $request,Logs $logs) {
 		$jdata = json_decode($request['BRequest'],true);
-		$url = 'https://'.ConnectWepps::$projectDev['host']."/profile/password.html?token={$jdata['token']}";
+		$url = 'https://'.Connect::$projectDev['host']."/profile/password.html?token={$jdata['token']}";
 		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
 		$text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
 		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
-		$mail = new MailWepps('html');
+		$mail = new Mail('html');
 		$outputMessage = "email fail";
 		if ($mail->mail($jdata['email'],"Восстановление доступа",$text)) {
 			$outputMessage = "email ok";

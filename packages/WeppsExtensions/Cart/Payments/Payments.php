@@ -1,21 +1,21 @@
 <?php
 namespace WeppsExtensions\Cart\Payments;
 
-use WeppsCore\Utils\UtilsWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Utils;
+use WeppsExtensions\Cart\CartUtils;
 
-class PaymentsWepps
+class Payments
 {
 	protected $settings;
     protected $cartUtils;
 	protected $paymentsUtils;
-	public function __construct(array $settings = [],CartUtilsWepps $cartUtils)
+	public function __construct(array $settings = [],CartUtils $cartUtils)
 	{
 		$this->settings = $settings;
 		$this->cartUtils = $cartUtils;
-		$this->paymentsUtils = new PaymentsUtilsWepps();
+		$this->paymentsUtils = new PaymentsUtils();
 	}
-	public function getTariff(CartUtilsWepps $cartUtils)
+	public function getTariff(CartUtils $cartUtils)
 	{
 		$cartSummary = $cartUtils->getCartSummary();
 		if (empty($cartSummary)) {
@@ -31,12 +31,12 @@ class PaymentsWepps
 				$output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Tariff']);
 				break;
 			default:
-				$output['price'] = UtilsWepps::round($this->settings['Tariff']);
+				$output['price'] = Utils::round($this->settings['Tariff']);
 				break;
 		}
 		return $output;
 	}
-	public function getDiscount(CartUtilsWepps $cartUtils): array
+	public function getDiscount(CartUtils $cartUtils): array
 	{
 		$cartSummary = $cartUtils->getCartSummary();
 		if (empty($cartSummary)) {
@@ -53,7 +53,7 @@ class PaymentsWepps
 				$output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Discount']);
 				break;
 			default:
-				$output['price'] = UtilsWepps::round($this->settings['Discount']);
+				$output['price'] = Utils::round($this->settings['Discount']);
 				break;
 		}
 		return $output;

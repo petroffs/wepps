@@ -2,17 +2,17 @@
 
 namespace WeppsAdmin\ConfigExtensions\Uploads;
 
-use WeppsAdmin\Admin\AdminUtilsWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsAdmin\Lists\ListsWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsAdmin\Admin\AdminUtils;
+use WeppsCore\Utils;
+use WeppsAdmin\Lists\Lists;
+use WeppsCore\Data;
+use WeppsCore\Connect;
 
 /*
  * Обновление таблицы s_Lang
  */
 
-class UploadsExcelListDataWepps {
+class UploadsExcelListData {
 	private $settings;
 	private $validator;
 	private $tableName;
@@ -27,7 +27,7 @@ class UploadsExcelListDataWepps {
 			/*
 			 * Запись/обновление данных
 			 */
-			$obj = new DataWepps($this->tableName);
+			$obj = new Data($this->tableName);
 			$str = "";
 			$fields = $this->settings['data'][2];
 			unset($this->settings['data'][1]);
@@ -41,13 +41,13 @@ class UploadsExcelListDataWepps {
 						}
 						
 					}
-					$arr = AdminUtilsWepps::query($row);
+					$arr = AdminUtils::query($row);
 					$str .= "insert ignore into {$this->tableName} (Id) values ('{$row['Id']}');\n";
 					$str .= "update {$this->tableName} set {$arr['update']} where Id='{$row['Id']}';\n";
 				}
 			}
 			if ($str != "") {
-				ConnectWepps::$db->exec($str);
+				Connect::$db->exec($str);
 				return [
 						'status'=>0,
 						'message'=>"Таблица {$this->tableName} обновлена"
@@ -64,7 +64,7 @@ class UploadsExcelListDataWepps {
 	}
 	
 	private function getValidator() {
-		$obj = new DataWepps($this->settings['title']);
+		$obj = new Data($this->settings['title']);
 		$scheme = $obj->getScheme();
 		$error = 0;
 		$message = "";

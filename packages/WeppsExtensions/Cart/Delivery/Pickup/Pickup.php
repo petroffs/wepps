@@ -1,13 +1,13 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery\Pickup;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryWepps;
+use WeppsCore\Connect;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Delivery\Delivery;
 
-class PickupWepps extends DeliveryWepps
+class Pickup extends Delivery
 {
-	public function __construct(array $settings, CartUtilsWepps $cartUtils)
+	public function __construct(array $settings, CartUtils $cartUtils)
 	{
 		parent::__construct($settings, $cartUtils);
 	}
@@ -19,7 +19,7 @@ class PickupWepps extends DeliveryWepps
 		$tpl = 'Pickup/Notice.tpl';
 		$data = [
 			'text' => $this->settings['Descr'],
-			'address' => ConnectWepps::$projectInfo['address'],
+			'address' => Connect::$projectInfo['address'],
 		];
 		$allowBtn = true;
 		return [

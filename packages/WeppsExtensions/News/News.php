@@ -1,19 +1,19 @@
 <?php
 namespace WeppsExtensions\News;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
 
-class NewsWepps extends ExtensionWepps {
+class News extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty ();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty ();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/News/News.tpl';
 				$conditions = 't.DisplayOff=0';
-				$obj = new DataWepps("News");
+				$obj = new Data("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->fetch($conditions,12,$this->page,"t.NDate desc");
 				$smarty->assign('elements', $res);
@@ -26,7 +26,7 @@ class NewsWepps extends ExtensionWepps {
 				$res = $this->getItem("News");
 				$smarty->assign('element',$res);
 				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
-				$obj = new DataWepps("News");
+				$obj = new Data("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->fetch($conditions,3,1,"t.NDate");
 				$smarty->assign('elements',$res);

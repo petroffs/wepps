@@ -1,9 +1,9 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
+use WeppsCore\Request;
 
-class SaveItemWepps extends RequestWepps {
+class SaveItem extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];

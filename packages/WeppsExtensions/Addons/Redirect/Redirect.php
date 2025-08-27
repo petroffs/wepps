@@ -1,15 +1,15 @@
 <?php
 namespace WeppsExtensions\Addons\Redirect;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class RedirectWepps extends ExtensionWepps {
+class Redirect extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Addons/Redirect/Redirect.tpl';
 				if (isset($this->navigator->child[0])) {
@@ -19,7 +19,7 @@ class RedirectWepps extends ExtensionWepps {
 				}
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		

@@ -1,27 +1,27 @@
 <?php
 namespace WeppsExtensions\Template\Blocks;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class BlocksWepps extends ExtensionWepps {
+class Blocks extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = "";
 				$this->headers->css("/ext/Template/Blocks/Blocks.{$this->rand}.css");
 				$this->headers->js("/ext/Template/Blocks/Blocks.{$this->rand}.js");
-				$obj = new DataWepps("s_Panels");
+				$obj = new Data("s_Panels");
 				$panels = $obj->fetch("t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'");
 				if (empty($panels)) {
 					return;
 				}
 
-				$obj = new DataWepps("s_Blocks");
+				$obj = new Data("s_Blocks");
 				$obj->setJoin("join s_Panels p on p.Id = t.PanelId inner join s_Navigator d on d.Id = p.NavigatorId");
 				$res = $obj->fetch("t.DisplayOff=0 and d.Id='{$this->navigator->content['Id']}'");
 				
@@ -43,11 +43,10 @@ class BlocksWepps extends ExtensionWepps {
 				}
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		$smarty->assign('blocks',$this->tpl);
 		return;
 	}
 }
-?>

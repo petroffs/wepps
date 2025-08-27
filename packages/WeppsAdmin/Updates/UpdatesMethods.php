@@ -2,12 +2,12 @@
 
 namespace WeppsAdmin\Updates;
 
-use WeppsAdmin\Admin\AdminUtilsWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsAdmin\Admin\AdminUtils;
+use WeppsCore\Utils;
+use WeppsCore\Connect;
 use Curl\Curl;
 
-class UpdatesMethodsWepps extends UpdatesWepps {
+class UpdatesMethods extends Updates {
 	public $parent = 0;
 	public $settings;
 	private $filename;
@@ -29,7 +29,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		return $this->getDiff($this->filename,false);
 	}
 	public function getReleasesList() : array {
-		$filename = @ConnectWepps::$projectServices['weppsupdates']['weppsurl']."/releases.json";
+		$filename = @Connect::$projectServices['weppsupdates']['weppsurl']."/releases.json";
 		if (empty($filename)) {
 			return [
 					'output' => 'Wrong settings'
@@ -78,9 +78,9 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 					'output'=>"Wrong tag"
 			];
 		}
-		$file = ConnectWepps::$projectServices['weppsupdates']['weppsfile'];
+		$file = Connect::$projectServices['weppsupdates']['weppsfile'];
 		$fileDst = __DIR__."/files/updates/$tag/$file";
-		$fileSrc = @ConnectWepps::$projectServices['weppsupdates']['weppsurl']."/packages/PPSAdmin/Releases/files/$tag/$file";
+		$fileSrc = @Connect::$projectServices['weppsupdates']['weppsurl']."/packages/PPSAdmin/Releases/files/$tag/$file";
 		$curl = new Curl();
 		$curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
 		$curl->setOpt(CURLOPT_SSL_VERIFYPEER, 0);
@@ -162,8 +162,8 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			if (empty($value)) {
 				continue;
 			}
-			if (file_exists(ConnectWepps::$projectDev['root']."/".$value)) {
-				$this->cli->copy(ConnectWepps::$projectDev['root']."/".$value, $pathRollback."/".$value);
+			if (file_exists(Connect::$projectDev['root']."/".$value)) {
+				$this->cli->copy(Connect::$projectDev['root']."/".$value, $pathRollback."/".$value);
 			}
 			if (file_exists($this->path['dirname']."/updates/".$value)) {
 				$this->cli->copy($this->path['dirname']."/updates/".$value, $pathDiff."/".$value);
@@ -180,7 +180,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			if (empty($value)) {
 				continue;
 			}
-			$this->cli->copy($this->path['dirname']."/updates/".$value, ConnectWepps::$projectDev['root']."/".$value);
+			$this->cli->copy($this->path['dirname']."/updates/".$value, Connect::$projectDev['root']."/".$value);
 		}
 		
 		$this->cli->rmdir($pathRollback);
@@ -191,7 +191,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		 */
 		$this->cli->rmdir($this->path['dirname'] . "/updates");
 		if (!empty($sql)) {
-			ConnectWepps::$db->exec($sql);
+			Connect::$db->exec($sql);
 		}
 		return [
 				'output' => 'Updates is complete succsessfull!'
@@ -222,7 +222,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			 * 3 - нет файла
 			 */
 			$status = 3;
-			$filename = ConnectWepps::$projectDev['root'].'/'.$value['file'];
+			$filename = Connect::$projectDev['root'].'/'.$value['file'];
 			if (!is_file($filename)) {
 				$files[] = [
 						'file' => $value['file'],
@@ -338,7 +338,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 			}
 			$table = $this->getTablesStructure($value['table']);
 			$sql = "show columns from {$value['table']}";
-			$res = ConnectWepps::$instance->fetch($sql);
+			$res = Connect::$instance->fetch($sql);
 			$columnsRelease = array_keys($value['columns']);
 			$columnsCurrent = array_column($res, 'Field');
 			
@@ -433,7 +433,7 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		 * Структура бд
 		 */
 		$sql = "SHOW CREATE TABLE $table";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		$str = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $res[0]['Create Table']).";\n\n";
 		$md5 = self::getTablesMD5($str);
 		
@@ -441,18 +441,18 @@ class UpdatesMethodsWepps extends UpdatesWepps {
 		 * Конфиг
 		 */
 		$sql = "select * from s_Config where TableName = '$table'";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		unset($res[0]['Id']);
-		$arr = AdminUtilsWepps::query($res[0]);
+		$arr = AdminUtils::query($res[0]);
 		$str .= "insert ignore into s_Config {$arr['insert']}\n\n";
 		
 		/*
 		 * Конфиг полей
 		 */
 		$sql = "select * from s_ConfigFields where TableName = '$table'";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		foreach ($res as $value) {
-			$arr = AdminUtilsWepps::query($value);
+			$arr = AdminUtils::query($value);
 			$str .= "insert ignore into s_ConfigFields {$arr['insert']}\n";
 		}
 		$str = preg_replace("/values \('(\d+)'/", 'values (null', $str);

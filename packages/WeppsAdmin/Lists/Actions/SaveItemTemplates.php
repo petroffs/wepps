@@ -1,10 +1,10 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
 
-class SaveItemTemplatesWepps extends RequestWepps {
+class SaveItemTemplates extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
@@ -20,7 +20,7 @@ class SaveItemTemplatesWepps extends RequestWepps {
 	}
 	private function copyTpl($tpl) {
 		$tmp = substr($tpl, 0, - 4);
-		$root = ConnectWepps::$projectDev['root']."/packages/WeppsExtensions/Template/";
+		$root = Connect::$projectDev['root']."/packages/WeppsExtensions/Template/";
 		if (! is_file("{$root}{$tmp}.tpl")) {
 			copy("{$root}Template.tpl","{$root}{$tmp}.tpl");
 		}

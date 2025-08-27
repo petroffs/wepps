@@ -1,33 +1,30 @@
 <?php
-namespace WeppsCore\Exception;
+namespace WeppsCore;
 
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsExtensions\Template\TemplateWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsExtensions\Template\Template;
+use WeppsCore\Connect;
 
-class ExceptionWepps {
+class Exception {
 	/**
 	 * Выдать сообщение в браузер
 	 * @param \Exception $e
 	 */
 	public static function display(\Exception $e) {
-		if (ConnectWepps::$projectDev['debug']==1) {
+		if (Connect::$projectDev['debug']==1) {
 			$error = [];
 			$error['message'] = $e->getMessage();
 			$trace = $e->getTrace();
-			if ($trace[1]['class']=='WeppsCore\Connect\ConnectWepps') {
+			if ($trace[1]['class']=='WeppsCore\Connect\Connect') {
 				$error['file'] = $trace[1]['file'];
 				$error['line'] = $trace[1]['line'];
 				$error['args'] = @$trace[1]['args'];
 			}
 			if (php_sapi_name() == 'cli') {
-				UtilsWepps::debug($error, 3);
-				UtilsWepps::debug($trace, 31);
+				Utils::debug($error, 3);
+				Utils::debug($trace, 31);
 			} else {
-				UtilsWepps::debug($error, 0);
-				UtilsWepps::debug($trace, 1);
+				Utils::debug($error, 0);
+				Utils::debug($trace, 1);
 			}
 		} else {
 			echo $e->getMessage();
@@ -36,9 +33,9 @@ class ExceptionWepps {
 	}
 	public static function error404() {
 		http_response_code(404);
-		$navigator = new NavigatorWepps('/error404/');
-		$headers = new TemplateHeadersWepps();
-		$obj = new TemplateWepps($navigator, $headers);
+		$navigator = new Navigator('/error404/');
+		$headers = new TemplateHeaders();
+		$obj = new Template($navigator, $headers);
 		unset($obj);
 		exit();
 	}

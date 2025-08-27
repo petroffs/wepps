@@ -1,27 +1,22 @@
 <?php
-namespace WeppsExtensions\News;
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Exception\ExceptionWepps;
-
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestNewsWepps extends RequestWepps {
+use WeppsCore\Request;
+use WeppsCore\Exception;
+
+class RequestNews extends Request {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
 				exit();
 				break;
 			default:
-				ExceptionWepps::error(404);
+				Exception::error(404);
 				exit();
 				break;
 		}
 	}
 }
-$request = new RequestNewsWepps($_REQUEST);
-/** @var \Smarty $smarty */
+$request = new RequestNews($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);
-?>

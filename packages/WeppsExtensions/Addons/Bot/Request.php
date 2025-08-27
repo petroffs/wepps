@@ -1,12 +1,9 @@
 <?php
-namespace WeppsExtensions\Addons\Bot;
-
-require_once __DIR__ . '/../../../../config.php';
-require_once __DIR__ . '/../../../../autoloader.php';
 require_once __DIR__ . '/../../../../configloader.php';
 
-/** @var array $argv */
+use WeppsExtensions\Addons\Bot\Bot;
+
 if (!isset($argv[1])) exit();
-$obj = new BotWepps($argv);
+$obj = new Bot
+($argv);
 unset($obj);
-?>

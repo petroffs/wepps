@@ -1,11 +1,11 @@
 <?php
 namespace WeppsExtensions\Template\Filters;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\TextTransforms\TextTransformsWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\TextTransforms;
+use WeppsCore\Utils;
 
-class FiltersWepps {
+class Filters {
 	private $params = [];
 	private $paramsFilters = [];
 	function __construct(array $params=[]) {
@@ -22,7 +22,7 @@ class FiltersWepps {
 		group by pv.Alias
 		order by p.Priority,pv.PValue
 		limit 500";
-		return ConnectWepps::$instance->fetch($sql,$conditions['params'],'group');
+		return Connect::$instance->fetch($sql,$conditions['params'],'group');
 	}
 	public function getFiltersCodeJS(array $filtersActive=[],int $count=0) {
 		if (empty($filtersActive)) {
@@ -51,11 +51,11 @@ class FiltersWepps {
 			}
 		}
 		$js .= "
-			filtersWepps.init();
+			filters.init();
 			var options = $('.options-count').eq(0);
 			options.attr('data-last','{$last}');
 			options.attr('data-check','{$checked}');
-			$('#pps-options-count').html('{$count} ".TextTransformsWepps::ending2("товар",$count)."');
+			$('#pps-options-count').html('{$count} ".TextTransforms::ending2("товар",$count)."');
 			//$('.text-top').addClass('pps_hide');
 			
 			var expand = $('.nav-filters-{$last}').find('li.pps_expand').find('a');
@@ -71,7 +71,7 @@ class FiltersWepps {
 				}
 			}
 		}
-		#UtilsWepps::debug($js,1);
+		#Utils::debug($js,1);
 		return $js;
 	}
 	public function setBrowserStateCodeJS(string $title='') {

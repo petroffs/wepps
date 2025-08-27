@@ -1,25 +1,21 @@
 <?php
-namespace WeppsExtensions\Products;
-
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Core\NavigatorWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
-use WeppsExtensions\Template\Filters\FiltersWepps;
-use WeppsCore\Utils\UtilsWepps;
-
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestProductsWepps extends RequestWepps {
+use WeppsCore\Request;
+use WeppsCore\Navigator;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Products\ProductsUtils;
+use WeppsExtensions\Template\Filters\Filters;
+
+class RequestProducts extends Request {
 	private $navigator;
 	public function request($action="") {
 		switch ($action) {
 			case 'suggestions':
 				$page = max(1, (int)($this->get['page'] ?? 1));
-				$productsUtils = new ProductsUtilsWepps();
-				$productsUtils->setNavigator(new NavigatorWepps("/catalog/"),'Products');
-				$filters = new FiltersWepps($this->get);
+				$productsUtils = new ProductsUtils();
+				$productsUtils->setNavigator(new Navigator("/catalog/"),'Products');
+				$filters = new Filters($this->get);
 				$params = $filters->getParams();
 				$sorting = $productsUtils->getSorting();
 				$conditions = $productsUtils->getConditions($params,false);
@@ -49,10 +45,10 @@ class RequestProductsWepps extends RequestWepps {
 			case 'filters':
 				$this->tpl = "RequestProductsFilters.tpl";
 				$ppsUrl = (isset($this->get['link'])) ? $this->get['link'] : "/catalog/";
-				$this->navigator = new NavigatorWepps($ppsUrl);
-				$productsUtils = new ProductsUtilsWepps();
+				$this->navigator = new Navigator($ppsUrl);
+				$productsUtils = new ProductsUtils();
 				$productsUtils->setNavigator($this->navigator,'Products');
-				$filters = new FiltersWepps($this->get);
+				$filters = new Filters($this->get);
 				$params = $filters->getParams();
 				$sorting = $productsUtils->getSorting();
 				$conditions = $productsUtils->getConditions($params,true);
@@ -64,7 +60,7 @@ class RequestProductsWepps extends RequestWepps {
 				];
 				$products = $productsUtils->getProducts($settings);
 				$filtersActive = $filters->getFilters($settings['conditions']);
-				$cartUtils = new CartUtilsWepps();
+				$cartUtils = new CartUtils();
 				$cartMetrics = $cartUtils->getCartMetrics();
 				$this->assign('cartMetrics',$cartMetrics);
 				$this->assign('products',$products['rows']);
@@ -82,6 +78,6 @@ class RequestProductsWepps extends RequestWepps {
 		}
 	}
 }
-$request = new RequestProductsWepps($_REQUEST);
+$request = new RequestProducts($_REQUEST);
 $smarty->assign('get',$request->get);
 $smarty->display($request->tpl);

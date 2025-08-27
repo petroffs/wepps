@@ -1,15 +1,15 @@
 <?php
 namespace WeppsExtensions\Addons\Rest;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
 
 /**
- * Summary of RestWepps
+ * Summary of Rest
  * 
  * ! Need Refactoring
  */
-class RestWepps
+class Rest
 {
 	protected $get;
 	protected $post;
@@ -32,7 +32,7 @@ class RestWepps
 			case 'post':
 				switch ($this->settings['method']) {
 					case 'test':
-						$obj = new RestListsWepps();
+						$obj = new RestLists();
 						$obj->setTest();
 						break;
 				}
@@ -40,11 +40,11 @@ class RestWepps
 			case 'get':
 				switch ($this->settings['method']) {
 					case 'getList':
-						$obj = new RestListsWepps();
+						$obj = new RestLists();
 						$obj->getLists($this->settings['param'], $this->settings['paramValue']);
 						break;
 					case 'test':
-						$obj = new RestListsWepps();
+						$obj = new RestLists();
 						$obj->getTest();
 						break;
 				}
@@ -52,7 +52,7 @@ class RestWepps
 			case 'delete':
 				switch ($this->settings['method']) {
 					case 'test':
-						$obj = new RestListsWepps();
+						$obj = new RestLists();
 						$obj->removeTest();
 						break;
 				}
@@ -60,13 +60,13 @@ class RestWepps
 			case 'put':
 				switch ($this->settings['method']) {
 					case 'test':
-						$obj = new RestListsWepps();
+						$obj = new RestLists();
 						$obj->setTest();
 						break;
 				}
 				break;
 			case 'cli':
-				$obj = new RestCliWepps($settings);
+				$obj = new RestCli($settings);
 				switch ($this->settings['method']) {
 					case "removeLogLocal":
 						$obj->removeLogLocal();
@@ -101,8 +101,8 @@ class RestWepps
 		}
 		$this->get = $_GET;
 		$this->post = $_POST;
-		$this->root = ConnectWepps::$projectDev['root'];
-		$this->url = ConnectWepps::$projectDev['protocol'] . ConnectWepps::$projectDev['host'] . $_SERVER['REQUEST_URI'];
+		$this->root = Connect::$projectDev['root'];
+		$this->url = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . $_SERVER['REQUEST_URI'];
 		$this->headers = apache_request_headers();
 		$this->request = file_get_contents('php://input');
 		$params = (!isset($this->get['params'])) ? "" : $this->get['params'];
@@ -111,7 +111,7 @@ class RestWepps
 		$param = (isset($ex[1])) ? $ex[1] : "";
 		$paramValue = (isset($ex[2])) ? $ex[2] : "";
 		if (!empty($this->request)) {
-			$validate = RestUtilsWepps::_json_validate($this->request);
+			$validate = RestUtils::_json_validate($this->request);
 			if ($validate['status'] == 200) {
 				$this->data = $validate['data'];
 			} else {
@@ -135,7 +135,7 @@ class RestWepps
 	protected function setLogLocal()
 	{
 		/**
-		 * Использовать LogsWepps
+		 * Использовать Logs
 		 */
 		return;
 
@@ -169,9 +169,9 @@ class RestWepps
 			'SResponse' => $this->status,
 			'IP' => (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : 'localhost',
 		);
-		$prepare = ConnectWepps::$instance->prepare($row);
+		$prepare = Connect::$instance->prepare($row);
 		$sql = "insert ignore into s_LocalServicesLog {$prepare['insert']}";
-		ConnectWepps::$instance->query($sql, $prepare['row']);
+		Connect::$instance->query($sql, $prepare['row']);
 
 
 
@@ -180,7 +180,7 @@ class RestWepps
 
 
 
-		$id = ConnectWepps::$db->lastInsertId();
+		$id = Connect::$db->lastInsertId();
 		/* if (!empty($this->request)) {
 			$fp = fopen(filename: __DIR__ . "/files/{$this->settings['method']}_{$id}.json", 'w');
 			fwrite($fp, $this->request);
@@ -199,12 +199,12 @@ class RestWepps
 			'BRequest' => $this->request,
 			'BResponse' => $this->response,
 		);
-		$prepare = ConnectWepps::$instance->prepare($row);
+		$prepare = Connect::$instance->prepare($row);
 		$sql = "insert ignore into s_RemoteServicesLog {$prepare['insert']}";
-		ConnectWepps::$instance->query($sql, $prepare['row']);
+		Connect::$instance->query($sql, $prepare['row']);
 		$out = 1;
 		/*
-		 $id = ConnectWepps::$db->lastInsertId();
+		 $id = Connect::$db->lastInsertId();
 		 $fp = fopen("files/{$type}_{$id}.json", 'w');
 		 fwrite($fp, $this->data);
 		 fclose($fp);
@@ -215,10 +215,10 @@ class RestWepps
 	{
 		$url = $this->protocol . $this->host . $_SERVER['REQUEST_URI'];
 		$sql = "select * from s_RemoteServicesLog where Url = '{$url}' and BRequest= '{$this->request}' order by Id desc limit 0,1";
-		$res = ConnectWepps::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql);
 		if (!empty($res[0]['BResponse'])) {
 			$this->type = $res[0]['FCategory'];
-			return $this->response = RestUtilsWepps::getJsonClear($res[0]['BResponse']);
+			return $this->response = RestUtils::getJsonClear($res[0]['BResponse']);
 		}
 		return null;
 	}

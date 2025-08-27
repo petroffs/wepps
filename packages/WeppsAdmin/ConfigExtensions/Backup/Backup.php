@@ -1,21 +1,21 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Backup;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Utils\TemplateHeadersWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsAdmin\Admin\AdminWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
+use WeppsCore\Smarty;
+use WeppsCore\Exception;
+use WeppsCore\TemplateHeaders;
+use WeppsCore\Data;
+use WeppsAdmin\Admin\Admin;
 
-class BackupWepps extends RequestWepps {
+class Backup extends Request {
 	public $way;
 	public $title;
 	public $headers;
 	public function request($action="") {
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		$this->tpl = 'Backup.tpl';
 		$this->title = $this->get['ext']['Name'];
 		$this->way = [];
@@ -23,7 +23,7 @@ class BackupWepps extends RequestWepps {
 			'Url'=>"/_wepps/extensions/{$this->get['ext']['Alias']}/",
 			'Name'=>$this->title
 		]);
-		$this->headers = new TemplateHeadersWepps();
+		$this->headers = new TemplateHeaders();
 		$this->headers->js ("/packages/WeppsAdmin/ConfigExtensions/Backup/Backup.{$this->headers::$rand}.js");
 		$this->headers->css ("/packages/WeppsAdmin/ConfigExtensions/Backup/Backup.{$this->headers::$rand}.css");
 		if ($action=="") {
@@ -33,7 +33,7 @@ class BackupWepps extends RequestWepps {
 			case 'database':
 				$this->title = "Резервирование базы данных";
 				$this->tpl = 'BackupDatabase.tpl';
-				$dh = opendir(ConnectWepps::$projectDev['root']."/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
+				$dh = opendir(Connect::$projectDev['root']."/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
 				while ($file = readdir($dh)) {
 					if ($file != '.' && $file != '..' && strstr($file, ".sql"))
 						$files[] = $file;
@@ -49,15 +49,15 @@ class BackupWepps extends RequestWepps {
 				$this->title = "Резервирование списков";
 				$this->tpl = 'BackupLists.tpl';
 				
-				$perm = AdminWepps::getPermissions(ConnectWepps::$projectData['user']['UserPermissions']);
-				$translate = AdminWepps::getTranslate();
+				$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
+				$translate = Admin::getTranslate();
 				$smarty->assign('translate',$translate);
 				/*
 				 * Списки с учетом прав доступа
 				 */
 				$fcond = "'".implode("','", $perm['lists'])."'";
 				$sql = "select * from s_Config as t where TableName in ($fcond) order by t.Category,t.Priority";
-				$res = ConnectWepps::$instance->fetch($sql);
+				$res = Connect::$instance->fetch($sql);
 				$arr = [];
 				foreach ($res as $value) {
 					$arr[$value['Category']][] = $value;
@@ -67,7 +67,7 @@ class BackupWepps extends RequestWepps {
 			case 'files':
 				$this->title = "Резервирование файлов";
 				$this->tpl = 'BackupFiles.tpl';
-				$dh = opendir(ConnectWepps::$projectDev['root']."/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
+				$dh = opendir(Connect::$projectDev['root']."/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
 				while ($file = readdir($dh)) {
 					if ($file != '.' && $file != '..' && strstr($file, ".7z"))
 						$files[] = $file;
@@ -80,7 +80,7 @@ class BackupWepps extends RequestWepps {
 				}
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		array_push($this->way, [

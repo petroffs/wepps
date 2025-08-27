@@ -2,14 +2,14 @@
 namespace WeppsExtensions\Addons\RemoteServices;
 
 use Curl\Curl;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils;
+use WeppsCore\Connect;
 
 /**
- * Summary of RemoteServicesWepps
+ * Summary of RemoteServices
  * ! Deprecated
  */
-class RemoteServicesWepps {
+class RemoteServices {
 	public $curl;
 	public $settings;
 	public $cache = 1;
@@ -53,7 +53,7 @@ class RemoteServicesWepps {
 	
 	private function getCache($hash) {
 	    $sql = "select * from RemoteServicesCache where binary Alias = '$hash'";
-	    $res = ConnectWepps::$instance->fetch($sql);
+	    $res = Connect::$instance->fetch($sql);
 	    if (!empty($res[0]['Id'])) {
 	        $url = (!empty($res[0]['Url'])) ? $res[0]['Url'] : '';
 	        $body = (!empty($res[0]['Descr'])) ? $res[0]['Descr'] : '';
@@ -67,7 +67,7 @@ class RemoteServicesWepps {
 	private function addCache($url='',$body='',$response='') {
 	    $className = get_class($this);
 	    
-		$prepare = ConnectWepps::$instance->prepare([
+		$prepare = Connect::$instance->prepare([
 	        'Name' => substr($className, strrpos($className, '\\')+1),
 	        'Alias' => md5($url.$body),
 	        'Url' => $url,
@@ -75,7 +75,7 @@ class RemoteServicesWepps {
 	        'DescrResponse' => $response,
 		]);
 	    $sql = "insert ignore RemoteServicesCache {$prepare['insert']}";
-	    ConnectWepps::$instance->query($sql,$prepare['row']);
+	    Connect::$instance->query($sql,$prepare['row']);
 	    return 1;
 	}
 }

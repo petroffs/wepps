@@ -1,17 +1,17 @@
 <?php
 namespace WeppsExtensions\Addons\Rest;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Connect;
+use WeppsCore\Utils;
 
-class RestCliWepps extends RestWepps {
+class RestCli extends Rest {
 	public $parent = 0;
 	public function __construct($settings=[]) {
 		parent::__construct($settings);
 	}
 	public function removeLogLocal() {
 		$sql = "truncate s_LocalServicesLog";
-		ConnectWepps::$instance->query($sql);
+		Connect::$instance->query($sql);
 		$directoryPath = __DIR__."/files/";
 		$directoryScan = scandir($directoryPath);
 		if (count($directoryScan)>2) {

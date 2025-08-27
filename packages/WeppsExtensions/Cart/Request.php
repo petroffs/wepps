@@ -1,22 +1,20 @@
 <?php
-namespace WeppsExtensions\Cart;
-
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsExtensions\Cart\Delivery\DeliveryUtilsWepps;
-use WeppsExtensions\Cart\Payments\PaymentsUtilsWepps;
-use WeppsExtensions\Products\ProductsUtilsWepps;
-
-require_once '../../../config.php';
-require_once '../../../autoloader.php';
 require_once '../../../configloader.php';
 
-class RequestCartWepps extends RequestWepps
+use WeppsCore\Smarty;
+use WeppsCore\Request;
+use WeppsCore\Exception;
+use WeppsExtensions\Cart\CartTemplates;
+use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Delivery\DeliveryUtils;
+use WeppsExtensions\Cart\Payments\PaymentsUtils;
+use WeppsExtensions\Products\ProductsUtils;
+
+class RequestCart extends Request
 {
 	public function request($action = "")
 	{
-		$cartUtils = new CartUtilsWepps();
+		$cartUtils = new CartUtils();
 		switch ($action) {
 			case 'add':
 				self::add($cartUtils);
@@ -26,7 +24,7 @@ class RequestCartWepps extends RequestWepps
 				break;
 			case 'edit':
 				if (empty($this->get['id'])) {
-					ExceptionWepps::error(400);
+					Exception::error(400);
 				}
 				if (empty($this->get['quantity']) || !is_numeric($this->get['quantity'])) {
 					$this->get['quantity'] = 1;
@@ -40,7 +38,7 @@ class RequestCartWepps extends RequestWepps
 				break;
 			case 'remove':
 				if (empty($this->get['id'])) {
-					ExceptionWepps::error(400);
+					Exception::error(400);
 				}
 				$cartUtils->remove($this->get['id']);
 				self::displayCart($cartUtils);
@@ -50,12 +48,12 @@ class RequestCartWepps extends RequestWepps
 				break;
 			case 'favorites':
 				if (empty($this->get['id'])) {
-					ExceptionWepps::error(400);
+					Exception::error(400);
 				}
 				$cartUtils->setFavorites($this->get['id']);
 				break;
 			case 'cities':
-				$deliveryUtils = new DeliveryUtilsWepps();
+				$deliveryUtils = new DeliveryUtils();
 				$res = $deliveryUtils->getCitiesByQuery($this->get['text'], (int) $this->get['page'] ?? 1);
 				if (empty($res)) {
 					echo json_encode([
@@ -77,7 +75,7 @@ class RequestCartWepps extends RequestWepps
 					http_response_code(404);
 					exit();
 				}
-				$deliveryUtils = new DeliveryUtilsWepps();
+				$deliveryUtils = new DeliveryUtils();
 				$cartUtils->setCartSummary();
 				$delivery = $deliveryUtils->getTariffsByCitiesId($this->get['citiesId'], $cartUtils);
 				if (!empty($delivery)) {
@@ -86,7 +84,7 @@ class RequestCartWepps extends RequestWepps
 				}
 				break;
 			case 'deliveryOperations':
-				$deliveryUtils = new DeliveryUtilsWepps();
+				$deliveryUtils = new DeliveryUtils();
 				$cartUtils->setCartSummary();
 				$deliveryUtils->setOperations($this->get, $cartUtils);
 				break;
@@ -95,7 +93,7 @@ class RequestCartWepps extends RequestWepps
 					http_response_code(404);
 					exit();
 				}
-				$paymentsUtils = new PaymentsUtilsWepps();
+				$paymentsUtils = new PaymentsUtils();
 				$payments = $paymentsUtils->getByDeliveryId($this->get['deliveryId'], $cartUtils);
 				if (!empty($payments)) {
 					$cartUtils->setCartDelivery($this->get['deliveryId']);
@@ -117,17 +115,17 @@ class RequestCartWepps extends RequestWepps
 			case 'copyOrder':
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 	}
-	private function add(CartUtilsWepps $cartUtils)
+	private function add(CartUtils $cartUtils)
 	{
 		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
-			ExceptionWepps::error(400);
+			Exception::error(400);
 		}
 		$this->tpl = 'RequestAddCart.tpl';
-		$productsUtils = new ProductsUtilsWepps();
+		$productsUtils = new ProductsUtils();
 		$element = $productsUtils->getProductsItem($this->get['id']);
 		if (!empty($this->get['idv'])) {
 			$ex = explode(',', $this->get['idv']);
@@ -162,29 +160,29 @@ class RequestCartWepps extends RequestWepps
 		$this->assign('cartSummary', $cartSummary);
 		$this->assign('get', $this->get);
 	}
-	private function displayCart(CartUtilsWepps $cartUtils)
+	private function displayCart(CartUtils $cartUtils)
 	{
 		$this->tpl = 'RequestDefault.tpl';
-		$smarty = SmartyWepps::getSmarty();
-		$template = new CartTemplatesWepps($smarty, $cartUtils);
+		$smarty = Smarty::getSmarty();
+		$template = new CartTemplates($smarty, $cartUtils);
 		$template->default();
 		return;
 	}
-	private function displayCheckoutCart(CartUtilsWepps $cartUtils)
+	private function displayCheckoutCart(CartUtils $cartUtils)
 	{
 		$this->tpl = 'RequestCheckout.tpl';
-		$smarty = SmartyWepps::getSmarty();
-		$template = new CartTemplatesWepps($smarty, $cartUtils);
+		$smarty = Smarty::getSmarty();
+		$template = new CartTemplates($smarty, $cartUtils);
 		$template->checkout();
 		return;
 	}
-	private function displayVariations(CartUtilsWepps $cartUtils)
+	private function displayVariations(CartUtils $cartUtils)
 	{
 		$this->tpl = 'RequestVariations.tpl';
 		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
-			ExceptionWepps::error(400);
+			Exception::error(400);
 		}
-		$productsUtils = new ProductsUtilsWepps();
+		$productsUtils = new ProductsUtils();
 		$el = $productsUtils->getProductsItem($this->get['id']);
 		$cartMetrics = $cartUtils->getCartMetrics();
 		$this->assign('cartMetrics', $cartMetrics);
@@ -203,6 +201,6 @@ class RequestCartWepps extends RequestWepps
 		return [];
 	}
 }
-$request = new RequestCartWepps($_REQUEST);
+$request = new RequestCart($_REQUEST);
 $smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

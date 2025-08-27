@@ -1,26 +1,26 @@
 <?php
 namespace WeppsExtensions\Services;
 
-use WeppsCore\Core\NavigatorWepps;
-use WeppsCore\Core\SmartyWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Core\ExtensionWepps;
-use WeppsCore\Exception\ExceptionWepps;
+use WeppsCore\Navigator;
+use WeppsCore\Smarty;
+use WeppsCore\Data;
+use WeppsCore\Extension;
+use WeppsCore\Exception;
 
-class ServicesWepps extends ExtensionWepps {
+class Services extends Extension {
 	public function request() {
-		$smarty = SmartyWepps::getSmarty ();
-		switch (NavigatorWepps::$pathItem) {
+		$smarty = Smarty::getSmarty ();
+		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Services/Services.tpl';
 				$conditions = "";
-				$obj = new DataWepps("Services");
+				$obj = new Data("Services");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->fetch($conditions,20,$this->page,"t.Priority");
 				$smarty->assign('elements',$res);
 				break;
 			default:
-				ExceptionWepps::error404();
+				Exception::error404();
 				break;
 		}
 		$this->headers->css("/ext/Services/Services.{$this->rand}.css");

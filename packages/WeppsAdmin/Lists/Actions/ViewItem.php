@@ -1,11 +1,11 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
-use WeppsCore\Utils\RequestWepps;
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Request;
+use WeppsCore\Connect;
+use WeppsCore\Smarty;
 
-class ViewItemWepps extends RequestWepps {
+class ViewItem extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $element = [];
@@ -17,16 +17,16 @@ class ViewItemWepps extends RequestWepps {
 		//unset($this->get['listScheme']['Name']);
 		$this->scheme = &$this->get['listScheme'];
 		$this->settings = &$this->get['listSettings'];
-		//TemplateHeadersWepps - передать тип для переменнной $headers
+		//TemplateHeaders - передать тип для переменнной $headers
 		$this->headers = &$this->get['headers'];
 		$this->headers->js("/packages/WeppsAdmin/Lists/Actions/ViewItem.{$this->headers::$rand}.js");
 		
-		$smarty = SmartyWepps::getSmarty();
+		$smarty = Smarty::getSmarty();
 		
 		$smarty->assign('itemGroup','Dopoln1');
-		$tpl1 = $smarty->fetch( ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/Actions/ViewItemDopoln1.tpl');
+		$tpl1 = $smarty->fetch( Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/Actions/ViewItemDopoln1.tpl');
 		$smarty->assign('itemGroup','Dopoln2');
-		$tpl2 = $smarty->fetch( ConnectWepps::$projectDev['root'] . '/packages/WeppsAdmin/Lists/Actions/ViewItemDopoln2.tpl');
+		$tpl2 = $smarty->fetch( Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/Actions/ViewItemDopoln2.tpl');
 		
 		//$this->fetch($key, $value);
 		

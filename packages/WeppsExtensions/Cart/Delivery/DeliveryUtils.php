@@ -1,10 +1,10 @@
 <?php
 namespace WeppsExtensions\Cart\Delivery;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsExtensions\Cart\CartUtilsWepps;
+use WeppsCore\Connect;
+use WeppsExtensions\Cart\CartUtils;
 
-class DeliveryUtilsWepps
+class DeliveryUtils
 {
     private $operations;
     public function __construct()
@@ -15,34 +15,34 @@ class DeliveryUtilsWepps
         $page = max(1, (int) ($page) ?? 1);
         $limit = ($page - 1) * $onpage;
         $term = urldecode($term);
-        $sql = "select c.Id,r.Id RegionsId,c.Name,concat(if(c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name))) Title from CitiesCdek c
+        $sql = "SELECT c.Id,r.Id RegionsId,c.Name,concat(if(c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name))) Title from CitiesCdek c
 						join RegionsCdek r on r.Id = c.RegionsId where concat(c.Name,', ',r.Name) like ? and c.Name not like '% (%' order by if(c.Name=r.Name,0,1) limit $limit,$onpage";
-        return ConnectWepps::$instance->fetch($sql, ["{$term}%"]);
+        return Connect::$instance->fetch($sql, ["{$term}%"]);
     }
     public function getCitiesById(int $id, int $page = 1, int $onpage = 12): array
     {
         $page = max(1, (int) ($page) ?? 1);
         $limit = ($page - 1) * $onpage;
-        $sql = "select c.Id,r.Id RegionsId,r.Name RegionsName,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
+        $sql = "SELECT c.Id,r.Id RegionsId,r.Name RegionsName,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";
-        return ConnectWepps::$instance->fetch($sql, [$id]);
+        return Connect::$instance->fetch($sql, [$id]);
     }
-    public function getTariffsByCitiesId(string $citiesId, CartUtilsWepps $cartUtils, string $deliveryId = ''): array
+    public function getTariffsByCitiesId(string $citiesId, CartUtils $cartUtils, string $deliveryId = ''): array
     {
         $conditions = "d.DisplayOff=0 and d.Id != ?";
         if (!empty($deliveryId)) {
             $conditions = "d.DisplayOff=0 and d.Id = ?";
         }
-        $sql = "select d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
+        $sql = "SELECT d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
                 d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.FreeLevel,d.Discount,d.IsDiscountPercentage,d.JSettings,
-                if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefault\DeliveryDefaultWepps') DeliveryExt,
+                if (d.DeliveryExt!='',d.DeliveryExt,'DeliveryDefault') DeliveryExt,
                 c.Id CitiesId,r.Id RegionsId,c.Name CitiesName,r.Name RegionsName,pc.Name PostalCode
                 from OrdersDelivery d 
                 left join CitiesCdek c on c.Id=?
                 left join PostalCodes pc on pc.Id=c.Id
                 left join RegionsCdek r on r.Id = c.RegionsId
                 where $conditions group by d.Id";
-        $res = ConnectWepps::$instance->fetch($sql, [$citiesId, $deliveryId]);
+        $res = Connect::$instance->fetch($sql, [$citiesId, $deliveryId]);
         if (empty($res)) {
             return [];
         }
@@ -68,9 +68,9 @@ class DeliveryUtilsWepps
         }
         $cartSummary = $cartUtils->getCartSummary();
         foreach ($output as $key => $value) {
-            $className = "\WeppsExtensions\\Cart\\Delivery\\{$value['DeliveryExt']}";
+            $className = "\WeppsExtensions\\Cart\\Delivery\\{$value['DeliveryExt']}\\{$value['DeliveryExt']}";
             /**
-             * @var DeliveryWepps $class
+             * @var Delivery $class
              */
             $class = new $className($value,$cartUtils);
             $output[$key]['Addons']['tariff'] = $class->getTariff();
@@ -86,7 +86,7 @@ class DeliveryUtilsWepps
     {
         return $this->operations;
     }
-    public function setOperations(array $data,CartUtilsWepps $cartUtils) : bool {
+    public function setOperations(array $data,CartUtils $cartUtils) : bool {
         $data = array_filter($data, fn($key) => str_starts_with($key, 'operations-'), ARRAY_FILTER_USE_KEY);
         if (empty($data)) {
             $cartUtils->setCartDeliveryOperations();

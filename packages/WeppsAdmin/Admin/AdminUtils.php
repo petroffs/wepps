@@ -1,16 +1,16 @@
 <?php
 namespace WeppsAdmin\Admin;
 
-use WeppsCore\Utils\CliWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Cli;
+use WeppsCore\Utils;
+use WeppsCore\Connect;
 
-class AdminUtilsWepps extends UtilsWepps {
-	public static function modal(string $message = '', CliWepps $cli = null)
+class AdminUtils extends Utils {
+	public static function modal(string $message = '', Cli $cli = null)
 	{
 		if (!empty($cli)) {
 			$cli->info($message);
-			ConnectWepps::$instance->close();
+			Connect::$instance->close();
 			return;
 		}
 
@@ -40,7 +40,7 @@ class AdminUtilsWepps extends UtilsWepps {
 			</script>
 		";
 		echo $js;
-		ConnectWepps::$instance->close();
+		Connect::$instance->close();
 		return;
 	}
 	/**
@@ -67,8 +67,8 @@ class AdminUtilsWepps extends UtilsWepps {
 				$strUpdate .= "{$key}=uuid(), ";
 				$strInsert2 .= "uuid(),";
 			} else {
-				$strUpdate .= "{$key}=" . ConnectWepps::$db->quote($value) . ", ";
-				$strInsert2 .= "" . ConnectWepps::$db->quote($value) . ",";
+				$strUpdate .= "{$key}=" . Connect::$db->quote($value) . ", ";
+				$strInsert2 .= "" . Connect::$db->quote($value) . ",";
 			}
 			$strInsert1 .= "$key,";
 			$strCond .= "{$key}={$value1} and ";

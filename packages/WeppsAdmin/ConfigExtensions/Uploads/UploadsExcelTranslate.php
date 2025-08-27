@@ -2,17 +2,17 @@
 
 namespace WeppsAdmin\ConfigExtensions\Uploads;
 
-use WeppsAdmin\Admin\AdminUtilsWepps;
-use WeppsCore\Utils\UtilsWepps;
-use WeppsAdmin\Lists\ListsWepps;
-use WeppsCore\Core\DataWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsAdmin\Admin\AdminUtils;
+use WeppsCore\Utils;
+use WeppsAdmin\Lists\Lists;
+use WeppsCore\Data;
+use WeppsCore\Connect;
 
 /*
  * Обновление таблицы s_Lang
  */
 
-class UploadsExcelTranslateWepps {
+class UploadsExcelTranslate {
 	private $settings;
 	private $validator;
 	private $tableName = 's_Lang';
@@ -27,7 +27,7 @@ class UploadsExcelTranslateWepps {
 			/*
 			 * Запись/обновление данных
 			 */
-			$obj = new DataWepps($this->tableName);
+			$obj = new Data($this->tableName);
 			$str = "";
 			unset($this->settings['data'][1]);
 			foreach ($this->settings['data'] as $value) {
@@ -40,13 +40,13 @@ class UploadsExcelTranslateWepps {
 							"Priority"=>1000,
 					);
 					
-					$arr = AdminUtilsWepps::query($row1);
+					$arr = AdminUtils::query($row1);
 					$str .= "insert ignore into {$this->tableName} (Name) values ('{$row1['Name']}');\n";
 					$str .= "update {$this->tableName} set {$arr['update']} where Name='{$row1['Name']}';\n";
 				}
 			}
 			if ($str != "") {
-				ConnectWepps::$db->exec($str);
+				Connect::$db->exec($str);
 				return [
 						'status'=>0,
 						'message'=>'Таблица Перевод обновлена'

@@ -1,11 +1,11 @@
 <?php
 namespace WeppsExtensions\Addons\Images;
 
-use WeppsCore\Utils\UtilsWepps;
-use WeppsCore\Exception\ExceptionWepps;
-use WeppsCore\Connect\ConnectWepps;
+use WeppsCore\Utils;
+use WeppsCore\Exception;
+use WeppsCore\Connect;
 
-class ImagesWepps {
+class Images {
 	private $source;
 	private $target;
 	private $newfile;
@@ -18,17 +18,17 @@ class ImagesWepps {
 	private $heightDst = 0;
 	public $get;
 	function __construct($get) {
-		$this->get = UtilsWepps::trim($get);
+		$this->get = Utils::trim($get);
 		$filename = (isset($this->get['fileUrl'])) ? $this->get['fileUrl'] : '';
 		$action = (isset($this->get['pref'])) ? $this->get['pref'] : '';
 		$root = substr(getcwd(),0,strpos(getcwd(), "packages"));
 		$rootfilename = $root."".$filename;
 		if (!is_file($rootfilename)) {
-			ExceptionWepps::error(404);
+			Exception::error(404);
 		}
-		$res = ConnectWepps::$instance->fetch("select * from s_Files where FileType like 'image/%' and FileUrl='/{$filename}'");
+		$res = Connect::$instance->fetch("select * from s_Files where FileType like 'image/%' and FileUrl='/{$filename}'");
 		if (count($res)==0) {
-			ExceptionWepps::error(404);
+			Exception::error(404);
 		}
 		$this->fileinfo = $res[0];
 		$size = @getimagesize($rootfilename) or die('die.');
@@ -79,7 +79,7 @@ class ImagesWepps {
 				$this->heightDst = 705;
 				break;
 			default :
-				ExceptionWepps::error(404);
+				Exception::error(404);
 				exit();
 		}
 		/*
@@ -270,7 +270,7 @@ class ImagesWepps {
 			return;
 		}
 		if (empty($filename)) {
-			$filename = ConnectWepps::$projectDev['root'].ConnectWepps::$projectInfo['logopng'];
+			$filename = Connect::$projectDev['root'].Connect::$projectInfo['logopng'];
 		}	
 		$target = imagecreatefrompng($filename) or die ($filename);
 		imagesavealpha($target, true);
@@ -335,6 +335,6 @@ class ImagesWepps {
 	function __destruct() {
 		if ($this->target) imagedestroy($this->target);
 		if ($this->source) imagedestroy($this->source);
-		ConnectWepps::$instance->close();
+		Connect::$instance->close();
 	}
 }

@@ -1,21 +1,22 @@
 <?php
 namespace WeppsExtensions\Addons\Jwt;
-use WeppsCore\Connect\ConnectWepps;
-use Ahc\Jwt\JWT;
-use WeppsCore\Utils\UtilsWepps;
 
-class JwtWepps {
+use WeppsCore\Connect;
+use Ahc\Jwt\JWT as VendorJWT;
+use WeppsCore\Utils;
+
+class Jwt {
 	private $secret;
 	
 	public function __construct($settings=[]) {
-		$this->secret = ConnectWepps::$projectServices['jwt']['secret'];
+		$this->secret = Connect::$projectServices['jwt']['secret'];
 	}
 	public function token_encode(array $payload=[],int $lifetime = 86200) : string {
-		$jwt = new JWT($this->secret,'HS256',$lifetime);
+		$jwt = new VendorJWT($this->secret,'HS256',$lifetime);
 		return $jwt->encode($payload);
 	}
 	public function token_decode(string $token='') : array {
-		$jwt = new JWT($this->secret);
+		$jwt = new VendorJWT($this->secret);
 		try {
 			$output = [
 					'type'=>'jwt',
@@ -35,7 +36,7 @@ class JwtWepps {
 	}
 	
 	public function bearer() : array {
-		$headers = UtilsWepps::getAllHeaders();
+		$headers = Utils::getAllHeaders();
 		$bearer = 'Bearer ';
 		if (!empty($headers['authorization']) && strstr($headers['authorization'], $bearer)) {
 			$token = str_replace($bearer, '', $headers['authorization']);
@@ -50,5 +51,3 @@ class JwtWepps {
 		return $output;
 	}
 }
-
-?>

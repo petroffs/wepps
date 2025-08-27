@@ -1,19 +1,19 @@
 <?php
 namespace WeppsExtensions\Addons\Messages\Mail;
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Core\SmartyWepps;
+use WeppsCore\Connect;
+use WeppsCore\Smarty;
 use Curl\Curl;
-use WeppsCore\Utils\UtilsWepps;
+use WeppsCore\Utils;
 
 /**
- * MailWepps handles the creation and sending of emails with support for HTML and plain text formats,
+ * Mail handles the creation and sending of emails with support for HTML and plain text formats,
  * attachments, and debug mode for the Wepps platform.
  * 
- * Класс MailWepps представляет собой модуль для отправки электронных писем с поддержкой 
+ * Класс Mail представляет собой модуль для отправки электронных писем с поддержкой 
  * HTML/Plain текста, вложений, встроенных изображений и отладки
  */
-class MailWepps {
+class Mail {
 	private $attachment=[];
 	private $attachmentInput=[];
 	private $from;
@@ -25,9 +25,9 @@ class MailWepps {
 	private $mime_boundary;
 	public function __construct($type='plain') {
 		$this->type = $type;
-		$this->from = "=?utf-8?B?" .base64_encode(ConnectWepps::$projectInfo['name']). "?=" . " <".ConnectWepps::$projectInfo['email'].">";
+		$this->from = "=?utf-8?B?" .base64_encode(Connect::$projectInfo['name']). "?=" . " <".Connect::$projectInfo['email'].">";
 		$this->mime_boundary=md5(time());
-		if (ConnectWepps::$projectDev['debug']==1) {
+		if (Connect::$projectDev['debug']==1) {
 			$this->debug = 1;
 		}
 	}
@@ -42,18 +42,18 @@ class MailWepps {
 		$headers .= "Content-Type: multipart/related; boundary=\"{$this->mime_boundary}\""."\n";
 		$this->contentAll = "--".$this->mime_boundary."\n";
 		
-		$smarty = SmartyWepps::getSmarty();
-		$settings = ConnectWepps::$projectInfo;
+		$smarty = Smarty::getSmarty();
+		$settings = Connect::$projectInfo;
 		$settings['host'] = [
-				'title'=>ConnectWepps::$projectDev['host'],
-				'url'=>ConnectWepps::$projectDev['protocol'].ConnectWepps::$projectDev['host']
+				'title'=>Connect::$projectDev['host'],
+				'url'=>Connect::$projectDev['protocol'].Connect::$projectDev['host']
 		];
 		$smarty->assign('settings',$settings);
 		switch ($this->type) {
 			case "html":
 				$smarty->assign('subject',$subject);
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailHtml.tpl');
+				$this->content = $smarty->fetch(Connect::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailHtml.tpl');
 				self::getQuotedPrintable();
 				$this->contentAll .= "Content-Type: text/html; charset=\"utf-8\"\n";
 				#$this->contentAll .= "Content-Transfer-Encoding: 8bit"."\n\n";
@@ -64,7 +64,7 @@ class MailWepps {
 				break;
 			default:
 				$smarty->assign('text',$text);
-				$this->content = $smarty->fetch(ConnectWepps::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailPlain.tpl');
+				$this->content = $smarty->fetch(Connect::$projectDev['root'].'/packages/WeppsExtensions/Addons/Messages/Mail/MailPlain.tpl');
 				$this->contentAll .= "Content-Type: text/plain; charset=\"utf-8\"\n";
 				$this->contentAll .= "Content-Transfer-Encoding: quoted-printable\n\n";
 				$this->contentAll .= (string) $this->content."\n\n";
@@ -74,9 +74,9 @@ class MailWepps {
 		$this->contentAll .= self::getAttachInput();
 		$this->contentAll .= "--{$this->mime_boundary}\n\n";
 		if ($this->debug==1) {
-			$to = ConnectWepps::$projectDev['email'];
+			$to = Connect::$projectDev['email'];
 		}
-		return mail($to,$subj,$this->contentAll,$headers,"-f".ConnectWepps::$projectInfo['email']);
+		return mail($to,$subj,$this->contentAll,$headers,"-f".Connect::$projectInfo['email']);
 	}
 	public function setSender($name,$email) {
 		$this->from = "=?utf-8?B?" .base64_encode($name). "?=" . " <".$email.">";
@@ -88,12 +88,12 @@ class MailWepps {
 		$this->attachmentInput = $attachment;
 	}
 	public function setDebug() {
-		if (ConnectWepps::$projectDev['debug']==1) {
+		if (Connect::$projectDev['debug']==1) {
 			return $this->debug = 1;
 		}
 	}
 	public function unsetDebug() {
-		if (ConnectWepps::$projectDev['debug']==1) {
+		if (Connect::$projectDev['debug']==1) {
 			return $this->debug = 0;
 		}
 	}
