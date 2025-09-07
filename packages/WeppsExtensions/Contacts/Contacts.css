@@ -1,15 +1,11 @@
-.contacts-wrapper div.title {
-	font-weight: 700;
+.page.contacts .content-block.map-block {
+	padding: 0;
 }
-
-.contacts-wrapper .map {
+.page.contacts .map {
 	width: 100%;
 	height: 400px;
-	margin-top: var(--step4);
 }
 
 @media screen and (max-width: 768px) {
-	div.elements.ContactsForm {
-		width: 100%;
-	}
+
 }

@@ -9,9 +9,14 @@ use WeppsCore\Exception;
 use WeppsCore\Connect;
 use WeppsCore\Utils;
 
+if (!session_id()) {
+	session_start();
+}
+
 class Contacts extends Extension {
 	public function request() {
 		$smarty = Smarty::getSmarty();
+		#Utils::debug($_SESSION,21);
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Contacts/Contacts.tpl';
@@ -19,15 +24,18 @@ class Contacts extends Extension {
 				$res = $obj->fetch("t.DisplayOff=0");
 				#Utils::debug($res,1);
 				$smarty->assign('elements',$res);
+				if (isset($_SESSION['uploads']['feedback-form'])) {
+					$smarty->assign('uploaded', $_SESSION['uploads']['feedback-form']);
+				}
+				#unset($_SESSION['uploads']);
+				#feedback-upload
+				#Utils::debug($_SESSION['uploads']['feedback-form'],1);
 				break;
 			default:
 				Exception::error404();
 				break;
 		}
-		
-		/*
-		 * Для глобального шаблона
-		 */
+		#Utils::debug($_SESSION['uploads'],21);
 		$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.js");
 		$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.css");
 		$apikey = Connect::$projectServices['yandexmaps']['apikey'];
@@ -38,4 +46,3 @@ class Contacts extends Extension {
 		return;
 	}
 }
-?>

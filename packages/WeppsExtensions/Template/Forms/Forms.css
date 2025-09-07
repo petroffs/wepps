@@ -233,8 +233,9 @@ label.pps.pps_select>select {
 }
 
 label.pps.pps_upload {
-	width: max-content;
-	max-width: 100%;
+	width: 100%;
+	flex-direction: column;
+	align-items: flex-start;
 }
 
 label.pps.pps_upload input[type="file"] {
@@ -270,6 +271,18 @@ label.pps.pps_upload span:hover {
 
 label.pps.pps_upload i {
 	margin-right: var(--step);
+}
+
+label.pps.pps_upload+div.pps_upload_add div.pps_upload_file {
+	margin-top: var(--step);
+	word-break: break-all;
+}
+label.pps.pps_upload+div.pps_upload_add div.pps_upload_file .bi {
+	color: var(--color-75);
+	cursor: pointer;
+}
+label.pps.pps_upload+div.pps_upload_add div.pps_upload_file .bi:hover {
+	color: var(--color-button);
 }
 
 .pps_fields,

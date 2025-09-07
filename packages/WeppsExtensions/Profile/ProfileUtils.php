@@ -79,23 +79,23 @@ class ProfileUtils
 	}
 	public function getFavorites()
 	{
-		$jdata = json_decode($this->partner['JFav'], true);
-		if (!is_array($jdata)) {
-			return false;
-		}
-		$ids = implode(',', array_keys($jdata));
-		if (empty($ids)) {
-			return false;
-		}
-		$conditions = "t.Id in ($ids)";
-		$settings = [
-			'page' => @$_GET['page'],
-			'condition' => $conditions,
-			'conditionSelf' => $conditions,
-			'orderBy' => "FIELD(t.Id,$ids)"
-		];
-		$products = Products::getProducts($settings);
-		return $products;
+		// $jdata = json_decode($this->partner['JFav'], true);
+		// if (!is_array($jdata)) {
+		// 	return false;
+		// }
+		// $ids = implode(',', array_keys($jdata));
+		// if (empty($ids)) {
+		// 	return false;
+		// }
+		// $conditions = "t.Id in ($ids)";
+		// $settings = [
+		// 	'page' => @$_GET['page'],
+		// 	'condition' => $conditions,
+		// 	'conditionSelf' => $conditions,
+		// 	'orderBy' => "FIELD(t.Id,$ids)"
+		// ];
+		// $products = Products::getProducts($settings);
+		// return $products;
 	}
 
 	public function getOrders($id = 0)

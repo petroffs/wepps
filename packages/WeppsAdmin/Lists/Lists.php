@@ -11,8 +11,8 @@ use WeppsCore\Data;
 use WeppsCore\TextTransforms;
 use WeppsCore\Validator;
 
-if (!isset($_SESSION)) {
-	@session_start();
+if (!session_id()) {
+	session_start();
 }
 
 class Lists
@@ -110,7 +110,7 @@ class Lists
 
 			if (isset($listSettings['ActionShow']) && $listSettings['ActionShow'] != '') {
 				$addAction = str_replace(".php", "", $listSettings['ActionShow']);
-				$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
+				$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
 				$addActionRequest = new $addActionClass(array('listSettings' => $listSettings, 'listScheme' => $listScheme));
 				$listCondition = $addActionRequest->condition;
 				if (!empty($addActionRequest->fields)) {

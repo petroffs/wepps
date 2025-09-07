@@ -81,10 +81,10 @@ class Mail {
 	public function setSender($name,$email) {
 		$this->from = "=?utf-8?B?" .base64_encode($name). "?=" . " <".$email.">";
 	}
-	public function setAttach($attachment = array()) {
+	public function setAttach(array $attachment = []) {
 		$this->attachment = $attachment;
 	}
-	public function setAttachInput($attachment = array()) {
+	public function setAttachInput(array $attachment = []) {
 		$this->attachmentInput = $attachment;
 	}
 	public function setDebug() {
@@ -114,7 +114,7 @@ class Mail {
 		if (count ( $this->attachment ) != 0) {
 			foreach ( $this->attachment as $value ) {
 				if (! is_file ( $value )) {
-					return 0;
+					return '';
 				} else {
 					$f_name = $value;
 					$handle = fopen ( $f_name, 'rb' );

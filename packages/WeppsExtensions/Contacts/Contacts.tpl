@@ -1,132 +1,129 @@
-<a href="" class="pps_button pps_animate">Тест</a>
-<div class="pps_interval"></div>
-<section class="contacts-wrapper">
-	{foreach name="out" item="item" from=$elements}
-		<div class="item">
-			<div class="title">{$item.Name}</div>
-			{if $item.Email}
-				<div class="param">{$item.Email}</div>
-			{/if}
-			{if $item.Phone}
-				<div class="param">{$item.Phone}</div>
-			{/if}
-			{if $item.Fax}
-				<div class="param">{$item.Fax}</div>
-			{/if}
-			{if $item.PhoneMob}
-				<div class="param">{$item.PhoneMob}</div>
-			{/if}
-
-			{if $item.LatLng && $item.Address}
-				<div class="pps_interval"></div>
+<div class="page contacts">
+	<section>
+		<div class="content-block">
+			<a href="" class="pps_button pps_animate">Тест</a>
+			<section class="contacts-wrapper">
+				{foreach name="out" item="item" from=$elements}
+					<div class="item">
+						<div class="title">{$item.Name}</div>
+						{if $item.Email}
+							<div class="param">{$item.Email}</div>
+						{/if}
+						{if $item.Phone}
+							<div class="param">{$item.Phone}</div>
+						{/if}
+						{if $item.Fax}
+							<div class="param">{$item.Fax}</div>
+						{/if}
+						{if $item.PhoneMob}
+							<div class="param">{$item.PhoneMob}</div>
+						{/if}
+						<div class="pps_interval"></div>
+					</div>
+				{/foreach}
+			</section>
+		</div>
+		<div class="pps_interval"></div>
+		{if $item.LatLng && $item.Address}
+			<div class="content-block map-block">
 				<div class="param mapData pps_hide" data-coord="{$item.LatLng}">{$item.Address}</div>
 				<div id="map" class="map"></div>
-			{/if}
+			</div>
 			<div class="pps_interval"></div>
-		</div>
-	{/foreach}
-</section>
-
-
-<h1>Напишите сообщение</h1>
-<div class="pps_interval"></div>
-<div class="elements ContactsForm">
-	<form action="javascript:formWepps.send('feedback','feedbackForm','/ext/Contacts/Request.php')" id="feedbackForm"
-		class="pps_form pps_flex_11">
-		<div class="form">
-			<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_padding">
-				<div class="pps_flex_11">
-					<span class="title">Ваше имя</span>
-					<label class="pps pps_input pps_require"><input type="text" name="name" placeholder="" />
-					</label>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Адрес электронной почты</span>
-					<label class="pps pps_input pps_require"> <input type="text" name="email" placeholder="" />
-					</label>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Телефон</span>
-					<label class="pps pps_input pps_require"> <input type="text" name="phone" placeholder="" />
-					</label>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Сообщение</span>
-					<label class="pps pps_area pps_require"> <textarea form="feedbackForm" name="comment"
-							placeholder=""></textarea>
-					</label>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Вложение</span>
-					<label class="pps pps_upload"> <input type="file" name="feedback-upload" /> <span>Прикрепить
-							файл</span>
-					</label>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Test Checkbox</span>
-					<div class="w_fields">
-						<label class="pps pps_checkbox">
-							<input type="checkbox"> <span>Опция 1</span>
-						</label>
-						<label class="pps pps_checkbox">
-							<input type="checkbox"> <span>Опция 2</span>
-						</label>
-					</div>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Test Radio</span>
-					<div class="w_fields">
-						<label class="pps pps_radio">
-							<input type="radio" name="radiotest"> <span>Опция 1</span>
-						</label>
-						<label class="pps pps_radio">
-							<input type="radio" name="radiotest"> <span>Опция 2</span>
-						</label>
-					</div>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Test Select</span>
-					<label class="pps pps_select">
-						<select>
-							<option>Выбор 1</option>
-							<option>Выбор 2</option>
-							<option>Выбор 3</option>
-						</select>
-					</label>
-				</div>
-				<div class="pps_flex_11">
-					<span class="title">Test Select</span>
-					<label class="pps pps_select">
-						<select multiple>
-							<option>Выбор 1</option>
-							<option>Выбор 2</option>
-							<option>Выбор 3</option>
-						</select>
-					</label>
-				</div>
-				<div class="pps_interval"></div>
-				<div class="pps_interval"></div>
-				<div class="pps_interval"></div>
-				<div class="pps_interval"></div>
-				<div class="pps_interval"></div>
-				<div class="pps_interval"></div>
-				<div class="pps_interval"></div>
-				<div class="pps_flex_11 pps_flex pps_flex_row">
-					<div class="pps_flex_23 pps_flex_11_view_small">
-						<label class="pps pps_checkbox"><input type="checkbox" name="approve" /> <span>Я согласен
-								на<br /><br /> обработку моих персональных данных</span></label>
-					</div>
-					<div class="pps_flex_13 pps_flex_11_view_small pps_right pps_center_view_small">
-						<label class="pps pps_button"> <input type="submit" value="Отправить" disabled="disabled" />
-						</label>
-					</div>
-
-					<div class="pps_flex_11 pps_padding">
-						<label class="pps pps_require pps_title">Обязательные поля</label>
-					</div>
-				</div>
+		{/if}
+		<div class="content-block">
+			<div class="pps_flex pps_flex_row pps_flex_center">
+				<form action="javascript:formWepps.send('feedback','feedback-form','/ext/Contacts/Request.php')"
+					id="feedback-form" class="pps_form pps_flex_12 pps_flex_11_view_medium">
+					<h2>Напишите сообщение</h2>
+					<fieldset>
+						<section>
+							<div class="title">Ваше имя</div>
+							<label class="pps pps_input pps_require"><input type="text" name="name"
+									placeholder="" /></label>
+						</section>
+						<section>
+							<div class="title">Адрес электронной почты</div>
+							<label class="pps pps_input pps_require"> <input type="text" name="email"
+									placeholder="" /></label>
+						</section>
+						<section>
+							<div class="title">Телефон</div>
+							<label class="pps pps_input pps_require"> <input type="text" name="phone" placeholder="" />
+							</label>
+						</section>
+					</fieldset>
+					<fieldset>
+						<section>
+							<div class="title">Сообщение</div>
+							<label class="pps pps_area pps_require"> <textarea name="comment" placeholder=""></textarea>
+							</label>
+						</section>
+						<section>
+							<div class="title">Вложение</div>
+							<label class="pps pps_upload"> <input type="file" name="feedback-upload" /> <span>Прикрепить
+									файл</span>
+							</label>
+							<div class="pps_upload_add">
+								{foreach name="o" item="i" key="k" from=$uploaded['feedback-upload']}
+									<div class="pps_upload_file" data-key="{$k}">{$i.name} <i
+											class="bi bi-x-circle-fill"></i></div>
+								{/foreach}
+							</div>
+						</section>
+					</fieldset>
+					<fieldset>
+						<section>
+							<div class="title">Test Checkbox</div>
+							<label class="pps pps_checkbox">
+								<input type="checkbox"> <span>Опция 1</span>
+							</label>
+							<label class="pps pps_checkbox">
+								<input type="checkbox"> <span>Опция 2</span>
+							</label>
+						</section>
+						<section>
+							<div class="title">Test Radio</div>
+							<label class="pps pps_radio">
+								<input type="radio" name="radiotest"> <span>Опция 1</span>
+							</label>
+							<label class="pps pps_radio">
+								<input type="radio" name="radiotest"> <span>Опция 2</span>
+							</label>
+						</section>
+						<section>
+							<div class="title">Test Select</div>
+							<label class="pps pps_select">
+								<select>
+									<option>Выбор 1</option>
+									<option>Выбор 2</option>
+									<option>Выбор 3</option>
+								</select>
+							</label>
+						</section>
+						<section>
+							<div class="title">Test Select multiple</div>
+							<label class="pps pps_select">
+								<select multiple>
+									<option>Выбор 1</option>
+									<option>Выбор 2</option>
+									<option>Выбор 3</option>
+								</select>
+							</label>
+						</section>
+					</fieldset>
+					<fieldset>
+						<section>
+							<label class="pps pps_checkbox"><input type="checkbox" name="approve" /> <span>Я согласен на
+									обработку
+									моих персональных данных</span></label>
+							<label class="pps pps_button">
+								<input type="submit" value="Отправить" disabled />
+							</label>
+						</section>
+					</fieldset>
+				</form>
 			</div>
 		</div>
-	</form>
+	</section>
 </div>
-<div class="pps_interval"></div>

@@ -1,4 +1,4 @@
-var readyContactsInit = function() {
+var contactsInit = function() {
 	ymaps.ready(function() {
 		let coord = $('.mapData').eq(0).data('coord');
 		let title = $('.mapData').eq(0).data('title');
@@ -8,4 +8,4 @@ var readyContactsInit = function() {
 		map.addMarker(coord,{title:title,descr:descr});
 	});
 }
-//$(window).load(readyContactsInit);
+$(document).ready(contactsInit);

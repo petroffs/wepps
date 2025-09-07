@@ -11,7 +11,7 @@ use WeppsAdmin\Admin\Admin;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-if (!isset($_SESSION)) {
+if (!session_id()) {
 	@session_start();
 }
 class RequestLists extends Request {
