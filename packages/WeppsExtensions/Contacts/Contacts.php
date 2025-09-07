@@ -40,6 +40,7 @@ class Contacts extends Extension {
 		$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.css");
 		$apikey = Connect::$projectServices['yandexmaps']['apikey'];
 		$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
+		$this->headers->js("/packages/vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.min.js");
 		$this->headers->css("/ext/Contacts/Contacts.{$this->rand}.css");
 		$this->headers->js("/ext/Contacts/Contacts.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));

@@ -15,7 +15,7 @@
 		"mpdf/mpdf": "*",
 		"fortawesome/font-awesome": "^4.7",
 		"components/masonry": "*",
-		"robinherbots/jquery.inputmask": "*",
+		"robinherbots/jquery.inputmask": "^5.0",
 		"dimsemenov/magnific-popup": "*",
 		"kenwheeler/slick": "*",
 		"phpoffice/phpspreadsheet": "*",

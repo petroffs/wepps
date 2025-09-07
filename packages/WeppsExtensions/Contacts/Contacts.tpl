@@ -44,7 +44,7 @@
 						</section>
 						<section>
 							<div class="title">Адрес электронной почты</div>
-							<label class="pps pps_input pps_require"> <input type="text" name="email"
+							<label class="pps pps_input pps_require"> <input type="email" name="email"
 									placeholder="" /></label>
 						</section>
 						<section>
@@ -76,38 +76,38 @@
 						<section>
 							<div class="title">Test Checkbox</div>
 							<label class="pps pps_checkbox">
-								<input type="checkbox"> <span>Опция 1</span>
+								<input type="checkbox" name="checkboxtest" value="opt1"> <span>Опция 1</span>
 							</label>
 							<label class="pps pps_checkbox">
-								<input type="checkbox"> <span>Опция 2</span>
+								<input type="checkbox" name="checkboxtest" value="opt2"> <span>Опция 2</span>
 							</label>
 						</section>
 						<section>
 							<div class="title">Test Radio</div>
 							<label class="pps pps_radio">
-								<input type="radio" name="radiotest"> <span>Опция 1</span>
+								<input type="radio" name="radiotest" value="opt1"> <span>Опция 1</span>
 							</label>
 							<label class="pps pps_radio">
-								<input type="radio" name="radiotest"> <span>Опция 2</span>
+								<input type="radio" name="radiotest" value="opt2"> <span>Опция 2</span>
 							</label>
 						</section>
 						<section>
 							<div class="title">Test Select</div>
 							<label class="pps pps_select">
-								<select>
-									<option>Выбор 1</option>
-									<option>Выбор 2</option>
-									<option>Выбор 3</option>
+								<select name="selecttext">
+									<option value="opt1">Выбор 1</option>
+									<option value="opt2">Выбор 2</option>
+									<option value="opt3">Выбор 3</option>
 								</select>
 							</label>
 						</section>
 						<section>
 							<div class="title">Test Select multiple</div>
 							<label class="pps pps_select">
-								<select multiple>
-									<option>Выбор 1</option>
-									<option>Выбор 2</option>
-									<option>Выбор 3</option>
+								<select multiple name="selectmultipletext">
+									<option value="opt1">Выбор 1</option>
+									<option value="opt2">Выбор 2</option>
+									<option value="opt3">Выбор 3</option>
 								</select>
 							</label>
 						</section>
