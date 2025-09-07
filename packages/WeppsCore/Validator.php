@@ -160,28 +160,34 @@ class Validator
 	/**
 	 * Индикация ошибок формы
 	 */
-	public static function setFormErrorsIndicate($errors, $form)
+	public static function setFormErrorsIndicate(array $errors = [], string $form): array
 	{
 		$str = "<script>\n";
-		foreach ($errors as $key => $value) {
-			if ($value != "") {
-				$str .= "
-				var elem = $('#{$form}').find('[name=\"{$key}\"]');
-                if (elem.length==0) {
-                    var elem = $('#{$form}').find('[name=\"{$key}[]\"]');
-                }
-				if (elem.length!=0) {
-					elem.closest('label').addClass('pps_error_parent');
-					var t = $('<div>{$value}</div>').addClass('pps_error_{$key}').addClass('pps_error');
-					elem.eq(0).before(t);
-					t.on('click',function(event) {
-						$(this).closest('label').removeClass('pps_error_parent');
-						$(this).remove();
-					});
-				}\n";
-			} else {
-				$str .= "$('.pps_error_{$key}').trigger('click');";
+		if (!empty($errors)) {
+			foreach ($errors as $key => $value) {
+				if ($value != "") {
+					$str .= "
+					var elem = $('#{$form}').find('[name=\"{$key}\"]');
+					if (elem.length==0) {
+						var elem = $('#{$form}').find('[name=\"{$key}[]\"]');
+					}
+					if (elem.length!=0) {
+						elem.closest('label').addClass('pps_error_parent');
+						var t = $('<div>{$value}</div>').addClass('pps_error_{$key}').addClass('pps_error');
+						elem.eq(0).before(t);
+						t.on('click',function(event) {
+							$(this).closest('label').removeClass('pps_error_parent');
+							$(this).remove();
+						});
+					}\n";
+				} else {
+					$str .= "$('.pps_error_{$key}').trigger('click');";
+				}
 			}
+			$str .= "
+			$([document.documentElement, document.body]).animate({
+				scrollTop: $('#{$form}').find('.pps_error_parent').eq(0).offset().top - 72
+			}, 1000);";
 		}
 		$str .= "
 				$('.pps_error_parent').children().on('focus',function() {

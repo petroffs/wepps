@@ -44,20 +44,16 @@ class RequestTemplate extends Request {
 						$files->setUploadSettings(1024 * 1024 * 1, 'image/'); // Изображение до 5 МБ
 						break;
 				}
-				$data = $files->upload($_FILES,$this->get['filesfield'],$this->get['filesform']);
-				echo $data['js'];
-				Connect::$instance->close();
+				$response = $files->upload($_FILES,$this->get['filesfield'],$this->get['filesform']);
+				echo $response['html'];
 				break;
 			case 'removeUploaded':
 				if (!session_id()) {
 					session_start();
 				}
-				if (empty($_SESSION['uploads'][$this->get['filesform']][$this->get['filesfield']][$this->get['key']])) {
-					exit;
-				}
-				unlink($_SESSION['uploads'][$this->get['filesform']][$this->get['filesfield']][$this->get['key']]['filedest']);
-				unset($_SESSION['uploads'][$this->get['filesform']][$this->get['filesfield']][$this->get['key']]);
-				echo "<script>$('#{$this->get['filesform']}').find('input[name=\"{$this->get['filesfield']}\"]').parent().siblings('.pps_upload_add').children('[data-key=\"{$this->get['key']}\"]').remove();</script>";
+				$files = new Files();
+				$response = $files->removeUploaded($this->get['filesform']??'',$this->get['filesfield']??'',$this->get['key']??'0');
+				echo $response['html'];
 				break;
 			default:
 				$this->tpl = "RequestCustom1.tpl";

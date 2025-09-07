@@ -94,7 +94,7 @@
 						<section>
 							<div class="title">Test Select</div>
 							<label class="pps pps_select">
-								<select name="selecttext">
+								<select name="selecttest">
 									<option value="opt1">Выбор 1</option>
 									<option value="opt2">Выбор 2</option>
 									<option value="opt3">Выбор 3</option>
@@ -104,7 +104,7 @@
 						<section>
 							<div class="title">Test Select multiple</div>
 							<label class="pps pps_select">
-								<select multiple name="selectmultipletext">
+								<select multiple name="selectmultipletest">
 									<option value="opt1">Выбор 1</option>
 									<option value="opt2">Выбор 2</option>
 									<option value="opt3">Выбор 3</option>

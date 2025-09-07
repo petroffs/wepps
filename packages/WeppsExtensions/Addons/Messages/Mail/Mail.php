@@ -110,10 +110,14 @@ class Mail {
 		file_put_contents($filename, $output);
 	}
 	private function getAttach() {
+		if (!session_id()) {
+			@session_start();
+		}
 		$msg = "";
 		if (count ( $this->attachment ) != 0) {
 			foreach ( $this->attachment as $value ) {
 				if (! is_file ( $value )) {
+					Utils::debug($value,1);
 					return '';
 				} else {
 					$f_name = $value;

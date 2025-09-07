@@ -7,6 +7,10 @@ use WeppsCore\TextTransforms;
 use WeppsCore\Utils;
 use WeppsCore\Validator;
 
+if (!session_id()) {
+	@session_start();
+}
+
 class Files
 {
 	private $uploadSettings = [];
@@ -71,17 +75,15 @@ class Files
 	 */
 	public function upload(array $files, string $field, string $form): array
 	{
-		if (!session_id()) {
-			@session_start();
-		}
-
 		$root = Connect::$projectDev['root'];
 		$errors = [];
-		$uploadedFiles = [];
 		// Проверяем, есть ли настройки валидации
 		if (empty($this->uploadSettings)) {
 			$errors[$field] = "Не настроены правила загрузки файлов";
-			return ['error' => $errors[$field]];
+			return [
+				'message' => $errors[$field],
+				'html' => ''
+			];
 		}
 		foreach ($files as $file) {
 			$valid = false;
@@ -98,97 +100,33 @@ class Files
 				$errors[] = "Файл '{$file['name']}' не соответствует требованиям";
 				continue;
 			}
-			// Формируем уникальное имя файла
-			$filepathinfo = pathinfo($file['name']);
-			$filename = strtolower(TextTransforms::translit($filepathinfo['filename'], 2));
-			$filedest = "{$root}/packages/WeppsExtensions/Template/Forms/uploads/{$filename}-" . time() . ".{$filepathinfo['extension']}";
-			// Сохраняем файл
-			if (move_uploaded_file($file['tmp_name'], $filedest)) {
-				$uploadedFiles[] = $file['name'];
-				// Обновляем сессию
+			if (is_file($file['tmp_name'])) {
 				if (!isset($_SESSION['uploads'][$form][$field])) {
 					$_SESSION['uploads'][$form][$field] = [];
 				}
-				$file['filedest'] = $filedest;
 				$_SESSION['uploads'][$form][$field][] = $file;
 			} else {
 				$errors[] = "Ошибка сохранения файла '{$file['name']}'";
 			}
 		}
-		
-		#$_SESSION['uploads'][$form][$field] = array_unique($_SESSION['uploads'][$form][$field]??[]);
 		if (!empty($errors)) {
 			$outer = Validator::setFormErrorsIndicate($errors, $form);
 			return [
-				'error' => implode(', ', $errors),
-				'js' => $outer['html']
+				'message' => implode(', ', $errors),
+				'html' => $outer['html']
 			];
 		}
-		#Utils::debug($_SESSION['uploads'][$form][$field]);
-		// Генерация JS-ответа
 		$js = "<script>
         $('.pps_upload_add').children().remove();\n";
 		foreach ($_SESSION['uploads'][$form][$field] as $key => $file) {
-			#$filename = addslashes(basename($filedest));
 			$js .= "$('input[name=\"{$field}\"]').parent().siblings('div.pps_upload_add').append($('<div class=\"pps_upload_file\" data-key=\"{$key}\">{$file['name']} <i class=\"bi bi-x-circle-fill\"></i></div>'));\n";
 		}
 		$js .= "$('label.{$field}').siblings('.pps_error').trigger('click');formsInit();</script>";
-		return ['success' => 'Файлы загружены', 'js' => $js];
+		return [
+			'message' => 'Файлы загружены',
+			'html' => $js];
 	}
 
-
-	/**
-	 * Загрузка файлов из формы, расчитано что за один раз грузится 1 файл,
-	 * в дальнешем проработать возможность мультизагрузки (или вызывать этот
-	 * метод необходимое кол-во раз при таком случае.
-	 * 
-	 * @param array $files Массив с загруженными файлами ($_FILES)
-	 * @param string $field Наименование html-элемента input[type="file"]
-	 * @param string $form Идентификатор формы
-	 * @return array
-	 */
-	public function upload2(array $files, string $field, string $form): array
-	{
-		if (!session_id()) {
-			@session_start();
-		}
-
-		$root = Connect::$projectDev['root'];
-		$errors = [];
-		/*
-		 * Не все изображения имеют эту метку, возможны ошибки
-		 * Переработать таким образом, чтобы была входная информация
-		 * о типе загруженного файла и в зависимости от этого делать
-		 * валидацию
-		 */
-		if (!strstr($files[0]['type'], "image/")) {
-			$errors[$field] = "Неверный тип файла";
-			$outer = Validator::setFormErrorsIndicate($errors, $form);
-			return ['error' => $errors[$field], 'js' => $outer['html']];
-		}
-		if ((int) $files[0]['size'] > 10000000) {
-			#1 мегабайт = 1 000 000 байт
-			$errors[$field] = "Слишком большой файл";
-			$outer = Validator::setFormErrorsIndicate($errors, $form);
-			return ['error' => $errors[$field], 'js' => $outer['html']];
-		}
-		$filepathinfo = pathinfo($files[0]['name']);
-		$filepathinfo['filename'] = strtolower(TextTransforms::translit($filepathinfo['filename'], 2));
-		$filedest = "{$root}/packages/WeppsExtensions/Addons/Forms/uploads/{$filepathinfo['filename']}-" . date("U") . ".{$filepathinfo['extension']}";
-		move_uploaded_file($files[0]['tmp_name'], $filedest);
-		if (!isset($_SESSION['uploads'][$form][$field])) {
-			$_SESSION['uploads'][$form][$field] = [];
-		}
-		array_push($_SESSION['uploads'][$form][$field], $filedest);
-		$_SESSION['uploads'][$form][$field] = array_unique($_SESSION['uploads'][$form][$field]);
-		$js = "	<script>
-		$('.fileadd').remove();
-		$('input[name=\"{$field}\"]').parent().append($('<p class=\"pps_fileadd\">Загружен файл &laquo;{$files[0]['name']}&raquo;</p>'));
-		$('label.{$field}').siblings('.pps_error').trigger('click');
-		</script>";
-		$data = ['success' => 'Files uploaded', 'js' => $js];
-		return $data;
-	}
 	/**
 	 * Устанавливает правила загрузки файлов (ограничения по размеру и MIME-типу).
 	 *
@@ -199,7 +137,7 @@ class Files
 	 * @param string $mime Разрешённый MIME-тип (например, "image/jpeg", "application/pdf")
 	 * @return bool Всегда возвращает true для поддержки цепочек вызовов
 	 */
-	public function setUploadSettings($size = 0, $mime = '')
+	public function setUploadSettings($size = 0, $mime = ''): bool
 	{
 		$this->uploadSettings[] = [
 			'size' => $size,
@@ -207,5 +145,34 @@ class Files
 		];
 		return true;
 	}
-
+	public function getUploaded(string $form,string $field): array
+	{
+		if (empty($_SESSION['uploads'][$form][$field])) {
+			return [];
+		}
+		$files = array_column($_SESSION['uploads'][$form][$field], 'tmp_name');
+		return $files;
+	}
+	public function removeUploadedAll(): bool
+	{
+		if (isset($_SESSION['uploads'])) {
+			unset($_SESSION['uploads']);
+		}
+		return true;
+	}
+	public function removeUploaded(string $form, string $field, string $index): array
+	{
+		if (empty($_SESSION['uploads'][$form][$field][$index])) {
+			return [
+				'message' => "Файл не найден",
+				'html' => ''
+			];
+		}
+		#unlink($_SESSION['uploads'][$this->get['filesform']][$this->get['filesfield']][$this->get['key']]['tmp_name']);
+		unset($_SESSION['uploads'][$form][$field][$index]);
+		return [
+			'message' => "Файл удален",
+			'html' => "<script>$('#{$form}').find('input[name=\"{$field}\"]').parent().siblings('.pps_upload_add').children('[data-key=\"{$index}\"]').remove();</script>"
+		];
+	}
 }
