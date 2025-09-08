@@ -60,6 +60,12 @@ var yandexMapsConstructor = function() {
 		clusterer.add(this.markers);
 	    this.map.geoObjects.add(clusterer);
 	};
+	this.destroy = function() {
+		if (this.map) {
+			this.map.destroy();
+			this.map = null;
+		}
+	}
 };
 /**
  * 	Пример вызова

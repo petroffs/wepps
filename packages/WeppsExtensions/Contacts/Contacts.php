@@ -27,15 +27,12 @@ class Contacts extends Extension {
 				if (isset($_SESSION['uploads']['feedback-form'])) {
 					$smarty->assign('uploaded', $_SESSION['uploads']['feedback-form']);
 				}
-				#unset($_SESSION['uploads']);
-				#feedback-upload
-				#Utils::debug($_SESSION['uploads']['feedback-form'],1);
 				break;
 			default:
 				Exception::error404();
 				break;
 		}
-		#Utils::debug($_SESSION['uploads'],21);
+		$smarty->assign('normalView',0);
 		$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.js");
 		$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.css");
 		$apikey = Connect::$projectServices['yandexmaps']['apikey'];

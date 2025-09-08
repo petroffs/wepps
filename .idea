@@ -21,3 +21,4 @@ smtp4dev - если платформа не работает
 	TCP    127.0.0.1:25000        0.0.0.0:0              LISTENING       10184
 	$ netstat -ano | findstr :25
 	$ taskkill -PID 28536 -F
+https://yandex.ru/dev/jsapi-v2-1/doc/ru/v2-1/examples/ - примеры яндекскарт

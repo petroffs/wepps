@@ -1,40 +1,46 @@
 <div class="page contacts">
 	<section>
-		<div class="content-block">
-			<a href="" class="pps_button pps_animate">Тест</a>
-			<section class="contacts-wrapper">
+		<div class="content-block contacts-header">
+			<h1>{$content.Name}</h1>
+			{if $content.Text1}
+				<div class="pps_interval_small"></div>
+				<div class="text">{$content.Text1}</div>
+			{/if}
+		</div>
+		<div class="content-block contacts-address">
+			<section class="contacts-offices">
 				{foreach name="out" item="item" from=$elements}
-					<div class="item">
-						<div class="title">{$item.Name}</div>
-						{if $item.Email}
-							<div class="param">{$item.Email}</div>
-						{/if}
-						{if $item.Phone}
-							<div class="param">{$item.Phone}</div>
-						{/if}
-						{if $item.Fax}
-							<div class="param">{$item.Fax}</div>
-						{/if}
-						{if $item.PhoneMob}
-							<div class="param">{$item.PhoneMob}</div>
-						{/if}
-						<div class="pps_interval"></div>
-					</div>
+					<section>
+						<h2>{$item.Name}</h2>
+						<div class="w_grid w_5col w_gap_medium">
+							<div class="w_3scol">
+								{if $item.Descr}
+									<div class="text">{$item.Descr}</div>
+								{/if}
+							</div>
+							<div class="w_2scol">
+								{if $item.Email}
+									<div class="text">{$item.Email}</div>
+								{/if}
+								{if $item.Phone}
+									<div class="text">{$item.Phone}</div>
+								{/if}
+								{if $item.LatLng}
+									<div class="text"><a href="" data-coord="{$item.LatLng}">Карта</a></div>
+								{/if}
+							</div>
+						</div>
+					</section>
 				{/foreach}
 			</section>
 		</div>
-		<div class="pps_interval"></div>
-		{if $item.LatLng && $item.Address}
-			<div class="content-block map-block">
-				<div class="param mapData pps_hide" data-coord="{$item.LatLng}">{$item.Address}</div>
-				<div id="map" class="map"></div>
-			</div>
-			<div class="pps_interval"></div>
-		{/if}
-		<div class="content-block">
+		<div class="contacts-map">
+			<div id="map" class="map"></div>
+		</div>
+		<div class="content-block contacts-form">
 			<div class="pps_flex pps_flex_row pps_flex_center">
 				<form action="javascript:formWepps.send('feedback','feedback-form','/ext/Contacts/Request.php')"
-					id="feedback-form" class="pps_form pps_flex_12 pps_flex_11_view_medium">
+					id="feedback-form" class="pps_form pps_flex_11 pps_flex_11_view_medium">
 					<h2>Напишите сообщение</h2>
 					<fieldset>
 						<section>
@@ -67,7 +73,8 @@
 							<div class="pps_upload_add">
 								{foreach name="o" item="i" key="k" from=$uploaded['feedback-upload']}
 									<div class="pps_upload_file" data-key="{$k}">{$i.name} <i
-											class="bi bi-x-circle-fill"></i></div>
+											class="bi bi-x-circle-fill"></i>
+									</div>
 								{/foreach}
 							</div>
 						</section>
