@@ -28,6 +28,16 @@ var select2Ajax = function (obj, fn) {
 	});
 	//$(id).select2("destroy").select2();
 };
+
+var select2Render = function() {
+ 	if ($(".pps_select select").hasClass("select2-hidden-accessible")) {
+		return;
+	}
+    $('.pps_select select').select2({
+        language: "ru",
+        delay: 500
+    });
+}
 var formsInit = function () {
 	$('label.pps.pps_upload').find('input[type="file"]').off('change').on('change', function (event) {
 		event.stopPropagation();
@@ -66,10 +76,7 @@ var formsInit = function () {
 	$('.pps.pps_area').find('textarea').off('input').on('input', function () {
 		autoResizeTextarea(this);
 	}).trigger('input');
-	$('.pps_select').find('select').off().select2({
-		language: "ru",
-		delay: 500
-	});
+	select2Render();
 	$('i.pps_field_empty').off('click').on('click', function () {
 		$(this).siblings('input,textarea').val('');
 	});

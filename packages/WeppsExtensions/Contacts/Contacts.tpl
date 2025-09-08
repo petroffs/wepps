@@ -76,10 +76,10 @@
 						<section>
 							<div class="title">Test Checkbox</div>
 							<label class="pps pps_checkbox">
-								<input type="checkbox" name="checkboxtest" value="opt1"> <span>Опция 1</span>
+								<input type="checkbox" name="checkboxtest[]" value="opt1"> <span>Опция 1</span>
 							</label>
 							<label class="pps pps_checkbox">
-								<input type="checkbox" name="checkboxtest" value="opt2"> <span>Опция 2</span>
+								<input type="checkbox" name="checkboxtest[]" value="opt2"> <span>Опция 2</span>
 							</label>
 						</section>
 						<section>
@@ -104,7 +104,7 @@
 						<section>
 							<div class="title">Test Select multiple</div>
 							<label class="pps pps_select">
-								<select multiple name="selectmultipletest">
+								<select multiple name="selectmultipletest[]">
 									<option value="opt1">Выбор 1</option>
 									<option value="opt2">Выбор 2</option>
 									<option value="opt3">Выбор 3</option>

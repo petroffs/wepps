@@ -12,7 +12,6 @@ wsl
 git
 	git config --global core.quotepath false
 cli
-	
 
 $json = json_encode($this->summary['items'],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
 UtilsWepps::debug($json,1);

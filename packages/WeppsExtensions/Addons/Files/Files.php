@@ -75,7 +75,6 @@ class Files
 	 */
 	public function upload(array $files, string $field, string $form): array
 	{
-		$root = Connect::$projectDev['root'];
 		$errors = [];
 		// Проверяем, есть ли настройки валидации
 		if (empty($this->uploadSettings)) {
@@ -104,6 +103,10 @@ class Files
 				if (!isset($_SESSION['uploads'][$form][$field])) {
 					$_SESSION['uploads'][$form][$field] = [];
 				}
+				$filepath = pathinfo($file['name']);
+				$filename = $filepath['filename'] . '_' . substr(Utils::guid(), 0, 8);
+				$file['dest_name'] = Connect::$projectDev['root']."/packages/WeppsExtensions/Template/Forms/uploads/{$filename}.{$filepath['extension']}";
+        		move_uploaded_file($file['tmp_name'], $file['dest_name']);
 				$_SESSION['uploads'][$form][$field][] = $file;
 			} else {
 				$errors[] = "Ошибка сохранения файла '{$file['name']}'";
@@ -150,7 +153,7 @@ class Files
 		if (empty($_SESSION['uploads'][$form][$field])) {
 			return [];
 		}
-		$files = array_column($_SESSION['uploads'][$form][$field], 'tmp_name');
+		$files = array_column($_SESSION['uploads'][$form][$field], 'dest_name');
 		return $files;
 	}
 	public function removeUploadedAll(): bool
@@ -160,15 +163,28 @@ class Files
 		}
 		return true;
 	}
-	public function removeUploaded(string $form, string $field, string $index): array
+	public function removeUploaded(string $form, string $field, string $index = ''): array
 	{
+		if ($index==='' && !empty($_SESSION['uploads'][$form][$field])) {
+			foreach ($_SESSION['uploads'][$form][$field] as $file) {
+				if (is_file($file['dest_name'])) {
+					unlink($file['dest_name']);
+				}
+			}
+			return [
+				'message' => "Файлы удалены",
+				'html' => ''
+			];
+		}
 		if (empty($_SESSION['uploads'][$form][$field][$index])) {
 			return [
 				'message' => "Файл не найден",
 				'html' => ''
 			];
 		}
-		#unlink($_SESSION['uploads'][$this->get['filesform']][$this->get['filesfield']][$this->get['key']]['tmp_name']);
+		if (is_file($_SESSION['uploads'][$form][$field][$index]['dest_name'])) {
+			unlink($_SESSION['uploads'][$form][$field][$index]['dest_name']);
+		}
 		unset($_SESSION['uploads'][$form][$field][$index]);
 		return [
 			'message' => "Файл удален",

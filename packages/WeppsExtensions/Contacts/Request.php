@@ -38,9 +38,6 @@ class RequestContacts extends Request
 				$this->assign('jscode', $outer['html']);
 				if ($outer['count'] == 0) {
 					$this->get['email'] = strtolower($this->get['email']);
-					/*
-					 * Отправка E-mail
-					 */
 					$subject = "Сообщение с сайта";
 					$message = "тема сообщения: $subject\n";
 					$message .= "дата: " . date("d.m.Y") . " время: " . date("H:i") . "\n\n";
@@ -50,7 +47,7 @@ class RequestContacts extends Request
 					$message .= "Тест:\n";
 					if (!empty($this->get['checkboxtest'])) {
 						if (is_array($this->get['checkboxtest'])) {
-							$message .= "Test Checkbox: ".implode(', ', $this->get['radiotest'])."\n";
+							$message .= "Test Checkbox: ".implode(', ', $this->get['checkboxtest'])."\n";
 						} else {
 							$message .= "Test Checkbox: {$this->get['checkboxtest']}\n";
 						}
@@ -83,18 +80,16 @@ class RequestContacts extends Request
 						'Priority' => 0,
 					];
 					Connect::$instance->insert("FormsData", $row);
-
 					$message = nl2br($message);
 					$mail = new Mail('html');
 					$files = new Files();
-					
 					if (is_array($filesAttach = $files->getUploaded($this->get['form'],'feedback-upload'))) {
 						$mail->setAttach($filesAttach);
 					}
 					$mail->mail(Connect::$projectInfo['email'], $subject, $message);
-					
+					$files->removeUploaded($this->get['form'], 'feedback-upload');
+					#Utils::debug('Тестирование удаление файлов после отправки почты',1);
 					$arr = Validator::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);
-					exit;
 					$this->assign('jscode', $arr['html']);
 				}
 				$this->tpl = "RequestContacts.tpl";
