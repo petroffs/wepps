@@ -4,6 +4,7 @@ namespace WeppsExtensions\Profile;
 use WeppsCore\Connect;
 use WeppsCore\Tasks;
 use WeppsCore\Navigator;
+use WeppsCore\Utils;
 use WeppsExtensions\Addons\Messages\Mail\Mail;
 
 class ProfileUtils
@@ -102,12 +103,27 @@ class ProfileUtils
 	public function processPasswordTask(array $request,Tasks $tasks) {
 		$jdata = json_decode($request['BRequest'],true);
 		$url = 'https://'.Connect::$projectDev['host']."/profile/password.html?token={$jdata['token']}";
-		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
+		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Поступил запрос на смену пароля!";
 		$text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
 		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
 		$mail = new Mail('html');
 		$outputMessage = "email fail";
 		if ($mail->mail($jdata['email'],"Восстановление доступа",$text)) {
+			$outputMessage = "email ok";
+		}
+		$response = [
+			'message' => $outputMessage
+		];
+		return $tasks->update($request['Id'],$response,200);
+	}
+	public function processPasswordConfirmTask(array $request,Tasks $tasks) {
+		$jdata = json_decode($request['BRequest'],true);
+		$url = 'https://'.Connect::$projectDev['host']."/profile/";
+		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Ваш пароль в Личном кабинете изменен!";
+		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Перейти в Личный кабинет</a></center>";
+		$mail = new Mail('html');
+		$outputMessage = "email fail";
+		if ($mail->mail($jdata['email'],"Пароль изменен",$text)) {
 			$outputMessage = "email ok";
 		}
 		$response = [

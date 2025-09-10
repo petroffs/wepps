@@ -152,17 +152,19 @@ class RequestProfile extends Request {
 		}
 		$password = password_hash($this->get['password'], PASSWORD_BCRYPT);
 		Connect::$instance->query("update s_Users set Password=? where Id=?", [$password, $token['payload']['id']]);
+		$user = Connect::$instance->fetch("select * from s_Users where Id=?", [$token['payload']['id']])[0];
 		$tasks = new Tasks();
-		return true;
-		Utils::debug($token,1);
-
-		// $url = 'https://'.Connect::$projectDev['host']."/profile/password.html?token={$token}";
-		// $text = "<b>Добрый день, {$user['NameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
-		// $text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
-		// $text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
-		// $mail = new Mail('html');
-		// $mail->mail($user['Email'],"Восстановление доступа",$text);
-		#Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
+		$jdata = [
+			'id' => $token['payload']['id'],
+			'nameFirst' => $user['NameFirst'],
+			'email' => $user['Email'],
+		];
+		$tasks->add('password-confirm',$jdata,date('Y-m-d H:i:s'),@$_SERVER['REMOTE_ADDR']);
+		// $user = new Users([
+		// 		'login' => $user['Login'],
+		// 		'password' => $this->get['password']
+		// ]);
+		// $user->signIn();
 		return true;
 	}
 }

@@ -39,6 +39,9 @@ class BotSystem extends Bot {
 				case 'password':
 					$profileUtils->processPasswordTask($value,$tasks);
 					break;
+				case 'password-confirm':
+					$profileUtils->processPasswordConfirmTask($value,$tasks);
+					break;
 				default:
 					$tasks->update($value['Id'],['message'=>'task fail'],404);
 					break;
