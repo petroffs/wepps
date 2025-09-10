@@ -28,6 +28,7 @@ div.pps_error {
 	background: var(--color-attention);
 	padding-left: var(--step2);
 	padding-right: var(--step6);
+	max-width: calc(100% - var(--step4));
 	min-height: calc(var(--step) * 6);
 	border-radius: var(--step2);
 	cursor: pointer;

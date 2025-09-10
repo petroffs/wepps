@@ -2,9 +2,8 @@
 namespace WeppsExtensions\Addons\Bot;
 
 use WeppsCore\Connect;
-use WeppsCore\Logs;
+use WeppsCore\Tasks;
 use WeppsCore\Memcached;
-use WeppsCore\Utils;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Payments\Yookassa\Yookassa;
 use WeppsExtensions\Profile\ProfileUtils;
@@ -22,31 +21,31 @@ class BotSystem extends Bot {
 		}
 		$ids = array_column($res,'Id');
 		new Memcached('no');
-		$logs = new Logs();
+		$tasks = new Tasks();
 		$cartUtils = new CartUtils();
 		$yookassa = new Yookassa([],$cartUtils);
 		$profileUtils = new ProfileUtils([]);
 		foreach ($res as $value) {
 			switch($value['Name']) {
 				case 'order-new':
-					$cartUtils->processLog($value, $logs);
+					$cartUtils->processTask($value, $tasks);
 					break;
 				case 'order-payment':
-					$cartUtils->processPaymentLog($value, $logs);
+					$cartUtils->processPaymentTask($value, $tasks);
 					break;
 				case 'yookassa':
-					$yookassa->processLog($value,$logs);
+					$yookassa->processTask($value,$tasks);
 					break;
 				case 'password':
-					$profileUtils->processPasswordLog($value,$logs);
+					$profileUtils->processPasswordTask($value,$tasks);
 					break;
 				default:
-					$logs->update($value['Id'],['message'=>'task fail'],404);
+					$tasks->update($value['Id'],['message'=>'task fail'],404);
 					break;
 			}
 		}
 		/*
-		 * Реализовано в $logs->update
+		 * Реализовано в $tasks->update
 		 */
 		#$in = Connect::$instance->in($ids);
 		#$sql = "update s_Tasks set InProgress=1,IsProcessed=1 where Id in ($in)";

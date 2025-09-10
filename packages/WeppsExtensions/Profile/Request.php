@@ -2,7 +2,7 @@
 require_once '../../../configloader.php';
 
 use WeppsCore\Connect;
-use WeppsCore\Logs;
+use WeppsCore\Tasks;
 use WeppsCore\Request;
 use WeppsCore\Exception;
 use WeppsCore\TemplateHeaders;
@@ -34,7 +34,8 @@ class RequestProfile extends Request {
 				$users->removeAuth();
 				$js = "
 						<script>
-						location.reload();
+						//location.reload();
+						location.href='/profile/';
 						</script>
 					";
 				echo $js;
@@ -114,7 +115,7 @@ class RequestProfile extends Request {
 			'typ' => 'pass',
 			'id' => $user['Id']
 		], $lifetime);
-		$logs = new Logs();
+		$tasks = new Tasks();
 		$payload = $jwt->token_decode($token);
 		$jdata = [
 			'token' => $token,
@@ -122,31 +123,39 @@ class RequestProfile extends Request {
 			'email' => $user['Email'],
 			'exp' => $payload['payload']['exp'],
 		];
-		$logs->add('password',$jdata,date('Y-m-d H:i:s'),@$_SERVER['REMOTE_ADDR']);
+		$tasks->add('password',$jdata,date('Y-m-d H:i:s'),@$_SERVER['REMOTE_ADDR']);
 		return true;
 	}
 	private function confirmPassword() {
 		Utils::cookies('wepps_token','');
-		$sql = "select * from s_Users where Login=? and DisplayOff=0";
-		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
+		$this->get['password'] = trim($this->get['password']);
+		$this->get['password2'] = trim($this->get['password2']);
 		$this->errors = [];
-		if (empty($user = $res[0])) {
-			$this->errors['login'] = 'Неверный логин';
+		if (empty($this->get['token'])) {
+			$this->errors['password'] = 'Неверный токен';
+		} else {
+			$jwt = new Jwt();
+			$token = $jwt->token_decode($this->get['token']);
+			if ($token['status'] !== 200 || $token['payload']['typ']!='pass') {
+				$this->errors['password'] = $token['message'];
+			} else {
+				if ($this->get['password']!=$this->get['password2']) {
+					$this->errors['password'] = 'Пароли не совпадают';
+				}
+				if (strlen($this->get['password'])<6) {
+					$this->errors['password'] = 'Пароль должен быть не менее 6 символов';
+				}
+			}
 		}
-		
-		/*
-		 * Добавить проверку на рекапчу
-		 */
-
 		if (!empty($this->errors)) {
 			return false;
 		}
-		$lifetime = 3600 * 24;
-		$jwt = new Jwt();
-		$token = $jwt->token_encode([
-			'typ' => 'pass',
-			'id' => $user['Id']
-		], $lifetime);
+		$password = password_hash($this->get['password'], PASSWORD_BCRYPT);
+		Connect::$instance->query("update s_Users set Password=? where Id=?", [$password, $token['payload']['id']]);
+		$tasks = new Tasks();
+		return true;
+		Utils::debug($token,1);
+
 		// $url = 'https://'.Connect::$projectDev['host']."/profile/password.html?token={$token}";
 		// $text = "<b>Добрый день, {$user['NameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
 		// $text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";

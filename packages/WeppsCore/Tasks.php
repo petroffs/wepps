@@ -10,7 +10,7 @@ namespace WeppsCore;
  * Использует паттерн подготовки SQL-запросов через Connect для обеспечения безопасности и гибкости.
  * 
  */
-class Logs {
+class Tasks {
 	public function __construct() {
 
 	}
@@ -42,7 +42,7 @@ class Logs {
 			$row['Url'] = @$_SERVER['REQUEST_URI'];
 		}
 		$prepare = Connect::$instance->prepare($row);
-		$insert = Connect::$db->prepare("insert into s_Tasks {$prepare['insert']}");
+		$insert = Connect::$db->prepare("INSERT into s_Tasks {$prepare['insert']}");
 		$insert->execute($row);
 	}
 	public function update(int $id,array $response,int $status=200) {
@@ -53,7 +53,7 @@ class Logs {
 			'SResponse' => $status,
 		];
 		$prepare = Connect::$instance->prepare($row);
-		$sql = "update s_Tasks set {$prepare['update']} where Id = :Id";
+		$sql = "UPDATE s_Tasks set {$prepare['update']} where Id = :Id";
 		Connect::$instance->query($sql,array_merge($prepare['row'],['Id'=>$id]));
 		return [
 			'id' => $id,

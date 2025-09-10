@@ -3,7 +3,7 @@ namespace WeppsExtensions\Cart;
 
 use WeppsCore\Data;
 use WeppsCore\Connect;
-use WeppsCore\Logs;
+use WeppsCore\Tasks;
 use WeppsCore\Memcached;
 use WeppsCore\TemplateHeaders;
 use WeppsCore\Utils;
@@ -543,8 +543,8 @@ class CartUtils
 				'email' => true,
 				'telegram' => true,
 			];
-			$logs = new Logs();
-			$logs->add('order-new',$jdata,$row['ODate'],$row['UserIP']);
+			$tasks = new Tasks();
+			$tasks->add('order-new',$jdata,$row['ODate'],$row['UserIP']);
 			$this->removeCart();
 			return [
 				'id' => $id,
@@ -642,14 +642,14 @@ class CartUtils
 		$order = @$obj->fetch("t.Alias = ?")[0];
 		return $order;
 	}
-	public function processLog(array $request,Logs $logs) {
+	public function processTask(array $request,Tasks $tasks) {
 		$jdata = json_decode($request['BRequest'],true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
 			$response = [
 				'message' => 'no order'
 			];
-			return $logs->update($request['Id'],$response,400);
+			return $tasks->update($request['Id'],$response,400);
 		}
 		$mail = new Mail('html');
 		$subject = 'Новый заказ';
@@ -671,16 +671,16 @@ class CartUtils
 		$response = [
 			'message' => $outputMessage
 		];
-		return $logs->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'],$response,200);
 	}
-	public function processPaymentLog(array $request,Logs $logs) {
+	public function processPaymentTask(array $request,Tasks $tasks) {
 		$jdata = json_decode($request['BRequest'],true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
 			$response = [
 				'message' => 'no order'
 			];
-			return $logs->update($request['Id'],$response,400);
+			return $tasks->update($request['Id'],$response,400);
 		}
 		$mail = new Mail('html');
 		$outputMessage = "";
@@ -713,6 +713,6 @@ class CartUtils
 		$response = [
 			'message' => $outputMessage
 		];
-		return $logs->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'],$response,200);
 	}
 }

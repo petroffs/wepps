@@ -33,21 +33,10 @@ class RequestAdmin extends Request {
 				$users->removeAuth();
 				$js = "
 						<script>
-						location.href='/profile/';
-						</script>
-					";
-				echo $js;
-				break;
-			case "logoff":
-				if (isset(Connect::$projectData['user']['Id'])) {
-					Utils::debug('remove auth');
-					$js = "
-						<script>
 						location.reload()
 						</script>
 					";
-					echo $js;
-				}
+				echo $js;
 				break;
 			case "hook":
 				if (empty(Connect::$projectServices['wepps']['git']) || Connect::$projectServices['wepps']['git'] != $_SERVER['HTTP_X_GITLAB_TOKEN']) {

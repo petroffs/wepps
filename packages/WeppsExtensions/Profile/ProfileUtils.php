@@ -2,12 +2,9 @@
 namespace WeppsExtensions\Profile;
 
 use WeppsCore\Connect;
-use WeppsCore\Logs;
-use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsCore\Tasks;
 use WeppsCore\Navigator;
 use WeppsExtensions\Addons\Messages\Mail\Mail;
-use WeppsExtensions\Addons\Messages\Telegram\Telegram;
-use WeppsExtensions\Products\Products;
 
 class ProfileUtils
 {
@@ -102,7 +99,7 @@ class ProfileUtils
 	{
 
 	}
-	public function processPasswordLog(array $request,Logs $logs) {
+	public function processPasswordTask(array $request,Tasks $tasks) {
 		$jdata = json_decode($request['BRequest'],true);
 		$url = 'https://'.Connect::$projectDev['host']."/profile/password.html?token={$jdata['token']}";
 		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Поступил запрос на смену пароля в Личном Кабинете!";
@@ -116,6 +113,6 @@ class ProfileUtils
 		$response = [
 			'message' => $outputMessage
 		];
-		return $logs->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'],$response,200);
 	}
 }

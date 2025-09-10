@@ -1,4 +1,4 @@
-<div class="pps_flex pps_flex_row pps_flex_center">
+<div class="pps_flex pps_flex_row pps_flex_start">
     <form action="javascript:formWepps.send('password-confirm','form-password-confirm','/ext/Profile/Request.php')" id="form-password-confirm"
         class="pps_form pps_flex_12 pps_flex_11_view_medium">
         <input type="hidden" name="token" value="{$get.token}"/>

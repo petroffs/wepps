@@ -4,7 +4,7 @@ namespace WeppsExtensions\Cart\Payments\Yookassa;
 use WeppsCore\Connect;
 use WeppsCore\Smarty;
 use WeppsCore\Exception;
-use WeppsCore\Logs;
+use WeppsCore\Tasks;
 use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Cart\CartTemplates;
@@ -235,17 +235,17 @@ class Yookassa extends Payments
 		if (empty($id = $jdata['object']['id'])) {
 			Exception::error(400);
 		}
-		$logs = new Logs();
-		$logs->add('yookassa',$jdata,'','','post');
+		$tasks = new Tasks();
+		$tasks->add('yookassa',$jdata,'','','post');
 		Exception::error(200);
 	}
-	public function processLog(array $request,Logs $logs) {
+	public function processTask(array $request,Tasks $tasks) {
 		$jdata = json_decode($request['BRequest'],true);
 		if (empty($id = $jdata['object']['id'])) {
 			$response = [
 				'message' => 'no object'
 			];
-			return $logs->update((int)$request['Id'],$response,400);
+			return $tasks->update((int)$request['Id'],$response,400);
 		}
 		$sql = "select Id from Payments where MerchantId=?";
 		$res = Connect::$instance->fetch($sql,[$id]);
@@ -253,7 +253,7 @@ class Yookassa extends Payments
 			$response = [
 				'message' => 'no payment'
 			];
-			return $logs->update((int)$request['Id'],$response,400);
+			return $tasks->update((int)$request['Id'],$response,400);
 		}
 		$row = [
 			'IsProcessed' => 1,
@@ -283,7 +283,7 @@ class Yookassa extends Payments
 				'email' => true,
 				'telegram' => true
 			];
-			$logs->add('order-payment', $responsePayment,'','','');
+			$tasks->add('order-payment', $responsePayment,'','','');
 		}
 		$prepare = Connect::$instance->prepare($row,[
 			'MerchantResponseDate' => [
@@ -294,7 +294,7 @@ class Yookassa extends Payments
 		$sql = "update Payments set {$prepare['update']} where Id=:Id";
 		$arr = array_merge($prepare['row'],['Id'=>$payment['Id']]);
 		Connect::$instance->query($sql,$arr);
-		return $logs->update((int)$request['Id'],$response,$status);
+		return $tasks->update((int)$request['Id'],$response,$status);
 	}
 	private function getStatuses() {
 		return [
