@@ -10,7 +10,7 @@ class RestCli extends Rest {
 		parent::__construct($settings);
 	}
 	public function removeLogLocal() {
-		$sql = "truncate s_LocalServicesLog";
+		$sql = "truncate s_Tasks";
 		Connect::$instance->query($sql);
 		$directoryPath = __DIR__."/files/";
 		$directoryScan = scandir($directoryPath);

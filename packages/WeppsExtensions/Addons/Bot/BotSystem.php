@@ -15,7 +15,7 @@ class BotSystem extends Bot {
 		parent::__construct();
 	}
 	public function tasks() {
-		$sql = "select * from s_LocalServicesLog where InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 50";
+		$sql = "select * from s_Tasks where InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 50";
 		$res = Connect::$instance->fetch($sql);
 		if (empty($res) || $res[0]['InProgress']==1) {
 			return;
@@ -49,7 +49,7 @@ class BotSystem extends Bot {
 		 * Реализовано в $logs->update
 		 */
 		#$in = Connect::$instance->in($ids);
-		#$sql = "update s_LocalServicesLog set InProgress=1,IsProcessed=1 where Id in ($in)";
+		#$sql = "update s_Tasks set InProgress=1,IsProcessed=1 where Id in ($in)";
 		#Connect::$instance->query($sql,$ids);
 	}
 }

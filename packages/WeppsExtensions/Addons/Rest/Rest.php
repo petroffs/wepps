@@ -170,7 +170,7 @@ class Rest
 			'IP' => (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : 'localhost',
 		);
 		$prepare = Connect::$instance->prepare($row);
-		$sql = "insert ignore into s_LocalServicesLog {$prepare['insert']}";
+		$sql = "insert ignore into s_Tasks {$prepare['insert']}";
 		Connect::$instance->query($sql, $prepare['row']);
 
 
@@ -200,7 +200,7 @@ class Rest
 			'BResponse' => $this->response,
 		);
 		$prepare = Connect::$instance->prepare($row);
-		$sql = "insert ignore into s_RemoteServicesLog {$prepare['insert']}";
+		$sql = "insert ignore into s_Logs {$prepare['insert']}";
 		Connect::$instance->query($sql, $prepare['row']);
 		$out = 1;
 		/*
@@ -214,7 +214,7 @@ class Rest
 	protected function getLogRemote()
 	{
 		$url = $this->protocol . $this->host . $_SERVER['REQUEST_URI'];
-		$sql = "select * from s_RemoteServicesLog where Url = '{$url}' and BRequest= '{$this->request}' order by Id desc limit 0,1";
+		$sql = "select * from s_Logs where Url = '{$url}' and BRequest= '{$this->request}' order by Id desc limit 0,1";
 		$res = Connect::$instance->fetch($sql);
 		if (!empty($res[0]['BResponse'])) {
 			$this->type = $res[0]['FCategory'];

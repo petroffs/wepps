@@ -42,7 +42,7 @@ class Logs {
 			$row['Url'] = @$_SERVER['REQUEST_URI'];
 		}
 		$prepare = Connect::$instance->prepare($row);
-		$insert = Connect::$db->prepare("insert into s_LocalServicesLog {$prepare['insert']}");
+		$insert = Connect::$db->prepare("insert into s_Tasks {$prepare['insert']}");
 		$insert->execute($row);
 	}
 	public function update(int $id,array $response,int $status=200) {
@@ -53,7 +53,7 @@ class Logs {
 			'SResponse' => $status,
 		];
 		$prepare = Connect::$instance->prepare($row);
-		$sql = "update s_LocalServicesLog set {$prepare['update']} where Id = :Id";
+		$sql = "update s_Tasks set {$prepare['update']} where Id = :Id";
 		Connect::$instance->query($sql,array_merge($prepare['row'],['Id'=>$id]));
 		return [
 			'id' => $id,

@@ -6,7 +6,7 @@
 			<label class="pps pps_button"><input type="submit" value="Выполнить задачи (tasks)"/></label>
 		</div>
 		<div class="pps_flex_12 pps_flex_11_view_medium">
-			Выполнить <a href="/_wepps/lists/s_LocalServicesLog/">задачи (log-tasks)</a>
+			Выполнить <a href="/_wepps/lists/s_Tasks/">задачи (log-tasks)</a>
 		</div>
 	</div>
 </form>
