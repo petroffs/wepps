@@ -4,6 +4,8 @@ remote
 	sudo a2enmod rewrite && sudo service apache2 restart
 	mysql --defaults-extra-file=/var/www/config.cnf wepps_platformdb < /var/www/wepps.dev/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.sql
 local
+	mysqldump --defaults-extra-file=/d/var/home/config.cnf -K --default-character-set=utf8mb4 --add-drop-table --no-data wepps_platform_structure > /d/var/home/wepps.platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
+	mysqldump --defaults-extra-file=/d/var/home/config.cnf -K --default-character-set=utf8mb4 --add-drop-table wepps_platformdb > /d/var/home/wepps.platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql
 	mysql --defaults-extra-file=/d/var/home/config.cnf wepps_platformdb < /d/var/home/wepps.platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/platform.sql
 	php8 /d/var/home/wepps.platform/packages/WeppsExtensions/Addons/Bot/Request.php tasks
 wsl	
