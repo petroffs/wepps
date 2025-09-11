@@ -27,7 +27,7 @@ class Profile extends Extension {
 		$this->headers->css ("/ext/Profile/Profile.{$this->rand}.css");
 
 		$smarty = Smarty::getSmarty();
-		$smarty->assign ('normalView',0);
+		#$smarty->assign ('normalView',0);
 		$smarty->assign ('pathItem',Navigator::$pathItem);
 		$smarty->assign ('get',$this->get);
 		$smarty->assign('profileNav',$profileNav);

@@ -7,6 +7,11 @@ form.pps_form fieldset {
 }
 form.pps_form fieldset>section {
 	padding: var(--step2) var(--step4);
+	max-width: 100%;
+}
+form.pps_form fieldset>section>* {
+	max-width: 100%;
+	overflow: hidden;
 }
 form.pps_form fieldset>section div.title {
 	font-weight: 600;
@@ -35,7 +40,6 @@ div.pps_error {
 	position: absolute;
 	z-index: 10;
 	right: var(--step);
-	top: var(--step);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

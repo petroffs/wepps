@@ -194,6 +194,51 @@ body section.sidebar div.nav ul>li.active>a {
 	background: var(--color-95);
 }
 
+body section.subnav div.nav {
+	background: var(--color-100);
+	border-radius: var(--step2);
+	margin-bottom: var(--step4);
+	overflow: hidden;
+}
+
+body section.subnav div.nav ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	justify-content: center;
+	align-items: stretch;
+
+}
+
+body section.subnav div.nav ul>li>a {
+	text-decoration: none;
+	color: var(--color-02);
+	padding: var(--step2);
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+body section.subnav div.nav ul>li:hover>a {
+	background: var(--color-50);
+}
+
+body section.subnav div.nav ul>li.active>a {
+	font-weight: 600;
+	background: var(--color-95);
+}
+
+
+
+
+
+
+
+
+
+
+
 body div.content-block {
 	background: var(--color-100);
 	padding: var(--step2);
@@ -238,7 +283,6 @@ body .bi.bi-vk::before {
 }
 
 @media screen and (max-width: 1440px) {
-
 	div.page div.page2,
 	div.page>section {
 		padding: 0 var(--step4);
