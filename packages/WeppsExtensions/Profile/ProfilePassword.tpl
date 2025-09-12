@@ -9,7 +9,7 @@
                     <input type="email" name="login" placeholder="" />
                 </label>
             </section>
-            <section class="pps_relative">
+            <section class="recaptcha">
                 {$recaptcha}
             </section>
         </fieldset>

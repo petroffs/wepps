@@ -221,7 +221,7 @@ body section.subnav div.nav ul>li>a {
 }
 
 body section.subnav div.nav ul>li:hover>a {
-	background: var(--color-50);
+	background: var(--color-95);
 }
 
 body section.subnav div.nav ul>li.active>a {

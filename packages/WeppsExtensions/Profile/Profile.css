@@ -6,10 +6,15 @@ div.page.profile {
 div.profile-nav-mobile {
     margin-bottom: var(--step4);
 }
+
 div.profile-nav {
     margin-bottom: var(--step4);
 }
 
 div#pps-option-nav {
     cursor: pointer;
+}
+
+@media screen and (max-width: 480px) {
+    
 }
