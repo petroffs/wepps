@@ -69,7 +69,7 @@ class RequestProducts extends Request {
 				$this->fetch('productsTpl','ProductsItems.tpl');
 				$js = $filters->getFiltersCodeJS($filtersActive,$products['count']);
 				$js .= $filters->setBrowserStateCodeJS($this->navigator->content['Name']);
-				$js .= "cartInit();productsInit();\n";
+				$js .= "cart.init();productsInit();\n";
 				$this->assign('js', $js);
 				break;
 			default:

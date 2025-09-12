@@ -463,7 +463,7 @@ class CartUtils
 		if (empty($cartSummary['delivery']['extension'])) {
 			return [];
 		}
-		$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}";
+		$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}\\{$cartSummary['delivery']['extension']}";
 		/**
 		 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
 		 */

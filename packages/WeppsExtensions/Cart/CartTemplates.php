@@ -70,7 +70,7 @@ class CartTemplates
 		if (empty($order)) {
 			Exception::error404();
 		}
-		$className = "\WeppsExtensions\\Cart\\Payments\\{$order['PaymentsExt']}";
+		$className = "\WeppsExtensions\\Cart\\Payments\\{$order['PaymentsExt']}\\{$order['PaymentsExt']}";
 		/**
 		 * @var \WeppsExtensions\Cart\Payments\Payments $class
 		 */

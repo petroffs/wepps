@@ -51,7 +51,7 @@ class Filters {
 			}
 		}
 		$js .= "
-			filters.init();
+			filtersWepps.init();
 			var options = $('.options-count').eq(0);
 			options.attr('data-last','{$last}');
 			options.attr('data-check','{$checked}');

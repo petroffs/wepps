@@ -1,31 +1,43 @@
 body div.content-block.delivery-address {
     overflow: inherit;
 }
+
 body div.content-block.delivery-address.active {
     background-color: var(--color-button);
 }
+
 body div.content-block.delivery-address .title {
     margin-bottom: var(--step);
 }
+
 body div.content-block.delivery-address.active .title {
     color: var(--color-100);
 }
-label.pps.pps_button.w_hide {
-    display: none;
-}
-label.pps.label-dadata {
-    display: block;
-}
+
 body div.content-block.delivery-address.active label.pps.pps_button>input {
     border-color: var(--color-100);
 }
+
+label.pps.pps_button.w_hide {
+    display: none;
+}
+
+label.pps.label-dadata {
+    display: block;
+}
+
+label.pps.label-dadata div.pps_error {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 label.pps.label-dadata input.suggestions-input.active {
     border-radius: var(--step2) var(--step2) 0 0;
     border-bottom-color: transparent;
     border-bottom: none;
 }
 
-label.pps.label-dadata input.suggestions-input + .suggestions-wrapper>.suggestions-suggestions {
+label.pps.label-dadata input.suggestions-input+.suggestions-wrapper>.suggestions-suggestions {
     border-color: var(--color-button);
     border-width: var(--stepHalf);
     border-top-width: 1px;

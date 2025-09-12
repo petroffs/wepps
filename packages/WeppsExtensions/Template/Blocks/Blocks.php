@@ -36,7 +36,7 @@ class Blocks extends Extension {
 					if (empty($value['Template'])) {
 						$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Template/Blocks/Blocks.tpl');
 					}  else {
-						$extensionClass = "\WeppsExtensions\\Template\\Blocks\\{$value['Template']}\\{$value['Template']}Wepps";
+						$extensionClass = "\WeppsExtensions\\Template\\Blocks\\{$value['Template']}\\{$value['Template']}";
 						$extension = new $extensionClass($this->navigator,$this->headers);
 						$this->tpl .= $extension->tpl;
 					}

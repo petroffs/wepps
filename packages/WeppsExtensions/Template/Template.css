@@ -206,9 +206,9 @@ body section.subnav div.nav ul {
 	padding: 0;
 	margin: 0;
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: center;
 	align-items: stretch;
-
 }
 
 body section.subnav div.nav ul>li>a {
@@ -280,7 +280,6 @@ body .bi.bi-vk::before {
 }
 
 @media screen and (max-width: 810px) {}
-
 
 @media screen and (max-width: 480px) {
 	footer {
