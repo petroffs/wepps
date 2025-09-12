@@ -1,5 +1,5 @@
 <div class="pps_flex pps_flex_row pps_flex_center">
-    <form action="javascript:formWepps.send('sign-in','form-sign-in','/ext/Profile/Request.php')" id="form-sign-in"
+    <form action="javascript:formWepps.send('sign-in','sign-in-form','/ext/Profile/Request.php')" id="sign-in-form"
         class="pps_form pps_flex_12 pps_flex_11_view_medium">
         <h2>Вход</h2>
         <fieldset>

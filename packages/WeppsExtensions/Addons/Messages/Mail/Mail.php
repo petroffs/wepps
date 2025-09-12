@@ -127,8 +127,8 @@ class Mail
 		}
 		foreach ($this->attachment as $value) {
 			if (!is_file($value)) {
-				Utils::debug($value, 1);
-				return '';
+				//Utils::debug($value, 1);
+				//return '';
 			} else {
 				$f_name = $value;
 				$handle = fopen($f_name, 'rb');

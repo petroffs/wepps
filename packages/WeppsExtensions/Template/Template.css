@@ -229,21 +229,10 @@ body section.subnav div.nav ul>li.active>a {
 	background: var(--color-95);
 }
 
-
-
-
-
-
-
-
-
-
-
 body div.content-block {
 	background: var(--color-100);
 	padding: var(--step2);
 	border-radius: var(--step2);
-	overflow: hidden;
 }
 
 body div.content-block.main {
@@ -283,6 +272,7 @@ body .bi.bi-vk::before {
 }
 
 @media screen and (max-width: 1440px) {
+
 	div.page div.page2,
 	div.page>section {
 		padding: 0 var(--step4);

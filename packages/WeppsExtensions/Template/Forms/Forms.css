@@ -9,10 +9,6 @@ form.pps_form fieldset>section {
 	padding: var(--step2) var(--step4);
 	max-width: 100%;
 }
-form.pps_form fieldset>section>* {
-	max-width: 100%;
-	overflow: hidden;
-}
 form.pps_form fieldset>section div.title {
 	font-weight: 600;
 	margin-bottom: var(--step);

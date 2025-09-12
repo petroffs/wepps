@@ -33,6 +33,7 @@ class Contacts extends Extension {
 				break;
 		}
 		$smarty->assign('normalView',0);
+		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.js");
 		$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.css");
 		$apikey = Connect::$projectServices['yandexmaps']['apikey'];
@@ -40,7 +41,6 @@ class Contacts extends Extension {
 		$this->headers->js("/packages/vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.min.js");
 		$this->headers->css("/ext/Contacts/Contacts.{$this->rand}.css");
 		$this->headers->js("/ext/Contacts/Contacts.{$this->rand}.js");
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
 		return;
 	}
 }

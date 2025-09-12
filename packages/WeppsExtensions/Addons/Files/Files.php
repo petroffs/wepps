@@ -171,6 +171,7 @@ class Files
 					unlink($file['dest_name']);
 				}
 			}
+			unset($_SESSION['uploads'][$form][$field]);
 			return [
 				'message' => "Файлы удалены",
 				'html' => ''

@@ -15,5 +15,6 @@ var profileInit = function () {
                 break;
         };
     });
+    $('input[name="phone"]').inputmask("+7 (999) 999-99-99");
 };
 $(document).ready(profileInit);

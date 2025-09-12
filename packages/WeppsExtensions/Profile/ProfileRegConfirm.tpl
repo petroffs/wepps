@@ -1,11 +1,12 @@
 <div class="pps_flex pps_flex_row pps_flex_center">
-    <form action="javascript:formWepps.send('password-confirm','password-confirm-form','/ext/Profile/Request.php')" id="password-confirm-form"
+    <form action="javascript:formWepps.send('reg-confirm','reg-confirm-form','/ext/Profile/Request.php')" id="reg-confirm-form"
         class="pps_form pps_flex_12 pps_flex_11_view_medium">
         <input type="hidden" name="token" value="{$get.token}"/>
-        <h2>Установить новый пароль</h2>
+        <h2>Завершите регистрацию</h2>
+        <p>После установки пароля - Ваш аккаунт будет активирован.</p>
         <fieldset>
             <section>
-                <div class="title">Новый пароль</div>
+                <div class="title">Пароль</div>
                 <label class="pps pps_input pps_require">
                     <input type="password" name="password" placeholder="" autocomplete="off"/>
                 </label>

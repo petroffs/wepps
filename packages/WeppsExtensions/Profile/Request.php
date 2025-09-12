@@ -13,14 +13,16 @@ use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 
-class RequestProfile extends Request {
-	public function request($action = "") {
+class RequestProfile extends Request
+{
+	public function request($action = "")
+	{
 		switch ($action) {
 			case "sign-in":
 				$this->signIn();
 				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['html'];
-				if ($outer['count']==0) {
+				if ($outer['count'] == 0) {
 					$js = "
 						<script>
 						location.reload();
@@ -44,8 +46,8 @@ class RequestProfile extends Request {
 				$this->password();
 				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['html'];
-				if ($outer['count']==0) {
-					$outer = Validator::setFormSuccess("Запрос на смену пароля отправлен",$this->get['form']);
+				if ($outer['count'] == 0) {
+					$outer = Validator::setFormSuccess("Запрос на смену пароля отправлен", $this->get['form']);
 					echo $outer['html'];
 				}
 				break;
@@ -53,19 +55,35 @@ class RequestProfile extends Request {
 				$this->confirmPassword();
 				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['html'];
-				if ($outer['count']==0) {
-					$outer = Validator::setFormSuccess("Пароль установлен",$this->get['form']);
+				if ($outer['count'] == 0) {
+					$outer = Validator::setFormSuccess("Пароль установлен", $this->get['form']);
 					echo $outer['html'];
 				}
 				break;
 			case 'reg':
+				$this->reg();
+				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
+				echo $outer['html'];
+				if ($outer['count'] == 0) {
+					$outer = Validator::setFormSuccess("Для завершения регистрации, загляните в почту", $this->get['form']);
+					echo $outer['html'];
+				}
 				break;
-			default :
+			case 'reg-confirm':
+				$this->confirmReg();
+				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
+				echo $outer['html'];
+				if ($outer['count'] == 0) {
+					$outer = Validator::setFormSuccess("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"pps_button\">Войти в личный кабинет</a>", $this->get['form']);
+					echo $outer['html'];
+				}
+				break;
+			default:
 				Exception::error(404);
 				break;
 		}
 	}
-	public function signIn(): bool
+	private function signIn(): bool
 	{
 		$sql = "select * from s_Users where Login=? and DisplayOff=0";
 		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
@@ -92,7 +110,8 @@ class RequestProfile extends Request {
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		return true;
 	}
-	private function password() {
+	private function password()
+	{
 		$sql = "select * from s_Users where Login=? and DisplayOff=0";
 		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
 		$this->errors = [];
@@ -102,13 +121,13 @@ class RequestProfile extends Request {
 		$recaptcha = new RecaptchaV2(new TemplateHeaders());
 		$response = $recaptcha->check($this->get['g-recaptcha-response']);
 		if ($response['response']['success'] !== true) {
-		    $this->errors['g-recaptcha-response'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
+			$this->errors['g-recaptcha-response'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
 		}
 		if (!empty($this->errors)) {
 			echo $recaptcha->reset();
 			return false;
 		}
-		Utils::cookies('wepps_token','');
+		Utils::cookies('wepps_token', '');
 		$lifetime = 3600 * 24;
 		$jwt = new Jwt();
 		$token = $jwt->token_encode([
@@ -123,11 +142,12 @@ class RequestProfile extends Request {
 			'email' => $user['Email'],
 			'exp' => $payload['payload']['exp'],
 		];
-		$tasks->add('password',$jdata,date('Y-m-d H:i:s'),@$_SERVER['REMOTE_ADDR']);
+		$tasks->add('password', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
 		return true;
 	}
-	private function confirmPassword() {
-		Utils::cookies('wepps_token','');
+	private function confirmPassword()
+	{
+		Utils::cookies('wepps_token', '');
 		$this->get['password'] = trim($this->get['password']);
 		$this->get['password2'] = trim($this->get['password2']);
 		$this->errors = [];
@@ -136,13 +156,15 @@ class RequestProfile extends Request {
 		} else {
 			$jwt = new Jwt();
 			$token = $jwt->token_decode($this->get['token']);
-			if ($token['status'] !== 200 || $token['payload']['typ']!='pass') {
+			if ($token['status'] !== 200) {
 				$this->errors['password'] = $token['message'];
+			} elseif ($token['payload']['typ'] != 'pass') {
+				$this->errors['password'] = 'Неверный токен';
 			} else {
-				if ($this->get['password']!=$this->get['password2']) {
+				if ($this->get['password'] != $this->get['password2']) {
 					$this->errors['password'] = 'Пароли не совпадают';
 				}
-				if (strlen($this->get['password'])<6) {
+				if (strlen($this->get['password']) < 6) {
 					$this->errors['password'] = 'Пароль должен быть не менее 6 символов';
 				}
 			}
@@ -159,7 +181,7 @@ class RequestProfile extends Request {
 			'nameFirst' => $user['NameFirst'],
 			'email' => $user['Email'],
 		];
-		$tasks->add('password-confirm',$jdata,date('Y-m-d H:i:s'),@$_SERVER['REMOTE_ADDR']);
+		$tasks->add('password-confirm', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
 		// $user = new Users([
 		// 		'login' => $user['Login'],
 		// 		'password' => $this->get['password']
@@ -167,7 +189,101 @@ class RequestProfile extends Request {
 		// $user->signIn();
 		return true;
 	}
+	private function reg()
+	{
+		$this->get['login'] = strtolower(trim($this->get['login'] ?? ''));
+		$this->get['phone'] = Utils::phone($this->get['phone'] ?? '')['num'] ?? '';
+		$this->errors = [];
+		$this->errors['login'] = Validator::isEmail($this->get['login'], 'Нверный формат');
+		$this->errors['phone'] = Validator::isNotEmpty($this->get['phone'], 'Нверный формат');
+		$this->errors['nameSurname'] = Validator::isNotEmpty($this->get['nameSurname'], 'Пустое поле');
+		$this->errors['nameFirst'] = Validator::isNotEmpty($this->get['nameFirst'], 'Пустое поле');
+		if (empty($this->error['login']) && !empty(Connect::$instance->fetch('SELECT * from s_Users where Login=?', [$this->get['login']])[0])) {
+			$this->errors['login'] = 'Пользователь уже существует';
+			return true;
+		}
+		if (empty($this->error['login'])) {
+			$jwt = new Jwt();
+			$token = $jwt->token_encode([
+				'typ' => 'reg',
+				'login' => $this->get['login']
+			]);
+			$tasks = new Tasks();
+			$jdata = [
+				'login' => $this->get['login'],
+				'email' => $this->get['login'],
+				'phone' => $this->get['phone'],
+				'nameFirst' => $this->get['nameFirst'],
+				'nameSurname' => $this->get['nameSurname'],
+				'namePatronymic' => $this->get['namePatronymic'],
+				'token' => $token
+			];
+			$tasks->add('reg-confirm', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
+			return true;
+		}
+		return false;
+	}
+	private function confirmReg()
+	{
+		Utils::cookies('wepps_token', '');
+		$this->get['password'] = trim($this->get['password']);
+		$this->get['password2'] = trim($this->get['password2']);
+		$this->errors = [];
+		if (empty($this->get['token'])) {
+			$this->errors['password'] = 'Неверный токен';
+		} else {
+			$jwt = new Jwt();
+			$token = $jwt->token_decode($this->get['token']);
+			if ($token['status'] !== 200) {
+				$this->errors['password'] = $token['message'];
+			} else if ($token['payload']['typ'] != 'reg') {
+				$this->errors['password'] = 'Неверный токен';
+			} else {
+				if ($this->get['password'] != $this->get['password2']) {
+					$this->errors['password'] = 'Пароли не совпадают';
+				}
+				if (strlen($this->get['password']) < 6) {
+					$this->errors['password'] = 'Пароль должен быть не менее 6 символов';
+				}
+			}
+		}
+		if (!empty($this->errors)) {
+			return false;
+		}
+		/*
+		 * Регистрация пользователя
+		 */
+		if (!empty($json = Connect::$instance->fetch('SELECT * from s_Tasks where Id=?', [$token['payload']['tsk']])[0]['BRequest'])) {
+			$jdata = json_decode($json, true);
+			if (!empty(Connect::$instance->fetch('SELECT * from s_Users where Login=?', [$jdata['login']])[0])) {
+				$this->errors['password'] = 'Пользователь уже существует';
+				return false;
+			}
+			$password = password_hash($this->get['password'], PASSWORD_BCRYPT);
+			$row = [
+				'Login' => $jdata['login'],
+				'Password' => $password,
+				'Name' => trim("{$jdata['nameSurname']} {$jdata['nameFirst']} {$jdata['namePatronymic']}"),
+				'Email' => $jdata['email'],
+				'UserPermissions' => 3,
+				'Phone' => $jdata['phone'],
+				'CreateDate' => date('Y-m-d H:i:s'),
+				'NameFirst' => $jdata['nameFirst'],
+				'NameSurname' => $jdata['nameSurname'],
+				'NamePatronymic' => $jdata['namePatronymic'],
+			];
+			$prepare = Connect::$instance->prepare($row);
+			Connect::$instance->query('INSERT ignore into s_Users  ' . $prepare['insert'], $prepare['row']);
+			$tasks = new Tasks();
+			$jdata = [
+				'nameFirst' => $row['NameFirst'],
+				'email' => $row['Email'],
+			];
+			$tasks->add('reg-complete', $jdata, $row['CreateDate'], @$_SERVER['REMOTE_ADDR']);
+		}
+		return true;
+	}
 }
 $request = new RequestProfile($_REQUEST);
-$smarty->assign('get',$request->get);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);
