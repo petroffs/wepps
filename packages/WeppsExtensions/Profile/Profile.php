@@ -2,6 +2,7 @@
 namespace WeppsExtensions\Profile;
 
 use WeppsCore\Connect;
+use WeppsCore\Data;
 use WeppsCore\Extension;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
@@ -82,6 +83,11 @@ class Profile extends Extension
 				break;
 			case 'orders':
 				$this->profileTpl = 'ProfileOrders.tpl';
+				$obj = new Data('Orders');
+				$obj->setParams([$this->user['Id']]);
+				$orders = $obj->fetch('t.DisplayOff=0 and t.UserId=?', 20,(int) ($this->get['page'] ?? 1),'Id desc');
+				$smarty->assign('orders', $orders);
+				#Utils::debug($orders,21);
 				break;
 			case 'favorites':
 				$this->profileTpl = 'ProfileFavorites.tpl';

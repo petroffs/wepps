@@ -1,0 +1,85 @@
+table.w_table {
+	text-align: left;
+	background-color: var(--color-98);
+	margin-top: var(--step2);
+	border: 0;
+	border-radius: var(--step2);
+	width: 100%;
+	border-spacing: 0px;
+    border-collapse: collapse;
+	overflow: hidden;
+}
+table.w_table tr:not(:last-child) > * {
+	border-bottom: var(--stepHalf) solid var(--color-100);
+}
+table.w_table tr:hover {
+	background-color: var(--color-95);
+}
+table.w_table th {
+	font-weight: 600;
+	padding: var(--step2) var(--step4);
+}
+
+table.w_table td {
+	padding: var(--step2) var(--step4);
+}
+
+table.w_table .w_table_11 {
+	max-width: 100%;
+	width: 100%;
+}
+
+table.w_table .w_table_12 {
+	max-width: 50%;
+	width: 49.999%;
+}
+
+table.w_table .w_table_13 {
+	max-width: 33.332%;
+	width: 33.332%;
+}
+
+table.w_table .w_table_14 {
+	max-width: 24.999%;
+	width: 24.999%;
+}
+
+table.w_table .w_table_15 {
+	max-width: 19.999%;
+	width: 19.999%;
+}
+
+table.w_table .w_table_16 {
+	max-width: 16.666%;
+	width: 16.666%;
+}
+
+table.w_table .w_table_23 {
+	max-width: 66.666%;
+	width: 66.666%;
+}
+
+table.w_table .w_table_25 {
+	max-width: 39.999%;
+	width: 39.999%;
+}
+
+table.w_table .w_table_34 {
+	max-width: 74.999%;
+	width: 74.999%;
+}
+
+table.w_table .w_table_35 {
+	max-width: 59.999%;
+	width: 59.999%;
+}
+
+table.w_table .w_table_45 {
+	max-width: 79.999%;
+	width: 79.999%;
+}
+
+table.w_table .w_table_56 {
+	max-width: 83.332%;
+	width: 83.332%;
+}
