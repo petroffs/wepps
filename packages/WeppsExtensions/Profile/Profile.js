@@ -16,5 +16,8 @@ var profileInit = function () {
         };
     });
     $('input[name="phone"]').inputmask("+7 (999) 999-99-99");
+    $('.w_table').find('tr[data-id]').off('click').on('click', function (e) {
+        window.location.href = (window.location.origin + window.location.pathname) + '?id=' + $(this).data('id');
+    });
 };
 $(document).ready(profileInit);

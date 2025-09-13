@@ -3,6 +3,10 @@ div.page.profile {
     padding-top: var(--step4);
 }
 
+.profile-wrapper {
+    margin-bottom: var(--step4);
+}
+
 div.profile-nav-mobile {
     margin-bottom: var(--step4);
 }
@@ -13,6 +17,15 @@ div.profile-nav {
 
 div#pps-option-nav {
     cursor: pointer;
+}
+
+.w_table tr[data-id]:hover {
+    cursor: pointer;
+}
+
+section.orders-table {
+    width: 100%; /* Or a specific fixed width */
+    overflow-y: auto;
 }
 
 @media screen and (max-width: 480px) {

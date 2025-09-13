@@ -24,6 +24,10 @@ table.w_table td {
 	padding: var(--step2) var(--step4);
 }
 
+table.w_table .w_table_active {
+	background-color: var(--color-95);
+}
+
 table.w_table .w_table_11 {
 	max-width: 100%;
 	width: 100%;
