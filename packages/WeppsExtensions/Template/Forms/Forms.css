@@ -4,6 +4,8 @@ form.pps_form fieldset {
 	margin-top: var(--step2);
 	border-width: 0;
 	border-radius: var(--step2);
+	min-width: 0;
+	overflow: hidden;
 }
 form.pps_form fieldset>section {
 	padding: var(--step2) var(--step4);

@@ -5,6 +5,10 @@
 	gap: 0;
 }
 
+.w_grid>* {
+	min-width: 0;
+}
+
 .w_grid.w_hide {
 	display: none;
 }

@@ -13,6 +13,10 @@
 	box-sizing: border-box;
 }
 
+.pps_flex > * {
+	min-width: 0;
+}
+
 .pps_flex_row {
 	width: 100%;
 	margin: 0;
