@@ -6,7 +6,7 @@
 			<table class="w_table">
 				<tbody>
 					<tr class="w_table_active">
-						<th class="w_table_12">Наименование</th>
+						<th class="w_table_12">Товары</th>
 						<th class="w_table_16">Цена</th>
 						<th class="w_table_16">Кол.</th>
 						<th class="w_table_16">Сумма</th>
@@ -19,18 +19,11 @@
 						<td>{$item.sum|money:2}</td>
 					</tr>
 					{/foreach}
-				</tbody>
-			</table>
-		</section>
-		<h3>Сервис</h3>
-		<section class="orders-table">
-			<table class="w_table">
-				<tbody>
 					<tr class="w_table_active">
-						<th class="w_table_12">Наименование</th>
-						<th class="w_table_16">Цена</th>
-						<th class="w_table_16">Кол.</th>
-						<th class="w_table_16">Сумма</th>
+						<th class="w_table_12">Сервис</th>
+						<th class="w_table_16"></th>
+						<th class="w_table_16"></th>
+						<th class="w_table_16"></th>
 					</tr>
 					<tr>
 						<td>Доставка Тариф ({$order.ODelivery_Name})</td>
@@ -62,7 +55,7 @@
 						<td>- {$order.OPaymentDiscount}</td>
 					</tr>
 					{/if}
-					<tr>
+					<tr class="w_table_active">
 							<td colspan="2"></td>
 							<th>Итого:</th>
 							<th>{$order.OSum|money:2}</th>
