@@ -19,5 +19,17 @@ var profileInit = function () {
     $('.w_table').find('tr[data-id]').off('click').on('click', function (e) {
         window.location.href = (window.location.origin + window.location.pathname) + '?id=' + $(this).data('id');
     });
+    $('#order-message-btn').off('click').on('click', function (e) {
+        e.preventDefault();
+        let obj = $('#order-message');
+        if (obj.val() == '') {
+            return;
+        }
+        layoutWepps.request({
+            data: 'action=addOrdersMessage&id='+obj.data('id')+'&message='+obj.val(),
+            url: '/ext/Profile/Request.php',
+            obj : $('#pps-rows-wrapper')
+        });
+    });
 };
 $(document).ready(profileInit);

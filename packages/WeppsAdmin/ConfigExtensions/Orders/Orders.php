@@ -56,7 +56,7 @@ class Orders extends Request
 				]);
 				$smarty->assign('statuses', $statuses);
 				$smarty->assign('statusesActive', $statusesActive);
-				$smarty->assign('url', 'https://platform.wepps.ubu/_wepps/extensions/Orders/orders.html');
+				$smarty->assign('url', '/_wepps/extensions/Orders/orders.html');
 
 				/*
 				 * Заказы

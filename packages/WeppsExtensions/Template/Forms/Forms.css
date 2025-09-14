@@ -386,6 +386,16 @@ label.pps.pps_button button:active {
 	box-shadow: 0 0 var(--step2) rgba(0, 0, 0, 0.2);
 }
 
+a.pps_button:focus,
+span.pps_button:focus,
+label.pps.pps_button input:focus,
+label.pps.pps_button button:focus {
+	color: var(--color-98);
+	background-color: var(--color-focus);
+	border-color: var(--color-focus);
+	box-shadow: 0 0 var(--step2) rgba(0, 0, 0, 0.2);
+}
+
 a.pps_button.pps_disabled,
 span.pps_button:disabled,
 label.pps.pps_button input:disabled,

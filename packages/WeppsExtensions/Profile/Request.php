@@ -12,6 +12,7 @@ use WeppsCore\Validator;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
+use WeppsExtensions\Cart\CartUtils;
 
 class RequestProfile extends Request
 {
@@ -77,6 +78,9 @@ class RequestProfile extends Request
 					$outer = Validator::setFormSuccess("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"pps_button\">Войти в личный кабинет</a>", $this->get['form']);
 					echo $outer['html'];
 				}
+				break;
+			case 'addOrdersMessage':
+				$this->addOrdersMessage();
 				break;
 			default:
 				Exception::error(404);
@@ -281,6 +285,30 @@ class RequestProfile extends Request
 			];
 			$tasks->add('reg-complete', $jdata, $row['CreateDate'], @$_SERVER['REMOTE_ADDR']);
 		}
+		return true;
+	}
+	private function addOrdersMessage(): bool
+	{
+		if (empty($this->get['id']) || empty($this->get['message'])) {
+			return false;		
+		}
+		if (empty(Connect::$instance->fetch('select Id from Orders where Id=? and UserId=?', [$this->get['id'],Connect::$projectData['user']['Id']]))) {
+			return false;
+		}
+		$arr = Connect::$instance->prepare([
+			'Name' => 'Msg',
+			'OrderId' => $this->get['id'],
+			'UserId' => Connect::$projectData['user']['Id'],
+			'EType' => 'msg',
+			'EDate' => date('Y-m-d H:i:s'),
+			'EText' => trim(strip_tags($this->get['message']))
+		]);
+		$sql = "insert into OrdersEvents {$arr['insert']}";
+		Connect::$instance->query($sql, $arr['row']);
+		$cartUtils = new CartUtils();
+		$order = $cartUtils->getOrder($this->get['id'],Connect::$projectData['user']['Id']);
+		$this->assign('order', $order);
+		$this->tpl = 'ProfileOrdersItem.tpl';
 		return true;
 	}
 }

@@ -28,6 +28,12 @@ section.orders-table {
     overflow-y: auto;
 }
 
+div.orders-notice>section {
+    font-size: var(--font-small);
+    color: var(--color-50);
+    margin-top: var(--step);
+}
+
 @media screen and (max-width: 480px) {
     
 }
