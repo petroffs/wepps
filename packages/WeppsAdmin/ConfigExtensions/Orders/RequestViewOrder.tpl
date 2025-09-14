@@ -9,7 +9,7 @@
 				<div class="price sum pps_flex_16 pps_flex_14_view_small pps_order_5_view_small pps_right_view_small">Сумма</div>
 				<div class="options pps_right pps_flex_16 pps_flex_12_view_small pps_order_2_view_small">Действия</div>
 			</div>
-			{foreach name="out" key="key" item="item" from=$products}
+			{foreach name="out" key="key" item="item" from=$order.W_Positions}
 			{assign var="options" value=$item.options|json_decode:true}
 			<div class="item pps_flex pps_flex_row pps_flex_row_str" data-index="{$key}" data-products="{$item.id}" data-order="{$order.Id}">
 				<div class="title2 pps_flex_13 pps_flex_45_view_small pps_order_1_view_small">{$item.name}
@@ -118,9 +118,9 @@
 					</div>
 					<div class="messages item pps_flex pps_flex_row pps_flex_row_top pps_flex_start">
 						<div class="dt pps_flex_14">Сообщения</div>
-						{if $order.Messages}
+						{if $order.W_Messages}
 						<div class="dd pps_flex_34">
-							{foreach item="item" from=$order.Messages} 
+							{foreach item="item" from=$order.W_Messages} 
 							<div class="even">
 								<div class="text">{$item.EText|@nl2br}</div>
 								<div class="date">{$item.EDate} {$item.UsersName}</div>

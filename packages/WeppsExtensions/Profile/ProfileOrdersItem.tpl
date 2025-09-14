@@ -6,21 +6,67 @@
 			<table class="w_table">
 				<tbody>
 					<tr class="w_table_active">
-						<th>Наименование</th>
-						<th>Цена</th>
-						<th>Кол.</th>
-						<th>Сумма</th>
-						<th>Сумма итог</th>
+						<th class="w_table_12">Наименование</th>
+						<th class="w_table_16">Цена</th>
+						<th class="w_table_16">Кол.</th>
+						<th class="w_table_16">Сумма</th>
 					</tr>
-					{foreach name="out" key="key" item="item" from=$products}
-						<tr>
-							<td>{$item.name}</td>
-							<td>{$item.price|money:2}</td>
-							<td>{$item.quantity}</td>
-							<td>{$item.sum|money:2}</td>
-							<td>{$item.sumTotal|money:2}</td>
-						</tr>
+					{foreach name="out" key="key" item="item" from=$order.W_Positions}
+					<tr>
+						<td>{$item.name}</td>
+						<td>{$item.price|money:2}</td>
+						<td>{$item.quantity}</td>
+						<td>{$item.sum|money:2}</td>
+					</tr>
 					{/foreach}
+				</tbody>
+			</table>
+		</section>
+		<h3>Сервис</h3>
+		<section class="orders-table">
+			<table class="w_table">
+				<tbody>
+					<tr class="w_table_active">
+						<th class="w_table_12">Наименование</th>
+						<th class="w_table_16">Цена</th>
+						<th class="w_table_16">Кол.</th>
+						<th class="w_table_16">Сумма</th>
+					</tr>
+					<tr>
+						<td>Доставка Тариф ({$order.ODelivery_Name})</td>
+						<td>{$order.ODeliveryTariff}</td>
+						<td>1</td>
+						<td>{$order.ODeliveryTariff}</td>
+					</tr>
+					{if $order.ODeliveryDiscount>0}
+					<tr>
+						<td>Скидка на товары за способ доставки</td>
+						<td>- {$order.ODeliveryDiscount}</td>
+						<td>1</td>
+						<td>- {$order.ODeliveryDiscount}</td>
+					</tr>
+					{/if}
+					{if $order.OPaymentTariff>0}
+					<tr>
+						<td>Оплата Тариф ({$order.OPayment_Name})</td>
+						<td>{$order.OPaymentTariff}</td>
+						<td>1</td>
+						<td>{$order.OPaymentTariff}</td>
+					</tr>
+					{/if}
+					{if $order.OPaymentDiscount>0}
+					<tr>
+						<td>Скидка на товары за способ оплаты</td>
+						<td>- {$order.OPaymentDiscount}</td>
+						<td>1</td>
+						<td>- {$order.OPaymentDiscount}</td>
+					</tr>
+					{/if}
+					<tr>
+							<td colspan="2"></td>
+							<th>Итого:</th>
+							<th>{$order.OSum|money:2}</th>
+						</tr>
 				</tbody>
 			</table>
 		</section>

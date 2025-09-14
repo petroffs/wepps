@@ -625,10 +625,51 @@ class CartUtils
 		$text = str_replace('[ПРОЕКТ]',Connect::$projectInfo['name'],$text);
 		return $text;
 	}
-	public function getOrder(int $id)
+	public function getOrder(int $id,int $userId=0): array
 	{
 		$obj = new Data("Orders");
-		$order = $obj->fetch($id)[0];
+		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
+		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
+		if ($userId > 0) {
+			$obj->setParams([$id,$userId]);
+			if (empty($order = $obj->fetch('t.Id=? and t.UserId=?')[0])) {
+				return [];
+			}
+		} else {
+			$obj->setParams([$id]);
+			if (empty($order = $obj->fetch('t.Id=?')[0])) {
+				return [];
+			}
+		}
+		$order['W_Positions'] = json_decode($order['JPositions'],true);
+		$sql = '';
+		$sum = 0;
+		$order['W_Positions'] = $this->getCartPositionsRecounter($order['W_Positions'],$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
+		foreach ($order['W_Positions'] as $value) {
+			$sum += $value['sum'];
+			$sql .= "\n(select '{$value['id']}' `id`,'{$value['name']}' `name`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`,'{$value['priceTotal']}' `priceTotal`,'{$value['sumTotal']}' `sumTotal`) union";
+		}
+		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
+		$ids = implode(',', array_column($order['W_Positions'], 'id'));
+		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum,x.priceTotal,x.sumTotal from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
+		$order['W_Positions'] = Connect::$instance->fetch($sql);
+
+		$sum += $order['ODeliveryTariff'];
+		$sum -= $order['ODeliveryDiscount'];
+		$sum += $order['OPaymentTariff'];
+		$sum -= $order['OPaymentDiscount'];
+
+		$order['OSum'] = Utils::round($sum);
+
+		$obj = new Data("OrdersEvents");
+		$obj->setParams([$id]);
+		$obj->setJoin("join s_Users u on u.Id=t.UserId");
+		$obj->setConcat("u.Name UsersName");
+		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?",2000,1,"t.Priority");
+		if (!empty($res)) {
+			$order['W_Messages'] = $res;
+		}
+		#Utils::debug($order,2);
 		return $order;
 	}
 	public function getOrderByGuid(string $guid) : array

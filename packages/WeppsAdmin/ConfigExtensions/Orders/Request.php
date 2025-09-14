@@ -177,12 +177,8 @@ class RequestOrders extends Request {
 		}
 	}
 	private function getOrder($id) {
-		$obj = new Data("Orders");
-		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
-		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
-		$obj->setParams([$id]);
-		$order = @$obj->fetch("t.Id=?")[0];
-		#Utils::debug($obj->sql,2);
+		$cartUtils = new CartUtils();
+		$order = $cartUtils->getOrder($id);
 		if (empty($order)) {
 			Exception::error(404);
 		}
@@ -190,40 +186,10 @@ class RequestOrders extends Request {
 		$statuses = Connect::$instance->fetch($sql);
 		$this->assign('statuses',$statuses);
 		$this->assign('statusesActive',$order['OStatus']);
-		$products = json_decode($order['JPositions'],true);
-		$sql = '';
-		$sum = 0;
-		$cartUtils = new CartUtils();
-		$products = $cartUtils->getCartPositionsRecounter($products,$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
-		foreach ($products as $value) {
-			$sum += $value['sum'];
-			$sql .= "\n(select '{$value['id']}' `id`,'{$value['name']}' `name`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`,'{$value['priceTotal']}' `priceTotal`,'{$value['sumTotal']}' `sumTotal`) union";
-		}
-		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
-		$ids = implode(',', array_column($products, 'id'));
-		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum,x.priceTotal,x.sumTotal from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
-		$products = Connect::$instance->fetch($sql);
-		$this->assign('products', $products);
-
-		$sum += $order['ODeliveryTariff'];
-		$sum -= $order['ODeliveryDiscount'];
-		$sum += $order['OPaymentTariff'];
-		$sum -= $order['OPaymentDiscount'];
-
-		$order['OSum'] = Utils::round($sum);
-		#$order['OSumPay'] = $sum - $order['PricePaid'];
-		$sql = "update Orders set OSum=? where Id=?";
-		Connect::$instance->query($sql,[$sum,$id]);
-		$obj = new Data("OrdersEvents");
-		$obj->setParams([$id]);
-		$obj->setJoin("join s_Users u on u.Id=t.UserId");
-		$obj->setConcat("u.Name UsersName");
-		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?",2000,1,"t.Priority");
-		if (!empty($res)) {
-			$order['Messages'] = $res;
-		}
+		$sql = 'update Orders set OSum = ? where Id = ?';
+		Connect::$instance->query($sql,[$order['OSum'],$id]);
 		$this->assign('order', $order);
-		return ['order'=>$order,'products'=>$products,'statuses'=>$statuses];
+		return ['order'=>$order,'statuses'=>$statuses];
 	}
 	private function searchProducts($text='',$page=1) {
 		if (strlen($text) < 0) {
