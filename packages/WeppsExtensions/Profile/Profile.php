@@ -7,10 +7,13 @@ use WeppsCore\Extension;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Exception;
+use WeppsCore\TextTransforms;
 use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Products\ProductsUtils;
+use WeppsExtensions\Template\Filters\Filters;
 
 class Profile extends Extension
 {
@@ -97,6 +100,9 @@ class Profile extends Extension
 				break;
 			case 'favorites':
 				$this->profileTpl = 'ProfileFavorites.tpl';
+				#Utils::debug($this->navigator->content,1);
+				$this->favorites($smarty);
+
 				break;
 			case 'settings':
 				$this->profileTpl = 'ProfileSettings.tpl';
@@ -116,5 +122,39 @@ class Profile extends Extension
 		}
 		$smarty->assign('order', $order);
 		return $order;
+	}
+	private function favorites(\Smarty\Smarty $smarty)
+	{
+		$productsUtils = new ProductsUtils();
+		$productsUtils->setNavigator($this->navigator, 'Products');
+		$filters = new Filters();
+		$this->headers->css("/ext/Products/ProductsItems.{$this->rand}.css");
+		$this->headers->css("/ext/Template/Filters/Filters.{$this->rand}.css");
+		$this->headers->js("/ext/Template/Filters/Filters.{$this->rand}.js");
+		$this->headers->js("/ext/Products/Products.{$this->rand}.js");
+		$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css" );
+		$params = $filters->getParams();
+		$sorting = $productsUtils->getSorting();
+		$conditions = $productsUtils->getConditions($params, false);
+		$conditionsFilters = $productsUtils->getConditions($params, true);
+		$settings = [
+			'pages' => $productsUtils->getPages(),
+			'page' => $this->page,
+			'sorting' => $sorting['conditions'],
+			'conditions' => $conditionsFilters,
+		];
+		$products = $productsUtils->getProducts($settings);
+		#Utils::debug($products,21);
+		$smarty->assign('products', $products['rows']);
+		$smarty->assign('productsCount', $products['count'] . ' ' . TextTransforms::ending2("товар", $products['count']));
+		$smarty->assign('productsSorting', $sorting['rows']);
+		$smarty->assign('productsSortingActive', $sorting['active']);
+		$smarty->assign('paginator', $products['paginator']);
+		$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
+		$smarty->assign('productsTpl', $smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
+		$smarty->assign('childsNav', $this->navigator->nav['subs'][3]);
+		$smarty->assign('filtersNav', $filters->getFilters($conditions));
+		$smarty->assign('content', $this->navigator->content);
+		$smarty->assign('productsPageTpl', $smarty->fetch('packages/WeppsExtensions/Products/Products.tpl'));
 	}
 }

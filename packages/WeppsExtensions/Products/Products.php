@@ -1,7 +1,6 @@
 <?php
 namespace WeppsExtensions\Products;
 
-use WeppsCore\Connect;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Data;
@@ -10,7 +9,6 @@ use WeppsExtensions\Template\Filters\Filters;
 use WeppsExtensions\Childs\Childs;
 use WeppsCore\Exception;
 use WeppsCore\TextTransforms;
-use WeppsCore\Utils;
 
 class Products extends Extension {
 	private $filters;
@@ -19,7 +17,7 @@ class Products extends Extension {
 		$smarty = Smarty::getSmarty ();
 		$this->productsUtils = new ProductsUtils();
 		$this->productsUtils->setNavigator($this->navigator,'Products');
-		$this->filters = new Filters($_GET);
+		$this->filters = new Filters($this->get);
 		$params = $this->filters->getParams();
 		if ($this->navigator->content['Id']==3 && empty($params['text'])) {
 			return new Childs($this->navigator, $this->headers);

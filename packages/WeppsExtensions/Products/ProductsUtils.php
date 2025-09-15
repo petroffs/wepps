@@ -1,10 +1,8 @@
 <?php
 namespace WeppsExtensions\Products;
 
-use WeppsCore\Connect;
 use WeppsCore\Navigator;
 use WeppsCore\Data;
-use WeppsCore\Exception;
 use WeppsCore\Utils;
 use WeppsExtensions\Template\Filters\Filters;
 
@@ -53,11 +51,15 @@ class ProductsUtils
 	}
 	public function getConditions(array $params = [], bool $isFilters = false): array
 	{
-		$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
 		$prepare = [];
-		if (!empty($params['text'])) {
-			$conditions = "t.DisplayOff=0 and lower(t.Name) like lower(?)";
-			$prepare[] = $params['text'] . "%";
+		if ($this->navigator->content['Id'] == 28) {
+			$conditions = "t.DisplayOff=0";
+		} else {
+			$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
+			if (!empty($params['text'])) {
+				$conditions = "t.DisplayOff=0 and lower(t.Name) like lower(?)";
+				$prepare[] = $params['text'] . "%";
+			}
 		}
 		if ($isFilters == false) {
 			return [
