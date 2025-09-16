@@ -95,14 +95,15 @@ class Profile extends Extension
 				$obj = new Data('Orders');
 				$obj->setParams([$this->user['Id']]);
 				$orders = $obj->fetch('t.DisplayOff=0 and t.UserId=?', 20,(int) ($this->get['page'] ?? 1),'Id desc');
+				if (empty($orders)) {
+					$this->profileTpl = 'ProfileOrdersEmpty.tpl';
+				}
 				$smarty->assign('orders', $orders);
-				#Utils::debug($orders,21);
 				break;
 			case 'favorites':
-				$this->profileTpl = 'ProfileFavorites.tpl';
-				#Utils::debug($this->navigator->content,1);
-				$this->favorites($smarty);
-
+				$this->profileTpl = '';
+				$this->tpl = __DIR__ . '/ProfileFavorites.tpl';
+				$this->favorites($smarty,$profileNav);
 				break;
 			case 'settings':
 				$this->profileTpl = 'ProfileSettings.tpl';
@@ -111,7 +112,9 @@ class Profile extends Extension
 				Exception::error404();
 				break;
 		}
-		$smarty->assign('profileTpl', $smarty->fetch(__DIR__ . '/' . $this->profileTpl));
+		if (!empty($this->profileTpl)) {
+			$smarty->assign('profileTpl', $smarty->fetch(__DIR__ . '/' . $this->profileTpl));
+		}
 		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
@@ -123,28 +126,52 @@ class Profile extends Extension
 		$smarty->assign('order', $order);
 		return $order;
 	}
-	private function favorites(\Smarty\Smarty $smarty)
+	private function favorites(\Smarty\Smarty $smarty,array $profileNav)
 	{
+		$this->navigator->content['Name'] = 'Избранное';
 		$productsUtils = new ProductsUtils();
 		$productsUtils->setNavigator($this->navigator, 'Products');
 		$filters = new Filters();
+		$this->headers->js("/ext/Cart/Cart.{$this->rand}.js");
+		$this->headers->css("/ext/Products/Products.{$this->rand}.css");
 		$this->headers->css("/ext/Products/ProductsItems.{$this->rand}.css");
 		$this->headers->css("/ext/Template/Filters/Filters.{$this->rand}.css");
 		$this->headers->js("/ext/Template/Filters/Filters.{$this->rand}.js");
+		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js" );
 		$this->headers->js("/ext/Products/Products.{$this->rand}.js");
 		$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css" );
 		$params = $filters->getParams();
 		$sorting = $productsUtils->getSorting();
-		$conditions = $productsUtils->getConditions($params, false);
-		$conditionsFilters = $productsUtils->getConditions($params, true);
+		if (empty($jfav = @json_decode($this->user['JFav'],true)['items'])) {
+			$this->profileTpl = 'ProfileFavoritesEmpty.tpl';
+			$this->tpl = __DIR__ . '/Profile.tpl';
+			return;
+
+		}
+		$ids = array_column($jfav,'id');
+		$in = Connect::$instance->in($ids);
+		$conditionsPrepared = "t.DisplayOff=0 and t.Id in ($in)";
+		$conditions = $productsUtils->getConditions($params, false,$conditionsPrepared,$ids);
+		$conditionsFilters = $productsUtils->getConditions($params, true,$conditionsPrepared,$ids);
 		$settings = [
 			'pages' => $productsUtils->getPages(),
 			'page' => $this->page,
 			'sorting' => $sorting['conditions'],
 			'conditions' => $conditionsFilters,
 		];
+		$subs = [];
+		foreach ($profileNav as $key => $item) {
+			if (!empty($item['event'])) {
+				continue;
+			}
+			$subs[] = [
+				'Id' => ($item['url']=='/profile/favorites.html')?Connect::$projectServices['commerce']['profileId']:0,
+				'Name' => $item['title'],
+				'Url' => $item['url'],
+			]; 
+		};
 		$products = $productsUtils->getProducts($settings);
-		#Utils::debug($products,21);
+		$smarty->assign('normalView',0);
 		$smarty->assign('products', $products['rows']);
 		$smarty->assign('productsCount', $products['count'] . ' ' . TextTransforms::ending2("товар", $products['count']));
 		$smarty->assign('productsSorting', $sorting['rows']);
@@ -152,7 +179,7 @@ class Profile extends Extension
 		$smarty->assign('paginator', $products['paginator']);
 		$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
 		$smarty->assign('productsTpl', $smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
-		$smarty->assign('childsNav', $this->navigator->nav['subs'][3]);
+		$smarty->assign('childsNav', $subs);
 		$smarty->assign('filtersNav', $filters->getFilters($conditions));
 		$smarty->assign('content', $this->navigator->content);
 		$smarty->assign('productsPageTpl', $smarty->fetch('packages/WeppsExtensions/Products/Products.tpl'));

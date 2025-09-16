@@ -10,7 +10,11 @@
 					<input type="text" id="search-input" placeholder="Поиск..." name="text" value="{$smarty.get.text|default:''|escape:'html'}" autocomplete="off"/>
 				</label>
 			</form>
-			<a href="/profile/" id="header-profile"><i class="bi bi-person"></i><span>Войти</span></a>
+			{if $user.Id}
+				<a href="/profile/" id="header-profile" data-auth="1"><i class="bi bi-person"></i><span>Привет, {$user.NameFirst}</span></a>
+			{else}
+				<a href="/profile/" id="header-profile" data-auth="0"><i class="bi bi-person"></i><span>Войти</span></a>
+			{/if}
 			<a href="/cart/" id="header-cart" data-metrics="{$cartMetrics.count}"><i class="bi bi-cart2"></i><span>Корзина</span></a>
 		</section>
 		<section class="header-wrapper">

@@ -1,6 +1,7 @@
 <?php
 namespace WeppsExtensions\Products;
 
+use WeppsCore\Connect;
 use WeppsCore\Navigator;
 use WeppsCore\Data;
 use WeppsCore\Utils;
@@ -49,12 +50,12 @@ class ProductsUtils
 			'conditions' => $conditions
 		];
 	}
-	public function getConditions(array $params = [], bool $isFilters = false): array
+	public function getConditions(array $params = [], bool $isFilters = false,string $conditions = '',array $prepare = []): array
 	{
-		$prepare = [];
-		if ($this->navigator->content['Id'] == 28) {
-			$conditions = "t.DisplayOff=0";
-		} else {
+		
+		// if ($this->navigator->content['Id'] == Connect::$projectServices['commerce']['profileId']) {
+		// 	$conditions = "t.DisplayOff=0";
+		if (empty($conditions)) {
 			$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
 			if (!empty($params['text'])) {
 				$conditions = "t.DisplayOff=0 and lower(t.Name) like lower(?)";

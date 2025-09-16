@@ -62,7 +62,7 @@
 						</label>
 					</div>
 				</div>
-				<div id="pps-rows-wrapper">
+				<div id="products-loader">
 				{$productsTpl}
 				</div>
 			</div>

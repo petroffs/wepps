@@ -28,7 +28,7 @@ var profileInit = function () {
         layoutWepps.request({
             data: 'action=addOrdersMessage&id='+obj.data('id')+'&message='+obj.val(),
             url: '/ext/Profile/Request.php',
-            obj : $('#pps-rows-wrapper')
+            obj : $('#profile-loader')
         });
     });
 };

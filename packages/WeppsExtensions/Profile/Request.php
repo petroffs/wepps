@@ -82,6 +82,15 @@ class RequestProfile extends Request
 			case 'addOrdersMessage':
 				$this->addOrdersMessage();
 				break;
+			case 'change-name':
+				
+				break;
+			case 'change-email':
+				break;
+			case 'change-phone':
+				break;
+			case 'change-password':
+				break;
 			default:
 				Exception::error(404);
 				break;

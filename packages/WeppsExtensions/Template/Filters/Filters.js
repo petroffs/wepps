@@ -2,6 +2,7 @@ class FiltersWepps {
 	constructor(settings = {}) {
 		this.settings = settings;
 		this.sidebar = $('.' + settings.sidebar);
+		this.responseLoader = $('#' + settings.responseLoader);
 		this.layout = new LayoutWepps();
 		this.layout.removeBefore = function () {
 			$('.' + settings.sidebar).detach().prependTo('.' + settings.content).addClass('w_hide_view_medium');
@@ -108,7 +109,7 @@ class FiltersWepps {
 				var mytitle = $(this).find('.title')
 			}
 		});
-		layoutWepps.request({ data: serialized, url: url, obj: $('#pps-rows-wrapper') });
+		layoutWepps.request({ data: serialized, url: url, obj: this.responseLoader });
 		if (gotop == 'top') {
 			$("html, body").animate({ scrollTop: content.offset().top - $('header').height() }, 600);
 			//$('label.pps.tooltipstered').tooltipster('destroy');

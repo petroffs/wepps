@@ -632,7 +632,7 @@ class CartUtils
 		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
 		if ($userId > 0) {
 			$obj->setParams([$id,$userId]);
-			if (empty($order = $obj->fetch('t.Id=? and t.UserId=?')[0])) {
+			if (empty($order = @$obj->fetch('t.Id=? and t.UserId=?')[0])) {
 				return [];
 			}
 		} else {

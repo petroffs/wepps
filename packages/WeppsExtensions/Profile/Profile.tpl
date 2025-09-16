@@ -17,7 +17,7 @@
 		</div>
 	</section>
 	<div class="profile-wrapper content-block">
-		<div id="pps-rows-wrapper">
+		<div id="profile-loader">
 			{$profileTpl}
 		</div>
 	</div>

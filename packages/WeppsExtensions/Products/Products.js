@@ -2,7 +2,8 @@ var productsInit = function() {
 	filtersWepps = new FiltersWepps({
 		filters : 'nav-filters',
 		sidebar : 'sidebar',
-		content : 'content-wrapper'
+		content : 'content-wrapper',
+		responseLoader : 'products-loader'
 	});
 	filtersWepps.init();
 	cart.addHandler();
