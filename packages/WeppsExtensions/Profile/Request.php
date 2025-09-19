@@ -45,51 +45,34 @@ class RequestProfile extends Request
 				break;
 			case 'password':
 				$this->password();
-				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
-				echo $outer['html'];
-				if ($outer['count'] == 0) {
-					$outer = Validator::setFormSuccess("Запрос на смену пароля отправлен", $this->get['form']);
-					echo $outer['html'];
-				}
+				$this->success('Запрос на смену пароля отправлен');
 				break;
 			case 'password-confirm':
 				$this->confirmPassword();
-				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
-				echo $outer['html'];
-				if ($outer['count'] == 0) {
-					$outer = Validator::setFormSuccess("Пароль установлен", $this->get['form']);
-					echo $outer['html'];
-				}
+				$this->success('Пароль установлен');
 				break;
 			case 'reg':
 				$this->reg();
-				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
-				echo $outer['html'];
-				if ($outer['count'] == 0) {
-					$outer = Validator::setFormSuccess("Для завершения регистрации, загляните в почту", $this->get['form']);
-					echo $outer['html'];
-				}
+				$this->success('Для завершения регистрации, загляните в почту');
 				break;
 			case 'reg-confirm':
 				$this->confirmReg();
-				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
-				echo $outer['html'];
-				if ($outer['count'] == 0) {
-					$outer = Validator::setFormSuccess("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"pps_button\">Войти в личный кабинет</a>", $this->get['form']);
-					echo $outer['html'];
-				}
+				$this->success("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"pps_button\">Войти в личный кабинет</a>");
 				break;
 			case 'addOrdersMessage':
 				$this->addOrdersMessage();
 				break;
 			case 'change-name':
-				
+				$this->changeName();
 				break;
 			case 'change-email':
+				$this->changeEmail();
 				break;
 			case 'change-phone':
+				$this->changePhone();
 				break;
 			case 'change-password':
+				$this->changePassword();
 				break;
 			default:
 				Exception::error(404);
@@ -318,6 +301,26 @@ class RequestProfile extends Request
 		$order = $cartUtils->getOrder($this->get['id'],Connect::$projectData['user']['Id']);
 		$this->assign('order', $order);
 		$this->tpl = 'ProfileOrdersItem.tpl';
+		return true;
+	}
+	private function changeName(): bool 
+	{
+
+		return true;
+	}
+	private function changeEmail(): bool 
+	{
+		
+		return true;
+	}
+	private function changePhone(): bool 
+	{
+		
+		return true;
+	}
+	private function changePassword(): bool 
+	{
+		
 		return true;
 	}
 }
