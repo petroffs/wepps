@@ -13,6 +13,7 @@ use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 use WeppsExtensions\Cart\CartUtils;
+use YooKassa\Validator\Constraints\ValidValidator;
 
 class RequestProfile extends Request
 {
@@ -45,19 +46,19 @@ class RequestProfile extends Request
 				break;
 			case 'password':
 				$this->password();
-				$this->success('Запрос на смену пароля отправлен');
+				$this->outer('Запрос на смену пароля отправлен');
 				break;
 			case 'password-confirm':
 				$this->confirmPassword();
-				$this->success('Пароль установлен');
+				$this->outer('Пароль установлен');
 				break;
 			case 'reg':
 				$this->reg();
-				$this->success('Для завершения регистрации, загляните в почту');
+				$this->outer('Для завершения регистрации, загляните в почту');
 				break;
 			case 'reg-confirm':
 				$this->confirmReg();
-				$this->success("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"pps_button\">Войти в личный кабинет</a>");
+				$this->outer("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"pps_button\">Войти в личный кабинет</a>");
 				break;
 			case 'addOrdersMessage':
 				$this->addOrdersMessage();
@@ -93,7 +94,7 @@ class RequestProfile extends Request
 		} elseif (!password_verify($this->get['password'], $res[0]['Password'])) {
 			$this->errors['password'] = 'Неверный пароль';
 		}
-		if (!empty($this->errors)) {
+		if (!empty(array_filter($this->errors))) {
 			return false;
 		}
 		$lifetime = 3600 * 24 * 180;
@@ -119,7 +120,7 @@ class RequestProfile extends Request
 		if ($response['response']['success'] !== true) {
 			$this->errors['g-recaptcha-response'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
 		}
-		if (!empty($this->errors)) {
+		if (!empty(array_filter($this->errors))) {
 			echo $recaptcha->reset();
 			return false;
 		}
@@ -165,7 +166,7 @@ class RequestProfile extends Request
 				}
 			}
 		}
-		if (!empty($this->errors)) {
+		if (!empty(array_filter($this->errors))) {
 			return false;
 		}
 		$password = password_hash($this->get['password'], PASSWORD_BCRYPT);
@@ -185,7 +186,7 @@ class RequestProfile extends Request
 		// $user->signIn();
 		return true;
 	}
-	private function reg()
+	private function reg(): bool
 	{
 		$this->get['login'] = strtolower(trim($this->get['login'] ?? ''));
 		$this->get['phone'] = Utils::phone($this->get['phone'] ?? '')['num'] ?? '';
@@ -196,30 +197,30 @@ class RequestProfile extends Request
 		$this->errors['nameFirst'] = Validator::isNotEmpty($this->get['nameFirst'], 'Пустое поле');
 		if (empty($this->error['login']) && !empty(Connect::$instance->fetch('SELECT * from s_Users where Login=?', [$this->get['login']])[0])) {
 			$this->errors['login'] = 'Пользователь уже существует';
-			return true;
+			return false;
 		}
-		if (empty($this->error['login'])) {
-			$jwt = new Jwt();
-			$token = $jwt->token_encode([
-				'typ' => 'reg',
-				'login' => $this->get['login']
-			]);
-			$tasks = new Tasks();
-			$jdata = [
-				'login' => $this->get['login'],
-				'email' => $this->get['login'],
-				'phone' => $this->get['phone'],
-				'nameFirst' => $this->get['nameFirst'],
-				'nameSurname' => $this->get['nameSurname'],
-				'namePatronymic' => $this->get['namePatronymic'],
-				'token' => $token
-			];
-			$tasks->add('reg-confirm', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
-			return true;
+		if (!empty($this->error['login'])) {
+			return false;
 		}
-		return false;
+		$jwt = new Jwt();
+		$token = $jwt->token_encode([
+			'typ' => 'reg',
+			'login' => $this->get['login']
+		]);
+		$tasks = new Tasks();
+		$jdata = [
+			'login' => $this->get['login'],
+			'email' => $this->get['login'],
+			'phone' => $this->get['phone'],
+			'nameFirst' => $this->get['nameFirst'],
+			'nameSurname' => $this->get['nameSurname'],
+			'namePatronymic' => $this->get['namePatronymic'],
+			'token' => $token
+		];
+		$tasks->add('reg-confirm', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
+		return true;
 	}
-	private function confirmReg()
+	private function confirmReg(): bool
 	{
 		Utils::cookies('wepps_token', '');
 		$this->get['password'] = trim($this->get['password']);
@@ -243,7 +244,7 @@ class RequestProfile extends Request
 				}
 			}
 		}
-		if (!empty($this->errors)) {
+		if (!empty(array_filter($this->errors))) {
 			return false;
 		}
 		/*
@@ -282,9 +283,9 @@ class RequestProfile extends Request
 	private function addOrdersMessage(): bool
 	{
 		if (empty($this->get['id']) || empty($this->get['message'])) {
-			return false;		
+			return false;
 		}
-		if (empty(Connect::$instance->fetch('select Id from Orders where Id=? and UserId=?', [$this->get['id'],Connect::$projectData['user']['Id']]))) {
+		if (empty(Connect::$instance->fetch('select Id from Orders where Id=? and UserId=?', [$this->get['id'], Connect::$projectData['user']['Id']]))) {
 			return false;
 		}
 		$arr = Connect::$instance->prepare([
@@ -298,29 +299,30 @@ class RequestProfile extends Request
 		$sql = "insert into OrdersEvents {$arr['insert']}";
 		Connect::$instance->query($sql, $arr['row']);
 		$cartUtils = new CartUtils();
-		$order = $cartUtils->getOrder($this->get['id'],Connect::$projectData['user']['Id']);
+		$order = $cartUtils->getOrder($this->get['id'], Connect::$projectData['user']['Id']);
 		$this->assign('order', $order);
 		$this->tpl = 'ProfileOrdersItem.tpl';
 		return true;
 	}
-	private function changeName(): bool 
+	private function changeName(): bool
+	{
+		
+
+		return true;
+	}
+	private function changeEmail(): bool
 	{
 
 		return true;
 	}
-	private function changeEmail(): bool 
+	private function changePhone(): bool
 	{
-		
+
 		return true;
 	}
-	private function changePhone(): bool 
+	private function changePassword(): bool
 	{
-		
-		return true;
-	}
-	private function changePassword(): bool 
-	{
-		
+
 		return true;
 	}
 }

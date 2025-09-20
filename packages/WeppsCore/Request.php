@@ -105,14 +105,18 @@ abstract class Request
 		}
 		$smarty->assign($key, $smarty->fetch($value));
 	}
-	public function success(string $message = ''): bool
+	public function outer(string $message = '', bool $print = true): array
 	{
 		$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
-		echo $outer['html'];
-		if ($outer['count'] == 0) {
-			$outer = Validator::setFormSuccess($message, $this->get['form']);
+		if ($print === true) {
 			echo $outer['html'];
 		}
-		return true;
+		if ($outer['count'] == 0) {
+			$outer = Validator::setFormSuccess($message, $this->get['form']);
+			if ($print === true) {
+				echo $outer['html'];
+			}
+		}
+		return $outer;
 	}
 }
