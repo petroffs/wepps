@@ -306,7 +306,7 @@ class Validator
 			}
 			$str .= "
 			$([document.documentElement, document.body]).animate({
-				scrollTop: $('#{$form}').find('.pps_error_parent').eq(0).offset().top - 72
+				scrollTop: $('#{$form}').find('.pps_error_parent').eq(0).offset().top - 300
 			}, 1000);";
 		}
 		$str .= "

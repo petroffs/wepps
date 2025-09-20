@@ -71,6 +71,7 @@ class RequestProfile extends Request
 				break;
 			case 'change-name':
 				$this->changeName();
+				$this->outer("Данные обновлены");
 				break;
 			case 'change-email':
 				$this->changeEmail();
@@ -347,8 +348,21 @@ class RequestProfile extends Request
 	 */
 	private function changeName(): bool
 	{
-
-
+		$this->errors = [];
+		$this->errors['nameSurname'] = Validator::isNotEmpty($this->get['nameSurname'], 'Пустое поле');
+		$this->errors['nameFirst'] = Validator::isNotEmpty($this->get['nameFirst'], 'Пустое поле');
+		if (!empty(array_filter($this->errors))) {
+			return false;
+		}
+		$row = [
+			'NameFirst' => $this->get['nameFirst'],
+			'NameSurname' => $this->get['nameSurname'],
+			'NamePatronymic' => $this->get['namePatronymic'],
+		];
+		$row['Name'] = preg_replace('/\s+/', ' ', trim("{$row['NameSurname']} {$row['NameSurname']} {$row['NamePatronymic']}"));
+		$prepare = Connect::$instance->prepare($row);
+		$prepare['row']['Id'] = Connect::$projectData['user']['Id'];
+		Connect::$instance->query("UPDATE s_Users set {$prepare['update']} where Id=:Id", $prepare['row']);
 		return true;
 	}
 	/**
