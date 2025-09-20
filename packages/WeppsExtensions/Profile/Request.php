@@ -10,13 +10,19 @@ use WeppsCore\Users;
 use WeppsCore\Utils;
 use WeppsCore\Validator;
 use WeppsExtensions\Addons\Jwt\Jwt;
-use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 use WeppsExtensions\Cart\CartUtils;
-use YooKassa\Validator\Constraints\ValidValidator;
 
+/**
+ * Класс для обработки запросов профиля пользователя.
+ */
 class RequestProfile extends Request
 {
+	/**
+	 * Обрабатывает запросы профиля пользователя.
+	 *
+	 * @param string $action Действие, которое необходимо выполнить.
+	 */
 	public function request($action = "")
 	{
 		switch ($action) {
@@ -80,6 +86,11 @@ class RequestProfile extends Request
 				break;
 		}
 	}
+	/**
+	 * Выполняет вход пользователя.
+	 *
+	 * @return bool Возвращает true, если вход выполнен успешно, иначе false.
+	 */
 	private function signIn(): bool
 	{
 		$sql = "select * from s_Users where Login=? and DisplayOff=0";
@@ -107,7 +118,12 @@ class RequestProfile extends Request
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		return true;
 	}
-	private function password()
+	/**
+	 * Отправляет запрос на смену пароля.
+	 *
+	 * @return bool Возвращает true, если запрос отправлен успешно, иначе false.
+	 */
+	private function password(): bool
 	{
 		$sql = "select * from s_Users where Login=? and DisplayOff=0";
 		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
@@ -142,6 +158,11 @@ class RequestProfile extends Request
 		$tasks->add('password', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
 		return true;
 	}
+	/**
+	 * Подтверждает смену пароля.
+	 *
+	 * @return bool Возвращает true, если смена пароля подтверждена успешно, иначе false.
+	 */
 	private function confirmPassword()
 	{
 		Utils::cookies('wepps_token', '');
@@ -186,6 +207,11 @@ class RequestProfile extends Request
 		// $user->signIn();
 		return true;
 	}
+	/**
+	 * Регистрирует пользователя.
+	 *
+	 * @return bool Возвращает true, если регистрация прошла успешно, иначе false.
+	 */
 	private function reg(): bool
 	{
 		$this->get['login'] = strtolower(trim($this->get['login'] ?? ''));
@@ -220,6 +246,11 @@ class RequestProfile extends Request
 		$tasks->add('reg-confirm', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
 		return true;
 	}
+	/**
+	 * Подтверждение регистрации пользователя
+	 *
+	 * @return bool Возвращает true, если регистрация подтверждена успешно, иначе false
+	 */
 	private function confirmReg(): bool
 	{
 		Utils::cookies('wepps_token', '');
@@ -280,6 +311,11 @@ class RequestProfile extends Request
 		}
 		return true;
 	}
+	/**
+	 * Добавляет сообщение к заказу.
+	 *
+	 * @return bool Возвращает true, если сообщение добавлено успешно, иначе false.
+	 */
 	private function addOrdersMessage(): bool
 	{
 		if (empty($this->get['id']) || empty($this->get['message'])) {
@@ -304,22 +340,42 @@ class RequestProfile extends Request
 		$this->tpl = 'ProfileOrdersItem.tpl';
 		return true;
 	}
+	/**
+	 * Изменяет имя пользователя.
+	 *
+	 * @return bool Возвращает true, если имя изменено успешно, иначе false.
+	 */
 	private function changeName(): bool
 	{
-		
+
 
 		return true;
 	}
+	/**
+	 * Изменяет email пользователя.
+	 *
+	 * @return bool Возвращает true, если email изменен успешно, иначе false.
+	 */
 	private function changeEmail(): bool
 	{
 
 		return true;
 	}
+	/**
+	 * Изменяет телефон пользователя.
+	 *
+	 * @return bool Возвращает true, если телефон изменен успешно, иначе false.
+	 */
 	private function changePhone(): bool
 	{
 
 		return true;
 	}
+	/**
+	 * Изменяет пароль пользователя.
+	 *
+	 * @return bool Возвращает true, если пароль изменен успешно, иначе false.
+	 */
 	private function changePassword(): bool
 	{
 
