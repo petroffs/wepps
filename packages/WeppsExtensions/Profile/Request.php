@@ -81,6 +81,7 @@ class RequestProfile extends Request
 				break;
 			case 'change-password':
 				$this->changePassword();
+				$this->outer("Пароль обновлен");
 				break;
 			default:
 				Exception::error(404);
@@ -159,6 +160,24 @@ class RequestProfile extends Request
 		$tasks->add('password', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
 		return true;
 	}
+	private function checkPassword(): bool
+	{
+		$this->get['password'] = trim($this->get['password']);
+		$this->get['password2'] = trim($this->get['password2']);
+
+		if (strlen($this->get['password']) < 6) {
+			$this->errors['password'] = 'Пароль должен быть не менее 6 символов';
+		} elseif (!preg_match('/[A-Z]/', $this->get['password'])) {
+			$this->errors['password'] = 'Пароль должен содержать хотя бы одну заглавную букву';
+		} elseif (!preg_match('/[a-z]/', $this->get['password'])) {
+			$this->errors['password'] = 'Пароль должен содержать хотя бы одну строчную букву';
+		} elseif (!preg_match('/[^A-Za-z0-9]/', $this->get['password'])) {
+			$this->errors['password'] = 'Пароль должен содержать хотя бы один спецсимвол';
+		} elseif ($this->get['password'] != $this->get['password2']) {
+			$this->errors['password'] = 'Пароли не совпадают';
+		}
+		return true;
+	}
 	/**
 	 * Подтверждает смену пароля.
 	 *
@@ -167,8 +186,7 @@ class RequestProfile extends Request
 	private function confirmPassword()
 	{
 		Utils::cookies('wepps_token', '');
-		$this->get['password'] = trim($this->get['password']);
-		$this->get['password2'] = trim($this->get['password2']);
+
 		$this->errors = [];
 		if (empty($this->get['token'])) {
 			$this->errors['password'] = 'Неверный токен';
@@ -180,12 +198,7 @@ class RequestProfile extends Request
 			} elseif ($token['payload']['typ'] != 'pass') {
 				$this->errors['password'] = 'Неверный токен';
 			} else {
-				if ($this->get['password'] != $this->get['password2']) {
-					$this->errors['password'] = 'Пароли не совпадают';
-				}
-				if (strlen($this->get['password']) < 6) {
-					$this->errors['password'] = 'Пароль должен быть не менее 6 символов';
-				}
+				self::checkPassword();
 			}
 		}
 		if (!empty(array_filter($this->errors))) {
@@ -392,7 +405,11 @@ class RequestProfile extends Request
 	 */
 	private function changePassword(): bool
 	{
-
+		self::checkPassword();
+		if (!empty(array_filter($this->errors))) {
+			return false;
+		}
+		Connect::$instance->query("update s_Users set Password=? where Id=?", [password_hash($this->get['password'], PASSWORD_BCRYPT), Connect::$projectData['user']['Id']]);
 		return true;
 	}
 }

@@ -81,13 +81,13 @@
             <section>
                 <div class="title">Новый пароль</div>
                 <label class="pps pps_input pps_require">
-                    <input type="password" name="password" placeholder=""/>
+                    <input type="password" name="password" placeholder="" autocomplete="new-password"/>
                 </label>
             </section>
             <section>
                 <div class="title">Повторите пароль</div>
                 <label class="pps pps_input pps_require">
-                    <input type="password" name="password2" placeholder=""/>
+                    <input type="password" name="password2" placeholder="" autocomplete="new-password"/>
                 </label>
             </section>
         </fieldset>
