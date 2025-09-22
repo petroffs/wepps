@@ -2,6 +2,7 @@
 require_once '../../../configloader.php';
 
 use WeppsCore\Connect;
+use WeppsCore\Memcached;
 use WeppsCore\Tasks;
 use WeppsCore\Request;
 use WeppsCore\Exception;
@@ -10,6 +11,7 @@ use WeppsCore\Users;
 use WeppsCore\Utils;
 use WeppsCore\Validator;
 use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 use WeppsExtensions\Cart\CartUtils;
 
@@ -75,6 +77,7 @@ class RequestProfile extends Request
 				break;
 			case 'change-email':
 				$this->changeEmail();
+				$this->outer("Для завершения смены E-mail - загляните в почту");
 				break;
 			case 'change-phone':
 				$this->changePhone();
@@ -385,8 +388,38 @@ class RequestProfile extends Request
 	 */
 	private function changeEmail(): bool
 	{
-
+		$this->errors = [];
+		$this->errors['login'] = Validator::isEmail(strtolower($this->get['login']),'Неверный формат');
+		if (empty(array_filter($this->errors))) {
+			$row = Connect::$instance->fetch('SELECT * from s_Users where Email=?', [$this->get['login']]);
+			if (!empty($row)) {
+				$this->errors['login'] = 'Пользователь с таким email уже существует';
+			}
+		}
+		if (!empty(array_filter($this->errors))) {
+			return false;
+		}
+		$memcache = new Memcached();
+		$code = rand(10001, 99999);
+		$codeCached = strtolower($this->get['login']).';;'.$code;
+		$memcache->set('codeCached', $codeCached, 3600);
+		$mail = new Mail('html');
+		$mail->mail(strtolower($this->get['login']),'Подтверждение почты','Код подтверждения смены E-mail: <b>'.$code.'</b>');
 		return true;
+	}
+	public function changeEmailOuter(string $message = '', bool $print = true): array
+	{
+		$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
+		if ($print === true) {
+			echo $outer['html'];
+		}
+		if ($outer['count'] == 0) {
+			$outer = Validator::setFormSuccess($message, $this->get['form']);
+			if ($print === true) {
+				echo $outer['html'];
+			}
+		}
+		return $outer;
 	}
 	/**
 	 * Изменяет телефон пользователя.
