@@ -3,15 +3,30 @@ namespace WeppsCore;
 
 use WeppsExtensions\Addons\Jwt\Jwt;
 
+/**
+ * Класс для работы с пользователями.
+ */
 class Users
 {
 	private $token = '';
 	private $get = [];
 	private $errors = [];
+
+	/**
+	 * Конструктор класса Users.
+	 *
+	 * @param array $settings Настройки пользователя.
+	 */
 	public function __construct(array $settings = [])
 	{
 		$this->get = $settings;
 	}
+
+	/**
+	 * Метод для входа пользователя в систему.
+	 *
+	 * @return bool Возвращает true, если вход выполнен успешно, иначе false.
+	 */
 	public function signIn(): bool
 	{
 		$sql = "select * from s_Users where Login=? and ShowAdmin=1 and DisplayOff=0";
@@ -39,10 +54,22 @@ class Users
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		return true;
 	}
+
+	/**
+	 * Метод для получения ошибок.
+	 *
+	 * @return array Возвращает массив ошибок.
+	 */
 	public function errors()
 	{
 		return $this->errors;
 	}
+
+	/**
+	 * Метод для проверки аутентификации пользователя.
+	 *
+	 * @return bool Возвращает true, если пользователь аутентифицирован, иначе false.
+	 */
 	public function getAuth(): bool
 	{
 		$allheaders = Connect::$projectData['headers'] = Utils::getAllheaders();
@@ -65,6 +92,12 @@ class Users
 		Connect::$projectData['user'] = $res[0];
 		return true;
 	}
+
+	/**
+	 * Метод для удаления аутентификации пользователя.
+	 *
+	 * @return bool Возвращает true, если аутентификация удалена, иначе false.
+	 */
 	public function removeAuth(): bool
 	{
 		if (empty(Connect::$projectData['user'])) {
@@ -73,6 +106,12 @@ class Users
 		Utils::cookies('wepps_token');
 		return true;
 	}
+
+	/**
+	 * Метод для генерации пароля.
+	 *
+	 * @return string Возвращает сгенерированный пароль.
+	 */
 	public function password(): string
 	{
 		$letters = ['a', 'o', 'u', 'i', 'e', 'y', 'A', 'U', 'I', 'E', 'Y', 'w', 'r', 't', 'k', 'm', 'n', 'b', 'h', 'd', 's', 'W', 'R', 'T', 'K', 'M', 'N', 'B', 'H', 'D', 'S'];

@@ -1,14 +1,18 @@
 <?php
 namespace WeppsCore;
 
+/**
+ * Класс для преобразования текста и числовых значений в различные форматы.
+ */
 class TextTransforms {
 
 	/**
 	 * Корректные окончания для существительных
 	 * Пример результата: 0 коров, 1 корова, 3 коровы, 16 коров, 21 корова
-	 * 
-	 * @param int $count
-	 * @return string
+	 *
+	 * @param string $string Исходная строка
+	 * @param int $count Количество
+	 * @return string Строка с корректным окончанием
 	 */
 	public static function ending1(string $string,int $count) : string {
 		$tmp1 = $count;
@@ -27,8 +31,9 @@ class TextTransforms {
 	 * Корректные окончания для существительных
 	 * Пример результата: 0 товаров, 1 товар, 3 товара, 16 товаров, 21 товар
 	 *
-	 * @param int $count
-	 * @return string
+	 * @param string $string Исходная строка
+	 * @param int $count Количество
+	 * @return string Строка с корректным окончанием
 	 */
 	public static function ending2(string $string,int $count) : string {
 		$tmp1 = $count;
@@ -42,6 +47,13 @@ class TextTransforms {
 		return $string.$output;
 	}
 	
+	/**
+	 * Форматирует денежную сумму
+	 *
+	 * @param string $string Строка с денежной суммой
+	 * @param int $view Вид форматирования (0 - стандартный, 1 - с двумя знаками после запятой)
+	 * @return string Отформатированная денежная сумма
+	 */
 	public static function money($string,$view=0) {
 		$tmp = "";
 		if (strstr($string,"от ")!==false) {
@@ -56,6 +68,14 @@ class TextTransforms {
 		}
 		return 0;
 	}
+
+	/**
+	 * Преобразует дату в формат "день месяц год"
+	 *
+	 * @param string $date Дата в формате YYYY-MM-DD
+	 * @param int|null $plusyear Добавить год к дате (1 - добавить, null - не добавлять)
+	 * @return string Дата в формате "день месяц год"
+	 */
 	public static function date($date, $plusyear = null) {
 		/** @var array $matches */
 		$t = preg_match ( "/(\d\d\d\d)-(\d\d)-(\d\d)/", $date, $matches );
@@ -86,6 +106,13 @@ class TextTransforms {
 		}
 		return $dateD . " " . $dateM . " " . $dateY . " г.";
 	}
+
+	/**
+	 * Преобразует число в строку прописью
+	 *
+	 * @param int|float $inn Число для преобразования
+	 * @return string Число прописью
+	 */
 	public static function num2str($inn = 0) {
 		$o = array (); // Результаты
 		$str = array (); // Основные массивы с строками
@@ -191,12 +218,10 @@ class TextTransforms {
 						'триллион',
 						'триллиона',
 						'триллионов',
-						2 
-				) 
-		) // 10^12
-		  // можно дописать всякие секстилионы ...
-		;
-		
+						2
+				)  // 10^12
+		);
+
 		// Нормализация значения, избавляемся от ТОЧКИ, например 6754321.67 переводим в 7654321067
 		$tmp = explode ( '.', str_replace ( ',', '.', $inn ) );
 		$rub = $tmp [0]; // рубли
@@ -234,6 +259,16 @@ class TextTransforms {
 		}
 		return  implode ( ' ', $o );
 	}
+
+	/**
+	 * Возвращает правильную форму существительного в зависимости от числа
+	 *
+	 * @param int $n Число
+	 * @param string $f1 Форма для 1
+	 * @param string $f2 Форма для 2,3,4
+	 * @param string $f5 Форма для 5 и более
+	 * @return string Правильная форма существительного
+	 */
 	private static function pluralForm($n, $f1, $f2, $f5) {
 		if (intval ( $n ) == 0)
 			return '';
@@ -247,10 +282,25 @@ class TextTransforms {
 			return $f1;
 		return $f5;
 	}
+
+	/**
+	 * Форматирует число в строку с заданным форматом
+	 *
+	 * @param int $number Число для форматирования
+	 * @param string $format Формат строки (по умолчанию "%04d")
+	 * @return string Отформатированное число
+	 */
 	public static function number(int $number,string $format="%04d") : string {
 		return sprintf($format,$number);
 	}
 		
+	/**
+	 * Транслитерирует строку
+	 *
+	 * @param string $string Строка для транслитерации
+	 * @param int $rule Правило транслитерации (1 - стандартное, 2 - в нижний регистр, 3 - с точками)
+	 * @return string Транслитерированная строка
+	 */
 	public static function translit($string,$rule=1) {
 		$tr = array(
 				"Ґ"=>"G","Ё"=>"YO","Є"=>"E","Ї"=>"YI","І"=>"I",

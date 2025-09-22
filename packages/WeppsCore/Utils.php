@@ -2,8 +2,8 @@
 namespace WeppsCore;
 
 /**
- * Класс Utils представляет собой набор вспомогательных функций для 
- * обработки данных, форматирования, отладки и работы 
+ * Класс Utils представляет собой набор вспомогательных функций для
+ * обработки данных, форматирования, отладки и работы
  * с HTTP-заголовками/куками.
  */
 class Utils
@@ -89,8 +89,10 @@ class Utils
 
 	/**
 	 * Форматирование входной строки
-	 * @param (string|array) $value
-	 * @return string
+	 *
+	 * @param string|array $value Входная строка или массив строк для форматирования
+	 * @param string $chr Символы для удаления из начала и конца строки
+	 * @return string|array Отформатированная строка или массив строк
 	 */
 	public static function trim($value, string $chr = '')
 	{
@@ -115,8 +117,9 @@ class Utils
 
 	/**
 	 * Форматирование телефонного номера
-	 * @param string|array $value
-	 * @return array
+	 *
+	 * @param string $string Входная строка с телефонным номером
+	 * @return array Массив с форматированным номером и его представлением
 	 */
 	public static function phone(string $string = ''): array
 	{
@@ -147,9 +150,11 @@ class Utils
 	}
 	/**
 	 * Установка массиву ключей по произвольному полю
-	 * @param array $value
-	 * @param string $index
-	 * @return array
+	 *
+	 * @param array $value Входной массив
+	 * @param string $index Поле, которое будет использоваться в качестве ключа
+	 * @param string $output Поле, которое будет использоваться в качестве значения (опционально)
+	 * @return array Массив с ключами, установленными по указанному полю
 	 */
 	public static function array(array $value, string $index = 'Id', string $output = ''): array
 	{
@@ -171,6 +176,11 @@ class Utils
 
 	/**
 	 * Получить массив из строки
+	 *
+	 * @param string $string Входная строка
+	 * @param string $columns Разделитель столбцов
+	 * @param string $rows Разделитель строк
+	 * @return array Двумерный массив, полученный из строки
 	 */
 	public static function arrayFromString(string $string, string $columns = "\t", string $rows = "\n"): array
 	{
@@ -189,14 +199,22 @@ class Utils
 	}
 	/**
 	 * Поиск элемента в массиве по значению
-	 * @param mixed $value
-	 * @param mixed $key
-	 * @param array $array
-	 * @return array
+	 *
+	 * @param mixed $value Значение для поиска
+	 * @param mixed $key Ключ, по которому будет производиться поиск
+	 * @param array $array Входной массив
+	 * @return array Массив, содержащий найденные элементы
 	 */
-	public static function arrayFilter($value,$key='Id',array $array) {
-		return array_filter($array, fn($v) => $v[$key]===$value, ARRAY_FILTER_USE_BOTH);
+	public static function arrayFilter($value, $key = 'Id', array $array)
+	{
+		return array_filter($array, fn($v) => $v[$key] === $value, ARRAY_FILTER_USE_BOTH);
 	}
+	/**
+	 * Генерация GUID
+	 *
+	 * @param string $string Входная строка для генерации GUID (опционально)
+	 * @return string Сгенерированный GUID
+	 */
 	public static function guid(string $string = ''): string
 	{
 		$charid = ($string == '') ? strtolower(md5(uniqid(rand(), true))) : strtolower(md5($string));
@@ -207,16 +225,27 @@ class Utils
 			substr($charid, 20, 12);
 		return $guid;
 	}
+	/**
+	 * Округление числа
+	 *
+	 * @param float $number Число для округления
+	 * @param int $scale Количество знаков после запятой
+	 * @param string $type Тип возвращаемого значения ('float' или 'str')
+	 * @return float|string Округленное число в виде float или строки
+	 */
 	public static function round($number, $scale = 2, $type = 'float')
 	{
-		for ($i=8;$i>=$scale;$i=$i-2) {
-			$number = round($number, $i);
-		}
+		$number = round($number, $scale);
 		if ($type == 'str') {
 			return number_format($number, $scale, ".", " ");
 		}
-		return doubleval(number_format($number, $scale, ".", ""));
+		return (float)number_format($number, $scale, ".", "");
 	}
+	/**
+	 * Получение всех HTTP-заголовков
+	 *
+	 * @return array Ассоциативный массив всех HTTP-заголовков
+	 */
 	public static function getAllHeaders(): array
 	{
 		$headers = getallheaders();
@@ -227,6 +256,14 @@ class Utils
 		}
 		return $headers;
 	}
+	/**
+	 * Установка куки
+	 *
+	 * @param string $name Имя куки
+	 * @param string $value Значение куки
+	 * @param int $lifetime Время жизни куки в секундах
+	 * @return void
+	 */
 	public static function cookies(string $name, string $value = '', int $lifetime = 86400)
 	{
 		$settings = [
@@ -245,6 +282,11 @@ class Utils
 }
 
 if (!function_exists('getallheaders')) {
+	/**
+	 * Получение всех HTTP-заголовков (если функция не существует)
+	 *
+	 * @return array Ассоциативный массив всех HTTP-заголовков
+	 */
 	function getallheaders()
 	{
 		$headers = [];

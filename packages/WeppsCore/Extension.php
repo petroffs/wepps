@@ -1,5 +1,11 @@
 <?php
 namespace WeppsCore;
+/**
+ * Абстрактный класс Extension
+ *
+ * Этот класс предоставляет базовые функциональные возможности для расширений.
+ * Он включает в себя навигатор, управление заголовками шаблонов, обработку входных данных и управление шаблонами.
+ */
 abstract class Extension
 {
 	/**
@@ -40,6 +46,15 @@ abstract class Extension
 	 */
 	public $extensionData = [];
 
+	/**
+	 * Конструктор класса Extension
+	 *
+	 * Инициализирует навигатор, заголовки шаблонов и входные данные.
+	 *
+	 * @param Navigator $navigator Навигатор
+	 * @param TemplateHeaders $headers Заголовки шаблонов
+	 * @param array $get Входные данные
+	 */
 	public function __construct(Navigator $navigator, TemplateHeaders $headers, $get = [])
 	{
 		$this->get = Utils::trim($get);
@@ -51,6 +66,17 @@ abstract class Extension
 		return;
 	}
 
+	/**
+	 * Получает элемент из таблицы
+	 *
+	 * Этот метод получает элемент из указанной таблицы по условию.
+	 * Если элемент не найден, выбрасывается исключение 404.
+	 *
+	 * @param string $tableName Название таблицы
+	 * @param string $condition Условие для выборки
+	 * @return array Возвращает массив с данными элемента
+	 * @throws Exception Если элемент не найден
+	 */
 	public function getItem($tableName, $condition = '')
 	{
 		$id = Navigator::$pathItem;
@@ -80,6 +106,8 @@ abstract class Extension
 
 	/**
 	 * Реализация логики
+	 *
+	 * Этот метод должен быть реализован в дочерних классах для выполнения специфической логики.
 	 */
 	abstract public function request();
 }

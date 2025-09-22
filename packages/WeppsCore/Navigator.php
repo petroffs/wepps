@@ -1,5 +1,8 @@
 <?php
 namespace WeppsCore;
+/**
+ * Класс Navigator отвечает за навигацию по сайту, обработку URL и управление контентом.
+ */
 class Navigator
 {
 	private $data;
@@ -74,6 +77,13 @@ class Navigator
 	 */
 	public $tpl;
 
+	/**
+	 * Конструктор класса Navigator.
+	 *
+	 * @param string|null $url URL-адрес для навигации.
+	 * @param integer|null $backOffice Признак текущего расположения (=1 если в админчасти).
+	 * @throws Exception Если раздел не найден.
+	 */
 	function __construct($url = null, $backOffice = null)
 	{
 		if ($url == null) {
@@ -116,14 +126,14 @@ class Navigator
 	}
 	/**
 	 * Извлечение переменных (на основе Url) для работы с мультиязычной составляющей
-	 * 
-	 * @param string $url
-	 * @return array
+	 *
+	 * @param string $url URL-адрес для навигации.
+	 * @return array Массив с данными о пути, языке и мультиязычности.
 	 */
 	private function getNavigateUrl($url)
 	{
 		$m = preg_match("/([^\/\?\&\=]+)\.([\w\d]{1,7}+)($|[\?])/", $url, $match);
-		if (empty(str_ends_with($url,'/')) && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
+		if (empty(str_ends_with($url, '/')) && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
 			header("HTTP/1.1 301 Moved Permanently");
 			header("Location: {$url}/");
 			exit();

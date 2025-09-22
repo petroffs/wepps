@@ -19,32 +19,68 @@ class TemplateHeaders
 		'css' => []
 	];
 
+	/**
+	 * Добавляет путь к JavaScript файлу в список для подключения.
+	 *
+	 * @param string $filename Путь к JavaScript файлу.
+	 * @return string Возвращает путь к JavaScript файлу.
+	 */
 	public function js(string $filename): string
 	{
 		#return $this->cssjs['js'][] = (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
 		return $this->cssjs['js'][] = $filename;
 	}
+
+	/**
+	 * Добавляет путь к CSS файлу в список для подключения.
+	 *
+	 * @param string $filename Путь к CSS файлу.
+	 * @return string Возвращает путь к CSS файлу.
+	 */
 	public function css(string $filename): string
 	{
 		#return $this->cssjs['css'][] = (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
 		return $this->cssjs['css'][] = $filename;
 	}
+
+	/**
+	 * Добавляет meta-тег в список для подключения.
+	 *
+	 * @param string $meta HTML-код meta-тега.
+	 * @return string Возвращает HTML-код meta-тега.
+	 */
 	public function meta(string $meta): string
 	{
 		return $this->output['meta'] .= (string) "\n" . $meta;
 	}
+
+	/**
+	 * Очищает список meta-тегов.
+	 *
+	 * @return string Возвращает пустую строку.
+	 */
 	public function resetMeta(): string
 	{
 		return $this->output['meta'] = "";
 	}
+
+	/**
+	 * Объединяет списки CSS и JS файлов из другого объекта TemplateHeaders.
+	 *
+	 * @param TemplateHeaders $headers Объект TemplateHeaders, списки CSS и JS файлов которого будут объединены.
+	 * @return void
+	 */
 	public function join(TemplateHeaders $headers): void
 	{
 		$this->cssjs['js'] = array_merge($this->cssjs['js'], $headers->cssjs['js']);
 		$this->cssjs['css'] = array_merge($this->cssjs['css'], $headers->cssjs['css']);
 	}
+
 	/**
-	 * Установка $this->output - содержит html-код
-	 * @return string[]
+	 * Подготавливает HTML-код для подключения CSS и JS файлов.
+	 *
+	 * @param bool $libOnly Флаг, указывающий, нужно ли подключать только библиотеки.
+	 * @return string[] Возвращает массив с HTML-кодом для подключения CSS и JS файлов.
 	 */
 	private function prepare(bool $libOnly = false): array
 	{
@@ -66,6 +102,12 @@ class TemplateHeaders
 		$this->output['cssjs'] = trim($this->output['cssjs'], "\n");
 		return $this->output;
 	}
+
+	/**
+	 * Возвращает HTML-код для подключения CSS и JS файлов, с учетом минификации.
+	 *
+	 * @return string[] Возвращает массив с HTML-кодом для подключения CSS и JS файлов.
+	 */
 	public function get(): array
 	{
 		if (Connect::$projectServices['minify']['active'] === false) {

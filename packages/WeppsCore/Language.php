@@ -1,13 +1,19 @@
 <?php
 namespace WeppsCore;
+/**
+ * Класс Language
+ *
+ * Этот класс предоставляет функциональность для работы с языками и переводами.
+ */
 class Language
 {
 	/**
-	 * Текущий язык раздела
-	 * ($langLink - например /en/)
+	 * Получает текущий язык раздела
 	 *
-	 * @param string $langLink
-	 * @return array
+	 * Этот метод получает информацию о текущем языке раздела на основе ссылки языка.
+	 *
+	 * @param string|null $langLink Ссылка языка (например /en/)
+	 * @return array Возвращает массив с информацией о языке
 	 */
 	public static function getLanguage($langLink = null)
 	{
@@ -51,11 +57,13 @@ class Language
 	}
 
 	/**
-	 * Перевод для шаблонов (список "Перевод")
+	 * Получает переводы для шаблонов
 	 *
-	 * @param array $langData
-	 * @param number $backOffice
-	 * @return array
+	 * Этот метод получает переводы для шаблонов из списка "Перевод".
+	 *
+	 * @param array $langData Информация о языке
+	 * @param int $backOffice Флаг для определения, является ли это административной частью
+	 * @return array Возвращает массив с переводами
 	 */
 	public static function getMultilanguage($langData, $backOffice = 0)
 	{
@@ -68,12 +76,14 @@ class Language
 		return $ppsInterface;
 	}
 	/**
-	 * Перевод элементов списка данных
-	 * 
-	 * @param array $data
-	 * @param array $scheme
-	 * @param array $lang
-	 * @return array
+	 * Получает переводы элементов списка данных
+	 *
+	 * Этот метод получает переводы элементов списка данных на основе схемы и языка.
+	 *
+	 * @param array $data Данные для перевода
+	 * @param array $scheme Схема данных
+	 * @param array $lang Информация о языке
+	 * @return array Возвращает массив с переведенными данными
 	 */
 	public static function getRows($data = [], $scheme = [], $lang = [])
 	{

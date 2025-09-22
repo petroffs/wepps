@@ -1,10 +1,25 @@
 <?php
 namespace WeppsCore;
-
-class Memcached {
+/**
+ * Класс Memcached
+ *
+ * Этот класс предоставляет функциональность для работы с Memcached.
+ * Он поддерживает как Memcache, так и Memcached.
+ */
+class Memcached
+{
 	private $memcache;
 	private $memcached;
-	public function __construct($isActive='auto') {
+
+	/**
+	 * Конструктор класса Memcached
+	 *
+	 * Инициализирует соединение с Memcached сервером.
+	 *
+	 * @param string $isActive Флаг активности Memcached (yes, no, auto)
+	 */
+	public function __construct($isActive = 'auto')
+	{
 		switch ($isActive) {
 			case 'yes':
 				$isActive = true;
@@ -24,7 +39,19 @@ class Memcached {
 			$this->memcached->addServer(Connect::$projectServices['memcached']['host'], Connect::$projectServices['memcached']['port']);
 		}
 	}
-	public function set($key,$value,$expire = 0) {
+
+	/**
+	 * Устанавливает значение в Memcached
+	 *
+	 * Этот метод устанавливает значение по указанному ключу.
+	 *
+	 * @param string $key Ключ
+	 * @param mixed $value Значение
+	 * @param int $expire Время жизни значения в секундах
+	 * @return bool Возвращает true в случае успеха
+	 */
+	public function set($key, $value, $expire = 0)
+	{
 		$expire = ($expire == 0) ? Connect::$projectServices['memcached']['expire'] : $expire;
 		if (!empty($this->memcache)) {
 			$this->memcache->set($key, $value, false, $expire);
@@ -33,6 +60,15 @@ class Memcached {
 		}
 		return true;
 	}
+
+	/**
+	 * Получает значение из Memcached
+	 *
+	 * Этот метод получает значение по указанному ключу.
+	 *
+	 * @param string $key Ключ
+	 * @return mixed Возвращает значение, если ключ найден, иначе null
+	 */
 	public function get($key)
 	{
 		if (!empty($this->memcache) && !empty($this->memcache->get($key))) {

@@ -1,5 +1,8 @@
 <?php
 namespace WeppsCore;
+/**
+ * Класс NavigatorData расширяет функциональность класса Data для работы с навигацией по сайту.
+ */
 class NavigatorData extends Data
 {
 	public $backOffice = 0;
@@ -8,6 +11,12 @@ class NavigatorData extends Data
 	private $navLevel = 0;
 	private $rchild = [];
 
+	/**
+	 * Получение навигации по сайту.
+	 *
+	 * @param integer $navLevel Уровень вложенности для групп навигации.
+	 * @return array Массив с группами и подразделами навигации.
+	 */
 	public function getNav($navLevel)
 	{
 		$condition = ($this->backOffice == 1) ? "t.DisplayOff in (0,1)" : "t.DisplayOff = 0";
@@ -47,8 +56,9 @@ class NavigatorData extends Data
 
 	/**
 	 * Путь до раздела (Хлебные крошки)
-	 * 
-	 * @param integer $id
+	 *
+	 * @param integer $id Идентификатор раздела.
+	 * @return array Массив с путём до раздела.
 	 */
 	public function getWay($id)
 	{
@@ -61,9 +71,9 @@ class NavigatorData extends Data
 
 	/**
 	 * Получение подраздела
-	 * 
-	 * @param integer $id
-	 * @return array
+	 *
+	 * @param integer $id Идентификатор родительского раздела.
+	 * @return array Массив с подразделами.
 	 */
 	public function getChild($id)
 	{
@@ -76,8 +86,8 @@ class NavigatorData extends Data
 
 	/**
 	 * Получение подраздела в рекурсии
-	 * @param integer $id
-	 * @return array
+	 * @param integer $id Идентификатор родительского раздела.
+	 * @return array Массив с подразделами в рекурсии.
 	 */
 	public function getRChild($id)
 	{
@@ -91,6 +101,13 @@ class NavigatorData extends Data
 		return $this->rchild;
 	}
 
+	/**
+	 * Получение дерева подразделов
+	 *
+	 * @param array $res Массив с подразделами.
+	 * @param integer $parent Идентификатор родительского раздела.
+	 * @return array Массив с деревом подразделов.
+	 */
 	public function getChildTree($res = array(), $parent = 1)
 	{
 		if ($parent == 1) {

@@ -1,5 +1,9 @@
 <?php
 namespace WeppsCore;
+
+/**
+ * Абстрактный класс для обработки HTTP-запросов.
+ */
 abstract class Request
 {
 	/**
@@ -21,12 +25,6 @@ abstract class Request
 	public $tpl;
 
 	/**
-	 * Инициализация $smarty
-	 * @var \Smarty
-	 */
-	#private $smarty;
-
-	/**
 	 * Подключение шаблона, который передается в общий шаблон self::$tpl
 	 * @var array
 	 */
@@ -44,6 +42,11 @@ abstract class Request
 
 	public $cli;
 
+	/**
+	 * Конструктор класса Request.
+	 *
+	 * @param array $settings Массив настроек для инициализации запроса.
+	 */
 	public function __construct(array $settings = [])
 	{
 		$this->get = Utils::trim($settings);
@@ -64,12 +67,14 @@ abstract class Request
 	}
 
 	/**
-	 * Обработка запроса (Реализация логики)
+	 * Абстрактный метод для обработки запроса.
+	 *
+	 * @param string $action Действие, которое необходимо выполнить.
 	 */
 	abstract public function request(string $action = '');
 
 	/**
-	 * Подключение стилей и js-сценариев
+	 * Подключение стилей и js-сценариев.
 	 * Подключаются автоматически, при наличии файла:
 	 * Для шаблона $this->tpl = "RequestExample.tpl" требуется
 	 * файл RequestExample.tpl.css или RequestExample.tpl.js
@@ -93,10 +98,24 @@ abstract class Request
 				$this->get['cssjs'] .= "<script type=\"text/javascript\">{$smarty->fetch($this->tpl . '.js')}</script>";
 		}
 	}
+
+	/**
+	 * Назначение переменной для шаблона.
+	 *
+	 * @param string $key Ключ переменной.
+	 * @param mixed $value Значение переменной.
+	 */
 	public function assign($key, $value)
 	{
 		$this->assign[$key] = $value;
 	}
+
+	/**
+	 * Подключение шаблона и назначение переменной для шаблона.
+	 *
+	 * @param string $key Ключ переменной.
+	 * @param string $value Значение переменной.
+	 */
 	public function fetch($key, $value)
 	{
 		$smarty = Smarty::getSmarty();
@@ -105,6 +124,14 @@ abstract class Request
 		}
 		$smarty->assign($key, $smarty->fetch($value));
 	}
+
+	/**
+	 * Вывод сообщений об ошибках и успехе.
+	 *
+	 * @param string $message Сообщение об успехе.
+	 * @param bool $print Флаг для вывода сообщения.
+	 * @return array Массив с HTML-кодом сообщения и количеством ошибок.
+	 */
 	public function outer(string $message = '', bool $print = true): array
 	{
 		$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);

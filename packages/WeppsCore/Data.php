@@ -16,89 +16,94 @@ namespace WeppsCore;
 class Data
 {
 	/**
-     * Таблица БД, с которой производятся операции
-     * @var string
-     */
-    public $tableName;
+	 * Таблица БД, с которой производятся операции
+	 * @var string
+	 */
+	public $tableName;
 
-    /**
-     * Количество строк запроса
-     * @var int
-     */
-    public $count = 0;
+	/**
+	 * Количество строк запроса
+	 * @var int
+	 */
+	public $count = 0;
 
-    /**
-     * Пагинация, заполняется при вызове методов fetchmini/fetch
-     * @var array
-     */
-    public $paginator;
+	/**
+	 * Пагинация, заполняется при вызове методов fetchmini/fetch
+	 * @var array
+	 */
+	public $paginator;
 
-    /**
-     * Запрос БД, сформированный в fetchmini/fetch
-     * @var string
-     */
-    public $sql;
+	/**
+	 * Запрос БД, сформированный в fetchmini/fetch
+	 * @var string
+	 */
+	public $sql;
 
-    /**
-     * Вспомогательный SQL-запрос для подсчёта строк
-     * @var string
-     */
-    private $sqlCounter;
+	/**
+	 * Вспомогательный SQL-запрос для подсчёта строк
+	 * @var string
+	 */
+	private $sqlCounter;
 
-    /**
-     * Длина обрезки полей типа area в fetch()
-     * @var int
-     */
-    public $truncate = 0;
+	/**
+	 * Длина обрезки полей типа area в fetch()
+	 * @var int
+	 */
+	public $truncate = 0;
 
-    /**
-     * Схема текущей таблицы БД
-     * @var array|null
-     */
-    private $scheme;
+	/**
+	 * Схема текущей таблицы БД
+	 * @var array|null
+	 */
+	private $scheme;
 
-    /**
-     * Перечисление полей таблицы
-     * @var string
-     */
-    private $fields = '';
+	/**
+	 * Перечисление полей таблицы
+	 * @var string
+	 */
+	private $fields = '';
 
-    /**
-     * Дополнительные поля для вывода (например, функции)
-     * @var string
-     */
-    private $concat = '';
+	/**
+	 * Дополнительные поля для вывода (например, функции)
+	 * @var string
+	 */
+	private $concat = '';
 
-    /**
-     * JOIN-запросы для сложных выборок
-     * @var string
-     */
-    private $join = '';
+	/**
+	 * JOIN-запросы для сложных выборок
+	 * @var string
+	 */
+	private $join = '';
 
-    /**
-     * Группировка результатов
-     * @var string
-     */
-    private $group = '';
+	/**
+	 * Группировка результатов
+	 * @var string
+	 */
+	private $group = '';
 
-    /**
-     * Условия HAVING для SQL-запроса
-     * @var string
-     */
-    private $having = '';
+	/**
+	 * Условия HAVING для SQL-запроса
+	 * @var string
+	 */
+	private $having = '';
 
-    /**
-     * Параметры для подготовленных запросов
-     * @var array
-     */
-    private $params = [];
+	/**
+	 * Параметры для подготовленных запросов
+	 * @var array
+	 */
+	private $params = [];
 
-    /**
-     * Язык для локализации данных
-     * @var mixed
-     */
-    public $lang;
+	/**
+	 * Язык для локализации данных
+	 * @var mixed
+	 */
+	public $lang;
 
+	/**
+	 * Конструктор класса Data
+	 *
+	 * @param string $tableName Имя таблицы БД
+	 */
 	public function __construct($tableName = '')
 	{
 		if ($tableName == "") {
@@ -108,6 +113,12 @@ class Data
 	}
 	/**
 	 * Получить набор строк таблицы
+	 *
+	 * @param string $conditions Условия выборки
+	 * @param int $onPage Количество строк на странице
+	 * @param int $currentPage Текущая страница
+	 * @param string $orderBy Поле для сортировки
+	 * @return array Массив строк таблицы
 	 */
 	public function fetchmini(string $conditions = '', $onPage = 20, $currentPage = 1, $orderBy = "Priority")
 	{
@@ -136,11 +147,12 @@ class Data
 	}
 	/**
 	 * Получить набор строк таблицы с соединением на основе схемы поля
-	 * @param integer $id
-	 * @param string $onPage
-	 * @param string $currentPage
-	 * @param string $orderBy
-	 * @return array
+	 *
+	 * @param string $conditions Условия выборки
+	 * @param int $onPage Количество строк на странице
+	 * @param int $currentPage Текущая страница
+	 * @param string $orderBy Поле для сортировки
+	 * @return array Массив строк таблицы
 	 */
 	public function fetch(string $conditions = '', $onPage = 20, $currentPage = 0, $orderBy = "t.Priority")
 	{
@@ -215,12 +227,12 @@ class Data
 	}
 	/**
 	 * Вспомогательная функция для обработки исходных переменных
-	 * 
-	 * @param integer $id
-	 * @param integer $onPage
-	 * @param integer $currentPage
-	 * @param string $orderBy
-	 * @return array
+	 *
+	 * @param string $conditions Условия выборки
+	 * @param int $onPage Количество строк на странице
+	 * @param int $currentPage Текущая страница
+	 * @param string $orderBy Поле для сортировки
+	 * @return array Массив с обработанными параметрами
 	 */
 	private function _getFormatted(string $conditions, $onPage, $currentPage, $orderBy)
 	{
@@ -244,10 +256,10 @@ class Data
 	}
 	/**
 	 * Пагинация для организации постраничного вывода
-	 * 
-	 * @param integer $onPage
-	 * @param integer $currentPage
-	 * @return array
+	 *
+	 * @param int $onPage Количество строк на странице
+	 * @param int $currentPage Текущая страница
+	 * @return array Массив с данными пагинации
 	 */
 	private function _getPaginator($onPage, $currentPage)
 	{
@@ -284,7 +296,7 @@ class Data
 			return [];
 		}
 		$arr['count'] = count($arr['pages']);
-		
+
 		$visiblePages = 5;
 		$start = max(1, $currentPage - $visiblePages);
 		$end = min($arr['count'], $currentPage + $visiblePages);
@@ -299,8 +311,9 @@ class Data
 	}
 	/**
 	 * Получение схемы полей таблицы
-	 * 
-	 * @return array
+	 *
+	 * @param int $renew Флаг для обновления схемы
+	 * @return array Массив с данными схемы таблицы
 	 */
 	public function getScheme($renew = 0)
 	{
@@ -328,17 +341,18 @@ class Data
 	/**
 	 * Установка $this->fields
 	 * Перечисление полей
-	 * @param string $value
+	 *
+	 * @param string $value Перечисление полей
 	 */
 	public function setFields($value)
 	{
 		$this->fields = $value;
 	}
-
 	/**
 	 * Установка $this->concat
 	 * Перечисление дополнительных полей (с функциями, например)
-	 * @param string $value
+	 *
+	 * @param string $value Перечисление дополнительных полей
 	 */
 	public function setConcat($value)
 	{
@@ -348,23 +362,30 @@ class Data
 	/**
 	 * Установка $this->join
 	 * Компоновка left outer join для сложных запросов
-	 * @param string $value
+	 *
+	 * @param string $value Компоновка left outer join
 	 */
 	public function setJoin($value)
 	{
 		$this->join = $value;
 	}
-
+	/**
+	 * Установка параметров для подготовленных запросов
+	 *
+	 * @param array $params Параметры для подготовленных запросов
+	 * @return bool Возвращает true в случае успешной установки параметров
+	 */
 	public function setParams(array $params): bool
 	{
 		$this->params = $params;
 		return true;
 	}
-
 	/**
 	 * Установка $this->group
-	 * Указание стобца для группировки
-	 * @param string $value
+	 * Указание столбца для группировки
+	 *
+	 * @param string $value Столбец для группировки
+	 * @return bool Возвращает true в случае успешной установки группировки
 	 */
 	public function setGroup($value): bool
 	{
@@ -372,9 +393,24 @@ class Data
 		return true;
 	}
 	/**
-	 * Обвновить строку
-	 * @param integer $id - Id строки
-	 * @param array $row - Массив столбцов и новых значений
+	 * Установка $this->having
+	 * Указание условий HAVING для SQL-запроса
+	 *
+	 * @param string $value Условия HAVING
+	 * @return bool Возвращает true в случае успешной установки условий HAVING
+	 */
+	public function setHaving($value): bool
+	{
+		$this->having = $value;
+		return true;
+	}
+	/**
+	 * Обновление строки
+	 *
+	 * @param int $id Id строки
+	 * @param array $row Массив столбцов и новых значений
+	 * @param array $settings Дополнительные настройки
+	 * @return mixed Результат выполнения запроса
 	 */
 	public function set(int $id, array $row, array $settings = [])
 	{
@@ -383,10 +419,12 @@ class Data
 		return Connect::$instance->query($this->sql, $arr['row']);
 	}
 	/**
-	 * Добавить строку
-	 * @param array $row
-	 * @param array $settings
-	 * @return number
+	 * Добавление строки
+	 *
+	 * @param array $row Массив данных для добавления
+	 * @param int $insertOnly Флаг для добавления только строки
+	 * @return int Id добавленной строки
+	 * @throws \RuntimeException Если обязательное поле пустое
 	 */
 	public function add(array $row = [], int $insertOnly = 0): int
 	{
@@ -429,8 +467,10 @@ class Data
 	}
 
 	/**
-	 * Удаление строки
-	 * @param integer $id
+	 * Удаление строки из таблицы и связанных файлов
+	 *
+	 * @param int $id Идентификатор строки для удаления
+	 * @return bool Возвращает true в случае успешного удаления
 	 */
 	public function remove(int $id): bool
 	{
