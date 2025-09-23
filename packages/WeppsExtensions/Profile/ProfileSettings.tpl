@@ -68,6 +68,12 @@
                         <input type="text" name="phone" value="{$user.Phone|escape|substr:1}" placeholder="" />
                     </label>
                 </section>
+				<section class="pps_hide change-phone-code">
+                    <div class="title">Код подтверждения</div>
+                    <label class="pps pps_input pps_require">
+                        <input type="text" name="code" value="" placeholder="" disabled/>
+                    </label>
+                </section>
             </fieldset>
             <fieldset>
                 <section>

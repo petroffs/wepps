@@ -81,6 +81,7 @@ class RequestProfile extends Request
 				break;
 			case 'change-phone':
 				$this->changePhone();
+				$this->outer("",true,false);
 				break;
 			case 'change-password':
 				$this->changePassword();
@@ -338,7 +339,7 @@ class RequestProfile extends Request
 		if (empty($this->get['id']) || empty($this->get['message'])) {
 			return false;
 		}
-		if (empty(Connect::$instance->fetch('select Id from Orders where Id=? and UserId=?', [$this->get['id'], Connect::$projectData['user']['Id']]))) {
+		if (empty(Connect::$instance->fetch('SELECT Id from Orders where Id=? and UserId=?', [$this->get['id'], Connect::$projectData['user']['Id']]))) {
 			return false;
 		}
 		$arr = Connect::$instance->prepare([
@@ -427,7 +428,45 @@ class RequestProfile extends Request
 	 */
 	private function changePhone(): bool
 	{
-
+		$this->errors = [];
+		if (empty($phone = Utils::phone($this->get['phone'])['num'])) {
+			$this->errors['phone'] = 'Неверный формат';
+		}
+		if (strlen($phone) != 11) {
+			$this->errors['phone'] = 'Неверный формат';
+		} elseif (substr($phone, 0, 1) != '7') {
+			$this->errors['phone'] = 'Неверный формат';
+		}
+		if (empty(array_filter($this->errors))) {
+			$row = Connect::$instance->fetch('SELECT * from s_Users where Phone=?', [$phone]);
+			if (!empty($row)) {
+				$this->errors['phone'] = 'Пользователь с таким телефоном уже существует';
+			}
+		}
+		$memcache = new Memcached('yes');
+		if (!empty($this->get['code'])) {
+			$codeCached = $phone.';;'.$this->get['code'];
+			if (empty($memcache->get($codeCached)) || $memcache->get($codeCached)!=$this->get['code']) {
+				$this->errors['code'] = 'Неверный код';
+				return false;
+			}
+			Connect::$instance->query('UPDATE s_Users set Phone=? where Id=?', [$phone,Connect::$projectData['user']['Id']]);
+			$this->outer('Ваш телефон обновлен');
+			$memcache->delete($codeCached);
+			exit();
+		}
+		if (!empty(array_filter($this->errors))) {
+			return false;
+		}
+		$code = rand(10001, 99999);
+		$codeCached = $phone.';;'.$code;
+		$memcache->set($codeCached, $code, 600);
+		$mail = new Mail('html');
+		/*
+		 * Желательно настроить через CMC
+		 */
+		$mail->mail(Connect::$projectData['user']['Email'],'Подтверждение телефона','Код подтверждения смены номера телефона: <b>'.$code.'</b>');
+		echo "<script>$('.change-phone-code').removeClass('pps_hide');$('.change-phone-code').find('input').prop('disabled',false);</script>";
 		return true;
 	}
 	/**
