@@ -201,11 +201,11 @@ class Utils
 	 * Поиск элемента в массиве по значению
 	 *
 	 * @param mixed $value Значение для поиска
-	 * @param mixed $key Ключ, по которому будет производиться поиск
 	 * @param array $array Входной массив
+	 * @param mixed $key Ключ, по которому будет производиться поиск
 	 * @return array Массив, содержащий найденные элементы
 	 */
-	public static function arrayFilter($value, $key = 'Id', array $array)
+	public static function arrayFilter($value, array $array, $key = 'Id')
 	{
 		return array_filter($array, fn($v) => $v[$key] === $value, ARRAY_FILTER_USE_BOTH);
 	}
