@@ -77,4 +77,21 @@ class Memcached
 			return $this->memcached->get($key);
 		}
 	}
+	/**
+	 * Удаляет значение из Memcached
+	 *
+	 * Этот метод удаляет значение по указанному ключу.
+	 *
+	 * @param string $key Ключ
+	 * @return bool Возвращает true в случае успеха
+	 */
+	public function delete($key)
+	{
+		if (!empty($this->memcache)) {
+			$this->memcache->delete($key);
+		} else if (!empty($this->memcached)) {
+			$this->memcached->delete($key);
+		}
+		return true;
+	}
 }

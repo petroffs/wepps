@@ -283,7 +283,8 @@ class Validator
 	public static function setFormErrorsIndicate(array $errors = [], string $form): array
 	{
 		$str = "<script>\n";
-		if (!empty($errors)) {
+		if (!empty(array_filter($errors))) {
+			Utils::debug($errors,2);
 			foreach ($errors as $key => $value) {
 				if ($value != "") {
 					$str .= "
@@ -306,7 +307,7 @@ class Validator
 			}
 			$str .= "
 			$([document.documentElement, document.body]).animate({
-				scrollTop: $('#{$form}').find('.pps_error_parent').eq(0).offset().top - 300
+				scrollTop: $('#{$form}').find('.pps_error_parent').offset().top - 300
 			}, 1000);";
 		}
 		$str .= "

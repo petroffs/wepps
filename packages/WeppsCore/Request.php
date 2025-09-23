@@ -132,15 +132,15 @@ abstract class Request
 	 * @param bool $print Флаг для вывода сообщения.
 	 * @return array Массив с HTML-кодом сообщения и количеством ошибок.
 	 */
-	public function outer(string $message = '', bool $print = true): array
+	public function outer(string $message = '', bool $printErrors = true, bool $printSuccess = true): array
 	{
 		$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
-		if ($print === true) {
+		if ($printErrors === true) {
 			echo $outer['html'];
 		}
 		if ($outer['count'] == 0) {
 			$outer = Validator::setFormSuccess($message, $this->get['form']);
-			if ($print === true) {
+			if ($printSuccess === true) {
 				echo $outer['html'];
 			}
 		}

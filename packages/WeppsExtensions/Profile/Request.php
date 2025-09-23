@@ -77,7 +77,7 @@ class RequestProfile extends Request
 				break;
 			case 'change-email':
 				$this->changeEmail();
-				$this->outer("Для завершения смены E-mail - загляните в почту");
+				$this->outer("",true,false);
 				break;
 			case 'change-phone':
 				$this->changePhone();
@@ -388,38 +388,37 @@ class RequestProfile extends Request
 	 */
 	private function changeEmail(): bool
 	{
+		$this->get['login'] = trim(strtolower($this->get['login']));
 		$this->errors = [];
-		$this->errors['login'] = Validator::isEmail(strtolower($this->get['login']),'Неверный формат');
+		$this->errors['login'] = Validator::isEmail($this->get['login'],'Неверный формат');
 		if (empty(array_filter($this->errors))) {
 			$row = Connect::$instance->fetch('SELECT * from s_Users where Email=?', [$this->get['login']]);
 			if (!empty($row)) {
 				$this->errors['login'] = 'Пользователь с таким email уже существует';
 			}
 		}
+		$memcache = new Memcached('yes');
+		if (!empty($this->get['code'])) {
+			$codeCached = $this->get['login'].';;'.$this->get['code'];
+			if (empty($memcache->get($codeCached)) || $memcache->get($codeCached)!=$this->get['code']) {
+				$this->errors['code'] = 'Неверный код';
+				return false;
+			}
+			Connect::$instance->query('UPDATE s_Users set Email=?,Login=? where Id=?', [$this->get['login'],$this->get['login'],Connect::$projectData['user']['Id']]);
+			$this->outer('Ваш E-mail обновлен');
+			$memcache->delete($codeCached);
+			exit();
+		}
 		if (!empty(array_filter($this->errors))) {
 			return false;
 		}
-		$memcache = new Memcached();
 		$code = rand(10001, 99999);
-		$codeCached = strtolower($this->get['login']).';;'.$code;
-		$memcache->set('codeCached', $codeCached, 3600);
+		$codeCached = $this->get['login'].';;'.$code;
+		$memcache->set($codeCached, $code, 600);
 		$mail = new Mail('html');
-		$mail->mail(strtolower($this->get['login']),'Подтверждение почты','Код подтверждения смены E-mail: <b>'.$code.'</b>');
+		$mail->mail($this->get['login'],'Подтверждение почты','Код подтверждения смены E-mail: <b>'.$code.'</b>');
+		echo "<script>$('.change-email-code').removeClass('pps_hide');$('.change-email-code').find('input').prop('disabled',false);</script>";
 		return true;
-	}
-	public function changeEmailOuter(string $message = '', bool $print = true): array
-	{
-		$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
-		if ($print === true) {
-			echo $outer['html'];
-		}
-		if ($outer['count'] == 0) {
-			$outer = Validator::setFormSuccess($message, $this->get['form']);
-			if ($print === true) {
-				echo $outer['html'];
-			}
-		}
-		return $outer;
 	}
 	/**
 	 * Изменяет телефон пользователя.

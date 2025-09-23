@@ -32,16 +32,20 @@
                 </section>
             </fieldset>
         </form>
-
         <h2>E-mail</h2>
         <form action="javascript:formWepps.send('change-email','change-email-form','/ext/Profile/Request.php')"
             id="change-email-form" class="pps_form pps_flex_12 pps_flex_11_view_medium" autocomplete="off">
-
             <fieldset>
                 <section>
                     <div class="title">E-mail</div>
                     <label class="pps pps_input pps_require">
                         <input type="email" name="login" value="{$user.Email|escape}" placeholder="" />
+                    </label>
+                </section>
+                <section class="pps_hide change-email-code">
+                    <div class="title">Код подтверждения</div>
+                    <label class="pps pps_input pps_require">
+                        <input type="text" name="code" value="" placeholder="" disabled/>
                     </label>
                 </section>
             </fieldset>
@@ -53,7 +57,6 @@
                 </section>
             </fieldset>
         </form>
-
         <h2>Телефон</h2>
         <form action="javascript:formWepps.send('change-phone','change-phone-form','/ext/Profile/Request.php')"
             id="change-phone-form" class="pps_form pps_flex_12 pps_flex_11_view_medium" autocomplete="off">
@@ -74,7 +77,6 @@
                 </section>
             </fieldset>
         </form>
-
         <h2>Пароль</h2>
         <form action="javascript:formWepps.send('change-password','change-password-form','/ext/Profile/Request.php')"
             id="change-password-form" class="pps_form pps_flex_12 pps_flex_11_view_medium" autocomplete="off">
