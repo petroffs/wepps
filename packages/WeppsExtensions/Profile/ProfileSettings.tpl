@@ -109,5 +109,30 @@
                 </section>
             </fieldset>
         </form>
+        <h2>Удалить профиль</h2>
+        <form action="javascript:formWepps.send('remove','remove-form','/ext/Profile/Request.php')"
+            id="remove-form" class="pps_form pps_flex_12 pps_flex_11_view_medium" autocomplete="off">
+            <fieldset>
+                <section>
+                    <div class="title">Напишите слово "УДАЛИТЬ"</div>
+                    <label class="pps pps_input pps_require">
+                        <input type="text" name="word" value="" placeholder="" autocomplete="new-password"/>
+                    </label>
+                </section>
+				<section class="pps_hide remove-code">
+                    <div class="title">Код подтверждения</div>
+                    <label class="pps pps_input pps_require">
+                        <input type="text" name="code" value="" placeholder="" disabled/>
+                    </label>
+                </section>
+            </fieldset>
+            <fieldset>
+                <section>
+                    <label class="pps pps_button">
+                        <input type="submit" value="Удалить профиль" />
+                    </label>
+                </section>
+            </fieldset>
+        </form>
     </div>
 </div>

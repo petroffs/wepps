@@ -100,6 +100,11 @@ class Users
 	 */
 	public function removeAuth(): bool
 	{
+		if (!session_id()) {
+			session_start();
+			session_unset();
+			session_destroy();
+		}
 		if (empty(Connect::$projectData['user'])) {
 			return false;
 		}

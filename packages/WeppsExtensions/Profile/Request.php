@@ -77,15 +77,19 @@ class RequestProfile extends Request
 				break;
 			case 'change-email':
 				$this->changeEmail();
-				$this->outer("",true,false);
+				$this->outer("", true, false);
 				break;
 			case 'change-phone':
 				$this->changePhone();
-				$this->outer("",true,false);
+				$this->outer("", true, false);
 				break;
 			case 'change-password':
 				$this->changePassword();
 				$this->outer("Пароль обновлен");
+				break;
+			case 'remove':
+				$this->remove();
+				$this->outer("", true, false);
 				break;
 			default:
 				Exception::error(404);
@@ -391,7 +395,7 @@ class RequestProfile extends Request
 	{
 		$this->get['login'] = trim(strtolower($this->get['login']));
 		$this->errors = [];
-		$this->errors['login'] = Validator::isEmail($this->get['login'],'Неверный формат');
+		$this->errors['login'] = Validator::isEmail($this->get['login'], 'Неверный формат');
 		if (empty(array_filter($this->errors))) {
 			$row = Connect::$instance->fetch('SELECT * from s_Users where Email=?', [$this->get['login']]);
 			if (!empty($row)) {
@@ -400,12 +404,12 @@ class RequestProfile extends Request
 		}
 		$memcache = new Memcached('yes');
 		if (!empty($this->get['code'])) {
-			$codeCached = $this->get['login'].';;'.$this->get['code'];
-			if (empty($memcache->get($codeCached)) || $memcache->get($codeCached)!=$this->get['code']) {
+			$codeCached = $this->get['login'] . ';;' . $this->get['code'];
+			if (empty($memcache->get($codeCached)) || $memcache->get($codeCached) != $this->get['code']) {
 				$this->errors['code'] = 'Неверный код';
 				return false;
 			}
-			Connect::$instance->query('UPDATE s_Users set Email=?,Login=? where Id=?', [$this->get['login'],$this->get['login'],Connect::$projectData['user']['Id']]);
+			Connect::$instance->query('UPDATE s_Users set Email=?,Login=? where Id=?', [$this->get['login'], $this->get['login'], Connect::$projectData['user']['Id']]);
 			$this->outer('Ваш E-mail обновлен');
 			$memcache->delete($codeCached);
 			exit();
@@ -414,10 +418,10 @@ class RequestProfile extends Request
 			return false;
 		}
 		$code = rand(10001, 99999);
-		$codeCached = $this->get['login'].';;'.$code;
+		$codeCached = $this->get['login'] . ';;' . $code;
 		$memcache->set($codeCached, $code, 600);
 		$mail = new Mail('html');
-		$mail->mail($this->get['login'],'Подтверждение почты','Код подтверждения смены E-mail: <b>'.$code.'</b>');
+		$mail->mail($this->get['login'], 'Подтверждение почты', 'Код подтверждения смены E-mail: <b>' . $code . '</b>');
 		echo "<script>$('.change-email-code').removeClass('pps_hide');$('.change-email-code').find('input').prop('disabled',false);</script>";
 		return true;
 	}
@@ -445,12 +449,12 @@ class RequestProfile extends Request
 		}
 		$memcache = new Memcached('yes');
 		if (!empty($this->get['code'])) {
-			$codeCached = $phone.';;'.$this->get['code'];
-			if (empty($memcache->get($codeCached)) || $memcache->get($codeCached)!=$this->get['code']) {
+			$codeCached = $phone . ';;' . $this->get['code'];
+			if (empty($memcache->get($codeCached)) || $memcache->get($codeCached) != $this->get['code']) {
 				$this->errors['code'] = 'Неверный код';
 				return false;
 			}
-			Connect::$instance->query('UPDATE s_Users set Phone=? where Id=?', [$phone,Connect::$projectData['user']['Id']]);
+			Connect::$instance->query('UPDATE s_Users set Phone=? where Id=?', [$phone, Connect::$projectData['user']['Id']]);
 			$this->outer('Ваш телефон обновлен');
 			$memcache->delete($codeCached);
 			exit();
@@ -459,13 +463,13 @@ class RequestProfile extends Request
 			return false;
 		}
 		$code = rand(10001, 99999);
-		$codeCached = $phone.';;'.$code;
+		$codeCached = $phone . ';;' . $code;
 		$memcache->set($codeCached, $code, 600);
 		$mail = new Mail('html');
 		/*
 		 * Желательно настроить через CMC
 		 */
-		$mail->mail(Connect::$projectData['user']['Email'],'Подтверждение телефона','Код подтверждения смены номера телефона: <b>'.$code.'</b>');
+		$mail->mail(Connect::$projectData['user']['Email'], 'Подтверждение телефона', 'Код подтверждения смены номера телефона: <b>' . $code . '</b>');
 		echo "<script>$('.change-phone-code').removeClass('pps_hide');$('.change-phone-code').find('input').prop('disabled',false);</script>";
 		return true;
 	}
@@ -481,6 +485,41 @@ class RequestProfile extends Request
 			return false;
 		}
 		Connect::$instance->query("update s_Users set Password=? where Id=?", [password_hash($this->get['password'], PASSWORD_BCRYPT), Connect::$projectData['user']['Id']]);
+		return true;
+	}
+	private function remove(): bool
+	{
+		$this->get['word'] = trim(mb_strtolower($this->get['word']));
+		$this->errors = [];
+		$this->errors['word'] = ($this->get['word'] != 'удалить') ? 'Неверное слово' : '';
+		$memcache = new Memcached('yes');
+		if (!empty($this->get['code'])) {
+			$codeCached = Connect::$projectData['user']['Login'] . ';;' . $this->get['code'];
+			if (empty($memcache->get($codeCached)) || $memcache->get($codeCached) != $this->get['code']) {
+				$this->errors['code'] = 'Неверный код';
+				return false;
+			}
+			Connect::$instance->query('UPDATE s_Users set DisplayOff=1,AuthDate=now() where Id=?', [Connect::$projectData['user']['Id']]);
+			$this->outer('Ваш профиль удален');
+			$memcache->delete($codeCached);
+			
+			$users = new Users();
+			$users->removeAuth();
+
+			echo "<script>setTimeout(function() {
+					location.href = '/profile/';
+					}, 2500);</script>";
+			exit();
+		}
+		if (!empty(array_filter($this->errors))) {
+			return false;
+		}
+		$code = rand(10001, 99999);
+		$codeCached = Connect::$projectData['user']['Login'] . ';;' . $code;
+		$memcache->set($codeCached, $code, 600);
+		$mail = new Mail('html');
+		$mail->mail(Connect::$projectData['user']['Email'], 'Подтверждение удаления аккаунта', 'Код подтверждения удаления аккаунта: <b>' . $code . '</b>');
+		echo "<script>$('.remove-code').removeClass('pps_hide');$('.remove-code').find('input').prop('disabled',false);</script>";
 		return true;
 	}
 }
