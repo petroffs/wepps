@@ -3,8 +3,6 @@ require_once '../../../configloader.php';
 
 use WeppsCore\Exception;
 use WeppsCore\Request;
-use WeppsCore\Connect;
-use WeppsCore\Utils;
 use WeppsExtensions\Addons\Files\Files;
 
 class RequestTemplate extends Request {

@@ -94,7 +94,10 @@ class Profile extends Extension
 				$this->profileTpl = 'ProfileOrders.tpl';
 				$obj = new Data('Orders');
 				$obj->setParams([$this->user['Id']]);
-				$orders = $obj->fetch('t.DisplayOff=0 and t.UserId=?', 20,(int) ($this->get['page'] ?? 1),'Id desc');
+				$orders = $obj->fetch('t.DisplayOff=0 and t.UserId=?', 10,(int) ($this->get['page'] ?? 1),'Id desc');
+				$smarty->assign('paginator',$obj->paginator);
+				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
+				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 				if (empty($orders)) {
 					$this->profileTpl = 'ProfileOrdersEmpty.tpl';
 				}

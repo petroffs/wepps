@@ -23,3 +23,7 @@
         </tbody>
     </table>
 </section>
+{if $paginatorTpl}
+<div class="pps_interval"></div>
+{$paginatorTpl}
+{/if}
