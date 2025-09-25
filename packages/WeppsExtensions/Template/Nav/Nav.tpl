@@ -44,6 +44,10 @@
 		<a href="" id="footer-nav"><i class="bi bi-list"></i></a>
 		<a href="/profile/fav.html"><i class="bi bi-heart"></i></a>
 		<a href="/cart/" id="footer-cart" data-metrics="{$cartMetrics.count}"><i class="bi bi-cart2"></i></a>
-		<a href="/profile/"><i class="bi bi-person"></i></a>
+		{if $user.Id}
+			<a href="/profile/" id="footer-profile" data-auth="1"><i class="bi bi-person"></i></a>
+		{else}
+			<a href="/profile/" id="footer-profile" data-auth="0"><i class="bi bi-person"></i></a>
+		{/if}
 	</section>
 </div>

@@ -46,6 +46,10 @@ var navInit = function() {
 			});
 		};
 	});
+	$('#header-profile[data-auth="0"],#footer-profile[data-auth="0"]').on('click',function(e) {
+		e.preventDefault();
+		layoutWepps.modal({ size: 'medium', data: 'action=sign-in-popup', url: '/ext/Profile/Request.php' });
+	});
 	const el = document.querySelector("header");
 	const observer = new IntersectionObserver( 
 	  ([e]) => e.target.classList.toggle("is-pinned", e.intersectionRatio < 1),

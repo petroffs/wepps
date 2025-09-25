@@ -41,6 +41,9 @@ class RequestProfile extends Request
 					echo $js;
 				}
 				break;
+			case "sign-in-popup":
+				$this->tpl = 'ProfilePopupSignIn.tpl';
+				break;
 			case "sign-out":
 				$users = new Users();
 				$users->removeAuth();
@@ -126,6 +129,9 @@ class RequestProfile extends Request
 		], $lifetime);
 		Utils::cookies('wepps_token', $token, $lifetime);
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
+		/**
+		 * Если есть $_COOKIE['cart'] - добавить эти товары в профайл
+		 */
 		return true;
 	}
 	/**

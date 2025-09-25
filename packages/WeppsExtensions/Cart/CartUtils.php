@@ -474,7 +474,11 @@ class CartUtils
 			echo $errors['html'];
 			exit();
 		}
-		$profile = Connect::$projectData['user'];
+		if (empty($profile = @Connect::$projectData['user'])) {
+			return [
+				'html' => "<script>$('a#header-profile').trigger('click');</script>"
+			];
+		}
 		$positions = [];
 		foreach ($cartSummary['items'] as $value) {
 			if (empty($value['active'])) {
