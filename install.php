@@ -1,8 +1,5 @@
 <?php
 
-use WeppsCore\Connect\ConnectWepps;
-use WeppsCore\Utils\CliWepps;
-
 if (php_sapi_name() !== 'cli') {
 	http_response_code(401);
 	exit();
@@ -12,12 +9,15 @@ require_once 'config.php';
 require_once 'autoloader.php';
 require_once 'configloader.php';
 
+use WeppsCore\Connect;
+use WeppsCore\Cli;
+
 class Install {
 	private $cli;
 	private $cnf;
 	private $config;
 	public function __construct() {
-		$this->cli = new CliWepps();
+		$this->cli = new Cli();
 		/*
 		 * Если config.conf не создан - создать и заполнить
 		 * Если уже существует
@@ -28,7 +28,7 @@ class Install {
 		 * И переименовать в config.cnf и вписать путь в файле config.php
 		 * 
 		 */
-		$this->config = ConnectWepps::$projectDB;
+		$this->config = Connect::$projectDB;
 		if (empty($this->config['host']) || empty($this->config['port']) || empty($this->config['user']) || empty($this->config['dbname'])) {
 			$this->cli->error('Секция DB некорректно заполнена');
 			exit();
@@ -49,7 +49,7 @@ class Install {
 		/*
 		 * exec mysql
 		 */
-		$filename = ConnectWepps::$projectDev['root'].'/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql';
+		$filename = Connect::$projectDev['root'].'/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql';
 		if (!is_file($filename)) {
 			$this->cli->error('wrong db-path');
 			exit();
