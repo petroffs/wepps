@@ -101,71 +101,87 @@ class ProfileUtils
 	{
 
 	}
-	public function processPasswordTask(array $request,Tasks $tasks) {
-		$jdata = json_decode($request['BRequest'],true);
-		$url = 'https://'.Connect::$projectDev['host']."/profile/?token={$jdata['token']}";
+	/**
+	 * Обрабатывает задачу на восстановление пароля пользователя.
+	 *
+	 * Декодирует входные данные, формирует уведомление по электронной почте с ссылкой
+	 * для установки нового пароля и обновляет статус задачи в системе.
+	 *
+	 * @param array $request Массив данных задачи, включая:
+	 *                       - BRequest (JSON-строка с токеном, именем и email)
+	 *                       - Id (идентификатор задачи)
+	 * @param Tasks $tasks Экземпляр класса для управления задачами
+	 * @return mixed Результат обновления задачи (вероятно, ответ с HTTP-статусом)
+	 */
+	public function processPasswordTask(array $request, Tasks $tasks)
+	{
+		$jdata = json_decode($request['BRequest'], true);
+		$url = 'https://' . Connect::$projectDev['host'] . "/profile/?token={$jdata['token']}";
 		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Поступил запрос на смену пароля!";
-		$text.= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
-		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
+		$text .= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
+		$text .= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";
 		$mail = new Mail('html');
 		$outputMessage = "email fail";
-		if ($mail->mail($jdata['email'],"Восстановление доступа",$text)) {
+		if ($mail->mail($jdata['email'], "Восстановление доступа", $text)) {
 			$outputMessage = "email ok";
 		}
 		$response = [
 			'message' => $outputMessage
 		];
-		return $tasks->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processPasswordConfirmTask(array $request,Tasks $tasks) {
-		$jdata = json_decode($request['BRequest'],true);
-		$url = 'https://'.Connect::$projectDev['host']."/profile/";
+	public function processPasswordConfirmTask(array $request, Tasks $tasks)
+	{
+		$jdata = json_decode($request['BRequest'], true);
+		$url = 'https://' . Connect::$projectDev['host'] . "/profile/";
 		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Ваш пароль в Личном кабинете изменен!";
-		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Перейти в Личный кабинет</a></center>";
+		$text .= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Перейти в Личный кабинет</a></center>";
 		$mail = new Mail('html');
 		$outputMessage = "email fail";
-		if ($mail->mail($jdata['email'],"Пароль изменен",$text)) {
+		if ($mail->mail($jdata['email'], "Пароль изменен", $text)) {
 			$outputMessage = "email ok";
 		}
 		$response = [
 			'message' => $outputMessage
 		];
-		return $tasks->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processRegConfirmTask(array $request,Tasks $tasks) {
-		$jdata = json_decode($request['BRequest'],true);
+	public function processRegConfirmTask(array $request, Tasks $tasks)
+	{
+		$jdata = json_decode($request['BRequest'], true);
 		$jwt = new Jwt();
 		$token = $jwt->token_decode($jdata['token']);
 		$token['payload']['tsk'] = $request['Id'];
 		$token = $jwt->token_encode($token['payload']);
-		$url = 'https://'.Connect::$projectDev['host']."/profile/?token={$token}";
+		$url = 'https://' . Connect::$projectDev['host'] . "/profile/?token={$token}";
 		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Пожалуйста, завершите регистрацию!";
-		$text.= "<br/>После перехода по ссылке и установки пароля - Ваш аккаунт будет активирован.";
-		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Заврешить регистрацию</a></center>";
+		$text .= "<br/>После перехода по ссылке и установки пароля - Ваш аккаунт будет активирован.";
+		$text .= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Заврешить регистрацию</a></center>";
 		$mail = new Mail('html');
 		$outputMessage = "email fail";
-		if ($mail->mail($jdata['email'],"Завершите регистрацию",$text)) {
+		if ($mail->mail($jdata['email'], "Завершите регистрацию", $text)) {
 			$outputMessage = "email ok";
 		}
 		$response = [
 			'message' => $outputMessage
 		];
-		return $tasks->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processRegCompleteTask(array $request,Tasks $tasks) {
-		$jdata = json_decode($request['BRequest'],true);
-		$url = 'https://'.Connect::$projectDev['host']."/profile/";
+	public function processRegCompleteTask(array $request, Tasks $tasks)
+	{
+		$jdata = json_decode($request['BRequest'], true);
+		$url = 'https://' . Connect::$projectDev['host'] . "/profile/";
 		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Вы завершили регистрацию!";
-		$text.= "<br/>Ваш аккаунт активирован, спасибо.";
-		$text.= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Перейти в личный кабинет</a></center>";
+		$text .= "<br/>Ваш аккаунт активирован, спасибо.";
+		$text .= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Перейти в личный кабинет</a></center>";
 		$mail = new Mail('html');
 		$outputMessage = "email fail";
-		if ($mail->mail($jdata['email'],"Регистрация прошла успешно",$text)) {
+		if ($mail->mail($jdata['email'], "Регистрация прошла успешно", $text)) {
 			$outputMessage = "email ok";
 		}
 		$response = [
 			'message' => $outputMessage
 		];
-		return $tasks->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'], $response, 200);
 	}
 }

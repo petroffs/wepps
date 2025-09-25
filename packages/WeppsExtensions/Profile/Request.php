@@ -174,6 +174,20 @@ class RequestProfile extends Request
 		$tasks->add('password', $jdata, date('Y-m-d H:i:s'), @$_SERVER['REMOTE_ADDR']);
 		return true;
 	}
+	/**
+	 * Проверяет валидность пароля и его подтверждения.
+	 *
+	 * Выполняет следующие проверки:
+	 * - Минимальная длина пароля: 6 символов.
+	 * - Наличие хотя бы одной заглавной буквы.
+	 * - Наличие хотя бы одной строчной буквы.
+	 * - Наличие хотя бы одного специального символа (не алфавитно-цифрового).
+	 * - Соответствие паролей (пароль и его подтверждение).
+	 *
+	 * Ошибки сохраняются в свойстве `$this->errors['password']`, если проверка не пройдена.
+	 *
+	 * @return bool Всегда возвращает `true`, даже если есть ошибки. Результаты проверки доступны через `$this->errors`.
+	 */
 	private function checkPassword(): bool
 	{
 		$this->get['password'] = trim($this->get['password']);
@@ -508,7 +522,7 @@ class RequestProfile extends Request
 			Connect::$instance->query('UPDATE s_Users set DisplayOff=1,AuthDate=now() where Id=?', [Connect::$projectData['user']['Id']]);
 			$this->outer('Ваш профиль удален');
 			$memcache->delete($codeCached);
-			
+
 			$users = new Users();
 			$users->removeAuth();
 
