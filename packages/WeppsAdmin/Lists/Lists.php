@@ -563,7 +563,7 @@ class Lists
 		$listSettings = Connect::$instance->fetch($sql)[0];
 		if (isset($listSettings['ActionModify']) && $listSettings['ActionModify'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionModify']);
-			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
+			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
 			$addActionRequest = new $addActionClass(['listSettings' => $listSettings, 'listScheme' => $listScheme, 'element' => $row]);
 		}
 		$path = "/_wepps/lists/{$list}/{$id}/";
@@ -928,7 +928,7 @@ class Lists
 		$listSettings = Connect::$instance->fetch($sql)[0];
 		if (isset($listSettings['ActionDrop']) && $listSettings['ActionDrop'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionDrop']);
-			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}Wepps";
+			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
 			$addActionRequest = new $addActionClass(array('listSettings' => $listSettings, 'id' => $id));
 		}
 
