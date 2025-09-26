@@ -81,7 +81,7 @@ class CartUtils
 			'itemsv' => array_values(array_unique(array_map(function ($i): int {
 				return (int) @explode('-', $i['id'])[1];
 			}, $this->cart['items'] ?? []))),
-			'commerce' => Connect::$projectServices['commerce']
+			'settings' => Connect::$projectServices['navigator']['cart']
 		];
 	}
 	public function setCart(): void
@@ -297,7 +297,7 @@ class CartUtils
 
 		$this->summary['date'] = $this->cart['date'];
 		$this->summary['favorites'] = $this->getFavorites();
-		if ($this->summary['sumActive'] >= Connect::$projectServices['commerce']['orderAmountMin']) {
+		if ($this->summary['sumActive'] >= Connect::$projectServices['navigator']['cart']['orderAmountMin']) {
 			$this->summary['isSumActiveEnough'] = 1;
 		}
 		if (!empty($this->cart['citiesId'])) {

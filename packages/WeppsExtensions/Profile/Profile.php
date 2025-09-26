@@ -168,7 +168,7 @@ class Profile extends Extension
 				continue;
 			}
 			$subs[] = [
-				'Id' => ($item['url']=='/profile/favorites.html')?Connect::$projectServices['commerce']['profileId']:0,
+				'Id' => ($item['url']=='/profile/favorites.html')?Connect::$projectServices['navigator']['profileId']:0,
 				'Name' => $item['title'],
 				'Url' => $item['url'],
 			]; 

@@ -81,7 +81,7 @@
 			</label>
 			{if $cartSummary.isSumActiveEnough==0}
 			<div class="warning">
-			⚠️ Минимальная сумма для&nbsp;заказа:&nbsp;{$cartMetrics.commerce.orderAmountMin}&nbsp;₽
+			⚠️ Минимальная сумма для&nbsp;заказа:&nbsp;{$cartMetrics.settings.orderAmountMin}&nbsp;₽
 			</div>
 			{/if}
 		</div>

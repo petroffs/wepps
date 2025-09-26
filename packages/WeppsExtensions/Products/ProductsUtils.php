@@ -52,9 +52,6 @@ class ProductsUtils
 	}
 	public function getConditions(array $params = [], bool $isFilters = false,string $conditions = '',array $prepare = []): array
 	{
-		
-		// if ($this->navigator->content['Id'] == Connect::$projectServices['commerce']['profileId']) {
-		// 	$conditions = "t.DisplayOff=0";
 		if (empty($conditions)) {
 			$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
 			if (!empty($params['text'])) {
