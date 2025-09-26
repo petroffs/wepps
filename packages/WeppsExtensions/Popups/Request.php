@@ -9,8 +9,8 @@ class RequestPopups extends Request {
 	public function request($action="") {
 		switch ($action) {
 			case 'test':
-				$obj = new BotTest();
-				$obj->mail();
+				#$obj = new BotTest();
+				#$obj->mail();
 				sleep(5);
 				echo '<h1>Hello, world</h1>';
 				break;

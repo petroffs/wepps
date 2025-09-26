@@ -94,6 +94,11 @@ class LayoutWepps {
 		});
 		return 1;
 	};
+	loader() {
+		$('.w_loader').remove();
+		let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
+		$('body').prepend(loader);
+	};
 	request(settings = {}) {
 		let self = this;
 		$("#w_ajax").remove();
@@ -101,11 +106,7 @@ class LayoutWepps {
 			type: "POST",
 			url: settings.url,
 			data: settings.data,
-			beforeSend: function () {
-				$('.w_loader').remove();
-				let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
-				$('body').prepend(loader)
-			}
+			beforeSend: self.loader()
 		}).done(function (responseText) {
 			$('.w_loader').fadeOut();
 			setTimeout(function () {

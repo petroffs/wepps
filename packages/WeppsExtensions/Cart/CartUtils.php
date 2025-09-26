@@ -558,7 +558,7 @@ class CartUtils
 			return [
 				'id' => $id,
 				'alias' => $alias,
-				'html' => "<script>window.location.href='/cart/order.html?id={$alias}'</script>"
+				'html' => "<script>layoutWepps.loader();window.location.href='/cart/order.html?id={$alias}'</script>"
 				#'html' => "<script>console.log('{$alias}');</script>"
 			];
 		};
