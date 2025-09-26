@@ -9,7 +9,7 @@
 			{foreach item="item" from=$cartSummary.items}
 				<section data-id="{$item.id}-{$item.idv}">
 					<div class="cart-checkbox"><label class="pps pps_checkbox"><input type="checkbox" name="cart-check"
-								value="{$item.id}" {if $item.active==1}checked {/if}
+								value="{$item.id}-{$item.idv}" {if $item.active==1}checked {/if}
 								autocomplete="off" /><span></span></label></div>
 					<div class="cart-image"><img src="/pic/lists{$item.image}" /></div>
 					<div class="cart-title">
@@ -74,7 +74,7 @@
 				</div>
 			</div>
 			<label class="pps pps_button pps_button_important">
-				<button id="cart-btn-checkout"
+				<button id="cart-btn-checkout" data-auth="{if $user.Id}1{else}0{/if}"
 				{if $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0 || $cartSummary.stocksErrors==1}disabled="disabled"{/if}>
 					Перейти к оформлению
 				</button>

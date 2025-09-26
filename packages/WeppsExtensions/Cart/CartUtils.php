@@ -71,15 +71,16 @@ class CartUtils
 	{
 		return $this->cart;
 	}
-	public function getCartMetrics() {
+	public function getCartMetrics()
+	{
 		return [
-			'count' => array_sum(array_column($this->cart['items']??[], 'qu')),
-			'items' => array_values(array_unique(array_map(function($i) : int {
-    			return (int) explode('-', $i['id'])[0];
-			}, $this->cart['items']??[]))),
-			'itemsv' => array_values(array_unique(array_map(function($i) : int {
-    			return (int) @explode('-', $i['id'])[1];
-			}, $this->cart['items']??[]))),
+			'count' => array_sum(array_column($this->cart['items'] ?? [], 'qu')),
+			'items' => array_values(array_unique(array_map(function ($i): int {
+				return (int) explode('-', $i['id'])[0];
+			}, $this->cart['items'] ?? []))),
+			'itemsv' => array_values(array_unique(array_map(function ($i): int {
+				return (int) @explode('-', $i['id'])[1];
+			}, $this->cart['items'] ?? []))),
 			'commerce' => Connect::$projectServices['commerce']
 		];
 	}
@@ -115,7 +116,7 @@ class CartUtils
 			$this->cart['deliveryTariff'] = $tariffs[0]['Addons']['tariff'];
 			$this->cart['deliveryDiscount'] = $tariffs[0]['Addons']['discount'];
 			$this->cart['deliveryExtension'] = $tariffs[0]['Addons']['extension'];
-			$this->cart['deliverySettings'] = json_decode($tariffs[0]['JSettings'],true);
+			$this->cart['deliverySettings'] = json_decode($tariffs[0]['JSettings'], true);
 		}
 		$this->setCart();
 	}
@@ -206,8 +207,8 @@ class CartUtils
 		if (empty($this->cart['items'])) {
 			return;
 		}
-		foreach($this->cart['items'] as $key=>$value) {
-			if ($value['ac']==1) {
+		foreach ($this->cart['items'] as $key => $value) {
+			if ($value['ac'] == 1) {
 				unset($this->cart['items'][$key]);
 			}
 		}
@@ -241,15 +242,15 @@ class CartUtils
 		$idv = [];
 		foreach ($this->cart['items'] as $value) {
 			$this->summary['quantity'] += $value['qu'];
-			$ex = explode('-',$value['id']);
-			$sql .= "\n(select '{$ex[0]}'*1 `id`,'".($ex[1]??0)."'*1 `idv`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
+			$ex = explode('-', $value['id']);
+			$sql .= "\n(select '{$ex[0]}'*1 `id`,'" . ($ex[1] ?? 0) . "'*1 `idv`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
 			$ids[] = $ex[0];
-			$idv[] = $ex[1]??0;
+			$idv[] = $ex[1] ?? 0;
 		}
-		$ids = implode(',',array_unique($ids));
-		$idv = implode(',',array_unique($idv));
+		$ids = implode(',', array_unique($ids));
+		$idv = implode(',', array_unique($idv));
 		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
-		
+
 		$sql = "select x.id,x.idv,if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) name,
 			(x.quantity*1) quantity,if(pv.Field4>0,pv.Field4+0e0,0) stocks,(x.active*1) active,(p.Price+0e0) price, (x.quantity*p.Price) `sum`,(p.PriceBefore+0e0) priceBefore, 
 			(x.quantity*p.PriceBefore) `sumBefore`,
@@ -275,7 +276,7 @@ class CartUtils
 		$this->summary['sumActive'] = 0;
 		$this->summary['sumTotal'] = 0;
 		$this->summary['stocksErrors'] = 0;
-		foreach($this->summary['items'] as $value) {
+		foreach ($this->summary['items'] as $value) {
 			$this->summary['quantity'] += $value['quantity'];
 			$this->summary['quantityActive'] += $value['quantityActive'];
 			$this->summary['sum'] += $value['sum'];
@@ -283,7 +284,7 @@ class CartUtils
 			$this->summary['sumBefore'] += $value['sumBeforeTotal'];
 			$this->summary['sumActive'] += $value['sumActive'];
 			$this->summary['sumTotal'] += $value['sumActive'];
-			if ($value['stocks']<=0 || $value['stocks']<$value['quantity']) {
+			if ($value['stocks'] <= 0 || $value['stocks'] < $value['quantity']) {
 				$this->summary['stocksErrors'] = 1;
 			}
 		}
@@ -293,10 +294,10 @@ class CartUtils
 		$this->summary['sumSaving'] = array_sum(array_column($this->summary['items'], 'sumSaving'));
 		$this->summary['sumBefore'] = array_sum(array_column($this->summary['items'], 'sumBeforeTotal'));
 		$this->summary['sumActive'] = $this->summary['sumTotal'] = array_sum(array_column($this->summary['items'], 'sumActive')); */
-			
+
 		$this->summary['date'] = $this->cart['date'];
 		$this->summary['favorites'] = $this->getFavorites();
-		if ($this->summary['sumActive']>=Connect::$projectServices['commerce']['orderAmountMin']) {
+		if ($this->summary['sumActive'] >= Connect::$projectServices['commerce']['orderAmountMin']) {
 			$this->summary['isSumActiveEnough'] = 1;
 		}
 		if (!empty($this->cart['citiesId'])) {
@@ -317,7 +318,7 @@ class CartUtils
 		}
 		if (!empty($this->cart['paymentsId'])) {
 			$this->summary['payments']['paymentsId'] = $this->cart['paymentsId'];
-			$this->summary['payments']['extension'] = $this->cart['paymentsExtension'];
+			$this->summary['payments']['extension'] = @$this->cart['paymentsExtension'];
 		}
 		if (!empty($this->cart['paymentsTariff'])) {
 			$this->summary['payments']['tariff'] = $this->cart['paymentsTariff'];
@@ -335,59 +336,61 @@ class CartUtils
 	{
 		return $this->summary;
 	}
-	public function getCartPercentage(float $percentage = 0) : float {
+	public function getCartPercentage(float $percentage = 0): float
+	{
 		$sum = 0;
 		foreach ($this->summary['items'] as $value) {
-			if ($value['active']!=1) {
+			if ($value['active'] != 1) {
 				continue;
 			}
-			$sum += Utils::round(($value['price'] - $value['price']*$percentage/100)*$value['quantity']);
+			$sum += Utils::round(($value['price'] - $value['price'] * $percentage / 100) * $value['quantity']);
 		}
 		$sum = $this->summary['sumActive'] - $sum;
 		return Utils::round($sum);
 	}
-	public function getCartPositionsRecounter(array $items=[],float $deliveryDiscount=0,float $paymentTariff=0,float $paymentDiscount=0) : array {
+	public function getCartPositionsRecounter(array $items = [], float $deliveryDiscount = 0, float $paymentTariff = 0, float $paymentDiscount = 0): array
+	{
 		$sum = 0;
-		if ($deliveryDiscount>0 || $paymentTariff>0 || $paymentDiscount>0) {
+		if ($deliveryDiscount > 0 || $paymentTariff > 0 || $paymentDiscount > 0) {
 			$sum = array_sum(array_column($items, 'sum'));
 		}
-		if ($sum==0) {
+		if ($sum == 0) {
 			//return $items;
 		}
-		if ($deliveryDiscount>0) {
-			foreach($items as $key=>$value) {
-				$rate = Utils::round($value['sum']/$sum,6);
-				$tariffRecount = - Utils::round($rate*$deliveryDiscount);
+		if ($deliveryDiscount > 0) {
+			foreach ($items as $key => $value) {
+				$rate = Utils::round($value['sum'] / $sum, 6);
+				$tariffRecount = -Utils::round($rate * $deliveryDiscount);
 				if (empty($items[$key]['tariff'])) {
 					$items[$key]['tariff'] = 0;
 				}
-				$items[$key]['tariff']+=$tariffRecount;
+				$items[$key]['tariff'] += $tariffRecount;
 			}
 		}
-		if ($paymentTariff>0) {
-			foreach($items as $key=>$value) {
-				$rate = Utils::round($value['sum']/$sum,6);
-				$tariffRecount = Utils::round($rate*$paymentTariff);
+		if ($paymentTariff > 0) {
+			foreach ($items as $key => $value) {
+				$rate = Utils::round($value['sum'] / $sum, 6);
+				$tariffRecount = Utils::round($rate * $paymentTariff);
 				if (empty($items[$key]['tariff'])) {
 					$items[$key]['tariff'] = 0;
 				}
-				$items[$key]['tariff']+=$tariffRecount;
+				$items[$key]['tariff'] += $tariffRecount;
 			}
 		}
-		if ($paymentDiscount>0) {
-			foreach($items as $key=>$value) {
-				$rate = Utils::round($value['sum']/$sum,6);
-				$tariffRecount = - Utils::round($rate*$paymentDiscount);
+		if ($paymentDiscount > 0) {
+			foreach ($items as $key => $value) {
+				$rate = Utils::round($value['sum'] / $sum, 6);
+				$tariffRecount = -Utils::round($rate * $paymentDiscount);
 				if (empty($items[$key]['tariff'])) {
 					$items[$key]['tariff'] = 0;
 				}
-				$items[$key]['tariff']+=$tariffRecount;
+				$items[$key]['tariff'] += $tariffRecount;
 			}
 		}
-		foreach($items as $key=>$value) {
-			$tariff = (!empty($items[$key]['tariff']))?$items[$key]['tariff']:0;
-			$items[$key]['sumTotal']=$value['sum'] + $tariff;
-			$items[$key]['priceTotal']= Utils::round($items[$key]['sumTotal']/$value['quantity'],2);
+		foreach ($items as $key => $value) {
+			$tariff = (!empty($items[$key]['tariff'])) ? $items[$key]['tariff'] : 0;
+			$items[$key]['sumTotal'] = $value['sum'] + $tariff;
+			$items[$key]['priceTotal'] = Utils::round($items[$key]['sumTotal'] / $value['quantity'], 2);
 		}
 		return $items;
 	}
@@ -454,10 +457,12 @@ class CartUtils
 		}
 		return $this->headers;
 	}
-	public function getMemcached() {
+	public function getMemcached()
+	{
 		return $this->memcached;
 	}
-	public function addOrder(array $get) {
+	public function addOrder(array $get)
+	{
 		$this->setCartSummary();
 		$cartSummary = $this->getCartSummary();
 		if (empty($cartSummary['delivery']['extension'])) {
@@ -467,10 +472,10 @@ class CartUtils
 		/**
 		 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
 		 */
-        $class = new $className([],$this);
+		$class = new $className([], $this);
 		$errors = $class->getErrors($get);
 		$errors = Validator::setFormErrorsIndicate($errors, $get['form']);
-		if ($errors['count']>0) {
+		if ($errors['count'] > 0) {
 			echo $errors['html'];
 			exit();
 		}
@@ -493,11 +498,11 @@ class CartUtils
 				'sum' => $value['sum'],
 			];
 		}
-		$positions = $this->getCartPositionsRecounter($positions,$cartSummary['delivery']['discount']['price'],$cartSummary['payments']['tariff']['price'],$cartSummary['payments']['discount']['price']);
+		$positions = $this->getCartPositionsRecounter($positions, $cartSummary['delivery']['discount']['price'], $cartSummary['payments']['tariff']['price'], $cartSummary['payments']['discount']['price']);
 		$row = [
 			'Name' => $profile['Name'],
 			'UserId' => $profile['Id'],
-			'UserIP' => $_SERVER['REMOTE_ADDR']??'',
+			'UserIP' => $_SERVER['REMOTE_ADDR'] ?? '',
 			'Phone' => $profile['Phone'],
 			'Email' => $profile['Email'],
 			'OStatus' => '1',
@@ -510,12 +515,12 @@ class CartUtils
 			'OPayment' => $cartSummary['payments']['paymentsId'],
 			'OPaymentTariff' => $cartSummary['payments']['tariff']['price'],
 			'OPaymentDiscount' => $cartSummary['payments']['discount']['price'],
-			'Address' => $get['operations-address']??'',
-			'City' => $get['operations-city']??'',
+			'Address' => $get['operations-address'] ?? '',
+			'City' => $get['operations-city'] ?? '',
 			'CityId' => $cartSummary['delivery']['citiesId'],
-			'PostalCode' => $get['operations-postal-code']??'',
-			'JData' => json_encode($cartSummary,JSON_UNESCAPED_UNICODE),
-			'JPositions' => json_encode($positions,JSON_UNESCAPED_UNICODE),
+			'PostalCode' => $get['operations-postal-code'] ?? '',
+			'JData' => json_encode($cartSummary, JSON_UNESCAPED_UNICODE),
+			'JPositions' => json_encode($positions, JSON_UNESCAPED_UNICODE),
 		];
 		$func = function (array $args) {
 			$row = $args['row'];
@@ -540,15 +545,15 @@ class CartUtils
 			$row['Id'] = $id;
 			$row['EText'] = @$row2['EText'];
 			$text = $this->getOrderText($row);
-			$alias = Utils::guid($id.'_'.time().'_'.Connect::$projectServices['wepps']['sign']);
-			Connect::$instance->query("update Orders set OText=?,Alias=? where Id=?",[$text,$alias,$id]);
+			$alias = Utils::guid($id . '_' . time() . '_' . Connect::$projectServices['wepps']['sign']);
+			Connect::$instance->query("update Orders set OText=?,Alias=? where Id=?", [$text, $alias, $id]);
 			$jdata = [
 				'id' => (int) $id,
 				'email' => true,
 				'telegram' => true,
 			];
 			$tasks = new Tasks();
-			$tasks->add('order-new',$jdata,$row['ODate'],$row['UserIP']);
+			$tasks->add('order-new', $jdata, $row['ODate'], $row['UserIP']);
 			$this->removeCart();
 			return [
 				'id' => $id,
@@ -557,85 +562,86 @@ class CartUtils
 				#'html' => "<script>console.log('{$alias}');</script>"
 			];
 		};
-		return Connect::$instance->transaction($func, ['row' => $row,'get'=>$get]);
+		return Connect::$instance->transaction($func, ['row' => $row, 'get' => $get]);
 	}
-	public function getOrderText(array $order) : string {
+	public function getOrderText(array $order): string
+	{
 		$sql = "select * from ServList where Categories='ШаблонЗаказНовый' order by Id desc limit 0,1";
 		$res = Connect::$instance->fetch($sql);
 		if (empty($text = $res[0]['Descr'])) {
 			return '';
 		}
-		$jdata = json_decode($order['JData'],true);
-		$jpositions = json_decode($order['JPositions'],true);
+		$jdata = json_decode($order['JData'], true);
+		$jpositions = json_decode($order['JPositions'], true);
 		$positions = "<table width=\"100%\" border=\"1\">";
 		$positions .= "<tr>";
 		$positions .= "<th width=\"50%\" align=\"left\">Наименование</th>";
 		$positions .= "<th width=\"25%\" align=\"center\">Кол-во</th>";
 		$positions .= "<th width=\"25%\" align=\"right\">Сумма</th>";
 		$positions .= "</tr>";
-		foreach($jpositions as $value) {
+		foreach ($jpositions as $value) {
 			$positions .= '<tr>';
-			$positions .= '<td align="left">'.$value['name'].'</td>';
-			$positions .= '<td align="center">'.$value['quantity'].'</td>';
-			$positions .= '<td align="right">'.Utils::round($value['sum'],2,'str').'</td>';
+			$positions .= '<td align="left">' . $value['name'] . '</td>';
+			$positions .= '<td align="center">' . $value['quantity'] . '</td>';
+			$positions .= '<td align="right">' . Utils::round($value['sum'], 2, 'str') . '</td>';
 			$positions .= '</tr>';
 		}
-		$deliveryAddress = (!empty($order['Address'])) ? '<br/>'.$order['PostalCode'] . ', ' . $order['Address'] : '';
+		$deliveryAddress = (!empty($order['Address'])) ? '<br/>' . $order['PostalCode'] . ', ' . $order['Address'] : '';
 		$positions .= '<tr>';
-		$positions .= '<td align="left">'.$jdata['delivery']['tariff']['title'].$deliveryAddress.'</td>';
+		$positions .= '<td align="left">' . $jdata['delivery']['tariff']['title'] . $deliveryAddress . '</td>';
 		$positions .= '<td align="center"></td>';
-		$positions .= '<td align="right">'.Utils::round($jdata['delivery']['tariff']['price'],2,'str').'</td>';
+		$positions .= '<td align="right">' . Utils::round($jdata['delivery']['tariff']['price'], 2, 'str') . '</td>';
 		$positions .= '</tr>';
 		if (!empty($jdata['delivery']['discount']['price'])) {
 			$positions .= '<tr>';
-			$positions .= '<td align="left">'.$jdata['delivery']['discount']['text'].'</td>';
+			$positions .= '<td align="left">' . $jdata['delivery']['discount']['text'] . '</td>';
 			$positions .= '<td align="center"></td>';
-			$positions .= '<td align="right">- '.Utils::round($jdata['delivery']['discount']['price'],2,'str').'</td>';
+			$positions .= '<td align="right">- ' . Utils::round($jdata['delivery']['discount']['price'], 2, 'str') . '</td>';
 			$positions .= '</tr>';
 		}
 		if (!empty($jdata['payments']['tariff']['price'])) {
 			$positions .= '<tr>';
-			$positions .= '<td align="left">'.$jdata['payments']['tariff']['text'].'</td>';
+			$positions .= '<td align="left">' . $jdata['payments']['tariff']['text'] . '</td>';
 			$positions .= '<td align="center"></td>';
-			$positions .= '<td align="right">- '.Utils::round($jdata['payments']['tariff']['price'],2,'str').'</td>';
+			$positions .= '<td align="right">- ' . Utils::round($jdata['payments']['tariff']['price'], 2, 'str') . '</td>';
 			$positions .= '</tr>';
 		}
 		if (!empty($jdata['payments']['discount']['price'])) {
 			$positions .= '<tr>';
-			$positions .= '<td align="left">'.$jdata['payments']['discount']['text'].'</td>';
+			$positions .= '<td align="left">' . $jdata['payments']['discount']['text'] . '</td>';
 			$positions .= '<td align="center"></td>';
-			$positions .= '<td align="right">- '.Utils::round($jdata['payments']['discount']['price'],2,'str').'</td>';
+			$positions .= '<td align="right">- ' . Utils::round($jdata['payments']['discount']['price'], 2, 'str') . '</td>';
 			$positions .= '</tr>';
 		}
 		$positions .= '<tr>';
 		$positions .= '<td align="left"></td>';
 		$positions .= '<td align="center">ИТОГО: </td>';
-		$positions .= '<td align="right"><b>'.Utils::round($jdata['sumTotal'],2,'str').'</b></td>';
+		$positions .= '<td align="right"><b>' . Utils::round($jdata['sumTotal'], 2, 'str') . '</b></td>';
 		$positions .= '</tr>';
 		$positions .= "</table>";
 
-		$comment = (!empty($order['EText']))?'<p><p><b>Комментарий</b><br/>'.$order['EText'].'</p>':'';
+		$comment = (!empty($order['EText'])) ? '<p><p><b>Комментарий</b><br/>' . $order['EText'] . '</p>' : '';
 		$addons = "$comment
 		<p><b>Покупатель</b><br/>
 		{$order['Name']}<br/>
 		{$order['Phone']}<br/>
 		{$order['Email']}</p>
 		";
-		$text = str_replace('[ЗАКАЗ]',$order['Id'],$text);
-		$text = str_replace('[НАИМЕНОВАНИЕ]',$order['Name'],$text);
-		$text = str_replace('[ИМЯ]',$order['Name'],$text);
-		$text = str_replace('[ТОВАРЫ]',$positions,$text);
-		$text = str_replace('[ДОПОЛНИТЕЛЬНО]',$addons,$text);
-		$text = str_replace('[ПРОЕКТ]',Connect::$projectInfo['name'],$text);
+		$text = str_replace('[ЗАКАЗ]', $order['Id'], $text);
+		$text = str_replace('[НАИМЕНОВАНИЕ]', $order['Name'], $text);
+		$text = str_replace('[ИМЯ]', $order['Name'], $text);
+		$text = str_replace('[ТОВАРЫ]', $positions, $text);
+		$text = str_replace('[ДОПОЛНИТЕЛЬНО]', $addons, $text);
+		$text = str_replace('[ПРОЕКТ]', Connect::$projectInfo['name'], $text);
 		return $text;
 	}
-	public function getOrder(int $id,int $userId=0): array
+	public function getOrder(int $id, int $userId = 0): array
 	{
 		$obj = new Data("Orders");
 		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
 		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
 		if ($userId > 0) {
-			$obj->setParams([$id,$userId]);
+			$obj->setParams([$id, $userId]);
 			if (empty($order = @$obj->fetch('t.Id=? and t.UserId=?')[0])) {
 				return [];
 			}
@@ -645,15 +651,15 @@ class CartUtils
 				return [];
 			}
 		}
-		$order['W_Positions'] = json_decode($order['JPositions'],true);
+		$order['W_Positions'] = json_decode($order['JPositions'], true);
 		$sql = '';
 		$sum = 0;
-		$order['W_Positions'] = $this->getCartPositionsRecounter($order['W_Positions'],$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
+		$order['W_Positions'] = $this->getCartPositionsRecounter($order['W_Positions'], $order['ODeliveryDiscount'], $order['OPaymentTariff'], $order['OPaymentDiscount']);
 		foreach ($order['W_Positions'] as $value) {
 			$sum += $value['sum'];
 			$sql .= "\n(select '{$value['id']}' `id`,'{$value['name']}' `name`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`,'{$value['priceTotal']}' `priceTotal`,'{$value['sumTotal']}' `sumTotal`) union";
 		}
-		$sql = "(select * from (\n" . trim($sql," union\n").') y)';
+		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
 		$ids = implode(',', array_column($order['W_Positions'], 'id'));
 		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum,x.priceTotal,x.sumTotal from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
 		$order['W_Positions'] = Connect::$instance->fetch($sql);
@@ -669,16 +675,16 @@ class CartUtils
 		$obj->setParams([$id]);
 		$obj->setJoin("join s_Users u on u.Id=t.UserId");
 		$obj->setConcat("u.Name UsersName");
-		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?",2000,1,"t.Priority");
+		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?", 2000, 1, "t.Priority");
 		if (!empty($res)) {
 			$order['W_Messages'] = $res;
 		}
 		#Utils::debug($order,2);
 		return $order;
 	}
-	public function getOrderByGuid(string $guid) : array
+	public function getOrderByGuid(string $guid): array
 	{
-		if (strlen($guid)!=36) {
+		if (strlen($guid) != 36) {
 			return [];
 		}
 		$obj = new Data("Orders");
@@ -687,14 +693,15 @@ class CartUtils
 		$order = @$obj->fetch("t.Alias = ?")[0];
 		return $order;
 	}
-	public function processTask(array $request,Tasks $tasks) {
-		$jdata = json_decode($request['BRequest'],true);
+	public function processTask(array $request, Tasks $tasks)
+	{
+		$jdata = json_decode($request['BRequest'], true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
 			$response = [
 				'message' => 'no order'
 			];
-			return $tasks->update($request['Id'],$response,400);
+			return $tasks->update($request['Id'], $response, 400);
 		}
 		$mail = new Mail('html');
 		$subject = 'Новый заказ';
@@ -708,24 +715,25 @@ class CartUtils
 		if (!empty($jdata['telegram'])) {
 			$text = "<b>НОВЫЙ ЗАКАЗ</b> №{$order['Id']} / {$order['OSum']} ₽\n🙋{$order['Name']}\n📞{$order['Phone']}\n✉️{$order['Email']}\n\n#сайт_{$order['Id']}";
 			$tg = new Telegram();
-			$res = $tg->send(Connect::$projectServices['telegram']['dev'],$text);
-			$jdata = json_decode($res['response'],true);
-			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram false";
+			$res = $tg->send(Connect::$projectServices['telegram']['dev'], $text);
+			$jdata = json_decode($res['response'], true);
+			$outputMessage .= ($jdata['ok'] === true) ? " telegram ok" : " telegram false";
 		}
 		$outputMessage = trim($outputMessage);
 		$response = [
 			'message' => $outputMessage
 		];
-		return $tasks->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processPaymentTask(array $request,Tasks $tasks) {
-		$jdata = json_decode($request['BRequest'],true);
+	public function processPaymentTask(array $request, Tasks $tasks)
+	{
+		$jdata = json_decode($request['BRequest'], true);
 		$order = $this->getOrder($jdata['id']);
 		if (empty($order)) {
 			$response = [
 				'message' => 'no order'
 			];
-			return $tasks->update($request['Id'],$response,400);
+			return $tasks->update($request['Id'], $response, 400);
 		}
 		$mail = new Mail('html');
 		$outputMessage = "";
@@ -735,14 +743,14 @@ class CartUtils
 			if (empty($text = $res[0]['Descr'])) {
 				$outputMessage .= " email fail";
 			} else {
-				$subject = ($jdata['status']=='succeeded')?'Заказ оплачен':'Заказ не оплачен - ошибка';
-				$text = str_replace('[ЗАКАЗ]',$order['Id'],$text);
-				$text = str_replace('[НАИМЕНОВАНИЕ]',$order['Name'],$text);
-				$text = str_replace('[ИМЯ]',$order['Name'],$text);
-				$text = str_replace('[ТЕКСТ]',$jdata['message'],$text);
-				$text = str_replace('[СТАТУС]',$jdata['status'],$text);
-				$text = str_replace('[СУММА]',$order['OSum'],$text);
-				$text = str_replace('[ПРОЕКТ]',Connect::$projectInfo['name'],$text);
+				$subject = ($jdata['status'] == 'succeeded') ? 'Заказ оплачен' : 'Заказ не оплачен - ошибка';
+				$text = str_replace('[ЗАКАЗ]', $order['Id'], $text);
+				$text = str_replace('[НАИМЕНОВАНИЕ]', $order['Name'], $text);
+				$text = str_replace('[ИМЯ]', $order['Name'], $text);
+				$text = str_replace('[ТЕКСТ]', $jdata['message'], $text);
+				$text = str_replace('[СТАТУС]', $jdata['status'], $text);
+				$text = str_replace('[СУММА]', $order['OSum'], $text);
+				$text = str_replace('[ПРОЕКТ]', Connect::$projectInfo['name'], $text);
 				$mail->mail($order['Email'], $subject, $text);
 				$outputMessage .= " email ok";
 			}
@@ -750,14 +758,14 @@ class CartUtils
 		if (!empty($jdata['telegram'])) {
 			$text = "<b>ЗАКАЗ ОПЛАТА</b> №{$order['Id']}\n\n{$jdata['message']}\n\nстатус платежа: {$jdata['status']}\n\n#сайт_{$jdata['id']}";
 			$tg = new Telegram();
-			$res = $tg->send(Connect::$projectServices['telegram']['dev'],$text);
-			$jdata = json_decode($res['response'],true);
-			$outputMessage .= ($jdata['ok']===true) ? " telegram ok" : " telegram fail";
+			$res = $tg->send(Connect::$projectServices['telegram']['dev'], $text);
+			$jdata = json_decode($res['response'], true);
+			$outputMessage .= ($jdata['ok'] === true) ? " telegram ok" : " telegram fail";
 		}
 		$outputMessage = trim($outputMessage);
 		$response = [
 			'message' => $outputMessage
 		];
-		return $tasks->update($request['Id'],$response,200);
+		return $tasks->update($request['Id'], $response, 200);
 	}
 }

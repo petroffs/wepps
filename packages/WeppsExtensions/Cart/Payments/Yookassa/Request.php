@@ -4,6 +4,7 @@ require_once '../../../../../configloader.php';
 use WeppsCore\Request;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsCore\Utils;
+use WeppsExtensions\Cart\Payments\Yookassa\Yookassa;
 
 class RequestYookassa extends Request
 {

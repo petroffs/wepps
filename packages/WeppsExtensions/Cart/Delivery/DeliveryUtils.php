@@ -72,7 +72,7 @@ class DeliveryUtils
             /**
              * @var Delivery $class
              */
-            $class = new $className($value,$cartUtils);
+            $class = new $className($value, $cartUtils);
             $output[$key]['Addons']['tariff'] = $class->getTariff();
             $output[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
             $output[$key]['Addons']['extension'] = $value['DeliveryExt'];
@@ -86,7 +86,8 @@ class DeliveryUtils
     {
         return $this->operations;
     }
-    public function setOperations(array $data,CartUtils $cartUtils) : bool {
+    public function setOperations(array $data, CartUtils $cartUtils): bool
+    {
         $data = array_filter($data, fn($key) => str_starts_with($key, 'operations-'), ARRAY_FILTER_USE_KEY);
         if (empty($data)) {
             $cartUtils->setCartDeliveryOperations();
@@ -95,9 +96,9 @@ class DeliveryUtils
         $cart = $cartUtils->getCart();
         $data2 = [];
         foreach ($data as $key => $value) {
-            $data2[str_replace('operations-','',$key)] = trim(htmlspecialchars(substr($value,0,256)));
+            $data2[str_replace('operations-', '', $key)] = trim(htmlspecialchars(substr($value, 0, 256)));
         }
-        $key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations'], 'id'));
+        $key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations']??[], 'id'));
         if ($key === false) {
             $cart['deliveryOperations'][] = [
                 'id' => (string) ($cart['deliveryId'] ?? '-1'),

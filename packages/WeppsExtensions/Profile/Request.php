@@ -127,6 +127,25 @@ class RequestProfile extends Request
 			'typ' => 'auth',
 			'id' => $res[0]['Id']
 		], $lifetime);
+
+		/**
+		 * Склеить корзину неавторизованного с текущим
+		 */
+		if (!empty($_COOKIE['wepps_cart']) && !empty($_COOKIE['wepps_cart_guid'])) {
+			$cartUtils = new CartUtils();
+			$cart = $cartUtils->getCart();
+			$cartUser = json_decode($res[0]['JCart'],true);
+			if (!empty($cart['items']) && !empty($cartUser['items'])) {
+				foreach($cartUser['items'] as $item) {
+					$cartUtils->add($item['id'],$item['qu']);
+				}
+				$cart = $cartUtils->getCart();
+				$json = json_encode($cart, JSON_UNESCAPED_UNICODE);
+				Connect::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$res[0]['Id']]);
+				Utils::cookies('wepps_cart');
+				Utils::cookies('wepps_cart_guid');
+			}
+		}
 		Utils::cookies('wepps_token', $token, $lifetime);
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		/**

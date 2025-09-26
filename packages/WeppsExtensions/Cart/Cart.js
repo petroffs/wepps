@@ -175,6 +175,10 @@ class CartWepps {
 		$('#cart-btn-checkout').off('click');
 		$('#cart-btn-checkout').on('click',function(e) {
 			e.preventDefault();
+			if ($(this).data('auth')=='0') {
+				$('a#header-profile').trigger('click');
+				return;
+			}
 			window.open('/cart/checkout.html','_self');
 		});
 		// window.addEventListener('popstate', (event) => {
@@ -230,6 +234,10 @@ class CartWepps {
 		obj.off('change');
 		obj.change(function (e) { 
 			e.preventDefault();
+			if ($(this).data('auth')=='0') {
+				$('a#header-profile').trigger('click');
+				return;
+			}
 			layoutWepps.request({
 				data: 'action=shipping&paymentsId=' + $(this).val() + '&context=cart',
 				url: '/ext/Cart/Request.php',

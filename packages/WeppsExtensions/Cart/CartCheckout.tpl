@@ -133,7 +133,7 @@
 				</div>
 			</div>
 			<label class="pps pps_button pps_button_important">
-				<button id="cart-btn-confirm" {if !$deliveryActive || !$paymentsActive || $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0 || $cartSummary.stocksErrors==1} disabled{/if}>
+				<button id="cart-btn-confirm" data-auth="{if $user.Id}1{else}0{/if}" {if !$deliveryActive || !$paymentsActive || $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0 || $cartSummary.stocksErrors==1} disabled{/if}>
 					Разместить заказ
 				</button>
 			</label>
