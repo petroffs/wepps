@@ -26,10 +26,7 @@ class Products extends Extension
 		$params = $this->filters->getParams();
 		if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['catalog'] && empty($params['text'])) {
 			return new Childs($this->navigator, $this->headers);
-		} elseif ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands']) {
-			/**
-			 * Вывести расширение бренды - ссылки на фильтры в этот же раздел
-			 */
+		} elseif ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands'] && empty($this->get['f_1'])) {
 			return new Brands($this->navigator, $this->headers);
 		}
 		if (Navigator::$pathItem == '') {

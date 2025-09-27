@@ -1,42 +1,16 @@
-section.brands-wrapper.pps_flex {
+section.brands-wrapper {
 	margin-bottom: var(--step4);
 	width: auto;
 }
 
-section.brands-wrapper>section {
-	border-radius: var(--step2);
-	overflow: hidden;
-	position: relative;
-}
-
-section.brands-wrapper>section:hover {
+section.brands-wrapper>div:hover {
 	box-shadow: var(--shadow);
 }
 
 section.brands-wrapper a {
-	text-decoration: none;
-	color: var(--color-05);
-	background: var(--color-95);
-	height: 100%;
-	display: block;
+	line-height: 1.6;
 }
-
-div.brands-img {
-	background: var(--color-100);
-}
-
-div.brands-img img {
-	width: 100%;
-	height: auto;
-	display: block;
-}
-
-div.brands-text {
-	background-color: var(--color-95);
-	padding: var(--step2);
-	height: 100%;
-}
-
-div.brands-text>.title {
+section.brands-wrapper div.title {
 	font-weight: 600;
+	font-size: var(--font-large);
 }

@@ -1,5 +1,3 @@
-Вывод по алфавиту, сгруппировать по первой букве
-Ссылки на фильтры в каталоге
 {* <section class="brands-wrapper pps_flex pps_flex_row pps_flex_start pps_flex_row_str pps_flex_margin_large pps_animate">
 	{foreach name="out" item="item" from=$elements}
 	{assign var="images" value=$item.Images_FileUrl|strarr}
@@ -19,3 +17,18 @@
 	</section>
 	{/foreach}
 </section> *}
+
+<section class="brands-wrapper w_grid w_5col w_3col_view_medium w_2col_view_small w_gap_large pps_animate">
+	{foreach name="out" item="item" key="key" from=$brands}
+		<div class="content-block item">
+			<div class="title">{$key}</div>
+			<div class="brands-items">
+				{foreach name="o" item="i" key="k" from=$item}
+					<div class="brands-item">
+						<a href="{$i.Url}">{$i.PValue}</a>
+					</div>
+				{/foreach}
+			</div>
+		</div>
+	{/foreach}
+</section>

@@ -53,7 +53,11 @@ class ProductsUtils
 	public function getConditions(array $params = [], bool $isFilters = false,string $conditions = '',array $prepare = []): array
 	{
 		if (empty($conditions)) {
-			$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
+			if ($this->navigator->content['Id']==Connect::$projectServices['navigator']['brands']) {
+				$conditions = "t.DisplayOff=0";
+			} else {
+				$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
+			}
 			if (!empty($params['text'])) {
 				$conditions = "t.DisplayOff=0 and lower(t.Name) like lower(?)";
 				$prepare[] = $params['text'] . "%";
