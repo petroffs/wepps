@@ -54,7 +54,8 @@ class ProductsUtils
 	{
 		if (empty($conditions)) {
 			if ($this->navigator->content['Id']==Connect::$projectServices['navigator']['brands']) {
-				$conditions = "t.DisplayOff=0";
+				$conditions = "t.DisplayOff=0 and t.Id in (select pv.TableNameId from s_PropertiesValues pv where pv.Alias=? and pv.DisplayOff=0 and pv.Name=1)";
+				$prepare[] = Navigator::$pathItem;
 			} else {
 				$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
 			}

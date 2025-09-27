@@ -10,7 +10,12 @@ section.brands-wrapper>div:hover {
 section.brands-wrapper a {
 	line-height: 1.6;
 }
+
 section.brands-wrapper div.title {
 	font-weight: 600;
 	font-size: var(--font-large);
+}
+
+body section.sidebar div.nav-filters:first-child {
+	margin-top: 0;
 }

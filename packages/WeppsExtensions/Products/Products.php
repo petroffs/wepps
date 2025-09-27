@@ -24,12 +24,15 @@ class Products extends Extension
 		$this->productsUtils->setNavigator($this->navigator, 'Products');
 		$this->filters = new Filters($this->get);
 		$params = $this->filters->getParams();
+		$displayForce = 0;
 		if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['catalog'] && empty($params['text'])) {
 			return new Childs($this->navigator, $this->headers);
-		} elseif ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands'] && empty($this->get['f_1'])) {
-			return new Brands($this->navigator, $this->headers);
+		} elseif ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands']) {
+			$obj = new Brands($this->navigator, $this->headers);
+			$this->extensionData = $obj->extensionData;
+			$displayForce = 1;
 		}
-		if (Navigator::$pathItem == '') {
+		if (Navigator::$pathItem == '' || $displayForce==1) {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Filters/Filters.{$this->rand}.css");

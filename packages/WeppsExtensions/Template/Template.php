@@ -58,6 +58,7 @@ class Template extends Extension {
 		}
 		$navigator = &$this->navigator;
 		if ($navigator::$pathItem!='' && !isset($extension->extensionData['element'])) {
+			
 			Exception::error404();
 		}
 		
