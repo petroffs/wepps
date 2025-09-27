@@ -6,10 +6,6 @@ use WeppsCore\Exception;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Extension;
-use WeppsCore\TextTransforms;
-use WeppsCore\Utils;
-use WeppsExtensions\Products\ProductsUtils;
-use WeppsExtensions\Template\Filters\Filters;
 
 class Brands extends Extension
 {
