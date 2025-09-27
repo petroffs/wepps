@@ -31,6 +31,9 @@ class Products extends Extension
 			$obj = new Brands($this->navigator, $this->headers);
 			$this->extensionData = $obj->extensionData;
 			$displayForce = 1;
+			if (Navigator::$pathItem == '') {
+				return $obj;
+			}
 		}
 		if (Navigator::$pathItem == '' || $displayForce==1) {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';

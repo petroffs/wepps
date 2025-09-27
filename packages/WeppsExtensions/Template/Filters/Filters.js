@@ -10,21 +10,18 @@ class FiltersWepps {
 	};
 	init() {
 		let self = this;
-		$('#pps-options-sort').find('select').off('select2:select');
-		$('#pps-options-sort').find('select').on('select2:select', function (e) {
+		$('#pps-options-sort').find('select').off('select2:select').on('select2:select', function (e) {
 			var sel = $(this).val();
 			$.cookie("wepps_sort", sel, { expires: 365, path: '/' });
 			self.response(1);
 		});
-		$('.paginator-wrapper').find('a[data-page]').off('click');
-		$('.paginator-wrapper').find('a[data-page]').on('click', function (e) {
+		$('.paginator-wrapper').find('a[data-page]').off('click').on('click', function (e) {
 			event.stopPropagation();
 			event.preventDefault();
 			var page = parseInt($(this).data('page'));
 			self.response(page, 'top');
 		});
-		$('.pps.pps_checkbox').find('input[type="checkbox"]').off('change');
-		$('.pps.pps_checkbox').find('input[type="checkbox"]').on('change', function (e) {
+		$('.pps.pps_checkbox').find('input[type="checkbox"]').off('change').on('change', function (e) {
 			event.preventDefault();
 			let filters = $(this).closest('div.nav-filters');
 			let last = filters.data('id');
@@ -38,8 +35,7 @@ class FiltersWepps {
 			self.sidebar.attr('data-check', $(this).prop('checked'));
 			self.response(page);
 		});
-		$('.nav-filters-reset').find('input').off('click');
-		$('.nav-filters-reset').find('input').on('click', function (e) {
+		$('.nav-filters-reset').find('input').off('click').on('click', function (e) {
 			event.stopPropagation();
 			event.preventDefault();
 			let el = $('.sidebar').find('input[type="checkbox"]');
@@ -50,14 +46,12 @@ class FiltersWepps {
 			}*/
 			self.response(1, 'top');
 		});
-		$('.nav-filters-apply').find('input').off('click');
-		$('.nav-filters-apply').find('input').on('click', function (e) {
+		$('.nav-filters-apply').find('input').off('click').on('click', function (e) {
 			event.stopPropagation();
 			event.preventDefault();
 			self.layout.remove();
 		});
-		$('li.pps_expand').find('a').off('click');
-		$('li.pps_expand').find('a').on('click', function (event) {
+		$('li.pps_expand').find('a').off('click').on('click', function (event) {
 			event.stopPropagation();
 			event.preventDefault();
 			var items = $(this).closest('ul').find('li');
@@ -71,17 +65,15 @@ class FiltersWepps {
 				var href = $(this);
 				setTimeout(function () {
 					items.filter(function (index) {
-						if (index >= 10) {
+						if (index >= 10 && !$(this).hasClass('pps_expand')) {
 							$(this).addClass('pps_hide');
 						}
 					});
-					href.parennav - filters - resett().removeClass('pps_hide');
 					href.text('Еще');
 				}, 500);
 			}
 		});
-		$('#pps-option-filters').off('click');
-		$('#pps-option-filters').on('click', function (e) {
+		$('#pps-option-filters').off('click').on('click', function (e) {
 			e.preventDefault();
 			self.layout.modal({ size: 'large' });
 			self.sidebar.detach().appendTo(".w_modal_content").removeClass('w_hide_view_medium');
