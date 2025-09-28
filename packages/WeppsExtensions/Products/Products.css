@@ -1,11 +1,11 @@
 div.page.products {
 	overflow: auto;
-	padding-bottom: var(--step4);
-	padding-top: var(--step4);
+	padding-bottom: var(--s4);
+	padding-top: var(--s4);
 }
 
 div.products-options {
-	margin-top: var(--step4);
+	margin-top: var(--s4);
 }
 
 div#pps-option-filters {
@@ -20,13 +20,13 @@ div.product-media {
 	position: relative;
 }
 
-label.pps.pps_button>a.cart-exists {
+label.pps.w_button>a.cart-exists {
 	text-decoration: none;
 	color: var(--color-100);
 	background-color: var(--color-active);
-	width: var(--step6);
-	height: var(--step6);
-	border: var(--stepHalf) solid var(--color-100);
+	width: var(--s6);
+	height: var(--s6);
+	border: var(--s-half) solid var(--color-100);
 	border-radius: 50%;
 	display: flex;
 	flex-direction: column;
@@ -34,17 +34,17 @@ label.pps.pps_button>a.cart-exists {
 	align-items: center;
 	position: absolute;
 	z-index: 1;
-	right: calc(-1 * var(--step2));
-	top: var(--step);
+	right: calc(-1 * var(--s2));
+	top: var(--s);
 }
-label.pps.pps_button>a.cart-exists::after {
+label.pps.w_button>a.cart-exists::after {
 	content: '\f243';
 	font-family: "bootstrap-icons";
 }
-label.pps.pps_button>a.cart-exists+input.cart-add {
+label.pps.w_button>a.cart-exists+input.cart-add {
 	color: var(--color-active);
 	background-color: var(--color-100);
-	padding-left: var(--step2);
+	padding-left: var(--s2);
 }
 
 /**/
@@ -52,11 +52,11 @@ label.pps.pps_button>a.cart-exists+input.cart-add {
 div.status {
 	background-color: rgba(0, 0, 0, 0.5);
 	border-radius: 50%;
-	width: var(--step6);
-	height: var(--step6);
+	width: var(--s6);
+	height: var(--s6);
 	position: absolute;
-	top: var(--step4);
-	left: var(--step4);
+	top: var(--s4);
+	left: var(--s4);
 	z-index: 1;
 	display: flex;
 	justify-content: center;

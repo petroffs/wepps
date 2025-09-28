@@ -1,5 +1,5 @@
 <div class="way">
-	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
+	<ul class="w_list w_flex w_flex_row w_flex_start">
 		<li><a href="/_wepps/">Главная</a></li>
 		<li><a href="/_wepps/navigator/">Навигатор</a></li>
 		{foreach name="out" item="item" key="key" from=$way}
@@ -7,9 +7,9 @@
 		{/foreach}
 	</ul>
 </div>
-<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin">
-	<div class="sidebar pps_flex_15 pps_flex_11_view_medium pps_flex pps_flex_col pps_hide pps_flex_view_medium">
-		<ul class="pps_list pps_flex_max">
+<div class="w_flex w_flex_row w_flex_row_str w_flex_margin">
+	<div class="sidebar w_flex_15 w_flex_11_view_medium w_flex w_flex_col w_hide w_flex_view_medium">
+		<ul class="w_list w_flex_max">
 			<li>
 				<div class="title">
 					<a href="" id="sidebar-show"><i class="fa fa-reorder"></i></a>
@@ -17,11 +17,11 @@
 			</li>
 		</ul>
 	</div>
-	<div class="sidebar pps_flex_15 pps_flex_11_view_medium pps_flex pps_flex_col pps_hide_view_medium">
-		<ul class="pps_list pps_flex_max">
+	<div class="sidebar w_flex_15 w_flex_11_view_medium w_flex w_flex_col w_hide_view_medium">
+		<ul class="w_list w_flex_max">
 			<li>
 				<div class="title title-search">
-					<label class="pps pps_input list-search">
+					<label class="pps w_input list-search">
 						<input type="text" placeholder="Поиск раздела" id="navigator-search"/>
 					</label>
 				</div>
@@ -30,7 +30,7 @@
 			<li>
 				<div class="title">{$item.0.NGroup_Name}</div>
 				{function menu level=0}
-				  <ul class="pps_list dir level{$level}" data-parent="{$entry.element.Id}" data-level="{$level}">
+				  <ul class="w_list dir level{$level}" data-parent="{$entry.element.Id}" data-level="{$level}">
 				  {foreach $data as $entry}
 				    {if count($entry.child)>0}
 				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}" data-id="{$entry.element.Id}"><a href="/_wepps/navigator{$entry.element.Url}">{$entry.element.Name}</a>&nbsp;<i class="fa fa-folder-o"></i></li>
@@ -42,12 +42,12 @@
 				  </ul>
 				{/function}
 				{menu data=$navtree[$key]}				
-				<div class="pps_interval_small"></div>
+				<div class="w_interval_small"></div>
 			</li>
 			{/foreach}
 		</ul>
 	</div>
-	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col centercontent">
+	<div class="w_flex_45 w_flex_11_view_medium w_flex w_flex_col centercontent">
 		{$listItemFormTpl}
 	</div>
 </div>

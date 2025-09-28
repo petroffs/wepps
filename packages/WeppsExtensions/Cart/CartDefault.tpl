@@ -2,13 +2,13 @@
 	<div class="w_2scol w_3scol_view_medium">
 		<div class="content-block">
 			<h1>Корзина</h1>
-			<label class="pps pps_checkbox"><input type="checkbox" id="cart-check-all" checked="checked"
+			<label class="pps w_checkbox"><input type="checkbox" id="cart-check-all" checked="checked"
 					autocomplete="off" /><span>Выбрать все</span></label>
 		</div>
 		<div class="content-block cart-items">
 			{foreach item="item" from=$cartSummary.items}
 				<section data-id="{$item.id}-{$item.idv}">
-					<div class="cart-checkbox"><label class="pps pps_checkbox"><input type="checkbox" name="cart-check"
+					<div class="cart-checkbox"><label class="pps w_checkbox"><input type="checkbox" name="cart-check"
 								value="{$item.id}-{$item.idv}" {if $item.active==1}checked {/if}
 								autocomplete="off" /><span></span></label></div>
 					<div class="cart-image"><img src="/pic/lists{$item.image}" /></div>
@@ -24,7 +24,7 @@
 					</div>
 					<div class="cart-quantity">
 						{if $item.stocks>0}
-						<div class="pps pps_minmax" data-value="{$item.quantity}" data-name="quantity">
+						<div class="pps w_minmax" data-value="{$item.quantity}" data-name="quantity">
 							<button class="sub">
 								<span></span>
 							</button>
@@ -57,7 +57,7 @@
 			<h2>Детали заказа</h2>
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">{$cartSummary.quantityActive} {$cartText.goodsCount}</div>
-				<div class="pps_right">
+				<div class="w_right">
 					<div class="price"><span>{$cartSummary.sumBefore|money}</span></div>
 				</div>
 			</div>
@@ -73,7 +73,7 @@
 					<div class="price"><span>{$cartSummary.sumActive|money}</span></div>
 				</div>
 			</div>
-			<label class="pps pps_button pps_button_important">
+			<label class="pps w_button w_button_important">
 				<button id="cart-btn-checkout" data-auth="{if $user.Id}1{else}0{/if}"
 				{if $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0 || $cartSummary.stocksErrors==1}disabled="disabled"{/if}>
 					Перейти к оформлению

@@ -1,9 +1,9 @@
 section.tiles-wrapper>section:not(:first-child) {
-	margin-top: var(--step4);
+	margin-top: var(--s4);
 }
 
 section.tiles-wrapper>section img {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	display: block;
 }
 
@@ -19,7 +19,7 @@ section.tiles-wrapper .title {
 	font-size: var(--font-large);
 	font-weight: 600;
 	line-height: 1.2;
-	margin-bottom: var(--step2);
+	margin-bottom: var(--s2);
 }
 
 @media screen and (max-width: 480px) {

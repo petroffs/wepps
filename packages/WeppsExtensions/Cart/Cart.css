@@ -1,6 +1,6 @@
 div.page.cart {
-	margin-top: var(--step4);
-	margin-bottom: var(--step4);
+	margin-top: var(--s4);
+	margin-bottom: var(--s4);
 }
 
 div.page.cart div.cart-total {
@@ -9,26 +9,26 @@ div.page.cart div.cart-total {
 }
 
 div.page.cart div.cart-total h2 {
-	margin-bottom: var(--step2);
+	margin-bottom: var(--s2);
 }
 
 div.page.cart div.cart-total>div {
-	padding-bottom: var(--step2);
-	margin-bottom: var(--step2);
+	padding-bottom: var(--s2);
+	margin-bottom: var(--s2);
 	border-bottom: var(--border);
 }
 
 div.page.cart div.warning {
 	background: var(--color-warning);
-	padding: var(--step) var(--step2);
-	margin: 0 0 var(--step2) 0;
+	padding: var(--s) var(--s2);
+	margin: 0 0 var(--s2) 0;
 	width: max-content;
 	max-width: 100%;
-	border-radius: var(--step);
+	border-radius: var(--s);
 }
 div.page.cart div.cart-total > div.warning {
-	padding: var(--step) var(--step2);
-	margin: var(--step2) 0 0 0;
+	padding: var(--s) var(--s2);
+	margin: var(--s2) 0 0 0;
 	border-bottom: 0;
 }
 
@@ -42,7 +42,7 @@ div.page.cart div.cart-total>div div.price {
 }
 
 div.page.cart div.content-block:not(:last-child) {
-	margin-bottom: var(--step4);
+	margin-bottom: var(--s4);
 }
 
 div.page.cart div.cart-items.content-block {
@@ -56,9 +56,9 @@ div.page.cart div.cart-items>section {
 	grid-template-areas:
 		"checkbox image title title quantity sum"
 	;
-	gap: var(--step4);
-	padding: var(--step2);
-	margin-bottom: var(--stepHalf);
+	gap: var(--s4);
+	padding: var(--s2);
+	margin-bottom: var(--s-half);
 	background-color: var(--color-100);
 }
 
@@ -66,15 +66,15 @@ div.page.cart div.cart-items>section:last-child {
 	margin-bottom: 0;
 }
 
-div.page.cart h1+label.pps.pps_checkbox input[type="checkbox"]+span::before {
-	margin-right: var(--step4);
+div.page.cart h1+label.pps.w_checkbox input[type="checkbox"]+span::before {
+	margin-right: var(--s4);
 }
 
-div.page.cart div.cart-items label.pps.pps_checkbox input[type="checkbox"]+span {
+div.page.cart div.cart-items label.pps.w_checkbox input[type="checkbox"]+span {
 	padding: 0;
 }
 
-div.page.cart div.cart-items label.pps.pps_checkbox input[type="checkbox"]+span::before {
+div.page.cart div.cart-items label.pps.w_checkbox input[type="checkbox"]+span::before {
 	margin-right: 0;
 }
 
@@ -87,7 +87,7 @@ div.page.cart div.cart-image {
 }
 
 div.page.cart div.cart-image img {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 }
 
 div.page.cart div.cart-title {
@@ -95,14 +95,14 @@ div.page.cart div.cart-title {
 }
 
 div.page.cart div.cart-title div.btn {
-	margin-top: var(--step);
+	margin-top: var(--s);
 }
 
 div.page.cart div.cart-title a.title {
 	font-weight: 600;
 	text-decoration: none;
 	color: var(--color-25);
-	margin-bottom: var(--step);
+	margin-bottom: var(--s);
 	max-width: max-content;
 	display: block;
 }
@@ -132,7 +132,7 @@ div.page.cart div.cart-quantity {
 div.page.cart .cart-price {
 	font-size: var(--font-small);
 	color: var(--color-50);	
-	margin-top: var(--step);
+	margin-top: var(--s);
 }
 
 div.page.cart .cart-price>span {
@@ -142,7 +142,7 @@ div.page.cart .cart-price>span {
 }
 
 div.page.cart .cart-price .price>span:after {
-	margin-right: var(--step);
+	margin-right: var(--s);
 }
 
 div.page.cart div.cart-sum {
@@ -161,14 +161,14 @@ div.page.cart div.cart-sum .price.price-before {
 }
 
 div.page.cart h1 {
-	margin-bottom: var(--step2)
+	margin-bottom: var(--s2)
 }
 
 div.cart-city.content-block {
 	overflow: inherit;
 }
 
-div.cart-city label.pps.pps_input {
+div.cart-city label.pps.w_input {
 	display: block;
 }
 
@@ -180,13 +180,13 @@ div.page.cart .cart-variants .header {
 	padding: 0;
 }
 div.page.cart .cart-variants .header .title {
-	padding: var(--step);
+	padding: var(--s);
 	display: flex;
 	flex-grow:1;
 }
 
 div.page.cart .cart-variants .header .period {
-	padding: var(--step);
+	padding: var(--s);
 	display: flex;
 	justify-content: flex-end;
 	flex: 1 1 20%;
@@ -194,69 +194,69 @@ div.page.cart .cart-variants .header .period {
 }
 
 div.page.cart .cart-variants .header .price {
-	padding: var(--step);
+	padding: var(--s);
 	display: flex;
 	justify-content: flex-end;
 	flex: 1 1 20%;
 	max-width: 20%;
 }
 
-div.page.cart .cart-variants label.pps.pps_radio {
+div.page.cart .cart-variants label.pps.w_radio {
 	width: 100%;
 	max-width: 100%;
 	border-bottom: var(--border);
 	flex-flow: row wrap;
 }
 
-div.page.cart .cart-variants label.pps.pps_radio:first-of-type {
-	border-radius: var(--step2) var(--step2) 0 0;
+div.page.cart .cart-variants label.pps.w_radio:first-of-type {
+	border-radius: var(--s2) var(--s2) 0 0;
 }
 
-div.page.cart .cart-variants label.pps.pps_radio:last-of-type {
+div.page.cart .cart-variants label.pps.w_radio:last-of-type {
 	border-bottom: none;
-	border-radius: 0 0 var(--step2) var(--step2);
+	border-radius: 0 0 var(--s2) var(--s2);
 }
 
-div.page.cart .cart-variants label.pps.pps_radio:hover {
+div.page.cart .cart-variants label.pps.w_radio:hover {
 	background: var(--color-95);
 }
 
-div.page.cart .cart-variants label.pps.pps_radio span.title {
-	padding: var(--step);
+div.page.cart .cart-variants label.pps.w_radio span.title {
+	padding: var(--s);
 	display: flex;
 	flex-grow:1;
 	min-width: 60%;
 }
 
-div.page.cart .cart-variants label.pps.pps_radio span.period {
-	padding: var(--step);
+div.page.cart .cart-variants label.pps.w_radio span.period {
+	padding: var(--s);
 	display: flex;
 	justify-content: flex-end;
 	flex: 1 1 20%;
 	max-width: 20%;
 }
 
-div.page.cart .cart-variants label.pps.pps_radio span.price {
-	padding: var(--step);
+div.page.cart .cart-variants label.pps.w_radio span.price {
+	padding: var(--s);
 	display: flex;
 	justify-content: flex-end;
 	flex: 1 1 20%;
 	max-width: 20%;
 }
 
-div.page.cart .cart-variants label.pps.pps_radio span.text {
-	padding-left: calc(var(--step) * 7);
+div.page.cart .cart-variants label.pps.w_radio span.text {
+	padding-left: calc(var(--s) * 7);
 	width: 80%;
 }
 
-div.page.cart .cart-variants label.pps.pps_radio span.attention {
+div.page.cart .cart-variants label.pps.w_radio span.attention {
 	color: var(--color-75);
 }
 
-div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.period+.price+.text,
-div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.period+.price+.text+.price,
-div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.text,
-div.page.cart .cart-variants label.pps.pps_radio input:checked+.title+.text+.price {
+div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.period+.price+.text,
+div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.period+.price+.text+.price,
+div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.text,
+div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.text+.price {
 	color: var(--color-success);
 }
 

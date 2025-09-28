@@ -39,14 +39,14 @@ class Filters {
 		$js = "
 			var obj = $('div.nav-filters').not('div.nav-filters-{$last}').find('input');
 			obj.prop('disabled', true);
-			obj.siblings('span').children('span').addClass('pps_hide');
+			obj.siblings('span').children('span').addClass('w_hide');
 			";
 		foreach ($filtersActive as $value) {
 			foreach ($value as $v) {
 				$js .= "
 					var obj = $('div.nav-filters-{$v['Name']}').find('input[name=\"{$v['Alias']}\"]');
 					obj.prop('disabled', false)
-					obj.siblings('span').children().html('{$v['Co']}').removeClass('pps_hide');
+					obj.siblings('span').children().html('{$v['Co']}').removeClass('w_hide');
 					";
 			}
 		}
@@ -56,11 +56,11 @@ class Filters {
 			options.attr('data-last','{$last}');
 			options.attr('data-check','{$checked}');
 			$('#pps-options-count').html('{$count} ".TextTransforms::ending2("товар",$count)."');
-			//$('.text-top').addClass('pps_hide');
+			//$('.text-top').addClass('w_hide');
 			
-			var expand = $('.nav-filters-{$last}').find('li.pps_expand').find('a');
+			var expand = $('.nav-filters-{$last}').find('li.w_expand').find('a');
 			var items = expand.closest('ul').find('li')
-			if (items.filter('.pps_hide').length!=0) {
+			if (items.filter('.w_hide').length!=0) {
 				expand.trigger('click');
 			}
 			";

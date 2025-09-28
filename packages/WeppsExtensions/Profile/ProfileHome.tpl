@@ -1,5 +1,5 @@
-<div class="pps_flex pps_flex_row pps_flex_center">
-    <div class="pps_form pps_flex_12 pps_flex_11_view_medium">
+<div class="w_flex w_flex_row w_flex_center">
+    <div class="w_form w_flex_12 w_flex_11_view_medium">
         <h2>Профайл</h2>
         <table class="w_table">
             <tbody>

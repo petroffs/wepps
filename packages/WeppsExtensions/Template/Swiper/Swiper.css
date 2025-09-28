@@ -1,10 +1,10 @@
 :root {
 	--swiper-theme-color: var(--color-button);
-	--swiper-pagination-bottom: var(--step4);
-	--swiper-pagination-bullet-size: var(--step2);
-	--pagination-bullet-width: var(--step2);
-	--swiper-pagination-bullet-height: var(--step2);
-	--swiper-pagination-bullet-horizontal-gap: var(--step);
+	--swiper-pagination-bottom: var(--s4);
+	--swiper-pagination-bullet-size: var(--s2);
+	--pagination-bullet-width: var(--s2);
+	--swiper-pagination-bullet-height: var(--s2);
+	--swiper-pagination-bullet-horizontal-gap: var(--s);
 }
 
 .swiper.w_hide {
@@ -36,7 +36,7 @@
 .swiper-button-next::after,
 .swiper-button-prev::after {
 	font-family: 'bootstrap-icons';
-	font-size: calc(var(--step) * 8);
+	font-size: calc(var(--s) * 8);
 }
 
 @media screen and (max-width: 480px) {

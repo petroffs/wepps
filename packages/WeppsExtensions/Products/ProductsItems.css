@@ -1,11 +1,11 @@
 div.products-items-wrapper {
-	margin-top: var(--step4);
+	margin-top: var(--s4);
 	overflow: auto;
 }
 
 div.products-items>section {
 	background: var(--color-100);
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 	position: relative;
 	display: flex;
@@ -28,11 +28,11 @@ div.products-items>section span.img {
 
 div.products-items>section span.title {
 	font-weight: 600;
-	padding: var(--step2);
+	padding: var(--s2);
 	display: block;
 }
 
 div.products-items>section div.prices-wrapper {
-	padding: var(--step2);
+	padding: var(--s2);
 	position: relative;
 }

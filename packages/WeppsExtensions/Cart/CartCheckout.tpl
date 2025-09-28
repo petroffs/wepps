@@ -6,8 +6,8 @@
 		</div>
 		<div class="content-block cart-city">
 			<h2>Выберите ваш регион доставки</h2>
-			<label class="pps pps_input">
-				<i class="pps_field_empty"></i>
+			<label class="pps w_input">
+				<i class="w_field_empty"></i>
 				<input type="text" name="citiesId" id="cart-city"
 					placeholder="Начните вводить город, и выберите из подсказки" value="{$cartCity.Title}" data-city="{$cartCity.Name}" data-region="{$cartCity.RegionsName}"
 					data-id="{$cartCity.Id}" autocomplete="off" />
@@ -21,7 +21,7 @@
 				<div class="price">Тариф</div>
 			</div>
 			{foreach name="out" item="item" from=$delivery}
-				<label class="pps pps_radio">
+				<label class="pps w_radio">
 					<input type="radio" name="delivery" value="{$item.Id}" data-price="0" {if $item.Id==$deliveryActive}
 						checked{/if} autocomplete="off"/>
 					<span class="title">{$item.Name}</span>
@@ -41,7 +41,7 @@
 				<div class="title">Наименование</div>
 			</div>
 			{foreach name="out" item="item" from=$payments}
-				<label class="pps pps_radio">
+				<label class="pps w_radio">
 					<input type="radio" name="payments" value="{$item.Id}" data-price="0" {if $item.Id==$paymentsActive}
 						checked{/if} autocomplete="off"/>
 					<span class="title">{$item.Name}</span>
@@ -57,7 +57,7 @@
 			{/foreach}
 			<div class="w_interval_large"></div>
 			<h2>Комментарий</h2>
-			<label class="pps pps_area">
+			<label class="pps w_area">
 				<textarea name="comment" autocomplete="off"></textarea>
 			</label>
 		</div>
@@ -68,7 +68,7 @@
 			<div class="w_grid w_3col">
 				<div class="w_2scol title">{$cartSummary.quantityActive}
 					{$cartText.goodsCount}</div>
-				<div class="pps_right">
+				<div class="w_right">
 					<div class="price">
 						<span>{$cartSummary.sumBefore|money:2}</span>
 					</div>
@@ -132,7 +132,7 @@
 					</div>
 				</div>
 			</div>
-			<label class="pps pps_button pps_button_important">
+			<label class="pps w_button w_button_important">
 				<button id="cart-btn-confirm" data-auth="{if $user.Id}1{else}0{/if}" {if !$deliveryActive || !$paymentsActive || $cartSummary.quantityActive==0 || $cartSummary.isSumActiveEnough==0 || $cartSummary.stocksErrors==1} disabled{/if}>
 					Разместить заказ
 				</button>

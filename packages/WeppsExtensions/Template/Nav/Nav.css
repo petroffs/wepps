@@ -19,7 +19,7 @@ section.header-wrapper-top {
 	display: grid;
 	grid-template-columns: auto 1fr auto auto;
 	grid-template-rows: auto;
-	gap: var(--step2);
+	gap: var(--s2);
 	align-items: center;
 }
 
@@ -59,23 +59,23 @@ a#footer-cart::after {
 	font-size: var(--font-small);
 	color: var(--color-100);
 	background-color: var(--color-button);
-	padding: 0 var(--stepHalf);
-	min-width: var(--step3);
-	height: var(--step3);
-	border-radius: var(--step2);
+	padding: 0 var(--s-half);
+	min-width: var(--s3);
+	height: var(--s3);
+	border-radius: var(--s2);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	position: absolute;
-	right: calc(0 * var(--step));
-	top: calc(0 * var(--step));
+	right: calc(0 * var(--s));
+	top: calc(0 * var(--s));
 }
 
 a#footer-cart::after {
-	right: calc(-3 * var(--step));
-	top: calc(0 * var(--step));
-	padding: var(--step2);
+	right: calc(-3 * var(--s));
+	top: calc(0 * var(--s));
+	padding: var(--s2);
 }
 
 a#header-cart[data-metrics="0"]::after,
@@ -84,7 +84,7 @@ a#footer-cart[data-metrics="0"]::after {
 }
 
 div.header-logo {
-	padding: var(--step2) 0;
+	padding: var(--s2) 0;
 }
 
 div.header-logo img {
@@ -101,13 +101,13 @@ section.header-wrapper-top label.pps {
 }
 
 section.header-wrapper-top label.pps>input[name="text"] {
-	height: calc(var(--step) * 6);
+	height: calc(var(--s) * 6);
 }
 
 section.header-wrapper-top .w_suggestions-item {
 	display: grid;
 	grid-template-columns: auto 1fr auto;
-	gap: var(--step2);
+	gap: var(--s2);
 	justify-content: center;
 	align-items: center;
 }
@@ -151,7 +151,7 @@ ul.header-nav>li>a {
 	font-weight: 600;
 	text-decoration: none;
 	color: var(--color-05);
-	padding: var(--step2);
+	padding: var(--s2);
 }
 
 ul.header-nav>li>ul {
@@ -172,7 +172,7 @@ ul.header-nav>li>ul>li {
 ul.header-nav>li>ul>li>a {
 	text-decoration: none;
 	color: var(--color-05);
-	padding: var(--step2) var(--step4);
+	padding: var(--s2) var(--s4);
 }
 
 ul.header-nav>li.hover {
@@ -202,14 +202,14 @@ div.w_nav {
 }
 
 div.w_nav .header-wrapper-top {
-	padding: var(--step4) var(--step4);
+	padding: var(--s4) var(--s4);
 	align-items: center;
 }
 
 div.w_nav .closer {
 	color: var(--color-75);
-	width: var(--step6);
-	height: var(--step6);
+	width: var(--s6);
+	height: var(--s6);
 	cursor: pointer;
 	display: flex;
 	justify-content: center;
@@ -228,7 +228,7 @@ div.w_nav .w_header-nav {
 	font-size: var(--font-medium);
 	list-style-type: none;
 	background: transparent;
-	padding: 0 var(--step4);
+	padding: 0 var(--s4);
 	margin-top: 90px;
 	flex-direction: column;
 }
@@ -243,7 +243,7 @@ div.w_nav ul>li>a.open+ul {
 
 div.w_nav ul>li {
 	letter-spacing: 3px;
-	padding: var(--step2) var(--step2);
+	padding: var(--s2) var(--s2);
 	position: relative;
 }
 
@@ -262,7 +262,7 @@ div.w_nav ul.w_header-nav li.has-childs>a:after {
 	line-height: 1.6;
 	color: var(--color-75);
 	position: absolute;
-	margin-left: var(--step2);
+	margin-left: var(--s2);
 }
 
 div.w_nav ul.w_header-nav li.has-childs>a.open:after {
@@ -273,14 +273,14 @@ div.w_nav ul.w_header-nav ul {
 	background: var(--color-20);
 	padding: 0;
 	margin: 0;
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 	max-width: max-content;
 	position: relative;
 }
 
 div.w_nav ul.w_header-nav ul li {
-	padding-left: var(--step5);
+	padding-left: var(--s5);
 }
 
 div.w_nav ul.w_header-nav ul li:before {
@@ -326,7 +326,7 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 
 .page.footer-nav>section {
 	background: var(--color-100);
-	height: calc(var(--step) * 14);
+	height: calc(var(--s) * 14);
 	display: flex;
 	flex-direction: row;
 	align-items: center;
@@ -350,18 +350,18 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 	}
 
 	header {
-		top: calc(var(--step) * -12);
+		top: calc(var(--s) * -12);
 	}
 
 	header section.header-wrapper-top,
 	header.is-pinned section.header-wrapper-top {
 		grid-template-columns: 1fr;
-		min-height: calc(var(--step) * 12);
-		padding-bottom: var(--step2);
+		min-height: calc(var(--s) * 12);
+		padding-bottom: var(--s2);
 	}
 
 	section.header-wrapper-top label.pps>input[name="term"] {
-		height: calc(var(--step) * 8);
+		height: calc(var(--s) * 8);
 	}
 
 	section.header-wrapper-top a>span {

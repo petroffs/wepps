@@ -52,7 +52,7 @@ h1 {
 	font-size: var(--font-large);
 	letter-spacing: 0.06em;
 	color: var(--color-00);
-	margin: var(--step4) 0 var(--step2) 0;
+	margin: var(--s4) 0 var(--s2) 0;
 }
 
 a {
@@ -63,7 +63,7 @@ a {
 
 a:hover {
 	text-decoration: underline;
-	text-underline-offset: var(--stepHalf);
+	text-underline-offset: var(--s-half);
 	color: var(--color-focus);
 }
 
@@ -104,8 +104,8 @@ div.page.footer a {
 }
 
 div.page.footer .footer-wrapper {
-	border-radius: var(--step2) var(--step2) 0 0;
-	margin-top: var(--step4);
+	border-radius: var(--s2) var(--s2) 0 0;
+	margin-top: var(--s4);
 	overflow: hidden;
 }
 
@@ -130,7 +130,7 @@ div.page.footer .footer-socials {
 
 body div.text p {
 	margin-top: 0;
-	margin-bottom: var(--step2);
+	margin-bottom: var(--s2);
 }
 
 body div.text p:last-child {
@@ -144,8 +144,8 @@ body .price {
 
 body .price>span:after {
 	content: "₽";
-	margin-left: var(--step);
-	margin-right: var(--stepHalf);
+	margin-left: var(--s);
+	margin-right: var(--s-half);
 }
 
 body .price.price-before {
@@ -162,7 +162,7 @@ body .price.price-before>span::before {
 }
 
 body section.sidebar div.nav {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 }
 
@@ -176,8 +176,8 @@ body section.sidebar div.nav ul>li>a {
 	text-decoration: none;
 	color: var(--color-02);
 	background: var(--color-100);
-	padding: var(--step2);
-	margin-bottom: var(--stepHalf);
+	padding: var(--s2);
+	margin-bottom: var(--s-half);
 	display: block;
 }
 
@@ -196,8 +196,8 @@ body section.sidebar div.nav ul>li.active>a {
 
 body section.subnav div.nav {
 	background: var(--color-100);
-	border-radius: var(--step2);
-	margin-bottom: var(--step4);
+	border-radius: var(--s2);
+	margin-bottom: var(--s4);
 	overflow: hidden;
 }
 
@@ -214,7 +214,7 @@ body section.subnav div.nav ul {
 body section.subnav div.nav ul>li>a {
 	text-decoration: none;
 	color: var(--color-02);
-	padding: var(--step2);
+	padding: var(--s2);
 	height: 100%;
 	display: flex;
 	align-items: center;
@@ -231,13 +231,13 @@ body section.subnav div.nav ul>li.active>a {
 
 body div.content-block {
 	background: var(--color-100);
-	padding: var(--step2);
-	border-radius: var(--step2);
+	padding: var(--s2);
+	border-radius: var(--s2);
 }
 
 body div.content-block.main {
-	margin-top: var(--step4);
-	margin-bottom: var(--step4);
+	margin-top: var(--s4);
+	margin-bottom: var(--s4);
 }
 
 body div.content-block h1 {
@@ -247,7 +247,7 @@ body div.content-block h1 {
 
 body div.content-block h2 {
 	letter-spacing: 0.03em;
-	margin-top: var(--step);
+	margin-top: var(--s);
 	margin-bottom: 0;
 }
 
@@ -275,7 +275,7 @@ body .bi.bi-vk::before {
 
 	div.page div.page2,
 	div.page>section {
-		padding: 0 var(--step4);
+		padding: 0 var(--s4);
 	}
 }
 
@@ -283,6 +283,6 @@ body .bi.bi-vk::before {
 
 @media screen and (max-width: 480px) {
 	footer {
-		margin-bottom: calc(var(--step) * 12);
+		margin-bottom: calc(var(--s) * 12);
 	}
 }

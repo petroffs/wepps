@@ -1,11 +1,11 @@
 .page>.exampletest-wrapper {
-	padding-bottom: var(--step4);
+	padding-bottom: var(--s4);
 }
-.exampletest-wrapper>.pps_blocks>.pps_block {
+.exampletest-wrapper>.w_blocks>.w_block {
 	min-height: 100px;
 	background: var(--color-warning);
 	position: relative;
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	display: flex;
 	justify-content: center;
 	align-items: center;

@@ -3,7 +3,7 @@ section.childs-wrapper {
 }
 
 section.childs-wrapper>section {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 }
 
@@ -31,5 +31,5 @@ div.childs-img img {
 div.childs-title {
 	font-weight: 600;
 	background-color: var(--color-95);
-	padding: var(--step2);
+	padding: var(--s2);
 }

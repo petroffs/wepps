@@ -1,4 +1,4 @@
-<section class="_Example11-wrapper pps_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap">
+<section class="_Example11-wrapper w_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap">
 	{foreach name="out" item="item" from=$elements}
 	{assign var="images" value=$item.Images_FileUrl|strarr}
 	<section class="">

@@ -6,7 +6,7 @@
 				<a href="/"><img src="/ext/Template/files/wepps.svg" /></a>
 			</div>
 			<form action="javascript:void(0)">
-				<label class="pps pps_input">
+				<label class="pps w_input">
 					<input type="text" id="search-input" placeholder="Поиск..." name="text" value="{$smarty.get.text|default:''|escape:'html'}" autocomplete="off"/>
 				</label>
 			</form>
@@ -19,7 +19,7 @@
 		</section>
 		<section class="header-wrapper">
 			<nav class="header-nav-wrapper w_hide_view_small">
-				<ul class="header-nav pps_list">
+				<ul class="header-nav w_list">
 					{foreach item="item" from=$nav.groups.2}
 					<li class="{if $way.1.Id==$item.Id} active{/if}{if $nav.subs[$item.Id]|isset} has-childs{/if}">
 						<a href="{$item.UrlMenu|default:$item.Url}">{$item.NameMenu|default:$item.Name}</a>

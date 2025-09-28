@@ -95,7 +95,7 @@ class BotTest extends Bot {
 				"DataTbls",
 				55,
 				[
-						'pps_path'=>'list',
+						'w_path'=>'list',
 						'GUID' => "",
 						'BTest' => 'test text'
 				]

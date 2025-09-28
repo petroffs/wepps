@@ -1,17 +1,17 @@
 .lists-items .title {
 	font-weight: 600;
-	margin: var(--step4) 0 0 0;
+	margin: var(--s4) 0 0 0;
 }
 
 .lists-items .descr {
 	font-weight: 300;
 	color: var(--color-50);
-	padding: var(--step) 0 var(--step) 0px;
+	padding: var(--s) 0 var(--s) 0px;
 }
 
 .lists-items .container {
 	border-top: 1px solid var(--color-85);
-	padding: var(--step) 0 var(--step) 0px;
+	padding: var(--s) 0 var(--s) 0px;
 }
 
 .lists-items .container:hover {

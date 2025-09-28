@@ -1,7 +1,7 @@
 .product-price>.prices>section {
-	border-radius: var(--step2);
-	padding: var(--step2);
-	margin-top: var(--step4);
+	border-radius: var(--s2);
+	padding: var(--s2);
+	margin-top: var(--s4);
 	border: var(--border);
 }
 
@@ -12,33 +12,33 @@
 .product-price>.prices>section div.price-title {
 	font-weight: 600;
 	letter-spacing: 1px;
-	margin-bottom: var(--step);
+	margin-bottom: var(--s);
 }
 
-.product-price>.prices>section a.pps_button {
+.product-price>.prices>section a.w_button {
 	color: var(--color-05);
 	background-color: var(--color-100);
-	margin-bottom: var(--step);
-	margin-right: var(--step);
+	margin-bottom: var(--s);
+	margin-right: var(--s);
 }
 
-.product-price>.prices>section a.pps_button.active {
+.product-price>.prices>section a.w_button.active {
 	color: var(--color-100);
 	background-color: var(--color-active);
 }
 
-.product-price>.prices>section a.pps_button.cart-add-v-exists::after {
+.product-price>.prices>section a.w_button.cart-add-v-exists::after {
 	content: '\f243';
 	font-family: "bootstrap-icons";
 	font-size: var(--font-small);
 	color: var(--color-100);
 	background-color: var(--color-active);
 	border-radius: 50%;
-	border: var(--stepHalf) solid var(--color-100);
+	border: var(--s-half) solid var(--color-100);
 	position: absolute;
-	right: calc(-1 * var(--step2));
-	width: var(--step5);
-	height: var(--step5);
+	right: calc(-1 * var(--s2));
+	width: var(--s5);
+	height: var(--s5);
 	display: flex;
 	justify-content: center;
 	align-items: center;

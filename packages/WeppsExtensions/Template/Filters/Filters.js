@@ -12,7 +12,7 @@ class FiltersWepps {
 		let self = this;
 		$('#pps-options-sort').find('select').off('select2:select').on('select2:select', function (e) {
 			var sel = $(this).val();
-			$.cookie("wepps_sort", sel, { expires: 365, path: '/' });
+			$.cookie("wew_sort", sel, { expires: 365, path: '/' });
 			self.response(1);
 		});
 		$('.paginator-wrapper').find('a[data-page]').off('click').on('click', function (e) {
@@ -21,7 +21,7 @@ class FiltersWepps {
 			var page = parseInt($(this).data('page'));
 			self.response(page, 'top');
 		});
-		$('.pps.pps_checkbox').find('input[type="checkbox"]').off('change').on('change', function (e) {
+		$('.pps.w_checkbox').find('input[type="checkbox"]').off('change').on('change', function (e) {
 			event.preventDefault();
 			let filters = $(this).closest('div.nav-filters');
 			let last = filters.data('id');
@@ -41,7 +41,7 @@ class FiltersWepps {
 			let el = $('.sidebar').find('input[type="checkbox"]');
 			el.prop('disabled', false);
 			el.prop('checked', false);
-			/*if ($('#products-sidebar').hasClass('pps_hide_view_small')==false) {
+			/*if ($('#products-sidebar').hasClass('w_hide_view_small')==false) {
 				$('.products-sidebar-nav>a').trigger('click');
 			}*/
 			self.response(1, 'top');
@@ -51,12 +51,12 @@ class FiltersWepps {
 			event.preventDefault();
 			self.layout.remove();
 		});
-		$('li.pps_expand').find('a').off('click').on('click', function (event) {
+		$('li.w_expand').find('a').off('click').on('click', function (event) {
 			event.stopPropagation();
 			event.preventDefault();
 			var items = $(this).closest('ul').find('li');
-			if (items.filter('.pps_hide').length != 0) {
-				items.removeClass('pps_hide');
+			if (items.filter('.w_hide').length != 0) {
+				items.removeClass('w_hide');
 				$(this).text('Скрыть');
 			} else {
 				$('html, body').animate({
@@ -65,8 +65,8 @@ class FiltersWepps {
 				var href = $(this);
 				setTimeout(function () {
 					items.filter(function (index) {
-						if (index >= 10 && !$(this).hasClass('pps_expand')) {
-							$(this).addClass('pps_hide');
+						if (index >= 10 && !$(this).hasClass('w_expand')) {
+							$(this).addClass('w_hide');
 						}
 					});
 					href.text('Еще');
@@ -90,7 +90,7 @@ class FiltersWepps {
 		let filters = this.sidebar.find('.' + this.settings.filters);
 		let url = this.sidebar.attr('data-url');
 		$.each(filters, function (key, value) {
-			var labels = $(value).find('.pps.pps_checkbox').find('input:checked');
+			var labels = $(value).find('.pps.w_checkbox').find('input:checked');
 			if (labels.length) {
 				var str = '';
 				$.each(labels, function (k, v) {

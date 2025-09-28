@@ -10,7 +10,7 @@ var readyOrdersInit = function() {
 		};
 		layoutWepps.request(settings);
 		$('.orders').children('.item').children('.order-wrapper').html('');
-		obj.removeClass('pps_hide');
+		obj.removeClass('w_hide');
 		$('.orders').children('.item').removeClass('active');
 		$(this).parent().addClass('active');
 	});

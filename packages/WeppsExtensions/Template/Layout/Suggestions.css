@@ -1,11 +1,11 @@
  
-label.pps.pps_input {
+label.pps.w_input {
 	
 } 
-label.pps.pps_input>input.w_suggestions {
+label.pps.w_input>input.w_suggestions {
 
 }
-label.pps.pps_input>input.focus {
+label.pps.w_input>input.focus {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	border-bottom: none;
@@ -13,13 +13,13 @@ label.pps.pps_input>input.focus {
 div.w_suggestions {
 	background: var(--color-100);
 	border: var(--border);
-	border-width: var(--stepHalf);
+	border-width: var(--s-half);
 	border-top-width: 1px;
 	border-color: var(--color-button);
-	border-radius: 0 0 var(--step2) var(--step2);
+	border-radius: 0 0 var(--s2) var(--s2);
 	width: 100%;
-	/* width: calc(100% + var(--step) - 1px); */
-	max-height: calc(var(--step) * 48);
+	/* width: calc(100% + var(--s) - 1px); */
+	max-height: calc(var(--s) * 48);
 	margin-top: 0;
 	scrollbar-width: thin;
 	overflow-y: auto;
@@ -35,14 +35,14 @@ div.w_suggestions.w_hide {
 div.w_suggestions-loader {
 	text-align: center;
 	background-color: var(--color-100);
-	padding: var(--step2);
+	padding: var(--s2);
 	position: absolute;
 	display: none;
 }
 
 div.w_suggestions-item {
 	border-bottom: var(--border);
-	padding: var(--step);
+	padding: var(--s);
 	cursor: pointer;
 	display: block;
 }

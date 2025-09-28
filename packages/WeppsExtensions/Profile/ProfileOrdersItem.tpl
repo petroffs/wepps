@@ -152,11 +152,11 @@
 					{/if}
 					<tr>
 						<td>
-							<label class="pps pps_area">
+							<label class="pps w_area">
 								<textarea id="order-message" data-id="{$order.Id}" autocomplete="off"></textarea>
 							</label>
-							<div class="pps_interval_small"></div>
-							<label class="pps pps_button">
+							<div class="w_interval_small"></div>
+							<label class="pps w_button">
 								<input type="button" value="Отправить" id="order-message-btn"/>
 							</label>
 						</td>

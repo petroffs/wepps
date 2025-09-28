@@ -3,18 +3,18 @@
 	margin-top: 10px;
 }
 
-.list-data ul.pps_list {
+.list-data ul.w_list {
 	
 }
 
-.list-data ul.pps_list li {
+.list-data ul.w_list li {
 	padding: 5px;
 }
 
-.list-data ul.pps_list li:hover {
+.list-data ul.w_list li:hover {
 	background: #ededed;
 }
 
-.list-data ul.pps_list li .descr {
+.list-data ul.w_list li .descr {
 	font-weight: 300;
 }

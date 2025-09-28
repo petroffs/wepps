@@ -12,9 +12,9 @@
             </tr>
             {foreach from=$orders item='item'}
                 <tr data-id="{$item.Id}">
-                    <td class="pps_right">{$item.Id}</td>
+                    <td class="w_right">{$item.Id}</td>
                     <td>{$item.ODate|date_format:'%d.%m.%Y'}</td>
-                    <td class="pps_right">{$item.OSum}</td>
+                    <td class="w_right">{$item.OSum}</td>
                     <td>{$item.OPayment_Name}</td>
                     <td>{$item.ODelivery_Name}</td>
                     <td>{$item.OStatus_Name}</td>
@@ -24,6 +24,6 @@
     </table>
 </section>
 {if $paginatorTpl}
-<div class="pps_interval"></div>
+<div class="w_interval"></div>
 {$paginatorTpl}
 {/if}

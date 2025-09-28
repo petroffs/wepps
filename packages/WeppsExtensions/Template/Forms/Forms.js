@@ -30,25 +30,25 @@ var select2Ajax = function (obj, fn) {
 };
 
 var select2Render = function() {
- 	if ($(".pps_select select").hasClass("select2-hidden-accessible")) {
+ 	if ($(".w_select select").hasClass("select2-hidden-accessible")) {
 		return;
 	}
-    $('.pps_select select').select2({
+    $('.w_select select').select2({
         language: "ru",
         delay: 500
     });
 }
 var formsInit = function () {
-	$('label.pps.pps_upload').find('input[type="file"]').off('change').on('change', function (event) {
+	$('label.pps.w_upload').find('input[type="file"]').off('change').on('change', function (event) {
 		event.stopPropagation();
 		formWepps.upload($(this), event.target.files);
 	});
-	$('div.pps_upload_file').children('.bi').off('click').on('click', function (e) {
+	$('div.w_upload_file').children('.bi').off('click').on('click', function (e) {
 		e.preventDefault();
 		let el = $(this).closest('section').find('input[type="file"]');
 		let filesField = el.attr('name');
 		let filesForm = el.closest('form').attr('id');
-		let key = $(this).closest('div.pps_upload_file').data('key');
+		let key = $(this).closest('div.w_upload_file').data('key');
 		if (!layoutWepps) {
 			var layoutWepps = new LayoutWepps();
 		};
@@ -73,11 +73,11 @@ var formsInit = function () {
 		var t = $(this).closest('form');
 		document.getElementById(t.attr('id')).reset();
 	});
-	$('.pps.pps_area').find('textarea').off('input').on('input', function () {
+	$('.pps.w_area').find('textarea').off('input').on('input', function () {
 		autoResizeTextarea(this);
 	}).trigger('input');
 	select2Render();
-	$('i.pps_field_empty').off('click').on('click', function () {
+	$('i.w_field_empty').off('click').on('click', function () {
 		$(this).siblings('input,textarea').val('');
 	});
 };
@@ -104,15 +104,15 @@ class FormWepps {
 			processData: false,
 			contentType: false
 		}).done(function (responseText) {
-			$("#pps_ajax").remove();
+			$("#w_ajax").remove();
 			let t = $("<div></div>");
-			t.attr("id", "pps_ajax");
+			t.attr("id", "w_ajax");
 			t.html(responseText);
 			$(document.body).prepend(t);
 		});
 	};
 	send(action, myform, url) {
-		$('.pps_error').remove();
+		$('.w_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
@@ -126,7 +126,7 @@ class FormWepps {
 		layoutWepps.request(settings);
 	};
 	popup(action, myform, url) {
-		$('.pps_error').remove();
+		$('.w_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
@@ -151,8 +151,8 @@ class FormWepps {
 			input.val(inputVal);
 			self.minmaxAfter(input.closest('section').data('id'), inputVal);
 		};
-		$('.pps_minmax').find('button').off('click');
-		$('.pps_minmax').find('button').on('click', function (event) {
+		$('.w_minmax').find('button').off('click');
+		$('.w_minmax').find('button').on('click', function (event) {
 			event.preventDefault();
 			let input = $(this).siblings('input');
 			var inputVal = parseInt(input.val()) ?? 1;
@@ -163,8 +163,8 @@ class FormWepps {
 			};
 			fn(input, inputVal);
 		});
-		$('.pps_minmax').find('input').off('keyup');
-		$('.pps_minmax').find('input').on('keyup', function (event) {
+		$('.w_minmax').find('input').off('keyup');
+		$('.w_minmax').find('input').on('keyup', function (event) {
 			event.preventDefault();
 			let input = $(this);
 			var inputVal = parseInt(input.val()) ?? 1;

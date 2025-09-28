@@ -1,11 +1,11 @@
 div.lastUploads .title {
   text-transform: uppercase;
 }
-div.lastUploads ul.pps_list.lastUploads>li {
+div.lastUploads ul.w_list.lastUploads>li {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	padding: 5px;
 }
-div.lastUploads ul.pps_list.lastUploads>li:hover {
+div.lastUploads ul.w_list.lastUploads>li:hover {
 	background-color: #f0f0f0;
 }

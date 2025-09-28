@@ -87,7 +87,7 @@ var readyListsInit = function() {
 		      }
 		}).autocomplete( "instance" )._renderItem = function( ul, item ) {
 		      return $( "<li>" )
-		        .append( "<div class='pps_padding'>" +
+		        .append( "<div class='w_padding'>" +
 		        		 "	<div class\"search-value\">" + item.value + "</div>" +
 		        		 "</div>")
 		        .appendTo( ul );

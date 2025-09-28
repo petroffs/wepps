@@ -15,17 +15,17 @@ class AdModifierCompiler extends Base {
         }
         switch ($tablename) {
             case "'navigator'":
-				return (string) '(\'<div class="navigator pps_admin_navigator"><a href="/_wepps/navigator\'.'.$id.'.\'" target="_blank"></a></div>\')';
+				return (string) '(\'<div class="navigator w_admin_navigator"><a href="/_wepps/navigator\'.'.$id.'.\'" target="_blank"></a></div>\')';
             case "'panels'":
                 return (string) '(\'
-                    <div class="pps_admin_list pps_admin_panels\">
+                    <div class="w_admin_list w_admin_panels\">
                         <a href="/_wepps/lists/s_Panels/\'.'.$panel.'.\'/" target="_blank" title="Редактировать панель"></a>
                         <a href="/_wepps/lists/s_Panels/add/?NavigatorId=\'.'.$id.'.\'" target="_blank" title="Добавить панель"></a>
                         <a href="/_wepps/lists/s_Blocks/add/?PanelId=\'.'.$panel.'.\'" target="_blank" title="Добавить блок"></a>
                     </div>\')';
             default:
 				#return '('.$tablename.')';
-				return (string) '(\'<div class="default pps_admin_list"><a href="/_wepps/lists/\' . ' . $tablename . '. \'/\' .' . $id . ' . \'/" target="_blank"></a></div>\')';
+				return (string) '(\'<div class="default w_admin_list"><a href="/_wepps/lists/\' . ' . $tablename . '. \'/\' .' . $id . ' . \'/" target="_blank"></a></div>\')';
         }
 	}
 }

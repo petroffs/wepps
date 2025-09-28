@@ -68,7 +68,7 @@ class CartWepps {
 		$('.cart-add-v').off('click');
 		$('.cart-add-v').on('click', function (e) {
 			e.preventDefault();
-			if ($(this).hasClass('pps_disabled')) {
+			if ($(this).hasClass('w_disabled')) {
 				return;
 			}
 			$(this).toggleClass('active');

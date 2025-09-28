@@ -3,7 +3,7 @@
 		<div class="content-block">
 			<h1>{$data.title}</h1>
 			<p>Код ошибки: {$data.text}</p>
-            <a href="/" class="pps_button">На главную</a>
+            <a href="/" class="w_button">На главную</a>
 		</div>
 	</div>
 </div>

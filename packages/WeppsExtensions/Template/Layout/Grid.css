@@ -90,23 +90,23 @@
 }
 
 .w_grid.w_gap {
-	gap: var(--step2);
+	gap: var(--s2);
 }
 
 .w_grid.w_gap_small {
-	gap: var(--step);
+	gap: var(--s);
 }
 
 .w_grid.w_gap_medium {
-	gap: var(--step4);
+	gap: var(--s4);
 }
 
 .w_grid.w_gap_large {
-	gap: var(--step5);
+	gap: var(--s5);
 }
 
 .w_grid.w_gap_xlarge {
-	gap: var(--step6);
+	gap: var(--s6);
 }
 
 .w_grid.w_ji_start {
@@ -215,23 +215,23 @@
 	}
 
 	.w_grid.w_gap_view_medium {
-		gap: var(--step2);
+		gap: var(--s2);
 	}
 
 	.w_grid.w_gap_small_view_medium {
-		gap: var(--step);
+		gap: var(--s);
 	}
 
 	.w_grid.w_gap_medium_view_medium {
-		gap: var(--step4);
+		gap: var(--s4);
 	}
 
 	.w_grid.w_gap_large_view_medium {
-		gap: var(--step5);
+		gap: var(--s5);
 	}
 
 	.w_grid.w_gap_xlarge_view_medium {
-		gap: var(--step6);
+		gap: var(--s6);
 	}
 
 	.w_grid.w_ji_start_view_medium {
@@ -329,23 +329,23 @@
 	}
 
 	.w_grid.w_gap_view_small {
-		gap: var(--step2);
+		gap: var(--s2);
 	}
 
 	.w_grid.w_gap_small_view_small {
-		gap: var(--step);
+		gap: var(--s);
 	}
 
 	.w_grid.w_gap_medium_view_small {
-		gap: var(--step4);
+		gap: var(--s4);
 	}
 
 	.w_grid.w_gap_large_view_small {
-		gap: var(--step5);
+		gap: var(--s5);
 	}
 
 	.w_grid.w_gap_xlarge_view_small {
-		gap: var(--step6);
+		gap: var(--s6);
 	}
 
 	.w_grid.w_ji_start_view_small {

@@ -2,18 +2,18 @@ div.elements.Alignment1 {
 	width: auto;
 	overflow: hidden;
 }
-div.pps_test_grid {
+div.w_test_grid {
 	background: honeydew;
 }
-div.pps_test_grid>div {
+div.w_test_grid>div {
 	background: ivory;
 }
-div.pps_test {
+div.w_test {
 	color: #fff;
 	background-color: fuchsia;
 	max-width: 100%;
 }
-div.pps_test2 {
+div.w_test2 {
 	color: #fff;
 	background-color: blueviolet;
 	max-width: 100%;
@@ -25,13 +25,13 @@ div.test {
 }
 section.aligment1-wrapper div.text-13 {
 	columns: 3;
-	margin-bottom: var(--step2);
+	margin-bottom: var(--s2);
 }
 section.aligment1-wrapper div.text-13 p {
 	margin-top: 0;
 }
 section.aligment1-wrapper div.text-13 p:not(:last-of-type) {
-	margin-bottom: var(--step2);
+	margin-bottom: var(--s2);
 }
 
 @media screen and (max-width: 480px) {

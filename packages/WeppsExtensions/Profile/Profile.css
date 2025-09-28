@@ -1,18 +1,18 @@
 div.page.profile {
-    padding-bottom: var(--step4);
-    padding-top: var(--step4);
+    padding-bottom: var(--s4);
+    padding-top: var(--s4);
 }
 
 .profile-wrapper {
-    margin-bottom: var(--step4);
+    margin-bottom: var(--s4);
 }
 
 div.profile-nav-mobile {
-    margin-bottom: var(--step4);
+    margin-bottom: var(--s4);
 }
 
 div.profile-nav {
-    margin-bottom: var(--step4);
+    margin-bottom: var(--s4);
 }
 
 div#pps-option-nav {
@@ -31,7 +31,7 @@ section.orders-table {
 div.orders-notice>section {
     font-size: var(--font-small);
     color: var(--color-50);
-    margin-top: var(--step);
+    margin-top: var(--s);
 }
 
 @media screen and (max-width: 480px) {

@@ -137,7 +137,7 @@ class RequestLists extends Request {
 				echo 1;
 				break;
 			case "save":
-				if (!isset($this->get['pps_tablename_id']) || !isset($this->get['pps_tablename'])) {
+				if (!isset($this->get['w_tablename_id']) || !isset($this->get['w_tablename'])) {
 					Exception::error404();
 				}
 				
@@ -147,11 +147,11 @@ class RequestLists extends Request {
 				/*
 				 * Проверка введенных данных (обязательные поля) с индикацией ошибки
 				 */
-				$obj = new Data($this->get['pps_tablename']);
+				$obj = new Data($this->get['w_tablename']);
 				$listScheme = $obj->getScheme();
 				$this->errors = [];
 				foreach ($listScheme as $key=>$value) {
-					if ($value[0][$this->get['pps_tablename_mode']]!='disabled' && $value[0][$this->get['pps_tablename_mode']]!='hidden') {
+					if ($value[0][$this->get['w_tablename_mode']]!='disabled' && $value[0][$this->get['w_tablename_mode']]!='hidden') {
 						if ($value[0]['Required']==1) {
 							$this->errors[$key] = Validator::isNotEmpty(@$this->get[$key], "Не заполнено");
 						}
@@ -161,9 +161,9 @@ class RequestLists extends Request {
 				 * Специальная обработка 1 с индикацией ошибки
 				 * Проверка на наличе заданного поля в схеме
 				 */
-				if ($this->get['pps_tablename']=='s_ConfigFields' && $this->get['pps_tablename_id']=='add') {
+				if ($this->get['w_tablename']=='s_ConfigFields' && $this->get['w_tablename_id']=='add') {
 					$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
-			                WHERE TABLE_SCHEMA = '".Connect::$projectDB['dbname']."' and TABLE_NAME = '{$this->get['pps_tablename']}'
+			                WHERE TABLE_SCHEMA = '".Connect::$projectDB['dbname']."' and TABLE_NAME = '{$this->get['w_tablename']}'
 			                and COLUMN_NAME = '{$this->get['Field']}'
 			                ";
 					$listSchemeReal = Connect::$instance->fetch($sql);
@@ -180,14 +180,14 @@ class RequestLists extends Request {
 					/*
 					 * Сохранение информации
 					 */
-					if ($this->get['pps_tablename_id']=='add') {
-						$obj = new Data($this->get['pps_tablename']);
+					if ($this->get['w_tablename_id']=='add') {
+						$obj = new Data($this->get['w_tablename']);
 						$id = $obj->add($this->get,1);
 						$this->get['Id'] = $id;
 						unset($this->get['Priority']);
-						$outer = Lists::setListItem($this->get['pps_tablename'],$id,$this->get);
+						$outer = Lists::setListItem($this->get['w_tablename'],$id,$this->get);
 					} else {
-						$outer = Lists::setListItem($this->get['pps_tablename'],$this->get['pps_tablename_id'],$this->get);
+						$outer = Lists::setListItem($this->get['w_tablename'],$this->get['w_tablename_id'],$this->get);
 					}
 					echo $outer['html'];
 				}
@@ -196,14 +196,14 @@ class RequestLists extends Request {
 				if (!isset($this->get['id']) || !isset($this->get['list'])) {
 					Exception::error404();
 				}
-				$outer = Lists::removeListItem($this->get['list'],$this->get['id'],$this->get['pps_path']);
+				$outer = Lists::removeListItem($this->get['list'],$this->get['id'],$this->get['w_path']);
 				echo $outer['html'];
 				break; 
 			case "copy":
 				if (!isset($this->get['id']) || !isset($this->get['list'])) {
 					Exception::error404();
 				}
-				$outer = Lists::copyListItem($this->get['list'],$this->get['id'],$this->get['pps_path']);
+				$outer = Lists::copyListItem($this->get['list'],$this->get['id'],$this->get['w_path']);
 				echo $outer['html'];
 				break;
 			case "propOptionAdd":

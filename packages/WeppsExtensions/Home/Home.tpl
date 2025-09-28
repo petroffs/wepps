@@ -12,7 +12,7 @@
 		{foreach name="out" key="key" item="item" from=$services}
 			<section>
 				<div class="services-img">
-					<img src="/pic/catprev/{$item.Images_FileUrl}" class="pps_image"/>
+					<img src="/pic/catprev/{$item.Images_FileUrl}" class="w_image"/>
 				</div>
 				<div class="title">{$item.Name}</div>
 			</section>
@@ -22,8 +22,8 @@
 </div>
 <div class="page gallery">
 	<section>
-		<div class="pps_interval_large"></div>
-		<section class="gallery-wrapper pps_animate w_grid w_4col w_3col_view_medium w_gap_large">
+		<div class="w_interval_large"></div>
+		<section class="gallery-wrapper w_animate w_grid w_4col w_3col_view_medium w_gap_large">
 			{foreach name=out item=item from=$gallery}
 			<section>
 				<div class="img w_overflow">
@@ -32,19 +32,19 @@
 			</section>
 			{/foreach}
 		</section>
-		<div class="pps_interval_large"></div>
+		<div class="w_interval_large"></div>
 	</section>
 </div>
 <div class="page advantages">
-	<section class="pps_overflow_auto">
-		<div class="pps_interval_large"></div>
+	<section class="w_overflow_auto">
+		<div class="w_interval_large"></div>
 		<section class="advantages-wrapper">
 			{foreach name="out" key="key" item="item" from=$services}
-			<section class="pps_flex pps_inline_flex pps_flex_row pps_flex_center pps_flex_margin_large">
-				<div class="img pps_flex_25 pps_flex_12_view_medium pps_flex_11_view_small">
-					<img src="/pic/catprev/{$item.Images_FileUrl}" class="pps_image"/>
+			<section class="w_flex w_inline_flex w_flex_row w_flex_center w_flex_margin_large">
+				<div class="img w_flex_25 w_flex_12_view_medium w_flex_11_view_small">
+					<img src="/pic/catprev/{$item.Images_FileUrl}" class="w_image"/>
 				</div>
-				<div class="text pps_flex_25 pps_flex_12_view_medium pps_flex_11_view_small">
+				<div class="text w_flex_25 w_flex_12_view_medium w_flex_11_view_small">
 					<div class="title">{$item.Name}</div>
 					<div class="text">{$item.Descr}</div>
 				</div>
@@ -54,9 +54,9 @@
 	</section>
 </div>
 <div class="page map">
-	<section class="pps_overflow_auto">
+	<section class="w_overflow_auto">
 		{if $contacts.0.Address}
-		<div class="param mapData pps_hide" data-coord="{$contacts.0.LatLng}" data-title="{$contacts.0.Name}" data-descr="{$contacts.0.Address}">{$contacts.0.Address}</div>
+		<div class="param mapData w_hide" data-coord="{$contacts.0.LatLng}" data-title="{$contacts.0.Name}" data-descr="{$contacts.0.Address}">{$contacts.0.Address}</div>
 		{/if}
 		<section id="map"></section>
 	</section>

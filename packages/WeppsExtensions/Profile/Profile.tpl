@@ -6,7 +6,7 @@
 		<div id="pps-option-nav"><i class="bi bi-sliders"></i></div>
 	</div>
 	<section class="profile-nav subnav content-block w_hide_view_medium">
-		<div class="nav pps_animate">
+		<div class="nav w_animate">
 			<ul>
 				{foreach name="out" item="item" from=$profileNav}
 					<li class="{if $pathItem==$item.alias}active{/if}">

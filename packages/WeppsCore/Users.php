@@ -50,7 +50,7 @@ class Users
 			'typ' => 'auth',
 			'id' => $res[0]['Id']
 		], $lifetime);
-		Utils::cookies('wepps_token', $token, $lifetime);
+		Utils::cookies('wew_token', $token, $lifetime);
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		return true;
 	}
@@ -77,14 +77,14 @@ class Users
 		if (!empty($allheaders['authorization']) && strstr($allheaders['authorization'], 'Bearer ')) {
 			$token = str_replace('Bearer ', '', $allheaders['authorization']);
 		}
-		$token = (empty($token) && !empty($_COOKIE['wepps_token'])) ? @$_COOKIE['wepps_token'] : $token;
+		$token = (empty($token) && !empty($_COOKIE['wew_token'])) ? @$_COOKIE['wew_token'] : $token;
 		if (empty($token)) {
 			return false;
 		}
 		$jwt = new Jwt();
 		$data = $jwt->token_decode($token);
 		if (@$data['payload']['typ'] != 'auth' || empty($data['payload']['id'])) {
-			Utils::cookies('wepps_token');
+			Utils::cookies('wew_token');
 			return false;
 		}
 		$sql = "select * from s_Users where Id=? and DisplayOff=0";
@@ -108,7 +108,7 @@ class Users
 		if (empty(Connect::$projectData['user'])) {
 			return false;
 		}
-		Utils::cookies('wepps_token');
+		Utils::cookies('wew_token');
 		return true;
 	}
 

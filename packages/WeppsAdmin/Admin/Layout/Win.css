@@ -1,14 +1,14 @@
 /*
-.pps_win_parent > :not(.pps_win_bg):not(.pps_loader) {
+.w_win_parent > :not(.w_win_bg):not(.w_loader) {
     filter: blur(3px);
 }
 */
-.pps_win_parent > header,
-.pps_win_parent > footer,
-.pps_win_parent > .mainWrapper {
+.w_win_parent > header,
+.w_win_parent > footer,
+.w_win_parent > .mainWrapper {
     filter: blur(3px);
 }
-.pps_win_bg {
+.w_win_bg {
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
@@ -21,7 +21,7 @@
 	align-items: center;
 	z-index: 9898;
 }
-.pps_win_bg2 {
+.w_win_bg2 {
     width: 100%;
     height: 100%;
     max-height: 100%;
@@ -34,7 +34,7 @@
     right: 0;
     overflow: auto;
 }
-.pps_win_element {
+.w_win_element {
 	position: relative;
 	width: 100%;
 	max-width: 620px;
@@ -49,17 +49,17 @@
 	overflow: auto;
 	scrollbar-width: thin;
 }
-.pps_win_element.pps_win_small {
+.w_win_element.w_win_small {
 	max-width: 300px;
 }
-.pps_win_element.pps_win_medium {
+.w_win_element.w_win_medium {
 	max-width: 620px;
 }
-.pps_win_element.pps_win_large {
+.w_win_element.w_win_large {
 	max-width: 100%;
 	min-height: 100%;
 }
-.pps_win_closer {
+.w_win_closer {
 	width: 20px;
 	height: 20px;
 	background: transparent url(files/controls-remove-gray.svg);
@@ -70,8 +70,8 @@
 	top:30px;
 	right:30px;
 }
-.pps_win_content h1,
-.pps_win_content h2 {
+.w_win_content h1,
+.w_win_content h2 {
 	font-size: 22px;
 	text-align: left;
 	letter-spacing: 2px;
@@ -80,7 +80,7 @@
 	padding-bottom: 20px;
 	margin: 0 0 20px 0;
 }
-.pps_loader {
+.w_loader {
 	position: fixed;
 	top: 0;
 	left: 0;

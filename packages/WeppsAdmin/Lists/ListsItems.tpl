@@ -1,34 +1,34 @@
 <div class="way">
-	<ul class="pps_list pps_flex pps_flex_row pps_flex_start">
+	<ul class="w_list w_flex w_flex_row w_flex_start">
 		<li><a href="/_wepps/">Главная</a></li>
 		<li><a href="/_wepps/lists/">Списки данных</a></li>
 		<li><a href="/_wepps/lists/{$listSettings.TableName}/">{$listSettings.Name}</a></li>
 	</ul>
 </div>
-<div class="pps_flex pps_flex_row pps_flex_row_str pps_flex_margin pps_animate">
+<div class="w_flex w_flex_row w_flex_row_str w_flex_margin w_animate">
 	{$listsNavTpl}
-	<div class="pps_flex_45 pps_flex_11_view_medium pps_flex pps_flex_col">
-		<div class="pps_flex_max">
+	<div class="w_flex_45 w_flex_11_view_medium w_flex w_flex_col">
+		<div class="w_flex_max">
 			<h2>{$content.Name}</h2>
-			<div class="controls-area pps_flex pps_flex_row pps_flex_row_top">
-				<div class="pps_flex_12 pps_flex_11_view_small">
-					<a href="/_wepps/lists/{$listSettings.TableName}/add/" class="pps_button" title="Добавить"><i class="fa fa-plus"></i> Добавить</a>
+			<div class="controls-area w_flex w_flex_row w_flex_row_top">
+				<div class="w_flex_12 w_flex_11_view_small">
+					<a href="/_wepps/lists/{$listSettings.TableName}/add/" class="w_button" title="Добавить"><i class="fa fa-plus"></i> Добавить</a>
 					{if $permConfig==1}
-					<a href="/_wepps/lists/s_Config/{$listSettings.Id}/" class="pps_button" title="Конфигурация"><i class="fa fa-gear"></i> Конфигурация</a>
-					<a href="/_wepps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="pps_button" title="Настройки полей"><i class="fa fa-gears"></i> Настройки полей</a>
-					<a title="Экспорт данных" href="#" class="pps_button" id="export" data-list="{$listSettings.TableName}"><i class="fa fa-download"></i> Экспорт</a>
+					<a href="/_wepps/lists/s_Config/{$listSettings.Id}/" class="w_button" title="Конфигурация"><i class="fa fa-gear"></i> Конфигурация</a>
+					<a href="/_wepps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="w_button" title="Настройки полей"><i class="fa fa-gears"></i> Настройки полей</a>
+					<a title="Экспорт данных" href="#" class="w_button" id="export" data-list="{$listSettings.TableName}"><i class="fa fa-download"></i> Экспорт</a>
 					{/if}
 				</div>
-				<div class="controls-area-form pps_flex_12 pps_flex_11_view_small pps_right">
-					<form class="pps_flex pps_flex_row pps_flex_margin_small"
+				<div class="controls-area-form w_flex_12 w_flex_11_view_small w_right">
+					<form class="w_flex w_flex_row w_flex_margin_small"
 						action="javascript:function ret() { return false }">
-						<label class="pps pps_select pps_flex_13"> <select>
+						<label class="pps w_select w_flex_13"> <select>
 								{foreach name="o" item="i" key="k" from=$listScheme} {if
 								$i.0.Type!='file' && $i.0.Type!='flag' &&
 								!$i.0.Type|strstr:"select"}
 								<option value="{$k}"{if $smarty.get.field==$k} selected="selected"{/if}>{$i.0.Name}</option> {/if} {/foreach}
 						</select>
-						</label> <label class="pps pps_input pps_flex_23"> <input
+						</label> <label class="pps w_input w_flex_23"> <input
 							type="text" class="search" value="{$smarty.get.search}" placeholder="поиск" data-list="{$listSettings.TableName}" data-orderby="{$smarty.get.orderby}"/>
 						</label>
 					</form>
@@ -40,7 +40,7 @@
 				{$paginatorTpl}
 			</div>
 			{/if}
-			<div class="pps_interval_medium"></div>
+			<div class="w_interval_medium"></div>
 			<div class="lists-items-list draggable">
 
 				<table class="">
@@ -53,7 +53,7 @@
 						</tr>
 						<tr class="filters">
 							{foreach name="o" item="i" key="k" from=$listScheme}
-							<th class="{$i.0.Type}" valign="top"><div class="pps_nowrap">
+							<th class="{$i.0.Type}" valign="top"><div class="w_nowrap">
 									<a href="{$paginatorUrl}?orderby={if $smarty.get.orderby==$k}{$k}+desc{else}{$k}{/if}{if $smarty.get.field}&field={$smarty.get.field}{/if}{if $smarty.get.filter}&filter={$smarty.get.filter}{elseif $smarty.get.search}&search={$smarty.get.search}{/if}" class="sort{if $orderField==$k} active{/if}"><i class="fa {if $smarty.get.orderby==$k|cat:' desc'}fa-sort-amount-desc{else}fa-sort-amount-asc{/if}"></i></a>
 									{if $i.0.Type != 'file' && $i.0.Type != 'area'} <a
 										href="" class="filter{if $smarty.get.field==$k} active{/if}" data-list="{$i.0.TableName}"
@@ -100,7 +100,7 @@
 
 			</div>
 			{if $paginatorTpl}
-			<div class="pps_interval"></div>
+			<div class="w_interval"></div>
 			<div class="controls-area">
 				{$paginatorTpl}
 			</div>

@@ -1,15 +1,15 @@
-<div class="pps_flex pps_flex_row pps_flex_start pps_flex_margin">
-	<label class="pps pps_button"> <input type="button"
+<div class="w_flex w_flex_row w_flex_start w_flex_margin">
+	<label class="pps w_button"> <input type="button"
 		value="plain popup small" id="plain-popup" />
-	</label> <label class="pps pps_button"> <input type="button"
+	</label> <label class="pps w_button"> <input type="button"
 		value="plain popup medium" id="plain-popup-medium" />
-	</label> <label class="pps pps_button"> <input type="button"
+	</label> <label class="pps w_button"> <input type="button"
 		value="plain popup large" id="plain-popup-large" />
-	</label> <label class="pps pps_button"> <input type="button"
+	</label> <label class="pps w_button"> <input type="button"
 		value="ajax popup" id="ajax-popup" />
-	</label> <label class="pps pps_button"> <input type="button"
+	</label> <label class="pps w_button"> <input type="button"
 		value="ajax to obj" id="ajax-to-obj" />
-	</label> <label class="pps pps_button"> <input type="button"
+	</label> <label class="pps w_button"> <input type="button"
 		value="ajax hidden" id="ajax-hidden" />
 	</label>
 </div>

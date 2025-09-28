@@ -1,10 +1,10 @@
-.pps_admin_list {
+.w_admin_list {
 	background: rgba(0, 0, 0, 0.1);
 	width: max-content;
-	border-radius: var(--step);
+	border-radius: var(--s);
 	position: fixed;
-	bottom: var(--step2);
-	right: var(--step5);
+	bottom: var(--s2);
+	right: var(--s5);
 	z-index: 10;
 	flex-direction: column;
 	justify-content: center;
@@ -12,44 +12,44 @@
 	position: absolute;
 }
 
-.pps_admin_list>a {
+.w_admin_list>a {
 	display: block;
 	text-decoration: none;
-	width: var(--step6);
-	height: var(--step4);
+	width: var(--s6);
+	height: var(--s4);
 }
 
-.pps_admin_list>a:before {
+.w_admin_list>a:before {
 	content: '';
 	background: url(/ext/Template/files/wepps-logo-squares.svg) center center no-repeat;
-	background-size: auto var(--step2);
-	padding: 0 var(--step2);
-	width: var(--step6);
-	height: var(--step4);
+	background-size: auto var(--s2);
+	padding: 0 var(--s2);
+	width: var(--s6);
+	height: var(--s4);
 	opacity: 0.5;
 	transition: all 0.3s ease;
 	display: block;
 	position: relative;
 }
 
-.pps_admin_list>a:hover:before {
+.w_admin_list>a:hover:before {
 	opacity: 1;
 }
 
-.pps_admin_list.pps_admin_panels {
+.w_admin_list.w_admin_panels {
 	right: inherit;
-	left: var(--step5);
-	margin-top: var(--step);
-	margin-right: var(--step4);
+	left: var(--s5);
+	margin-top: var(--s);
+	margin-right: var(--s4);
 }
 
-.pps_admin_navigator {
+.w_admin_navigator {
 	background: rgba(0, 0, 0, 0.1);
 	width: max-content;
-	border-radius: var(--step);
+	border-radius: var(--s);
 	position: fixed;
-	bottom: var(--step2);
-	right: var(--step5);
+	bottom: var(--s2);
+	right: var(--s5);
 	z-index: 10;
 	flex-direction: column;
 	justify-content: center;
@@ -57,26 +57,26 @@
 	display: flex;
 }
 
-.pps_admin_navigator>a {
+.w_admin_navigator>a {
 	display: block;
 	text-decoration: none;
-	width: var(--step6);
-	height: var(--step4);
+	width: var(--s6);
+	height: var(--s4);
 }
 
-.pps_admin_navigator>a:before {
+.w_admin_navigator>a:before {
 	content: '';
 	background: url(/ext/Template/files/wepps-logo-squares.svg) center center no-repeat;
-	background-size: auto var(--step2);
-	padding: 0 var(--step2);
-	width: var(--step6);
-	height: var(--step4);
+	background-size: auto var(--s2);
+	padding: 0 var(--s2);
+	width: var(--s6);
+	height: var(--s4);
 	opacity: 0.5;
 	transition: all 0.3s ease;
 	display: block;
 	position: relative;
 }
 
-.pps_admin_navigator>a:hover:before {
+.w_admin_navigator>a:hover:before {
 	opacity: 1;
 }

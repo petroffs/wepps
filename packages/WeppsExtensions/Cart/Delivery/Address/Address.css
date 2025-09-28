@@ -7,18 +7,18 @@ body div.content-block.delivery-address.active {
 }
 
 body div.content-block.delivery-address .title {
-    margin-bottom: var(--step);
+    margin-bottom: var(--s);
 }
 
 body div.content-block.delivery-address.active .title {
     color: var(--color-100);
 }
 
-body div.content-block.delivery-address.active label.pps.pps_button>input {
+body div.content-block.delivery-address.active label.pps.w_button>input {
     border-color: var(--color-100);
 }
 
-label.pps.pps_button.w_hide {
+label.pps.w_button.w_hide {
     display: none;
 }
 
@@ -26,21 +26,21 @@ label.pps.label-dadata {
     display: block;
 }
 
-label.pps.label-dadata div.pps_error {
+label.pps.label-dadata div.w_error {
     top: 50%;
     transform: translateY(-50%);
 }
 
 label.pps.label-dadata input.suggestions-input.active {
-    border-radius: var(--step2) var(--step2) 0 0;
+    border-radius: var(--s2) var(--s2) 0 0;
     border-bottom-color: transparent;
     border-bottom: none;
 }
 
 label.pps.label-dadata input.suggestions-input+.suggestions-wrapper>.suggestions-suggestions {
     border-color: var(--color-button);
-    border-width: var(--stepHalf);
+    border-width: var(--s-half);
     border-top-width: 1px;
-    border-radius: 0 0 var(--step2) var(--step2);
+    border-radius: 0 0 var(--s2) var(--s2);
     overflow: hidden;
 }

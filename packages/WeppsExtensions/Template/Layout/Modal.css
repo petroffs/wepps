@@ -21,16 +21,16 @@
 }
 .w_modal {
 	background-color: var(--color-100);
-	padding: var(--step4);
+	padding: var(--s4);
 	padding-top: 66px;
-	margin: var(--step6) 0;
+	margin: var(--s6) 0;
 	width: 100%;
 	max-width: 600px;
 	min-height: 240px;
 	max-height: 100%;
 	position: relative;
-	border-radius: var(--step2);
-	box-shadow:0 0 var(--step2) rgba(0,0,0,0.1);
+	border-radius: var(--s2);
+	box-shadow:0 0 var(--s2) rgba(0,0,0,0.1);
 	overflow: auto;
 	scrollbar-width: thin;
 	display: none;
@@ -50,13 +50,13 @@
 .w_modal_closer {
 	font-size: var(--font-large);
 	color: var(--color-75);
-	width: var(--step4);
-	height: var(--step4);
+	width: var(--s4);
+	height: var(--s4);
 	cursor: pointer;
 	position: absolute;
 	z-index: 2;
-	top:var(--step4);
-	right: var(--step4);
+	top:var(--s4);
+	right: var(--s4);
 }
 .w_modal_closer::before {
 	display: flex;
@@ -187,7 +187,7 @@
 	}
 	.w_modal.w_modal_medium {
 		margin-bottom: 0;
-		border-radius: var(--step4) var(--step4) 0 0;
+		border-radius: var(--s4) var(--s4) 0 0;
 	}
 }
 

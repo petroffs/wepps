@@ -1,6 +1,6 @@
 {if $paginator.pages}
 <section class="paginator-wrapper">
-	<ul class="pps_list pps_flex pps_flex_row pps_flex_start pps_flex_margin_small">
+	<ul class="w_list w_flex w_flex_row w_flex_start w_flex_margin_small">
 		{if $paginator.prev}
 		<li class="next"><a href="{$paginatorUrl}?page={$paginator.prev}" data-page="{$paginator.prev}">&lt;</a></li>
 		{/if}

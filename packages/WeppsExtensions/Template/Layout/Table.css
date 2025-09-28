@@ -1,27 +1,27 @@
 table.w_table {
 	text-align: left;
 	background-color: var(--color-98);
-	margin-top: var(--step2);
+	margin-top: var(--s2);
 	border: 0;
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	width: 100%;
 	border-spacing: 0px;
     border-collapse: collapse;
 	overflow: hidden;
 }
 table.w_table tr:not(:last-child) > * {
-	border-bottom: var(--stepHalf) solid var(--color-100);
+	border-bottom: var(--s-half) solid var(--color-100);
 }
 table.w_table tr:hover {
 	background-color: var(--color-95);
 }
 table.w_table th {
 	font-weight: 600;
-	padding: var(--step2) var(--step4);
+	padding: var(--s2) var(--s4);
 }
 
 table.w_table td {
-	padding: var(--step2) var(--step4);
+	padding: var(--s2) var(--s4);
 }
 
 table.w_table .w_table_active {

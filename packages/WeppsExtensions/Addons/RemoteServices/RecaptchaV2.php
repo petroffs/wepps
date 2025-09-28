@@ -47,7 +47,7 @@ class RecaptchaV2 extends RemoteServices
 		#<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit\" async defer></script>
 		$this->headers->js("https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit");
 		$html = "
-		<label class=\"pps pps_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
+		<label class=\"pps w_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
 		<div class=\"g-recaptcha\" id=\"{$id}\"></div>
 		<script>
 		var onloadRecapchaV2 = function() {

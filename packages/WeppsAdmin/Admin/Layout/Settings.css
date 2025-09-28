@@ -28,13 +28,13 @@
 
 :root {
 	--margin: 0;
-	--step: 6px;
-	--stepHalf: 3px;
-	--step2: 12px;
-	--step3: 18px;
-	--step4: 24px;
-	--step5: 30px;
-	--step6: 36px;
+	--s: 6px;
+	--s-half: 3px;
+	--s2: 12px;
+	--s3: 18px;
+	--s4: 24px;
+	--s5: 30px;
+	--s6: 36px;
 	--width: 100%;
 	--height: 100%;
 	--font: 'Roboto',sans-serif;
@@ -51,13 +51,13 @@
 
 @media screen and (max-width: 810px) {
 	:root {
-		--step: 5px;
-		--stepHalf: 2.5px;
-		--step2: 10px;
-		--step3: 15px;
-		--step4: 20px;
-		--step5: 25px;
-		--step6: 30px;
+		--s: 5px;
+		--s-half: 2.5px;
+		--s2: 10px;
+		--s3: 15px;
+		--s4: 20px;
+		--s5: 25px;
+		--s6: 30px;
 		--font-default: 14px;
 		--font-small: 12px;
 		--font-tiny: 10px;
@@ -70,13 +70,13 @@
 
 @media screen and (max-width: 480px) {
 	:root {
-		--step: 4px;
-		--stepHalf: 2px;
-		--step2: 8px;
-		--step3: 12px;
-		--step4: 16px;
-		--step5: 20px;
-		--step6: 24px;
+		--s: 4px;
+		--s-half: 2px;
+		--s2: 8px;
+		--s3: 12px;
+		--s4: 16px;
+		--s5: 20px;
+		--s6: 24px;
 		--font-default: 14px;
 		--font-small: 12px;
 		--font-tiny: 10px;

@@ -15,21 +15,21 @@
 			<a href="{$item.Url}">
 				<span class="img">
 					{if $images.0}
-					<img src="/pic/catbigv{$images.0}" class="pps_image"/>
+					<img src="/pic/catbigv{$images.0}" class="w_image"/>
 					{else}
-					<img src="/ext/Template/files/noimage480v.png" class="pps_image"/>
+					<img src="/ext/Template/files/noimage480v.png" class="w_image"/>
 					{/if}
 				</span>
 				<span class="title">{$item.Name}</span>
 			</a>
-			<div class="prices-wrapper pps_flex_12 pps_flex pps_flex_row">
+			<div class="prices-wrapper w_flex_12 w_flex w_flex_row">
 				<div class="prices">
 					<div class="price"><span>{$item.Price|money}</span></div>
 					{if $item.PriceBefore>0}
 					<div class="price price-before"><span>{$item.PriceBefore|money}</span></div>
 					{/if}
 				</div>
-				<label class="pps pps_button">
+				<label class="pps w_button">
 					{if $item.Id|in_array:$cartMetrics.items}
 						<a href="/cart/" class="cart-exists"></a>
 					{/if}
@@ -45,7 +45,7 @@
 		{/foreach}
 	</div>
 	{if $paginatorTpl}
-	<div class="pps_interval_medium"></div>
+	<div class="w_interval_medium"></div>
 	<div class="content-block">
 		{$paginatorTpl}
 	</div>

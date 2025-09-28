@@ -1,7 +1,7 @@
 
 section.services-wrapper>section {
 	background-color: var(--color-100);
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 }
 
@@ -12,15 +12,15 @@ section.services-wrapper a {
 }
 
 div.services-title {
-	padding: var(--step2);
+	padding: var(--s2);
 }
 
 .services-text>.title {
 	font-size: var(--font-medium);
 	font-weight: 600;
-	margin-bottom: var(--step4);
+	margin-bottom: var(--s4);
 }
 
 .services-text>.img {
-	margin-bottom: var(--step2);
+	margin-bottom: var(--s2);
 }

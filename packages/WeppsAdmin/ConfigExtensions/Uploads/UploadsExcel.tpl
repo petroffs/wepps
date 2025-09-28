@@ -1,9 +1,9 @@
-<form class="list-data pps_flex pps_flex_row pps_flex_start pps_flex_row_top controls-area" 
+<form class="list-data w_flex w_flex_row w_flex_start w_flex_row_top controls-area" 
 	action="javascript:formWepps.send('excel','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Uploads/Request.php')"
 	id="list-data-form">
-	<div class="pps_flex_23 pps_flex_11_view_medium pps_border item" data-id="upload">
-		<div class="selectUpload pps_flex_12 pps_flex pps_flex_row pps_flex_start">
-			<label class="pps pps_select pps_flex_12">
+	<div class="w_flex_23 w_flex_11_view_medium w_border item" data-id="upload">
+		<div class="selectUpload w_flex_12 w_flex w_flex_row w_flex_start">
+			<label class="pps w_select w_flex_12">
 				<select name="source">
 					<option value='0'>Цель: </option>
 					{foreach name="out" item="item" key="key" from=$source}
@@ -11,31 +11,31 @@
 					{/foreach}
 				</select>
 			</label>
-			<label class="pps pps_upload pps_flex_fix">
+			<label class="pps w_upload w_flex_fix">
 				<input type="file" name="upload" multiple="multiple"/> <span>Загрузить</span>
 			</label>
 		</div>
-		<div class="pps_interval_small"></div>
+		<div class="w_interval_small"></div>
 		{foreach name="o" item="i" key="k" from=$uploaded.upload}
-			<p class="fileadd pps_flex_11">
+			<p class="fileadd w_flex_11">
 				{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="fa fa-remove"></i></a>
 			</p>
 		{/foreach}
 	</div>
-	<span class="pps_interval_small"></span>
-	<div class="pps_flex_23 pps_flex_11_view_small pps_flex pps_flex_row pps_flex_start pps_border">
-		<label class="pps pps_button"><input type="submit" value="Далее"/></label>
+	<span class="w_interval_small"></span>
+	<div class="w_flex_23 w_flex_11_view_small w_flex w_flex_row w_flex_start w_border">
+		<label class="pps w_button"><input type="submit" value="Далее"/></label>
 	</div>
-	<span class="pps_interval_small"></span>
-	<div class="lastUploads pps_flex_23 pps_flex_11_view_small pps_border">
+	<span class="w_interval_small"></span>
+	<div class="lastUploads w_flex_23 w_flex_11_view_small w_border">
 		{if $files.0.Id}
 		<div class="title">Последние загрузки</div>
-		<div class="pps_interval_small"></div>
-		<ul class="pps_list lastUploads">
+		<div class="w_interval_small"></div>
+		<ul class="w_list lastUploads">
 			{foreach name="out" item="item" from=$files}
-			<li class="pps_flex pps_flex_row"><div class="pps_flex_12"><i class="fa fa-file-o"></i> <a href="/f{$item.FileUrl}">{$item.Name}</a></div><div class="descr pps_flex_12">{$item.FileDate|date_format:"%d.%m.%Y"}</div></li>
+			<li class="w_flex w_flex_row"><div class="w_flex_12"><i class="fa fa-file-o"></i> <a href="/f{$item.FileUrl}">{$item.Name}</a></div><div class="descr w_flex_12">{$item.FileDate|date_format:"%d.%m.%Y"}</div></li>
 			{/foreach}
-			<li class="pps_flex pps_flex_row"><div class="pps_flex_12"><i class="fa fa-file-o"></i> <a href="/_wepps/lists/s_UploadsSource/">Все загрузки</a></div><div class="descr pps_flex_12"></div></li>
+			<li class="w_flex w_flex_row"><div class="w_flex_12"><i class="fa fa-file-o"></i> <a href="/_wepps/lists/s_UploadsSource/">Все загрузки</a></div><div class="descr w_flex_12"></div></li>
 		</ul>
 	
 	{/if}

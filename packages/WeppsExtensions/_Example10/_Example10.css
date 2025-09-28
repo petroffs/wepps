@@ -1,10 +1,10 @@
-section._Example10-wrapper.pps_flex {
-	margin-bottom: var(--step4);
+section._Example10-wrapper.w_flex {
+	margin-bottom: var(--s4);
 	width: auto;
 }
 
 section._Example10-wrapper>section {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 	position: relative;
 }
@@ -33,7 +33,7 @@ div._Example10-img img {
 
 div._Example10-text {
 	background-color: var(--color-95);
-	padding: var(--step2);
+	padding: var(--s2);
 	height: 100%;
 }
 

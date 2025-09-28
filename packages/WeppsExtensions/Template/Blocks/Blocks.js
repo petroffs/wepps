@@ -1,10 +1,10 @@
 var readyBlocksInit = function () {
-	if ($('.pps_sortable').length == 0) {
+	if ($('.w_sortable').length == 0) {
 		return;
 	}
-	$(".pps_sortable").sortable({
+	$(".w_sortable").sortable({
 		stop: function (event, ui) {
-			let items = $(this).closest('.pps_panel').find('.pps_block');
+			let items = $(this).closest('.w_panel').find('.w_block');
 			var str = '';
 			$.each(items, function (num, elem) {
 				str += $(elem).data('id') + ',';
@@ -16,6 +16,6 @@ var readyBlocksInit = function () {
 			})
 		}
 	});
-	$(".pps_sortable").disableSelection();
+	$(".w_sortable").disableSelection();
 };
 $(document).ready(readyBlocksInit);

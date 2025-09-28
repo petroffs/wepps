@@ -1,7 +1,7 @@
 .paginator-wrapper {
   border-top: 1px solid var(--color-85);
-  padding-top: var(--step3);
-  padding-bottom: var(--step3);
+  padding-top: var(--s3);
+  padding-bottom: var(--s3);
 }
 
 .orders .price span::after {
@@ -9,7 +9,7 @@
 }
 
 .statuses>.item {
-	padding: var(--step2) 0;
+	padding: var(--s2) 0;
 }
 
 .statuses>.item.active>a {
@@ -19,7 +19,7 @@
 
 .orders {
 	overflow: hidden;
-	padding: var(--step2) 0;
+	padding: var(--s2) 0;
 }
 
 .orders>.item {
@@ -35,7 +35,7 @@
 }
 
 .orders>.item>.item-field {
-	padding: var(--step2);
+	padding: var(--s2);
 	cursor: pointer;
 }
 

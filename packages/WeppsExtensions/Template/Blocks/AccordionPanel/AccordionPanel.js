@@ -3,10 +3,10 @@ var blocksAccordionPanelInit = function() {
 		var parent = $(this).parent();
 		if (parent.hasClass('active')) {
 			parent.removeClass('active');
-			parent.children('.text').addClass('pps_hide');
+			parent.children('.text').addClass('w_hide');
 		} else {
 			parent.addClass('active');
-			parent.children('.text').removeClass('pps_hide');
+			parent.children('.text').removeClass('w_hide');
 		};
 	});
 };

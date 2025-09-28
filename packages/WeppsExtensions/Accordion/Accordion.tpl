@@ -1,6 +1,6 @@
-<div class="pps_interval_medium"></div>
-<section class="accordion-wrapper pps_flex pps_flex_row">
-	<div class="accordion-items pps_animate pps_flex_23 pps_flex_11_view_medium">
+<div class="w_interval_medium"></div>
+<section class="accordion-wrapper w_flex w_flex_row">
+	<div class="accordion-items w_animate w_flex_23 w_flex_11_view_medium">
 		{foreach name="out" item="item" key="key" from=$elements}
 		{assign var="images" value=$item.Images_FileUrl|strarr}
 		<section>
@@ -10,4 +10,4 @@
 		{/foreach}
 	</div>
 </section>
-<div class="pps_interval_medium"></div>
+<div class="w_interval_medium"></div>

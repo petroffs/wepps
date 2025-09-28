@@ -1,10 +1,10 @@
-div.pps_error {
+div.w_error {
 	color: var(--color-100);
 	background: var(--color-attention);
 	background-size: 15px 15px;
-	padding-left: var(--step2);
-	padding-right: var(--step6);
-	min-height: calc(var(--step6) - 2px);
+	padding-left: var(--s2);
+	padding-right: var(--s6);
+	min-height: calc(var(--s6) - 2px);
 	border-radius: 1px;
 	cursor: pointer;
 	position: absolute;
@@ -16,30 +16,30 @@ div.pps_error {
 	justify-content: center;
 }
 
-div.pps_error:after {
+div.w_error:after {
 	content: '\f057';
 	font-family: 'FontAwesome';
 	font-size: var(--font-default);
 	position: absolute;
 	top: 50%;
-	right: var(--step2);
+	right: var(--s2);
 	transform: translate(0, -50%);
 }
 
-div.pps_error:before {
+div.w_error:before {
 	content: '';
 	position: absolute;
-	border: var(--step) solid transparent;
-	border-right: var(--step) solid var(--color-attention);
+	border: var(--s) solid transparent;
+	border-right: var(--s) solid var(--color-attention);
 	top: 50%;
-	left: calc(-1 * var(--step2) + 1px);
+	left: calc(-1 * var(--s2) + 1px);
 	transform: translate(0, -50%);
 }
 
-form.pps_success {
+form.w_success {
 	text-align: center;
 	font-size: var(--font-medium);
-	padding: var(--step4) var(--step4);
+	padding: var(--s4) var(--s4);
 	background: var(--color-98);
 	border: 1px solid var(--color-success);
 	border-radius: 0;
@@ -53,17 +53,17 @@ label.pps {
 	padding: 0;
 }
 
-label.pps.pps_require {
+label.pps.w_require {
 	position: relative;
 }
 
-label.pps.pps_require:after {
+label.pps.w_require:after {
 	content: '\f111';
 	font-family: 'FontAwesome';
-	font-size: var(--step);
+	font-size: var(--s);
 	position: absolute;
-	left: calc(-1 * var(--step2));
-	top: var(--step2);
+	left: calc(-1 * var(--s2));
+	top: var(--s2);
 	color: var(--color-attention);
 }
 
@@ -86,21 +86,21 @@ label.pps select {
 	overflow: hidden;
 }
 
-label.pps.pps_checkbox {
+label.pps.w_checkbox {
 	width: max-content;
 	max-width: 100%;
 }
 
-label.pps.pps_checkbox input[type="checkbox"] {
+label.pps.w_checkbox input[type="checkbox"] {
 	display: none;
 }
 
-label.pps.pps_checkbox input[type="checkbox"]+span {
+label.pps.w_checkbox input[type="checkbox"]+span {
 	display: inline-block;
-	padding: 0 var(--step) var(--step) var(--step5);
+	padding: 0 var(--s) var(--s) var(--s5);
 }
 
-label.pps.pps_checkbox input[type="checkbox"]+span:before {
+label.pps.w_checkbox input[type="checkbox"]+span:before {
 	content: "\f096";
 	font-size: var(--font-medium);
 	font-family: 'FontAwesome';
@@ -112,29 +112,29 @@ label.pps.pps_checkbox input[type="checkbox"]+span:before {
 
 }
 
-label.pps.pps_checkbox input[type="checkbox"]:checked+span:before {
+label.pps.w_checkbox input[type="checkbox"]:checked+span:before {
 	content: "\f046";
 }
 
-label.pps.pps_checkbox input[type="checkbox"][disabled]+span {
+label.pps.w_checkbox input[type="checkbox"][disabled]+span {
 	color: var(--color-85);
 	cursor: default;
 }
 
-label.pps.pps_checkbox input[type="checkbox"][disabled]+span:before {
+label.pps.w_checkbox input[type="checkbox"][disabled]+span:before {
 	color: var(--color-85);
 }
 
-label.pps.pps_radio input[type="radio"] {
+label.pps.w_radio input[type="radio"] {
 	display: none;
 }
 
-label.pps.pps_radio input[type="radio"]+span {
+label.pps.w_radio input[type="radio"]+span {
 	display: inline-block;
-	padding: 0 var(--step) var(--step) var(--step5);
+	padding: 0 var(--s) var(--s) var(--s5);
 }
 
-label.pps.pps_radio input[type="radio"]+span:before {
+label.pps.w_radio input[type="radio"]+span:before {
 	content: "\f10c";
 	font-size: var(--font-medium);
 	height: 100%;
@@ -145,45 +145,45 @@ label.pps.pps_radio input[type="radio"]+span:before {
 	left: 0px;
 }
 
-label.pps.pps_radio input[type="radio"]:checked+span:before {
+label.pps.w_radio input[type="radio"]:checked+span:before {
 	content: "\f192";
 }
 
-label.pps.pps_radio input[type="radio"][disabled]+span {
+label.pps.w_radio input[type="radio"][disabled]+span {
 	color: var(--color-85);
 	cursor: default;
 }
 
-label.pps.pps_radio input[type="radio"][disabled]+span:before {
+label.pps.w_radio input[type="radio"][disabled]+span:before {
 	color: var(--color-85);
 }
 
-label.pps.pps_select>select {
+label.pps.w_select>select {
 	width: 100%;
 }
 
-label.pps.pps_upload {
+label.pps.w_upload {
 	width: max-content;
 	max-width: 100%;
 }
 
-label.pps.pps_upload input[type="file"] {
+label.pps.w_upload input[type="file"] {
 	opacity: 0;
 	display: none;
 }
 
-label.pps.pps_upload span {
+label.pps.w_upload span {
 	font-weight: 300;
 	line-height: inherit;
 	color: var(--color-20);
 	background: transparent;
 	border: 1px solid var(--color-50);
-	border-radius: var(--stepHalf);
+	border-radius: var(--s-half);
 	margin: 0;
-	padding: 0 var(--step2);
+	padding: 0 var(--s2);
 	width: auto;
 	max-width: max-content;
-	min-height: var(--step6);
+	min-height: var(--s6);
 	overflow: hidden;
 	display: flex;
 	flex-direction: row;
@@ -191,54 +191,54 @@ label.pps.pps_upload span {
 	align-items: center;
 	align-content: center;
 }
-label.pps.pps_upload span:hover {
+label.pps.w_upload span:hover {
 	color: var(--color-focus);
 	background-color: var(--color-98);
 }
-label.pps.pps_upload i {
-	margin-right: var(--step);
+label.pps.w_upload i {
+	margin-right: var(--s);
 }
-label.pps.pps_input input {
+label.pps.w_input input {
 	width: 100%;
 	border: var(--border);
-	border-radius: var(--stepHalf);
-	padding: var(--step);
-	height: var(--step6);
+	border-radius: var(--s-half);
+	padding: var(--s);
+	height: var(--s6);
 	margin: 0;
 	display: block;
 }
 
-label.pps.pps_area textarea {
+label.pps.w_area textarea {
 	width: 100%;
 	min-height: 65px;
 	border: var(--border);
-	border-radius: var(--stepHalf);
+	border-radius: var(--s-half);
 	padding: 4px 5px;
 	margin: 0 !important;
 	display: block;
 }
 
-label.pps.pps_select select:focus,
-label.pps.pps_area textarea:focus,
-label.pps.pps_input input:focus {
-	box-shadow: inset 0 0 var(--step2) var(--color-95);
+label.pps.w_select select:focus,
+label.pps.w_area textarea:focus,
+label.pps.w_input input:focus {
+	box-shadow: inset 0 0 var(--s2) var(--color-95);
 }
 
-label.pps.pps_button {
+label.pps.w_button {
 	display: inline-block;
 }
 
-a.pps_button,
-span.pps_button,
-label.pps.pps_button input {
+a.w_button,
+span.w_button,
+label.pps.w_button input {
 	font-weight: 300;
 	font-size: var(--font-default);
 	color: var(--color-20);
 	background: var(--color-100);
 	border: 1px solid var(--color-50);
-	border-radius: var(--stepHalf);
-	padding: 0 var(--step2);
-	min-height: var(--step6);
+	border-radius: var(--s-half);
+	padding: 0 var(--s2);
+	min-height: var(--s6);
 	display: inline-flex;
 	outline: none;
 	-webkit-appearance: none;
@@ -248,34 +248,34 @@ label.pps.pps_button input {
 	position: relative;
 }
 
-a.pps_button:hover,
-span.pps_button:hover,
-label.pps.pps_button input:hover {
+a.w_button:hover,
+span.w_button:hover,
+label.pps.w_button input:hover {
 	color: var(--color-focus);
 	background-color: var(--color-98);
 }
 
-a.pps_button:active,
-span.pps_button:active,
-label.pps.pps_button input:active {
+a.w_button:active,
+span.w_button:active,
+label.pps.w_button input:active {
 	border-color: var(--color-focus);
 	cursor: default;
 }
 
-a.pps_button:disabled,
-span.pps_button:disabled,
-label.pps.pps_button input:disabled,
-label.pps.pps_button input:disabled:hover {
+a.w_button:disabled,
+span.w_button:disabled,
+label.pps.w_button input:disabled,
+label.pps.w_button input:disabled:hover {
 	background-color: var(--color-85);
 	border-color: var(--color-85);
 	box-shadow: none;
 	cursor: default;
 }
 
-body a.pps_button,
-body span.pps_button {
+body a.w_button,
+body span.w_button {
 	text-decoration: none;
-	min-height: var(--step6);
+	min-height: var(--s6);
 	align-items: center;
 	justify-content: center;
 }
@@ -286,8 +286,8 @@ form {
 	padding: 0px;
 }
 
-.pps.pps_hide,
-.pps_flex.pps_hide,
-.pps_button.pps_hide {
+.pps.w_hide,
+.w_flex.w_hide,
+.w_button.w_hide {
 	display: none;
 }

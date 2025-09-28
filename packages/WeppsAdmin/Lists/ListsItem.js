@@ -39,10 +39,10 @@ var readyListsItemInit = function() {
 				text : "Копировать",
 				icon : "ui-icon-check",
 				click : function() {
-					let tableName = element.find('input[name="pps_tablename"]').val();  
-					let tableNameId = element.find('input[name="pps_tablename_id"]').val();
-					let path = element.find('input[name="pps_path"]').eq(0).val();
-					let str = 'action=copy&list='+tableName+'&id='+tableNameId+'&pps_path='+path;
+					let tableName = element.find('input[name="w_tablename"]').val();  
+					let tableNameId = element.find('input[name="w_tablename_id"]').val();
+					let path = element.find('input[name="w_path"]').eq(0).val();
+					let str = 'action=copy&list='+tableName+'&id='+tableNameId+'&w_path='+path;
 					let settings = {
 						data:str,
 						url:'/packages/WeppsAdmin/Lists/Request.php'
@@ -69,10 +69,10 @@ var readyListsItemInit = function() {
 				text : "Удалить",
 				icon : "ui-icon-close",
 				click : function() {
-					let id = element.find('input[name="pps_tablename_id"]').eq(0).val();
-					let list = element.find('input[name="pps_tablename"]').eq(0).val();
-					let path = element.find('input[name="pps_path"]').eq(0).val();
-					let str = 'action=remove&id='+id+'&list='+list+'&pps_path='+path;
+					let id = element.find('input[name="w_tablename_id"]').eq(0).val();
+					let list = element.find('input[name="w_tablename"]').eq(0).val();
+					let path = element.find('input[name="w_path"]').eq(0).val();
+					let str = 'action=remove&id='+id+'&list='+list+'&w_path='+path;
 					let settings = {
 						data: str,
 						url: '/packages/WeppsAdmin/Lists/Request.php',
@@ -109,8 +109,8 @@ var readyListsItemInit = function() {
 	});
 	$('form.list-data').find('.properties-item-option-add').on('click',function(event) {
 		event.preventDefault();
-		var select1 = $(this).closest('.labels2').find('label.pps_select').find('select').eq(0);
-		var input1 = $(this).closest('.labels2').find('label.pps_input').find('input').eq(0);
+		var select1 = $(this).closest('.labels2').find('label.w_select').find('select').eq(0);
+		var input1 = $(this).closest('.labels2').find('label.w_input').find('input').eq(0);
 		
 		var id = input1.data('id');
 		if (input1.val()=='') {
@@ -161,12 +161,12 @@ var readyListsItemInit = function() {
 		
 		if (group1=='FieldAll') {
 			var fields1 = $('form.list-data').find('.item[data-group]');
-			fields1.removeClass('pps_hide');
+			fields1.removeClass('w_hide');
 		} else {
 			var fields1 = $('form.list-data').find('.item[data-group]');
-			fields1.addClass('pps_hide');
+			fields1.addClass('w_hide');
 			var fields1 = $('form.list-data').find('.item[data-group="'+group1+'"]');
-			fields1.removeClass('pps_hide');
+			fields1.removeClass('w_hide');
 		}
 	});
 };
@@ -258,11 +258,11 @@ var readyListsItemFilesInit = function() {
 		if ($(this).data('status')==0) {
 			status = 1;
 			$(this).addClass('active');
-			$('.field-file-action').removeClass('pps_hide');
+			$('.field-file-action').removeClass('w_hide');
 		} else {
 			status = 0;
 			$(this).removeClass('active');
-			$('.field-file-action').addClass('pps_hide');
+			$('.field-file-action').addClass('w_hide');
 		};
 		$(this).data('status',status);
 	});
@@ -289,7 +289,7 @@ var readyListsItemFilesInit = function() {
 			ids += $(e).data('id')+','
 		});
 		ids = ids.substr(0,ids.length-1);
-		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="pps pps_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
+		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="pps w_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
 			'title':'Сообщение',
 			'modal': true,
 			'buttons' : [

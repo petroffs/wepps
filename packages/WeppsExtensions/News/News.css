@@ -1,5 +1,5 @@
 section.news-wrapper>section {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 	position: relative;
 }
@@ -28,7 +28,7 @@ div.news-img img {
 
 div.news-text {
 	background-color: var(--color-95);
-	padding: var(--step2);
+	padding: var(--s2);
 	height: 100%;
 }
 
@@ -37,17 +37,17 @@ div.news-text>.title {
 }
 
 div.page.news-item {
-	padding-top: var(--step6);
+	padding-top: var(--s6);
 	position: relative;
 }
 
 div.page.news-item h1 {
-	margin-top: var(--step2);
+	margin-top: var(--s2);
 }
 
 section.news-item-wrapper>div {
 	background-color: var(--color-100);
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	position: relative;
 	overflow: hidden;
 }

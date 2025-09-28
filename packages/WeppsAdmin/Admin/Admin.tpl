@@ -10,11 +10,11 @@
 		{$headers.cssjs}
 	</head>
 	<body>
-		<div class="page header pps_flex pps_flex_col">
+		<div class="page header w_flex w_flex_col">
 			<div class="page2">
-				<div class="nav pps_flex pps_flex_row">
+				<div class="nav w_flex w_flex_row">
 					<div>
-						<div class="pps_flex pps_flex_row pps_flex_start">
+						<div class="w_flex w_flex_row w_flex_start">
 							<div class="item">
 								<a href="/">Сайт</a>
 							</div>
@@ -35,22 +35,22 @@
 				</div>
 			</div>
 		</div>
-		<div class="page main pps_flex_max pps_flex pps_flex_col">
+		<div class="page main w_flex_max w_flex w_flex_col">
 			<div class="page2">
 				<h1 class="">{$content.NameNavItem|default:$contenttop.Name}</h1>
 				{$extension}
 			</div>
 		</div>
 		{$horizontalBottomTpl}
-		<div class="page footer pps_flex pps_flex_col pps_flex_center">
-			<div class="page2 pps_flex pps_flex_col pps_flex_center">
+		<div class="page footer w_flex w_flex_col w_flex_center">
+			<div class="page2 w_flex w_flex_col w_flex_center">
 				<div
-					class="copyrights pps_flex pps_flex_row pps_flex_center">
-					<div class="item pps_flex_fix pps_padding pps_center">© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
+					class="copyrights w_flex w_flex_row w_flex_center">
+					<div class="item w_flex_fix w_padding w_center">© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
 				</div>
 			</div>
 		</div>
-		<div id="dialog" title="dialog title" class="pps_hide">
+		<div id="dialog" title="dialog title" class="w_hide">
 			<p></p>
 		</div>
 	</body>

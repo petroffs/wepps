@@ -4,12 +4,12 @@ div.page.home {
 
 div.page.home .text {
 	column-count: 3;
-	padding-bottom: var(--step4);
+	padding-bottom: var(--s4);
 }
 
 div.page.home .text p {
 	margin-top: 0;
-	margin-bottom: var(--step4);
+	margin-bottom: var(--s4);
 }
 
 div.page.home .text p:last-child {
@@ -21,13 +21,13 @@ div.page.services {
 }
 
 section.services-wrapper {
-	padding-top: var(--step5);
-	padding-bottom: var(--step5);
+	padding-top: var(--s5);
+	padding-bottom: var(--s5);
 }
 
 section.services-wrapper section {
 	background-color: var(--color-75);
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 }
 
@@ -38,7 +38,7 @@ section.services-wrapper section:hover {
 section.services-wrapper .title {
 	font-weight: 600;
 	font-size: var(--font-medium);
-	padding: var(--step4);
+	padding: var(--s4);
 }
 
 div.page.gallery {
@@ -47,7 +47,7 @@ div.page.gallery {
 
 section.gallery-wrapper section {
 	overflow: hidden;
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 }
 
 section.gallery-wrapper section:hover {
@@ -55,15 +55,15 @@ section.gallery-wrapper section:hover {
 }
 
 div.page.advantages {
-	padding-bottom: var(--step4);
+	padding-bottom: var(--s4);
 }
 
 section.advantages-wrapper section:not(:first-child) {
-	margin-top: var(--step4);
+	margin-top: var(--s4);
 }
 
 section.advantages-wrapper section img {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	display: block;
 }
 
@@ -80,7 +80,7 @@ section.advantages-wrapper .title {
 	font-weight: 600;
 	letter-spacing: 0.06em;
 	line-height: 1.2;
-	margin-bottom: var(--step2);
+	margin-bottom: var(--s2);
 }
 
 div.page.map {
@@ -89,8 +89,8 @@ div.page.map {
 
 section#map {
 	background: var(--color-95);
-	margin: var(--step4) auto 0 auto;
-	border-radius: var(--step2);
+	margin: var(--s4) auto 0 auto;
+	border-radius: var(--s2);
 	overflow: hidden;
 	width: 100%;
 	height: 600px;

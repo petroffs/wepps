@@ -69,7 +69,7 @@ class RequestProfile extends Request
 				break;
 			case 'reg-confirm':
 				$this->confirmReg();
-				$this->outer("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"pps_button\">Войти в личный кабинет</a>");
+				$this->outer("Регистрация завершена<br/><br/><a href=\"/profile/\" class=\"w_button\">Войти в личный кабинет</a>");
 				break;
 			case 'addOrdersMessage':
 				$this->addOrdersMessage();
@@ -131,7 +131,7 @@ class RequestProfile extends Request
 		/**
 		 * Склеить корзину неавторизованного с текущим
 		 */
-		if (!empty($_COOKIE['wepps_cart']) && !empty($_COOKIE['wepps_cart_guid'])) {
+		if (!empty($_COOKIE['wew_cart']) && !empty($_COOKIE['wew_cart_guid'])) {
 			$cartUtils = new CartUtils();
 			$cart = $cartUtils->getCart();
 			$cartUser = json_decode($res[0]['JCart'],true);
@@ -142,11 +142,11 @@ class RequestProfile extends Request
 				$cart = $cartUtils->getCart();
 				$json = json_encode($cart, JSON_UNESCAPED_UNICODE);
 				Connect::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$res[0]['Id']]);
-				Utils::cookies('wepps_cart');
-				Utils::cookies('wepps_cart_guid');
+				Utils::cookies('wew_cart');
+				Utils::cookies('wew_cart_guid');
 			}
 		}
-		Utils::cookies('wepps_token', $token, $lifetime);
+		Utils::cookies('wew_token', $token, $lifetime);
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		/**
 		 * Если есть $_COOKIE['cart'] - добавить эти товары в профайл
@@ -175,7 +175,7 @@ class RequestProfile extends Request
 			echo $recaptcha->reset();
 			return false;
 		}
-		Utils::cookies('wepps_token', '');
+		Utils::cookies('wew_token', '');
 		$lifetime = 3600 * 24;
 		$jwt = new Jwt();
 		$token = $jwt->token_encode([
@@ -232,7 +232,7 @@ class RequestProfile extends Request
 	 */
 	private function confirmPassword()
 	{
-		Utils::cookies('wepps_token', '');
+		Utils::cookies('wew_token', '');
 
 		$this->errors = [];
 		if (empty($this->get['token'])) {
@@ -314,7 +314,7 @@ class RequestProfile extends Request
 	 */
 	private function confirmReg(): bool
 	{
-		Utils::cookies('wepps_token', '');
+		Utils::cookies('wew_token', '');
 		$this->get['password'] = trim($this->get['password']);
 		$this->get['password2'] = trim($this->get['password2']);
 		$this->errors = [];
@@ -461,7 +461,7 @@ class RequestProfile extends Request
 		$memcache->set($codeCached, $code, 600);
 		$mail = new Mail('html');
 		$mail->mail($this->get['login'], 'Подтверждение почты', 'Код подтверждения смены E-mail: <b>' . $code . '</b>');
-		echo "<script>$('.change-email-code').removeClass('pps_hide');$('.change-email-code').find('input').prop('disabled',false);</script>";
+		echo "<script>$('.change-email-code').removeClass('w_hide');$('.change-email-code').find('input').prop('disabled',false);</script>";
 		return true;
 	}
 	/**
@@ -509,7 +509,7 @@ class RequestProfile extends Request
 		 * Желательно настроить через CMC
 		 */
 		$mail->mail(Connect::$projectData['user']['Email'], 'Подтверждение телефона', 'Код подтверждения смены номера телефона: <b>' . $code . '</b>');
-		echo "<script>$('.change-phone-code').removeClass('pps_hide');$('.change-phone-code').find('input').prop('disabled',false);</script>";
+		echo "<script>$('.change-phone-code').removeClass('w_hide');$('.change-phone-code').find('input').prop('disabled',false);</script>";
 		return true;
 	}
 	/**
@@ -558,7 +558,7 @@ class RequestProfile extends Request
 		$memcache->set($codeCached, $code, 600);
 		$mail = new Mail('html');
 		$mail->mail(Connect::$projectData['user']['Email'], 'Подтверждение удаления аккаунта', 'Код подтверждения удаления аккаунта: <b>' . $code . '</b>');
-		echo "<script>$('.remove-code').removeClass('pps_hide');$('.remove-code').find('input').prop('disabled',false);</script>";
+		echo "<script>$('.remove-code').removeClass('w_hide');$('.remove-code').find('input').prop('disabled',false);</script>";
 		return true;
 	}
 }

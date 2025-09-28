@@ -293,31 +293,31 @@ class Validator
 						var elem = $('#{$form}').find('[name=\"{$key}[]\"]');
 					}
 					if (elem.length!=0) {
-						elem.closest('label').addClass('pps_error_parent');
-						var t = $('<div>{$value}</div>').addClass('pps_error_{$key}').addClass('pps_error');
+						elem.closest('label').addClass('w_error_parent');
+						var t = $('<div>{$value}</div>').addClass('w_error_{$key}').addClass('w_error');
 						elem.eq(0).before(t);
 						t.on('click',function(event) {
-							$(this).closest('label').removeClass('pps_error_parent');
+							$(this).closest('label').removeClass('w_error_parent');
 							$(this).remove();
 						});
 					}\n";
 				} else {
-					$str .= "$('.pps_error_{$key}').trigger('click');";
+					$str .= "$('.w_error_{$key}').trigger('click');";
 				}
 			}
 			$str .= "
 			$([document.documentElement, document.body]).animate({
-				scrollTop: $('#{$form}').find('.pps_error_parent').offset().top - 300
+				scrollTop: $('#{$form}').find('.w_error_parent').offset().top - 300
 			}, 1000);";
 		}
 		$str .= "
-				$('.pps_error_parent').children().on('focus',function() {
+				$('.w_error_parent').children().on('focus',function() {
                     var attr = $(this).attr('name').replace('[]','');
-					$('.pps_error_'+attr).trigger('click');
+					$('.w_error_'+attr).trigger('click');
 				});
-				$('.pps_error_parent').children('input').on('change',function() {
+				$('.w_error_parent').children('input').on('change',function() {
                     var attr = $(this).attr('name').replace('[]','');
-					$('.pps_error_'+attr).trigger('click');
+					$('.w_error_'+attr).trigger('click');
 				});
 		";
 		$str .= "</script>";
@@ -344,7 +344,7 @@ class Validator
 		$str = "
 			<script>
 			$('#{$form}').html('{$message}');
-			$('#{$form}').addClass('pps_success');
+			$('#{$form}').addClass('w_success');
 			$('#{$form}').fadeIn();
 			$js
 			</script>

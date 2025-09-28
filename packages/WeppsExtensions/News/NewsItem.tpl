@@ -15,9 +15,9 @@
 			</div>
 		</div>
 	</section>
-	<div class="pps_interval_large"></div>
+	<div class="w_interval_large"></div>
 	<section>
-		<section class="news-wrapper pps_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap_medium">
+		<section class="news-wrapper w_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap_medium">
 			{foreach name="out" item="item" from=$elements}
 			{assign var="images" value=$item.Images_FileUrl|strarr}
 			<section>
@@ -38,7 +38,7 @@
 			</section>
 			{/foreach}
 		</section>
-		<div class="pps_interval_medium"></div>
+		<div class="w_interval_medium"></div>
 	</section>
-	<div class="pps_interval_small"></div>
+	<div class="w_interval_small"></div>
 </div>

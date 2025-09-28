@@ -1,10 +1,10 @@
 var readyAdminWeppsInit = function() {
 	$('#sidebar-show').on('click',function(event) {
 		event.preventDefault();
-		if ($('.sidebar').hasClass('pps_hide_view_medium')) {
-			$('.sidebar').removeClass('pps_hide_view_medium');
+		if ($('.sidebar').hasClass('w_hide_view_medium')) {
+			$('.sidebar').removeClass('w_hide_view_medium');
 		} else {
-			$('.sidebar').eq(1).addClass('pps_hide_view_medium');
+			$('.sidebar').eq(1).addClass('w_hide_view_medium');
 		}
 	});
 	$('#sign-out').on('click',function(event) {
@@ -15,7 +15,7 @@ var readyAdminWeppsInit = function() {
 		};
 		layoutWepps.request(settings);
 	});
-	$('.pps_select').find('select').select2({
+	$('.w_select').find('select').select2({
 		language: "ru",
 		delay: 500
 	});

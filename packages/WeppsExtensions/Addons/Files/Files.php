@@ -120,11 +120,11 @@ class Files
 			];
 		}
 		$js = "<script>
-        $('.pps_upload_add').children().remove();\n";
+        $('.w_upload_add').children().remove();\n";
 		foreach ($_SESSION['uploads'][$form][$field] as $key => $file) {
-			$js .= "$('input[name=\"{$field}\"]').parent().siblings('div.pps_upload_add').append($('<div class=\"pps_upload_file\" data-key=\"{$key}\">{$file['name']} <i class=\"bi bi-x-circle-fill\"></i></div>'));\n";
+			$js .= "$('input[name=\"{$field}\"]').parent().siblings('div.w_upload_add').append($('<div class=\"w_upload_file\" data-key=\"{$key}\">{$file['name']} <i class=\"bi bi-x-circle-fill\"></i></div>'));\n";
 		}
-		$js .= "$('label.{$field}').siblings('.pps_error').trigger('click');formsInit();</script>";
+		$js .= "$('label.{$field}').siblings('.w_error').trigger('click');formsInit();</script>";
 		return [
 			'message' => 'Файлы загружены',
 			'html' => $js];
@@ -189,7 +189,7 @@ class Files
 		unset($_SESSION['uploads'][$form][$field][$index]);
 		return [
 			'message' => "Файл удален",
-			'html' => "<script>$('#{$form}').find('input[name=\"{$field}\"]').parent().siblings('.pps_upload_add').children('[data-key=\"{$index}\"]').remove();</script>"
+			'html' => "<script>$('#{$form}').find('input[name=\"{$field}\"]').parent().siblings('.w_upload_add').children('[data-key=\"{$index}\"]').remove();</script>"
 		];
 	}
 }

@@ -1,14 +1,14 @@
 section.paginator-wrapper {
 	overflow: auto;
-	margin-bottom: var(--step4);
+	margin-bottom: var(--s4);
 }
 
 section.paginator-wrapper>ul>li {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	border: var(--border);
 	overflow: hidden;
-	width: var(--step6);
-	height: var(--step6);
+	width: var(--s6);
+	height: var(--s6);
 	display: inline-block;
 }
 

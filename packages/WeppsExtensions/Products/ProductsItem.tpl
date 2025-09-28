@@ -1,5 +1,5 @@
 {assign var="images" value=$element.Images_FileUrl|strarr}
-<div class="page product pps_flex_max">
+<div class="page product w_flex_max">
 	{$element.Id|wepps:"Products"}
 	<section>
 		<div class="product-wrapper">
@@ -10,7 +10,7 @@
 				<div class="img-carousel carousel">
 					{foreach name="out" item="item" from=$images}
 					<div class="img">
-						<img src="/pic/catbigv{$item}" class="pps_image" />
+						<img src="/pic/catbigv{$item}" class="w_image" />
 					</div>
 					{/foreach}
 				</div>
@@ -42,8 +42,8 @@
 					{/if}
 					{if $element.W_Variations.W_GROUP.0.Id}
 						{assign var="elementGroup" value=$element.W_Variations.W_GROUP.0}
-						<div class="pps_interval"></div>
-						<label class="pps pps_button">
+						<div class="w_interval"></div>
+						<label class="pps w_button">
 							{if $element.Id|in_array:$cartMetrics.items}
 								<a href="/cart/" class="cart-exists"></a>
 							{/if}
@@ -54,12 +54,12 @@
 						<section>
 							<div class="price-title">{$key}</div>
 							{foreach from=$item item="i" name="o"}
-							<a href="" class="pps_button cart-add-v{if $i.Stocks<=0} pps_disabled{/if}{if $i.Id|in_array:$cartMetrics.itemsv} cart-add-v-exists{/if}" data-id="{$i.Id}">{$i.Size}</a>
+							<a href="" class="w_button cart-add-v{if $i.Stocks<=0} w_disabled{/if}{if $i.Id|in_array:$cartMetrics.itemsv} cart-add-v-exists{/if}" data-id="{$i.Id}">{$i.Size}</a>
 							{/foreach}
 						</section>
 					{/foreach}
-					<div class="pps_interval"></div>
-					<label class="pps pps_button">
+					<div class="w_interval"></div>
+					<label class="pps w_button">
 						{if $element.Id|in_array:$cartMetrics.items}
 							<a href="/cart/" class="cart-exists"></a>
 						{/if}

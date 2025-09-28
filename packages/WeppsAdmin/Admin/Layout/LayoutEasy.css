@@ -1,128 +1,128 @@
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_11 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_11 {
 	width: 100%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_12 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_12 {
 	width: 50%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_13 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_13 {
 	width: 33.333333%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_14 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_14 {
 	width: 25%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_15 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_15 {
 	width: 20%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_16 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_16 {
 	width: 16.66666667%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_23 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_23 {
 	width: 66.666667%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_25 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_25 {
 	width: 40%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_34 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_34 {
 	width: 75%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_35 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_35 {
 	width: 60%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_45 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_45 {
 	width: 80%;
 }
 
-.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_56 {
+.w_flex.w_flex_easy.w_flex_row>.w_flex_56 {
 	width: 83.3333333%;
 }
 
 /**adaptive**/
 @media screen and (max-width: 768px) {
 
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_11_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_11_view_medium {
 		width: 100%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_12_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_12_view_medium {
 		width: 50%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_13_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_13_view_medium {
 		width: 33.333333%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_14_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_14_view_medium {
 		width: 25%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_15_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_15_view_medium {
 		width: 20%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_16_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_16_view_medium {
 		width: 16.66666667%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_23_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_23_view_medium {
 		width: 66.666667%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_25_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_25_view_medium {
 		width: 40%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_34_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_34_view_medium {
 		width: 75%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_35_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_35_view_medium {
 		width: 60%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_45_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_45_view_medium {
 		width: 80%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_56_view_medium {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_56_view_medium {
 		width: 83.3333333%;
 	}
 }
 
 @media screen and (max-width: 480px) {
 	
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_11_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_11_view_small {
 		width: 100%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_12_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_12_view_small {
 		width: 50%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_13_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_13_view_small {
 		width: 33.333333%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_14_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_14_view_small {
 		width: 25%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_15_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_15_view_small {
 		width: 20%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_16_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_16_view_small {
 		width: 16.66666667%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_23_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_23_view_small {
 		width: 66.666667%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_25_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_25_view_small {
 		width: 40%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_34_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_34_view_small {
 		width: 75%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_35_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_35_view_small {
 		width: 60%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_45_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_45_view_small {
 		width: 80%;
 	}
-	.pps_flex.pps_flex_easy.pps_flex_row>.pps_flex_56_view_small {
+	.w_flex.w_flex_easy.w_flex_row>.w_flex_56_view_small {
 		width: 83.3333333%;
 	}
 }

@@ -16,12 +16,12 @@
 		{$content.Url|wepps:'navigator'}
 		{$extensionTop}
 		{if $normalView==1}
-		<div class="page pps_flex_max pps_flex pps_flex_col">
+		<div class="page w_flex_max w_flex w_flex_col">
 			<section>
 				<div class="content-block main">
 					<h1>{$content.Name}</h1>
 					{if $content.Text1}
-					<div class="pps_interval_small"></div>
+					<div class="w_interval_small"></div>
 					<div class="text">{$content.Text1}</div>
 					{/if}
 				</div>
@@ -35,22 +35,22 @@
 		{$extensionFooter}
 	</main>
 	<footer>
-		<div class="page footer pps_flex pps_flex_col pps_flex_center">
+		<div class="page footer w_flex w_flex_col w_flex_center">
 			<section>
 				<div class="footer-wrapper">
-					<div class="pps_flex pps_flex_row pps_flex_end pps_flex_margin pps_padding">
-						<div class="footer-logo pps_flex_fix pps_flex_12_view_small">
+					<div class="w_flex w_flex_row w_flex_end w_flex_margin w_padding">
+						<div class="footer-logo w_flex_fix w_flex_12_view_small">
 							<a href="/"><img src="/ext/Template/files/wepps.svg" alt="logo"/></a>
 						</div>
-						<div class="text pps_flex_fix pps_flex_12_view_small">
-							<ul class="footer-company pps_list">
+						<div class="text w_flex_fix w_flex_12_view_small">
+							<ul class="footer-company w_list">
 								<li>©  {$org.Name}</li>
 								<li>{mailto address=$org.Email}</li>
 								<li>{$org.Phone}</li>
 							</ul>
 						</div>
-						<div class="text pps_flex_fix pps_flex_11_view_small">
-							<ul class="footer-socials pps_list pps_flex pps_flex_row pps_flex_center pps_flex_margin">
+						<div class="text w_flex_fix w_flex_11_view_small">
+							<ul class="footer-socials w_list w_flex w_flex_row w_flex_center w_flex_margin">
 								{foreach name=out item=item from=$socials}
 								<li><a class="bi bi-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a></li>
 								{/foreach}

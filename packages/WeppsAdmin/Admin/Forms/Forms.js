@@ -29,7 +29,7 @@ var select2Ajax = function(obj,fn) {
 	//$(id).select2("destroy").select2();
 };
 var formsInit = function() {
-	$('label.pps.pps_upload').find('input[type="file"]').on('change', function(event) {
+	$('label.pps.w_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();
 		formWepps.upload($(this),event.target.files);
 	});
@@ -48,10 +48,10 @@ var formsInit = function() {
 		var t = $(this).closest('form');
 		document.getElementById(t.attr('id')).reset();
 	});
-	$('.pps.pps_area').find('textarea').on('input', function () {
+	$('.pps.w_area').find('textarea').on('input', function () {
 		autoResizeTextarea(this);
 	}).trigger('input');
-	$('.pps_select').find('select').select2({
+	$('.w_select').find('select').select2({
 		language: "ru",
 		delay: 500
 	});
@@ -79,15 +79,15 @@ class FormWepps {
 			processData : false,
 			contentType : false
 		}).done(function(responseText) {
-			$("#pps_ajax").remove();
+			$("#w_ajax").remove();
 			let t = $("<div></div>");
-			t.attr("id", "pps_ajax");
+			t.attr("id", "w_ajax");
 			t.html(responseText);
 			$(document.body).prepend(t);
 		});
 	};
 	send(action, myform, url) {
-		$('.pps_error').remove();
+		$('.w_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
@@ -101,7 +101,7 @@ class FormWepps {
 		layoutWepps.request(settings);
 	};
 	popup(action, myform, url) {
-		$('.pps_error').remove();
+		$('.w_error').remove();
 		let link = $(location).attr('pathname');
 		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
 		var serialized = $("#" + myform).serialize();
@@ -126,8 +126,8 @@ class FormWepps {
 			input.val(inputVal);
 			self.minmaxAfter(input.closest('section').data('id'),inputVal);
 		};
-		$('.pps_minmax').find('button').off('click');
-		$('.pps_minmax').find('button').on('click',function(event) {
+		$('.w_minmax').find('button').off('click');
+		$('.w_minmax').find('button').on('click',function(event) {
 			event.preventDefault();
 			let input = $(this).siblings('input');
 			var inputVal = parseInt(input.val())??1;
@@ -138,8 +138,8 @@ class FormWepps {
 			};
 			fn(input,inputVal);
 		});
-		$('.pps_minmax').find('input').off('keyup');
-		$('.pps_minmax').find('input').on('keyup',function(event) {
+		$('.w_minmax').find('input').off('keyup');
+		$('.w_minmax').find('input').on('keyup',function(event) {
 			event.preventDefault();
 			let input = $(this);
 			var inputVal = parseInt(input.val())??1;

@@ -1,5 +1,5 @@
 div.accordion-items {
-	border-radius: var(--step2);
+	border-radius: var(--s2);
 	overflow: hidden;
 }
 
@@ -9,13 +9,13 @@ div.accordion-items h2 {
 	text-transform: uppercase;
 	color: var(--color-100);
 	background: var(--color-05);
-	padding: var(--step4) var(--step2);
+	padding: var(--s4) var(--s2);
 	position: relative;
 	cursor: pointer;
 }
 
 div.accordion-items>section h2 {
-	margin: 0 0 var(--stepHalf) 0;
+	margin: 0 0 var(--s-half) 0;
 }
 
 div.accordion-items>section:last-child h2 {
@@ -29,7 +29,7 @@ div.accordion-items>section h2:after {
 	color: var(--color-95);
 	position: absolute;
 	top: 50%;
-	right: var(--step4);
+	right: var(--s4);
 	transform: translate(0, -50%);
 }
 
@@ -41,7 +41,7 @@ div.accordion-items div.text {
 	font-size: var(--font-medium);
 	color: var(--color-05);
 	background: var(--color-95);
-	padding: var(--step4) var(--step2);
+	padding: var(--s4) var(--s2);
 	display: none;
 }
 

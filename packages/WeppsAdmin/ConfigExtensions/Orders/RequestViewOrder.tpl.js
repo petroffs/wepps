@@ -1,8 +1,8 @@
 var readyViewOrderInit = function() {
-	if ($('.pps_select').find('select').data('select2')) {
-		//$('.pps_select').find('select').select2('destroy');		
+	if ($('.w_select').find('select').data('select2')) {
+		//$('.w_select').find('select').select2('destroy');		
 	}
-	/*$('.pps_select').find('select').select2({
+	/*$('.w_select').find('select').select2({
 		language: "ru",
 		delay: 500
 	});*/
@@ -11,7 +11,7 @@ var readyViewOrderInit = function() {
 	order.children('.item-field.price').find('span').text(utilsWepps.money(orderSum));
 	$('select.quantity,.price>label>input').on('focus',function(event) {
 		event.stopPropagation();
-		$(this).closest('.item').find('a.list-item-save').removeClass('pps_hide');
+		$(this).closest('.item').find('a.list-item-save').removeClass('w_hide');
 	});
 	$('select.quantity').off('change');
 	$('select.quantity').on('change',function(event) {

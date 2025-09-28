@@ -12,24 +12,24 @@
 	z-index: 20;
 	top: 50%;
 	transform: translate(0,-50%);
-	right: var(--step2);
+	right: var(--s2);
 	line-height: 100%;
 }
 
 .lists-items .title {
 	font-weight: 600;
-	margin: var(--step4) 0 0 0;
+	margin: var(--s4) 0 0 0;
 }
 
 .lists-items .descr {
 	font-weight: 300;
 	color: var(--color-50);
-	padding: var(--step) 0 var(--step) 0px;
+	padding: var(--s) 0 var(--s) 0px;
 }
 
 .lists-items .container {
 	border-top: 1px solid var(--color-85);
-	padding: var(--step) 0 var(--step) 0px;
+	padding: var(--s) 0 var(--s) 0px;
 }
 
 .lists-items .container:hover {
@@ -43,8 +43,8 @@
 
 .controls-area {
 	border-top: 1px solid var(--color-85);
-	padding-top: var(--step3);
-	padding-bottom: var(--step3);
+	padding-top: var(--s3);
+	padding-bottom: var(--s3);
 }
 
 .controls-area label {
@@ -52,7 +52,7 @@
 }
 
 .controls-area a {
-	margin-bottom: var(--stepHalf);
+	margin-bottom: var(--s-half);
 }
 
 .controls-area a.active {
@@ -61,10 +61,10 @@
 }
 
 .controls-area a i.fa {
-	padding-right: var(--step);
+	padding-right: var(--s);
 }
 
-label.pps.pps_select.list-item-language {
+label.pps.w_select.list-item-language {
 	margin-left: auto;
 }
 
@@ -92,7 +92,7 @@ label.pps.pps_select.list-item-language {
 }
 
 .lists-items-list>table>thead>tr.titles>th>div {
-	padding: var(--step);
+	padding: var(--s);
 }
 
 .lists-items-list>table>thead>tr.titles>th {
@@ -131,7 +131,7 @@ label.pps.pps_select.list-item-language {
 .lists-items-list>table>thead>tr.filters>th .filter2 a {
 	font-weight: 300;
 	display: block;
-	padding: var(--stepHalf);
+	padding: var(--s-half);
 }
 
 .lists-items-list>table>thead>tr.filters>th .filter2 a:hover {
@@ -165,7 +165,7 @@ label.pps.pps_select.list-item-language {
 .lists-items-list>table>tbody>tr>td>div {
 	width: 100%;
 	overflow: hidden;
-	padding: var(--stepHalf);
+	padding: var(--s-half);
 }
 
 .lists-items-list>table>tbody>tr>td.int {

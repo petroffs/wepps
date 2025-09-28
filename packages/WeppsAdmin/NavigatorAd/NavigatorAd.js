@@ -8,29 +8,29 @@ var readyListsInit = function() {
 		      }
 		}).autocomplete( "instance" )._renderItem = function( ul, item ) {
 		      return $( "<li>" )
-		        .append( "<div class='pps_padding'>" +
+		        .append( "<div class='w_padding'>" +
 		        		 "	<div class\"search-value\">" + item.value + " (" + item.id + ")</div>" +
 		        		 "</div>")
 		        .appendTo( ul );
 		 };
 	};
 	
-	$('.pps_list.dir').find('i').on('click',function(event){
+	$('.w_list.dir').find('i').on('click',function(event){
 		var parent1 = $(this).closest('li').data('id');
 		var set1 = $('[data-parent="'+parent1+'"]');
-		if (set1.hasClass('pps_hide')) {
-			set1.removeClass('pps_hide');
+		if (set1.hasClass('w_hide')) {
+			set1.removeClass('w_hide');
 		} else {
-			set1.addClass('pps_hide');
+			set1.addClass('w_hide');
 		};
 	});
 	
-	$('.pps_list.dir:not(.level0)').addClass('pps_hide');
-	var active = $('.pps_list.dir').find('li.active');
+	$('.w_list.dir:not(.level0)').addClass('w_hide');
+	var active = $('.w_list.dir').find('li.active');
 	var level = active.closest('ul').data('level');
 	if (level>0) {
 		for (var i = 0; i <= level; i++) {
-			active.closest('ul.level'+i).removeClass('pps_hide');
+			active.closest('ul.level'+i).removeClass('w_hide');
 		}
 	}
 };

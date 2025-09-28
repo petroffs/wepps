@@ -1,10 +1,10 @@
 form.list-data .item {
-	padding: var(--step) 0;
+	padding: var(--s) 0;
 }
 
 form.list-data .item-before {
 	border-top: 1px solid var(--color-85);
-	height: var(--step);
+	height: var(--s);
 }
 
 form.list-data .item:hover {
@@ -21,11 +21,11 @@ form.list-data .item .title .descr {
 }
 
 form.list-data .item .title .descr .field-file a {
-	margin-right: var(--step2);
+	margin-right: var(--s2);
 	display: inline-block;
 }
 
-form.list-data .item .title .descr .field-file .field-file-action.pps_hide {
+form.list-data .item .title .descr .field-file .field-file-action.w_hide {
 	display: none;
 }
 
@@ -33,12 +33,12 @@ form.list-data .item .title .descr .field-file-select.active {
 	color: var(--color-attention);
 }
 
-form.list-data .item .field label.pps.pps_input,
-form.list-data .item .field label.pps.pps_area {
+form.list-data .item .field label.pps.w_input,
+form.list-data .item .field label.pps.w_area {
 	width: 100%;
 }
 
-form.list-data .item .field .pps_area textarea {
+form.list-data .item .field .w_area textarea {
 	min-width: 100%;
 	max-width: 100%;
 	min-height: 150px;
@@ -64,7 +64,7 @@ form.list-data .item .field .files {
 
 form.list-data .item .field .files .files-item {
 	border-bottom: 1px solid #f7f7f7;
-	padding: var(--step);
+	padding: var(--s);
 }
 
 form.list-data .item .field .files>.files-item {
@@ -126,8 +126,8 @@ form.list-data .item .field .fileadd a.file-remove {
 }
 
 form.list-data .item .field .properties {
-	padding: var(--step4);
-	margin: var(--step2) 0;
+	padding: var(--s4);
+	margin: var(--s2) 0;
 }
 
 form.list-data .item .field .properties .title2 {
@@ -145,7 +145,7 @@ form.list-data .item .field .properties .descr2 {
 
 form.list-data .item .field .minitable {
 	outline: var(--border);
-	border-radius: var(--stepHalf);
+	border-radius: var(--s-half);
 	overflow: hidden;
 }
 
@@ -154,7 +154,7 @@ form.list-data .item .field .minitable-row:not(:last-child) {
 }
 
 form.list-data .item .field .minitable-cell {
-	padding: var(--step);
+	padding: var(--s);
 	overflow-wrap: break-word;
 }
 
@@ -165,7 +165,7 @@ form.list-data .item .field .minitable-body-tpl {
 form.list-data .item .field .minitable-body .minitable-cell {
 	font-weight: 300;
 	color: #000;
-	padding: var(--step);
+	padding: var(--s);
 }
 
 form.list-data .item .field .minitable-body .minitable-cell:focus {

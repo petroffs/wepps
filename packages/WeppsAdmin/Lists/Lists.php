@@ -489,7 +489,7 @@ class Lists
 					break;
 				}
 			}
-			if (strstr($key, "pps_property_")) {
+			if (strstr($key, "w_property_")) {
 				if (is_array($value)) {
 					$value = implode(":::", $value);
 				}
@@ -567,11 +567,11 @@ class Lists
 			$addActionRequest = new $addActionClass(['listSettings' => $listSettings, 'listScheme' => $listScheme, 'element' => $row]);
 		}
 		$path = "/_wepps/lists/{$list}/{$id}/";
-		if ($data['pps_path'] == 'navigator') {
+		if ($data['w_path'] == 'navigator') {
 			$path = "/_wepps/navigator{$addActionRequest->element['Url']}";
 		}
 		$jslocation = "";
-		if (isset($_SESSION['uploads']) || @$data['pps_tablename_id'] == 'add') {
+		if (isset($_SESSION['uploads']) || @$data['w_tablename_id'] == 'add') {
 			$jslocation = "location.href = '{$path}'";
 			;
 			unset($_SESSION['uploads']);
@@ -665,12 +665,12 @@ class Lists
 			/* $_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
 					 $co = count($_SESSION['uploads'][$myform][$filesfield])-1; */
 			$js .= "
-					$('input[name=\"{$filesfield}\"]').parent().parent().append($('<p class=\"fileadd pps_flex_11\">{$value['name']} <a href=\"\" class=\"file-remove\" rel=\"{$fileurl}\"><i class=\"fa fa-remove\"></i></a></p>'));
+					$('input[name=\"{$filesfield}\"]').parent().parent().append($('<p class=\"fileadd w_flex_11\">{$value['name']} <a href=\"\" class=\"file-remove\" rel=\"{$fileurl}\"><i class=\"fa fa-remove\"></i></a></p>'));
 			";
 		}
 		$js = "	<script>
 					{$js}
-					$('label.{$filesfield}').siblings('.pps_error').trigger('click');
+					$('label.{$filesfield}').siblings('.w_error').trigger('click');
 					$(document).ready(readyListsItemInit);
 				</script>";
 		$data = array('success' => 'Form was submitted', 'js' => $js);
