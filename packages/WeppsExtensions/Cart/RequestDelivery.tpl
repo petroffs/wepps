@@ -1,6 +1,6 @@
 <h2>Выберите способ доставки</h2>
 {foreach name="out" item="item" from=$delivery}
-	<label class="pps w_radio">
+	<label class="w_label w_radio">
 		<input type="radio" name="delivery" value="{$item.Id}" data-price="0" />
 		<span>{$item.Name}</span>
 	</label>

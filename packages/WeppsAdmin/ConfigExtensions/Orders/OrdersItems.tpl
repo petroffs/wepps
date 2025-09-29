@@ -8,7 +8,7 @@
 		<div class="item item-search w_flex_14 w_flex_12_view_medium w_flex_11_view_small">
 			<form action="{$url}">
 			<input type="hidden" name="status" value="-1">
-			<label class="pps w_input">
+			<label class="w_label w_input">
 				<input type="text" name="search" placeholder="Поиск" value="{$smarty.get.search|escape}">
 			</label>
 			<div class="w_hide">

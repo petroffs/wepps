@@ -12,7 +12,7 @@
             </section>
         {/foreach}
         <div class="w_interval"></div>
-        <label class="pps w_button">
+        <label class="w_label w_button">
             {if $element.Id|in_array:$cartMetrics.items}
                 <a href="/cart/" class="cart-exists"></a>
             {/if}

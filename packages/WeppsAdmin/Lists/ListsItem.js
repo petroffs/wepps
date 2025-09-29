@@ -289,7 +289,7 @@ var readyListsItemFilesInit = function() {
 			ids += $(e).data('id')+','
 		});
 		ids = ids.substr(0,ids.length-1);
-		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="pps w_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
+		$('#dialog').html('<p>Описание выбранных файлов:</p><p><label class="w_label w_input" style="min-width:calc(100% - 10px)"><input type="text" id="file-input-edit"></label></p>').dialog({
 			'title':'Сообщение',
 			'modal': true,
 			'buttons' : [

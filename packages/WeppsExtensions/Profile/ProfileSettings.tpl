@@ -7,26 +7,26 @@
             <fieldset>
                 <section>
                     <div class="title">Фамилия</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="text" name="nameSurname" value="{$user.NameSurname|escape}" placeholder="" />
                     </label>
                 </section>
                 <section>
                     <div class="title">Имя</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="text" name="nameFirst" value="{$user.NameFirst|escape}" placeholder="" />
                     </label>
                 </section>
                 <section>
                     <div class="title">Отчество</div>
-                    <label class="pps w_input">
+                    <label class="w_label w_input">
                         <input type="text" name="namePatronymic" value="{$user.NamePatronymic|escape}" placeholder="" />
                     </label>
                 </section>
             </fieldset>
             <fieldset>
                 <section>
-                    <label class="pps w_button">
+                    <label class="w_label w_button">
                         <input type="submit" value="Изменить" />
                     </label>
                 </section>
@@ -38,20 +38,20 @@
             <fieldset>
                 <section>
                     <div class="title">E-mail</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="email" name="login" value="{$user.Email|escape}" placeholder="" />
                     </label>
                 </section>
                 <section class="w_hide change-email-code">
                     <div class="title">Код подтверждения</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="text" name="code" value="" placeholder="" disabled/>
                     </label>
                 </section>
             </fieldset>
             <fieldset>
                 <section>
-                    <label class="pps w_button">
+                    <label class="w_label w_button">
                         <input type="submit" value="Изменить" />
                     </label>
                 </section>
@@ -64,20 +64,20 @@
             <fieldset>
                 <section>
                     <div class="title">Телефон</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="text" name="phone" value="{$user.Phone|escape|substr:1}" placeholder="" />
                     </label>
                 </section>
 				<section class="w_hide change-phone-code">
                     <div class="title">Код подтверждения</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="text" name="code" value="" placeholder="" disabled/>
                     </label>
                 </section>
             </fieldset>
             <fieldset>
                 <section>
-                    <label class="pps w_button">
+                    <label class="w_label w_button">
                         <input type="submit" value="Изменить" />
                     </label>
                 </section>
@@ -90,20 +90,20 @@
             <fieldset>
                 <section>
                     <div class="title">Новый пароль</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="password" name="password" placeholder="" autocomplete="new-password" />
                     </label>
                 </section>
                 <section>
                     <div class="title">Повторите пароль</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="password" name="password2" placeholder="" autocomplete="new-password" />
                     </label>
                 </section>
             </fieldset>
             <fieldset>
                 <section>
-                    <label class="pps w_button">
+                    <label class="w_label w_button">
                         <input type="submit" value="Изменить" />
                     </label>
                 </section>
@@ -115,20 +115,20 @@
             <fieldset>
                 <section>
                     <div class="title">Напишите слово "УДАЛИТЬ"</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="text" name="word" value="" placeholder="" autocomplete="new-password"/>
                     </label>
                 </section>
 				<section class="w_hide remove-code">
                     <div class="title">Код подтверждения</div>
-                    <label class="pps w_input w_require">
+                    <label class="w_label w_input w_require">
                         <input type="text" name="code" value="" placeholder="" disabled/>
                     </label>
                 </section>
             </fieldset>
             <fieldset>
                 <section>
-                    <label class="pps w_button">
+                    <label class="w_label w_button">
                         <input type="submit" value="Удалить профиль" />
                     </label>
                 </section>

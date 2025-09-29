@@ -5,14 +5,14 @@
         <fieldset>
             <section>
                 <div class="title">E-mail</div>
-                <label class="pps w_input w_require">
+                <label class="w_label w_input w_require">
                     <input type="email" name="login" placeholder="" />
                 </label>
             </section>
         </fieldset>
         <fieldset>
             <section>
-                <label class="pps w_button">
+                <label class="w_label w_button">
                     <input type="submit" value="Восстановить доступ" />
                 </label>
                 <div class="w_interval"></div>

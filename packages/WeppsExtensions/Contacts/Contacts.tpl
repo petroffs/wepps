@@ -45,29 +45,29 @@
 					<fieldset>
 						<section>
 							<div class="title">Ваше имя</div>
-							<label class="pps w_input w_require"><input type="text" name="name"
+							<label class="w_label w_input w_require"><input type="text" name="name"
 									placeholder="" /></label>
 						</section>
 						<section>
 							<div class="title">Адрес электронной почты</div>
-							<label class="pps w_input w_require"> <input type="email" name="email"
+							<label class="w_label w_input w_require"> <input type="email" name="email"
 									placeholder="" /></label>
 						</section>
 						<section>
 							<div class="title">Телефон</div>
-							<label class="pps w_input w_require"> <input type="text" name="phone" placeholder="" />
+							<label class="w_label w_input w_require"> <input type="text" name="phone" placeholder="" />
 							</label>
 						</section>
 					</fieldset>
 					<fieldset>
 						<section>
 							<div class="title">Сообщение</div>
-							<label class="pps w_area w_require"> <textarea name="comment" placeholder=""></textarea>
+							<label class="w_label w_area w_require"> <textarea name="comment" placeholder=""></textarea>
 							</label>
 						</section>
 						<section>
 							<div class="title">Вложение</div>
-							<label class="pps w_upload"> <input type="file" name="feedback-upload" /> <span>Прикрепить
+							<label class="w_label w_upload"> <input type="file" name="feedback-upload" /> <span>Прикрепить
 									файл</span>
 							</label>
 							<div class="w_upload_add">
@@ -82,25 +82,25 @@
 					<fieldset>
 						<section>
 							<div class="title">Test Checkbox</div>
-							<label class="pps w_checkbox">
+							<label class="w_label w_checkbox">
 								<input type="checkbox" name="checkboxtest[]" value="opt1"> <span>Опция 1</span>
 							</label>
-							<label class="pps w_checkbox">
+							<label class="w_label w_checkbox">
 								<input type="checkbox" name="checkboxtest[]" value="opt2"> <span>Опция 2</span>
 							</label>
 						</section>
 						<section>
 							<div class="title">Test Radio</div>
-							<label class="pps w_radio">
+							<label class="w_label w_radio">
 								<input type="radio" name="radiotest" value="opt1"> <span>Опция 1</span>
 							</label>
-							<label class="pps w_radio">
+							<label class="w_label w_radio">
 								<input type="radio" name="radiotest" value="opt2"> <span>Опция 2</span>
 							</label>
 						</section>
 						<section>
 							<div class="title">Test Select</div>
-							<label class="pps w_select">
+							<label class="w_label w_select">
 								<select name="selecttest">
 									<option value="opt1">Выбор 1</option>
 									<option value="opt2">Выбор 2</option>
@@ -110,7 +110,7 @@
 						</section>
 						<section>
 							<div class="title">Test Select multiple</div>
-							<label class="pps w_select">
+							<label class="w_label w_select">
 								<select multiple name="selectmultipletest[]">
 									<option value="opt1">Выбор 1</option>
 									<option value="opt2">Выбор 2</option>
@@ -121,10 +121,10 @@
 					</fieldset>
 					<fieldset>
 						<section>
-							<label class="pps w_checkbox"><input type="checkbox" name="approve" /> <span>Я согласен на
+							<label class="w_label w_checkbox"><input type="checkbox" name="approve" /> <span>Я согласен на
 									обработку
 									моих персональных данных</span></label>
-							<label class="pps w_button">
+							<label class="w_label w_button">
 								<input type="submit" value="Отправить" disabled />
 							</label>
 						</section>

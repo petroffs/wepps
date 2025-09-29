@@ -6,7 +6,7 @@
 				<a href="/"><img src="/ext/Template/files/wepps.svg" /></a>
 			</div>
 			<form action="javascript:void(0)">
-				<label class="pps w_input">
+				<label class="w_label w_input">
 					<input type="text" id="search-input" placeholder="Поиск..." name="text" value="{$smarty.get.text|default:''|escape:'html'}" autocomplete="off"/>
 				</label>
 			</form>

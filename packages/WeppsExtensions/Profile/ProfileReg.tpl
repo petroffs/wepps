@@ -5,13 +5,13 @@
         <fieldset>
             <section>
                 <div class="title">E-mail</div>
-                <label class="pps w_input w_require">
+                <label class="w_label w_input w_require">
                     <input type="email" name="login" placeholder=""/>
                 </label>
             </section>
             <section>
                 <div class="title">Телефон</div>
-                <label class="pps w_input w_require">
+                <label class="w_label w_input w_require">
                     <input type="text" name="phone" placeholder=""/>
                 </label>
             </section>
@@ -19,28 +19,28 @@
         <fieldset>
             <section>
                 <div class="title">Фамилия</div>
-                <label class="pps w_input w_require">
+                <label class="w_label w_input w_require">
                     <input type="text" name="nameSurname" placeholder=""/>
                 </label>
             </section>
             <section>
                 <div class="title">Имя</div>
-                <label class="pps w_input w_require">
+                <label class="w_label w_input w_require">
                     <input type="text" name="nameFirst" placeholder=""/>
                 </label>
             </section>
             <section>
                 <div class="title">Отчество</div>
-                <label class="pps w_input">
+                <label class="w_label w_input">
                     <input type="text" name="namePatronymic" placeholder=""/>
                 </label>
             </section>
         </fieldset>
         <fieldset>
             <section>
-                <label class="pps w_checkbox"><input type="checkbox" name="approve"/> <span>Я согласен на обработку
+                <label class="w_label w_checkbox"><input type="checkbox" name="approve"/> <span>Я согласен на обработку
                         моих персональных данных</span></label>
-                <label class="pps w_button">
+                <label class="w_label w_button">
                     <input type="submit" value="Зарегистрироваться" disabled/>
                 </label>
             </section>

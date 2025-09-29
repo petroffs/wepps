@@ -11,9 +11,9 @@
 			<form class="list-data w_flex w_flex_row" action="javascript:formWepps.send('sign-in','sign-in-form','/packages/WeppsAdmin/Admin/Request.php')"
 				id="sign-in-form">
 				<div class="w_flex_11 w_flex w_flex_row w_flex_start w_flex_margin">
-					<label class="pps w_input w_flex_11"><input type="text" name="login"/></label>
-					<label class="pps w_input w_flex_11"><input type="password" name="password"/></label>
-					<label class="pps w_button"><input type="submit" value="Войти"/></label>
+					<label class="w_label w_input w_flex_11"><input type="text" name="login"/></label>
+					<label class="w_label w_input w_flex_11"><input type="password" name="password"/></label>
+					<label class="w_label w_button"><input type="submit" value="Войти"/></label>
 				</div>
 			</form>
 		</div>

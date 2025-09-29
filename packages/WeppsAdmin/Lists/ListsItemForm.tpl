@@ -65,36 +65,36 @@
 						{if $item.0.$listMode=="disabled" && $item.0.Type!='properties' && !$item.0.Type|strstr:'minitable'}
 							{$element.$key}
 						{elseif $item.0.Type=="digit"}
-							<label class="pps w_input list-item-int{if $item.0.Required==1} w_require{/if}">
+							<label class="w_label w_input list-item-int{if $item.0.Required==1} w_require{/if}">
 								<input type="text" name="{$key}" value="{$element.$key}" />
 							</label>
 						{elseif $item.0.Type=="int"}
-							<label class="pps w_input list-item-int{if $item.0.Required==1} w_require{/if}">
+							<label class="w_label w_input list-item-int{if $item.0.Required==1} w_require{/if}">
 								<input type="number" name="{$key}" value="{$element.$key}" />
 							</label>
 						{elseif $item.0.Type=="date"}
-							<label class="pps w_input list-item-date{if $item.0.Required==1} w_require{/if}">
+							<label class="w_label w_input list-item-date{if $item.0.Required==1} w_require{/if}">
 								<input type="datetime" name="{$key}" value="{$element.$key|escape:'html'}" />
 							</label>
 						{elseif $item.0.Type=="password"}
-							<label class="pps w_input{if $item.0.Required==1} w_require{/if}">
+							<label class="w_label w_input{if $item.0.Required==1} w_require{/if}">
 								<input type="text" name="{$key}" value="{$element.$key|escape:'html'}" />
 							</label>
 						{elseif $item.0.Type=="flag"}
-							<label class="pps w_checkbox">
+							<label class="w_label w_checkbox">
 								<input type="checkbox" name="{$key}" value="1" {if $element.$key==1} checked="true" {/if} />
 								<span>{$item.0.Name}</span>
 							</label>
 						{elseif $item.0.Type=="area"}
-							<label class="pps w_area{if $item.0.Required==1} w_require{/if}">
+							<label class="w_label w_area{if $item.0.Required==1} w_require{/if}">
 								<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
 							</label>
 						{elseif $item.0.Type=="blob"}
-							<label class="pps w_area">
+							<label class="w_label w_area">
 								<textarea name="{$key}">{$element.$key}</textarea>
 							</label>
 						{elseif $item.0.Type=="date"}
-							<label class="pps w_input list-item-date">
+							<label class="w_label w_input list-item-date">
 								<input type="datetime" name="{$k}" value="{$element.$key}" />
 							</label>
 						{elseif $item.0.Type=="file"}
@@ -114,7 +114,7 @@
 											</div>
 											<div class="descr{if $i.FileDescription} descr-fill{/if}">
 												<div class="input">
-													<label class="pps w_input">
+													<label class="w_label w_input">
 														<input type="text" value="/pic/full{$i.FileUrl}" />
 													</label>
 												</div>
@@ -133,7 +133,7 @@
 									{/foreach}
 								</div>
 							{/if}
-							<label class="pps w_upload">
+							<label class="w_label w_upload">
 								<input type="file" name="{$key}" multiple="multiple" /> <span><i class="fa fa-cloud-download"></i>
 									Загрузить</span>
 							</label>
@@ -144,20 +144,20 @@
 							{/foreach}
 						{elseif $item.0.Type|strstr:"select_multi" || $item.0.Type|strstr:"dbtable_multi"}
 							{assign var="optionsCounter" value=$element[$key|cat:"_SelectOptionsSizeView"]}
-							<label class="pps w_select w_select_multi">
+							<label class="w_label w_select w_select_multi">
 								<select name="{$key}[]" multiple="multiple" size="{$optionsCounter}">
 									{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"] multiple="multiple"}
 								</select>
 							</label>
 						{elseif $item.0.Type|strstr:"select" || $item.0.Type|strstr:"dbtable"}
-							<label class="pps w_select">
+							<label class="w_label w_select">
 								<select name="{$key}">
 									{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 								</select>
 							</label>
 						{elseif $item.0.Type|strstr:"remote"}
 							{if $item.0.Type|strstr:"remote_multi"}
-								<label class="pps w_select{if $item.0.Required==1} w_require{/if}">
+								<label class="w_label w_select{if $item.0.Required==1} w_require{/if}">
 									<select name="{$key}[]" id="remote_{$key}" multiple="multiple">
 										{foreach name="o" item="i" key="k" from=$element[$key|cat:"_SelectChecked"]}
 											<option value="{$k}" selected="selected">{$i}</option>
@@ -165,7 +165,7 @@
 									</select>
 								</label>
 							{else}
-								<label class="pps w_select">
+								<label class="w_label w_select">
 									<select name="{$key}" id="remote_{$key}">
 										{foreach name="o" item="i" key="k" from=$element[$key|cat:"_SelectChecked"]}
 											<option value="{$k}" selected="selected">{$i}</option>
@@ -212,13 +212,13 @@
 							{if $item.0.$listMode!='disabled'}
 								<div class="w_hide">
 									<div class="w_interval"></div>
-									<label class="pps w_area">
+									<label class="w_label w_area">
 										<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
 									</label>
 								</div>
 							{/if}
 						{elseif $item.0.Type|strstr:"properties"}
-							<label class="pps w_select list-item-properties{if $item.0.Required==1} w_require{/if}">
+							<label class="w_label w_select list-item-properties{if $item.0.Required==1} w_require{/if}">
 								<select name="{$key}" {if $item.0.$listMode=="disabled"} disabled="disabled" {/if}>
 									{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 								</select>
@@ -236,7 +236,7 @@
 										{/if}
 										<div class="labels2">
 											{if $i.PType=='select'}
-												<label class="pps w_select w_select_multi{if $item.0.Required==1} w_require{/if}">
+												<label class="w_label w_select w_select_multi{if $item.0.Required==1} w_require{/if}">
 													<select multiple="multiple" name="w_property_{$key}_{$i.Id}[]"
 														{if $item.0.$listMode=="disabled"} disabled="disabled" {/if}>
 														<option>-</option>
@@ -246,7 +246,7 @@
 												<div class="w_interval"></div>
 												{if $item.0.$listMode!="disabled"}
 													<div class="w_flex w_flex_row w_flex_end">
-														<label class="pps w_input w_flex_12">
+														<label class="w_label w_input w_flex_12">
 															<input type="text" placeholder="новая опция" data-id="{$i.Id}" />
 														</label>
 														<div class="w_flex_fix"><a href="" class="w_button properties-item-option-add"><i
@@ -254,7 +254,7 @@
 													</div>
 												{/if}
 											{elseif $i.PType=='text-multi'}
-												<label class="pps w_area">
+												<label class="w_label w_area">
 													<textarea name="w_property_{$key}_{$i.Id}" {if $item.0.$listMode=="disabled"}
 															disabled="disabled"
 														{/if}>{$element[$key|cat:"_PropertiesSelected"][$i.Id]}</textarea>
@@ -265,7 +265,7 @@
 								{/foreach}
 							</div>
 						{else}
-							<label class="pps w_input{if $item.0.Required==1} w_require{/if} list-item-text">
+							<label class="w_label w_input{if $item.0.Required==1} w_require{/if} list-item-text">
 								<input type="text" name="{$key}" value="{$element.$key|escape:'html'}" />
 							</label>
 						{/if}

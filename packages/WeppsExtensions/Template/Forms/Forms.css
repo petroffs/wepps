@@ -75,7 +75,7 @@ form.w_success {
 	border-radius: var(--s2);
 }
 
-label.pps {
+label.w_label {
 	position: relative;
 	cursor: pointer;
 	display: flex;
@@ -84,11 +84,11 @@ label.pps {
 	padding: 0;
 }
 
-label.pps.w_require {
+label.w_label.w_require {
 	position: relative;
 }
 
-label.pps.w_require:after {
+label.w_label.w_require:after {
 	content: '\f287';
 	font-family: 'bootstrap-icons';
 	font-size: 9px;
@@ -98,19 +98,19 @@ label.pps.w_require:after {
 	color: var(--color-attention);
 }
 
-label.pps.w_require.w_title {
+label.w_label.w_require.w_title {
 	padding-top: var(--s);
 }
 
-label.pps * {
+label.w_label * {
 	font-size: var(--font-default);
 }
 
-label.pps>* {
+label.w_label>* {
 	transition: all 0.3s ease;
 }
 
-label.pps>i.w_field_empty {
+label.w_label>i.w_field_empty {
 	font-style: normal;
 	background-color: transparent;
 	border-radius: var(--s2);
@@ -126,53 +126,53 @@ label.pps>i.w_field_empty {
 	align-items: center;
 }
 
-label.pps>i.w_field_empty::before {
+label.w_label>i.w_field_empty::before {
 	content: "\f659";
 	font-family: 'bootstrap-icons';
 	font-size: var(--font-default);
 	color: var(--color-50);
 }
 
-label.pps>i.w_field_empty:hover {
+label.w_label>i.w_field_empty:hover {
 	background-color: var(--color-button);
 }
 
-label.pps>i.w_field_empty:hover::before {
+label.w_label>i.w_field_empty:hover::before {
 	color: var(--color-100);
 }
 
-label.pps>i.w_field_empty+input {
+label.w_label>i.w_field_empty+input {
 	padding-right: var(--s6);
 }
 
-label.pps input,
-label.pps button,
-label.pps textarea,
-label.pps select {
+label.w_label input,
+label.w_label button,
+label.w_label textarea,
+label.w_label select {
 	font-family: var(--font);
 	letter-spacing: 0.03em;
 	outline: none
 }
 
-label.pps.w_checkbox {
+label.w_label.w_checkbox {
 	max-width: 100%;
 }
 
-label.pps.w_checkbox input[type="checkbox"] {
+label.w_label.w_checkbox input[type="checkbox"] {
 	display: none;
 }
 
-label.pps.w_checkbox input[type="checkbox"]+span {
+label.w_label.w_checkbox input[type="checkbox"]+span {
 	padding: 0 var(--s) var(--s) 0;
 	display: inline-flex;
 	align-items: center;
 }
 
-label.pps.w_checkbox:last-child input[type="checkbox"]+span {
+label.w_label.w_checkbox:last-child input[type="checkbox"]+span {
 	padding: 0 var(--s) 0 0;
 }
 
-label.pps.w_checkbox input[type="checkbox"]+span:before {
+label.w_label.w_checkbox input[type="checkbox"]+span:before {
 	content: "\f584";
 	font-family: 'bootstrap-icons';
 	font-size: var(--font-medium);
@@ -180,40 +180,40 @@ label.pps.w_checkbox input[type="checkbox"]+span:before {
 	margin-right: var(--s2);
 }
 
-label.pps.w_checkbox input[type="checkbox"]:checked+span:before {
+label.w_label.w_checkbox input[type="checkbox"]:checked+span:before {
 	content: "\f26C";
 	color: var(--color-button);
 }
 
-label.pps.w_checkbox input[type="checkbox"][disabled]+span {
+label.w_label.w_checkbox input[type="checkbox"][disabled]+span {
 	color: var(--color-85);
 	cursor: not-allowed;
 }
 
-label.pps.w_checkbox input[type="checkbox"][disabled]+span:before {
+label.w_label.w_checkbox input[type="checkbox"][disabled]+span:before {
 	color: var(--color-85);
 }
 
-label.pps.w_radio {
+label.w_label.w_radio {
 	width: max-content;
 	max-width: 100%;
 }
 
-label.pps.w_radio input[type="radio"] {
+label.w_label.w_radio input[type="radio"] {
 	display: none;
 }
 
-label.pps.w_radio input[type="radio"]+span {
+label.w_label.w_radio input[type="radio"]+span {
 	padding: 0 var(--s) var(--s) 0;
 	display: inline-flex;
 	align-items: center;
 }
 
-label.pps.w_radio:last-child input[type="radio"]+span {
+label.w_label.w_radio:last-child input[type="radio"]+span {
 	padding: 0 var(--s) 0 0;
 }
 
-label.pps.w_radio input[type="radio"]+span:before {
+label.w_label.w_radio input[type="radio"]+span:before {
 	content: "\f28A";
 	font-family: 'bootstrap-icons';
 	font-size: var(--font-medium);
@@ -221,36 +221,36 @@ label.pps.w_radio input[type="radio"]+span:before {
 	margin-right: var(--s2);
 }
 
-label.pps.w_radio input[type="radio"]:checked+span:before {
+label.w_label.w_radio input[type="radio"]:checked+span:before {
 	content: "\f26A";
 	color: var(--color-button);
 }
 
-label.pps.w_radio input[type="radio"][disabled]+span {
+label.w_label.w_radio input[type="radio"][disabled]+span {
 	color: var(--color-85);
 	cursor: default;
 }
 
-label.pps.w_radio input[type="radio"][disabled]+span:before {
+label.w_label.w_radio input[type="radio"][disabled]+span:before {
 	color: var(--color-85);
 }
 
-label.pps.w_select>select {
+label.w_label.w_select>select {
 	width: 100%;
 }
 
-label.pps.w_upload {
+label.w_label.w_upload {
 	width: 100%;
 	flex-direction: column;
 	align-items: flex-start;
 }
 
-label.pps.w_upload input[type="file"] {
+label.w_label.w_upload input[type="file"] {
 	opacity: 0;
 	display: none;
 }
 
-label.pps.w_upload span {
+label.w_label.w_upload span {
 	font-weight: 300;
 	line-height: inherit;
 	color: var(--color-button);
@@ -271,32 +271,32 @@ label.pps.w_upload span {
 	user-select: none;
 }
 
-label.pps.w_upload span:hover {
+label.w_label.w_upload span:hover {
 	color: var(--color-100);
 	background-color: var(--color-button);
 }
 
-label.pps.w_upload i {
+label.w_label.w_upload i {
 	margin-right: var(--s);
 }
 
-label.pps.w_upload+div.w_upload_add div.w_upload_file {
+label.w_label.w_upload+div.w_upload_add div.w_upload_file {
 	margin-top: var(--s);
 	word-break: break-all;
 }
 
-label.pps.w_upload+div.w_upload_add div.w_upload_file .bi {
+label.w_label.w_upload+div.w_upload_add div.w_upload_file .bi {
 	color: var(--color-75);
 	cursor: pointer;
 }
 
-label.pps.w_upload+div.w_upload_add div.w_upload_file .bi:hover {
+label.w_label.w_upload+div.w_upload_add div.w_upload_file .bi:hover {
 	color: var(--color-button);
 }
 
 .w_fields,
 .w_fields,
-label.pps.w_input input {
+label.w_label.w_input input {
 	background: var(--color-100);
 	width: 100%;
 	border: var(--s-half) solid var(--color-85);
@@ -325,7 +325,7 @@ label.pps.w_input input {
 	border-color: var(--color-warning);
 }
 
-label.pps.w_area textarea {
+label.w_label.w_area textarea {
 	background: var(--color-100);
 	width: 100%;
 	min-height: calc(var(--s) * 20);
@@ -338,21 +338,21 @@ label.pps.w_area textarea {
 	display: block;
 }
 
-label.pps.w_select select:focus,
-label.pps.w_area textarea:focus,
-label.pps.w_input input:focus {
+label.w_label.w_select select:focus,
+label.w_label.w_area textarea:focus,
+label.w_label.w_input input:focus {
 	border-color: var(--color-button);
 }
 
-label.pps.w_button {
+label.w_label.w_button {
 	display: inline-block;
 	max-width: 100%;
 }
 
 a.w_button,
 span.w_button,
-label.pps.w_button input,
-label.pps.w_button button {
+label.w_label.w_button input,
+label.w_label.w_button button {
 	font-size: var(--font-default);
 	white-space: normal;
 	color: var(--color-100);
@@ -375,8 +375,8 @@ label.pps.w_button button {
 
 a.w_button:hover,
 span.w_button:hover,
-label.pps.w_button input:hover,
-label.pps.w_button button:hover {
+label.w_label.w_button input:hover,
+label.w_label.w_button button:hover {
 	color: var(--color-98);
 	background-color: var(--color-focus);
 	border-color: var(--color-focus);
@@ -384,8 +384,8 @@ label.pps.w_button button:hover {
 
 a.w_button:active,
 span.w_button:active,
-label.pps.w_button input:active,
-label.pps.w_button button:active {
+label.w_label.w_button input:active,
+label.w_label.w_button button:active {
 	background-color: var(--color-active);
 	border-color: var(--color-active);
 	cursor: default;
@@ -394,8 +394,8 @@ label.pps.w_button button:active {
 
 a.w_button:focus,
 span.w_button:focus,
-label.pps.w_button input:focus,
-label.pps.w_button button:focus {
+label.w_label.w_button input:focus,
+label.w_label.w_button button:focus {
 	color: var(--color-98);
 	background-color: var(--color-focus);
 	border-color: var(--color-focus);
@@ -404,10 +404,10 @@ label.pps.w_button button:focus {
 
 a.w_button.w_disabled,
 span.w_button:disabled,
-label.pps.w_button input:disabled,
-label.pps.w_button input:disabled:hover,
-label.pps.w_button button:disabled,
-label.pps.w_button button:disabled:hover {
+label.w_label.w_button input:disabled,
+label.w_label.w_button input:disabled:hover,
+label.w_label.w_button button:disabled,
+label.w_label.w_button button:disabled:hover {
 	background-color: var(--color-75);
 	border-color: var(--color-75);
 	box-shadow: none;
@@ -504,13 +504,13 @@ div.pps.w_minmax>input[type="text"] {
 	min-height: var(--s6);
 }
 
-label.pps.w_hide,
-label.pps.w_hide {
+label.w_label.w_hide,
+label.w_label.w_hide {
 	display: none;
 }
 
-label.pps>*.w_hide,
-label.pps>*.w_hide,
+label.w_label>*.w_hide,
+label.w_label>*.w_hide,
 a.w_button.w_hide,
 a.w_button.w_hide,
 span.w_button.w_hide,

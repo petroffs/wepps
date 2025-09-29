@@ -29,7 +29,7 @@
 					<div class="price price-before"><span>{$item.PriceBefore|money}</span></div>
 					{/if}
 				</div>
-				<label class="pps w_button">
+				<label class="w_label w_button">
 					{if $item.Id|in_array:$cartMetrics.items}
 						<a href="/cart/" class="cart-exists"></a>
 					{/if}

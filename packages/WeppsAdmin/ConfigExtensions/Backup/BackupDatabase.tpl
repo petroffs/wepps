@@ -4,9 +4,9 @@
 	<input type="hidden" name="action" value="database">
 	<input type="hidden" name="add" value="1">
 	<div class="w_flex_23 w_flex_11_view_medium w_flex w_flex_row w_flex_start w_border">
-		<label class="pps w_input"><input name="list" type="text" value="" placeholder="Название таблицы БД"/></label>
-		<label class="pps w_input"><input name="comment" type="text" value="" placeholder="Комментарий"/></label>
-		<label class="pps w_button"><input type="submit" value="Создать бекап"/></label>
+		<label class="w_label w_input"><input name="list" type="text" value="" placeholder="Название таблицы БД"/></label>
+		<label class="w_label w_input"><input name="comment" type="text" value="" placeholder="Комментарий"/></label>
+		<label class="w_label w_button"><input type="submit" value="Создать бекап"/></label>
 	</div>
 </form>
 {if $backups}

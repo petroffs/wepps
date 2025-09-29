@@ -11,7 +11,7 @@
 	<ul class="w_list w_flex_max">
 		<li>
 			<div class="title title-search">
-				<label class="pps w_input list-search">
+				<label class="w_label w_input list-search">
 					<input type="text" placeholder="Поиск списков" id="list-search"/>
 				</label>
 			</div>

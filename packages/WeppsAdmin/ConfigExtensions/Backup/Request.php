@@ -117,7 +117,7 @@ class RequestBackup extends Request
 					 */
 					$js = "
                     <script>
-                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"pps w_input\"><input type=\"text\" value=\"{$cmd}\" id=\"dialog-cmd\"/></label>').dialog({
+                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"w_label w_input\"><input type=\"text\" value=\"{$cmd}\" id=\"dialog-cmd\"/></label>').dialog({
         				'title':'Сообщение',
         				'modal': true,
         				'buttons' : [{
@@ -159,7 +159,7 @@ class RequestBackup extends Request
 				 */
 				$js = "
                     <script>
-                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"pps w_input\"><input type=\"text\" value=\"{$cmd}\" id=\"dialog-cmd\"/></label>').dialog({
+                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"w_label w_input\"><input type=\"text\" value=\"{$cmd}\" id=\"dialog-cmd\"/></label>').dialog({
         				'title':'Сообщение',
         				'modal': true,
         				'buttons' : [{

@@ -22,13 +22,13 @@
 				<div class="controls-area-form w_flex_12 w_flex_11_view_small w_right">
 					<form class="w_flex w_flex_row w_flex_margin_small"
 						action="javascript:function ret() { return false }">
-						<label class="pps w_select w_flex_13"> <select>
+						<label class="w_label w_select w_flex_13"> <select>
 								{foreach name="o" item="i" key="k" from=$listScheme} {if
 								$i.0.Type!='file' && $i.0.Type!='flag' &&
 								!$i.0.Type|strstr:"select"}
 								<option value="{$k}"{if $smarty.get.field==$k} selected="selected"{/if}>{$i.0.Name}</option> {/if} {/foreach}
 						</select>
-						</label> <label class="pps w_input w_flex_23"> <input
+						</label> <label class="w_label w_input w_flex_23"> <input
 							type="text" class="search" value="{$smarty.get.search}" placeholder="поиск" data-list="{$listSettings.TableName}" data-orderby="{$smarty.get.orderby}"/>
 						</label>
 					</form>

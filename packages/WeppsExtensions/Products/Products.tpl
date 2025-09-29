@@ -21,7 +21,7 @@
 					{if $smarty.foreach.o.iteration>10} {assign var="hide" value="w_hide"}
 					{/if}
 					<li class="{$hide}">
-						<label class="pps w_checkbox">
+						<label class="w_label w_checkbox">
 							<input type="checkbox" name="{$i.Alias}" /> <span>{$i.PValue} <span>{$i.Co}</span></span>
 						</label>
 					</li>
@@ -34,12 +34,12 @@
 			{/foreach}
 			<div class="nav-filters-reset">
 				<div class="title">
-					<label class="pps w_button"><input type="button" value="Очистить"/></label>
+					<label class="w_label w_button"><input type="button" value="Очистить"/></label>
 				</div>
 			</div>
 			<div class="nav-filters-apply">
 				<div class="title">
-					<label class="pps w_button"><input type="button" value="Применить"/></label>
+					<label class="w_label w_button"><input type="button" value="Применить"/></label>
 				</div>
 			</div>
 		</section>
@@ -55,7 +55,7 @@
 					<div id="pps-option-filters"><i class="bi bi-sliders"></i></div>
 					<div id="pps-options-count">{$productsCount}</div>
 					<div id="pps-options-sort">
-						<label class="pps w_select w_select">
+						<label class="w_label w_select w_select">
 							<select data-minimum-results-for-search="Infinity">
 								{foreach name="out" key="key" item="item" from=$productsSorting}
 								<option value="{$key}" {if $productsSortingActive==$key} selected="selected"{/if}>{$item}</option>

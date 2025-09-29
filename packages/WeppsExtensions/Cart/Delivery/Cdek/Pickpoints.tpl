@@ -1,5 +1,5 @@
 <div class="content-block delivery-pickpoints">
-    <label class="pps w_input">
+    <label class="w_label w_input">
         <input type="text" name="delivery-pickpoints-message" class="w_hide" />
     </label>
     <div class="delivery-pickpoints-items">

@@ -3,7 +3,7 @@
 	id="list-data-form">
 	<div class="w_flex_23 w_flex_11_view_medium w_border item" data-id="upload">
 		<div class="selectUpload w_flex_12 w_flex w_flex_row w_flex_start">
-			<label class="pps w_select w_flex_12">
+			<label class="w_label w_select w_flex_12">
 				<select name="source">
 					<option value='0'>Цель: </option>
 					{foreach name="out" item="item" key="key" from=$source}
@@ -11,7 +11,7 @@
 					{/foreach}
 				</select>
 			</label>
-			<label class="pps w_upload w_flex_fix">
+			<label class="w_label w_upload w_flex_fix">
 				<input type="file" name="upload" multiple="multiple"/> <span>Загрузить</span>
 			</label>
 		</div>
@@ -24,7 +24,7 @@
 	</div>
 	<span class="w_interval_small"></span>
 	<div class="w_flex_23 w_flex_11_view_small w_flex w_flex_row w_flex_start w_border">
-		<label class="pps w_button"><input type="submit" value="Далее"/></label>
+		<label class="w_label w_button"><input type="submit" value="Далее"/></label>
 	</div>
 	<span class="w_interval_small"></span>
 	<div class="lastUploads w_flex_23 w_flex_11_view_small w_border">

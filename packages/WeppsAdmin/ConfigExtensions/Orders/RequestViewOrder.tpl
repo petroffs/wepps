@@ -16,7 +16,7 @@
 					<div class="options">{if $options.name}{$options.name} : {$options.value}{/if}</div>
 				</div>
 				<div class="price w_flex_16 w_flex_13_view_small w_order_3_view_small">
-					<label class="pps w_input">
+					<label class="w_label w_input">
 						<input type="text" name="price" value="{$item.price}"/>
 					</label>
 					{if $item.priceTotal}
@@ -24,7 +24,7 @@
 					{/if}
 				</div>
 				<div class="quantity w_flex_16 w_flex_16 w_flex_13_view_small w_order_4_view_small">
-					<label class="pps w_select">
+					<label class="w_label w_select">
 						<select class="quantity" data-id="{$item.id}" data-option="">
 							{for $qty=1 to 100}
 							<option value="{$qty}" {if $item.quantity==$qty} selected="selected"{/if}>{$qty}</option>
@@ -45,18 +45,18 @@
 			{/foreach}
 			<div class="item item-add w_flex w_flex_row w_flex_row_str" data-order="{$order.Id}" data-name="">
 				<div class="title2 w_flex_13 w_flex_45_view_small w_order_1_view_small">
-					<label class="pps w_select">
+					<label class="w_label w_select">
 						<select id="add-products"></select>
 					</label>
 					<div id="add-products-options" class="options w_hide"></div>
 				</div>
 				<div class="w_flex_16 w_flex_13_view_small w_order_3_view_small">
-					<label class="pps w_input">
+					<label class="w_label w_input">
 						<input type="text" id="add-products-price" value=""/>
 					</label>
 				</div>
 				<div class="quantity w_flex_16 w_flex_13_view_small w_order_4_view_small">
-					<label class="pps w_select">
+					<label class="w_label w_select">
 						<select class="quantity" id="add-products-quantity">
 							{for $quantity=1 to 100}
 							<option value="{$quantity}">{$quantity}</option>
@@ -77,7 +77,7 @@
 					<div class="status item w_flex w_flex_row w_flex_start">
 						<div class="dt w_flex_14">Статус</div>
 						<div class="dd w_flex_12">
-							<label class="pps w_select">
+							<label class="w_label w_select">
 								<select class="status-select"> 
 								{foreach name="out" item="item" from=$statuses}
 								<option value="{$item.Id}" {if $item.Id==$order.OStatus} selected="selected"{/if}>{$item.Name}</option>
@@ -108,7 +108,7 @@
 						<div class="dt w_flex_14"></div>
 						{/if}
 						<div class="dd w_flex_12">
-							<label class="pps w_input">
+							<label class="w_label w_input">
 								<input type="text" id="add-payments" placeholder="Сумма оплаты" value="{$order.OSumPay}"/>
 							</label>
 						</div>
@@ -131,15 +131,15 @@
 						<div class="dt w_flex_14"></div>
 						{/if}
 						<div class="dd w_flex_12">
-							<label class="pps w_area">
+							<label class="w_label w_area">
 								<textarea id="add-messages"></textarea>
 							</label>
 							{*
-							<label class="pps w_checkbox">
+							<label class="w_label w_checkbox">
 								<input type="checkbox" value="1" id="add-messages-products"/>
 								<span>прикрепить состав заказа</span>
 							</label>
-							<label class="pps w_checkbox">
+							<label class="w_label w_checkbox">
 								<input type="checkbox" value="1" id="addPaymentLink"/>
 								<span>прикрепить ссылку на оплату</span>
 							</label>
@@ -168,7 +168,7 @@
 						<div class="dt w_flex_13 w_right">Тариф</div>
 						<div class="dd w_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps w_input"><input type="text" name="delivery-tariff" value="{$order.ODeliveryTariff}"></label>
+								<label class="w_label w_input"><input type="text" name="delivery-tariff" value="{$order.ODeliveryTariff}"></label>
 							</div>
 							<div class="w_right">
 								<a class="w_button list-item-tariff" data-target="delivery-tariff" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
@@ -179,7 +179,7 @@
 						<div class="dt w_flex_13 w_right">Скидка <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
 						<div class="dd w_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps w_input"><input type="text" name="delivery-discount" value="{$order.ODeliveryDiscount}"></label>
+								<label class="w_label w_input"><input type="text" name="delivery-discount" value="{$order.ODeliveryDiscount}"></label>
 							</div>
 							<div class="w_right">
 								<a class="w_button list-item-tariff" data-target="delivery-discount" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
@@ -194,7 +194,7 @@
 						<div class="dt w_flex_13 w_right">Тариф  <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
 						<div class="dd w_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps w_input"><input type="text" name="payment-tariff" value="{$order.OPaymentTariff}"></label>
+								<label class="w_label w_input"><input type="text" name="payment-tariff" value="{$order.OPaymentTariff}"></label>
 							</div>
 							<div class="w_right">
 								<a class="w_button list-item-tariff" data-target="payment-tariff" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
@@ -205,7 +205,7 @@
 						<div class="dt w_flex_13 w_right">Скидка  <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
 						<div class="dd w_flex_23 w_grid w_3col">
 							<div class="w_2scol">
-								<label class="pps w_input"><input type="text" name="payment-discount" value="{$order.OPaymentDiscount}"></label>
+								<label class="w_label w_input"><input type="text" name="payment-discount" value="{$order.OPaymentDiscount}"></label>
 							</div>
 							<div class="w_right">
 								<a class="w_button list-item-tariff" data-target="payment-discount" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>

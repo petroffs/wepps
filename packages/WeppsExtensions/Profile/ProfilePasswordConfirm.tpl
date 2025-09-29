@@ -6,20 +6,20 @@
         <fieldset>
             <section>
                 <div class="title">Новый пароль</div>
-                <label class="pps w_input w_require">
+                <label class="w_label w_input w_require">
                     <input type="password" name="password" placeholder="" autocomplete="off"/>
                 </label>
             </section>
             <section>
                 <div class="title">Повторите пароль</div>
-                <label class="pps w_input w_require">
+                <label class="w_label w_input w_require">
                     <input type="password" name="password2" placeholder="" autocomplete="off"/>
                 </label>
             </section>
         </fieldset>
         <fieldset>
             <section>
-                <label class="pps w_button">
+                <label class="w_label w_button">
                     <input type="submit" value="Сохранить пароль" />
                 </label>
             </section>

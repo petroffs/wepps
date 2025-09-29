@@ -17,7 +17,7 @@
 		{/if}
 	{/if}
 	{if $language && $element.TableId|isset && $element.LanguageId|isset}
-		<label class="pps w_select list-item-language">
+		<label class="w_label w_select list-item-language">
 			<select name="list-item-language" data-minimum-results-for-search="Infinity">
 				{foreach name="out" item="item" from=$language}
 				<option value="{$item.Id}">{$item.Name}</option>

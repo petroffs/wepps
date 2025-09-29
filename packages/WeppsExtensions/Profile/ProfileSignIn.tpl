@@ -5,20 +5,20 @@
         <fieldset>
             <section>
                 <div class="title">E-mail</div>
-                <label class="pps w_input">
+                <label class="w_label w_input">
                     <input type="email" name="login" placeholder="" />
                 </label>
             </section>
             <section>
                 <div class="title">Пароль</div>
-                <label class="pps w_input">
+                <label class="w_label w_input">
                     <input type="password" name="password" placeholder="" />
                 </label>
             </section>
         </fieldset>
         <fieldset>
             <section>
-                <label class="pps w_button">
+                <label class="w_label w_button">
                     <input type="submit" value="Войти" />
                 </label>
             </section>
