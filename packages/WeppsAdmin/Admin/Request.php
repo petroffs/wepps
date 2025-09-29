@@ -8,8 +8,10 @@ use WeppsCore\Validator;
 use WeppsCore\Users;
 use WeppsCore\Utils;
 
-class RequestAdmin extends Request {
-	public function request($action="") {
+class RequestAdmin extends Request
+{
+	public function request($action = "")
+	{
 		$this->tpl = '';
 		#$translate = Admin::getTranslate();
 		switch ($action) {
@@ -19,7 +21,7 @@ class RequestAdmin extends Request {
 				$this->errors = $users->errors();
 				$outer = Validator::setFormErrorsIndicate($this->errors, $this->get['form']);
 				echo $outer['html'];
-				if ($outer['count']==0) {
+				if ($outer['count'] == 0) {
 					$js = "
 						<script>
 						location.reload();
@@ -63,7 +65,7 @@ class RequestAdmin extends Request {
 			case "git":
 				$json = file_get_contents('php://input');
 				$token = Connect::$projectServices['wepps']['git'];
-				if (empty($token) || $token!=$_SERVER['HTTP_CLIENTTOKEN']) {
+				if (empty($token) || $token != $_SERVER['HTTP_CLIENTTOKEN']) {
 					http_response_code(401);
 					echo "FAIL";
 					exit();
@@ -82,6 +84,6 @@ class RequestAdmin extends Request {
 		}
 	}
 }
-$request = new RequestAdmin ($_REQUEST);
-$smarty->assign('get',$request->get);
+$request = new RequestAdmin($_REQUEST);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

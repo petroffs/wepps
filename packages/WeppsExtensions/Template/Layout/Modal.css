@@ -1,12 +1,14 @@
 .w_modal_parent {
 	overflow: hidden;
 }
+
 .w_modal_parent>*:not(.w_modal_wrapper):not(.w_nav):not(.w_loader) {
-    filter: blur(2px);
-    opacity: 0.6;
+	filter: blur(2px);
+	opacity: 0.6;
 }
+
 .w_modal_wrapper {
-	background: rgba(255,255,255,0.1);
+	background: rgba(255, 255, 255, 0.1);
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
@@ -19,6 +21,7 @@
 	justify-content: center;
 	align-items: center;
 }
+
 .w_modal {
 	background-color: var(--color-100);
 	padding: var(--s4);
@@ -30,23 +33,27 @@
 	max-height: 100%;
 	position: relative;
 	border-radius: var(--s2);
-	box-shadow:0 0 var(--s2) rgba(0,0,0,0.1);
+	box-shadow: 0 0 var(--s2) rgba(0, 0, 0, 0.1);
 	overflow: auto;
 	scrollbar-width: thin;
 	display: none;
 }
+
 .w_modal.w_modal_small {
 	max-width: 300px;
 	min-height: 180px;
 }
+
 .w_modal.w_modal_medium {
 	max-width: 620px;
 }
+
 .w_modal.w_modal_large {
 	max-width: 100%;
 	min-height: 100%;
 	border-radius: 0;
 }
+
 .w_modal_closer {
 	font-size: var(--font-large);
 	color: var(--color-75);
@@ -55,9 +62,10 @@
 	cursor: pointer;
 	position: absolute;
 	z-index: 2;
-	top:var(--s4);
+	top: var(--s4);
 	right: var(--s4);
 }
+
 .w_modal_closer::before {
 	display: flex;
 	width: 100%;
@@ -65,9 +73,11 @@
 	justify-content: center;
 	align-items: center;
 }
+
 .w_modal_content>h1:first-child {
 	margin-top: 0;
 }
+
 .w_modal_content h1,
 .w_modal_content h2 {
 	font-size: var(--font-medium);
@@ -76,14 +86,15 @@
 	width: 100%;
 	max-width: calc(100% - 60px);
 }
+
 .w_loader {
 	position: fixed;
 	top: 0;
 	left: 0;
 	z-index: 1000;
-	width: 100% ;
+	width: 100%;
 	height: 100%;
-	background: rgba(255,255,255,.5);
+	background: rgba(255, 255, 255, .5);
 }
 
 .lds-spinner {
@@ -92,7 +103,7 @@
 	position: fixed;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate(-50%, -50%);
 	z-index: 99;
 }
 
@@ -172,24 +183,26 @@
 	transform: rotate(330deg);
 	animation-delay: 0s;
 }
+
 @keyframes lds-spinner {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
 }
 
 @media screen and (max-width: 810px) {
 	.w_modal_wrapper.w_modal_medium {
 		justify-content: end;
 	}
+
 	.w_modal.w_modal_medium {
 		margin-bottom: 0;
 		border-radius: var(--s4) var(--s4) 0 0;
 	}
 }
-
 
 @media screen and (max-width: 480px) {}

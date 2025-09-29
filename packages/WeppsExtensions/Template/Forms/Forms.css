@@ -7,10 +7,12 @@ form.w_form fieldset {
 	min-width: 0;
 	overflow: hidden;
 }
+
 form.w_form fieldset>section {
 	padding: var(--s2) var(--s4);
 	max-width: 100%;
 }
+
 form.w_form fieldset>section div.title {
 	font-weight: 600;
 	margin-bottom: var(--s);
@@ -18,6 +20,7 @@ form.w_form fieldset>section div.title {
 	max-width: 100%;
 	display: block;
 }
+
 form.w_form fieldset>section div.text {
 	color: var(--color-50);
 	margin-bottom: var(--s);
@@ -133,6 +136,7 @@ label.pps>i.w_field_empty::before {
 label.pps>i.w_field_empty:hover {
 	background-color: var(--color-button);
 }
+
 label.pps>i.w_field_empty:hover::before {
 	color: var(--color-100);
 }
@@ -280,10 +284,12 @@ label.pps.w_upload+div.w_upload_add div.w_upload_file {
 	margin-top: var(--s);
 	word-break: break-all;
 }
+
 label.pps.w_upload+div.w_upload_add div.w_upload_file .bi {
 	color: var(--color-75);
 	cursor: pointer;
 }
+
 label.pps.w_upload+div.w_upload_add div.w_upload_file .bi:hover {
 	color: var(--color-button);
 }

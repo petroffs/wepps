@@ -1,6 +1,7 @@
 .page>.exampletest-wrapper {
 	padding-bottom: var(--s4);
 }
+
 .exampletest-wrapper>.w_blocks>.w_block {
 	min-height: 100px;
 	background: var(--color-warning);

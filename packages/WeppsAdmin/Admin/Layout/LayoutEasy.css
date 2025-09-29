@@ -52,80 +52,101 @@
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_11_view_medium {
 		width: 100%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_12_view_medium {
 		width: 50%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_13_view_medium {
 		width: 33.333333%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_14_view_medium {
 		width: 25%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_15_view_medium {
 		width: 20%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_16_view_medium {
 		width: 16.66666667%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_23_view_medium {
 		width: 66.666667%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_25_view_medium {
 		width: 40%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_34_view_medium {
 		width: 75%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_35_view_medium {
 		width: 60%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_45_view_medium {
 		width: 80%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_56_view_medium {
 		width: 83.3333333%;
 	}
 }
 
 @media screen and (max-width: 480px) {
-	
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_11_view_small {
 		width: 100%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_12_view_small {
 		width: 50%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_13_view_small {
 		width: 33.333333%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_14_view_small {
 		width: 25%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_15_view_small {
 		width: 20%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_16_view_small {
 		width: 16.66666667%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_23_view_small {
 		width: 66.666667%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_25_view_small {
 		width: 40%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_34_view_small {
 		width: 75%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_35_view_small {
 		width: 60%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_45_view_small {
 		width: 80%;
 	}
+
 	.w_flex.w_flex_easy.w_flex_row>.w_flex_56_view_small {
 		width: 83.3333333%;
 	}
 }
 
-@media screen and (max-width: 350px) {
-}
+@media screen and (max-width: 350px) {}

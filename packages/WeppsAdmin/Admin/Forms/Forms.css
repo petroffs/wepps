@@ -191,13 +191,16 @@ label.pps.w_upload span {
 	align-items: center;
 	align-content: center;
 }
+
 label.pps.w_upload span:hover {
 	color: var(--color-focus);
 	background-color: var(--color-98);
 }
+
 label.pps.w_upload i {
 	margin-right: var(--s);
 }
+
 label.pps.w_input input {
 	width: 100%;
 	border: var(--border);

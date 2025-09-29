@@ -1,15 +1,9 @@
- 
-label.pps.w_input {
-	
-} 
-label.pps.w_input>input.w_suggestions {
-
-}
 label.pps.w_input>input.focus {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	border-bottom: none;
 }
+
 div.w_suggestions {
 	background: var(--color-100);
 	border: var(--border);
@@ -51,4 +45,3 @@ div.w_suggestions-item:hover,
 div.w_suggestions-item.focus {
 	background-color: var(--color-98);
 }
-

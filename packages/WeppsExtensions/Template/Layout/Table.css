@@ -6,15 +6,18 @@ table.w_table {
 	border-radius: var(--s2);
 	width: 100%;
 	border-spacing: 0px;
-    border-collapse: collapse;
+	border-collapse: collapse;
 	overflow: hidden;
 }
-table.w_table tr:not(:last-child) > * {
+
+table.w_table tr:not(:last-child)>* {
 	border-bottom: var(--s-half) solid var(--color-100);
 }
+
 table.w_table tr:hover {
 	background-color: var(--color-95);
 }
+
 table.w_table th {
 	font-weight: 600;
 	padding: var(--s2) var(--s4);
