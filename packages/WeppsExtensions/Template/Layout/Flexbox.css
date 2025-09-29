@@ -603,6 +603,45 @@
 	}
 }
 
+.w_flex.w_flex_gap {
+	gap: var(--s3);
+	margin: 0 calc(-1 * var(--s3));
+	float: right;
+	width: calc(100% + var(--s3));
+}
+
+.w_flex.w_flex_gap>* {
+	max-width: calc(var(--width) - var(--s3));
+	max-height: calc(var(--height) - var(--s3));
+}
+
+.w_flex.w_flex_gap_small {
+	gap: var(--s);
+}
+
+.w_flex.w_flex_gap_small>* {
+	max-width: calc(var(--width) - var(--s));
+	max-height: calc(var(--height) - var(--s));
+}
+
+.w_flex.w_flex_gap_medium {
+	gap: var(--s4);
+}
+
+.w_flex.w_flex_gap_medium>* {
+	max-width: calc(var(--width) - var(--s4));
+	max-height: calc(var(--height) - var(--s4));
+}
+
+.w_flex.w_flex_gap_large {
+	gap: var(--s5);
+}
+
+.w_flex.w_flex_gap_large>* {
+	max-width: calc(var(--width) - var(--s5));
+	max-height: calc(var(--height) - var(--s5));
+}
+
 .w_flex.w_flex_margin {
 	width: calc(100% + var(--s3));
 	margin: calc(var(--s3) * -1) 0 0 calc(var(--s3) * -1);

@@ -30,6 +30,20 @@
 
 <div class="w_flex w_flex_row w_flex_start w_flex_row_top">
 	<div class="w_test2 w_flex_12">
+		<div class="w_flex w_flex_row w_flex_gap w_flex_start">
+			<div class="w_flex_12 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_12 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_14 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_14 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_14 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_14 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_13 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_12 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_14 w_flex_11_view_small test">gap</div>
+			<div class="w_flex_14 w_flex_11_view_small test">gap</div>
+		</div>
+	</div>
+	<div class="w_test2 w_flex_12">
 		<div class="w_flex w_flex_row w_flex_margin_small w_flex_start">
 			<div class="w_flex_14 w_flex_11_view_small test">test</div>
 			<div class="w_flex_14 w_flex_11_view_small test">test</div>
