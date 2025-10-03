@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../../../../configloader.php';
 
 use WeppsAdmin\Admin\AdminUtils;
+use WeppsAdmin\ConfigExtensions\Processing\ProcessingProducts;
+use WeppsAdmin\ConfigExtensions\Processing\ProcessingTasks;
 use WeppsCore\Request;
 use WeppsCore\Utils;
 use WeppsCore\Exception;
