@@ -6,6 +6,8 @@ use WeppsCore\Data;
 
 class BotFeeds extends Bot {
 	public $parent = 0;
+	private $data;
+	private $date;
 	public function __construct() {
 		parent::__construct();
 	}
@@ -30,7 +32,7 @@ class BotFeeds extends Bot {
 		$obj->setConcat ( "concat('/novosti/',if(Alias!='',Alias,Id),'.html') as Url" );
 		$res = $obj->fetchmini("DisplayOff=0",50000,1);
 		foreach ($res as $value) {
-			$arr[$value['Url']] = "<url><loc>http://{$this->host}{$value['Url']}</loc></url>";
+			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";
 		}
 		
 		/*
@@ -56,4 +58,3 @@ class BotFeeds extends Bot {
 		$this->data->save(dirname(__FILE__) .'/../../../../sitemap.xml');
 	}
 }
-?>
