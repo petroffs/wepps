@@ -42,19 +42,18 @@ class Updates {
 					$output = "release tag is empty, see list";
 					$this->cli->br();
 					$this->cli->warning($output);
-					return true;
 					break;
 				}
 				$output = $obj->setUpdates($this->settings[2])['output'];
 				break;
 			
 			case 'test':
-				$obj = new UpdatesMethods();
-				$obj->getCliProgress(10, 100,"копирование 1");
-				sleep(2);
-				$obj->getCliProgress(20, 100,"копирование 2");
-				sleep(2);
-				$obj->getCliProgress(30, 100,"копирование 3");
+				// $obj = new UpdatesMethods();
+				// $obj->getCliProgress(10, 100,"копирование 1");
+				// sleep(2);
+				// $obj->getCliProgress(20, 100,"копирование 2");
+				// sleep(2);
+				// $obj->getCliProgress(30, 100,"копирование 3");
 				
 				#$output = "Test";
 				break;
@@ -62,12 +61,11 @@ class Updates {
 				$output = "wrong params";
 				$this->cli->br();
 				$this->cli->error($output);
-				return true;
 				break;
 		}
 		$this->cli->br();
 		$this->cli->info($output);
-		return true;
+		return;
 	}
 	
 }

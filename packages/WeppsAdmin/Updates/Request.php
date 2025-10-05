@@ -1,9 +1,8 @@
 <?php
 require_once __DIR__ . '/../../../configloader.php';
 
-/**
- * @var array $argv
- */
+use WeppsAdmin\Updates\Updates;
+
 if (empty($argv)) {
 	exit();
 }
