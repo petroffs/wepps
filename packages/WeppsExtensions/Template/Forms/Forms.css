@@ -67,10 +67,11 @@ div.w_error:before {
 }
 
 form.w_success {
-	text-align: center;
 	font-size: var(--font-medium);
-	padding: var(--s4) var(--s4);
+	text-align: center;
+	color: var(--color-25);
 	background: var(--color-98);
+	padding: var(--s4) var(--s4);
 	border: var(--s-half) solid var(--color-success);
 	border-radius: var(--s2);
 }
