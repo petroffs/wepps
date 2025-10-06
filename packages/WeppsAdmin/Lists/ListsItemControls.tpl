@@ -8,12 +8,12 @@
 	
 		{if $ppsUrl}
 			{if !$ppsUrl|@strstr:"addNavigator"}
-				<a class="w_button list-item-add" href="/_wepps/{$ppsPath}{$ppsUrl}addNavigator/" title="Добавить раздел"><i class="fa fa-plus"></i> Добавить</a>
-				<a class="w_button list-item-remove" href="" data-path="{$ppsPath}" title="Удалить"><i class="fa fa-remove"></i> Удалить</a>
+				<a class="w_button list-item-add" href="/_wepps/{$weppspath}{$ppsUrl}addNavigator/" title="Добавить раздел"><i class="fa fa-plus"></i> Добавить</a>
+				<a class="w_button list-item-remove" href="" data-path="{$weppspath}" title="Удалить"><i class="fa fa-remove"></i> Удалить</a>
 			{/if}
 		{elseif $element.Id}
-			<a class="w_button list-item-add" href="/_wepps/{$ppsPath}/{$listSettings.TableName}/add/" title="Добавить элемент"><i class="fa fa-plus"></i> Добавить</a>
-			<a class="w_button list-item-remove" href="" data-path="{$ppsPath}" title="Удалить"><i class="fa fa-remove"></i> Удалить</a>
+			<a class="w_button list-item-add" href="/_wepps/{$weppspath}/{$listSettings.TableName}/add/" title="Добавить элемент"><i class="fa fa-plus"></i> Добавить</a>
+			<a class="w_button list-item-remove" href="" data-path="{$weppspath}" title="Удалить"><i class="fa fa-remove"></i> Удалить</a>
 		{/if}
 	{/if}
 	{if $language && $element.TableId|isset && $element.LanguageId|isset}

@@ -94,13 +94,13 @@ div.header-logo img {
 	display: block;
 }
 
-section.header-wrapper-top label.pps {
+section.header-wrapper-top label.w_label {
 	margin: 0 auto;
 	max-width: 540px;
 	display: block;
 }
 
-section.header-wrapper-top label.pps>input[name="text"] {
+section.header-wrapper-top label.w_label>input[name="text"] {
 	height: calc(var(--s) * 6);
 }
 
@@ -360,7 +360,7 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 		padding-bottom: var(--s2);
 	}
 
-	section.header-wrapper-top label.pps>input[name="term"] {
+	section.header-wrapper-top label.w_label>input[name="term"] {
 		height: calc(var(--s) * 8);
 	}
 

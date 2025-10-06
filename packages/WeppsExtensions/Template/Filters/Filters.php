@@ -55,7 +55,7 @@ class Filters {
 			var options = $('.options-count').eq(0);
 			options.attr('data-last','{$last}');
 			options.attr('data-check','{$checked}');
-			$('#pps-options-count').html('{$count} ".TextTransforms::ending2("товар",$count)."');
+			$('#wepps-options-count').html('{$count} ".TextTransforms::ending2("товар",$count)."');
 			//$('.text-top').addClass('w_hide');
 			
 			var expand = $('.nav-filters-{$last}').find('li.w_expand').find('a');

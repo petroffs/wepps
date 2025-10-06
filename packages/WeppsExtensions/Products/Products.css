@@ -8,11 +8,11 @@ div.products-options {
 	margin-top: var(--s4);
 }
 
-div#pps-option-filters {
+div#wepps-option-filters {
 	cursor: pointer;
 }
 
-div#pps-option-filters i {
+div#wepps-option-filters i {
 	font-size: var(--font-medium);
 }
 
@@ -20,7 +20,7 @@ div.product-media {
 	position: relative;
 }
 
-label.pps.w_button>a.cart-exists {
+label.w_label.w_button>a.cart-exists {
 	text-decoration: none;
 	color: var(--color-100);
 	background-color: var(--color-active);
@@ -37,11 +37,11 @@ label.pps.w_button>a.cart-exists {
 	right: calc(-1 * var(--s2));
 	top: var(--s);
 }
-label.pps.w_button>a.cart-exists::after {
+label.w_label.w_button>a.cart-exists::after {
 	content: '\f243';
 	font-family: "bootstrap-icons";
 }
-label.pps.w_button>a.cart-exists+input.cart-add {
+label.w_label.w_button>a.cart-exists+input.cart-add {
 	color: var(--color-active);
 	background-color: var(--color-100);
 	padding-left: var(--s2);

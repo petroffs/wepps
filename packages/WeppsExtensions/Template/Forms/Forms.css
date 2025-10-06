@@ -432,7 +432,7 @@ label.w_button.w_button_important button {
 	min-height: calc(var(--s) * 10);
 }
 
-div.pps.w_minmax {
+div.w_label.w_minmax {
 	border: var(--border);
 	border-radius: var(--s2);
 	max-width: 120px;
@@ -443,7 +443,7 @@ div.pps.w_minmax {
 	align-items: center;
 }
 
-div.pps.w_minmax>button {
+div.w_label.w_minmax>button {
 	border: none;
 	padding: 0;
 	margin: 0;
@@ -451,7 +451,7 @@ div.pps.w_minmax>button {
 	height: calc(var(--s) * 8);
 }
 
-div.pps.w_minmax>button>span {
+div.w_label.w_minmax>button>span {
 	content: '\F64D';
 	font-family: 'bootstrap-icons';
 	font-size: var(--font-default);
@@ -466,31 +466,31 @@ div.pps.w_minmax>button>span {
 	transition: all 0.3s ease;
 }
 
-div.pps.w_minmax>button>span:before {
+div.w_label.w_minmax>button>span:before {
 	content: '\F64D';
 	font-family: 'bootstrap-icons';
 	font-size: var(--font-default);
 	display: block;
 }
 
-div.pps.w_minmax>button:first-child>span:before {
+div.w_label.w_minmax>button:first-child>span:before {
 	content: '\F63B';
 	font-family: 'bootstrap-icons';
 	font-size: var(--font-default);
 	display: block;
 }
 
-div.pps.w_minmax>button>span:hover {
+div.w_label.w_minmax>button>span:hover {
 	color: var(--color-100);
 	background-color: var(--color-focus);
 }
 
-div.pps.w_minmax>button>span:active {
+div.w_label.w_minmax>button>span:active {
 	color: var(--color-100);
 	background-color: var(--color-active);
 }
 
-div.pps.w_minmax>input[type="text"] {
+div.w_label.w_minmax>input[type="text"] {
 	font-family: var(--font);
 	letter-spacing: 0.03em;
 	font-weight: normal;

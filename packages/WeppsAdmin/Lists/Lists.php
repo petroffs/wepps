@@ -26,7 +26,7 @@ class Lists
 		$headers->js("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.js");
 		$headers->css("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.css");
 		$this->get = Utils::trim($_GET);
-		$ppsUrl = "/" . $_GET['ppsUrl'];
+		$ppsUrl = "/" . $_GET['weppsurl'];
 		$ppsUrlEx = explode("/", trim($ppsUrl, '/'));
 		$tpl2 = "../Admin/AdminError.tpl";
 		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
@@ -181,7 +181,7 @@ class Lists
 			/*
 			 * Вывод данных
 			 */
-			$smarty->assign('ppsPath', 'lists');
+			$smarty->assign('weppspath', 'lists');
 			$smarty->assign('permFields', $listForm['permFields']);
 			$smarty->assign('element', $listForm['element']);
 			$smarty->assign('content', $content);

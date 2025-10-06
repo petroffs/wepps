@@ -52,9 +52,9 @@
 			</div>
 			<div class="products-wrapper">
 				<div class="products-options content-block w_flex w_flex_row">
-					<div id="pps-option-filters"><i class="bi bi-sliders"></i></div>
-					<div id="pps-options-count">{$productsCount}</div>
-					<div id="pps-options-sort">
+					<div id="wepps-option-filters"><i class="bi bi-sliders"></i></div>
+					<div id="wepps-options-count">{$productsCount}</div>
+					<div id="wepps-options-sort">
 						<label class="w_label w_select w_select">
 							<select data-minimum-results-for-search="Infinity">
 								{foreach name="out" key="key" item="item" from=$productsSorting}

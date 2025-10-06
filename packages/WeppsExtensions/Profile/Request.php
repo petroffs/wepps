@@ -131,7 +131,7 @@ class RequestProfile extends Request
 		/**
 		 * Склеить корзину неавторизованного с текущим
 		 */
-		if (!empty($_COOKIE['wew_cart']) && !empty($_COOKIE['wew_cart_guid'])) {
+		if (!empty($_COOKIE['wepps_cart']) && !empty($_COOKIE['wepps_cart_guid'])) {
 			$cartUtils = new CartUtils();
 			$cart = $cartUtils->getCart();
 			$cartUser = json_decode($res[0]['JCart'],true);
@@ -142,11 +142,11 @@ class RequestProfile extends Request
 				$cart = $cartUtils->getCart();
 				$json = json_encode($cart, JSON_UNESCAPED_UNICODE);
 				Connect::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$res[0]['Id']]);
-				Utils::cookies('wew_cart');
-				Utils::cookies('wew_cart_guid');
+				Utils::cookies('wepps_cart');
+				Utils::cookies('wepps_cart_guid');
 			}
 		}
-		Utils::cookies('wew_token', $token, $lifetime);
+		Utils::cookies('wepps_token', $token, $lifetime);
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		/**
 		 * Если есть $_COOKIE['cart'] - добавить эти товары в профайл
@@ -175,7 +175,7 @@ class RequestProfile extends Request
 			echo $recaptcha->reset();
 			return false;
 		}
-		Utils::cookies('wew_token', '');
+		Utils::cookies('wepps_token', '');
 		$lifetime = 3600 * 24;
 		$jwt = new Jwt();
 		$token = $jwt->token_encode([
@@ -232,7 +232,7 @@ class RequestProfile extends Request
 	 */
 	private function confirmPassword()
 	{
-		Utils::cookies('wew_token', '');
+		Utils::cookies('wepps_token', '');
 
 		$this->errors = [];
 		if (empty($this->get['token'])) {
@@ -314,7 +314,7 @@ class RequestProfile extends Request
 	 */
 	private function confirmReg(): bool
 	{
-		Utils::cookies('wew_token', '');
+		Utils::cookies('wepps_token', '');
 		$this->get['password'] = trim($this->get['password']);
 		$this->get['password2'] = trim($this->get['password2']);
 		$this->errors = [];

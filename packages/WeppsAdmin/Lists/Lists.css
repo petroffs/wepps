@@ -64,7 +64,7 @@
 	padding-right: var(--s);
 }
 
-label.pps.w_select.list-item-language {
+label.w_label.w_select.list-item-language {
 	margin-left: auto;
 }
 

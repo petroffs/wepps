@@ -29,7 +29,7 @@ var select2Ajax = function(obj,fn) {
 	//$(id).select2("destroy").select2();
 };
 var formsInit = function() {
-	$('label.pps.w_upload').find('input[type="file"]').on('change', function(event) {
+	$('label.w_label.w_upload').find('input[type="file"]').on('change', function(event) {
 		event.stopPropagation();
 		formWepps.upload($(this),event.target.files);
 	});
@@ -48,7 +48,7 @@ var formsInit = function() {
 		var t = $(this).closest('form');
 		document.getElementById(t.attr('id')).reset();
 	});
-	$('.pps.w_area').find('textarea').on('input', function () {
+	$('.w_label.w_area').find('textarea').on('input', function () {
 		autoResizeTextarea(this);
 	}).trigger('input');
 	$('.w_select').find('select').select2({

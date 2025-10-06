@@ -19,7 +19,7 @@ class ConfigExtensions
 		$headers->css("/packages/WeppsAdmin/ConfigExtensions/ConfigExtensions.{$headers::$rand}.css");
 		$tpl2 = "ConfigExtensions.tpl";
 		$this->getExtensionsEnv();
-		$ppsUrl = "/" . $_GET['ppsUrl'];
+		$ppsUrl = "/" . $_GET['weppsurl'];
 		$ppsUrlEx = explode("/", trim($ppsUrl, '/'));
 		if (!isset($ppsUrlEx[1])) {
 			$content = [
@@ -39,12 +39,12 @@ class ConfigExtensions
 			 * Включение расширения
 			 */
 			$action = "";
-			if (strstr($_GET['ppsUrl'], ".html")) {
-				$action = substr($_GET['ppsUrl'], strrpos($_GET['ppsUrl'], "/", 0) + 1);
+			if (strstr($_GET['weppsurl'], ".html")) {
+				$action = substr($_GET['weppsurl'], strrpos($_GET['weppsurl'], "/", 0) + 1);
 				$action = substr($action, 0, -5);
 				$smarty->assign('extsActive', $action);
 			}
-			if ($action == "" && $_GET['ppsUrl'] != "extensions/{$ext['Alias']}/") {
+			if ($action == "" && $_GET['weppsurl'] != "extensions/{$ext['Alias']}/") {
 				Exception::error404();
 			}
 			$request = ['action' => $action];

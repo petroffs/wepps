@@ -6,7 +6,7 @@
 		<input type="hidden" name="w_tablename" value="{$listSettings.TableName}" />
 		<input type="hidden" name="w_tablename_id" value="{$element.Id|default:'add'}" />
 		<input type="hidden" name="w_tablename_mode" value="{$listMode}" />
-		<input type="hidden" name="w_path" value="{$ppsPath}" />
+		<input type="hidden" name="w_path" value="{$weppspath}" />
 		{foreach name="out" item="item" key="key" from=$listScheme}
 			{if ($item.0.$listMode=="hidden" || $item.0.$listMode=="disabled") && !$item.0.Type|strstr:'minitable'}
 				<input type="hidden" name="{$key}" value="{$element.$key|escape:'html'}" />

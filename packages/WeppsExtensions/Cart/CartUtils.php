@@ -31,8 +31,8 @@ class CartUtils
 			if (!empty($jdata['items'])) {
 				$jdata2 = json_decode(Connect::$projectData['user']['JCart'], true);
 				$jdata2['items'] += $jdata['items'];
-				Utils::cookies('wew_cart');
-				Utils::cookies('wew_cart_guid');
+				Utils::cookies('wepps_cart');
+				Utils::cookies('wepps_cart_guid');
 				$this->setCart();
 			}
 			$this->user = $this->getUser(Connect::$projectData['user']);
@@ -89,8 +89,8 @@ class CartUtils
 		$this->cart['date'] = date('Y-m-d H:i:s');
 		$json = json_encode($this->cart, JSON_UNESCAPED_UNICODE);
 		if (empty(Connect::$projectData['user'])) {
-			Utils::cookies('wew_cart', $json);
-			Utils::cookies('wew_cart_guid', Utils::guid($json . Connect::$projectServices['jwt']['secret']));
+			Utils::cookies('wepps_cart', $json);
+			Utils::cookies('wepps_cart_guid', Utils::guid($json . Connect::$projectServices['jwt']['secret']));
 			return;
 		}
 		$this->setCartSummary();
@@ -401,12 +401,12 @@ class CartUtils
 	private function _getCartFromCookies(bool $shouldCreate = true)
 	{
 		$cart = '';
-		if (isset($_COOKIE['wew_cart']) && @$_COOKIE['wew_cart_guid'] == self::_getCartHash($_COOKIE['wew_cart'])) {
-			$cart = $_COOKIE['wew_cart'];
+		if (isset($_COOKIE['wepps_cart']) && @$_COOKIE['wepps_cart_guid'] == self::_getCartHash($_COOKIE['wepps_cart'])) {
+			$cart = $_COOKIE['wepps_cart'];
 		} elseif ($shouldCreate == true) {
 			$cart = '{"items":null}';
-			Utils::cookies('wew_cart', $this->user['JCart'] ?? '');
-			Utils::cookies('wew_cart_guid', self::_getCartHash($this->user['JCart'] ?? ''));
+			Utils::cookies('wepps_cart', $this->user['JCart'] ?? '');
+			Utils::cookies('wepps_cart_guid', self::_getCartHash($this->user['JCart'] ?? ''));
 		}
 		return $cart;
 	}

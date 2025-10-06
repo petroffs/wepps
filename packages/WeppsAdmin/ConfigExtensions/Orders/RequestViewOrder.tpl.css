@@ -18,14 +18,14 @@
 	background: transparent;
 }
 
-.orders>.item.active>.order-wrapper .products>.item>.quantity>label.pps {}
+.orders>.item.active>.order-wrapper .products>.item>.quantity>label.w_label {}
 
 .orders>.item.active>.order-wrapper .products>.item>.options>a {
 	margin-left: var(--s2);
 }
 
-.orders>.item.active>.order-wrapper .products>.item label.pps.w_input,
-.orders>.item.active>.order-wrapper .products>.item label.pps.w_select {
+.orders>.item.active>.order-wrapper .products>.item label.w_label.w_input,
+.orders>.item.active>.order-wrapper .products>.item label.w_label.w_select {
 	padding-right: var(--s3);
 }
 

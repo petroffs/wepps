@@ -36,7 +36,7 @@ class Profile extends Extension
 		$this->headers->css("/ext/Profile/Profile.{$this->rand}.css");
 		$this->headers->js("/packages/vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.min.js");
 		if (!empty($this->get['token'])) {
-			Utils::cookies('wew_token');
+			Utils::cookies('wepps_token');
 			$jwt = new Jwt();
 			$payload = $jwt->token_decode($this->get['token']);
 			if ($payload['payload']['status'] = 200) {

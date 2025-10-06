@@ -66,15 +66,15 @@ div.page.cart div.cart-items>section:last-child {
 	margin-bottom: 0;
 }
 
-div.page.cart h1+label.pps.w_checkbox input[type="checkbox"]+span::before {
+div.page.cart h1+label.w_label.w_checkbox input[type="checkbox"]+span::before {
 	margin-right: var(--s4);
 }
 
-div.page.cart div.cart-items label.pps.w_checkbox input[type="checkbox"]+span {
+div.page.cart div.cart-items label.w_label.w_checkbox input[type="checkbox"]+span {
 	padding: 0;
 }
 
-div.page.cart div.cart-items label.pps.w_checkbox input[type="checkbox"]+span::before {
+div.page.cart div.cart-items label.w_label.w_checkbox input[type="checkbox"]+span::before {
 	margin-right: 0;
 }
 
@@ -168,7 +168,7 @@ div.cart-city.content-block {
 	overflow: inherit;
 }
 
-div.cart-city label.pps.w_input {
+div.cart-city label.w_label.w_input {
 	display: block;
 }
 
@@ -201,34 +201,34 @@ div.page.cart .cart-variants .header .price {
 	max-width: 20%;
 }
 
-div.page.cart .cart-variants label.pps.w_radio {
+div.page.cart .cart-variants label.w_label.w_radio {
 	width: 100%;
 	max-width: 100%;
 	border-bottom: var(--border);
 	flex-flow: row wrap;
 }
 
-div.page.cart .cart-variants label.pps.w_radio:first-of-type {
+div.page.cart .cart-variants label.w_label.w_radio:first-of-type {
 	border-radius: var(--s2) var(--s2) 0 0;
 }
 
-div.page.cart .cart-variants label.pps.w_radio:last-of-type {
+div.page.cart .cart-variants label.w_label.w_radio:last-of-type {
 	border-bottom: none;
 	border-radius: 0 0 var(--s2) var(--s2);
 }
 
-div.page.cart .cart-variants label.pps.w_radio:hover {
+div.page.cart .cart-variants label.w_label.w_radio:hover {
 	background: var(--color-95);
 }
 
-div.page.cart .cart-variants label.pps.w_radio span.title {
+div.page.cart .cart-variants label.w_label.w_radio span.title {
 	padding: var(--s);
 	display: flex;
 	flex-grow:1;
 	min-width: 60%;
 }
 
-div.page.cart .cart-variants label.pps.w_radio span.period {
+div.page.cart .cart-variants label.w_label.w_radio span.period {
 	padding: var(--s);
 	display: flex;
 	justify-content: flex-end;
@@ -236,7 +236,7 @@ div.page.cart .cart-variants label.pps.w_radio span.period {
 	max-width: 20%;
 }
 
-div.page.cart .cart-variants label.pps.w_radio span.price {
+div.page.cart .cart-variants label.w_label.w_radio span.price {
 	padding: var(--s);
 	display: flex;
 	justify-content: flex-end;
@@ -244,19 +244,19 @@ div.page.cart .cart-variants label.pps.w_radio span.price {
 	max-width: 20%;
 }
 
-div.page.cart .cart-variants label.pps.w_radio span.text {
+div.page.cart .cart-variants label.w_label.w_radio span.text {
 	padding-left: calc(var(--s) * 7);
 	width: 80%;
 }
 
-div.page.cart .cart-variants label.pps.w_radio span.attention {
+div.page.cart .cart-variants label.w_label.w_radio span.attention {
 	color: var(--color-75);
 }
 
-div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.period+.price+.text,
-div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.period+.price+.text+.price,
-div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.text,
-div.page.cart .cart-variants label.pps.w_radio input:checked+.title+.text+.price {
+div.page.cart .cart-variants label.w_label.w_radio input:checked+.title+.period+.price+.text,
+div.page.cart .cart-variants label.w_label.w_radio input:checked+.title+.period+.price+.text+.price,
+div.page.cart .cart-variants label.w_label.w_radio input:checked+.title+.text,
+div.page.cart .cart-variants label.w_label.w_radio input:checked+.title+.text+.price {
 	color: var(--color-success);
 }
 

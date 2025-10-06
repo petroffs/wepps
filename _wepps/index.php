@@ -8,5 +8,5 @@ if (!session_id()) {
     session_start();
 }
 
-$obj = new Admin($_GET['ppsUrl'],$headers);
+$obj = new Admin($_GET['weppsurl'],$headers);
 unset($obj);

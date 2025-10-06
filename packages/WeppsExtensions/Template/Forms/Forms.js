@@ -39,7 +39,7 @@ var select2Render = function() {
     });
 }
 var formsInit = function () {
-	$('label.pps.w_upload').find('input[type="file"]').off('change').on('change', function (event) {
+	$('label.w_label.w_upload').find('input[type="file"]').off('change').on('change', function (event) {
 		event.stopPropagation();
 		formWepps.upload($(this), event.target.files);
 	});
@@ -73,7 +73,7 @@ var formsInit = function () {
 		var t = $(this).closest('form');
 		document.getElementById(t.attr('id')).reset();
 	});
-	$('.pps.w_area').find('textarea').off('input').on('input', function () {
+	$('.w_label.w_area').find('textarea').off('input').on('input', function () {
 		autoResizeTextarea(this);
 	}).trigger('input');
 	select2Render();

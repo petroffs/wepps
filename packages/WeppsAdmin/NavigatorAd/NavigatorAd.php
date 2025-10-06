@@ -18,7 +18,7 @@ class NavigatorAd {
 		$smarty = Smarty::getSmarty();
 		$headers->js ("/packages/WeppsAdmin/NavigatorAd/NavigatorAd.{$headers::$rand}.js");
 		$headers->css("/packages/WeppsAdmin/NavigatorAd/NavigatorAd.{$headers::$rand}.css");
-		$ppsUrl = substr($_GET['ppsUrl'], 9);
+		$ppsUrl = substr($_GET['weppsurl'], 9);
 		$navigator = new Navigator($ppsUrl,1);
 		$nav2 = new NavigatorData("s_Navigator");
 
@@ -51,8 +51,8 @@ class NavigatorAd {
 		$smarty->assign('way',$navigator->way);
 		$navigator->content['MetaTitle'] = "{$navigator->content['Name']} — Навигатор";
 		$navigator->content['NameNavItem'] = "Навигатор";
-		$smarty->assign('ppsUrl',$ppsUrl);
-		$smarty->assign('ppsPath','navigator');
+		$smarty->assign('weppsurl',$ppsUrl);
+		$smarty->assign('weppspath','navigator');
 		$smarty->assign('permFields',$listForm['permFields']);
 		$smarty->assign('element',$listForm['element']);
 		$smarty->assign('content',$navigator->content);

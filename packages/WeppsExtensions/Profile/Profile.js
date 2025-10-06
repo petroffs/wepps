@@ -1,5 +1,5 @@
 var profileInit = function () {
-    $('div#pps-option-nav').off('click').on('click', function (e) {
+    $('div#wepps-option-nav').off('click').on('click', function (e) {
         e.preventDefault();
         let nav = $('.profile-nav');
         nav.toggleClass('w_hide_view_medium');

@@ -1,4 +1,4 @@
-label.pps.w_input>input.focus {
+label.w_label.w_input>input.focus {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 	border-bottom: none;

@@ -289,7 +289,7 @@ form {
 	padding: 0px;
 }
 
-.pps.w_hide,
+.w_label.w_hide,
 .w_flex.w_hide,
 .w_button.w_hide {
 	display: none;

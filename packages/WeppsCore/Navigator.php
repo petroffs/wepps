@@ -87,7 +87,7 @@ class Navigator
 	function __construct($url = null, $backOffice = null)
 	{
 		if ($url == null) {
-			$url = (isset($_GET['ppsUrl'])) ? $_GET['ppsUrl'] : "";
+			$url = (isset($_GET['weppsurl'])) ? $_GET['weppsurl'] : "";
 		}
 		/*
 		 * Для компоновки страницы создания нового элемента
