@@ -111,7 +111,7 @@ class Cli
 		$rate = 0.5;
 		$perc2 = floor($perc * $rate);
 		$left2 = ceil($left * $rate);
-		$write = sprintf("\033[0G\033[2K[%'#{$perc2}s#%-{$left2}s] $done/$total [$perc%%]", "", "");
+		$write = sprintf("\033[0G\033[2K[%'#{$perc2}s#%-{$left2}s] $done/$total [$perc%%]\n", "", "");
 		echo $write;
 	}
 

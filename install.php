@@ -1,22 +1,23 @@
 <?php
-
 if (php_sapi_name() !== 'cli') {
 	http_response_code(401);
 	exit();
 }
-
-require_once 'config.php';
-require_once 'autoloader.php';
+if (!is_file(__DIR__ . '/packages/vendor/autoload.php')) {
+	echo 'no composer install';
+}
 require_once 'configloader.php';
 
 use WeppsCore\Connect;
+use WeppsCore\Utils;
 use WeppsCore\Cli;
 
-class Install {
+class Install
+{
 	private $cli;
-	private $cnf;
 	private $config;
-	public function __construct() {
+	public function __construct()
+	{
 		$this->cli = new Cli();
 		/*
 		 * Если config.conf не создан - создать и заполнить
@@ -33,34 +34,40 @@ class Install {
 			$this->cli->error('Секция DB некорректно заполнена');
 			exit();
 		}
-		if (empty($this->config['cnf']) || !is_file($this->config['cnf'])) {
+		#Utils::debug(is_file('d:/var/home/config.cnf'),31);
+		if (empty($this->config['cnf'])) {
+			#Utils::debug(is_file('d:/var/home/config.cnf'),31);
 			$content = "[client]\n";
-			$content .= "host=".$this->config['host']."\n";
-			$content .= "port=".$this->config['port']."\n";
-			$content .= "user=".$this->config['user']."\n";
-			$content .= "password=".@$this->config['password']."\n";
+			$content .= "host=" . $this->config['host'] . "\n";
+			$content .= "port=" . $this->config['port'] . "\n";
+			$content .= "user=" . $this->config['user'] . "\n";
+			$content .= "password=" . @$this->config['password'] . "\n";
 			$this->cli->put($content, __DIR__ . '/config.conf');
-			$this->cnf = __DIR__ . '/config.conf';
-		} elseif (empty($this->config['cnf']) && is_file($this->config['cnf'])) {
-			$this->cnf = $this->config['cnf'];
+			$this->config['cnf'] = __DIR__ . '/config.conf';
+		} 
+		if (!is_file($this->config['cnf'])) {
+			$this->cli->error('wrong cnf-file ' . $this->config['cnf']);
 		}
 	}
-	public function restoreDB() {
+	public function restoreDB()
+	{
 		/*
 		 * exec mysql
 		 */
-		$filename = Connect::$projectDev['root'].'/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql';
+		$filename = Connect::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql';
 		if (!is_file($filename)) {
 			$this->cli->error('wrong db-path');
 			exit();
 		}
-		$cmd = "mysql --defaults-extra-file={$this->cnf} {$this->config['dbname']} < $filename";
-		$this->cli->cmd($cmd,false);
-		$this->cli->success('База данных заполнена');
+		$this->cli->success('Заполнение базы данных. Ждите.');
+		$cmd = "mysql --defaults-extra-file={$this->config['cnf']} {$this->config['dbname']} < $filename";
+		$this->cli->cmd($cmd, false);
+		$this->cli->success('База данных заполнена.');
 	}
-	public function runComposer() {
+	public function runComposer()
+	{
 		$composerFolder = __DIR__ . '/packages';
-		if (!is_file($composerFolder.'/composer.phar')) {
+		if (!is_file($composerFolder . '/composer.phar')) {
 			$this->cli->error('wrong composer-path');
 			exit();
 		}
@@ -68,17 +75,18 @@ class Install {
 		$this->cli->cmd($cmd);
 		$this->cli->success('Composer обновлен/пакеты загружены');
 	}
-	public function displayFinalMessage() {
+	public function displayFinalMessage()
+	{
 		$this->cli->success('Установка завершена.');
-		if ($this->cnf == __DIR__ . '/config.conf') {
-			$this->cli->warning('Скопируйте файл {$this->cnf} за пределы корневой директории (../config.cnf)');
+		if ($this->config['cnf'] == __DIR__ . '/config.conf') {
+			$this->cli->warning("Скопируйте файл {$this->config['cnf']} за пределы корневой директории (../config.cnf)");
 			$this->cli->warning('Укажите путь к этому файлу в настройках config.php (DB->cnf)');
 		}
-		$this->cli->warning('Удалите файл install.php');
+		$this->cli->warning('Удалите файл install.php.');
 	}
 }
 
 $obj = new Install();
 $obj->restoreDB();
-$obj->runComposer();
+#$obj->runComposer();
 $obj->displayFinalMessage();

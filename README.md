@@ -25,6 +25,12 @@ $ sudo a2enmod rewrite && sudo service apache2 restart
 
 > Файл config.cnf настоятельно рекомендуем вынести за пределы папки хоста.
 
+- Перейдите в папку packages/ и выполните команду
+
+```
+$ php composer.phar install
+```
+
 - Выполните команду
 
 ```

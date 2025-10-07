@@ -1,18 +1,19 @@
 <?php
-
 namespace WeppsAdmin\Updates;
 
 use WeppsCore\Utils;
 use WeppsCore\Cli;
 
-class Updates {
+class Updates
+{
 	public $parent = 1;
 	public $settings;
 	public $cli;
-	public function __construct($settings=[]) {
+	public function __construct($settings = [])
+	{
 		$this->settings = $settings;
 		$this->cli = new Cli();
-		if ($this->parent==0) {
+		if ($this->parent == 0) {
 			return;
 		}
 		$output = "";
@@ -46,7 +47,6 @@ class Updates {
 				}
 				$output = $obj->setUpdates($this->settings[2])['output'];
 				break;
-			
 			case 'test':
 				// $obj = new UpdatesMethods();
 				// $obj->getCliProgress(10, 100,"копирование 1");
@@ -54,7 +54,6 @@ class Updates {
 				// $obj->getCliProgress(20, 100,"копирование 2");
 				// sleep(2);
 				// $obj->getCliProgress(30, 100,"копирование 3");
-				
 				#$output = "Test";
 				break;
 			default:
@@ -67,6 +66,4 @@ class Updates {
 		$this->cli->info($output);
 		return;
 	}
-	
 }
-?>
