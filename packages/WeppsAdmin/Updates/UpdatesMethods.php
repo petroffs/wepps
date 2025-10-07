@@ -83,7 +83,7 @@ class UpdatesMethods extends Updates
 				'output' => "Wrong tag"
 			];
 		}
-		$file = Connect::$projectServices['wepps']['name'].'-updates.zip';
+		$file = Connect::$projectServices['wepps']['nameconf'].'-updates.zip';
 		$fileDst = __DIR__ . "/files/updates/$tag/$file";
 		$fileSrc = @Connect::$projectServices['wepps']['updates'] . "/packages/PPSAdmin/Releases/files/$tag/$file";
 		$curl = new Curl();
