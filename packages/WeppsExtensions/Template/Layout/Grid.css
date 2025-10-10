@@ -121,6 +121,10 @@
 	justify-items: end;
 }
 
+.w_grid.w_ji_stretch {
+	justify-items: stretch;
+}
+
 .w_grid.w_ai_start {
 	align-items: start;
 }
@@ -131,6 +135,10 @@
 
 .w_grid.w_ai_end {
 	align-items: end;
+}
+
+.w_grid.w_ai_stretch {
+	align-items: stretch;
 }
 
 @media screen and (max-width: 810px) {
