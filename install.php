@@ -7,12 +7,19 @@ if (php_sapi_name() !== 'cli') {
 
 if (!is_file(__DIR__ . '/packages/vendor/autoload.php')) {
 	if (!is_file(__DIR__ . '/packages/composer.phar')) {
-		echo 'Неправильный путь к установщику';
+		echo 'Неправильный путь к установщику\n';
 		exit();
 	}
 	$dir = str_replace('\\', '/', __DIR__);
-	$message = "Необходимо выполнить composer install\nВыполните следующие команды:\ncd {$dir}/packages && php composer.phar self-update && php composer.phar install && cd ../ && php install.php";
+	$message = "Необходимо выполнить composer install\nВыполните следующие команды:\ncd {$dir}/packages && php composer.phar self-update && php composer.phar install && cd ../ && php install.php\n";
 	echo $message;
+	exit();
+}
+
+require_once 'config.php';
+
+if (empty($projectSettings['DB']['host']) || empty($projectSettings['DB']['port']) || empty($projectSettings['DB']['user']) || empty($projectSettings['DB']['dbname'])) {
+	echo "error: Секция DB некорректно заполнена\n";
 	exit();
 }
 
@@ -37,12 +44,10 @@ class Install
 	{
 		$this->cli = new Cli();
 		$this->config = Connect::$projectDB;
-
-		if (empty($this->config['host']) || empty($this->config['port']) || empty($this->config['user']) || empty($this->config['dbname'])) {
-			$this->cli->error('Секция DB некорректно заполнена');
-			exit();
-		}
-
+		// if (empty($this->config['host']) || empty($this->config['port']) || empty($this->config['user']) || empty($this->config['dbname'])) {
+		// 	$this->cli->error('Секция DB некорректно заполнена');
+		// 	exit();
+		// }
 		if (empty($this->config['cnf'])) {
 			$content = "[client]\n";
 			$content .= "host=" . $this->config['host'] . "\n";
