@@ -1,5 +1,6 @@
 <?php
 namespace WeppsExtensions\Popups;
+
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Extension;
@@ -29,4 +30,3 @@ class Popups extends Extension {
 		return;
 	}
 }
-?>

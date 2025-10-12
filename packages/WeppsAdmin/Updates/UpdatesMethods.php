@@ -8,14 +8,16 @@ use Curl\Curl;
 class UpdatesMethods extends Updates
 {
 	public $parent = 0;
-	public $settings;
-	private $filename;
-	private $path;
+	public array $settings;
+	private string $filename;
+	private array $path;
+	private string $nameconf;
 
 	public function __construct($settings = [])
 	{
 		parent::__construct();
 		$this->filename = __DIR__ . '/files/md5.conf';
+		$this->nameconf = Connect::$projectServices['wepps']['nameconf'];
 	}
 	public function getReleaseCurrentVersion(): string
 	{
@@ -23,7 +25,7 @@ class UpdatesMethods extends Updates
 			return 'no version info';
 		}
 		$jdata = json_decode(file_get_contents($this->filename), true);
-		return $jdata['version'] ?? 'version info fail';
+		return $jdata['version']??'version info fail';
 	}
 	public function getReleaseCurrentModified(): array
 	{
@@ -81,7 +83,7 @@ class UpdatesMethods extends Updates
 				'output' => "Wrong tag"
 			];
 		}
-		$file = Connect::$projectServices['wepps']['nameconf'] . '-updates.zip';
+		$file = $this->nameconf.'-updates.zip';
 		$fileDst = __DIR__ . "/files/updates/$tag/$file";
 		$fileSrc = @Connect::$projectServices['wepps']['updates'] . "/packages/PPSAdmin/Releases/files/$tag/$file";
 		$curl = new Curl();
@@ -173,8 +175,8 @@ class UpdatesMethods extends Updates
 				$this->cli->copy($this->path['dirname'] . "/updates/" . $value, $pathDiff . "/" . $value);
 			}
 		}
-		$this->zip("{$this->path['dirname']}/wepps.platform-rollback.zip", "{$pathRollback}/*");
-		$this->zip("{$this->path['dirname']}/wepps.platform-diff.zip", "{$pathDiff}/*");
+		$this->zip("{$this->path['dirname']}/{$this->nameconf}-rollback.zip", "{$pathRollback}/*");
+		$this->zip("{$this->path['dirname']}/{$this->nameconf}-diff.zip", "{$pathDiff}/*");
 
 		/*
 		 * Реальный апдейт из updates
@@ -415,9 +417,9 @@ class UpdatesMethods extends Updates
 			'disallowed' => $disallowed,
 			'new' => $new,
 			'allowed' => $allowed,
-			'allowed-add' => $columns['add'],
-			'allowed-update' => $columns['update'],
-			'need-delete' => $columns['delete'],
+			'allowed-add' => @$columns['add'],
+			'allowed-update' => @$columns['update'],
+			'need-delete' => @$columns['delete'],
 		], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT), $this->path['dirname'] . "/log-db.conf");
 		return $str;
 	}
