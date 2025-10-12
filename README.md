@@ -48,20 +48,20 @@ $ php /var/www/site/packages/WeppsAdmin/Release/Request.php install
 Отобразить текущую версию Wepps-платформы
 
 ```
-$ php /var/www/site/packages/WeppsAdmin/Release/Request.php version
+$ php /var/www/site/packages/WeppsAdmin/Updates/Request.php version
 ```
 
 Отобразить список измененных файлов, которые могут быть в поставке обновления.
 Эти файлы будут запрещены к обновлению.
 
 ```
-$ php /var/www/site/packages/WeppsAdmin/Release/Request.php modified
+$ php /var/www/site/packages/WeppsAdmin/Updates/Request.php modified
 ```
 
 Список достуных обновлений. Обновления будут устанавливаться только на более свежую версию. Вниз не обновится.
 
 ```
-$ php /var/www/site/packages/WeppsAdmin/Release/Request.php list
+$ php /var/www/site/packages/WeppsAdmin/Updates/Request.php list
 ```
 
 Обновление Wepps-платформы. [tag] - версия для обновления, ее можно узнать из предыдущей команды. При запуске будет список файлов к обновлению, список таблиц к обновлению. Для подтверждения обновления следует написать "yes" в вопросе, который появится.
@@ -73,5 +73,5 @@ $ php /var/www/site/packages/WeppsAdmin/Release/Request.php list
 5. wepps.platform-updates.zip (все файлы обновления)
 
 ```
-$ php /var/www/site/packages/WeppsAdmin/Release/Request.php update [tag]
+$ php /var/www/site/packages/WeppsAdmin/Updates/Request.php update [tag]
 ```

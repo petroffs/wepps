@@ -1,9 +1,7 @@
 <?php
-
 namespace WeppsAdmin\Updates;
 
 use WeppsAdmin\Admin\AdminUtils;
-use WeppsCore\Utils;
 use WeppsCore\Connect;
 use Curl\Curl;
 
@@ -25,7 +23,7 @@ class UpdatesMethods extends Updates
 			return 'no version info';
 		}
 		$jdata = json_decode(file_get_contents($this->filename), true);
-		return $jdata['version']??'version info fail';
+		return $jdata['version'] ?? 'version info fail';
 	}
 	public function getReleaseCurrentModified(): array
 	{
@@ -83,7 +81,7 @@ class UpdatesMethods extends Updates
 				'output' => "Wrong tag"
 			];
 		}
-		$file = Connect::$projectServices['wepps']['nameconf'].'-updates.zip';
+		$file = Connect::$projectServices['wepps']['nameconf'] . '-updates.zip';
 		$fileDst = __DIR__ . "/files/updates/$tag/$file";
 		$fileSrc = @Connect::$projectServices['wepps']['updates'] . "/packages/PPSAdmin/Releases/files/$tag/$file";
 		$curl = new Curl();
@@ -264,21 +262,21 @@ class UpdatesMethods extends Updates
 			'files' => $files,
 		];
 	}
-	private function getTablesUpdates($fileMD5)
+	private function getTablesUpdates($fileMD5): string
 	{
 		if (!is_file($fileMD5)) {
-			return [];
+			return '';
 		}
 		$files = [];
 		$jdata = json_decode(file_get_contents($this->filename), true);
 		$jrelease = json_decode(file_get_contents($fileMD5), true);
 		if (empty($jdata['db']) || empty($jrelease['db'])) {
-			return [];
+			return '';
 		}
 
 		$files = $this->getTablesDiff($jrelease['db'], $jdata['db'])['diff'];
 		if (empty($files)) {
-			return [];
+			return '';
 		}
 
 		/*
@@ -528,4 +526,3 @@ class UpdatesMethods extends Updates
 		];
 	}
 }
-?>
