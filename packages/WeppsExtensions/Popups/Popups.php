@@ -20,6 +20,9 @@ class Popups extends Extension {
 		/*
 		 * Переменные для глобального шаблона
 		 */
+		$this->headers->css("/ext/Template/Tabs/Tabs.{$this->rand}.css");
+		$this->headers->js("/ext/Template/Tabs/Tabs.{$this->rand}.js");
+		$this->headers->css("/ext/Popups/Popups.{$this->rand}.css");
 		$this->headers->css("/ext/Popups/Popups.{$this->rand}.css");
 		$this->headers->js("/ext/Popups/Popups.{$this->rand}.js");
 		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));

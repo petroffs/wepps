@@ -1,48 +1,37 @@
-ul.tabs li {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	cursor: pointer;
-	color: black;
-	font-size: 100%;
-	padding: 5px 10px 5px 10px !important;
+ul.w_tabs li {
 	white-space: wrap;
 	text-align: center;
+	color: var(--color-05);
+	padding: var(--s2) var(--s4);
+	margin: 0;
+	list-style-type: none;
+	cursor: pointer;
 }
 
-ul.tabs li.active {
-	background: #333;
-	color: white;
+ul.w_tabs li.active {
+	background: var(--color-95);
+	border-radius: var(--s2) var(--s2) 0 0;
 }
 
-div.tabs-content {
-	padding: 20px 0;
-
+div.w_tabs_content {
+	background: var(--color-95);
+	padding: var(--s2) var(--s4);
+	border-radius: 0 0 var(--s2) var(--s2);
 }
 
-div.tabs-content div.tabs-item {
+div.w_tabs_content div.w_tabs_item {
 	display: none;
 	padding: 0 10px;
 }
 
-div.tabs-content div.tabs-item.active {
+div.w_tabs_content div.w_tabs_item.active {
 	display: block;
 }
 
 @media screen and (max-width: 1020px) {
-	ul.tabs li {
-		font-size: 100%;
-		font-weight: 700;
-		padding: 8px 15px 0 15px;
-	}
+	
 }
 
-@media screen and (max-width: 768px) {
-	ul.tabs li {
-		font-size: 80%;
-		font-weight: 700;
-		padding: 12px 5px 0 5px;
-	}
-}
+@media screen and (max-width: 810px) {}
 
 @media screen and (max-width: 480px) {}
