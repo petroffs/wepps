@@ -11,7 +11,7 @@ if (!is_file(__DIR__ . '/packages/vendor/autoload.php')) {
 		exit();
 	}
 	$dir = str_replace('\\', '/', __DIR__);
-	$message = "Необходимо выполнить composer install\nВыполните следующие команды:\ncd {$dir}/packages && php composer.phar self-update && php composer.phar install && cd ../ && php install.php\n";
+	$message = "Необходимо выполнить composer install\nВыполните следующие команды:\ncd {$dir}/packages && php composer.phar self-update && php composer.phar install && cd ../\nПосле этого заново выполните php install.php";
 	echo $message;
 	exit();
 }
