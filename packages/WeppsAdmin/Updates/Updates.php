@@ -6,9 +6,9 @@ use WeppsCore\Cli;
 
 class Updates
 {
-	public $parent = 1;
-	public $settings;
-	public $cli;
+	public int $parent = 1;
+	public array $settings;
+	public Cli $cli;
 	public function __construct($settings = [])
 	{
 		$this->settings = $settings;

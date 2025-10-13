@@ -7,8 +7,7 @@ use Curl\Curl;
 
 class UpdatesMethods extends Updates
 {
-	public $parent = 0;
-	public array $settings;
+	public int $parent = 0;
 	private string $filename;
 	private array $path;
 	private string $nameconf;
