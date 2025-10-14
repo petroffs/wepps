@@ -21,7 +21,7 @@ class SmartyPlugins
             return strstr($haystack,$needle);
         });
         $smarty->registerPlugin('modifier', 'stristr', function ($haystack='',$needle='') {
-            return strstr($haystack,$needle);
+            return stristr($haystack,$needle);
         });
         $smarty->registerPlugin('modifier', 'array_slice', function (array $array,int $offset) {
             return array_slice($array,$offset);
