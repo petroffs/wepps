@@ -16,7 +16,7 @@ class AdminUtils extends Utils {
 
 		$js = "
 			<script>
-				let dialogWidth = (window.screen.width<400) ? '90%' : 400;
+				var dialogWidth = (window.screen.width<400) ? '90%' : 400;
 				$('#dialog').html('<p>{$message}</p>').dialog({
 					title:'Сообщение',
 					modal: true,
