@@ -15,6 +15,7 @@
 	<main>
 		{$content.Url|wepps:'navigator'}
 		{$extensionTop}
+		{$carouselTpl}
 		{if $normalView==1}
 		<div class="page w_flex_max w_flex w_flex_col">
 			<section>
