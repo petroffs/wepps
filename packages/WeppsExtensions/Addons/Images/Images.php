@@ -5,7 +5,8 @@ use WeppsCore\Utils;
 use WeppsCore\Exception;
 use WeppsCore\Connect;
 
-class Images {
+class Images
+{
 	private $source;
 	private $target;
 	private $newfile;
@@ -17,24 +18,25 @@ class Images {
 	private $widthDst = 0;
 	private $heightDst = 0;
 	public $get;
-	function __construct($get) {
+	function __construct($get)
+	{
 		$this->get = Utils::trim($get);
 		$filename = (isset($this->get['fileUrl'])) ? $this->get['fileUrl'] : '';
 		$action = (isset($this->get['pref'])) ? $this->get['pref'] : '';
-		$root = substr(getcwd(),0,strpos(getcwd(), "packages"));
-		$rootfilename = $root."".$filename;
+		$root = substr(getcwd(), 0, strpos(getcwd(), "packages"));
+		$rootfilename = $root . "" . $filename;
 		if (!is_file($rootfilename)) {
 			Exception::error(404);
 		}
 		$res = Connect::$instance->fetch("select * from s_Files where FileType like 'image/%' and FileUrl='/{$filename}'");
-		if (count($res)==0) {
+		if (count($res) == 0) {
 			Exception::error(404);
 		}
 		$this->fileinfo = $res[0];
 		$size = @getimagesize($rootfilename) or die('die.');
 		$this->mime = $size['mime'];
-		$this->ratio = $size[0]/$size[1];
-		
+		$this->ratio = $size[0] / $size[1];
+
 		/*
 		 * Проверка на наличие установочных параметров для ресайза/кропа
 		 */
@@ -43,23 +45,23 @@ class Images {
 		$this->widthDst = 0;
 		$this->heightDst = 0;
 		switch ($action) {
-			case "lists" :
+			case "lists":
 				$this->widthDst = 80;
 				$this->heightDst = 80;
 				$crop = 0;
 				break;
-			case "full" :
+			case "full":
 				$side = 1280;
 				break;
-			case "catprev" :
+			case "catprev":
 				$this->widthDst = 320;
 				$this->heightDst = 240;
 				break;
-			case "catbig" :
+			case "catbig":
 				$this->widthDst = 640;
 				$this->heightDst = 480;
 				break;
-			case "catbigv" :
+			case "catbigv":
 				$this->widthDst = 480;
 				$this->heightDst = 600;
 				break;
@@ -68,36 +70,37 @@ class Images {
 				$this->heightDst = 600;
 				$crop = 0;
 				break;
-			case "slider" :
+			case "slider":
 				$side = 1280;
 				break;
-			case "sliderm" :
+			case "sliderm":
 				$side = 600;
 				break;
 			case "a4":
 				$this->widthDst = 500;
 				$this->heightDst = 705;
 				break;
-			default :
+			default:
 				Exception::error(404);
 				exit();
 		}
 		/*
 		 * Директория и файл для записи в файловую систему
 		 */
-		$newfile = $root."/pic/".$action."/".$filename;
+		$newfile = $root . "/pic/" . $action . "/" . $filename;
 		$newdir = dirname($newfile);
-		if (!is_dir($newdir)) mkdir($newdir,0750,true);
+		if (!is_dir($newdir))
+			mkdir($newdir, 0750, true);
 		$this->newfile = $newfile;
-		$ratio = ($this->widthDst>0 && $this->heightDst>0) ? $this->widthDst/$this->heightDst : $this->ratio;
-		
+		$ratio = ($this->widthDst > 0 && $this->heightDst > 0) ? $this->widthDst / $this->heightDst : $this->ratio;
+
 		/*
 		 * Подготовка данных для манипуляций
 		 */
-		
-		if ($side>0) {
-			$side = (is_numeric($side) && $side>0)?$side:100;
-			$side = ($side>1920)?1920:$side;
+
+		if ($side > 0) {
+			$side = (is_numeric($side) && $side > 0) ? $side : 100;
+			$side = ($side > 1920) ? 1920 : $side;
 			$this->widthDst = ($this->ratio >= 1) ? $side : $side * $this->ratio;
 			$this->heightDst = ($this->ratio >= 1) ? $side / $this->ratio : $side;
 		}
@@ -118,39 +121,12 @@ class Images {
 				$source = imagecreatefromstring(file_get_contents($rootfilename)) or die('die');
 				break;
 		}
-		
-		/*
-		 * CROP
-		 * Источник > 1, Цель > 1
-		 * https://platform.wepps.ubu/pic/catbig/files/lists/News/000002_Images_1733344138_SS04006.JPG
-		 * 
-		 * Источник > 1, Цель < 1
-		 * https://platform.wepps.ubu/pic/catbigv/files/lists/News/000002_Images_1733344138_SS04006.JPG
-		 * 
-		 * Источник < 1, Цель > 1
-		 * https://platform.wepps.ubu/pic/catbig/files/lists/News/000001_Images_1492375078_llDay.ru_102.JPG
-		 * 
-		 * Источник < 1, Цель < 1
-		 * https://platform.wepps.ubu/pic/catbigv/files/lists/News/000001_Images_1492375078_llDay.ru_102.JPG
-		 * 
-		 * Источник = 1, Цель > 1
-		 * https://platform.wepps.ubu/pic/catbig/files/lists/News/12_Image_1314039898_BS16006.jpg
-		 * 
-		 * Источник = 1, Цель < 1
-		 * https://platform.wepps.ubu/pic/catbigv/files/lists/News/12_Image_1314039898_BS16006.jpg
-		 * 
-		 * Источник > 1, Цель = 1
-		 * https://platform.wepps.ubu/pic/lists/files/lists/News/000003_Images_1733349746_001.png
-		 * 
-		 * Источник < 1, Цель = 1
-		 * https://platform.wepps.ubu/pic/lists/files/lists/News/000003_Images_1733349746_002.png
-		 * 
-		 */
+
 		if ($this->heightDst > 0) {
-			if ($size[0]<$this->widthDst || $size[1]<$this->heightDst) {
-				$this->width = $size [0];
-				$this->height = $size [1];
-			} elseif ($crop==0) {
+			if ($size[0] < $this->widthDst || $size[1] < $this->heightDst) {
+				$this->width = $size[0];
+				$this->height = $size[1];
+			} elseif ($crop == 0) {
 				$this->resize($this->widthDst, $this->heightDst, $ratio);
 			} else {
 				$this->crop($this->widthDst, $this->heightDst, $ratio);
@@ -159,60 +135,63 @@ class Images {
 			$target = $this->imagefill($target);
 			$target2 = imagecreatetruecolor($this->widthDst, $this->heightDst);
 			$target2 = $this->imagefill($target2);
-			$newX = round(($this->widthDst-$this->width)/2);
-			$newY = round(($this->heightDst-$this->height)/2);
-			imagecopyresampled($target,$source,0,0,0,0,$this->width,$this->height,$size[0],$size[1]);
-			imagecopy($target2,$target,$newX,$newY,0,0,$this->width,$this->height);
+			$newX = round(($this->widthDst - $this->width) / 2);
+			$newY = round(($this->heightDst - $this->height) / 2);
+			imagecopyresampled($target, $source, 0, 0, 0, 0, $this->width, $this->height, $size[0], $size[1]);
+			imagecopy($target2, $target, $newX, $newY, 0, 0, $this->width, $this->height);
 			$this->target = $target2;
 			$this->source = $source;
 			return;
 		}
-		
+
 		/*
 		 * Сохранение для вывода
 		 */
 		$target = imagecreatetruecolor($this->widthDst, $this->heightDst);
 		$target = $this->imagefill($target);
-		imagecopyresampled($target,$source,0,0,0,0,$this->widthDst,$this->widthDst/$this->ratio,$size[0],$size[1]);
+		imagecopyresampled($target, $source, 0, 0, 0, 0, $this->widthDst, $this->widthDst / $this->ratio, $size[0], $size[1]);
 		$this->target = $target;
 		$this->source = $source;
 		return;
 	}
-	public function save() {
+	public function save()
+	{
 		switch ($this->mime) {
-			case "image/png" :
-				imagepng($this->target,$this->newfile,5);
+			case "image/png":
+				imagepng($this->target, $this->newfile, 5);
 				break;
-			default :
-				imagejpeg($this->target,$this->newfile,100);
+			default:
+				imagejpeg($this->target, $this->newfile, 100);
 				break;
 		}
 	}
-	public function output() {
-		header('Content-type: '.$this->mime);
+	public function output()
+	{
+		header('Content-type: ' . $this->mime);
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-		header("Expires: ".gmdate("D, d M Y H:i:s",strtotime('+1 years'))." GMT");
+		header("Expires: " . gmdate("D, d M Y H:i:s", strtotime('+1 years')) . " GMT");
 		header("Cache-Control: max-age=31536000, s-maxage=31536000, must-revalidate");
 		switch ($this->mime) {
-			case "image/png" :
-				imagepng($this->target,null,5);
+			case "image/png":
+				imagepng($this->target, null, 5);
 				break;
-			default :
-				imagejpeg($this->target,null,100);
+			default:
+				imagejpeg($this->target, null, 100);
 				break;
 		}
 	}
-	private function resize(float $width, float $height, float $ratio) {
-		if ($ratio==1) {
-			if ($this->ratio>=1) {
-				$this->width = $width ;
-				$this->height = $width/$this->ratio;
+	private function resize(float $width, float $height, float $ratio)
+	{
+		if ($ratio == 1) {
+			if ($this->ratio >= 1) {
+				$this->width = $width;
+				$this->height = $width / $this->ratio;
 			} else {
 				$this->width = $height * $this->ratio;
 				$this->height = $height;
 			}
-		} elseif ($ratio>=1) {
-			if ($this->ratio>=1) {
+		} elseif ($ratio >= 1) {
+			if ($this->ratio >= 1) {
 				$this->width = $height * $this->ratio;
 				$this->height = $height;
 			} else {
@@ -220,43 +199,30 @@ class Images {
 				$this->height = $height;
 			}
 		} else {
-			if ($this->ratio>=1) {
+			if ($this->ratio >= 1) {
 				$this->width = $width;
 				$this->height = $width / $this->ratio;
 			} else {
-				$this->width = $height * $this->ratio ;
+				$this->width = $height * $this->ratio;
 				$this->height = $height;
 			}
 		}
 	}
-	private function crop(float $width, float $height, float $ratio) {
-		if ($ratio==1) {
-			if ($this->ratio>=1) {
-				$this->width = $height * $this->ratio;
-				$this->height = $height;
-			} else {
-				$this->width = $width ;
-				$this->height = $width/$this->ratio;
-			}
-		} elseif ($ratio>=1) {
-			if ($this->ratio>=1) {
-				$this->width = $width ;
-				$this->height = $width/$this->ratio;
-			} else {
-				$this->width = $width;
-				$this->height = $width / $this->ratio;
-			}
+	private function crop(float $width, float $height, float $ratio)
+	{
+		$srcRatio = $this->ratio;
+		$dstRatio = $ratio;
+
+		if ($srcRatio > $dstRatio) {
+			$this->height = $height;
+			$this->width = $height * $srcRatio;
 		} else {
-			if ($this->ratio>=1) {
-				$this->width = $height * $this->ratio;
-				$this->height = $height;
-			} else {
-				$this->width = $width ;
-				$this->height = $width/$this->ratio;
-			}
+			$this->width = $width;
+			$this->height = $width / $srcRatio;
 		}
 	}
-	public function stamp(string $x='right',string $y='bottom',float $gap=0.1, string $list='', string $filename='') {
+	public function stamp(string $x = 'right', string $y = 'bottom', float $gap = 0.1, string $list = '', string $filename = '')
+	{
 		$exit = 1;
 		if (empty($list)) {
 			$exit = 0;
@@ -266,17 +232,17 @@ class Images {
 				$exit = 0;
 			}
 		}
-		if ($exit==1) {
+		if ($exit == 1) {
 			return;
 		}
 		if (empty($filename)) {
-			$filename = Connect::$projectDev['root'].Connect::$projectInfo['logopng'];
-		}	
-		$target = imagecreatefrompng($filename) or die ($filename);
+			$filename = Connect::$projectDev['root'] . Connect::$projectInfo['logopng'];
+		}
+		$target = imagecreatefrompng($filename) or die($filename);
 		imagesavealpha($target, true);
 		$size = getimagesize($filename);
-		$ratio = $size[0]/$size[1];
-		
+		$ratio = $size[0] / $size[1];
+
 		/*
 		 * Уменьшить штамп
 		 */
@@ -287,17 +253,21 @@ class Images {
 		imagecolortransparent($thumb, $background);
 		imagealphablending($thumb, false);
 		imagesavealpha($thumb, true);
-		$width = $this->widthDst * 0.15;
+
+		// Рассчитать размеры штампа на основе меньшей размерности целевого изображения
+		$minDimension = min($this->widthDst, $this->heightDst);
+		$width = $minDimension * 0.15;
 		$height = $width / $ratio;
+
 		imagecopyresampled($thumb, $target, 0, 0, 0, 0, $width, $height, $size[0], $size[1]);
 		$target = $thumb;
-		$gap = $width*$gap;
+		$gap = $width * $gap;
 		switch ($x) {
 			case 'left':
 				$posX = $gap;
 				break;
 			case 'center':
-				$posX = $this->widthDst/2 - $width/2;
+				$posX = $this->widthDst / 2 - $width / 2;
 				break;
 			case 'right':
 			default:
@@ -309,32 +279,36 @@ class Images {
 				$posY = $gap;
 				break;
 			case 'center':
-				$posY = $this->heightDst/2 - $height/2;
+				$posY = $this->heightDst / 2 - $height / 2;
 				break;
 			case 'bottom':
 			default:
 				$posY = $this->heightDst - $height - $gap;
 				break;
 		}
-		imagecopy($this->target,$target,$posX,$posY,0,0,$width,$height);
+		imagecopy($this->target, $target, $posX, $posY, 0, 0, $width, $height);
 	}
-	private function imagefill($target) {
+	private function imagefill($target)
+	{
 		switch ($this->mime) {
-			case "image/png" :
-				imagealphablending( $target, false );
-				imagesavealpha( $target, true );
+			case "image/png":
+				imagealphablending($target, false);
+				imagesavealpha($target, true);
 				$transparent = imagecolorallocatealpha($target, 0, 0, 0, 127);
 				imagefill($target, 0, 0, $transparent);
 				break;
-			default :
-				imagefill($target,0,0,0xFFFFFF);
+			default:
+				imagefill($target, 0, 0, 0xFFFFFF);
 				break;
 		}
 		return $target;
 	}
-	function __destruct() {
-		if ($this->target) imagedestroy($this->target);
-		if ($this->source) imagedestroy($this->source);
+	function __destruct()
+	{
+		if ($this->target)
+			imagedestroy($this->target);
+		if ($this->source)
+			imagedestroy($this->source);
 		Connect::$instance->close();
 	}
 }

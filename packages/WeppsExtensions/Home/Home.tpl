@@ -8,7 +8,7 @@
 </div>
 <div class="page services">
 	<section>
-		<section class="services-wrapper w_grid w_4col w_2col_view_medium w_gap_large">
+		<section class="services-wrapper w_grid w_4col w_2col_view_medium w_gap_large w_animate">
 		{foreach name="out" key="key" item="item" from=$services}
 			<section>
 				<div class="services-img">
