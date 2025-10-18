@@ -3,6 +3,7 @@
 	<div class="content-block">
 		{$paginatorTpl}
 	</div>
+	<div class="w_interval_medium"></div>
 	{/if}
 	<div class="products-items w_grid w_3col w_2col_view_medium w_gap_medium">
 		{foreach item="item" from=$products}
