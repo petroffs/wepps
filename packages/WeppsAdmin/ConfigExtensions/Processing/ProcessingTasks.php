@@ -13,41 +13,21 @@ class ProcessingTasks
 	{
 		$this->root = Connect::$projectDev['root'];
 	}
-	public function removeFiles()
+	public function removeFiles(): void
 	{
-		/*
-		 * Получить список всех файлов в папке /pic/,/files/lists/
-		 * Составить список для дальнеших действий
-		 * Составить список из таблицы s_Files
-		 * Проверить расхождение и на основе этого
-		 * Составить список тех файлов, которых нет в s_Files
-		 * Удалить все файлы, которые попадут в этот список
-		 * Удалить все что в /Addons/Forms/uploads, кроме .htaccess
-		 */
-
-		/*
-		 * Данные в папках
-		 */
-
-
+		self::removeDatabaseRows();
+		
 		$dirs = [
 			$this->root . '/files/lists/',
 			$this->root . '/pic/'
 		];
 		$files = self::findFiles($dirs);
-		// Utils::debug($files,21);
-		// $output = [];
-		// exec("find {$this->root}/files/lists/ {$this->root}/pic/ -name '*.*' ! -name '*.htaccess' 2>&1", $output);
-		// $arr1 = [];
-		// Utils::debug($output, 21);
 		foreach ($files as $value) {
 			$str = substr($value, strpos($value, "/files/"));
 			$arr1[$str][] = $value;
 		}
 		$arr1keys = array_keys($arr1);
-		/*
-		 * Данные в базе
-		 */
+
 		$sql = "select Id,FileUrl from s_Files";
 		$res = Connect::$instance->fetch($sql);
 		$arr2 = [];
@@ -68,6 +48,7 @@ class ProcessingTasks
 			foreach ($diff as $value) {
 				if (isset($arr1[$value])) {
 					foreach ($arr1[$value] as $filename) {
+						echo $filename."\n";
 						unlink($filename);
 						$i++;
 					}
@@ -76,7 +57,7 @@ class ProcessingTasks
 		}
 		echo "\n$i files deleted\n";
 	}
-	private function findFiles($dirs, $exclude = ['.htaccess'])
+	private function findFiles($dirs, $exclude = ['.htaccess']): array
 	{
 		$files = [];
 		foreach ((array) $dirs as $dir) {
@@ -94,5 +75,29 @@ class ProcessingTasks
 			}
 		}
 		return $files;
+	}
+	private function removeDatabaseRows(): bool
+	{
+		// Получаем все уникальные имена таблиц
+		$result = Connect::$instance->fetch("SELECT DISTINCT TableName,TableNameField FROM s_Files WHERE TableName != ''");
+		foreach ($result as $value) {
+			$table = $value['TableName'];
+			$tableField = $value['TableNameField'];
+			// Проверяем существует ли таблица
+			$check = Connect::$instance->fetch("SELECT COUNT(*) as cnt FROM information_schema.tables 
+                                    WHERE table_name = ? AND table_schema = DATABASE()", [$table]);
+			$exists = $check[0]['cnt'];
+			if (!$exists) {
+				// Удаляем если таблицы нет
+				Connect::$instance->query("DELETE FROM s_Files WHERE TableName = ?", [$table]);
+			} else {
+				// Удаляем "осиротевшие" записи
+				$sql = "DELETE sf FROM s_Files sf 
+					LEFT JOIN {$table} t ON sf.TableNameId = t.Id  and sf.TableName = '{$table}'
+					WHERE sf.TableName = ? AND t.Id IS NULL";
+				Connect::$instance->query($sql, [$table]);
+			}
+		}
+		return true;
 	}
 }
