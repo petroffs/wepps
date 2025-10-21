@@ -1,4 +1,7 @@
 <?php
+
+use WeppsAdmin\Lists\Lists;
+
 /**
  * Установщик приложения
  *
@@ -6,7 +9,7 @@
  * Он выполняет восстановление базы данных из резервной копии и позволяет
  * установить логин и пароль администратора.
  *
-  */
+ */
 
 if (php_sapi_name() !== 'cli') {
     http_response_code(401);
@@ -91,8 +94,7 @@ class Install
      */
     public function restoreDB(): void
     {
-        $filename = Connect::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/Backup/files/db.sql';
-
+        $filename = Connect::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/Backup/files/' . Connect::$projectServices['wepps']['nameconf'] . '.release.sql';
         if (!is_file($filename)) {
             $this->cli->error('Неправильный путь к файлу базы данных');
             exit();
@@ -101,6 +103,10 @@ class Install
         $this->cli->success('Заполнение базы данных. Ждите.');
         $cmd = "mysql --defaults-extra-file={$this->config['cnf']} {$this->config['dbname']} < $filename";
         $this->cli->cmd($cmd, false);
+
+        $str = Lists::setSearchIndex();
+        Connect::$db->exec($str);
+
         $this->cli->success('База данных заполнена.');
     }
 
@@ -149,13 +155,14 @@ class Install
             }
             break;
         }
-
+        $date = date('Y-m-d H:i:s');
         $row = [
             'Login' => $login,
             'Password' => password_hash($password, PASSWORD_BCRYPT),
             'Email' => $login,
             'Phone' => '',
-            'CreateDate' => date('Y-m-d H:i:s'),
+            'AuthDate' => $date,
+            'CreateDate' => $date,
             'JCart' => '',
             'JFav' => '',
             'JData' => ''
@@ -163,7 +170,7 @@ class Install
 
         $prepare = Connect::$instance->prepare($row);
         $sql = "UPDATE s_Users SET {$prepare['update']} WHERE Id = 1";
-        Connect::$instance->fetch($sql, $prepare['row']);
+        Connect::$instance->query($sql, $prepare['row']);
         $this->cli->success("Логин и пароль администратора успешно обновлены");
     }
 

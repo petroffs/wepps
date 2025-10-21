@@ -11,7 +11,7 @@ use WeppsCore\Data;
 use WeppsCore\TextTransforms;
 use WeppsCore\Validator;
 
-if (!session_id()) {
+if (!session_id() && php_sapi_name() !== 'cli') {
 	session_start();
 }
 
