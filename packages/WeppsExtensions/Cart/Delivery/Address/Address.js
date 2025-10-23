@@ -44,7 +44,31 @@ var fnAddressInit = function () {
 		},
 		onSelectNothing: function(params) {
 			suggest.removeClass('active');
-		}
+		},
+		// Добавляем обработчики ошибок
+		onSearchError: function(query, jqXHR, textStatus, errorThrown) {
+			suggest.removeClass('active');
+			var errorMessage = 'Ошибка при работе с сервисом DaData';
+			try {
+				const errorData = JSON.parse(jqXHR.responseText);
+				if (errorData.message) {
+					errorMessage = errorData.message;
+				}
+			} catch (e) {
+				console.error('Failed to parse DaData error response:', e);
+			}
+			$('.dadata-error').remove();
+			console.error('DaData search error:', errorMessage);
+			let errorElement = $('<div class="dadata-error" style="color:var(--color-attention);margin-top:var(--s);display:none"></div>');
+			errorElement.text(errorMessage);
+			suggest.after(errorElement);
+			errorElement.fadeIn(500);
+			//console.log(suggest);
+			//errorElement.after(suggest);
+
+			//errorElement.text(errorMessage).show();
+			//console.error('DaData error:', error);
+		},
 	});
 	//https://confluence.hflabs.ru/pages/viewpage.action?pageId=207454320
 };

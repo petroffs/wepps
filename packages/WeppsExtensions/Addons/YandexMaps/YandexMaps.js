@@ -1,4 +1,4 @@
-var yandexMapsConstructor = function() {
+const yandexMapsConstructor = function() {
 	this.getLatlng = function(coord) {
 		let myCoord = coord.split(',');
 		let myLatlng = [parseFloat(myCoord[0]),parseFloat(myCoord[1])];

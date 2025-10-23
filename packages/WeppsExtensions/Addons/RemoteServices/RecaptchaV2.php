@@ -25,7 +25,7 @@ class RecaptchaV2 extends RemoteServices
 	/*
 	 * Получить ответ V2
 	 */
-	public function check($response) : array
+	public function check($response): array
 	{
 		$url = "https://www.google.com/recaptcha/api/siteverify";
 		$body = [
@@ -49,11 +49,32 @@ class RecaptchaV2 extends RemoteServices
 		$html = "
 		<label class=\"w_label w_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
 		<div class=\"g-recaptcha\" id=\"{$id}\"></div>
+		<div id=\"{$id}_error\" class=\"recaptcha-error\" style=\"display:none; color: var(--color-attention); margin-top: var(--s);\"></div>
 		<script>
 		var onloadRecapchaV2 = function() {
-			{$gwidgetId} = grecaptcha.render('{$id}', {
-				'sitekey' : '" . $this->sitekey . "'
-			});
+			try {
+				{$gwidgetId} = grecaptcha.render('{$id}', {
+					'sitekey' : '" . $this->sitekey . "',
+					'error-callback': function(error) {
+						var errorElement = document.getElementById('{$id}_error');
+						if (error) {
+							if (error.includes('invalid-site-key')) {
+								errorElement.textContent = 'Ошибка: Неверный ключ сайта (site key)';
+							} else {
+								errorElement.textContent = 'Ошибка reCAPTCHA: ' + error;
+							}
+							errorElement.style.display = 'block';
+						} else {
+							errorElement.style.display = 'none';
+						}
+					}
+				});
+			} catch (e) {
+				var errorElement = document.getElementById('{$id}_error');
+				errorElement.textContent = 'Ошибка инициализации reCAPTCHA: ' + e.message;
+				errorElement.style.display = 'block';
+				console.error('reCAPTCHA initialization error:', e);
+			}
 		};
 		</script>
 		";

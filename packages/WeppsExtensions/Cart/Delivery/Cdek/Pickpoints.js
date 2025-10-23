@@ -10,7 +10,7 @@ var setPoint = function (id, request = true) {
 	$('input[name="operations-id"]').val(point.data('id'));
 	$('input[name="operations-title"]').val(point.data('name'));
 	$('input[name="operations-city"]').val(point.data('city'));
-	$('input[name="operations-address"]').val(point.data('city')+', '+point.data('address'));
+	$('input[name="operations-address"]').val(point.data('city') + ', ' + point.data('address'));
 	$('input[name="operations-address-short"]').val(point.data('address'));
 	$('input[name="operations-postal-code"]').val(point.data('postal-code'));
 	/* $("html, body").animate({
@@ -25,7 +25,11 @@ var setPoint = function (id, request = true) {
 		});
 	}
 };
-var fnPointsInit = function () {
+const fnPointsInit = function () {
+	if (typeof ymaps === 'undefined') {
+		console.error('Yandex Maps not loaded');
+		return;
+	}
 	ymaps.ready(init);
 	function init() {
 		let map = new yandexMapsConstructor();
