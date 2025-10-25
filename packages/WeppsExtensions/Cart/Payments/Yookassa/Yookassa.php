@@ -2,14 +2,17 @@
 namespace WeppsExtensions\Cart\Payments\Yookassa;
 
 use WeppsCore\Connect;
+use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Exception;
 use WeppsCore\Tasks;
+use WeppsCore\TemplateHeaders;
 use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Cart\CartTemplates;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Payments\Payments;
+use WeppsExtensions\Template\Template;
 use YooKassa\Client;
 
 class Yookassa extends Payments
@@ -21,7 +24,7 @@ class Yookassa extends Payments
 	private $vatCode;
 	public function __construct(array $settings = [], CartUtils $cartUtils)
 	{
-		$alias = (Connect::$projectDev['debug']==1) ? 'dev':'pro';
+		$alias = (Connect::$projectDev['debug'] == 1) ? 'dev' : 'pro';
 		parent::__construct($settings, $cartUtils);
 		$this->settings = $settings;
 		$this->shopId = Connect::$projectServices['yookassa'][$alias]['shopId'];
@@ -29,7 +32,11 @@ class Yookassa extends Payments
 		$this->currency = Connect::$projectServices['yookassa'][$alias]['currency'];
 		$this->vatCode = Connect::$projectServices['yookassa'][$alias]['vatCode'];
 		$this->client = new Client();
-		$this->client->setAuth($this->shopId, $this->secretKey);
+		if (empty($this->shopId) || empty($this->secretKey)) {
+			Exception::page('Что-то не так с настройками Yookassa', "<p>Похоже, в параметрах подключения к сервису платежной системы есть ошибка. Из-за этого мы не можем обработать запрос.</p><p><b>Что делать?</b></p><p>Проверьте параметры подключения: Убедитесь, что ShopID и Секретный ключ из личного кабинета ЮKassa скопированы правильно и без лишних символов.</p>");
+		} else {
+			$this->client->setAuth($this->shopId, $this->secretKey);
+		}
 	}
 	public function getOperations($order): array
 	{
@@ -37,7 +44,7 @@ class Yookassa extends Payments
 		#$headers->js("/path.{$headers::$rand}.js");
 		#$headers->css("/path.{$headers::$rand}.css");
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=1 and IsProcessed=1";
-		$res = Connect::$instance->fetch($sql,[$order['Id']]);
+		$res = Connect::$instance->fetch($sql, [$order['Id']]);
 		$tpl = 'Yookassa/Yookassa.tpl';
 		return [
 			'tpl' => $tpl,
@@ -53,7 +60,7 @@ class Yookassa extends Payments
 			Exception::error404();
 		}
 		$sql = "select * from Orders where Alias=?";
-		$res = Connect::$instance->fetch($sql,[$this->settings['id']]);
+		$res = Connect::$instance->fetch($sql, [$this->settings['id']]);
 		## https://platform.wepps/cart/order.html?id=48cf279e-17c7-54bc-4999-499eb6feb56c
 		## https://platform.wepps/ext/Cart/Payments/Yookassa/Request.php?action=form&id=48cf279e-17c7-54bc-4999-499eb6feb56c
 		## https://platform.wepps/ext/Cart/Payments/Yookassa/Request.php?action=return&token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXAiOiJvcmQiLCJpZCI6NTIsInBheSI6MywiZXhwIjoxNzUxNjY5ODQ2fQ.y6K8Hk0nUbTqJAQFqR3KkY6_tq89wS9_OwkdQQRyLKw
@@ -61,28 +68,27 @@ class Yookassa extends Payments
 			Exception::error404();
 		}
 		$order = $res[0];
-		$products = json_decode($order['JPositions'],true);
+		$products = json_decode($order['JPositions'], true);
 		$cartUtils = new CartUtils();
-		$products = $cartUtils->getCartPositionsRecounter($products,$order['ODeliveryDiscount'],$order['OPaymentTariff'],$order['OPaymentDiscount']);
-		//Utils::debug($products,1);
+		$products = $cartUtils->getCartPositionsRecounter($products, $order['ODeliveryDiscount'], $order['OPaymentTariff'], $order['OPaymentDiscount']);
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=1 and IsProcessed=1";
-		$res = Connect::$instance->fetch($sql,[$order['Id']]);
-		
+		$res = Connect::$instance->fetch($sql, [$order['Id']]);
+
 		if (!empty($res[0])) {
 			$smarty = Smarty::getSmarty();
 			$cartUtils = new CartUtils();
-			$cartTemplates = new CartTemplates($smarty,$cartUtils);
+			$cartTemplates = new CartTemplates($smarty, $cartUtils);
 			$data = [
 				'status' => 200,
 				'title' => 'Оплата уже проведена ранее!',
 				'text' => [
 					'id' => $order['Id']
 				]
-			];	
-			$cartTemplates->page($data,__DIR__ .'/ReturnSuccess.tpl');
+			];
+			$cartTemplates->page($data, __DIR__ . '/ReturnSuccess.tpl');
 		}
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=0 and IsProcessed=0";
-		$res = Connect::$instance->fetch($sql,[$order['Id']]);
+		$res = Connect::$instance->fetch($sql, [$order['Id']]);
 		if (empty($res)) {
 			$row = [
 				'Name' => 'Yookassa',
@@ -98,7 +104,7 @@ class Yookassa extends Payments
 			];
 			$prepare = Connect::$instance->prepare($row);
 			$sql = "insert into Payments {$prepare['insert']}";
-			Connect::$instance->query($sql,$prepare['row']);
+			Connect::$instance->query($sql, $prepare['row']);
 			$id = Connect::$db->lastInsertId();
 		} else {
 			$id = $res[0]['Id'];
@@ -108,7 +114,7 @@ class Yookassa extends Payments
 			'typ' => 'ord',
 			'id' => $order['Id'],
 			'pay' => $id
-		],3600);
+		], 3600);
 		$items = [];
 		foreach ($products as $value) {
 			$row = [
@@ -125,7 +131,7 @@ class Yookassa extends Payments
 			];
 			array_push($items, $row);
 		}
-		if ($order['ODeliveryTariff']>0) {
+		if ($order['ODeliveryTariff'] > 0) {
 			$row = [
 				'description' => 'Доставка',
 				'quantity' => 1,
@@ -166,94 +172,101 @@ class Yookassa extends Payments
 				'items' => $items
 			]
 		];
-		$payment = $this->client->createPayment($paymentData, md5($order['Alias'].rand()));
-		$jdata = $payment->jsonSerialize();
-		$url = $jdata['confirmation']['confirmation_url'];
-		$mid = $jdata['id'];
-		$sql = "update Payments set MerchantId=?,MerchantRequest=?,MerchantResponse=? where Id=?";
-		Connect::$instance->query($sql,[$mid,json_encode($paymentData,JSON_UNESCAPED_UNICODE),json_encode($jdata,JSON_UNESCAPED_UNICODE),$id]);
-		return [
-			'url' => $url
-		];
+		try {
+			$payment = $this->client->createPayment($paymentData, md5($order['Alias'] . rand()));
+			$jdata = $payment->jsonSerialize();
+			$url = $jdata['confirmation']['confirmation_url'];
+			$mid = $jdata['id'];
+			$sql = "update Payments set MerchantId=?,MerchantRequest=?,MerchantResponse=? where Id=?";
+			Connect::$instance->query($sql, [$mid, json_encode($paymentData, JSON_UNESCAPED_UNICODE), json_encode($jdata, JSON_UNESCAPED_UNICODE), $id]);
+			return [
+				'url' => $url
+			];
+		} catch (\Exception $e) {
+			Exception::page('Что-то не так с настройками Yookassa', "<p>Похоже, в параметрах подключения к сервису платежной системы есть ошибка. Из-за этого мы не можем обработать запрос.</p><p>{$e->getMessage()}</p><p><b>Что делать?</b></p><p>Проверьте параметры подключения: Убедитесь, что ShopID и Секретный ключ из личного кабинета ЮKassa скопированы правильно и без лишних символов.</p>");
+		}
 	}
-	public function return() {
+	public function return()
+	{
 		if (empty($this->settings['token'])) {
 			Exception::error404();
 		}
 		$smarty = Smarty::getSmarty();
 		$cartUtils = new CartUtils();
-		$cartTemplates = new CartTemplates($smarty,$cartUtils);
+		$cartTemplates = new CartTemplates($smarty, $cartUtils);
 		$jwt = new Jwt();
-		$payload = $jwt->token_decode($this->settings['token']);		
-		if ($payload['status']!=200) {
+		$payload = $jwt->token_decode($this->settings['token']);
+		if ($payload['status'] != 200) {
 			$data = [
 				'status' => $payload['status'],
 				'title' => 'Ошибка',
 				'text' => $payload['message']
-			];	
-			$cartTemplates->page($data,__DIR__ .'/ReturnError.tpl');
+			];
+			$cartTemplates->page($data, __DIR__ . '/ReturnError.tpl');
 		}
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Id=?";
-		$res = Connect::$instance->fetch($sql,[$payload['payload']['id'],$payload['payload']['pay']]);
+		$res = Connect::$instance->fetch($sql, [$payload['payload']['id'], $payload['payload']['pay']]);
 		if (empty($res[0])) {
 			$data = [
 				'status' => 404,
 				'title' => 'Ошибка',
 				'text' => 'Платеж не найден'
-			];	
-			$cartTemplates->page($data,__DIR__ .'/ReturnError.tpl');
-		} else if ($res[0]['IsPaid']==1 && $res[0]['IsProcessed']==1) {
+			];
+			$cartTemplates->page($data, __DIR__ . '/ReturnError.tpl');
+		} else if ($res[0]['IsPaid'] == 1 && $res[0]['IsProcessed'] == 1) {
 			$data = [
 				'status' => 200,
 				'title' => 'Оплата прошла успешно!',
 				'text' => $payload['payload']
-			];	
-			$cartTemplates->page($data,__DIR__ .'/ReturnSuccess.tpl');
+			];
+			$cartTemplates->page($data, __DIR__ . '/ReturnSuccess.tpl');
 		}
 		$paymentInfo = $this->client->getPaymentInfo($res[0]['MerchantId']);
-		if ($paymentInfo->status=='succeeded') {
+		if ($paymentInfo->status == 'succeeded') {
 			$sql = "update Payments set IsPaid=1,IsProcessed=1,MerchantResponseDate=now() where Id=?";
-			Connect::$instance->query($sql,[$res[0]['Id']]);
+			Connect::$instance->query($sql, [$res[0]['Id']]);
 			$data = [
 				'status' => 200,
 				'title' => 'Оплата прошла успешно!',
 				'text' => $payload['payload']
-			];	
-			$cartTemplates->page($data,__DIR__ .'/ReturnSuccess.tpl');
+			];
+			$cartTemplates->page($data, __DIR__ . '/ReturnSuccess.tpl');
 		} else {
 			$data = [
 				'status' => 200,
 				'title' => 'Ошибка',
 				'text' => 'Ошибка выясняется'
-			];	
-			$cartTemplates->page($data,__DIR__ .'/ReturnError.tpl');
+			];
+			$cartTemplates->page($data, __DIR__ . '/ReturnError.tpl');
 		}
 	}
-	public function webhook() {
+	public function webhook()
+	{
 		$json = file_get_contents('php://input');
-		$jdata = json_decode($json,true);
+		$jdata = json_decode($json, true);
 		if (empty($id = $jdata['object']['id'])) {
 			Exception::error(400);
 		}
 		$tasks = new Tasks();
-		$tasks->add('yookassa',$jdata,'','','post');
+		$tasks->add('yookassa', $jdata, '', '', 'post');
 		Exception::error(200);
 	}
-	public function processTask(array $request,Tasks $tasks) {
-		$jdata = json_decode($request['BRequest'],true);
+	public function processTask(array $request, Tasks $tasks)
+	{
+		$jdata = json_decode($request['BRequest'], true);
 		if (empty($id = $jdata['object']['id'])) {
 			$response = [
 				'message' => 'no object'
 			];
-			return $tasks->update((int)$request['Id'],$response,400);
+			return $tasks->update((int) $request['Id'], $response, 400);
 		}
 		$sql = "select Id from Payments where MerchantId=?";
-		$res = Connect::$instance->fetch($sql,[$id]);
+		$res = Connect::$instance->fetch($sql, [$id]);
 		if (empty($payment = @$res[0])) {
 			$response = [
 				'message' => 'no payment'
 			];
-			return $tasks->update((int)$request['Id'],$response,400);
+			return $tasks->update((int) $request['Id'], $response, 400);
 		}
 		$row = [
 			'IsProcessed' => 1,
@@ -283,20 +296,21 @@ class Yookassa extends Payments
 				'email' => true,
 				'telegram' => true
 			];
-			$tasks->add('order-payment', $responsePayment,'','','');
+			$tasks->add('order-payment', $responsePayment, '', '', '');
 		}
-		$prepare = Connect::$instance->prepare($row,[
+		$prepare = Connect::$instance->prepare($row, [
 			'MerchantResponseDate' => [
 				'fn' => 'now()',
 				'rm' => 1
 			]
 		]);
 		$sql = "update Payments set {$prepare['update']} where Id=:Id";
-		$arr = array_merge($prepare['row'],['Id'=>$payment['Id']]);
-		Connect::$instance->query($sql,$arr);
-		return $tasks->update((int)$request['Id'],$response,$status);
+		$arr = array_merge($prepare['row'], ['Id' => $payment['Id']]);
+		Connect::$instance->query($sql, $arr);
+		return $tasks->update((int) $request['Id'], $response, $status);
 	}
-	private function getStatuses() {
+	private function getStatuses()
+	{
 		return [
 			'succeeded' => 'Оплата прошла успешно!',
 			'3d_secure_failed' => 'Не пройдена аутентификация по 3-D Secure. При новой попытке оплаты вам следует использовать другое платежное средство или обратиться в банк за уточнениями.',

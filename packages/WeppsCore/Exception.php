@@ -59,4 +59,27 @@ class Exception
 		echo "Status: $status";
 		exit();
 	}
+
+	/**
+	 * Отображает страницу ошибки с кастомным заголовком и текстом
+	 *
+	 * Генерирует страницу ошибки с указанным HTTP-статусом, заголовком и текстом ошибки.
+	 * Используется для отображения пользовательских ошибок вместо стандартных страниц 404/500.
+	 *
+	 * @param string $title Заголовок страницы ошибки (отображается в шаблоне)
+	 * @param string $text Текст ошибки (отображается в основном блоке страницы)
+	 * @param int $status HTTP-код статуса (по умолчанию: 401 Unauthorized)
+	 * @return never Метод всегда завершает выполнение скрипта через exit()
+	 */
+	public static function page($title, $text, $status = 401)
+	{
+		http_response_code($status);
+		$navigator = new Navigator('/error404/');
+		$navigator->content['Name'] = $title;
+		$navigator->content['Text1'] = $text;
+		$headers = new TemplateHeaders();
+		$obj = new Template($navigator, $headers);
+		unset($obj);
+		exit();
+	}
 }
