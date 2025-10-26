@@ -32,10 +32,8 @@ class Yookassa extends Payments
 		$this->currency = Connect::$projectServices['yookassa'][$alias]['currency'];
 		$this->vatCode = Connect::$projectServices['yookassa'][$alias]['vatCode'];
 		$this->client = new Client();
-		if (empty($this->shopId) || empty($this->secretKey)) {
-			Exception::page('Что-то не так с настройками Yookassa', "<p>Похоже, в параметрах подключения к сервису платежной системы есть ошибка. Из-за этого мы не можем обработать запрос.</p><p><b>Что делать?</b></p><p>Проверьте параметры подключения: Убедитесь, что ShopID и Секретный ключ из личного кабинета ЮKassa скопированы правильно и без лишних символов.</p>");
-		} else {
-			$this->client->setAuth($this->shopId, $this->secretKey);
+		if (!empty($this->shopId) && !empty($this->secretKey)) {
+			$this->client->setAuth($this->shopId, $this->secretKey);	
 		}
 	}
 	public function getOperations($order): array
