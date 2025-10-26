@@ -2,6 +2,7 @@
 namespace WeppsExtensions\Cart\Delivery\Cdek;
 
 use WeppsCore\Cli;
+use WeppsCore\Exception;
 use WeppsCore\Utils;
 use WeppsCore\Connect;
 use Curl\Curl;
@@ -38,20 +39,7 @@ class Cdek extends Delivery
 		$this->office = Connect::$projectServices['cdek']['office'];
 		$this->tokenFilename = __DIR__ . '/files/cdek.conf';
 		$this->settings = $settings;
-		$f = file_get_contents($this->tokenFilename);
-		$jdata = json_decode($f, true);
-		if (empty($jdata) || date('U') >= @$jdata['lifetime']) {
-			$this->getToken();
-		} elseif (!empty($jdata['access_token'])) {
-			$this->token = $jdata['access_token'];
-		} else {
-			Utils::debug('token error', 31);
-			exit();
-		}
-		$this->curl = new Curl();
-		$this->curl->setHeader('content-type', 'application/json;charset=UTF-8');
-		$this->curl->setHeader('accept', 'application/json');
-		$this->curl->setHeader('authorization', value: 'Bearer ' . $this->token);
+		$this->getToken();
 	}
 
 	public function getTariff(): array
@@ -74,9 +62,9 @@ class Cdek extends Delivery
 					'code' => 'INSURANCE',
 					'parameter' => (string) $cartSummary['sumActive'] . ".0"
 				],
-				/* [
-									'code' => 'SMS'
-							], */
+				// [
+				// 	'code' => 'SMS'
+				// ],
 			],
 			'packages' => [
 				'weight' => (int) $jsettings['weight'] * 1000,
@@ -321,29 +309,40 @@ class Cdek extends Delivery
 		$jdata = @json_decode($response->response, true);
 		return $jdata;
 	}
-	private function getToken()
+	private function getToken(): void
 	{
-		$curl = new Curl();
-		$curl->setHeader('content-type', 'application/x-www-form-urlencoded');
-		#$curl->setHeader('content-type', 'application/json;charset=UTF-8');
-		#$curl->setHeader('accept', 'application/json');
-		$body = [
-			'grant_type' => 'client_credentials',
-			'client_id' => $this->account,
-			'client_secret' => $this->password
-		];
-		;
-		$response = $curl->post($this->url . '/v2/oauth/token', $body);
-		$jdata = json_decode($response->response, true);
-		if (empty($jdata['access_token'])) {
-			echo $response->response;
+		$f = file_get_contents($this->tokenFilename);
+		$jdata = json_decode($f, true);
+		if (empty($jdata) || date('U') >= @$jdata['lifetime']) {
+			$curl = new Curl();
+			$curl->setHeader('content-type', 'application/x-www-form-urlencoded');
+			$body = [
+				'grant_type' => 'client_credentials',
+				'client_id' => $this->account,
+				'client_secret' => $this->password
+			];
+			$response = $curl->post($this->url . '/v2/oauth/token', $body);
+			$jdata = json_decode($response->response, true);
+			if (empty($jdata['access_token'])) {
+				#Exception::page('Ошибка получения токена CDEK','500', 401);
+				Exception::page('Что-то не так с настройками CDEK', "<p>Похоже, в параметрах подключения к сервису CDEK есть ошибка. Из-за этого мы не можем обработать запрос.</p><p>{$response->response}</p><p><b>Что делать?</b></p><p>Проверьте параметры подключения: Убедитесь, что данные из личного кабинета CDEK скопированы правильно и без лишних символов.</p>",401);
+				exit();
+			}
+			$this->token = $jdata['access_token'];
+			$jdata['lifetime'] = date('U') + $jdata['expires_in'] - 300;
+			$this->curl = new Curl();
+			$this->curl->setHeader('authorization', 'Bearer ' . $this->token);
+			file_put_contents($this->tokenFilename, json_encode($jdata), JSON_UNESCAPED_UNICODE);
+			$this->counter++;
+		} elseif (!empty($jdata['access_token'])) {
+			$this->token = $jdata['access_token'];
+		} else {
+			Utils::debug('token error', 31);
 			exit();
 		}
-		$this->token = $jdata['access_token'];
-		$jdata['lifetime'] = date('U') + $jdata['expires_in'] - 300;
 		$this->curl = new Curl();
-		$this->curl->setHeader('authorization', 'Bearer ' . $this->token);
-		file_put_contents($this->tokenFilename, json_encode($jdata), JSON_UNESCAPED_UNICODE);
-		$this->counter++;
+		$this->curl->setHeader('content-type', 'application/json;charset=UTF-8');
+		$this->curl->setHeader('accept', 'application/json');
+		$this->curl->setHeader('authorization', value: 'Bearer ' . $this->token);
 	}
 }

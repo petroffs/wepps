@@ -111,6 +111,9 @@
 										</section>
 									{/foreach}
 								</div>
+							{elseif $order.OPayment==1}
+								<div class="w_interval_small"></div>
+								<div><a href="/ext/Cart/Payments/Yookassa/Request.php?action=form&id={$order.Alias}" class="w_button">Оплатить</a></div>
 							{/if}
 						</td>
 					</tr>
@@ -157,7 +160,7 @@
 							</label>
 							<div class="w_interval_small"></div>
 							<label class="w_label w_button">
-								<input type="button" value="Отправить" id="order-message-btn"/>
+								<input type="button" value="Отправить" id="order-message-btn" />
 							</label>
 						</td>
 					</tr>
