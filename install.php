@@ -160,6 +160,7 @@ class Install
             'Login' => $login,
             'Password' => password_hash($password, PASSWORD_BCRYPT),
             'Email' => $login,
+            'Name' => 'Admin',
             'Phone' => '',
             'AuthDate' => $date,
             'CreateDate' => $date,
