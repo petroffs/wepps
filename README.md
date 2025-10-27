@@ -78,3 +78,7 @@ $ php /var/www/site/packages/WeppsAdmin/Updates/Request.php list
 ```
 $ php /var/www/site/packages/WeppsAdmin/Updates/Request.php update [tag]
 ```
+
+## Лицензия
+
+Этот проект распространяется под лицензией MIT. Подробнее см. в файле [LICENSE](LICENSE).
