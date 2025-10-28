@@ -2,17 +2,13 @@
 namespace WeppsExtensions\Cart\Payments\Yookassa;
 
 use WeppsCore\Connect;
-use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Exception;
 use WeppsCore\Tasks;
-use WeppsCore\TemplateHeaders;
-use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Cart\CartTemplates;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Payments\Payments;
-use WeppsExtensions\Template\Template;
 use YooKassa\Client;
 
 class Yookassa extends Payments
@@ -33,14 +29,11 @@ class Yookassa extends Payments
 		$this->vatCode = Connect::$projectServices['yookassa'][$alias]['vatCode'];
 		$this->client = new Client();
 		if (!empty($this->shopId) && !empty($this->secretKey)) {
-			$this->client->setAuth($this->shopId, $this->secretKey);	
+			$this->client->setAuth($this->shopId, $this->secretKey);
 		}
 	}
 	public function getOperations($order): array
 	{
-		#$headers = $this->cartUtils->getHeaders();
-		#$headers->js("/path.{$headers::$rand}.js");
-		#$headers->css("/path.{$headers::$rand}.css");
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=1 and IsProcessed=1";
 		$res = Connect::$instance->fetch($sql, [$order['Id']]);
 		$tpl = 'Yookassa/Yookassa.tpl';
@@ -181,7 +174,7 @@ class Yookassa extends Payments
 				'url' => $url
 			];
 		} catch (\Exception $e) {
-			Exception::page('Что-то не так с настройками Yookassa', "<p>Похоже, в параметрах подключения к сервису платежной системы есть ошибка. Из-за этого мы не можем обработать запрос.</p><p>{$e->getMessage()}</p><p><b>Что делать?</b></p><p>Проверьте параметры подключения: Убедитесь, что ShopID и Секретный ключ из личного кабинета ЮKassa скопированы правильно и без лишних символов.</p>",401);
+			Exception::page('Что-то не так с настройками Yookassa', "<p>Похоже, в параметрах подключения к сервису платежной системы есть ошибка. Из-за этого мы не можем обработать запрос.</p><p>{$e->getMessage()}</p><p><b>Что делать?</b></p><p>Проверьте параметры подключения: Убедитесь, что ShopID и Секретный ключ из личного кабинета ЮKassa скопированы правильно и без лишних символов.</p>", 401);
 		}
 	}
 	public function return()
