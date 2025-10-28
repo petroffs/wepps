@@ -22,7 +22,7 @@ class Yookassa extends Payments
 	private $secretKey;
 	private $currency;
 	private $vatCode;
-	public function __construct(array $settings = [], CartUtils $cartUtils)
+	public function __construct(array $settings, CartUtils $cartUtils)
 	{
 		$alias = (Connect::$projectDev['debug'] == 1) ? 'dev' : 'pro';
 		parent::__construct($settings, $cartUtils);
