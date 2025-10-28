@@ -131,6 +131,8 @@ class Images
 			} else {
 				$this->crop($this->widthDst, $this->heightDst, $ratio);
 			}
+			$this->width = round($this->width);
+			$this->height = round($this->height);
 			$target = imagecreatetruecolor($this->width, $this->height);
 			$target = $this->imagefill($target);
 			$target2 = imagecreatetruecolor($this->widthDst, $this->heightDst);
