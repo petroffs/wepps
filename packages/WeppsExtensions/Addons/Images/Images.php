@@ -259,6 +259,9 @@ class Images
 		$width = $minDimension * 0.15;
 		$height = $width / $ratio;
 
+		$width = round($width);
+		$height = round($height);
+
 		imagecopyresampled($thumb, $target, 0, 0, 0, 0, $width, $height, $size[0], $size[1]);
 		$target = $thumb;
 		$gap = $width * $gap;
@@ -286,6 +289,8 @@ class Images
 				$posY = $this->heightDst - $height - $gap;
 				break;
 		}
+		$posX = round($posX);
+		$posY = round($posY);
 		imagecopy($this->target, $target, $posX, $posY, 0, 0, $width, $height);
 	}
 	private function imagefill($target)
