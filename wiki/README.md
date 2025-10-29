@@ -1,38 +1,38 @@
-# Wiki Documentation
+# Документация Wiki
 
-This directory contains comprehensive documentation for the Wepps platform.
+Этот каталог содержит полную документацию по платформе Wepps.
 
-## Available Pages
+## Доступные страницы
 
-- **[Home](Home.md)** - Main wiki page with overview and quick links
-- **[Installation](Installation.md)** - Detailed installation guide
-- **[Configuration](Configuration.md)** - Configuration file setup and options
-- **[Updates](Updates.md)** - Platform update procedures and rollback
-- **[Project Structure](Project-Structure.md)** - File and directory structure
-- **[Features](Features.md)** - Platform capabilities and features
+- **[Главная](Home.md)** - Главная страница wiki с обзором и быстрыми ссылками
+- **[Установка](Installation.md)** - Подробное руководство по установке
+- **[Конфигурация](Configuration.md)** - Настройка конфигурационных файлов и параметров
+- **[Обновления](Updates.md)** - Процедуры обновления платформы и откат изменений
+- **[Структура проекта](Project-Structure.md)** - Структура файлов и каталогов
+- **[Возможности](Features.md)** - Возможности и функции платформы
 
-## Using this Documentation
+## Использование документации
 
-### For GitHub Wiki
+### Для GitHub Wiki
 
-These markdown files can be imported into GitHub Wiki:
+Эти markdown-файлы можно импортировать в GitHub Wiki:
 
-1. Go to your repository's Wiki tab
-2. Create new pages with the same names
-3. Copy the content from each `.md` file
+1. Перейдите на вкладку Wiki вашего репозитория
+2. Создайте новые страницы с теми же названиями
+3. Скопируйте содержимое из каждого `.md` файла
 
-### As Standalone Documentation
+### Как автономная документация
 
-You can also browse these files directly in the repository or use any markdown viewer.
+Вы также можете просматривать эти файлы непосредственно в репозитории или использовать любой markdown-просмотрщик.
 
-## Contributing
+## Участие в разработке
 
-If you find errors or want to improve the documentation:
+Если вы нашли ошибки или хотите улучшить документацию:
 
-1. Edit the relevant `.md` file
-2. Submit a pull request
-3. Or create an issue describing the needed changes
+1. Отредактируйте соответствующий `.md` файл
+2. Отправьте pull request
+3. Или создайте issue с описанием необходимых изменений
 
-## Language
+## Язык
 
-The documentation is in Russian (Русский язык) to match the project's primary audience.
+Документация написана на русском языке, что соответствует основной аудитории проекта.
