@@ -4,6 +4,9 @@ namespace WeppsCore;
 use WeppsExtensions\Template\Template;
 use WeppsCore\Connect;
 
+/**
+ * Класс Exception предоставляет методы для обработки и отображения ошибок в приложении.
+ */
 class Exception
 {
 	/**
