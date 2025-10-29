@@ -220,7 +220,8 @@ sudo service php8.4-fpm restart
 
 ```bash
 # Пример скрипта резервного копирования
-mysqldump --defaults-file=/var/www/config/your-project.cnf your_database > /backup/db-$(date +%Y%m%d).sql
+mysqldump --defaults-extra-file=/var/www/config.cnf -K --default-character-set=utf8mb4 --add-drop-table your_database > /var/www/your-project/platform/packages/WeppsAdmin/ConfigExtensions/Backup/files/db-$(date +%Y%m%d).sql
+
 tar -czf /backup/files-$(date +%Y%m%d).tar.gz /var/www/your-project
 ```
 
