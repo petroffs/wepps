@@ -52,6 +52,21 @@ php /var/www/site/packages/WeppsAdmin/Updates/Request.php update v1.2.0
 
 ## Файлы обновления
 
+### Структура
+
+```
+Updates/
+├── Request.php           # CLI-скрипт управления обновлениями
+├── files/
+│   └── updates/         # Директория с файлами обновлений
+│       └── [tag]/       # Директория конкретной версии
+│           ├── log.conf                      # Журнал файлов
+│           ├── log-db.conf                   # Журнал БД
+│           ├── wepps.platform-diff.zip       # Новые файлы
+│           ├── wepps.platform-rollback.zip   # Файлы отката
+│           └── wepps.platform-updates.zip    # Все файлы обновления
+```
+
 После успешного обновления в папке `/packages/WeppsAdmin/Updates/files/updates/[tag]` будут созданы следующие файлы:
 
 ### log.conf
