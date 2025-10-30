@@ -66,10 +66,11 @@ class RequestBackup extends Request
 				 */
 				$path = $root . '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
 				$filename = $path . $this->get['id'];
+				$charset = Connect::$projectDB['charset'];
 				if (strstr($filename, "sql.gz")) {
-					$str = "zcat $filename | mysql --defaults-extra-file={$cnf} $db";
+					$str = "zcat $filename | mysql --defaults-file={$cnf} --default-character-set={$charset} $db";
 				} else {
-					$str = "mysql --defaults-extra-file={$cnf} $db < $filename";
+					$str = "mysql --defaults-file={$cnf} --default-character-set={$charset} $db < $filename";
 				}
 				$error = "";
 				system($str, $error);

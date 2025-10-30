@@ -10,6 +10,7 @@ class BackupFiles {
 	private $backupPath;
 	private $db;
 	private $cnf;
+	private $dbcharset;
 	private $dateMask;
 	
 	public function __construct() {
@@ -18,6 +19,7 @@ class BackupFiles {
 		$this->backupPath = '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
 		$this->db = Connect::$projectDB['dbname'];
 		$this->cnf = Connect::$projectDB['cnf'];
+		$this->dbcharset = Connect::$projectDB['charset'];
 		$this->dateMask = date("Ymd-His");
 	}
 	
@@ -75,7 +77,7 @@ class BackupFiles {
 			$this->removeBackupDB();
 		}
 		$backupFilenameDB = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}.sql";
-		$str = "mysqldump --defaults-extra-file={$this->cnf} -K --default-character-set=utf8 --add-drop-table $this->db > $backupFilenameDB";
+		$str = "mysqldump --defaults-file={$this->cnf} -K --default-character-set={$this->dbcharset} --add-drop-table {$this->db} > $backupFilenameDB";
 		exec($str);
 		return 1;
 	}

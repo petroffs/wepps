@@ -67,6 +67,8 @@ class Connect
 			if ($projectSettings['Dev']['debug'] == 1) {
 				$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			}
+			// Явно устанавливаем кодировку соединения для поддержки эмодзи и специальных символов
+			$db->exec("SET NAMES {$projectSettings['DB']['charset']} COLLATE {$projectSettings['DB']['charset']}_unicode_ci");
 			self::$db = &$db;
 		} catch (\Exception $e) {
 			$s = 0;
