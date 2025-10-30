@@ -26,7 +26,10 @@ class SmartyPlugins
         $smarty->registerPlugin('modifier', 'array_slice', function (array $array,int $offset) {
             return array_slice($array,$offset);
         });
-        $smarty->registerPlugin('modifier', 'strarr', function ($string, $delimiter = ':::') {
+        $smarty->registerPlugin('modifier', 'strarr', function (?string $string, $delimiter = ':::') {
+            if ($string === null) {
+                return [];
+            }
             return explode($delimiter, $string);
         });
         $smarty->registerPlugin('modifier', 'format', function ($string, $nobr = '') {
