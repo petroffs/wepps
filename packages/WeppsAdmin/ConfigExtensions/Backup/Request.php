@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../../../configloader.php';
 
 use WeppsAdmin\Admin\AdminUtils;
+use WeppsAdmin\ConfigExtensions\Backup\BackupFiles;
 use WeppsCore\Request;
 use WeppsCore\Exception;
 use WeppsCore\Connect;
@@ -19,6 +20,7 @@ class RequestBackup extends Request
 		$db = Connect::$projectDB['dbname'];
 		$root = Connect::$projectDev['root'];
 		$host = Connect::$projectDev['host'];
+		$charset = Connect::$projectDB['charset'];
 		$backupPath = '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
 		switch ($action) {
 			case "database":
@@ -36,13 +38,13 @@ class RequestBackup extends Request
 				 */
 				switch ($type) {
 					case "1":
-						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set=utf8 --add-drop-table $db $table > $filename";
+						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set={$charset} --add-drop-table $db $table > $filename";
 						break;
 					case "2":
-						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set=utf8 --add-drop-table $db DataTbls > $filename";
+						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set={$charset} --add-drop-table $db DataTbls > $filename";
 						break;
 					default:
-						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set=utf8 --add-drop-table $db > $filename";
+						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set={$charset} --add-drop-table $db > $filename";
 						break;
 				}
 				system($str, $error);
@@ -222,7 +224,7 @@ class RequestBackup extends Request
 				$res = Connect::$instance->fetch($sql);
 
 				unset($res[0]['Id']);
-				$arr = AdminAdminUtils::query($res[0]);
+				$arr = Connect::$instance->prepare($res[0]);
 				$str .= "insert ignore into s_Config {$arr['insert']}\n\n";
 
 				/*
@@ -232,7 +234,7 @@ class RequestBackup extends Request
 				$res = Connect::$instance->fetch($sql);
 
 				foreach ($res as $value) {
-					$arr = AdminAdminUtils::query($value);
+					$arr = Connect::$instance->prepare($value);
 					$str .= "insert ignore into s_ConfigFields {$arr['insert']}\n";
 				}
 

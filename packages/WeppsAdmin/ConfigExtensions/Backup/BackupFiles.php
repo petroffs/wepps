@@ -77,8 +77,17 @@ class BackupFiles {
 			$this->removeBackupDB();
 		}
 		$backupFilenameDB = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}.sql";
-		$str = "mysqldump --defaults-file={$this->cnf} -K --default-character-set={$this->dbcharset} --add-drop-table {$this->db} > $backupFilenameDB";
+		$str = "mysqldump --defaults-file={$this->cnf} -K --default-character-set={$this->dbcharset} --set-charset --add-drop-table {$this->db} > $backupFilenameDB";
 		exec($str);
+		
+		// Исправляем заголовок кодировки для корректной работы с эмодзи
+		if (file_exists($backupFilenameDB) && $this->dbcharset === 'utf8mb4') {
+			$content = file_get_contents($backupFilenameDB);
+			$content = str_replace('SET NAMES utf8 ', 'SET NAMES utf8mb4 ', $content);
+			$content = preg_replace('/\/\*!50503 SET NAMES utf8 \*\/;/', '/*!50503 SET NAMES utf8mb4 */;', $content);
+			file_put_contents($backupFilenameDB, $content);
+		}
+		
 		return 1;
 	}
 	
@@ -92,5 +101,3 @@ class BackupFiles {
 		return 1;
 	}
 }
-
-?>
