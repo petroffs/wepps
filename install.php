@@ -96,7 +96,7 @@ class Install
     {
         $filename = Connect::$projectDev['root'] . '/packages/WeppsAdmin/ConfigExtensions/Backup/files/' . Connect::$projectServices['wepps']['nameconf'] . '.release.sql';
         if (!is_file($filename)) {
-            $this->cli->error('Неправильный путь к файлу базы данных');
+            $this->cli->error('Неправильный путь к файлу базы данных: ' . $filename);
             exit();
         }
 

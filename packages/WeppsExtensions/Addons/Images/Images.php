@@ -89,8 +89,9 @@ class Images
 		 */
 		$newfile = $root . "/pic/" . $action . "/" . $filename;
 		$newdir = dirname($newfile);
-		if (!is_dir($newdir))
-			mkdir($newdir, 0750, true);
+		if (!is_dir($newdir)) {
+			@mkdir($newdir, 0750, true);
+		}
 		$this->newfile = $newfile;
 		$ratio = ($this->widthDst > 0 && $this->heightDst > 0) ? $this->widthDst / $this->heightDst : $this->ratio;
 
