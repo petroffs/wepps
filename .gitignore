@@ -15,6 +15,6 @@
 /debug.conf
 *.sql.gz
 *.7z
-*.7zip
+*.zip
 /sitemap.xml
 /robots.txt
