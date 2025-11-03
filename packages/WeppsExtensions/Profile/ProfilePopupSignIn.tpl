@@ -16,10 +16,12 @@
         </section>
     </fieldset>
     <fieldset>
-        <section>
+        <section class="w_grid w_3col w_1col_view_small w_ai_center w_gap">
             <label class="w_label w_button">
                 <input type="submit" value="Войти" />
             </label>
+            <a href="/profile/reg.html">Регистрация</a>
+            <a href="/profile/password.html">Забыли пароль?</a>
         </section>
     </fieldset>
 </form>

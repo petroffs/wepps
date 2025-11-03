@@ -2,11 +2,13 @@
 namespace WeppsExtensions\Cart;
 
 use Smarty\Smarty as VendorSmarty;
+use WeppsCore\Connect;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Exception;
 use WeppsCore\TemplateHeaders;
 use WeppsCore\TextTransforms;
+use WeppsCore\Utils;
 use WeppsExtensions\Template\Template;
 
 class CartTemplates
@@ -88,6 +90,11 @@ class CartTemplates
 	public function empty(): void
 	{
 		$this->headers->css("/ext/Cart/CartEmpty.{$this->headers::$rand}.css");
+		$this->headers->js("/ext/Cart/CartEmpty.{$this->headers::$rand}.js");
+		if (!empty(Connect::$projectData['user']['Id'])) {
+			$this->smarty->assign('cartDefaultTpl', $this->smarty->fetch(__DIR__ . '/CartEmptyLogged.tpl'));
+			return;
+		}
 		$this->smarty->assign('cartDefaultTpl', $this->smarty->fetch(__DIR__ . '/CartEmpty.tpl'));
 		return;
 	}
