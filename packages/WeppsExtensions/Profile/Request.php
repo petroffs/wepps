@@ -134,10 +134,10 @@ class RequestProfile extends Request
 		if (!empty($_COOKIE['wepps_cart']) && !empty($_COOKIE['wepps_cart_guid'])) {
 			$cartUtils = new CartUtils();
 			$cart = $cartUtils->getCart();
-			$cartUser = json_decode($res[0]['JCart'],true);
+			$cartUser = json_decode($res[0]['JCart'], true);
 			if (!empty($cart['items']) && !empty($cartUser['items'])) {
-				foreach($cartUser['items'] as $item) {
-					$cartUtils->add($item['id'],$item['qu']);
+				foreach ($cartUser['items'] as $item) {
+					$cartUtils->add($item['id'], $item['qu']);
 				}
 				$cart = $cartUtils->getCart();
 				$json = json_encode($cart, JSON_UNESCAPED_UNICODE);
@@ -163,16 +163,20 @@ class RequestProfile extends Request
 		$sql = "select * from s_Users where Login=? and DisplayOff=0";
 		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
 		$this->errors = [];
-		if (empty($user = $res[0])) {
+		if (empty($user = @$res[0])) {
 			$this->errors['login'] = 'Неверный логин';
 		}
 		$recaptcha = new RecaptchaV2(new TemplateHeaders());
-		$response = $recaptcha->check($this->get['g-recaptcha-response']);
-		if ($response['response']['success'] !== true) {
-			$this->errors['g-recaptcha-response'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
+		$response = $recaptcha->check($this->get['g-recaptcha-response'] ?? '');
+		if ($recaptcha->getSitekey()) {
+			if ($response['response']['success'] !== true) {
+				$this->errors['recaptchadub'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
+			}
 		}
 		if (!empty(array_filter($this->errors))) {
-			echo $recaptcha->reset();
+			if ($recaptcha->getSitekey()) {
+				echo $recaptcha->reset();
+			}
 			return false;
 		}
 		Utils::cookies('wepps_token', '');

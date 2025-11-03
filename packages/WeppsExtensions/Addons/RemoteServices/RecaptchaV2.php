@@ -44,11 +44,14 @@ class RecaptchaV2 extends RemoteServices
 
 	public function render($gwidgetId = 'gwidgetId', $id = 'greacptchaV2', $recaptchadub = 'recaptchadub')
 	{
+		if (empty($this->sitekey)) {
+			return '<div style="color: var(--color-attention);">Ошибка: не задан ключ сайта (site key) для reCAPTCHA V2</div>';
+		}
 		#<script src=\"https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit\" async defer></script>
 		$this->headers->js("https://www.google.com/recaptcha/api.js?onload=onloadRecapchaV2&render=explicit");
 		$html = "
-		<label class=\"w_label w_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
 		<div class=\"g-recaptcha\" id=\"{$id}\"></div>
+		<label class=\"w_label w_input\"><input type=\"text\" name=\"{$recaptchadub}\"  style=\"display:none;\"/></label>
 		<div id=\"{$id}_error\" class=\"recaptcha-error\" style=\"display:none; color: var(--color-attention); margin-top: var(--s);\"></div>
 		<script>
 		var onloadRecapchaV2 = function() {
