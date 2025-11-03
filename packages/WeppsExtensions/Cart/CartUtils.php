@@ -23,23 +23,31 @@ class CartUtils
 	private $memcached;
 	public function __construct()
 	{
-		if (empty(Connect::$projectData['user'])) {
-			$this->user['JCart'] = $this->_getCartFromCookies();
-		} else {
-			$cart = $this->_getCartFromCookies(false);
-			$jdata = json_decode($cart, true);
-			if (!empty($jdata['items'])) {
-				$jdata2 = json_decode(Connect::$projectData['user']['JCart'], true);
-				$jdata2['items'] += $jdata['items'];
-				Utils::cookies('wepps_cart');
-				Utils::cookies('wepps_cart_guid');
-				$this->setCart();
-			}
-			$this->user = $this->getUser(Connect::$projectData['user']);
-			$this->favorites = json_decode($this->user['JFav'], true);
-		}
-		$this->cart = json_decode($this->user['JCart'] ?? '', true) ?? [];
 		$this->memcached = new Memcached();
+		if (empty(Connect::$projectData['user'])) {
+			$this->cart = json_decode($this->_getCartFromCookies(), true) ?? [];
+			return;
+		}
+		$this->user = $this->getUser(Connect::$projectData['user']);
+		$cart = $this->_getCartFromCookies(false);
+		$jdata = json_decode($cart, true);
+		if (!empty($jdata['items'])) {
+			$jdata2 = (array) json_decode(Connect::$projectData['user']['JCart'], true);
+			if (!empty($jdata2['items'])) {
+				$jdata2['items'] += $jdata['items'];
+			} else {
+				$jdata2['items'] = $jdata['items'];
+			}
+			$jdata2['date'] = date('Y-m-d H:i:s');
+			$this->user['JCart'] = json_encode($jdata2, JSON_UNESCAPED_UNICODE);
+			Utils::cookies('wepps_cart');
+			Utils::cookies('wepps_cart_guid');
+			$this->cart = $jdata2;
+			$this->setCart();
+		}
+		$this->favorites = json_decode($this->user['JFav'], true);
+		$this->cart = json_decode($this->user['JCart'] ?? '', true) ?? [];
+		return;
 	}
 	public function getUser(array $user): array
 	{
@@ -88,13 +96,13 @@ class CartUtils
 	{
 		$this->cart['date'] = date('Y-m-d H:i:s');
 		$json = json_encode($this->cart, JSON_UNESCAPED_UNICODE);
-		if (empty(Connect::$projectData['user'])) {
+		if (empty($this->user['Id'])) {
 			Utils::cookies('wepps_cart', $json);
 			Utils::cookies('wepps_cart_guid', Utils::guid($json . Connect::$projectServices['jwt']['secret']));
 			return;
 		}
 		$this->setCartSummary();
-		Connect::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$this->user['Id']]);
+		Connect::$instance->query("update s_Users set JCart=? where Id=?", [$json, $this->user['Id']]);
 		return;
 	}
 	public function setCartCitiesId(string $citiesId): void
