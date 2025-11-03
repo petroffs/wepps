@@ -1,13 +1,11 @@
 <?php
 require_once 'config.php';
-
 require_once 'packages/vendor/autoload.php';
 
 use WeppsCore\Connect;
 use WeppsCore\Smarty;
 use WeppsCore\TemplateHeaders;
 use WeppsCore\Users;
-use WeppsCore\Utils;
 
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 setlocale(LC_NUMERIC, 'en_US.UTF-8');
