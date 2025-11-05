@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../../configloader.php';
 
-$obj = new Rest(['cli'=>@$argv]);
+use WeppsExtensions\Addons\Rest\Rest;
+
+$obj = new Rest(['cli' => ($argv ?? [])]);
 unset($obj);
-?>

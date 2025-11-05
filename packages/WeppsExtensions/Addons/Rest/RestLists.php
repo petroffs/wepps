@@ -2,99 +2,176 @@
 namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
-use WeppsCore\Data;
-use WeppsCore\Utils;
 use WeppsCore\Exception;
 
-class RestLists extends Rest {
-	public $parent = 0;
-	public function __construct($settings=[]) {
+/**
+ * REST обработчик для работы со списками
+ * Наследует структуру от Rest класса
+ */
+class RestLists extends Rest
+{
+	/**
+	 * Флаг отключения родительской инициализации
+	 * @var int
+	 */
+	public int $parent = 0;
+
+	/**
+	 * Конструктор класса RestLists
+	 * 
+	 * @param array $settings Параметры инициализации
+	 */
+	public function __construct($settings = [])
+	{
 		parent::__construct($settings);
 	}
-	public function getLists($list='',$field='') {
-		$text = @$this->get['search'];
-		$page = @$this->get['page'];
-		if (empty($page)) {
+
+	/**
+	 * Получить список с поиском и пагинацией
+	 * 
+	 * @param array $params Параметры запроса (должны содержать 'list' и 'field')
+	 * @param array $additionalParams Дополнительные параметры
+	 * @return void
+	 */
+	public function getLists($params = [], $additionalParams = []): void
+	{
+		$text = $this->get['search'] ?? '';
+		$page = (int) ($this->get['page'] ?? 1);
+
+		if ($page < 1) {
 			$page = 1;
 		}
-		
-		/*
-		 * Условие поля извлечь из схемы
-		 */
-		$sql = "select * from s_ConfigFields where TableName='{$list}' and Id='{$field}'";
+
+		// Получение информации о поле из конфигурации
+		$list = $params[0] ?? $params['list'] ?? '';
+		$field = $params[1] ?? $params['field'] ?? '';
+
+		$sql = "SELECT * FROM s_ConfigFields WHERE TableName = '{$list}' AND Id = '{$field}'";
 		$res = Connect::$instance->fetch($sql);
+
 		if (empty($res)) {
 			Exception::error(404);
 		}
+
 		$ex = explode('::', $res[0]['Type']);
-		$list = $ex[1];
-		$field = $ex[2];
-		$condition = $ex[3];
-		
-		if (mb_strlen($text)>=0) {
-			$condition .= " and t.{$field} like '%{$text}%'";
+		$list = $ex[1] ?? '';
+		$field = $ex[2] ?? '';
+		$condition = $ex[3] ?? '';
+
+		// Добавление условия поиска
+		if (mb_strlen($text) > 0) {
+			$condition .= " AND t.{$field} LIKE '%{$text}%'";
 		}
+
 		$limit = 10;
-		$offset = ($page-1)*$limit;
-		$sql = "select t.Id id,concat(t.{$field},' (',t.Id,')') text from $list t where $condition order by t.{$field} limit $offset,$limit";
+		$offset = ($page - 1) * $limit;
+		$sql = "SELECT t.Id id, CONCAT(t.{$field}, ' (', t.Id, ')') text 
+		        FROM {$list} t 
+		        WHERE {$condition} 
+		        ORDER BY t.{$field} 
+		        LIMIT {$offset}, {$limit}";
+
 		$res = Connect::$instance->fetch($sql);
-		#Utils::debug($res,1);
-		$pagination = false;
-		if (!empty($res)) {
-			$pagination = true;
-		}
+		$pagination = !empty($res);
+
 		$output = [
-				'results'=>$res,
+			'status' => 200,
+			'message' => 'List retrieved successfully',
+			'data' => [
+				'results' => $res,
 				'pagination' => [
-						'more'=> $pagination
+					'more' => $pagination
 				]
+			]
 		];
-		echo $this->getJson($output);
-		exit();
+
+		$this->sendResponse($output);
 	}
-	public function getTest() {
+
+	/**
+	 * Тестовый метод GET запроса
+	 * 
+	 * @return void
+	 */
+	public function getTest(): void
+	{
 		$output = [
+			'status' => 200,
+			'message' => 'GET request processed',
+			'data' => [
 				[
-						'id'=>1,
-						'title'=>'test 1',
-						'test'=>'test get'
+					'id' => 1,
+					'title' => 'test 1',
+					'test' => 'test get'
 				]
+			]
 		];
-		$this->status = 200;
-		$this->setResponse($output);
+
+		$this->sendResponse($output);
 	}
-	public function setTest() {
+
+	/**
+	 * Тестовый метод POST/PUT запроса
+	 * 
+	 * @return void
+	 */
+	public function setTest(): void
+	{
 		$output = [
+			'status' => 200,
+			'message' => 'POST request processed',
+			'data' => [
 				[
-						'id'=>1,
-						'title'=>'test 1',
-						'test'=>'test set'
+					'id' => 1,
+					'title' => 'test 1',
+					'test' => 'test set'
 				],
 				[
-						'id'=>2,
-						'title'=>'test 2',
-						'test'=>'test set'
+					'id' => 2,
+					'title' => 'test 2',
+					'test' => 'test set'
 				],
+			]
 		];
-		$this->status = 200;
-		$this->setResponse($output);
+
+		$this->sendResponse($output);
 	}
-	public function removeTest() {
+
+	/**
+	 * Тестовый метод DELETE запроса
+	 * 
+	 * @return void
+	 */
+	public function removeTest(): void
+	{
 		$output = [
-					'field'=>$this->settings['param'],
-					'value'=>$this->settings['paramValue'],
-					'removed'=>'ok',
+			'status' => 200,
+			'message' => 'DELETE request processed',
+			'data' => [
+				'field' => $this->apiParams['param'] ?? $this->settings['param'] ?? '',
+				'value' => $this->apiParams['paramValue'] ?? $this->settings['paramValue'] ?? '',
+				'removed' => 'ok',
+			]
 		];
-		$this->status = 200;
-		$this->setResponse($output);
+
+		$this->sendResponse($output);
 	}
-	public function cliTest() {
+
+	/**
+	 * Тестовый метод CLI запроса
+	 * 
+	 * @return void
+	 */
+	public function cliTest(): void
+	{
 		$output = [
-				'message'=>'ok'
+			'status' => 200,
+			'message' => 'CLI test executed',
+			'data' => [
+				'message' => 'ok'
+			]
 		];
-		$this->status = 200;
-		$this->setResponse($output,false);
+
+		$this->sendResponse($output, false);
 	}
 }
-
-?>

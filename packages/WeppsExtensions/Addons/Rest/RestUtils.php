@@ -1,12 +1,13 @@
-<?php 
+<?php
 namespace WeppsExtensions\Addons\Rest;
 
-class RestUtils {
-    public static function _json_validate($string)
+class RestUtils
+{
+    public function validateJson($string)
     {
-        $string = self::_removeBOM($string);
-        $result = json_decode($string,true);
-        
+        $string = $this->_removeBOM($string);
+        $result = json_decode($string, true);
+
         // switch and check possible JSON errors
         switch (json_last_error()) {
             case JSON_ERROR_NONE:
@@ -24,15 +25,15 @@ class RestUtils {
             case JSON_ERROR_SYNTAX:
                 $error = 'Syntax error, malformed JSON.';
                 break;
-                // PHP >= 5.3.3
+            // PHP >= 5.3.3
             case JSON_ERROR_UTF8:
                 $error = 'Malformed UTF-8 characters, possibly incorrectly encoded.';
                 break;
-                // PHP >= 5.5.0
+            // PHP >= 5.5.0
             case JSON_ERROR_RECURSION:
                 $error = 'One or more recursive references in the value to be encoded.';
                 break;
-                // PHP >= 5.5.0
+            // PHP >= 5.5.0
             case JSON_ERROR_INF_OR_NAN:
                 $error = 'One or more NAN or INF values in the value to be encoded.';
                 break;
@@ -43,27 +44,21 @@ class RestUtils {
                 $error = 'Unknown JSON error occured.';
                 break;
         }
-        
+
         if ($error !== '') {
             // throw the Exception or exit // or whatever :)
-            return array('status'=>'500','message'=>$error);
+            return ['status' => 400, 'message' => $error];
         }
         // everything is OK
-        return array('status'=>'200','message'=>'ok','data'=>$result);
-        
-        
+        return ['status' => 200, 'message' => 'OK', 'data' => $result];
+
+
     }
-    private static function _removeBOM($data) {
+    private function _removeBOM($data)
+    {
         if (0 === strpos(bin2hex($data), 'efbbbf')) {
             return substr($data, 3);
         }
         return $data;
-    }
-    public static function getJsonClear($json) {
-    	if (!empty($json)) {
-    		$json = str_replace('\\\'',"'", $json);
-    		return $json;
-    	}
-    	return null;
     }
 }
