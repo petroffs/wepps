@@ -8,6 +8,10 @@ namespace WeppsExtensions\Addons\Rest;
  * Примеры JSON для v1.post.test и v1.put.test:
  * - Объект: {"type": "test", "data": {"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}}
  * - Массив:  {"type": "test", "data": [{"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}]}
+ * 
+ * validation: валидация данных из тела JSON
+ * query_validation: валидация GET-параметров, например для фильтрации и сортировки
+ * type: может быть строка ('int') или массив (['int', 'string']) для множественных типов
  */
 class RestConfig
 {
@@ -35,12 +39,16 @@ class RestConfig
                     'getList' => [
                         'class' => RestLists::class,
                         'method' => 'getLists',
-                        'note' => 'List retrieved successfully',
+                        'note' => 'List retrieved successfully'
                     ],
                     'test' => [
                         'class' => RestLists::class,
                         'method' => 'getTest',
                         'note' => 'GET request processed',
+                        'query_validation' => [
+                            'id' => ['type' => ['int', 'string'], 'required' => false],
+                            'sort' => ['type' => 'string', 'required' => false]
+                        ]
                     ],
                 ],
                 'delete' => [

@@ -137,6 +137,15 @@ class Rest
 				if (isset($config['validation']) && $this->data) {
 					$this->validateData($this->data['data'] ?? [], $config['validation']);
 				}
+
+				// Валидация GET-параметров, если задана
+				if (isset($config['query_validation'])) {
+					$queryData = [];
+					foreach ($config['query_validation'] as $key => $rule) {
+						$queryData[$key] = $this->get[$key] ?? null;
+					}
+					$this->validateData($queryData, $config['query_validation']);
+				}
 				if (method_exists($handler, $config['method'])) {
 					return $handler->{$config['method']}($this->data);
 				}
@@ -192,44 +201,17 @@ class Rest
 				throw new \Exception("Field '$key' is required");
 			}
 			if ($value !== null) {
-				switch ($rule['type']) {
-					case 'int':
-						if (!is_int($value)) {
-							throw new \Exception("Field '$key' must be integer");
-						}
+				$types = is_array($rule['type']) ? $rule['type'] : [$rule['type']];
+				$valid = false;
+				foreach ($types as $type) {
+					if ($this->validateType($value, $type)) {
+						$valid = true;
 						break;
-					case 'string':
-						if (!is_string($value)) {
-							throw new \Exception("Field '$key' must be string");
-						}
-						break;
-					case 'date':
-						if (!strtotime($value)) {
-							throw new \Exception("Field '$key' must be valid date");
-						}
-						break;
-					case 'email':
-						if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-							throw new \Exception("Field '$key' must be valid email");
-						}
-						break;
-					case 'phone':
-						$cleaned = preg_replace('/\D/', '', $value);
-						if (strlen($cleaned) !== 10) {
-							throw new \Exception("Field '$key' must be 10 digits after cleaning");
-						}
-						break;
-					case 'guid':
-						if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value)) {
-							throw new \Exception("Field '$key' must be valid GUID");
-						}
-						break;
-					case 'barcode':
-						if (!$this->isValidEAN13($value)) {
-							throw new \Exception("Field '$key' must be valid EAN13 barcode");
-						}
-						break;
-					// Добавить другие типы по необходимости
+					}
+				}
+				if (!$valid) {
+					$typeStr = is_array($rule['type']) ? implode('|', $rule['type']) : $rule['type'];
+					throw new \Exception("Field '$key' must be $typeStr");
 				}
 			}
 		}
@@ -265,6 +247,37 @@ class Rest
 		$checkDigit = (10 - ($sum % 10)) % 10;
 		return (int) $ean13[12] === $checkDigit;
 	}
+
+	/**
+	 * Валидация значения по типу
+	 * 
+	 * @param mixed $value Значение для проверки
+	 * @param string $type Тип для проверки
+	 * @return bool Результат валидации
+	 */
+	private function validateType($value, string $type): bool
+	{
+		switch ($type) {
+			case 'int':
+				return is_int($value);
+			case 'string':
+				return is_string($value);
+			case 'date':
+				return strtotime($value) !== false;
+			case 'email':
+				return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+			case 'phone':
+				$cleaned = preg_replace('/\D/', '', $value);
+				return strlen($cleaned) === 10;
+			case 'guid':
+				return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value);
+			case 'barcode':
+				return $this->isValidEAN13($value);
+			default:
+				return false;
+		}
+	}
+
 	private function validateJson(string $string): array
 	{
 		// Удаление BOM
