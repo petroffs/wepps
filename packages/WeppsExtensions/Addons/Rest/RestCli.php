@@ -24,6 +24,8 @@ class RestCli extends Rest
 	public function __construct($settings = [])
 	{
 		parent::__construct($settings);
+		// Парсинг данных для обработчиков
+		$this->getSettings($settings);
 	}
 
 	/**
@@ -32,7 +34,7 @@ class RestCli extends Rest
 	 * 
 	 * @return void
 	 */
-	public function removeLogLocal(): void
+	public function removeLogLocal(): array
 	{
 		try {
 			// Очистка таблицы логов задач
@@ -51,23 +53,21 @@ class RestCli extends Rest
 				}
 			}
 
-			$output = [
+			return [
 				'status' => 200,
 				'message' => 'Local logs removed successfully',
 				'data' => [
-					'removed' => 'ok',
+					'removed' => 'OK',
 					'timestamp' => date('Y-m-d H:i:s')
 				]
 			];
 		} catch (\Exception $e) {
-			$output = [
+			return [
 				'status' => 500,
 				'message' => 'Error removing logs: ' . $e->getMessage(),
 				'data' => null
 			];
 		}
-
-		$this->sendResponse($output, false);
 	}
 
 	/**
@@ -75,17 +75,15 @@ class RestCli extends Rest
 	 * 
 	 * @return void
 	 */
-	public function cliTest(): void
+	public function cliTest(): array
 	{
-		$output = [
+		return [
 			'status' => 200,
 			'message' => 'CLI test executed',
 			'data' => [
-				'message' => 'ok',
+				'message' => 'OK',
 				'timestamp' => date('Y-m-d H:i:s')
 			]
 		];
-
-		$this->sendResponse($output, false);
 	}
 }

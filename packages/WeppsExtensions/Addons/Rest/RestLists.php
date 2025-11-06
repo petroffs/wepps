@@ -3,6 +3,7 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
 use WeppsCore\Exception;
+use WeppsCore\Utils;
 
 /**
  * REST обработчик для работы со списками
@@ -24,6 +25,8 @@ class RestLists extends Rest
 	public function __construct($settings = [])
 	{
 		parent::__construct($settings);
+		// Парсинг данных для обработчиков
+		$this->getSettings($settings);
 	}
 
 	/**
@@ -33,7 +36,7 @@ class RestLists extends Rest
 	 * @param array $additionalParams Дополнительные параметры
 	 * @return void
 	 */
-	public function getLists($params = [], $additionalParams = []): void
+	public function getLists($params = [], $additionalParams = []): array
 	{
 		$text = $this->get['search'] ?? '';
 		$page = (int) ($this->get['page'] ?? 1);
@@ -50,7 +53,11 @@ class RestLists extends Rest
 		$res = Connect::$instance->fetch($sql);
 
 		if (empty($res)) {
-			Exception::error(404);
+			return [
+				'status' => 404,
+				'message' => 'Field not found',
+				'data' => null
+			];
 		}
 
 		$ex = explode('::', $res[0]['Type']);
@@ -74,7 +81,7 @@ class RestLists extends Rest
 		$res = Connect::$instance->fetch($sql);
 		$pagination = !empty($res);
 
-		$output = [
+		return [
 			'status' => 200,
 			'message' => 'List retrieved successfully',
 			'data' => [
@@ -84,8 +91,6 @@ class RestLists extends Rest
 				]
 			]
 		];
-
-		$this->sendResponse($output);
 	}
 
 	/**
@@ -93,9 +98,9 @@ class RestLists extends Rest
 	 * 
 	 * @return void
 	 */
-	public function getTest(): void
+	public function getTest(): array
 	{
-		$output = [
+		return [
 			'status' => 200,
 			'message' => 'GET request processed',
 			'data' => [
@@ -106,18 +111,18 @@ class RestLists extends Rest
 				]
 			]
 		];
-
-		$this->sendResponse($output);
 	}
 
 	/**
 	 * Тестовый метод POST/PUT запроса
 	 * 
-	 * @return void
+	 * @param array|null $data Входные данные
+	 * @return array
 	 */
-	public function setTest(): void
+	public function setTest($data = null): array
 	{
-		$output = [
+		#Utils::debug($this->d, 31);
+		return [
 			'status' => 200,
 			'message' => 'POST request processed',
 			'data' => [
@@ -133,8 +138,6 @@ class RestLists extends Rest
 				],
 			]
 		];
-
-		$this->sendResponse($output);
 	}
 
 	/**
@@ -142,9 +145,9 @@ class RestLists extends Rest
 	 * 
 	 * @return void
 	 */
-	public function removeTest(): void
+	public function removeTest(): array
 	{
-		$output = [
+		return [
 			'status' => 200,
 			'message' => 'DELETE request processed',
 			'data' => [
@@ -153,8 +156,6 @@ class RestLists extends Rest
 				'removed' => 'ok',
 			]
 		];
-
-		$this->sendResponse($output);
 	}
 
 	/**
@@ -162,16 +163,14 @@ class RestLists extends Rest
 	 * 
 	 * @return void
 	 */
-	public function cliTest(): void
+	public function cliTest(): array
 	{
-		$output = [
+		return [
 			'status' => 200,
 			'message' => 'CLI test executed',
 			'data' => [
 				'message' => 'ok'
 			]
 		];
-
-		$this->sendResponse($output, false);
 	}
 }
