@@ -125,7 +125,7 @@ class RequestProfile extends Request
 		$jwt = new Jwt();
 		$token = $jwt->token_encode([
 			'typ' => 'auth',
-			'id' => $res[0]['Id']
+			'id' => $res[0]['Id'],
 		], $lifetime);
 
 		/**

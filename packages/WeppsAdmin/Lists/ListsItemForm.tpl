@@ -174,7 +174,9 @@
 								</label>
 							{/if}
 							<script>
-								$(document).ready(function() { getSelectRemote({ id:"#remote_{$key}",url:"/rest/v1.0/getList/{$item.0.TableName}/{$item.0.Id}/" })});
+								$(document).ready(function() {
+									getSelectRemote({ id:"#remote_{$key}",url:"/rest/wepps/list_items?list={$item.0.TableName}&field={$item.0.Id}",token: "{$smarty.cookies.wepps_token}" });
+								});
 							</script>
 						{elseif $item.0.Type|strstr:"minitable"}
 							<div class="minitable {if $item.0.$listMode=='disabled'}minitable-disabled{else}minitable-active{/if}"

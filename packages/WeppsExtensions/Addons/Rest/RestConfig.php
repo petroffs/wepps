@@ -19,11 +19,22 @@ class RestConfig
     {
         return [
             'v1' => [
+                'get' => [
+                    'test' => [
+                        'class' => RestAd::class,
+                        'method' => 'getTest',
+                        'note' => 'Retrieve test data with optional filtering',
+                        'query_validation' => [
+                            'id' => ['type' => 'int2', 'required' => false],
+                            'sort' => ['type' => 'string', 'required' => false]
+                        ]
+                    ],
+                ],
                 'post' => [
                     'test' => [
-                        'class' => RestLists::class,
+                        'class' => RestAd::class,
                         'method' => 'setTest',
-                        'note' => 'POST request processed',
+                        'note' => 'Create or update test data with validation',
                         'auth_required' => true,
                         'validation' => [
                             'id' => ['type' => 'int', 'required' => true],
@@ -36,34 +47,18 @@ class RestConfig
                         ]
                     ],
                 ],
-                'get' => [
-                    'getList' => [
-                        'class' => RestLists::class,
-                        'method' => 'getLists',
-                        'note' => 'List retrieved successfully'
-                    ],
-                    'test' => [
-                        'class' => RestLists::class,
-                        'method' => 'getTest',
-                        'note' => 'GET request processed',
-                        'query_validation' => [
-                            'id' => ['type' => 'int2', 'required' => false],
-                            'sort' => ['type' => 'string', 'required' => false]
-                        ]
-                    ],
-                ],
                 'delete' => [
                     'test' => [
-                        'class' => RestLists::class,
+                        'class' => RestAd::class,
                         'method' => 'removeTest',
-                        'note' => 'DELETE request processed',
+                        'note' => 'Remove test data by ID',
                     ],
                 ],
                 'put' => [
                     'test' => [
-                        'class' => RestLists::class,
+                        'class' => RestAd::class,
                         'method' => 'setTest',
-                        'note' => 'PUT request processed',
+                        'note' => 'Update existing test data',
                         'validation' => [
                             'id' => ['type' => 'int', 'required' => true],
                             'title' => ['type' => 'string', 'required' => true]
@@ -74,70 +69,54 @@ class RestConfig
                     'removeLogLocal' => [
                         'class' => RestCli::class,
                         'method' => 'removeLogLocal',
-                        'note' => 'Local log removed',
+                        'note' => 'Remove local log files',
                     ],
                     'test' => [
                         'class' => RestCli::class,
                         'method' => 'cliTest',
-                        'note' => 'CLI test executed',
+                        'note' => 'Execute CLI test operations',
                     ],
                 ],
             ],
             'wepps' => [
-                'post' => [
-                    'login' => [
-                        'class' => RestLists::class,
-                        'method' => 'login',
-                        'note' => 'User authentication successful',
-                        'validation' => [
+                'get' => [
+                    'token' => [
+                        'class' => RestAd::class,
+                        'method' => 'getToken',
+                        'note' => 'Authenticate user and return JWT token',
+                        'query_validation' => [
                             'login' => ['type' => 'string', 'required' => true],
                             'password' => ['type' => 'string', 'required' => true]
                         ]
                     ],
-                    'test' => [
-                        'class' => RestLists::class,
-                        'method' => 'setTest',
-                        'note' => 'POST request processed',
+                    'list_items' => [
+                        'class' => RestAd::class,
+                        'method' => 'getListItems',
+                        'note' => 'Retrieve list of available items',
+                        'auth_required' => true,
+                        'query_validation' => [
+                            'list' => ['type' => 'string', 'required' => true],
+                            'field' => ['type' => 'int2', 'required' => true],
+                            'search' => ['type' => 'string', 'required' => false],
+                            'page' => ['type' => 'int2', 'required' => false],
+                        ]
                     ],
                 ],
-                'get' => [
-                    'getList' => [
-                        'class' => RestLists::class,
-                        'method' => 'getLists',
-                        'note' => 'List retrieved successfully',
-                    ],
-                    'test' => [
-                        'class' => RestLists::class,
-                        'method' => 'getTest',
-                        'note' => 'GET request processed',
-                    ],
-                ],
-                'delete' => [
-                    'test' => [
-                        'class' => RestLists::class,
-                        'method' => 'removeTest',
-                        'note' => 'DELETE request processed',
-                    ],
-                ],
-                'put' => [
-                    'test' => [
-                        'class' => RestLists::class,
-                        'method' => 'setTest',
-                        'note' => 'PUT request processed',
-                    ],
-                ],
+                'post' => [],
+                'delete' => [],
+                'put' => [],
             ],
             'cli' => [
                 'cli' => [
                     'removeLogLocal' => [
                         'class' => RestCli::class,
                         'method' => 'removeLogLocal',
-                        'note' => 'Local log removed',
+                        'note' => 'Remove local log files',
                     ],
                     'test' => [
                         'class' => RestCli::class,
                         'method' => 'cliTest',
-                        'note' => 'CLI test executed',
+                        'note' => 'Execute CLI test operations',
                     ],
                 ],
             ],

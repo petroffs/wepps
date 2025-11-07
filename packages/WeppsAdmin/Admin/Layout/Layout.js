@@ -125,13 +125,46 @@ class LayoutWepps {
 	call () {
 		
 	};
+	token() {
+		return storageWepps.get('wepps_token');
+	};
 };
 
 class UtilsWepps {
 	money(val) {
 		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
 	};
+	cookie(name) {
+		let matches = document.cookie.match(new RegExp(
+			"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+		));
+		return matches ? decodeURIComponent(matches[1]) : null;
+	};
 };
 
-var layoutWepps = new LayoutWepps();
+class StorageWepps {
+	set(key, value, ttl = null) {
+		const item = {
+			value: value,
+			expiry: ttl ? Date.now() + ttl * 1000 : null
+		};
+		localStorage.setItem(key, JSON.stringify(item));
+	};
+	get(key) {
+		const itemStr = localStorage.getItem(key);
+		if (!itemStr) return null;
+		const item = JSON.parse(itemStr);
+		if (item.expiry && Date.now() > item.expiry) {
+			localStorage.removeItem(key);
+			return null;
+		}
+		return item.value;
+	};
+	remove(key) {
+		localStorage.removeItem(key);
+	};
+};
+
 var utilsWepps = new UtilsWepps();
+var storageWepps = new StorageWepps();
+var layoutWepps = new LayoutWepps();

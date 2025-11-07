@@ -1,5 +1,4 @@
-var readyViewItemInit = function() {
-	console.log('test viewItem');
-}
+var readyViewItemInit = function () {
+};
 
 $(document).ready(readyViewItemInit);

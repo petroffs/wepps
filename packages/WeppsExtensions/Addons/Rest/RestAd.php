@@ -2,59 +2,75 @@
 namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
+use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsCore\Validator;
 
 /**
- * REST обработчик для работы со списками
+ * REST обработчик для работы со списками админки
  */
-class RestLists
+class RestAd extends Rest
 {
-
 	/**
-	 * Конструктор класса RestLists
+	 * Конструктор класса RestAd
 	 * 
 	 * @param array $settings Параметры инициализации
 	 */
 	public function __construct($settings = [])
 	{
-		// Инициализация без наследования
+		$this->settings = $this->getSettings($settings);
 	}
 
-	public function login($data)
+	/**
+	 * Аутентификация пользователя через GET-параметры и генерация JWT токена
+	 * 
+	 * @return array Результат аутентификации с токеном или сообщением об ошибке
+	 */
+	public function getToken()
 	{
-		$login = $data['data']['login'] ?? '';
-		$password = $data['data']['password'] ?? '';
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$login = $this->get['login'] ?? '';
+		$password = $this->get['password'] ?? '';
 
 		if (empty($login) || empty($password)) {
 			return ['status' => 400, 'message' => 'Login and password are required', 'data' => null];
 		}
 
-		// Проверка в таблице s_Users (предполагаем MD5 хэширование пароля)
-		$user = Connect::$instance->query("SELECT Id, Login FROM s_Users WHERE Login = ? AND Password = ?", [$login, password_hash($password, PASSWORD_BCRYPT)])->fetch();
+		// Если логин является email, приводим к нижнему регистру
+		$errorMessage = 'Invalid email format';
+		$error = Validator::isEmail($login, $errorMessage);
 
-		if ($user) {
-			$jwt = new Jwt();
-			$token = $jwt->token_encode([
-				'user_id' => $user['Id'],
-				'login' => $user['Login'],
-				'iat' => time()
-			]);
+		if (!empty($error)) {
+			return ['status' => 401, 'message' => $errorMessage, 'data' => null];
+		}
 
-			return ['status' => 200, 'message' => 'Login successful', 'data' => ['token' => $token]];
-		} else {
+		$login = strtolower($login);
+
+		// Проверка в таблице s_Users
+		$res = Connect::$instance->fetch("SELECT Id, Login, Password FROM s_Users WHERE Login = ?", [$login]);
+
+		if (empty($user = $res[0]) || !password_verify($password, $res[0]['Password'] ?? '')) {
 			return ['status' => 401, 'message' => 'Invalid credentials', 'data' => null];
 		}
+
+		$jwt = new Jwt();
+		$lifetime = 86200;
+		$token = $jwt->token_encode([
+			'typ' => 'auth',
+			'id' => $user['Id']
+		], $lifetime);
+		$tokenData = $jwt->token_decode($token);
+
+		return ['status' => 200, 'message' => 'Login successful', 'data' => ['token' => $token, 'exp' => $tokenData['payload']['exp']]];
 	}
 
 	/**
 	 * Получить список с поиском и пагинацией
-	 * 
-	 * @param array $params Параметры запроса (должны содержать 'list' и 'field')
-	 * @param array $additionalParams Дополнительные параметры
-	 * @return void
+	 * @return array
 	 */
-	public function getLists($params = [], $additionalParams = []): array
+	public function getListItems(): array
 	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$text = $this->get['search'] ?? '';
 		$page = (int) ($this->get['page'] ?? 1);
 
@@ -63,11 +79,11 @@ class RestLists
 		}
 
 		// Получение информации о поле из конфигурации
-		$list = $params[0] ?? $params['list'] ?? '';
-		$field = $params[1] ?? $params['field'] ?? '';
+		$list = $this->get['list'] ?? '';
+		$field = $this->get['field'] ?? '';
 
-		$sql = "SELECT * FROM s_ConfigFields WHERE TableName = '{$list}' AND Id = '{$field}'";
-		$res = Connect::$instance->fetch($sql);
+		$sql = "SELECT * FROM s_ConfigFields WHERE TableName = ? AND Id = ?";
+		$res = Connect::$instance->fetch($sql, [$list, $field]);
 
 		if (empty($res)) {
 			return [
@@ -117,6 +133,7 @@ class RestLists
 	 */
 	public function getTest(): array
 	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		return [
 			'status' => 200,
 			'message' => 'GET request processed',
@@ -138,6 +155,7 @@ class RestLists
 	 */
 	public function setTest($data = null): array
 	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		#Utils::debug($this->d, 31);
 		return [
 			'status' => 200,
@@ -164,6 +182,7 @@ class RestLists
 	 */
 	public function removeTest(): array
 	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		return [
 			'status' => 200,
 			'message' => 'DELETE request processed',
@@ -182,6 +201,7 @@ class RestLists
 	 */
 	public function cliTest(): array
 	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		return [
 			'status' => 200,
 			'message' => 'CLI test executed',

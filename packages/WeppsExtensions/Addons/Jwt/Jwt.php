@@ -27,7 +27,7 @@ class Jwt {
 		} catch (\Exception $e) {
 			$output = [
 					'type'=>'jwt',
-					'status'=>(strstr($e->getMessage(), ': Expired'))?401:500,
+					'status'=>(strstr($e->getMessage(), ': Expired'))?401:400,
 					'message' => $e->getMessage(),
 					'code' => $e->getCode(),
 			];

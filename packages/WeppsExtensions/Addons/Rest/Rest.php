@@ -124,30 +124,34 @@ class Rest
 	{
 		try {
 			$config = $this->getConfig($this->version, $this->type, $this->method);
-			if ($config) {
-				// Проверка аутентификации, если требуется
-				if (!empty($config['auth_required'])) {
-					$this->authenticateBearerToken();
-				}
-
-				// Валидация входных данных, если задана
-				if (isset($config['validation']) && $this->data) {
-					$this->validateData($this->data['data'] ?? [], $config['validation']);
-				}
-
-				// Валидация GET-параметров, если задана
-				if (isset($config['query_validation'])) {
-					$queryData = [];
-					foreach ($config['query_validation'] as $key => $rule) {
-						$queryData[$key] = $this->get[$key] ?? null;
-					}
-					$this->validateData($queryData, $config['query_validation']);
-				}
-				if (method_exists($handler, $config['method'])) {
-					return $handler->{$config['method']}($this->data);
-				}
+			if (!$config) {
+				return ['status' => 404, 'message' => 'Method not found', 'data' => null];
 			}
-			return ['status' => 404, 'message' => 'Method not found', 'data' => null];
+
+			// Проверка аутентификации, если требуется
+			if (!empty($config['auth_required'])) {
+				$this->authenticateBearerToken();
+			}
+
+			// Валидация входных данных, если задана
+			if (isset($config['validation']) && $this->data) {
+				$this->validateData($this->data['data'] ?? [], $config['validation']);
+			}
+
+			// Валидация GET-параметров, если задана
+			if (isset($config['query_validation'])) {
+				$queryData = [];
+				foreach ($config['query_validation'] as $key => $rule) {
+					$queryData[$key] = $this->get[$key] ?? null;
+				}
+				$this->validateData($queryData, $config['query_validation']);
+			}
+
+			if (!method_exists($handler, $config['method'])) {
+				return ['status' => 404, 'message' => 'Method not found', 'data' => null];
+			}
+
+			return $handler->{$config['method']}($this->data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => 'Validation error: ' . $e->getMessage(), 'data' => null];
 		}
@@ -181,7 +185,8 @@ class Rest
 		}
 
 		// TODO: Реализовать полную проверку токена (JWT, база данных и т.д.)
-		Utils::debug('Api version: ' . $this->version, 31);
+		// Если попали сюда, значит токен валиден. Возможно потребуется брать инфо о пользователе и его права доступа
+		//Utils::debug('Api version: ' . $this->version, 31);
 	}
 
 	/**
@@ -192,16 +197,16 @@ class Rest
 	private function routeRequest(): ?array
 	{
 		$config = $this->getConfig($this->version, $this->type, $this->method);
-		if ($config) {
-			$class = $config['class'];
-			$instance = ($class === RestCli::class) ? new $class($this->settings) : new $class();
-			return [
-				'data' => $instance,
-				'note' => $config['note'],
-			];
+		if (!$config) {
+			return null;
 		}
 
-		return null;
+		$class = $config['class'];
+		$instance = ($class === RestCli::class) ? new $class($this->settings) : new $class();
+		return [
+			'data' => $instance,
+			'note' => $config['note'],
+		];
 	}
 
 	/**
@@ -289,7 +294,7 @@ class Rest
 		}
 	}
 
-	private function validateJson(string $string): array
+	protected function validateJson(string $string): array
 	{
 		// Удаление BOM
 		if (0 === strpos(bin2hex($string), 'efbbbf')) {
@@ -402,26 +407,19 @@ class Rest
 		$this->headers = apache_request_headers();
 		$this->request = file_get_contents('php://input');
 		$this->type = strtolower($_SERVER['REQUEST_METHOD']);
-		//Utils::debug($this->get, 3);
+
 		// Парсинг URL параметров: ?params=v1/method/param/value
 		$params = $this->get['params'] ?? '';
 		$this->parseRequest($params);
 
-
-		// Utils::debug($this->headers, 3);
-		// Utils::debug('API Version: ' . $this->version, 3);
-		// Utils::debug('API Method: ' . $this->method, 3);
-		// Utils::debug('API Type: ' . $this->type, 3);
-		//Utils::debug($this->params, 31);
-
 		if (!empty($this->request)) {
 			$validate = $this->validateJson($this->request);
-			if ($validate['status'] == 200) {
-				$this->data = &$validate['data'];
-			} else {
+			if ($validate['status'] != 200) {
 				$this->status = $validate['status'];
 				return $this->sendResponse(['message' => $validate['message']]);
 			}
+
+			$this->data = &$validate['data'];
 		}
 		return $this->buildSettings();
 	}
