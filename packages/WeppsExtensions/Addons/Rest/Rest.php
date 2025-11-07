@@ -63,12 +63,6 @@ class Rest
 	public int $log = 1;
 
 	/**
-	 * Флаг родительского класса (1 - продолжить, 0 - остановить выполнение)
-	 * @var int
-	 */
-	public int $parent = 1;
-
-	/**
 	 * Версия API (v1, v2, cli и т.д.)
 	 * @var string
 	 */
@@ -103,9 +97,6 @@ class Rest
 	{
 		$this->config = RestConfig::getConfig();
 		$this->settings = $this->getSettings($settings);
-		if ($this->parent == 0) {
-			return;
-		}
 
 		// Маршрутизация по версии, методу и типу запроса
 		$handler = $this->routeRequest();
@@ -134,6 +125,11 @@ class Rest
 		try {
 			$config = $this->getConfig($this->version, $this->type, $this->method);
 			if ($config) {
+				// Проверка аутентификации, если требуется
+				if (!empty($config['auth_required'])) {
+					$this->authenticateBearerToken();
+				}
+
 				// Валидация входных данных, если задана
 				if (isset($config['validation']) && $this->data) {
 					$this->validateData($this->data['data'] ?? [], $config['validation']);
@@ -155,6 +151,37 @@ class Rest
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => 'Validation error: ' . $e->getMessage(), 'data' => null];
 		}
+	}
+
+	/**
+	 * Проверка Bearer токена аутентификации
+	 * 
+	 * @throws \Exception Если токен отсутствует или некорректный
+	 */
+	private function authenticateBearerToken(): void
+	{
+		$headers = $this->headers ?? [];
+		$authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+
+		if (empty($authHeader)) {
+			throw new \Exception('Authorization header is required');
+		}
+
+		if (!preg_match('/^Bearer\s+(.+)$/', $authHeader, $matches)) {
+			throw new \Exception('Invalid Authorization header format. Expected: Bearer <token>');
+		}
+
+		$token = $matches[1];
+
+		// Здесь можно добавить дополнительную валидацию токена
+		// Например, проверка в базе данных, JWT декодирование и т.д.
+		// Для примера, просто проверяем, что токен не пустой и имеет минимальную длину
+		if (empty($token) || strlen($token) < 10) {
+			throw new \Exception('Invalid Bearer token');
+		}
+
+		// TODO: Реализовать полную проверку токена (JWT, база данных и т.д.)
+		Utils::debug('Api version: ' . $this->version, 31);
 	}
 
 	/**

@@ -2,19 +2,12 @@
 namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
-use WeppsCore\Utils;
 
 /**
  * REST обработчик для CLI запросов
- * Наследует структуру от Rest класса
  */
-class RestCli extends Rest
+class RestCli
 {
-	/**
-	 * Флаг отключения родительской инициализации
-	 * @var int
-	 */
-	public int $parent = 0;
 
 	/**
 	 * Конструктор класса RestCli
@@ -23,9 +16,7 @@ class RestCli extends Rest
 	 */
 	public function __construct($settings = [])
 	{
-		parent::__construct($settings);
-		// Парсинг данных для обработчиков
-		$this->getSettings($settings);
+		// Инициализация без наследования
 	}
 
 	/**

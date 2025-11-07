@@ -2,20 +2,13 @@
 namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
-use WeppsCore\Exception;
-use WeppsCore\Utils;
+use WeppsExtensions\Addons\Jwt\Jwt;
 
 /**
  * REST обработчик для работы со списками
- * Наследует структуру от Rest класса
  */
-class RestLists extends Rest
+class RestLists
 {
-	/**
-	 * Флаг отключения родительской инициализации
-	 * @var int
-	 */
-	public int $parent = 0;
 
 	/**
 	 * Конструктор класса RestLists
@@ -24,9 +17,33 @@ class RestLists extends Rest
 	 */
 	public function __construct($settings = [])
 	{
-		parent::__construct($settings);
-		// Парсинг данных для обработчиков
-		$this->getSettings($settings);
+		// Инициализация без наследования
+	}
+
+	public function login($data)
+	{
+		$login = $data['data']['login'] ?? '';
+		$password = $data['data']['password'] ?? '';
+
+		if (empty($login) || empty($password)) {
+			return ['status' => 400, 'message' => 'Login and password are required', 'data' => null];
+		}
+
+		// Проверка в таблице s_Users (предполагаем MD5 хэширование пароля)
+		$user = Connect::$instance->query("SELECT Id, Login FROM s_Users WHERE Login = ? AND Password = ?", [$login, password_hash($password, PASSWORD_BCRYPT)])->fetch();
+
+		if ($user) {
+			$jwt = new Jwt();
+			$token = $jwt->token_encode([
+				'user_id' => $user['Id'],
+				'login' => $user['Login'],
+				'iat' => time()
+			]);
+
+			return ['status' => 200, 'message' => 'Login successful', 'data' => ['token' => $token]];
+		} else {
+			return ['status' => 401, 'message' => 'Invalid credentials', 'data' => null];
+		}
 	}
 
 	/**

@@ -24,6 +24,7 @@ class RestConfig
                         'class' => RestLists::class,
                         'method' => 'setTest',
                         'note' => 'POST request processed',
+                        'auth_required' => true,
                         'validation' => [
                             'id' => ['type' => 'int', 'required' => true],
                             'title' => ['type' => 'string', 'required' => true],
@@ -82,8 +83,17 @@ class RestConfig
                     ],
                 ],
             ],
-            'v2' => [
+            'wepps' => [
                 'post' => [
+                    'login' => [
+                        'class' => RestLists::class,
+                        'method' => 'login',
+                        'note' => 'User authentication successful',
+                        'validation' => [
+                            'login' => ['type' => 'string', 'required' => true],
+                            'password' => ['type' => 'string', 'required' => true]
+                        ]
+                    ],
                     'test' => [
                         'class' => RestLists::class,
                         'method' => 'setTest',
