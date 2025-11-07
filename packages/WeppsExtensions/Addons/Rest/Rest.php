@@ -3,6 +3,7 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
 use WeppsCore\Utils;
+use WeppsCore\Validator;
 
 
 class Rest
@@ -201,17 +202,8 @@ class Rest
 				throw new \Exception("Field '$key' is required");
 			}
 			if ($value !== null) {
-				$types = is_array($rule['type']) ? $rule['type'] : [$rule['type']];
-				$valid = false;
-				foreach ($types as $type) {
-					if ($this->validateType($value, $type)) {
-						$valid = true;
-						break;
-					}
-				}
-				if (!$valid) {
-					$typeStr = is_array($rule['type']) ? implode('|', $rule['type']) : $rule['type'];
-					throw new \Exception("Field '$key' must be $typeStr");
+				if (!$this->validateType($value, $rule['type'])) {
+					throw new \Exception("Field '$key' must be {$rule['type']}");
 				}
 			}
 		}
@@ -226,29 +218,6 @@ class Rest
 	}
 
 	/**
-	 * Проверка валидности EAN13 штрих-кода
-	 * 
-	 * @param string $ean13 Код для проверки
-	 * @return bool Результат проверки
-	 */
-	private function isValidEAN13(string $ean13): bool
-	{
-		// Должно быть ровно 13 цифр
-		if (!preg_match('/^\d{13}$/', $ean13)) {
-			return false;
-		}
-
-		$sum = 0;
-		for ($i = 0; $i < 12; $i++) {
-			$digit = (int) $ean13[$i];
-			$sum += $i % 2 === 0 ? $digit : $digit * 3;
-		}
-
-		$checkDigit = (10 - ($sum % 10)) % 10;
-		return (int) $ean13[12] === $checkDigit;
-	}
-
-	/**
 	 * Валидация значения по типу
 	 * 
 	 * @param mixed $value Значение для проверки
@@ -259,20 +228,35 @@ class Rest
 	{
 		switch ($type) {
 			case 'int':
-				return is_int($value);
+				$errorMessage = 'must be an integer';
+				return Validator::isInt($value, $errorMessage) === '';
+			case 'int2':
+				$errorMessage = 'must be an integer or numeric string';
+				return Validator::isInt2($value, $errorMessage) === '';
+			case 'float':
+				$errorMessage = 'must be a float or integer';
+				return Validator::isFloat($value, $errorMessage) === '';
+			case 'float2':
+				$errorMessage = 'must be a number or numeric string';
+				return Validator::isFloat2($value, $errorMessage) === '';
 			case 'string':
-				return is_string($value);
+				$errorMessage = 'must be a string';
+				return Validator::isString($value, $errorMessage) === '';
 			case 'date':
-				return strtotime($value) !== false;
+				$errorMessage = 'must be a valid date';
+				return Validator::isDate($value, $errorMessage) === '';
 			case 'email':
-				return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+				$errorMessage = 'must be a valid email address';
+				return Validator::isEmail($value, $errorMessage) === '';
 			case 'phone':
-				$cleaned = preg_replace('/\D/', '', $value);
-				return strlen($cleaned) === 10;
+				$errorMessage = 'must be a valid phone number (10 digits)';
+				return Validator::isPhone($value, $errorMessage) === '';
 			case 'guid':
-				return preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $value);
+				$errorMessage = 'must be a valid GUID';
+				return Validator::isGuid($value, $errorMessage) === '';
 			case 'barcode':
-				return $this->isValidEAN13($value);
+				$errorMessage = 'must be a valid EAN13 barcode';
+				return Validator::isBarcode($value, $errorMessage) === '';
 			default:
 				return false;
 		}

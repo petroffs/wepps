@@ -11,7 +11,7 @@ namespace WeppsExtensions\Addons\Rest;
  * 
  * validation: валидация данных из тела JSON
  * query_validation: валидация GET-параметров, например для фильтрации и сортировки
- * type: может быть строка ('int') или массив (['int', 'string']) для множественных типов
+ * type: строка с типом данных ('int', 'int2', 'float', 'float2', 'string', 'email', 'date', 'phone', 'guid', 'barcode')
  */
 class RestConfig
 {
@@ -46,7 +46,7 @@ class RestConfig
                         'method' => 'getTest',
                         'note' => 'GET request processed',
                         'query_validation' => [
-                            'id' => ['type' => ['int', 'string'], 'required' => false],
+                            'id' => ['type' => 'int2', 'required' => false],
                             'sort' => ['type' => 'string', 'required' => false]
                         ]
                     ],
