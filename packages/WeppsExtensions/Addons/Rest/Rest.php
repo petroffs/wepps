@@ -216,6 +216,9 @@ class Rest
 				return ['status' => 404, 'message' => 'Method not found', 'data' => null];
 			}
 
+			// Настройка логирования для метода
+			$this->log = $config['log'] ?? $this->log;
+
 			// Проверка аутентификации, если требуется
 			if (!empty($config['auth_required'])) {
 				$this->authenticateBearerToken();
