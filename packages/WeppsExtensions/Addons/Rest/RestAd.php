@@ -124,19 +124,22 @@ class RestAd
 		$condition = $ex[3] ?? '';
 
 		// Добавление условия поиска
+		$searchCondition = '';
+		$params = [];
 		if (mb_strlen($text) > 0) {
-			$condition .= " AND t.{$field} LIKE '%{$text}%'";
+			$searchCondition = " AND t.{$field} LIKE ?";
+			$params[] = '%' . $text . '%';
 		}
 
 		$limit = 10;
 		$offset = ($page - 1) * $limit;
 		$sql = "SELECT t.Id id, CONCAT(t.{$field}, ' (', t.Id, ')') text 
 		        FROM {$list} t 
-		        WHERE {$condition} 
+		        WHERE {$condition}{$searchCondition} 
 		        ORDER BY t.{$field} 
-		        LIMIT {$offset}, {$limit}";
+		        LIMIT $offset, $limit";
 
-		$res = Connect::$instance->fetch($sql);
+		$res = Connect::$instance->fetch($sql, $params);
 		$pagination = !empty($res);
 
 		return [

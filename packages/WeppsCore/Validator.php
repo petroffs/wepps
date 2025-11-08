@@ -278,7 +278,6 @@ class Validator
 	{
 		$str = "<script>\n";
 		if (!empty(array_filter($errors))) {
-			Utils::debug($errors,2);
 			foreach ($errors as $key => $value) {
 				if ($value != "") {
 					$str .= "
