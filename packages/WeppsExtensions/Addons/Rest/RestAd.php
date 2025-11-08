@@ -140,15 +140,11 @@ class RestAd
 		$pagination = !empty($res);
 
 		return [
-			'status' => 200,
-			'message' => 'List retrieved successfully',
-			'data' => [
 				'results' => $res,
 				'pagination' => [
 					'more' => $pagination
 				]
-			]
-		];
+			];
 	}
 
 	/**

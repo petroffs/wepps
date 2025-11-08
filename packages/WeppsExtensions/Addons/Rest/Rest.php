@@ -88,6 +88,12 @@ class Rest
 	protected string $type = 'GET';
 
 	/**
+	 * Флаг кастомного ответа (без стандартной структуры status/message/data)
+	 * @var bool
+	 */
+	protected bool $customResponse = false;
+
+	/**
 	 * Конфигурация API методов
 	 * @var array
 	 */
@@ -164,6 +170,7 @@ class Rest
 		} else {
 			$handlerObject = $handler['data'];
 			$config = $handler['config'];
+			$this->customResponse = $config['custom_response'] ?? false;
 			return $this->executeHandler($handlerObject, $config);
 		}
 	}
@@ -187,6 +194,7 @@ class Rest
 			} else {
 				$handlerObject = $handler['data'];
 				$config = $handler['config'];
+				$this->customResponse = $config['custom_response'] ?? false;
 				$result = $this->executeHandler($handlerObject, $config);
 				$this->sendResponse($result);
 			}
@@ -229,6 +237,10 @@ class Rest
 
 			if (!method_exists($handler, $config['method'])) {
 				return ['status' => 404, 'message' => 'Method not found', 'data' => null];
+			}
+
+			if ($this->customResponse) {
+				return $handler->{$config['method']}($this->data);
 			}
 
 			return $handler->{$config['method']}($this->data);
@@ -571,20 +583,34 @@ class Rest
 	 */
 	protected function sendResponse($output, $print = true)
 	{
+		#Utils::debug('sendResponse customResponse: ' . ($this->customResponse ? 'true' : 'false'), 31);
+
+		// Если кастомный ответ, отправляем данные напрямую
+		if ($this->customResponse) {
+			$this->response = is_string($output) ? $output : $this->getJson($output);
+			if ($print) {
+				header('Content-Type: application/json; charset=utf-8');
+				echo $this->response;
+				exit();
+			}
+			return $this->response;
+		}
+
 		// Если это массив со структурированными данными
 		if (is_array($output) && isset($output['status'])) {
 			$this->status = $output['status'];
 			$responseData = [
 				'status' => $output['status'],
 				'message' => $output['message'] ?? '',
-				'data' => $output['data'] ?? null,
+				'data' => $this->normalizeData($output['data'] ?? null),
 			];
+
 		} else {
 			// Если это просто данные, оборачиваем их
 			$responseData = [
 				'status' => $this->status ?? 200,
 				'message' => is_array($output) && isset($output['message']) ? $output['message'] : '',
-				'data' => $output,
+				'data' => $this->normalizeData($output),
 			];
 		}
 
@@ -677,6 +703,26 @@ class Rest
 		}
 	}
 
+	/**
+	 * Нормализация данных для консистентной сериализации в JSON
+	 * Обеспечивает, что 'data' всегда массив в JSON
+	 * 
+	 * @param mixed $data Данные для нормализации
+	 * @return array Нормализованные данные
+	 */
+	private function normalizeData($data): array
+	{
+		if (is_array($data)) {
+			// Если массив ассоциативный (объект), оборачиваем в массив
+			if (!empty($data) && !is_numeric(key($data))) {
+				return [$data];
+			}
+			// Если уже индексированный массив, возвращаем как есть
+			return $data;
+		}
+		// Если не массив, оборачиваем в массив
+		return [$data];
+	}
 	/**
 	 * Форматировать заголовки в строку
 	 * 

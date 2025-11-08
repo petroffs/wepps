@@ -54,7 +54,7 @@ class RestCli
 			];
 		} catch (\Exception $e) {
 			return [
-				'status' => 500,
+				'status' => 400,
 				'message' => 'Error removing logs: ' . $e->getMessage(),
 				'data' => null
 			];
