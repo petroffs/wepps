@@ -93,25 +93,103 @@ class Rest
 	 */
 	protected array $config;
 
-	public function __construct($settings = [])
+	/**
+	 * Получить GET параметры
+	 * @return array
+	 */
+	public function &getGet(): array
 	{
-		$this->config = RestConfig::getConfig();
-		$this->settings = $this->getSettings($settings);
+		return $this->get;
+	}
 
-		// Маршрутизация по версии, методу и типу запроса
+	/**
+	 * Получить POST параметры
+	 * @return array
+	 */
+	public function &getPost(): array
+	{
+		return $this->post;
+	}
+
+	/**
+	 * Получить данные из тела запроса
+	 * @return array|null
+	 */
+	public function &getData(): ?array
+	{
+		return $this->data;
+	}
+
+	/**
+	 * Получить HTTP заголовки
+	 * @return array|null
+	 */
+	public function getHeaders(): ?array
+	{
+		return $this->headers;
+	}
+
+	/**
+	 * Получить настройки API
+	 * @return array
+	 */
+	public function getSettings(): array
+	{
+		return $this->settings;
+	}
+
+	/**
+	 * Получить параметры запроса
+	 * @return array
+	 */
+	public function getParams(): array
+	{
+		return $this->params;
+	}
+
+	/**
+	 * Обработать запрос вручную (для тестирования)
+	 * @return array Результат обработки
+	 */
+	public function process(): array
+	{
 		$handler = $this->routeRequest();
 
 		if (empty($handler)) {
-			$this->status = 404;
-			$this->sendResponse([
+			return [
 				'status' => 404,
 				'message' => 'Endpoint not found',
 				'data' => null,
-			]);
+			];
 		} else {
 			$handlerObject = $handler['data'];
-			$result = $this->executeHandler($handlerObject);
-			$this->sendResponse($result);
+			$config = $handler['config'];
+			return $this->executeHandler($handlerObject, $config);
+		}
+	}
+
+	public function __construct($settings = [], $autoProcess = true, $forceWebMode = false)
+	{
+		$this->config = RestConfig::getConfig();
+		$this->settings = $this->setSettings($settings, $forceWebMode);
+
+		if ($autoProcess) {
+			// Маршрутизация по версии, методу и типу запроса
+			$handler = $this->routeRequest();
+
+			if (empty($handler)) {
+				$this->status = 404;
+				$this->sendResponse([
+					'status' => 404,
+					'message' => 'Endpoint not found',
+					'data' => null,
+				]);
+			} else {
+				$handlerObject = $handler['data'];
+				$config = $handler['config'];
+				$result = $this->executeHandler($handlerObject, $config);
+				$this->sendResponse($result);
+			}
 		}
 		return;
 	}	/**
@@ -120,10 +198,12 @@ class Rest
 		 * @param object $handler Объект обработчика
 		 * @return array Результат выполнения метода
 		 */
-	private function executeHandler($handler): array
+	private function executeHandler($handler, $config = null): array
 	{
 		try {
-			$config = $this->getConfig($this->version, $this->type, $this->method);
+			if (!$config) {
+				$config = $this->getConfig($this->version, $this->type, $this->method);
+			}
 			if (!$config) {
 				return ['status' => 404, 'message' => 'Method not found', 'data' => null];
 			}
@@ -202,9 +282,16 @@ class Rest
 		}
 
 		$class = $config['class'];
-		$instance = ($class === RestCli::class) ? new $class($this->settings) : new $class();
+		if ($class === RestCli::class) {
+			$instance = new $class($this->settings);
+		} elseif ($class === RestAd::class) {
+			$instance = new $class($this);
+		} else {
+			$instance = new $class($this->get, $this->post, $this->data, $this->headers);
+		}
 		return [
 			'data' => $instance,
+			'config' => $config,
 			'note' => $config['note'],
 		];
 	}
@@ -393,9 +480,9 @@ class Rest
 	}
 
 
-	protected function getSettings($settings = [])
+	protected function setSettings($settings = [], $forceWebMode = false)
 	{
-		if (php_sapi_name() === 'cli') {
+		if (php_sapi_name() === 'cli' && !$forceWebMode) {
 			$this->headers = null;
 			$this->parseCliRequest($settings);
 			return $this->buildSettings();
@@ -463,7 +550,7 @@ class Rest
 	 * 
 	 * @return array
 	 */
-	private function buildSettings(): array
+	protected function buildSettings(): array
 	{
 		return [
 			'version' => $this->version,

@@ -9,16 +9,39 @@ use WeppsCore\Validator;
 /**
  * REST обработчик для работы со списками админки
  */
-class RestAd extends Rest
+class RestAd
 {
+	private Rest $rest;
+
+	/**
+	 * GET параметры запроса
+	 * @var array
+	 */
+	protected array $get = [];
+
+	/**
+	 * POST параметры запроса
+	 * @var array
+	 */
+	protected array $post = [];
+
+	/**
+	 * Парсированные данные из тела JSON запроса
+	 * @var array|null
+	 */
+	protected ?array $data = null;
+
 	/**
 	 * Конструктор класса RestAd
 	 * 
-	 * @param array $settings Параметры инициализации
+	 * @param Rest $rest Экземпляр Rest с данными и методами
 	 */
-	public function __construct($settings = [])
+	public function __construct(Rest $rest)
 	{
-		$this->settings = $this->getSettings($settings);
+		$this->rest = $rest;
+		$this->get = &$rest->getGet();
+		$this->post = &$rest->getPost();
+		$this->data = &$rest->getData();
 	}
 
 	/**
@@ -49,9 +72,11 @@ class RestAd extends Rest
 		// Проверка в таблице s_Users
 		$res = Connect::$instance->fetch("SELECT Id, Login, Password FROM s_Users WHERE Login = ?", [$login]);
 
-		if (empty($user = $res[0]) || !password_verify($password, $res[0]['Password'] ?? '')) {
+		if (empty($res) || empty($res[0]) || !password_verify($password, $res[0]['Password'] ?? '')) {
 			return ['status' => 401, 'message' => 'Invalid credentials', 'data' => null];
 		}
+
+		$user = $res[0];
 
 		$jwt = new Jwt();
 		$lifetime = 86200;
@@ -187,8 +212,8 @@ class RestAd extends Rest
 			'status' => 200,
 			'message' => 'DELETE request processed',
 			'data' => [
-				'field' => $this->apiParams['param'] ?? $this->settings['param'] ?? '',
-				'value' => $this->apiParams['paramValue'] ?? $this->settings['paramValue'] ?? '',
+				'field' => $this->rest->getParams()['param'] ?? $this->rest->getSettings()['param'] ?? '',
+				'value' => $this->rest->getParams()['paramValue'] ?? $this->rest->getSettings()['paramValue'] ?? '',
 				'removed' => 'ok',
 			]
 		];
