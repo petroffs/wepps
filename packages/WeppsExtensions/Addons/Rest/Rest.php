@@ -2,8 +2,10 @@
 namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
+use WeppsCore\Users;
 use WeppsCore\Utils;
 use WeppsCore\Validator;
+use WeppsExtensions\Addons\Jwt\Jwt;
 
 
 class Rest
@@ -94,6 +96,12 @@ class Rest
 	protected bool $customResponse = false;
 
 	/**
+	 * Данные аутентифицированного пользователя
+	 * @var array|null
+	 */
+	protected ?array $user = null;
+
+	/**
 	 * Конфигурация API методов
 	 * @var array
 	 */
@@ -151,6 +159,15 @@ class Rest
 	public function getParams(): array
 	{
 		return $this->params;
+	}
+
+	/**
+	 * Получить данные пользователя
+	 * @return array|null
+	 */
+	public function getUser(): ?array
+	{
+		return $this->user;
 	}
 
 	/**
@@ -248,7 +265,9 @@ class Rest
 
 			return $handler->{$config['method']}($this->data);
 		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => 'Validation error: ' . $e->getMessage(), 'data' => null];
+			$status = $e->getCode() ?: 400;
+			$this->status = $status;
+			return ['status' => $status, 'message' => $e->getMessage(), 'data' => null];
 		}
 	}
 
@@ -263,25 +282,33 @@ class Rest
 		$authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
 
 		if (empty($authHeader)) {
-			throw new \Exception('Authorization header is required');
+			throw new \Exception('Authorization header is required', 401);
 		}
 
-		if (!preg_match('/^Bearer\s+(.+)$/', $authHeader, $matches)) {
-			throw new \Exception('Invalid Authorization header format. Expected: Bearer <token>');
+		$jwt = new Jwt();
+		$bearer = $jwt->bearer();
+
+		if ($bearer['status'] != 200) {
+			throw new \Exception('Authentication failed: ' . $bearer['message'], $bearer['status']);
 		}
 
-		$token = $matches[1];
-
-		// Здесь можно добавить дополнительную валидацию токена
-		// Например, проверка в базе данных, JWT декодирование и т.д.
-		// Для примера, просто проверяем, что токен не пустой и имеет минимальную длину
-		if (empty($token) || strlen($token) < 10) {
-			throw new \Exception('Invalid Bearer token');
+		if ($bearer['payload']['typ'] != 'auth') {
+			throw new \Exception('Invalid token payload: auth expected', 401);
+		} elseif (empty($bearer['payload']['id'])) {
+			throw new \Exception('Invalid token payload: id expected', 401);
 		}
 
-		// TODO: Реализовать полную проверку токена (JWT, база данных и т.д.)
-		// Если попали сюда, значит токен валиден. Возможно потребуется брать инфо о пользователе и его права доступа
-		//Utils::debug('Api version: ' . $this->version, 31);
+		if ($this->version == 'wepps') {
+			$sql = "SELECT * from s_Users where Id=? and DisplayOff=0 and ShowAdmin=1";
+			$res = Connect::$instance->fetch($sql, [$bearer['payload']['id']]);
+			if (empty($res[0]['Id'])) {
+				throw new \Exception('User not found or inactive', 401);
+			}
+
+			// Сохраняем данные пользователя при успешной аутентификации
+			$this->user = $res[0];
+			#Utils::debug($this->user, 31);
+		}
 	}
 
 	/**
@@ -584,14 +611,16 @@ class Rest
 	 * @param bool $print Выводить ли ответ клиенту
 	 * @return string JSON ответ
 	 */
-	protected function sendResponse($output, $print = true)
+	protected function sendResponse(array $output, bool $print = true)
 	{
 		#Utils::debug('sendResponse customResponse: ' . ($this->customResponse ? 'true' : 'false'), 31);
 
 		// Если кастомный ответ, отправляем данные напрямую
 		if ($this->customResponse) {
-			$this->response = is_string($output) ? $output : $this->getJson($output);
+			$this->response = $this->getJson($this->normalizeData($output, false));
 			if ($print) {
+				http_response_code($this->status);
+				header('X-API-Status: ' . $this->status);
 				header('Content-Type: application/json; charset=utf-8');
 				echo $this->response;
 				exit();
@@ -618,6 +647,7 @@ class Rest
 		}
 
 		http_response_code($this->status);
+		header('X-API-Status: ' . $this->status);
 		$this->response = $this->getJson($responseData);
 
 		// Логирование запроса
@@ -708,19 +738,20 @@ class Rest
 
 	/**
 	 * Нормализация данных для консистентной сериализации в JSON
-	 * Обеспечивает, что 'data' всегда массив в JSON
+	 * Обеспечивает, что 'data' всегда массив в JSON, для кастомных ответов сохраняет структуру
 	 * 
 	 * @param mixed $data Данные для нормализации
+	 * @param bool $forDataField Флаг, что это для поля 'data' (требует оборачивания ассоциативных массивов)
 	 * @return array Нормализованные данные
 	 */
-	private function normalizeData($data): array
+	private function normalizeData($data, bool $forDataField = false): array
 	{
 		if (is_array($data)) {
-			// Если массив ассоциативный (объект), оборачиваем в массив
-			if (!empty($data) && !is_numeric(key($data))) {
+			// Для поля 'data' оборачиваем ассоциативные массивы в массив
+			if ($forDataField && !empty($data) && !is_numeric(key($data))) {
 				return [$data];
 			}
-			// Если уже индексированный массив, возвращаем как есть
+			// Для кастомных ответов или индексированных массивов возвращаем как есть
 			return $data;
 		}
 		// Если не массив, оборачиваем в массив

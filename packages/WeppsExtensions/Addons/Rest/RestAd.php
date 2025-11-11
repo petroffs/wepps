@@ -49,7 +49,7 @@ class RestAd
 	 * 
 	 * @return array Результат аутентификации с токеном или сообщением об ошибке
 	 */
-	public function getToken()
+	public function getToken(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$login = $this->get['login'] ?? '';
@@ -77,7 +77,6 @@ class RestAd
 		}
 
 		$user = $res[0];
-
 		$jwt = new Jwt();
 		$lifetime = 86200;
 		$token = $jwt->token_encode([
@@ -143,11 +142,11 @@ class RestAd
 		$pagination = !empty($res);
 
 		return [
-				'results' => $res,
-				'pagination' => [
-					'more' => $pagination
-				]
-			];
+			'results' => $res,
+			'pagination' => [
+				'more' => $pagination
+			]
+		];
 	}
 
 	/**

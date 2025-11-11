@@ -38,7 +38,7 @@ class RestConfig
                         'class' => RestAd::class,
                         'method' => 'setTest',
                         'note' => 'Create or update test data with validation',
-                        'auth_required' => true,
+                        #'auth_required' => true,
                         'validation' => [
                             'id' => ['type' => 'int', 'required' => true],
                             'title' => ['type' => 'string', 'required' => true],
@@ -87,6 +87,7 @@ class RestConfig
                         'class' => RestAd::class,
                         'method' => 'getToken',
                         'note' => 'Authenticate user and return JWT token',
+                        'log' => false,
                         'query_validation' => [
                             'login' => ['type' => 'string', 'required' => true],
                             'password' => ['type' => 'string', 'required' => true]
