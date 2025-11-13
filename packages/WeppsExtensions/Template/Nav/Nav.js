@@ -30,7 +30,8 @@ var navInit = function() {
 			let header = $('<section>');
 			header.addClass('header-wrapper-top');
 			header.append(("<div class=\"closer\"><i class=\"bi bi-x-lg\"></i></div>"));
-			header.append("<div class=\"logo\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-white.svg\" class=\"w_image\"/></a></div>");
+			header.append("<div class=\"logo w_theme_block_light\"><a href=\"/\"><img src=\"/ext/Template/files/wepps.svg\" class=\"w_image\" /></div>");
+			header.append("<div class=\"logo w_theme_block_dark\"><a href=\"/\"><img src=\"/ext/Template/files/wepps-white.svg\" class=\"w_image\" /></a></div>");
 			popup.append(header);
 			let nav = $('ul.header-nav').eq(0).clone();
 			nav.addClass('w_header-nav');

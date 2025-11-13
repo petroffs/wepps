@@ -188,7 +188,7 @@ div.w_nav_parent {
 }
 
 div.w_nav {
-	background: rgba(0, 0, 0, 0.9);
+	background: var(--color-100);
 	width: 100%;
 	height: 100%;
 	min-height: 100%;
@@ -206,7 +206,7 @@ div.w_nav .header-wrapper-top {
 }
 
 div.w_nav .closer {
-	color: var(--color-75);
+	color: var(--color-50);
 	width: var(--s6);
 	height: var(--s6);
 	cursor: pointer;
@@ -249,7 +249,7 @@ div.w_nav ul>li {
 div.w_nav ul>li>a {
 	text-decoration: none;
 	letter-spacing: 3px;
-	color: var(--color-95);
+	color: var(--color-05);
 	max-width: max-content;
 	position: relative;
 	display: block;
@@ -259,7 +259,7 @@ div.w_nav ul.w_header-nav li.has-childs>a:after {
 	content: '\f286';
 	font-family: "bootstrap-icons";
 	line-height: 1.6;
-	color: var(--color-75);
+	color: var(--color-50);
 	position: absolute;
 	margin-left: var(--s2);
 }
@@ -269,9 +269,9 @@ div.w_nav ul.w_header-nav li.has-childs>a.open:after {
 }
 
 div.w_nav ul.w_header-nav ul {
-	background: var(--color-20);
+	background: var(--color-95);
 	padding: 0;
-	margin: 0;
+	margin: var(--s2) 0 0 0;
 	border-radius: var(--s2);
 	overflow: hidden;
 	max-width: max-content;
@@ -286,17 +286,17 @@ div.w_nav ul.w_header-nav ul li:before {
 	content: '\f285';
 	font-family: 'bootstrap-icons';
 	line-height: 1.6;
-	color: var(--color-75);
+	color: var(--color-50);
 	position: absolute;
 	left: 0;
 }
 
 div.w_nav ul.w_header-nav ul li:hover {
-	background: var(--color-25);
+	background: var(--color-85);
 }
 
 header.is-pinned {
-	box-shadow: 0 6px 6px rgba(140, 140, 140, 0.1);
+	box-shadow: 0 var(--s) var(--s) rgba(140, 140, 140, 0.1);
 }
 
 header.is-pinned section.header-wrapper {

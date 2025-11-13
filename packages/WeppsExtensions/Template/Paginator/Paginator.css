@@ -14,7 +14,6 @@ section.paginator-wrapper>ul>li {
 
 section.paginator-wrapper>ul>li>a,
 section.paginator-wrapper>ul>li>span {
-	font-weight: 600;
 	text-align: center;
 	text-decoration: none;
 	color: var(--color-05);
@@ -40,8 +39,8 @@ section.paginator-wrapper>ul>li:hover a {
 }
 
 section.paginator-wrapper>ul>li.active {
-	background: var(--color-05);
-	border-color: var(--color-05);
+	background: var(--color-button);
+	border-color: var(--color-button);
 }
 
 section.paginator-wrapper>ul>li.active a {
