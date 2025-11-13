@@ -42,12 +42,9 @@
 			</div>
 		</div>
 		{$horizontalBottomTpl}
-		<div class="page footer w_flex w_flex_col w_flex_center">
-			<div class="page2 w_flex w_flex_col w_flex_center">
-				<div
-					class="copyrights w_flex w_flex_row w_flex_center">
-					<div class="item w_flex_fix w_padding w_center">© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
-				</div>
+		<div class="page footer w_flex w_flex_col">
+			<div class="page2">
+				© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a>
 			</div>
 		</div>
 		<div id="dialog" title="dialog title" class="w_hide">

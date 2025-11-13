@@ -63,7 +63,6 @@ form.list-data .item .field .files {
 }
 
 form.list-data .item .field .files .files-item {
-	border-bottom: 1px solid #f7f7f7;
 	padding: var(--s);
 }
 
@@ -100,15 +99,15 @@ form.list-data .item .field .files .descr>.input {
 }
 
 form.list-data .item .field .files>.sortable-active {
-	background: #0080C0;
+	background: var(--color-button);
 }
 
 form.list-data .item .field .files .files-item:hover {
-	background-color: #f0f0f0;
+	background-color: var(--color-95);
 }
 
 form.list-data .item .field .files .files-item.active {
-	background-color: #f0f0f0;
+	background-color: var(--color-95);
 }
 
 form.list-data .item .field .files .files-item .files-controls {
@@ -150,7 +149,7 @@ form.list-data .item .field .minitable {
 }
 
 form.list-data .item .field .minitable-row:not(:last-child) {
-	border-bottom: 1px solid #f0f0f0;
+	border-bottom: var(--border);
 }
 
 form.list-data .item .field .minitable-cell {
@@ -164,12 +163,12 @@ form.list-data .item .field .minitable-body-tpl {
 
 form.list-data .item .field .minitable-body .minitable-cell {
 	font-weight: 300;
-	color: #000;
+	color: var(--color-primary);
 	padding: var(--s);
 }
 
 form.list-data .item .field .minitable-body .minitable-cell:focus {
-	background: #f0f0f0;
+	background: var(--color-85);
 }
 
 form.list-data .item .field .minitable-remove {

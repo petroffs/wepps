@@ -1,6 +1,5 @@
 .list-search {
 	position: relative;
-	opacity: 0.6;
 }
 
 .list-search::after {
@@ -11,7 +10,7 @@
 	position: absolute;
 	z-index: 20;
 	top: 50%;
-	transform: translate(0,-50%);
+	transform: translate(0, -50%);
 	right: var(--s2);
 	line-height: 100%;
 }
@@ -84,8 +83,15 @@ label.w_label.w_select.list-item-language {
 }
 
 .lists-items-list>table {
+	background: var(--color-95);
 	width: 100%;
-	background: var(--color-98);
+	border-collapse: collapse;
+	border-style: hidden;
+}
+
+.lists-items-list>table td,
+.lists-items-list>table th {
+	border: var(--s-half) solid var(--color-85);
 }
 
 .lists-items-list>table>thead>tr.titles>th {
@@ -99,7 +105,7 @@ label.w_label.w_select.list-item-language {
 .lists-items-list>table>thead>tr.titles>th {
 	text-decoration: none;
 	color: var(--color-100);
-	
+
 }
 
 .lists-items-list>table>thead>tr.titles>td {
@@ -137,9 +143,9 @@ label.w_label.w_select.list-item-language {
 
 .lists-items-list>table>thead>tr.filters>th .filter2 a:hover {
 	text-decoration: none;
-		color: var(--color-100);
+	color: var(--color-100);
 	background: var(--color-25);
-	
+
 }
 
 .lists-items-list>table td {
@@ -152,7 +158,7 @@ label.w_label.w_select.list-item-language {
 }
 
 .lists-items-list>table>tbody>tr>td {
-	border-bottom: 1px solid var(--color-85);
+	border-bottom: var(--border);
 }
 
 .lists-items-list>table>tbody>tr:hover>td {

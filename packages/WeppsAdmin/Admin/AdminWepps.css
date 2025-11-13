@@ -62,9 +62,10 @@ a:focus {
 	text-transform: none;
 	line-height: 1;
 	color: var(--color-primary);
-	background: var(--color-98);
+	background: var(--color-95);
 	padding: var(--s6) var(--s2) var(--s4) var(--s3);
 	margin: 0;
+	border-radius: 0 0 var(--s2) var(--s2);
 }
 
 .page.main .page2 h2 {
@@ -77,8 +78,16 @@ a:focus {
 	margin: 0;
 }
 
+.page.footer {
+	padding-top: var(--s4);
+	padding-bottom: var(--s4);
+	margin-top: var(--s4);
+	border-top: var(--border);
+}
+
 .nav {
 	background: var(--color-25);
+	border-radius: var(--s2) var(--s2) 0 0;
 }
 
 .nav>div div.item>a {
@@ -90,12 +99,12 @@ a:focus {
 }
 
 .nav>div div.item>a:hover {
-	background: var(--color-100);
+	background: var(--color-95);
 	color: var(--color-50);
 }
 
 .nav>div div.item.active>a {
-	background: var(--color-98);
+	background: var(--color-95);
 	color: var(--color-primary);
 }
 
@@ -123,6 +132,11 @@ a:focus {
 
 .way>ul>li:last-child:after {
 	content: '';
+}
+
+.sidebar label.list-search input:focus {
+	border-radius: var(--s2) var(--s2) 0 0;
+	border-bottom: 1px solid var(--color-active);
 }
 
 .sidebar .title {
@@ -177,4 +191,18 @@ a:focus {
 
 .bg1>.title {
 	font-weight: 700;
+}
+
+.block-rounded {
+	border-radius: var(--s2);
+	overflow: hidden;
+}
+
+.ui-widget.ui-widget-content.ui-autocomplete {
+	color: var(--color-05);
+	background: var(--color-100);
+	border: var(--s-half) solid var(--color-button);
+	border-top: 0;
+	border-radius: 0 0 var(--s2) var(--s2);
+
 }

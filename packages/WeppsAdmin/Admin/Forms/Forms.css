@@ -204,7 +204,7 @@ label.w_label.w_upload i {
 }
 
 label.w_label.w_input input {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-100);
 	width: 100%;
 	border: var(--s-half) solid var(--color-85);
@@ -216,7 +216,7 @@ label.w_label.w_input input {
 }
 
 label.w_label.w_area textarea {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-100);
 	width: 100%;
 	min-height: calc(var(--s) * 20);
@@ -436,6 +436,8 @@ form {
 }
 
 .select2-container--default .select2-search--dropdown .select2-search__field {
+	color: var(--color-primary);
+	background: var(--color-100);
 	border-color: var(--color-button);
 	border-radius: var(--s);
 	padding: var(--s2);

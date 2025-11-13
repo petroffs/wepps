@@ -9,6 +9,7 @@ div.paginator div.item {
 	width: var(--s6);
 	height: var(--s6);
 	overflow: hidden;
+	border-radius: var(--s2);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -17,19 +18,17 @@ div.paginator div.item {
 
 div.paginator div.item span,
 div.paginator div.item a {
-	font-weight: 600;
 	text-align: center;
 	text-decoration: none;
 	color: var(--color-25);
 	cursor: pointer;
 	width: max-content;
 	margin: 0;
-	display: black;
+	display: flex;
 }
 
 div.paginator div.item:hover {
 	background-color: var(--color-focus);
-	border-radius: var(--s);
 }
 
 div.paginator div.item:hover a {
@@ -38,9 +37,8 @@ div.paginator div.item:hover a {
 }
 
 div.paginator div.item.active {
-	background: var(--color-25);
-	border-color: var(--color-25);
-	border-radius: var(--s);
+	background: var(--color-button);
+	border-color: var(--color-button);
 }
 
 div.paginator div.item.active a {
