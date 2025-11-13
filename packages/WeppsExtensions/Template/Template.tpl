@@ -41,7 +41,8 @@
 				<div class="footer-wrapper">
 					<div class="w_flex w_flex_row w_flex_end w_flex_margin w_padding">
 						<div class="footer-logo w_flex_fix w_flex_12_view_small">
-							<a href="/"><img src="/ext/Template/files/wepps.svg" alt="logo"/></a>
+							<a href="/"><img src="/ext/Template/files/wepps.svg" class="w_theme_block_light" alt="logo"/></a>
+							<a href="/"><img src="/ext/Template/files/wepps-white.svg" class="w_theme_block_dark" alt="logo"/></a>
 						</div>
 						<div class="text w_flex_fix w_flex_12_view_small">
 							<ul class="footer-company w_list">

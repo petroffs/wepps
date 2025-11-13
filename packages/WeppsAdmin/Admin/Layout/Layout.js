@@ -128,6 +128,14 @@ class LayoutWepps {
 	token() {
 		return storageWepps.get('wepps_token');
 	};
+	theme() {
+		const savedTheme = localStorage.getItem('w_theme');
+		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+		
+		$('html').attr('data-theme', theme);
+		return theme;
+	};
 };
 
 class UtilsWepps {
@@ -168,3 +176,4 @@ class StorageWepps {
 var utilsWepps = new UtilsWepps();
 var storageWepps = new StorageWepps();
 var layoutWepps = new LayoutWepps();
+layoutWepps.theme();

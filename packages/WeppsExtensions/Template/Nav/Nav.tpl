@@ -3,7 +3,10 @@
 		<section class="header-wrapper header-wrapper-top">
 			<a href="" id="header-nav"><i class="bi bi-list"></i></a>
 			<div class="header-logo">
-				<a href="/"><img src="/ext/Template/files/wepps.svg" /></a>
+				<a href="/">
+					<img src="/ext/Template/files/wepps.svg" class="w_theme_block_light" />
+					<img src="/ext/Template/files/wepps-white.svg" class="w_theme_block_dark" />
+				</a>
 			</div>
 			<form action="javascript:void(0)">
 				<label class="w_label w_input">

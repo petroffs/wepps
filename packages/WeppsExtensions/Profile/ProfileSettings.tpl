@@ -1,9 +1,23 @@
 <div class="w_flex w_flex_row w_flex_center">
     <div class="w_flex_12 w_flex_11_view_medium">
+        <h2>Тема</h2>
+        <form action="javascript:void(0)" id="theme-form" class="w_form" autocomplete="off">
+            <fieldset>
+                <section>
+                    <div class="title">Выберите вашу тему</div>
+                    <label class="w_label w_select">
+                        <select name="theme" id="theme-select" data-minimum-results-for-search="Infinity">
+                            <option value="auto">Автоматически (как в системе)</option>
+                            <option value="light">Светлая</option>
+                            <option value="dark">Темная</option>
+                        </select>
+                    </label>
+                </section>
+            </fieldset>
+        </form>
         <h2>Мои данные</h2>
         <form action="javascript:formWepps.send('change-name','change-name-form','/ext/Profile/Request.php')"
             id="change-name-form" class="w_form" autocomplete="off">
-
             <fieldset>
                 <section>
                     <div class="title">Фамилия</div>
@@ -45,7 +59,7 @@
                 <section class="w_hide change-email-code">
                     <div class="title">Код подтверждения</div>
                     <label class="w_label w_input w_require">
-                        <input type="text" name="code" value="" placeholder="" disabled/>
+                        <input type="text" name="code" value="" placeholder="" disabled />
                     </label>
                 </section>
             </fieldset>
@@ -68,10 +82,10 @@
                         <input type="text" name="phone" value="{$user.Phone|escape|substr:1}" placeholder="" />
                     </label>
                 </section>
-				<section class="w_hide change-phone-code">
+                <section class="w_hide change-phone-code">
                     <div class="title">Код подтверждения</div>
                     <label class="w_label w_input w_require">
-                        <input type="text" name="code" value="" placeholder="" disabled/>
+                        <input type="text" name="code" value="" placeholder="" disabled />
                     </label>
                 </section>
             </fieldset>
@@ -110,19 +124,19 @@
             </fieldset>
         </form>
         <h2>Удалить профиль</h2>
-        <form action="javascript:formWepps.send('remove','remove-form','/ext/Profile/Request.php')"
-            id="remove-form" class="w_form w_flex_12 w_flex_11_view_medium" autocomplete="off">
+        <form action="javascript:formWepps.send('remove','remove-form','/ext/Profile/Request.php')" id="remove-form"
+            class="w_form w_flex_12 w_flex_11_view_medium" autocomplete="off">
             <fieldset>
                 <section>
                     <div class="title">Напишите слово "УДАЛИТЬ"</div>
                     <label class="w_label w_input w_require">
-                        <input type="text" name="word" value="" placeholder="" autocomplete="new-password"/>
+                        <input type="text" name="word" value="" placeholder="" autocomplete="new-password" />
                     </label>
                 </section>
-				<section class="w_hide remove-code">
+                <section class="w_hide remove-code">
                     <div class="title">Код подтверждения</div>
                     <label class="w_label w_input w_require">
-                        <input type="text" name="code" value="" placeholder="" disabled/>
+                        <input type="text" name="code" value="" placeholder="" disabled />
                     </label>
                 </section>
             </fieldset>

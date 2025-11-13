@@ -38,6 +38,7 @@ label.w_label.label-dadata input.suggestions-input.active {
 }
 
 label.w_label.label-dadata input.suggestions-input+.suggestions-wrapper>.suggestions-suggestions {
+    background-color: var(--color-100);
     border-color: var(--color-button);
     border-width: var(--s-half);
     border-top-width: 1px;

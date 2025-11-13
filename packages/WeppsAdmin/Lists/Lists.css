@@ -57,6 +57,7 @@
 
 .controls-area a.active {
 	color: var(--color-focus);
+	background: var(--color-100);
 	border-color: var(--color-focus);
 }
 
