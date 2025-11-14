@@ -146,22 +146,60 @@ class LayoutWepps {
 			}, delay);
 		});
 	};
-	theme() {
-		const savedTheme = localStorage.getItem('w_theme');
-		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-		const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-		
-		$('html').attr('data-theme', theme);
-		return theme;
-	};
 };
 
 class UtilsWepps {
 	digit(val) {
 		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
 	};
+	theme() {
+		const savedTheme = localStorage.getItem('w_theme');
+		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+		$('html').attr('data-theme', theme);
+		this.applyThemeIcons(theme);
+		this.themeToggle();
+		return theme;
+	};
+	themeToggle() {
+		$('.w_theme_switcher').on('click', function () {
+			const currentTheme = localStorage.getItem('w_theme') || 'light';
+			let newTheme;
+			if (currentTheme === 'light') {
+				newTheme = 'dark';
+			} else if (currentTheme === 'dark') {
+				newTheme = 'auto';
+			} else if (currentTheme === 'auto') {
+				newTheme = 'light';
+			} else {
+				newTheme = 'light';
+			}
+			localStorage.setItem('w_theme', newTheme);
+			// Apply theme
+			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			let actualTheme;
+			if (newTheme === 'auto') {
+				actualTheme = prefersDark ? 'dark' : 'light';
+			} else {
+				actualTheme = newTheme;
+			}
+			$('html').attr('data-theme', actualTheme);
+			utilsWepps.applyThemeIcons(newTheme);
+		});
+	};
+	applyThemeIcons(theme) {
+		$('.theme-icon-light').addClass('w_hide');
+		$('.theme-icon-dark').addClass('w_hide');
+		$('.theme-icon-auto').addClass('w_hide');
+		if (theme === 'light') {
+			$('.theme-icon-light').removeClass('w_hide');
+		} else if (theme === 'dark') {
+			$('.theme-icon-dark').removeClass('w_hide');
+		} else if (theme === 'auto') {
+			$('.theme-icon-auto').removeClass('w_hide');
+		}
+	};
 };
 
 let layoutWepps = new LayoutWepps();
-layoutWepps.theme();
 let utilsWepps = new UtilsWepps();

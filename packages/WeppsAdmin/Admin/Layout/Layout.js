@@ -1,6 +1,6 @@
-var readyLayoutInit = function() {
+var readyLayoutInit = function () {
 	$('.w_radius').height($('.w_radius').width());
-	$('.w_admin').find('a').on('click',function(event) {
+	$('.w_admin').find('a').on('click', function (event) {
 		event.stopPropagation();
 	});
 };
@@ -8,9 +8,9 @@ $(document).ready(readyLayoutInit);
 //$(window).on('resize', readyLayoutInit);
 
 class LayoutWepps {
-	constructor(settings={}) {
+	constructor(settings = {}) {
 		if (settings != undefined) {
-			this.settings = settings 
+			this.settings = settings
 		}
 	};
 	init() {
@@ -18,31 +18,31 @@ class LayoutWepps {
 		$('html').removeClass('w_overflow');
 		$('.w_win_bg2').remove();
 		$('.w_win_bg').remove();
-		$('.w_loader').remove();	
+		$('.w_loader').remove();
 		return 1;
 	};
 	remove() {
-		let self = this;	
-		$('.w_win_element').fadeOut(300, function() {
-			self.init();		
+		let self = this;
+		$('.w_win_element').fadeOut(300, function () {
+			self.init();
 		});
 		return 2;
 	};
-	win(settings={}) {
+	win(settings = {}) {
 		let self = this;
 		this.init();
 		this.window = $('<div></div>');
 		this.window.addClass('w_win_element');
 		this.window.attr('id', 'w_win_element');
-		
+
 		this.closer = $('<div></div>');
 		this.closer.addClass('w_win_closer');
 		this.window.append(this.closer);
-		
-		this.closer.on('click', function() {
+
+		this.closer.on('click', function () {
 			self.remove();
 		});
-		
+
 		this.content = $('<div></div>');
 		this.content.addClass('w_win_content');
 		this.window.append(this.content);
@@ -77,36 +77,36 @@ class LayoutWepps {
 			this.request(settings);
 		};
 		$(document).off('keyup');
-		$(document).keyup(function(e) {
-		    if (e.keyCode == 27) {
-		    	self.remove();
-		    }
+		$(document).keyup(function (e) {
+			if (e.keyCode == 27) {
+				self.remove();
+			}
 		});
 		$(document).off('mouseup');
-		$(document).mouseup(function(e) {
-		    if ($('.w_win_element').has(e.target).length === 0 && $(e.target).hasClass('w_win_element')==false && $(e.target).hasClass('w_loader')==false) {
-		      	self.remove();
-		    };
+		$(document).mouseup(function (e) {
+			if ($('.w_win_element').has(e.target).length === 0 && $(e.target).hasClass('w_win_element') == false && $(e.target).hasClass('w_loader') == false) {
+				self.remove();
+			};
 		});
 		return 1;
 	};
-	request(settings={}) {
+	request(settings = {}) {
 		let self = this;
 		$("#w_ajax").remove();
 		$.ajax({
-			type : "POST",
-			url : settings.url,
-			data : settings.data,
-			beforeSend: function() {
+			type: "POST",
+			url: settings.url,
+			data: settings.data,
+			beforeSend: function () {
 				$('.w_loader').remove();
-		    	let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
-		        $('body').prepend(loader);
-		    }
-		}).done(function(responseText) {
+				let loader = $('<div class="w_loader"><div class="lds-spinner"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div></div>');
+				$('body').prepend(loader);
+			}
+		}).done(function (responseText) {
 			$('.w_loader').fadeOut();
-			setTimeout(function() {
+			setTimeout(function () {
 				$('.w_loader').remove();
-			},500);
+			}, 500);
 			if (settings.obj) {
 				settings.obj.html(responseText);
 				$("#w_ajax").remove();
@@ -122,19 +122,11 @@ class LayoutWepps {
 		});
 		return 1;
 	};
-	call () {
-		
+	call() {
+
 	};
 	token() {
 		return storageWepps.get('wepps_token');
-	};
-	theme() {
-		const savedTheme = localStorage.getItem('w_theme');
-		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-		const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-		
-		$('html').attr('data-theme', theme);
-		return theme;
 	};
 };
 
@@ -148,32 +140,54 @@ class UtilsWepps {
 		));
 		return matches ? decodeURIComponent(matches[1]) : null;
 	};
-};
-
-class StorageWepps {
-	set(key, value, ttl = null) {
-		const item = {
-			value: value,
-			expiry: ttl ? Date.now() + ttl * 1000 : null
-		};
-		localStorage.setItem(key, JSON.stringify(item));
+	theme() {
+		const savedTheme = localStorage.getItem('w_theme');
+		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+		$('html').attr('data-theme', theme);
+		this.applyThemeIcons(theme);
+		this.themeToggle();
+		return theme;
 	};
-	get(key) {
-		const itemStr = localStorage.getItem(key);
-		if (!itemStr) return null;
-		const item = JSON.parse(itemStr);
-		if (item.expiry && Date.now() > item.expiry) {
-			localStorage.removeItem(key);
-			return null;
+	themeToggle() {
+		$('.w_theme_switcher').on('click', function () {
+			const currentTheme = localStorage.getItem('w_theme') || 'light';
+			let newTheme;
+			if (currentTheme === 'light') {
+				newTheme = 'dark';
+			} else if (currentTheme === 'dark') {
+				newTheme = 'auto';
+			} else if (currentTheme === 'auto') {
+				newTheme = 'light';
+			} else {
+				newTheme = 'light';
+			}
+			localStorage.setItem('w_theme', newTheme);
+			// Apply theme
+			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			let actualTheme;
+			if (newTheme === 'auto') {
+				actualTheme = prefersDark ? 'dark' : 'light';
+			} else {
+				actualTheme = newTheme;
+			}
+			$('html').attr('data-theme', actualTheme);
+			utilsWepps.applyThemeIcons(newTheme);
+		});
+	};
+	applyThemeIcons(theme) {
+		$('.theme-icon-light').addClass('w_hide');
+		$('.theme-icon-dark').addClass('w_hide');
+		$('.theme-icon-auto').addClass('w_hide');
+		if (theme === 'light') {
+			$('.theme-icon-light').removeClass('w_hide');
+		} else if (theme === 'dark') {
+			$('.theme-icon-dark').removeClass('w_hide');
+		} else if (theme === 'auto') {
+			$('.theme-icon-auto').removeClass('w_hide');
 		}
-		return item.value;
-	};
-	remove(key) {
-		localStorage.removeItem(key);
 	};
 };
 
 var utilsWepps = new UtilsWepps();
-var storageWepps = new StorageWepps();
 var layoutWepps = new LayoutWepps();
-layoutWepps.theme();

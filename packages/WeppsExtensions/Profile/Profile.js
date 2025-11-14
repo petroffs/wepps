@@ -26,21 +26,21 @@ var profileInit = function () {
             return;
         }
         layoutWepps.request({
-            data: 'action=addOrdersMessage&id='+obj.data('id')+'&message='+obj.val(),
+            data: 'action=addOrdersMessage&id=' + obj.data('id') + '&message=' + obj.val(),
             url: '/ext/Profile/Request.php',
-            obj : $('#profile-loader')
+            obj: $('#profile-loader')
         });
     });
 };
 
 // Добавляем в profileInit инициализацию темы
-var profileThemeInit = function() {
+var profileThemeInit = function () {
     const $themeSelect = $('#theme-select');
     if ($themeSelect.length === 0) return;
-    
+
     const savedTheme = localStorage.getItem('w_theme') || 'auto';
-    $themeSelect.val(savedTheme);
-    
+    $themeSelect.val(savedTheme).trigger('change');
+
     // Функция определения системной темы
     function getSystemTheme() {
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -48,28 +48,30 @@ var profileThemeInit = function() {
         }
         return 'light';
     }
-    
+
     // Применяем тему
     function applyTheme(theme) {
+        let actualTheme = theme;
         if (theme === 'auto') {
-            theme = getSystemTheme();
+            actualTheme = getSystemTheme();
         }
-        $('html').attr('data-theme', theme);
+        $('html').attr('data-theme', actualTheme);
+        utilsWepps.applyThemeIcons(theme);
     }
-    
+
     // Применяем сохраненную тему
     applyTheme(savedTheme);
-    
+
     // Сохраняем тему в localStorage при изменении
-    $themeSelect.off('change').on('change', function() {
+    $themeSelect.on('select2:select', function () {
         const selectedTheme = $(this).val();
         localStorage.setItem('w_theme', selectedTheme);
         applyTheme(selectedTheme);
     });
-    
+
     // Отслеживаем изменения системной темы
     if (window.matchMedia) {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function() {
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
             const currentTheme = localStorage.getItem('w_theme') || 'auto';
             if (currentTheme === 'auto') {
                 applyTheme('auto');
