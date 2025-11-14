@@ -143,9 +143,12 @@ class UtilsWepps {
 	theme() {
 		const savedTheme = localStorage.getItem('w_theme');
 		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-		const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+		var theme = savedTheme;
+		if (theme==='' || theme === 'auto') {
+			theme = prefersDark ? 'dark' : 'light';
+		}
 		$('html').attr('data-theme', theme);
-		this.applyThemeIcons(theme);
+		this.applyThemeIcons(savedTheme);
 		this.themeToggle();
 		return theme;
 	};
