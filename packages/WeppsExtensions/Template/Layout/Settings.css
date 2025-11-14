@@ -92,14 +92,30 @@
 }
 
 /* Темная тема */
-/* @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
 	:root {
-		--color-00: #ffffff;
 		--color-02: #fafafa;
+		--color-05: #f2f2f2;
+		--color-20: #cccccc;
+		--color-25: #bfbfbf;
+		--color-50: #808080;
+		--color-75: #404040;
+		--color-85: #333333;
+		--color-95: #292929;
+		--color-98: #181818;
+		--color-100: #0c0c0c;
+		--color-attention: #e87878;
+		--color-success: #6dd19f;
+		--color-warning: #f8f3b5;
+		--color-button: #6ba4fd;
+		--color-focus: #5a88d4;
+		--color-active: #6ba4fd;
+		--color-green: #1abf99;
+		--color-red: #e87878;
+		--border: 1px solid var(--color-85);
+		--shadow: 0 0 12px rgba(0, 0, 0, 0.1);
 	}
-} */
-
-
+}
 
 /* Ручное переключение темной темы */
 [data-theme="dark"] {
