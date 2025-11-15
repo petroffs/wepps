@@ -1,6 +1,6 @@
 <div class="lists-items w_flex w_flex_row w_flex_row_str w_flex_start w_flex_margin">
 	<div class="w_flex_23 w_flex_11_view_small">
-		<div class="w_flex w_flex_col w_bg_silver w_height">
+		<div class="w_rounded w_flex w_flex_col w_bg_silver w_height">
 			<div class="w_flex_max w_padding">
 				<div class="descr">
 					{$ext.Descr}

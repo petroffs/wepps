@@ -173,6 +173,15 @@ img.w_image {
 	border: 1px solid var(--color-85);
 }
 
+.w_rounded {
+	border-radius: var(--s2);
+	overflow: hidden;
+}
+
+.w_rounded_plain {
+	border-radius: var(--s2);
+}
+
 .w_zoom_bg {
 	background-size: 100% auto;
 }

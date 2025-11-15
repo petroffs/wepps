@@ -11,7 +11,7 @@
 			<div class="w_overflow_auto">
 				<div class="lists-items w_flex w_flex_row w_flex_row_str w_flex_start w_flex_margin">
 					{foreach name="out" item="item" key="key" from=$navhome}
-					<div class="block-rounded w_flex_14 w_flex_12_view_medium w_flex_11_view_small" data-url="/_wepps/{$key}/">
+					<div class="w_rounded w_flex_14 w_flex_12_view_medium w_flex_11_view_small" data-url="/_wepps/{$key}/">
 						<div class="w_flex w_flex_col w_bg_silver w_height">
 							<div class="w_flex_max w_padding">
 								<div class="title">{$item.Name}</div>

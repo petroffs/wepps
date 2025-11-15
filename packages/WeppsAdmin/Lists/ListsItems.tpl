@@ -41,7 +41,7 @@
 			</div>
 			{/if}
 			<div class="w_interval_medium"></div>
-			<div class="lists-items-list block-rounded draggable">
+			<div class="lists-items-list w_rounded draggable">
 
 				<table class="">
 					<thead>

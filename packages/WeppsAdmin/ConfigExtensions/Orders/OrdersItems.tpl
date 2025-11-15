@@ -1,4 +1,4 @@
-<div class="w_border w_padding">
+<div class="w_rounded w_border w_padding">
 	<div class="statuses w_flex w_flex_row w_flex_start w_flex_margin_large1">
 		{foreach name="out" item="item" from=$statuses}
 		<div class="item w_flex_14 w_flex_12_view_medium{if $item.Id==$statusesActive} active{/if}">

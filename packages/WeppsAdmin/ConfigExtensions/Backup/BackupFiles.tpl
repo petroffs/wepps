@@ -2,8 +2,9 @@
 	action="javascript:formWepps.send('files','list-data-form','/packages/WeppsAdmin/ConfigExtensions/Backup/Request.php')"
 	id="list-data-form">
 	<input type="hidden" name="add" value="1"/>
-	<div class="w_flex_23 w_flex_11_view_medium w_flex w_flex_row w_flex_start w_border">
+	<div class="w_rounded w_flex_23 w_flex_11_view_medium w_flex w_flex_row w_flex_start w_border">
 		<label class="w_label w_checkbox w_flex_11"><input type="checkbox" name="add-git" value="1"/> <span>Включить папку .git</span></label>
+		<div class="w_interval_small"></div>
 		<label class="w_label w_button w_flex_11"><input type="submit" value="Создать бекап файлов"/></label>
 	</div>
 </form>
