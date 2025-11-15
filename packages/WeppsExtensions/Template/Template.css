@@ -259,6 +259,19 @@ body .bi.bi-vk {
 	mask-position: center;
 }
 
+body #theme-switcher {
+	font-size: var(--font-default);
+	color: var(--color-50);
+	background: var(--color-85);
+	padding: var(--s);
+	width: var(--s6);
+	height: var(--s6);
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
 @media screen and (max-width: 1440px) {
 
 	div.page div.page2,

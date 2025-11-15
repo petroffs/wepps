@@ -141,11 +141,12 @@ class UtilsWepps {
 		return matches ? decodeURIComponent(matches[1]) : null;
 	};
 	theme() {
-		const savedTheme = localStorage.getItem('w_theme');
-		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		var savedTheme = localStorage.getItem('w_theme');
+		let prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 		var theme = savedTheme;
-		if (theme==='' || theme === 'auto') {
+		if (theme === null || theme === 'auto') {
 			theme = prefersDark ? 'dark' : 'light';
+			savedTheme = 'auto';
 		}
 		$('html').attr('data-theme', theme);
 		this.applyThemeIcons(savedTheme);
@@ -153,21 +154,26 @@ class UtilsWepps {
 		return theme;
 	};
 	themeToggle() {
-		$('.w_theme_switcher').on('click', function () {
-			const currentTheme = localStorage.getItem('w_theme') || 'light';
+		$('#theme-switcher').on('click', function () {
+			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+			const currentTheme = localStorage.getItem('w_theme') || (prefersDark ? 'dark' : 'light');
 			let newTheme;
-			if (currentTheme === 'light') {
-				newTheme = 'dark';
-			} else if (currentTheme === 'dark') {
-				newTheme = 'auto';
-			} else if (currentTheme === 'auto') {
-				newTheme = 'light';
-			} else {
-				newTheme = 'light';
+			switch (currentTheme) {
+				case 'light':
+					newTheme = 'dark';
+					break;
+				case 'dark':
+					newTheme = 'auto';
+					break;
+				case 'auto':
+					newTheme = 'light';
+					break;
+				default:
+					newTheme = 'light';
+					break;
 			}
 			localStorage.setItem('w_theme', newTheme);
 			// Apply theme
-			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 			let actualTheme;
 			if (newTheme === 'auto') {
 				actualTheme = prefersDark ? 'dark' : 'light';
@@ -179,15 +185,17 @@ class UtilsWepps {
 		});
 	};
 	applyThemeIcons(theme) {
-		$('.theme-icon-light').addClass('w_hide');
-		$('.theme-icon-dark').addClass('w_hide');
-		$('.theme-icon-auto').addClass('w_hide');
-		if (theme === 'light') {
-			$('.theme-icon-light').removeClass('w_hide');
-		} else if (theme === 'dark') {
-			$('.theme-icon-dark').removeClass('w_hide');
-		} else if (theme === 'auto') {
-			$('.theme-icon-auto').removeClass('w_hide');
+		$('.theme-icon').addClass('w_hide');
+		switch (theme) {
+			case 'light':
+				$('.theme-icon-light').removeClass('w_hide');
+				break;
+			case 'dark':
+				$('.theme-icon-dark').removeClass('w_hide');
+				break;
+			case 'auto':
+				$('.theme-icon-auto').removeClass('w_hide');
+				break;
 		}
 	};
 };

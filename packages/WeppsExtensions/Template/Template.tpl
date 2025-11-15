@@ -41,10 +41,10 @@
 				<div class="footer-wrapper">
 					<div class="w_flex w_flex_row w_flex_end w_flex_margin w_padding">
 						<div class="w_flex_fix w_flex_12_view_small">
-							<button class="w_theme_switcher" title="Переключить тему">
-								<i class="bi bi-sun theme-icon-light"></i>
-								<i class="bi bi-moon theme-icon-dark"></i>
-								<i class="bi bi-circle-half theme-icon-auto"></i>
+							<button id="theme-switcher" title="Переключить тему">
+								<i class="bi bi-sun theme-icon theme-icon-light"></i>
+								<i class="bi bi-moon theme-icon theme-icon-dark"></i>
+								<i class="bi bi-circle-half theme-icon theme-icon-auto"></i>
 							</button>
 						</div>
 						<div class="footer-logo w_flex_fix w_flex_12_view_small">

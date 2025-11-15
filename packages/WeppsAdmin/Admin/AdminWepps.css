@@ -206,3 +206,16 @@ a:focus {
 	border-radius: 0 0 var(--s2) var(--s2);
 
 }
+
+body #theme-switcher {
+	font-size: var(--font-default);
+	color: var(--color-50);
+	background: var(--color-85);
+	padding: var(--s);
+	width: var(--s6);
+	height: var(--s6);
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}

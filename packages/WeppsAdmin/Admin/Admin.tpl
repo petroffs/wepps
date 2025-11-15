@@ -44,15 +44,13 @@
 		</div>
 	</div>
 	{$horizontalBottomTpl}
-	<div class="page footer w_flex w_flex_col">
-		<div class="page2">
-			© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a>
-		</div>
-		<div class="w_flex_fix w_flex_12_view_small">
-			<button class="w_theme_switcher" title="Переключить тему">
-				<i class="bi bi-sun theme-icon-light"></i>
-				<i class="bi bi-moon theme-icon-dark"></i>
-				<i class="bi bi-circle-half theme-icon-auto"></i>
+	<div class="page footer w_flex w_flex_row">
+		<div class="page2  w_flex w_flex_row">
+			<div>© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
+			<button id="theme-switcher" title="Переключить тему">
+				<i class="bi bi-sun theme-icon theme-icon-light"></i>
+				<i class="bi bi-moon theme-icon theme-icon-dark"></i>
+				<i class="bi bi-circle-half theme-icon theme-icon-auto"></i>
 			</button>
 		</div>
 	</div>
