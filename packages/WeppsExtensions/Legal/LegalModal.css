@@ -16,6 +16,11 @@
     margin-bottom: var(--s2);
 }
 
+.legal-modal .text {
+    font-size: var(--font-small);
+    margin-bottom: var(--s3);
+}
+
 .legal-modal a.w_button {
     margin: 0 var(--s) var(--s) 0;
 }
