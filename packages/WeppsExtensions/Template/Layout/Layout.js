@@ -149,23 +149,34 @@ class LayoutWepps {
 };
 
 class UtilsWepps {
-	digit(val) {
-		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
-	};
-	theme() {
-		var savedTheme = localStorage.getItem('w_theme');
-		let prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-		var theme = savedTheme;
-		if (theme === null || theme === 'auto') {
-			theme = prefersDark ? 'dark' : 'light';
-			savedTheme = 'auto';
+	constructor() {
+		this.savedTheme = localStorage.getItem('w_theme');
+		// Проверяем сохраненную тему или системные настройки
+		const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		let theme;
+		if (this.savedTheme === 'auto' || !this.savedTheme) {
+			theme = systemTheme;
+		} else {
+			theme = this.savedTheme;
 		}
-		$('html').attr('data-theme', theme);
-		this.applyThemeIcons(savedTheme);
-		this.themeToggle();
-		return theme;
-	};
-	themeToggle() {
+		if (theme === 'dark') {
+			document.documentElement.setAttribute('data-theme', 'dark');
+		}
+	}
+	theme() {
+		// Apply initial theme icons
+		$('.theme-icon').addClass('w_hide');
+		switch (this.savedTheme) {
+			case 'light':
+				$('.theme-icon-light').removeClass('w_hide');
+				break;
+			case 'dark':
+				$('.theme-icon-dark').removeClass('w_hide');
+				break;
+			case 'auto':
+				$('.theme-icon-auto').removeClass('w_hide');
+				break;
+		}
 		$('#theme-switcher').on('click', function () {
 			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 			const currentTheme = localStorage.getItem('w_theme') || (prefersDark ? 'dark' : 'light');
@@ -193,22 +204,23 @@ class UtilsWepps {
 				actualTheme = newTheme;
 			}
 			$('html').attr('data-theme', actualTheme);
-			utilsWepps.applyThemeIcons(newTheme);
+			// Apply theme icons
+			$('.theme-icon').addClass('w_hide');
+			switch (newTheme) {
+				case 'light':
+					$('.theme-icon-light').removeClass('w_hide');
+					break;
+				case 'dark':
+					$('.theme-icon-dark').removeClass('w_hide');
+					break;
+				case 'auto':
+					$('.theme-icon-auto').removeClass('w_hide');
+					break;
+			}
 		});
 	};
-	applyThemeIcons(theme) {
-		$('.theme-icon').addClass('w_hide');
-		switch (theme) {
-			case 'light':
-				$('.theme-icon-light').removeClass('w_hide');
-				break;
-			case 'dark':
-				$('.theme-icon-dark').removeClass('w_hide');
-				break;
-			case 'auto':
-				$('.theme-icon-auto').removeClass('w_hide');
-				break;
-		}
+	digit(val) {
+		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
 	};
 };
 
