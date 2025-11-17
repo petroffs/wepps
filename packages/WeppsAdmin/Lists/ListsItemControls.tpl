@@ -6,9 +6,9 @@
 		<a class="w_button list-item-refresh" href="" title="Обновить страницу"><i class="fa fa-refresh"></i> Обновить</a>
 		{/if}
 	
-		{if $ppsUrl}
-			{if !$ppsUrl|@strstr:"addNavigator"}
-				<a class="w_button list-item-add" href="/_wepps/{$weppspath}{$ppsUrl}addNavigator/" title="Добавить раздел"><i class="fa fa-plus"></i> Добавить</a>
+		{if $weppsurl}
+			{if !$weppsurl|@strstr:"addNavigator"}
+				<a class="w_button list-item-add" href="/_wepps/{$weppspath}{$weppsurl}addNavigator/" title="Добавить раздел"><i class="fa fa-plus"></i> Добавить раздел</a>
 				<a class="w_button list-item-remove" href="" data-path="{$weppspath}" title="Удалить"><i class="fa fa-remove"></i> Удалить</a>
 			{/if}
 		{elseif $element.Id}

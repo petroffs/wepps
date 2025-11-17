@@ -46,8 +46,8 @@ class RequestProducts extends Request
 				break;
 			case 'filters':
 				$this->tpl = "RequestProductsFilters.tpl";
-				$ppsUrl = (isset($this->get['link'])) ? $this->get['link'] : "/catalog/";
-				$this->navigator = new Navigator($ppsUrl);
+				$weppsurl = (isset($this->get['link'])) ? $this->get['link'] : "/catalog/";
+				$this->navigator = new Navigator($weppsurl);
 				$productsUtils = new ProductsUtils();
 				$productsUtils->setNavigator($this->navigator, 'Products');
 				$filters = new Filters($this->get);

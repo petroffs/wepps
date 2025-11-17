@@ -26,8 +26,8 @@ class Lists
 		$headers->js("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.js");
 		$headers->css("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.css");
 		$this->get = Utils::trim($_GET);
-		$ppsUrl = "/" . $_GET['weppsurl'];
-		$ppsUrlEx = explode("/", trim($ppsUrl, '/'));
+		$weppsurl = "/" . $_GET['weppsurl'];
+		$weppsurlEx = explode("/", trim($weppsurl, '/'));
 		$tpl2 = "../Admin/AdminError.tpl";
 		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
 		$translate = Admin::getTranslate();
@@ -53,7 +53,7 @@ class Lists
 		}
 		$smarty->assign('lists', $arr);
 		$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
-		if ($ppsUrl == '/lists/') {
+		if ($weppsurl == '/lists/') {
 			/*
 			 * Список списков
 			 */
@@ -63,7 +63,7 @@ class Lists
 			$content['NameNavItem'] = "Списки данных";
 			$smarty->assign('content', $content);
 			$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
-		} elseif (count($ppsUrlEx) == 2 && in_array($ppsUrlEx[1], $perm['lists'])) {
+		} elseif (count($weppsurlEx) == 2 && in_array($weppsurlEx[1], $perm['lists'])) {
 			/*
 			 * Элементы списка
 			 */
@@ -72,9 +72,9 @@ class Lists
 			/*
 			 * Свойства списка (Конфигурация и поля)
 			 */
-			$sql = "select * from s_Config as t where TableName in ('{$ppsUrlEx[1]}') order by t.Category";
+			$sql = "select * from s_Config as t where TableName in ('{$weppsurlEx[1]}') order by t.Category";
 			$listSettings = Connect::$instance->fetch($sql)[0];
-			$listObj = new Data($ppsUrlEx[1]);
+			$listObj = new Data($weppsurlEx[1]);
 			if (!empty($listSettings['ItemsFields'])) {
 				$listObj->setFields($listSettings['ItemsFields']);
 			}
@@ -142,23 +142,23 @@ class Lists
 			if (isset($listItems[0]['Id'])) {
 				$smarty->assign('listItems', $listItems);
 				$smarty->assign('paginator', $listObj->paginator);
-				$smarty->assign('paginatorUrl', "/_wepps/lists/{$ppsUrlEx[1]}/");
+				$smarty->assign('paginatorUrl', "/_wepps/lists/{$weppsurlEx[1]}/");
 				$smarty->assign('paginatorTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Admin/Paginator/PaginatorLists.tpl'));
 				$smarty->assign('orderField', $orderField);
 				$headers->css("/packages/WeppsAdmin/Admin/Paginator/Paginator.{$headers::$rand}.css");
 			}
 			$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
-		} elseif (count($ppsUrlEx) == 3) {
+		} elseif (count($weppsurlEx) == 3) {
 			/*
 			 * Элемент списка
 			 */
-			$listForm = self::getListItemForm($headers, $ppsUrlEx[1], $ppsUrlEx[2]);
+			$listForm = self::getListItemForm($headers, $weppsurlEx[1], $weppsurlEx[2]);
 			$element = $listForm['element'];
 			$listSettings = $listForm['listSettings'];
 			$tpl2 = "ListsItem.tpl";
 			$headers = &$listForm['headers'];
 
-			if ($ppsUrlEx[2] == 'add') {
+			if ($weppsurlEx[2] == 'add') {
 				$content['MetaTitle'] = "Новый элемент — {$listSettings['Name']} — Списки данных";
 				$content['Name'] = "Новый элемент";
 				$element['Id'] = 'add';

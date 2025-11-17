@@ -14,11 +14,11 @@ class Admin {
 	private $page;
 	public static $pathItem;
 	public static $path;
-	public function __construct(string $ppsUrl,TemplateHeaders &$headers) {
+	public function __construct(string $weppsurl,TemplateHeaders &$headers) {
 		/*
 		 * Если не залогинен - вывести форму авторизации
 		 */
-		self::getNavigateUrl($ppsUrl);
+		self::getNavigateUrl($weppsurl);
 		$this->page = (isset($_GET['page']))?(int)$_GET['page']:1;
 		$this->headers = &$headers;
 		$this->nav = array (

@@ -19,16 +19,16 @@ class ConfigExtensions
 		$headers->css("/packages/WeppsAdmin/ConfigExtensions/ConfigExtensions.{$headers::$rand}.css");
 		$tpl2 = "ConfigExtensions.tpl";
 		$this->getExtensionsEnv();
-		$ppsUrl = "/" . $_GET['weppsurl'];
-		$ppsUrlEx = explode("/", trim($ppsUrl, '/'));
-		if (!isset($ppsUrlEx[1])) {
+		$weppsurl = "/" . $_GET['weppsurl'];
+		$weppsurlEx = explode("/", trim($weppsurl, '/'));
+		if (!isset($weppsurlEx[1])) {
 			$content = [
 				'MetaTitle' => "Системные расширения",
 				'Name' => "Все системные расширения",
 				'NameNavItem' => "Системные расширения"
 			];
-		} elseif (isset($ppsUrlEx[1]) && isset($this->extensions[$ppsUrlEx[1]])) {
-			$ext = $this->extensions[$ppsUrlEx[1]];
+		} elseif (isset($weppsurlEx[1]) && isset($this->extensions[$weppsurlEx[1]])) {
+			$ext = $this->extensions[$weppsurlEx[1]];
 			$content = [
 				'MetaTitle' => "{$ext['Name']} — Системные расширения",
 				'Name' => $ext['Name'],
@@ -59,7 +59,7 @@ class ConfigExtensions
 			if (!empty($extResult->headers)) {
 				$headers->join($extResult->headers);
 			}
-		} elseif (isset($ppsUrlEx[1])) {
+		} elseif (isset($weppsurlEx[1])) {
 			Exception::error404();
 		}
 		$smarty->assign('exts', $this->extensions);
