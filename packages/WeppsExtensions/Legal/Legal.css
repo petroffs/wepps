@@ -4,6 +4,8 @@ section.legal-wrapper.w_flex {
 }
 
 section.legal-wrapper>section {
+	margin-bottom: var(--s2);
+	max-width: max-content;
 	border-radius: var(--s2);
 	overflow: hidden;
 	position: relative;
@@ -14,20 +16,11 @@ section.legal-wrapper>section:hover {
 }
 
 section.legal-wrapper a {
+	font-size: var(--font-medium);
 	text-decoration: none;
 	color: var(--color-05);
 	background: var(--color-95);
 	height: 100%;
-	display: block;
-}
-
-div.legal-img {
-	background: var(--color-100);
-}
-
-div.legal-img img {
-	width: 100%;
-	height: auto;
 	display: block;
 }
 
@@ -55,14 +48,4 @@ section.legal-item-wrapper>div {
 	border-radius: var(--s2);
 	position: relative;
 	overflow: hidden;
-}
-
-div.legal-item-img img {
-	width: 100%;
-	height: auto;
-	display: block;
-}
-
-div.legal-item-date {
-	color: var(--color-50);
 }

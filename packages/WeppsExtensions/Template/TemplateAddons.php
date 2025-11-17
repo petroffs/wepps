@@ -5,7 +5,9 @@ use WeppsCore\Extension;
 use WeppsCore\Data;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
+use WeppsCore\Utils;
 use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Legal\LegalUtils;
 
 if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 	/**
@@ -88,6 +90,13 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			$obj = new Data("Organizations");
 			$smarty->assign('org', $obj->fetchmini()[0]);
 			unset($obj);
+
+			/**
+			 * Установка пользовательских соглашений
+			 * @see LegalUtils::getPrivacyPolicyAgreements()
+			 */
+			$legalUtils = new LegalUtils($this->headers);
+			$smarty->assign('legalModal', $legalUtils->renderModal());
 
 			/**
 			 * Обработка и вывод карусели слайдов

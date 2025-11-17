@@ -70,5 +70,6 @@
 			</section>
 		</div>
 	</footer>
+	{$legalModal}
 </body>
 </html>

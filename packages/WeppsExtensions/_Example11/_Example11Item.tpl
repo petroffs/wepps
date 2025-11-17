@@ -8,7 +8,7 @@
 				<div class="_Example11-item-img"><img src="/pic/catbigv{$images.0}"/></div>
 			</div>
 			{/if}
-			<div class="w_padding">
+			<div class="w_padding_medium">
 				<h1>{$element.Name}</h1>
 				<div class="_Example11-item-date">{$element.NDate|date_format:"%d.%m.%Y"}</div>
 				<div class="_Example11-item-text">{$element.Descr}</div>
@@ -19,7 +19,7 @@
 	</section>
 	<div class="w_interval"></div>
 	<section>
-		<section class="_Example11-wrapper w_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap">
+		<section class="_Example11-wrapper w_animate w_grid w_3col w_2col_view_medium w_1col_view_small w_gap_medium">
 			{foreach name="out" item="item" from=$elements}
 			{assign var="images" value=$item.Images_FileUrl|strarr}
 			<section class="w_flex_13 w_flex_12_view_medium">

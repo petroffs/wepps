@@ -1,0 +1,21 @@
+.legal-modal {
+    color: var(--color-05);
+    background-color: var(--color-95);
+    padding: var(--s4);
+    max-width: 280px;
+    border-radius: var(--s2);
+    box-shadow: var(--shadow);
+    position: fixed;
+    bottom: var(--s4);
+    right: var(--s4);
+    z-index: 10;
+}
+
+.legal-modal .title {
+    font-weight: 600;
+    margin-bottom: var(--s2);
+}
+
+.legal-modal a.w_button {
+    margin: 0 var(--s) var(--s) 0;
+}

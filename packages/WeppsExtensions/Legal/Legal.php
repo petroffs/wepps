@@ -13,22 +13,19 @@ class Legal extends Extension {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Legal/Legal.tpl';
 				$conditions = "t.DisplayOff=0";
-				$obj = new Data("News");
+				$obj = new Data("Legal");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->fetch($conditions,6,$this->page,"t.Priority desc");
+				$res = $obj->fetch($conditions,30,1,"t.Priority");
 				$smarty->assign('elements',$res);
-				$smarty->assign('paginator',$obj->paginator);
-				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
-				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 				break;
 			default:
 				$this->tpl = 'packages/WeppsExtensions/Legal/LegalItem.tpl';
-				$res = $this->getItem("News");
+				$res = $this->getItem("Legal");
 				$smarty->assign('element',$res);
-				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
-				$obj = new Data("News");
+				$conditions = "t.DisplayOff=0";
+				$obj = new Data("Legal");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
-				$res = $obj->fetch($conditions,3,1,"t.Priority desc");
+				$res = $obj->fetch($conditions,30,1,"t.Priority");
 				$smarty->assign('elements',$res);
 				$smarty->assign('normalView',0);
 				break;
