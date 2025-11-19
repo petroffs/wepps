@@ -15,16 +15,16 @@ class LegalUtils
     private function getPrivacyPolicyAgreements(): array
     {
         return [
-			'default' => $_COOKIE['isPrivacyAgree'] ?? 'false',
-			'analytics' => $_COOKIE['isPrivacyAnalyticsAgree'] ?? 'true'
-		];
+            'default' => $_COOKIE['wepps_cookies_default'] ?? 'false',
+            'analytics' => $_COOKIE['wepps_cookies_analytics'] ?? 'true'
+        ];
     }
     public function renderModal(): string
     {
         $smarty = Smarty::getSmarty();
         $smarty->assign('privacyPolicyAgreements', $this->getPrivacyPolicyAgreements());
         $this->headers->css("/ext/Legal/LegalModal.{$this->headers::$rand}.css");
-        $this->headers->js("/ext/Legal/LegalModal.{$this->headers::$rand}.js");
+        // $this->headers->js("/ext/Legal/LegalModal.{$this->headers::$rand}.js");
         return $smarty->fetch(__DIR__ . '/LegalModal.tpl');
     }
 }

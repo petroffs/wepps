@@ -2,12 +2,12 @@
     color: var(--color-05);
     background-color: var(--color-95);
     padding: var(--s4);
-    max-width: 280px;
+    max-width: calc(var(--s) * 60);
     border-radius: var(--s2);
     box-shadow: var(--shadow);
     position: fixed;
     bottom: var(--s4);
-    right: var(--s4);
+    left: var(--s4);
     z-index: 10;
 }
 
@@ -23,4 +23,12 @@
 
 .legal-modal a.w_button {
     margin: 0 var(--s) var(--s) 0;
+}
+
+@media screen and (max-width: 480px) {
+    .legal-modal {
+        max-width: calc(100% - var(--s4) * 4);
+        bottom: calc(var(--s) * 20);
+        left: inherit;
+    }
 }

@@ -10,8 +10,6 @@
 			{/if}
 			<div class="w_padding_medium">
 				<div class="legal-item-text">{$element.Text1}</div>
-				<div class="w_interval"></div>
-				<a href="" class="w_button" id="ajax-test" data-id="{$element.Id}">AJAX-window test</a>
 			</div>
 		</div>
 	</section>
@@ -24,7 +22,6 @@
 				<a href="{$item.Url}">
 					<div class="legal-text">
 						<div class="title">{$item.Name}</div>
-						{if $item.Announce}<div class="text">{$item.Announce}</div>{/if}
 					</div>
 				</a>
 			</section>

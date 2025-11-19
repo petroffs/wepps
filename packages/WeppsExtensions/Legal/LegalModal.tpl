@@ -10,9 +10,8 @@
             </p>
         </div>
         <div class="btn">
-            <a href="" class="w_button privacy-agree">Принять все</a>
-            <a href="" class="w_button privacy-settings">Настроить</a>
+            <a href="" class="w_button" id="privacy-agree">Принять все</a>
+            <a href="" class="w_button" id="privacy-settings">Настроить</a>
         </div>
-
     </div>
 {/if}
