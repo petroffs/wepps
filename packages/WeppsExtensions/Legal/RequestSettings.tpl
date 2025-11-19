@@ -35,8 +35,6 @@
 				</label>
 			</div>
 		</section>
-
-
 	</fieldset>
 </form>
 {$get.cssjs}
