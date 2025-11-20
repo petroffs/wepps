@@ -2,7 +2,7 @@
 <p>Мы используем файлы cookie для работы сайта и аналитики. Вы можете выбрать, какие виды cookie разрешить. Необходимые
 	cookie обязательны для работы сайта. Подробнее читайте в нашей <a href='/legal/cookies.html'>Политике использования
 		cookie-файлов</a>.</p>
-<form action="javascript:void(0)" id="legacy-form" class="w_form" autocomplete="off">
+<form action="javascript:void(0)" id="legal-form" class="w_form" autocomplete="off">
 	<fieldset>
 		<section>
 			<div class="title">Необходимые cookie (Обязательные для работы сайта)</div>
@@ -15,8 +15,9 @@
 		</section>
 		<section>
 			<div class="title">Аналитические cookie</div>
-			<label class="w_label w_checkbox"><input type="checkbox" name="analytics" value="true" {if $privacy.analytics==
-				'true'} checked="checked" {/if} id="privacy-analytics"><span>Аналитические cookie</span></label>
+			<label class="w_label w_checkbox"><input type="checkbox" name="analytics" value="true"
+					{if $privacyPolicyAgreements.analytics=='true'} checked="checked" {/if}
+					id="privacy-analytics"><span>Аналитические cookie</span></label>
 			<div class="text">Эти cookie помогают нам понимать, как посетители взаимодействуют с сайтом, собирая
 				анонимную информацию. Это позволяет улучшать пользовательский опыт и развивать сайт.</div>
 		</section>

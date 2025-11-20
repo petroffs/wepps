@@ -3,7 +3,9 @@ require_once '../../../configloader.php';
 
 use WeppsCore\Request;
 use WeppsCore\Exception;
+use WeppsCore\TemplateHeaders;
 use WeppsCore\Utils;
+use WeppsExtensions\Legal\LegalUtils;
 
 class RequestLegacy extends Request
 {
@@ -12,13 +14,29 @@ class RequestLegacy extends Request
 		switch ($action) {
 			case 'agree':
 				$lifetime = 60*60*24*180;
-				Utils::cookies('wepps_cookies_default',$this->get['default']??'false',$lifetime);
-				Utils::cookies('wepps_cookies_analytics',$this->get['analytics']??'false',$lifetime);
-				if ($this->get['default']??'false' === 'true') {
+				$default = $this->get['default'] ?? 'false';
+				$analytics = $this->get['analytics'] ?? 'false';
+				// if ($default === 'false' && $analytics === 'true') {
+				//     $default = '';
+				// 	$analytics = 'false';
+				// }
+				// if ($analytics === 'false') {
+				//     $analytics = '';
+				// }
+				if ($default === 'false' && $analytics === 'false') {
+				    $default = '';
+				    $analytics = '';
+				}
+				Utils::cookies('wepps_cookies_default',$default,$lifetime);
+				Utils::cookies('wepps_cookies_analytics',$analytics,$lifetime);
+				if ($default === 'true') {
 					echo "<script>$('.legal-modal').remove()</script>";
 				}
 				break;
 			case 'settings':
+				$headers = new TemplateHeaders();
+				$legalUtils = new LegalUtils($headers);
+				$this->assign('privacyPolicyAgreements', $legalUtils->getPrivacyPolicyAgreements());
 				$this->tpl = 'RequestSettings.tpl';
 				break;
 			default:

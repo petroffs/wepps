@@ -12,7 +12,7 @@ class LegalUtils
     {
         $this->headers = $headers;
     }
-    private function getPrivacyPolicyAgreements(): array
+    public function getPrivacyPolicyAgreements(): array
     {
         return [
             'default' => $_COOKIE['wepps_cookies_default'] ?? 'false',
@@ -24,7 +24,7 @@ class LegalUtils
         $smarty = Smarty::getSmarty();
         $smarty->assign('privacyPolicyAgreements', $this->getPrivacyPolicyAgreements());
         $this->headers->css("/ext/Legal/LegalModal.{$this->headers::$rand}.css");
-        // $this->headers->js("/ext/Legal/LegalModal.{$this->headers::$rand}.js");
+        $this->headers->js("/ext/Legal/LegalModal.{$this->headers::$rand}.js");
         return $smarty->fetch(__DIR__ . '/LegalModal.tpl');
     }
 }
