@@ -7,6 +7,12 @@
 <meta name="viewport" content="initial-scale=1, maximum-scale=3" />
 {$headers.meta}
 {$headers.cssjs}
+{if $privacyPolicyAgreements.analytics=='true'}
+	<script>
+		console.log('Analytics scripts can be loaded here based on user consent.');
+		// Example: Load Google Analytics script
+	</script>
+{/if}
 </head>
 <body>
 	<header>
@@ -56,6 +62,7 @@
 								<li>©  {$org.Name}</li>
 								<li>{mailto address=$org.Email}</li>
 								<li>{$org.Phone}</li>
+								<li><a href="/legal/cookies.html" class="privacy-settings">Настройки cookies</a></li>
 							</ul>
 						</div>
 						<div class="text w_flex_fix w_flex_11_view_small">
