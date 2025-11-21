@@ -552,3 +552,20 @@ form {
 .select2-container--default .select2-results__option.select2-container--below:last-child {
 	border-radius: 0 0 var(--s) var(--s);
 }
+
+
+@media screen and (max-width: 810px) {
+	.w_label.w_flex_view_medium,
+	.w_flex.w_flex_view_medium,
+	.w_button.w_flex_view_medium {
+		display: flex;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.w_label.w_flex_view_small,
+	.w_flex.w_flex_view_small,
+	.w_button.w_flex_view_small {
+		display: flex;
+	}
+}

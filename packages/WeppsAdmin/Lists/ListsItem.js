@@ -153,10 +153,10 @@ var readyListsItemInit = function () {
 		var group1 = $(this).data('id');
 		var siblings1 = $(this).siblings('a');
 		siblings1.removeClass('active');
-		siblings1.find('i.fa-caret-down').addClass('fa-caret-right');
-		siblings1.find('i.fa-caret-down').removeClass('fa-caret-down');
-		$(this).find('i').addClass('fa-caret-down');
-		$(this).find('i').removeClass('fa-caret-right');
+		siblings1.find('i.bi-caret-down').addClass('bi-caret-right');
+		siblings1.find('i.bi-caret-down').removeClass('bi-caret-down');
+		$(this).find('i').addClass('bi-caret-down');
+		$(this).find('i').removeClass('bi-caret-right');
 		$(this).addClass('active');
 
 		if (group1 == 'FieldAll') {

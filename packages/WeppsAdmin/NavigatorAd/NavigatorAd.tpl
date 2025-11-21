@@ -12,7 +12,7 @@
 		<ul class="w_list w_flex_max">
 			<li>
 				<div class="title">
-					<a href="" id="sidebar-show"><i class="fa fa-reorder"></i></a>
+					<a href="" id="sidebar-show"><i class="bi bi-list"></i></a>
 				</div>
 			</li>
 		</ul>
@@ -33,7 +33,7 @@
 				  <ul class="w_list dir level{$level}" data-parent="{$entry.element.Id}" data-level="{$level}">
 				  {foreach $data as $entry}
 				    {if count($entry.child)>0}
-				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}" data-id="{$entry.element.Id}"><a href="/_wepps/navigator{$entry.element.Url}">{$entry.element.Name}</a>&nbsp;<i class="fa fa-folder-o"></i></li>
+				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}" data-id="{$entry.element.Id}"><a href="/_wepps/navigator{$entry.element.Url}">{$entry.element.Name}</a>&nbsp;<i class="bi bi-folder"></i></li>
 				      {menu data=$entry.child level=$level+1}
 				    {else}
 				      <li class="{if $entry.element.DisplayOff==1}hidden {/if}{if $content.Id==$entry.element.Id}active{/if}" title="Id: {$entry.element.Id}"><a href="/_wepps/navigator{$entry.element.Url}">{$entry.element.Name}</a></li>

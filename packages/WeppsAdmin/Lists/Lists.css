@@ -60,7 +60,7 @@ font-family: 'bootstrap-icons';
 	border-color: var(--color-focus);
 }
 
-.controls-area a i.fa {
+.controls-area a i.bi {
 	padding-right: var(--s);
 }
 

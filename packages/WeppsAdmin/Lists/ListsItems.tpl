@@ -12,11 +12,11 @@
 			<h2>{$content.Name}</h2>
 			<div class="controls-area w_flex w_flex_row w_flex_row_top">
 				<div class="w_flex_12 w_flex_11_view_small">
-					<a href="/_wepps/lists/{$listSettings.TableName}/add/" class="w_button" title="Добавить"><i class="fa fa-plus"></i> Добавить</a>
+					<a href="/_wepps/lists/{$listSettings.TableName}/add/" class="w_button" title="Добавить"><i class="bi bi-plus-lg"></i> Добавить</a>
 					{if $permConfig==1}
-					<a href="/_wepps/lists/s_Config/{$listSettings.Id}/" class="w_button" title="Конфигурация"><i class="fa fa-gear"></i> Конфигурация</a>
-					<a href="/_wepps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="w_button" title="Настройки полей"><i class="fa fa-gears"></i> Настройки полей</a>
-					<a title="Экспорт данных" href="#" class="w_button" id="export" data-list="{$listSettings.TableName}"><i class="fa fa-download"></i> Экспорт</a>
+					<a href="/_wepps/lists/s_Config/{$listSettings.Id}/" class="w_button" title="Конфигурация"><i class="bi bi-gear"></i> Конфигурация</a>
+					<a href="/_wepps/lists/s_ConfigFields/?field=TableName&filter={$listSettings.TableName}" class="w_button" title="Настройки полей"><i class="bi bi-sliders2"></i> Настройки полей</a>
+					<a title="Экспорт данных" href="#" class="w_button" id="export" data-list="{$listSettings.TableName}"><i class="bi bi-download"></i> Экспорт</a>
 					{/if}
 				</div>
 				<div class="controls-area-form w_flex_12 w_flex_11_view_small w_right">
@@ -54,11 +54,11 @@
 						<tr class="filters">
 							{foreach name="o" item="i" key="k" from=$listScheme}
 							<th class="{$i.0.Type}" valign="top"><div class="w_nowrap">
-									<a href="{$paginatorUrl}?orderby={if $smarty.get.orderby==$k}{$k}+desc{else}{$k}{/if}{if $smarty.get.field}&field={$smarty.get.field}{/if}{if $smarty.get.filter}&filter={$smarty.get.filter}{elseif $smarty.get.search}&search={$smarty.get.search}{/if}" class="sort{if $orderField==$k} active{/if}"><i class="fa {if $smarty.get.orderby==$k|cat:' desc'}fa-sort-amount-desc{else}fa-sort-amount-asc{/if}"></i></a>
+									<a href="{$paginatorUrl}?orderby={if $smarty.get.orderby==$k}{$k}+desc{else}{$k}{/if}{if $smarty.get.field}&field={$smarty.get.field}{/if}{if $smarty.get.filter}&filter={$smarty.get.filter}{elseif $smarty.get.search}&search={$smarty.get.search}{/if}" class="sort{if $orderField==$k} active{/if}"><i class="bi {if $smarty.get.orderby==$k|cat:' desc'}bi-sort-down{else}bi-sort-up{/if}"></i></a>
 									{if $i.0.Type != 'file' && $i.0.Type != 'area'} <a
 										href="" class="filter{if $smarty.get.field==$k} active{/if}" data-list="{$i.0.TableName}"
 										data-field="{$k}" data-orderby="{$smarty.get.orderby}">
-										<i class="fa fa-filter"></i></a> {/if}
+										<i class="bi bi-funnel"></i></a> {/if}
 								</div></th> {/foreach}
 						</tr>
 					</thead>

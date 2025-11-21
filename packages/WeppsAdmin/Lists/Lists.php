@@ -665,7 +665,7 @@ class Lists
 			/* $_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
 					 $co = count($_SESSION['uploads'][$myform][$filesfield])-1; */
 			$js .= "
-					$('input[name=\"{$filesfield}\"]').parent().parent().append($('<p class=\"fileadd w_flex_11\">{$value['name']} <a href=\"\" class=\"file-remove\" rel=\"{$fileurl}\"><i class=\"fa fa-remove\"></i></a></p>'));
+					$('input[name=\"{$filesfield}\"]').parent().parent().append($('<p class=\"fileadd w_flex_11\">{$value['name']} <a href=\"\" class=\"file-remove\" rel=\"{$fileurl}\"><i class=\"bi bi-x-circle\"></i></a></p>'));
 			";
 		}
 		$js = "	<script>
