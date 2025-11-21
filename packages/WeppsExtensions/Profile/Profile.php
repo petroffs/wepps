@@ -11,6 +11,7 @@ use WeppsCore\TextTransforms;
 use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
+use WeppsExtensions\Addons\RemoteServices\SmartCaptcha;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Products\ProductsUtils;
 use WeppsExtensions\Template\Filters\Filters;
@@ -36,7 +37,7 @@ class Profile extends Extension
 		$this->headers->css("/ext/Profile/Profile.{$this->rand}.css");
 		$this->headers->js("/packages/vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.min.js");
 		if (!empty($this->get['token'])) {
-			Utils::cookies('wepps_token');
+			Utils::cookies('wepps_token','');
 			$jwt = new Jwt();
 			$payload = $jwt->token_decode($this->get['token']);
 			if ($payload['payload']['status'] = 200) {
@@ -67,9 +68,12 @@ class Profile extends Extension
 					break;
 				case 'password':
 					$this->profileTpl = 'ProfilePassword.tpl';
-					$recaptcha = new RecaptchaV2($this->headers);
-					$response = $recaptcha->render();
-					$smarty->assign('recaptcha', $response);
+					// $recaptcha = new RecaptchaV2($this->headers);
+					// $response = $recaptcha->render();
+					// $smarty->assign('recaptcha', $response);
+					$smartcaptcha = new SmartCaptcha();
+					$response = $smartcaptcha->render();
+					$smarty->assign('smartcaptcha', $response);
 					break;
 				default:
 					$this->profileTpl = 'ProfileSignIn.tpl';
@@ -88,14 +92,14 @@ class Profile extends Extension
 			case 'orders':
 				if (!empty($this->get['id'])) {
 					$this->profileTpl = 'ProfileOrdersItem.tpl';
-					$this->getOrder($this->get['id'],$smarty);
+					$this->getOrder($this->get['id'], $smarty);
 					break;
 				}
 				$this->profileTpl = 'ProfileOrders.tpl';
 				$obj = new Data('Orders');
 				$obj->setParams([$this->user['Id']]);
-				$orders = $obj->fetch('t.DisplayOff=0 and t.UserId=?', 10,(int) ($this->get['page'] ?? 1),'Id desc');
-				$smarty->assign('paginator',$obj->paginator);
+				$orders = $obj->fetch('t.DisplayOff=0 and t.UserId=?', 10, (int) ($this->get['page'] ?? 1), 'Id desc');
+				$smarty->assign('paginator', $obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
 				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 				if (empty($orders)) {
@@ -106,7 +110,7 @@ class Profile extends Extension
 			case 'favorites':
 				$this->profileTpl = '';
 				$this->tpl = __DIR__ . '/ProfileFavorites.tpl';
-				$this->favorites($smarty,$profileNav);
+				$this->favorites($smarty, $profileNav);
 				break;
 			case 'settings':
 				$this->profileTpl = 'ProfileSettings.tpl';
@@ -121,15 +125,16 @@ class Profile extends Extension
 		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
-	private function getOrder($id,\Smarty\Smarty $smarty): array {
+	private function getOrder($id, \Smarty\Smarty $smarty): array
+	{
 		$cartUtils = new CartUtils();
-		if (empty($order = $cartUtils->getOrder($id,$this->user['Id']))) {
+		if (empty($order = $cartUtils->getOrder($id, $this->user['Id']))) {
 			Exception::error(404);
 		}
 		$smarty->assign('order', $order);
 		return $order;
 	}
-	private function favorites(\Smarty\Smarty $smarty,array $profileNav)
+	private function favorites(\Smarty\Smarty $smarty, array $profileNav)
 	{
 		$this->navigator->content['Name'] = 'Избранное';
 		$productsUtils = new ProductsUtils();
@@ -140,22 +145,22 @@ class Profile extends Extension
 		$this->headers->css("/ext/Products/ProductsItems.{$this->rand}.css");
 		$this->headers->css("/ext/Template/Filters/Filters.{$this->rand}.css");
 		$this->headers->js("/ext/Template/Filters/Filters.{$this->rand}.js");
-		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js" );
+		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js");
 		$this->headers->js("/ext/Products/Products.{$this->rand}.js");
-		$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css" );
+		$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 		$params = $filters->getParams();
 		$sorting = $productsUtils->getSorting();
-		if (empty($jfav = @json_decode($this->user['JFav'],true)['items'])) {
+		if (empty($jfav = @json_decode($this->user['JFav'], true)['items'])) {
 			$this->profileTpl = 'ProfileFavoritesEmpty.tpl';
 			$this->tpl = __DIR__ . '/Profile.tpl';
 			return;
 
 		}
-		$ids = array_column($jfav,'id');
+		$ids = array_column($jfav, 'id');
 		$in = Connect::$instance->in($ids);
 		$conditionsPrepared = "t.DisplayOff=0 and t.Id in ($in)";
-		$conditions = $productsUtils->getConditions($params, false,$conditionsPrepared,$ids);
-		$conditionsFilters = $productsUtils->getConditions($params, true,$conditionsPrepared,$ids);
+		$conditions = $productsUtils->getConditions($params, false, $conditionsPrepared, $ids);
+		$conditionsFilters = $productsUtils->getConditions($params, true, $conditionsPrepared, $ids);
 		$settings = [
 			'pages' => $productsUtils->getPages(),
 			'page' => $this->page,
@@ -168,13 +173,14 @@ class Profile extends Extension
 				continue;
 			}
 			$subs[] = [
-				'Id' => ($item['url']=='/profile/favorites.html')?Connect::$projectServices['navigator']['profile']:0,
+				'Id' => ($item['url'] == '/profile/favorites.html') ? Connect::$projectServices['navigator']['profile'] : 0,
 				'Name' => $item['title'],
 				'Url' => $item['url'],
-			]; 
-		};
+			];
+		}
+		;
 		$products = $productsUtils->getProducts($settings);
-		$smarty->assign('normalView',0);
+		$smarty->assign('normalView', 0);
 		$smarty->assign('products', $products['rows']);
 		$smarty->assign('productsCount', $products['count'] . ' ' . TextTransforms::ending2("товар", $products['count']));
 		$smarty->assign('productsSorting', $sorting['rows']);

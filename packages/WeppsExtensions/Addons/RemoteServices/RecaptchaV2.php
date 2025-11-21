@@ -3,7 +3,6 @@ namespace WeppsExtensions\Addons\RemoteServices;
 
 use Curl\Curl;
 use WeppsCore\TemplateHeaders;
-use WeppsCore\Utils;
 use WeppsCore\Connect;
 
 class RecaptchaV2 extends RemoteServices

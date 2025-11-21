@@ -40,8 +40,8 @@ class CartUtils
 			}
 			$jdata2['date'] = date('Y-m-d H:i:s');
 			$this->user['JCart'] = json_encode($jdata2, JSON_UNESCAPED_UNICODE);
-			Utils::cookies('wepps_cart');
-			Utils::cookies('wepps_cart_guid');
+			Utils::cookies('wepps_cart','');
+			Utils::cookies('wepps_cart_guid','');
 			$this->cart = $jdata2;
 			$this->setCart();
 		}
@@ -409,8 +409,10 @@ class CartUtils
 	private function _getCartFromCookies(bool $shouldCreate = true)
 	{
 		$cart = '';
-		if (isset($_COOKIE['wepps_cart']) && @$_COOKIE['wepps_cart_guid'] == self::_getCartHash($_COOKIE['wepps_cart'])) {
-			$cart = $_COOKIE['wepps_cart'];
+		if (Utils::cookies('wepps_cart_guid') == self::_getCartHash(Utils::cookies('wepps_cart')??'')) {
+			$cart = Utils::cookies('wepps_cart'
+		);
+
 		} elseif ($shouldCreate == true) {
 			$cart = '{"items":null}';
 			Utils::cookies('wepps_cart', $this->user['JCart'] ?? '');

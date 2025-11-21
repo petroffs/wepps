@@ -29,7 +29,7 @@ class ProductsUtils
 			'nameasc' => 'Наименование',
 			'default' => 'Без сортировки',
 		];
-		$active = (!isset($_COOKIE['wepps_sort'])) ? 'default' : $_COOKIE['wepps_sort'];
+		$active = (empty(Utils::cookies('wepps_sort'))) ? 'default' : Utils::cookies('wepps_sort');
 		switch ($active) {
 			case 'priceasc':
 				$conditions = "t.Price asc";

@@ -13,6 +13,7 @@ use WeppsCore\Validator;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
+use WeppsExtensions\Addons\RemoteServices\SmartCaptcha;
 use WeppsExtensions\Cart\CartUtils;
 
 /**
@@ -131,7 +132,7 @@ class RequestProfile extends Request
 		/**
 		 * Склеить корзину неавторизованного с текущим
 		 */
-		if (!empty($_COOKIE['wepps_cart']) && !empty($_COOKIE['wepps_cart_guid'])) {
+		if (!empty(Utils::cookies('wepps_cart')) && !empty(Utils::cookies('wepps_cart_guid'))) {
 			$cartUtils = new CartUtils();
 			$cart = $cartUtils->getCart();
 			$cartUser = json_decode($res[0]['JCart'], true);
@@ -142,14 +143,14 @@ class RequestProfile extends Request
 				$cart = $cartUtils->getCart();
 				$json = json_encode($cart, JSON_UNESCAPED_UNICODE);
 				Connect::$instance->query("update s_Users set JCart=? where Id=?", [$json, @$res[0]['Id']]);
-				Utils::cookies('wepps_cart');
-				Utils::cookies('wepps_cart_guid');
+				Utils::cookies('wepps_cart','');
+				Utils::cookies('wepps_cart_guid','');
 			}
 		}
 		Utils::cookies('wepps_token', $token, $lifetime);
 		Connect::$instance->query("update s_Users set AuthDate=?,AuthIP=?,Password=? where Id=?", [date("Y-m-d H:i:s"), $_SERVER['REMOTE_ADDR'], password_hash($this->get['password'], PASSWORD_BCRYPT), $res[0]['Id']]);
 		/**
-		 * Если есть $_COOKIE['cart'] - добавить эти товары в профайл
+		 * Если есть Utils::cookies('cart') - добавить эти товары в профайл
 		 */
 		return true;
 	}
@@ -166,16 +167,28 @@ class RequestProfile extends Request
 		if (empty($user = @$res[0])) {
 			$this->errors['login'] = 'Неверный логин';
 		}
-		$recaptcha = new RecaptchaV2(new TemplateHeaders());
-		$response = $recaptcha->check($this->get['g-recaptcha-response'] ?? '');
-		if ($recaptcha->getSitekey()) {
-			if ($response['response']['success'] !== true) {
-				$this->errors['recaptchadub'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
-			}
+		$smartcaptcha = new SmartCaptcha();
+		$check = $smartcaptcha->check($this->get['smartcaptcha-response'] ?? '');
+		if ($check['response']['status'] != 'ok') {
+			$this->errors[$smartcaptcha->captchadub()] = 'Проверка не пройдена';
+			//echo $smartcaptcha->reset();
 		}
+		// $recaptcha = new RecaptchaV2(new TemplateHeaders());
+		// $response = $recaptcha->check($this->get['g-recaptcha-response'] ?? '');
+		// if ($recaptcha->getSitekey()) {
+		// 	if ($response['response']['success'] !== true) {
+		// 		$this->errors['recaptchadub'] = 'Ошибка проверки reCAPTCHA, попробуйте еще раз';
+		// 	}
+		// }
+		// if (!empty(array_filter($this->errors))) {
+		// 	if ($recaptcha->getSitekey()) {
+		// 		echo $recaptcha->reset();
+		// 	}
+		// 	return false;
+		// }
 		if (!empty(array_filter($this->errors))) {
-			if ($recaptcha->getSitekey()) {
-				echo $recaptcha->reset();
+			if ($smartcaptcha->getSitekey()) {
+				echo $smartcaptcha->reset();
 			}
 			return false;
 		}

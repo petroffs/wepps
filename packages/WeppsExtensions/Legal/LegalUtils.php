@@ -4,6 +4,7 @@ namespace WeppsExtensions\Legal;
 use WeppsCore\Smarty;
 use WeppsCore\TemplateHeaders;
 use WeppsCore\Utils;
+use WeppsExtensions\Cart\CartUtils;
 
 /**
  * Утилиты для работы с юридическими документами и соглашениями
@@ -33,15 +34,15 @@ class LegalUtils
     /**
      * Получить текущие соглашения пользователя о политике приватности
      *
-     * Возвращает статус согласий на использование cookies из $_COOKIE.
+     * Возвращает статус согласий на использование cookies из Utils::cookies().
      *
      * @return array Массив с соглашениями ['default' => string, 'analytics' => string]
      */
     public function getPrivacyPolicyAgreements(): array
     {
         return [
-            'default' => $_COOKIE['wepps_cookies_default'] ?? 'false',
-            'analytics' => $_COOKIE['wepps_cookies_analytics'] ?? 'true'
+            'default' =>  Utils::cookies('wepps_cookies_default') ?? 'false',
+            'analytics' => Utils::cookies('wepps_cookies_analytics') ?? 'true'
         ];
     }
 

@@ -35,13 +35,6 @@ class RequestLegacy extends Request
 				$lifetime = 60*60*24*180;
 				$default = $this->get['default'] ?? 'false';
 				$analytics = $this->get['analytics'] ?? 'false';
-				// if ($default === 'false' && $analytics === 'true') {
-				//     $default = '';
-				// 	$analytics = 'false';
-				// }
-				// if ($analytics === 'false') {
-				//     $analytics = '';
-				// }
 				if ($default === 'false' && $analytics === 'false') {
 				    $default = '';
 				    $analytics = '';

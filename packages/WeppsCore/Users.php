@@ -77,14 +77,14 @@ class Users
 		if (!empty($allheaders['authorization']) && strstr($allheaders['authorization'], 'Bearer ')) {
 			$token = str_replace('Bearer ', '', $allheaders['authorization']);
 		}
-		$token = (empty($token) && !empty($_COOKIE['wepps_token'])) ? @$_COOKIE['wepps_token'] : $token;
+		$token = (empty($token) && !empty(Utils::cookies('wepps_token'))) ? Utils::cookies('wepps_token') : $token;
 		if (empty($token)) {
 			return false;
 		}
 		$jwt = new Jwt();
 		$data = $jwt->token_decode($token);
 		if (@$data['payload']['typ'] != 'auth' || empty($data['payload']['id'])) {
-			Utils::cookies('wepps_token');
+			Utils::cookies('wepps_token','');
 			return false;
 		}
 		$sql = "select * from s_Users where Id=? and DisplayOff=0";
@@ -108,7 +108,7 @@ class Users
 		if (empty(Connect::$projectData['user'])) {
 			return false;
 		}
-		Utils::cookies('wepps_token');
+		Utils::cookies('wepps_token','');
 		return true;
 	}
 
