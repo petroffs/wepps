@@ -14,7 +14,7 @@ class _Example11 extends Extension
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/_Example11/_Example11.tpl';
-				$conditions = "t.DisplayOff=0";
+				$conditions = "t.IsHidden=0";
 				$obj = new Data("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->fetch($conditions, 6, $this->page, "t.Priority desc");
@@ -27,7 +27,7 @@ class _Example11 extends Extension
 				$this->tpl = 'packages/WeppsExtensions/_Example11/_Example11Item.tpl';
 				$res = $this->getItem("News");
 				$smarty->assign('element', $res);
-				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
+				$conditions = "t.IsHidden=0 and t.Id!='{$res['Id']}'";
 				$obj = new Data("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->fetch($conditions, 3, 1, "t.Priority desc");

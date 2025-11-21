@@ -82,7 +82,7 @@ class Admin {
 		//$smarty->assign('navTpl',$smarty->fetch( __DIR__ . '/AdminNav.tpl'));
 		
 		if (Connect::$projectServices['wepps']['multilang']==1) {
-			$sql = "select * from s_NGroupsLang where DisplayOff=0 order by Priority";
+			$sql = "select * from s_NGroupsLang where IsHidden=0 order by Priority";
 			$language = Connect::$instance->fetch($sql);
 			$smarty->assign('language',$language);
 			$sql = "select * from s_Lang where Category='back' order by Priority";

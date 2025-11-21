@@ -16,8 +16,8 @@ class Filters {
 		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
 		p.Name as PropertyName,count(*) as Co
 		from Products as t
-		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id and pv.DisplayOff=0
-		left outer join s_Properties as p on p.Id = pv.Name and p.DisplayOff=0
+		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id and pv.IsHidden=0
+		left outer join s_Properties as p on p.Id = pv.Name and p.IsHidden=0
 		where {$conditions['conditions']}
 		group by pv.Alias
 		order by p.Priority,pv.PValue

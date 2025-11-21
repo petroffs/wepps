@@ -346,7 +346,7 @@ class Rest
 		}
 
 		if ($this->version == 'wepps') {
-			$sql = "SELECT * from s_Users where Id=? and DisplayOff=0 and ShowAdmin=1";
+			$sql = "SELECT * from s_Users where Id=? and IsHidden=0 and ShowAdmin=1";
 			$res = Connect::$instance->fetch($sql, [$bearer['payload']['id']]);
 			if (empty($res[0]['Id'])) {
 				throw new \Exception('User not found or inactive', 401);

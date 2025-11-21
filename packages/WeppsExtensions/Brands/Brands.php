@@ -17,8 +17,8 @@ class Brands extends Extension
 				$this->tpl = 'packages/WeppsExtensions/Brands/Brands.tpl';
 				$sql = "SELECT distinct substring(pv.PValue,1,1) FirstLetter,pv.Name,pv.Alias,pv.PValue, concat('{$this->navigator->content['Url']}',pv.Alias,'.html') Url
 						from s_PropertiesValues pv
-						join Products p on p.Id = pv.TableNameId and p.DisplayOff=0
-						where pv.Name=1 and pv.DisplayOff=0";
+						join Products p on p.Id = pv.TableNameId and p.IsHidden=0
+						where pv.Name=1 and pv.IsHidden=0";
 				$res = Connect::$instance->fetch($sql, [], 'group');
 				$smarty->assign('brands', $res);
 				break;
@@ -37,8 +37,8 @@ class Brands extends Extension
 		$this->extensionData['element'] = 1;
 		$sql = "SELECT pv.Name,pv.Alias,pv.PValue, concat('{$this->navigator->content['Url']}',pv.Alias,'.html') Url
 				from s_PropertiesValues pv
-				join Products p on p.Id = pv.TableNameId and p.DisplayOff=0
-				where pv.Alias=? and pv.DisplayOff=0 limit 1";
+				join Products p on p.Id = pv.TableNameId and p.IsHidden=0
+				where pv.Alias=? and pv.IsHidden=0 limit 1";
 		$res = Connect::$instance->fetch($sql, [Navigator::$pathItem]);
 		if (empty($res[0])) {
 			Exception::error404();

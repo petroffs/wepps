@@ -648,7 +648,7 @@ class CartUtils
 	public function getOrder(int $id, int $userId = 0): array
 	{
 		$obj = new Data("Orders");
-		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
+		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.IsHidden=0');
 		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
 		if ($userId > 0) {
 			$obj->setParams([$id, $userId]);
@@ -685,7 +685,7 @@ class CartUtils
 		$obj->setParams([$id]);
 		$obj->setJoin("join s_Users u on u.Id=t.UserId");
 		$obj->setConcat("u.Name UsersName");
-		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?", 2000, 1, "t.Priority");
+		$res = $obj->fetch("t.IsHidden=0 and t.OrderId=?", 2000, 1, "t.Priority");
 		if (!empty($res)) {
 			$order['W_Messages'] = $res;
 		}

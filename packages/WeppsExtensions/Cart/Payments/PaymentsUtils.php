@@ -13,11 +13,11 @@ class PaymentsUtils
     
     public function getByDeliveryId(string $deliveryId,CartUtils $cartUtils,string $paymentsId=''): array
     {
-        $conditions = "p.DisplayOff=0 and p.Id != ?";
+        $conditions = "p.IsHidden=0 and p.Id != ?";
         if (!empty($paymentsId)) {
-            $conditions = "p.DisplayOff=0 and p.Id = ?";
+            $conditions = "p.IsHidden=0 and p.Id = ?";
         }
-        $sql = "SELECT p.Id,p.Name,p.Priority,p.DisplayOff,
+        $sql = "SELECT p.Id,p.Name,p.Priority,p.IsHidden,
                 p.Tariff,p.IsTariffPercentage,p.Discount,p.IsDiscountPercentage,
                 if (p.PaymentsExt!='',p.PaymentsExt,'PaymentsDefault') PaymentsExt
                 from OrdersPayments p

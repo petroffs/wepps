@@ -202,8 +202,8 @@ class RequestOrders extends Request {
 				if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) `text`,
 				if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) `name`,
 				p.Price `price` from Products p
-				join ProductsVariations pv on pv.ProductsId=p.Id and pv.DisplayOff=0 and pv.Field4>0
-				where p.DisplayOff=0 and (p.Name like ? or p.Article like ? or concat(pv.Field1,', ',pv.Field2) like ? or pv.Field3 like ?)
+				join ProductsVariations pv on pv.ProductsId=p.Id and pv.IsHidden=0 and pv.Field4>0
+				where p.IsHidden=0 and (p.Name like ? or p.Article like ? or concat(pv.Field1,', ',pv.Field2) like ? or pv.Field3 like ?)
 				group by p.Id order by p.Name asc limit $offset,$limit";
 			$res = Connect::$instance->fetch($sql,["%{$term}%","%{$term}%","%{$term}%","%{$term}%"]);
 		}

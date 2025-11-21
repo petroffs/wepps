@@ -37,7 +37,7 @@ class Uploads extends Request {
 				}
 
 				$obj = new Data("s_UploadsSource");
-				$source = $obj->fetchmini("DisplayOff=0",200,1);
+				$source = $obj->fetchmini("IsHidden=0",200,1);
 				$smarty->assign('source',$source);
 				
 				$obj = new Data("s_Files");

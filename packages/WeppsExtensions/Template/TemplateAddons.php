@@ -111,7 +111,7 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			 */
 			if (empty(Navigator::$pathItem)) {
 				$obj = new Data("Sliders");
-				$res = $obj->fetch("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
+				$res = $obj->fetch("t.IsHidden=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
 				if (!empty($res[0]['Id'])) {
 					$smarty->assign('carousel', $res);
 					$carouselTpl = $smarty->fetch('packages/WeppsExtensions/Template/Swiper/Swiper.tpl');
@@ -128,7 +128,7 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			 * @see Data::fetch()
 			 */
 			$obj = new Data("ServList");
-			$res = $obj->fetch("t.Categories='Соцсети' and t.DisplayOff=0");
+			$res = $obj->fetch("t.Categories='Соцсети' and t.IsHidden=0");
 			$smarty->assign('socials', $res);
 			unset($obj);
 

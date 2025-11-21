@@ -29,7 +29,7 @@ class Users
 	 */
 	public function signIn(): bool
 	{
-		$sql = "select * from s_Users where Login=? and ShowAdmin=1 and DisplayOff=0";
+		$sql = "select * from s_Users where Login=? and ShowAdmin=1 and IsHidden=0";
 		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
 		$this->errors = [];
 		if (empty($res[0]['Id'])) {
@@ -87,7 +87,7 @@ class Users
 			Utils::cookies('wepps_token','');
 			return false;
 		}
-		$sql = "select * from s_Users where Id=? and DisplayOff=0";
+		$sql = "select * from s_Users where Id=? and IsHidden=0";
 		$res = Connect::$instance->fetch($sql, [$data['payload']['id']]);
 		Connect::$projectData['user'] = $res[0];
 		return true;

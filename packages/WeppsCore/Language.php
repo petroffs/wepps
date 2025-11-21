@@ -19,15 +19,15 @@ class Language
 	{
 
 		if ($langLink != '/') {
-			$sql = "select * from s_NGroupsLang where DisplayOff='0' and LinkDirectory=? or LinkDirectory='/' order by Priority desc limit 2";
+			$sql = "select * from s_NGroupsLang where IsHidden='0' and LinkDirectory=? or LinkDirectory='/' order by Priority desc limit 2";
 			$langData = Connect::$instance->fetch($sql, [$langLink]);
 		} else {
-			$sql = "select * from s_NGroupsLang where DisplayOff='0' and LinkDirectory='/' order by Priority desc limit 2";
+			$sql = "select * from s_NGroupsLang where IsHidden='0' and LinkDirectory='/' order by Priority desc limit 2";
 			$langData = Connect::$instance->fetch($sql);
 		}
 
 		/* $langLink = ($langLink != '/') ? "LinkDirectory='" . $langLink . "' or" : "";
-			  $sql = "select * from s_NGroupsLang where DisplayOff='0' and {$langLink} LinkDirectory='/' order by Priority desc limit 2";
+			  $sql = "select * from s_NGroupsLang where IsHidden='0' and {$langLink} LinkDirectory='/' order by Priority desc limit 2";
 			  $langData = Connect::$instance->fetch ( $sql ); */
 		$url = "";
 		if (!empty($_SERVER['REQUEST_URI'])) {
@@ -95,7 +95,7 @@ class Language
 		if ($resKeys == "") {
 			return $data;
 		}
-		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId='" . @$lang['id'] . "' and DisplayOff=0";
+		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId='" . @$lang['id'] . "' and IsHidden=0";
 		$res2 = Connect::$instance->fetch($sql);
 		if (count($res2) == 0)
 			return $data;

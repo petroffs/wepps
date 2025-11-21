@@ -15,7 +15,7 @@ class _Example10 extends Extension
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/_Example10/_Example10.tpl';
-				$conditions = 't.DisplayOff=0';
+				$conditions = 't.IsHidden=0';
 				$obj = new Data("News");
 				$res = $obj->fetch($conditions, 6, $this->page, 't.Priority desc');
 				$smarty->assign('elements', $res);

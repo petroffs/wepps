@@ -21,7 +21,7 @@ class Home extends Extension
 				 * Услуги
 				 */
 				$obj = new Data("Services");
-				$res = $obj->fetch("t.DisplayOff=0");
+				$res = $obj->fetch("t.IsHidden=0");
 				$smarty->assign('services', $res);
 
 				/*
@@ -39,7 +39,7 @@ class Home extends Extension
 				 * Преимущества
 				 */
 				$obj = new Data("Advantages");
-				$res = $obj->fetch("t.DisplayOff=0");
+				$res = $obj->fetch("t.IsHidden=0");
 				$smarty->assign('advantages', $res);
 
 				/*
@@ -50,7 +50,7 @@ class Home extends Extension
 				$apikey = Connect::$projectServices['yandexmaps']['apikey'];
 				$this->headers->js("https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey={$apikey}");
 				$obj = new Data("Contacts");
-				$res = $obj->fetch("t.DisplayOff=0", 1);
+				$res = $obj->fetch("t.IsHidden=0", 1);
 				$smarty->assign('contacts', $res);
 				#Utils::debug($res,1);
 				$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Home/Home.tpl');

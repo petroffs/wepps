@@ -31,7 +31,7 @@ class Legal extends Extension {
         switch (Navigator::$pathItem) {
             case '':
                 $this->tpl = 'packages/WeppsExtensions/Legal/Legal.tpl';
-                $conditions = "t.DisplayOff=0";
+                $conditions = "t.IsHidden=0";
                 $obj = new Data("Legal");
                 $obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
                 $res = $obj->fetch($conditions,30,1,"t.Priority");
@@ -41,7 +41,7 @@ class Legal extends Extension {
                 $this->tpl = 'packages/WeppsExtensions/Legal/LegalItem.tpl';
                 $res = $this->getItem("Legal");
                 $smarty->assign('element',$res);
-                $conditions = "t.DisplayOff=0";
+                $conditions = "t.IsHidden=0";
                 $obj = new Data("Legal");
                 $obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
                 $res = $obj->fetch($conditions,30,1,"t.Priority");

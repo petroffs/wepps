@@ -43,7 +43,7 @@ class Profile extends Extension
 			if ($payload['payload']['status'] = 200) {
 				switch ($payload['payload']['typ']) {
 					case 'pass':
-						$user = @Connect::$instance->fetch('SELECT * from s_Users where Id=? and DisplayOff=0', [$payload['payload']['id']])[0];
+						$user = @Connect::$instance->fetch('SELECT * from s_Users where Id=? and IsHidden=0', [$payload['payload']['id']])[0];
 						if (empty($user)) {
 							$this->profileTpl = 'ProfilePasswordError.tpl';
 							break;
@@ -98,7 +98,7 @@ class Profile extends Extension
 				$this->profileTpl = 'ProfileOrders.tpl';
 				$obj = new Data('Orders');
 				$obj->setParams([$this->user['Id']]);
-				$orders = $obj->fetch('t.DisplayOff=0 and t.UserId=?', 10, (int) ($this->get['page'] ?? 1), 'Id desc');
+				$orders = $obj->fetch('t.IsHidden=0 and t.UserId=?', 10, (int) ($this->get['page'] ?? 1), 'Id desc');
 				$smarty->assign('paginator', $obj->paginator);
 				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
 				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
@@ -158,7 +158,7 @@ class Profile extends Extension
 		}
 		$ids = array_column($jfav, 'id');
 		$in = Connect::$instance->in($ids);
-		$conditionsPrepared = "t.DisplayOff=0 and t.Id in ($in)";
+		$conditionsPrepared = "t.IsHidden=0 and t.Id in ($in)";
 		$conditions = $productsUtils->getConditions($params, false, $conditionsPrepared, $ids);
 		$conditionsFilters = $productsUtils->getConditions($params, true, $conditionsPrepared, $ids);
 		$settings = [

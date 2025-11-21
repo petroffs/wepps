@@ -64,7 +64,7 @@
 					</thead>
 					<tbody>
 						{foreach name="out" item="item" key="key" from=$listItems}
-						<tr class="data{if $smarty.foreach.out.last} data-last{/if}{if $item.DisplayOff==1} hidden{/if}"
+						<tr class="data{if $smarty.foreach.out.last} data-last{/if}{if $item.IsHidden==1} hidden{/if}"
 							data-url="/_wepps/lists/{$listSettings.TableName}/{$item.Id}/"
 							data-id="{$item.Id}">
 							{foreach name="o" item="i" key="k" from=$listScheme}

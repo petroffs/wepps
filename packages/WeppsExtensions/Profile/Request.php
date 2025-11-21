@@ -107,7 +107,7 @@ class RequestProfile extends Request
 	 */
 	private function signIn(): bool
 	{
-		$sql = "select * from s_Users where Login=? and DisplayOff=0";
+		$sql = "select * from s_Users where Login=? and IsHidden=0";
 		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
 		$this->errors = [];
 		if (empty($res[0]['Id'])) {
@@ -161,7 +161,7 @@ class RequestProfile extends Request
 	 */
 	private function password(): bool
 	{
-		$sql = "select * from s_Users where Login=? and DisplayOff=0";
+		$sql = "select * from s_Users where Login=? and IsHidden=0";
 		$res = Connect::$instance->fetch($sql, [$this->get['login']]);
 		$this->errors = [];
 		if (empty($user = @$res[0])) {
@@ -555,7 +555,7 @@ class RequestProfile extends Request
 				$this->errors['code'] = 'Неверный код';
 				return false;
 			}
-			Connect::$instance->query('UPDATE s_Users set DisplayOff=1,AuthDate=now() where Id=?', [Connect::$projectData['user']['Id']]);
+			Connect::$instance->query('UPDATE s_Users set IsHidden=1,AuthDate=now() where Id=?', [Connect::$projectData['user']['Id']]);
 			$this->outer('Ваш профиль удален');
 			$memcache->delete($codeCached);
 

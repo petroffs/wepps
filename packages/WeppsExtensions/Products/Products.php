@@ -72,7 +72,7 @@ class Products extends Extension
 			 * Карусель
 			 */
 			// $obj = new Data("Sliders");
-			// $res = $obj->fetch("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
+			// $res = $obj->fetch("t.IsHidden=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
 			// if (!empty($res[0]['Id'])) {
 			// 	$smarty->assign('carousel', $res);
 			// 	$carouselTpl = $smarty->fetch('packages/WeppsExtensions/Template/Swiper/Swiper.tpl');
@@ -89,7 +89,7 @@ class Products extends Extension
 			$this->navigator->content['Text1'] = '';
 			$res = $this->getItem("Products");
 			$smarty->assign('element', $res);
-			$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
+			$conditions = "t.IsHidden=0 and t.Id!='{$res['Id']}'";
 			$obj = new Data("Products");
 			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 			$res = $obj->fetch($conditions, 3, 1, "t.Priority");

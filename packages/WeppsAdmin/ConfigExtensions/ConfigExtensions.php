@@ -73,7 +73,7 @@ class ConfigExtensions
 		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
 		$fcond = "'" . implode("','", $perm['extensions']) . "'";
 		$objExt = new Data("s_ConfigExtensions");
-		$extensions = $objExt->fetch("t.DisplayOff=0 and t.Id in ($fcond)", 2000);
+		$extensions = $objExt->fetch("t.IsHidden=0 and t.Id in ($fcond)", 2000);
 		$this->extensions = [];
 		foreach ($extensions as $value) {
 			$value['ENavArr'] = Utils::arrayFromString($value['ENav'], ":::");

@@ -14,7 +14,7 @@ class Tiles extends Extension {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Tiles/Tiles.tpl';
 				$obj = new Data("Services");
-				$res = $obj->fetch("t.DisplayOff=0");
+				$res = $obj->fetch("t.IsHidden=0");
 				$smarty->assign('elements',$res);
 				break;
 			default:
