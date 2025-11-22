@@ -67,21 +67,6 @@ class Products extends Extension
 			}
 			$this->headers->js("/ext/Products/Products.{$this->rand}.js");
 			$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
-
-			/*
-			 * Карусель
-			 */
-			// $obj = new Data("Sliders");
-			// $res = $obj->fetch("t.IsHidden=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
-			// if (!empty($res[0]['Id'])) {
-			// 	$smarty->assign('carousel', $res);
-			// 	$carouselTpl = $smarty->fetch('packages/WeppsExtensions/Template/Swiper/Swiper.tpl');
-			// 	$smarty->assign('carouselTpl',$carouselTpl);
-			// 	$this->headers->css("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.css");
-			// 	$this->headers->js("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.js");
-			// 	$this->headers->js("/ext/Template/Swiper/Swiper.{$this->rand}.js");
-			// 	$this->headers->css("/ext/Template/Swiper/Swiper.{$this->rand}.css");
-			// }
 		} else {
 			$this->tpl = 'packages/WeppsExtensions/Products/ProductsItem.tpl';
 			$this->headers->css("/ext/Products/ProductsItem.{$this->rand}.css");

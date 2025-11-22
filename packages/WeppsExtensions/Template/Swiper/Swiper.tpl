@@ -1,8 +1,8 @@
 <div class="swiper swiper-desktop w_hide_view_small" data-swiper-autoplay="2000">
 	<div class="swiper-wrapper">
-		{foreach name=out item=item key=key from=$carousel}
+		{foreach name=out item=item key=key from=$slides}
 		<div class="swiper-slide">
-			<img src="/pic/slider{$item.Image_FileUrl}">
+			<img src="/pic/slide{$item.Image_FileUrl}">
 		</div>
 		{/foreach}
 	</div>
@@ -12,9 +12,9 @@
 </div>
 <div class="swiper swiper-mobile w_hide w_block_view_small" data-swiper-autoplay="2000">
 	<div class="swiper-wrapper">
-		{foreach name=out item=item key=key from=$carousel}
+		{foreach name=out item=item key=key from=$slides}
 		<div class="swiper-slide">
-			<img src="/pic/sliderm{$item.ImageMobile_FileUrl}">
+			<img src="/pic/slidem{$item.ImageMobile_FileUrl}">
 		</div>
 		{/foreach}
 	</div>

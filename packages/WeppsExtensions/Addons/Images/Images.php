@@ -70,10 +70,10 @@ class Images
 				$this->heightDst = 600;
 				$crop = 0;
 				break;
-			case "slider":
+			case "slide":
 				$side = 1280;
 				break;
-			case "sliderm":
+			case "slidem":
 				$side = 600;
 				break;
 			case "a4":
