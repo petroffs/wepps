@@ -10,7 +10,7 @@
 				<div class="img-carousel carousel">
 					{foreach name="out" item="item" from=$images}
 					<div class="img">
-						<img src="/pic/catbigv{$item}" class="w_image" />
+						<img src="/pic/mediumv{$item}" class="w_image" />
 					</div>
 					{/foreach}
 				</div>

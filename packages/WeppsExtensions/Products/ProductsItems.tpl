@@ -16,7 +16,7 @@
 			<a href="{$item.Url}">
 				<span class="img">
 					{if $images.0}
-					<img src="/pic/catbigv{$images.0}" class="w_image"/>
+					<img src="/pic/mediumv{$images.0}" class="w_image"/>
 					{else}
 					<img src="/ext/Template/files/noimage480v.png" class="w_image"/>
 					{/if}

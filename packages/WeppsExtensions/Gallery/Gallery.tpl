@@ -2,7 +2,7 @@
 	{foreach name=out item=item from=$elements}
 	<section>
 		<div class="gallery-img w_overflow">
-			<a href="/pic/full{$item.FileUrl}" class="image-gallery"><img src="/pic/catbig{$item.FileUrl}" class="w_image w_pointer w_zoom" /></a>
+			<a href="/pic/full{$item.FileUrl}" class="image-gallery"><img src="/pic/medium{$item.FileUrl}" class="w_image w_pointer w_zoom" /></a>
 		</div>
 	</section>
 	{/foreach}

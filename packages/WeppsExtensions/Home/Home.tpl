@@ -12,7 +12,7 @@
 		{foreach name="out" key="key" item="item" from=$services}
 			<section>
 				<div class="services-img">
-					<img src="/pic/catprev/{$item.Images_FileUrl}" class="w_image"/>
+					<img src="/pic/preview/{$item.Images_FileUrl}" class="w_image"/>
 				</div>
 				<div class="title">{$item.Name}</div>
 			</section>
@@ -27,7 +27,7 @@
 			{foreach name=out item=item from=$gallery}
 			<section>
 				<div class="img w_overflow">
-					<a href="/pic/full{$item.FileUrl}" class="image-gallery"><img src="/pic/catbig{$item.FileUrl}" class="w_image w_pointer w_zoom" /></a>
+					<a href="/pic/full{$item.FileUrl}" class="image-gallery"><img src="/pic/medium{$item.FileUrl}" class="w_image w_pointer w_zoom" /></a>
 				</div>
 			</section>
 			{/foreach}
@@ -42,7 +42,7 @@
 			{foreach name="out" key="key" item="item" from=$services}
 			<section class="w_flex w_inline_flex w_flex_row w_flex_center w_flex_margin_large">
 				<div class="img w_flex_25 w_flex_12_view_medium w_flex_11_view_small">
-					<img src="/pic/catprev/{$item.Images_FileUrl}" class="w_image"/>
+					<img src="/pic/preview/{$item.Images_FileUrl}" class="w_image"/>
 				</div>
 				<div class="text w_flex_25 w_flex_12_view_medium w_flex_11_view_small">
 					<div class="title">{$item.Name}</div>

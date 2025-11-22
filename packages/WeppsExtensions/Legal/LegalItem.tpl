@@ -5,7 +5,7 @@
 			{$element.Id|wepps:"Legal"}
 			{if $images.0}
 			<div>
-				<div class="legal-item-img"><img src="/pic/catbigv{$images.0}"/></div>
+				<div class="legal-item-img"><img src="/pic/mediumv{$images.0}"/></div>
 			</div>
 			{/if}
 			<div class="w_padding_medium">

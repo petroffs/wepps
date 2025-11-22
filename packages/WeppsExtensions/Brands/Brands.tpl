@@ -5,7 +5,7 @@
 		{$item.Id|wepps:"News"}
 		<div class="brands-img">
 			{if $images.0}
-			<img src="/pic/catbig{$images.0}" class="w_image"/>
+			<img src="/pic/medium{$images.0}" class="w_image"/>
 			{else}
 			<img src="/ext/Template/files/noimage640.png" class="w_image"/>
 			{/if}

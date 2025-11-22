@@ -5,7 +5,7 @@
 			{$element.Id|wepps:"News"}
 			{if $images.0}
 			<div>
-				<div class="news-item-img"><img src="/pic/catbigv{$images.0}"/></div>
+				<div class="news-item-img"><img src="/pic/mediumv{$images.0}"/></div>
 			</div>
 			{/if}
 			<div class="w_padding_medium">
@@ -25,7 +25,7 @@
 				<a href="{$item.Url}">
 					<div class="news-img">
 						{if $images.0}
-						<img src="/pic/catbig{$images.0}"/>
+						<img src="/pic/medium{$images.0}"/>
 						{else}
 						<img src="/ext/Template/files/noimage640.png"/>
 						{/if}
