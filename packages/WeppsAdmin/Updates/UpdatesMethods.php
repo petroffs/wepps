@@ -214,13 +214,17 @@ class UpdatesMethods extends Updates
 	private function getDiff(string $fileMD5, bool $includeRemoved = false)
 	{
 		if (!is_file($fileMD5)) {
-			return [];
+			return [
+				'output' => ''
+			];
 		}
 		$files = [];
 		$output = "\n";
 		$jdata = json_decode(file_get_contents($fileMD5), true);
 		if (empty($jdata['files'])) {
-			return [];
+			return [
+				'output' => ''
+			];
 		}
 		foreach ($jdata['files'] as $value) {
 			/*
