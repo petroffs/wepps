@@ -181,15 +181,6 @@ class UpdatesMethods extends Updates
 		 */
 		$modifiedRelease = $this->getDiff($fileMD5, true);
 
-
-		$this->cli->info("Modified files in current release:");
-
-		Utils::debug($modifiedRelease, 31);
-
-		exit();
-
-
-
 		/*
 		 * Расхождение между $modifiedSelf и $modifiedRelease
 		 */
