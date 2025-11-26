@@ -8,7 +8,7 @@ var readyViewOrderInit = function() {
 	});*/
 	formsInit();
 	let order = $('.orders').children('.item[data-id="'+orderId+'"]');
-	order.children('.item-field.price').find('span').text(utilsWepps.money(orderSum));
+	order.children('.item-field.price').find('span').text(utilsWepps.digit(orderSum));
 	$('select.quantity,.price>label>input').on('focus',function(event) {
 		event.stopPropagation();
 		$(this).closest('.item').find('a.list-item-save').removeClass('w_hide');
@@ -19,7 +19,7 @@ var readyViewOrderInit = function() {
 		let el = $(this).closest('.item');
 		let price = parseFloat(el.find('input[name="price"]').val());
 		let sum = (price*$(this).val()).toFixed(2);
-		el.find('div.price.sum').find('span').text(utilsWepps.money(sum));
+		el.find('div.price.sum').find('span').text(utilsWepps.digit(sum));
 	});
 	$('div.products').find('a.list-item-save').off('click');
 	$('div.products').find('a.list-item-save').on('click',function(event) {

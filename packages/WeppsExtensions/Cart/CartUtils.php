@@ -40,8 +40,8 @@ class CartUtils
 			}
 			$jdata2['date'] = date('Y-m-d H:i:s');
 			$this->user['JCart'] = json_encode($jdata2, JSON_UNESCAPED_UNICODE);
-			Utils::cookies('wepps_cart');
-			Utils::cookies('wepps_cart_guid');
+			Utils::cookies('wepps_cart','');
+			Utils::cookies('wepps_cart_guid','');
 			$this->cart = $jdata2;
 			$this->setCart();
 		}
@@ -409,8 +409,10 @@ class CartUtils
 	private function _getCartFromCookies(bool $shouldCreate = true)
 	{
 		$cart = '';
-		if (isset($_COOKIE['wepps_cart']) && @$_COOKIE['wepps_cart_guid'] == self::_getCartHash($_COOKIE['wepps_cart'])) {
-			$cart = $_COOKIE['wepps_cart'];
+		if (Utils::cookies('wepps_cart_guid') == self::_getCartHash(Utils::cookies('wepps_cart')??'')) {
+			$cart = Utils::cookies('wepps_cart'
+		);
+
 		} elseif ($shouldCreate == true) {
 			$cart = '{"items":null}';
 			Utils::cookies('wepps_cart', $this->user['JCart'] ?? '');
@@ -646,7 +648,7 @@ class CartUtils
 	public function getOrder(int $id, int $userId = 0): array
 	{
 		$obj = new Data("Orders");
-		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.DisplayOff=0');
+		$obj->setJoin('left join Payments p on p.TableNameId=t.Id and p.TableName=\'Orders\' and p.IsPaid=1 and p.IsProcessed=1 and p.IsHidden=0');
 		$obj->setConcat('if(sum(p.PriceTotal)>0,sum(p.PriceTotal),0) PricePaid,if(sum(p.PriceTotal)>0,(t.OSum-sum(p.PriceTotal)),t.OSum) OSumPay,group_concat(p.Id,\':::\',p.Name,\':::\',p.PriceTotal,\':::\',p.MerchantDate,\':::\' separator \';;;\') Payments');
 		if ($userId > 0) {
 			$obj->setParams([$id, $userId]);
@@ -683,7 +685,7 @@ class CartUtils
 		$obj->setParams([$id]);
 		$obj->setJoin("join s_Users u on u.Id=t.UserId");
 		$obj->setConcat("u.Name UsersName");
-		$res = $obj->fetch("t.DisplayOff=0 and t.OrderId=?", 2000, 1, "t.Priority");
+		$res = $obj->fetch("t.IsHidden=0 and t.OrderId=?", 2000, 1, "t.Priority");
 		if (!empty($res)) {
 			$order['W_Messages'] = $res;
 		}

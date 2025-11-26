@@ -113,7 +113,7 @@ a:focus {
 }
 
 .way>ul>li {
-	margin: 0 var(--s5) 0 0;
+	margin: 0 var(--s6) 0 0;
 	position: relative;
 }
 
@@ -123,11 +123,11 @@ a:focus {
 }
 
 .way>ul>li:after {
-	content: '\f0da';
-	font-family: 'FontAwesome';
+	content: '\F231';
+	font-family: 'bootstrap-icons';
 	position: absolute;
 	top: 0;
-	right: calc(-1 * var(--s3));
+	right: calc(-4 * var(--s));
 }
 
 .way>ul>li:last-child:after {

@@ -1,4 +1,4 @@
 var templateInit = function() {
-    utilsWepps.theme();
+    themeWepps.theme();
 };
 $(document).ready(templateInit);

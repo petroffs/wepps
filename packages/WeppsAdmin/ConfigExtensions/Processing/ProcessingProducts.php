@@ -111,7 +111,7 @@ class ProcessingProducts
 		];
 	}
 	public function setProductsVariations(array $element) {
-		Connect::$instance->query("update ProductsVariations set DisplayOff=1 where ProductsId=?",[$element['Id']]);
+		Connect::$instance->query("update ProductsVariations set IsHidden=1 where ProductsId=?",[$element['Id']]);
 		$data = Utils::arrayFromString($element['Variations'],':::');
 		if (empty($data)) {
 			return;
@@ -134,7 +134,7 @@ class ProcessingProducts
 		}
 		$row = [
 				'Name' => '',
-				'DisplayOff' => 0,
+				'IsHidden' => 0,
 				'Priority' => 0,
 				'ProductsId' => '',
 				'Field1' => '',
@@ -149,7 +149,7 @@ class ProcessingProducts
 			$alias = self::getProductsVariationsHash($element['Id'],$value);
 			$stmt->execute($row = [
 				'Name' => $value[2]??trim($element['Id'].'-'.@$value[0].'-'.@$value[1],'-'),
-				'DisplayOff' => 0,
+				'IsHidden' => 0,
 				'Priority' => $i++,
 				'ProductsId' => $element['Id'],
 				'Field1' => trim(@$value[0]),

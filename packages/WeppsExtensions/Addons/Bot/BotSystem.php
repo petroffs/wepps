@@ -14,7 +14,7 @@ class BotSystem extends Bot {
 		parent::__construct();
 	}
 	public function tasks() {
-		$sql = "select * from s_Tasks where DisplayOff=0 and InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 50";
+		$sql = "select * from s_Tasks where IsHidden=0 and InProgress in (1,0) and IsProcessed=0 order by InProgress desc,Id limit 50";
 		$res = Connect::$instance->fetch($sql);
 		if (empty($res) || $res[0]['InProgress']==1) {
 			return;

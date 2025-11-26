@@ -2,7 +2,7 @@
 	<ul class="w_list w_flex_max">
 		<li>
 			<div class="title">
-				<a href="" id="sidebar-show"><i class="fa fa-reorder"></i></a>
+				<a href="" id="sidebar-show"><i class="bi bi-list"></i></a>
 			</div>
 		</li>
 	</ul>

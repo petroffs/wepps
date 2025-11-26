@@ -5,7 +5,7 @@
 		<a href="{$language.link}{$item.UrlMenu|default:$item.Url}">
 			<div class="childs-img">
 				{if $images.0}
-				<img src="/pic/catdir{$images.0}" class="w_image"/>
+				<img src="/pic/mediumsq{$images.0}" class="w_image"/>
 				{else}
 				<img src="/ext/Template/files/noimage.png" class="w_image"/>
 				{/if}

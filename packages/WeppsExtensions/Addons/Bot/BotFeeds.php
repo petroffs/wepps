@@ -18,7 +18,7 @@ class BotFeeds extends Bot {
 		/*
 		 * Структура
 		 */
-		$sql = "select Id,Name,NameMenu,if(UrlMenu!='',UrlMenu,Url) as Url from s_Navigator where DisplayOff=0 and (NGroup!=1 or (Id=1))";
+		$sql = "select Id,Name,NameMenu,if(UrlMenu!='',UrlMenu,Url) as Url from s_Navigator where IsHidden=0 and (NGroup!=1 or (Id=1))";
 		$res = Connect::$instance->fetch($sql);
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";
@@ -30,13 +30,13 @@ class BotFeeds extends Bot {
 		$obj = new Data("News");
 		$obj->setFields("Name,Alias,Id");
 		$obj->setConcat ( "concat('/novosti/',if(Alias!='',Alias,Id),'.html') as Url" );
-		$res = $obj->fetchmini("DisplayOff=0",50000,1);
+		$res = $obj->fetchmini("IsHidden=0",50000,1);
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";
 		}
 		
 		/*
-		 $sql = "select Id,Name,concat('/blog/',if(Alias!='',Alias,Id),'.html') as Url from Blog where DisplayOff=0";
+		 $sql = "select Id,Name,concat('/blog/',if(Alias!='',Alias,Id),'.html') as Url from Blog where IsHidden=0";
 		 $res = Connect::$instance->fetch($sql);
 		 foreach ($res as $value) {
 		 $arr[$value['Url']] = "<url><loc>http://izburg.ru{$value['Url']}</loc></url>";

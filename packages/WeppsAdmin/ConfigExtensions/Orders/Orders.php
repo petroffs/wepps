@@ -45,9 +45,9 @@ class Orders extends Request
 				/*
 				 * Статусы
 				 */
-				$sql = "select ts.Id,ts.Name,count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.DisplayOff=0 group by ts.Id order by ts.Priority";
+				$sql = "select ts.Id,ts.Name,count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.IsHidden=0 group by ts.Id order by ts.Priority";
 				$statuses = Connect::$instance->fetch($sql);
-				$sql = "select count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.DisplayOff=0 order by ts.Priority";
+				$sql = "select count(o.Id) as Co from OrdersStatuses ts left join Orders o on o.OStatus = ts.Id where ts.IsHidden=0 order by ts.Priority";
 				$statusesCo = Connect::$instance->fetch($sql);
 				array_push($statuses, [
 					'Id' => -1,

@@ -29,7 +29,7 @@ class ProductsUtils
 			'nameasc' => 'Наименование',
 			'default' => 'Без сортировки',
 		];
-		$active = (!isset($_COOKIE['wepps_sort'])) ? 'default' : $_COOKIE['wepps_sort'];
+		$active = (empty(Utils::cookies('wepps_sort'))) ? 'default' : Utils::cookies('wepps_sort');
 		switch ($active) {
 			case 'priceasc':
 				$conditions = "t.Price asc";
@@ -54,13 +54,13 @@ class ProductsUtils
 	{
 		if (empty($conditions)) {
 			if ($this->navigator->content['Id']==Connect::$projectServices['navigator']['brands']) {
-				$conditions = "t.DisplayOff=0 and t.Id in (select pv.TableNameId from s_PropertiesValues pv where pv.Alias=? and pv.DisplayOff=0 and pv.Name=1)";
+				$conditions = "t.IsHidden=0 and t.Id in (select pv.TableNameId from s_PropertiesValues pv where pv.Alias=? and pv.IsHidden=0 and pv.Name=1)";
 				$prepare[] = Navigator::$pathItem;
 			} else {
-				$conditions = "t.DisplayOff=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
+				$conditions = "t.IsHidden=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
 			}
 			if (!empty($params['text'])) {
-				$conditions = "t.DisplayOff=0 and lower(t.Name) like lower(?)";
+				$conditions = "t.IsHidden=0 and lower(t.Name) like lower(?)";
 				$prepare[] = $params['text'] . "%";
 			}
 		}
@@ -74,7 +74,7 @@ class ProductsUtils
 			if (substr($key, 0, 2) == 'f_') {
 				$ex = explode('|', $value);
 				$ids = str_repeat('?,', count($ex) - 1) . '?';
-				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where DisplayOff=0 and TableName='{$this->list}' and Name ='" . str_replace('f_', '', $key) . "' and Alias in ($ids))";
+				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where IsHidden=0 and TableName='{$this->list}' and Name ='" . str_replace('f_', '', $key) . "' and Alias in ($ids))";
 				$prepare = array_merge($prepare, $ex);
 			}
 		}
@@ -91,7 +91,7 @@ class ProductsUtils
 	{
 		$obj = new Data("Products");
 		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url,group_concat(distinct concat(pv.Id,':::',pv.Field1,':::',pv.Field2,':::',pv.Field3,':::',pv.Field4) order by pv.Priority separator '\\n') W_Variations,count(pv.Id) W_VariationsCount");
-		$obj->setJoin("join ProductsVariations pv on pv.ProductsId=t.Id and pv.DisplayOff=0");
+		$obj->setJoin("join ProductsVariations pv on pv.ProductsId=t.Id and pv.IsHidden=0");
 		if (!empty($settings['conditions']['params'])) {
 			$obj->setParams($settings['conditions']['params']);
 		}
