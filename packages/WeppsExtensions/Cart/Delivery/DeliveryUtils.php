@@ -29,9 +29,9 @@ class DeliveryUtils
     }
     public function getTariffsByCitiesId(string $citiesId, CartUtils $cartUtils, string $deliveryId = ''): array
     {
-        $conditions = "d.DisplayOff=0 and d.Id != ?";
+        $conditions = "d.IsHidden=0 and d.Id != ?";
         if (!empty($deliveryId)) {
-            $conditions = "d.DisplayOff=0 and d.Id = ?";
+            $conditions = "d.IsHidden=0 and d.Id = ?";
         }
         $sql = "SELECT d.Id,d.Name,d.Descr,d.DeliveryExt,d.IncludeCitiesId,d.ExcludeCitiesId,
                 d.IncludeRegionsId,d.ExcludeRegionsId,d.Tariff,d.IsTariffPercentage,d.FreeLevel,d.Discount,d.IsDiscountPercentage,d.JSettings,

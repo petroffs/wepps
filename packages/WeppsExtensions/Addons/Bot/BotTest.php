@@ -79,7 +79,7 @@ class BotTest extends Bot {
 		$obj->setParams([
 				'Брюки Armani Junior'
 		]);
-		$res = $obj->fetch("t.DisplayOff=0 and t.Name = ?",5,1);
+		$res = $obj->fetch("t.IsHidden=0 and t.Name = ?",5,1);
 		Utils::debug($res,21);
 		
 		/* $obj = new Data("DataTbls");

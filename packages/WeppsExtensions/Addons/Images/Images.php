@@ -5,6 +5,25 @@ use WeppsCore\Utils;
 use WeppsCore\Exception;
 use WeppsCore\Connect;
 
+/**
+ * Class Images
+ *
+ * Утилитарный класс для работы с изображениями на сервере — ресайз, кроп, штамп и вывод.
+ *
+ * Назначение:
+ * - Загружает исходное изображение из файловой системы и метаданные из таблицы `s_Files`.
+ * - Выполняет подготовку целевого изображения в зависимости от запрошенного префикса
+ *   (lists, full, preview, medium, slide и т.д.).
+ * - Поддерживает сохранение в файловую систему (`save`) и вывод в ответ (`output`).
+ * - Позволяет добавлять штамп (логотип) методом `stamp`.
+ *
+ * Примечания по использованию:
+ * - Конструктор принимает массив параметров (обычно из GET-запроса) с ключами
+ *   `fileUrl` и `pref` (префикс типа вывода).
+ * - При невозможности найти файл или запись в БД выбрасывает ошибку 404 через `Exception::error(404)`.
+ *
+ * @package WeppsExtensions\Addons\Images
+ */
 class Images
 {
 	private $source;
@@ -18,6 +37,20 @@ class Images
 	private $widthDst = 0;
 	private $heightDst = 0;
 	public $get;
+	/**
+	 * Images constructor.
+	 *
+	 * Инициализирует объект, читает метаданные файла из `s_Files`, определяет
+	 * требуемые размеры и подготавливает ресурс изображения для дальнейших
+	 * манипуляций (resize / crop / stamp).
+	 *
+	 * Ожидаемые ключи в `$get`:
+	 * - `fileUrl` : string Путь к файлу относительно корня `packages`.
+	 * - `pref` : string Префикс вывода (lists, full, preview, medium и т.д.).
+	 *
+	 * @param array $get Массив параметров (необработанный $_GET-подобный массив).
+	 * @throws \WeppsCore\Exception При отсутствии файла или записи в БД (генерирует 404).
+	 */
 	function __construct($get)
 	{
 		$this->get = Utils::trim($get);
@@ -53,27 +86,27 @@ class Images
 			case "full":
 				$side = 1280;
 				break;
-			case "catprev":
+			case "preview":
 				$this->widthDst = 320;
 				$this->heightDst = 240;
 				break;
-			case "catbig":
+			case "medium":
 				$this->widthDst = 640;
 				$this->heightDst = 480;
 				break;
-			case "catbigv":
+			case "mediumv":
 				$this->widthDst = 480;
 				$this->heightDst = 600;
 				break;
-			case "catdir":
+			case "mediumsq":
 				$this->widthDst = 600;
 				$this->heightDst = 600;
 				$crop = 0;
 				break;
-			case "slider":
+			case "slide":
 				$side = 1280;
 				break;
-			case "sliderm":
+			case "slidem":
 				$side = 600;
 				break;
 			case "a4":
@@ -157,6 +190,14 @@ class Images
 		$this->source = $source;
 		return;
 	}
+	/**
+	 * Сохраняет подготовленное изображение в файловую систему по пути, определённому
+	 * в конструкторе (`$this->newfile`). Формат сохраняемого файла зависит от MIME:
+	 * - PNG — через `imagepng` с качеством 5
+	 * - прочие (JPEG) — через `imagejpeg` с качеством 100
+	 *
+	 * @return void
+	 */
 	public function save()
 	{
 		switch ($this->mime) {
@@ -168,6 +209,12 @@ class Images
 				break;
 		}
 	}
+	/**
+	 * Выводит подготовленное изображение в HTTP-ответ с корректными заголовками
+	 * кэширования. Используется для отдачи изображения напрямую клиенту.
+	 *
+	 * @return void
+	 */
 	public function output()
 	{
 		header('Content-type: ' . $this->mime);
@@ -183,6 +230,16 @@ class Images
 				break;
 		}
 	}
+	/**
+	 * Рассчитывает целевую ширину и высоту для ресайза, сохраняя соотношение сторон.
+	 * Метод не выполняет непосредственного создания изображения — только вычисляет
+	 * значения `$this->width` и `$this->height` на основе входных параметров.
+	 *
+	 * @param float $width Желаемая ширина
+	 * @param float $height Желаемая высота
+	 * @param float $ratio Целевое соотношение сторон (width/height)
+	 * @return void
+	 */
 	private function resize(float $width, float $height, float $ratio)
 	{
 		if ($ratio == 1) {
@@ -211,6 +268,16 @@ class Images
 			}
 		}
 	}
+	/**
+	 * Вычисляет размеры для кропа (обрезки) так, чтобы результирующее изображение
+	 * заполнило заданный прямоугольник `$width x $height` без искажений.
+	 * Результат записывается в `$this->width` и `$this->height`.
+	 *
+	 * @param float $width Ширина области кропа
+	 * @param float $height Высота области кропа
+	 * @param float $ratio Целевое соотношение сторон
+	 * @return void
+	 */
 	private function crop(float $width, float $height, float $ratio)
 	{
 		$srcRatio = $this->ratio;
@@ -224,6 +291,16 @@ class Images
 			$this->height = $width / $srcRatio;
 		}
 	}
+	/**
+	 * Накладывает штамп (обычно логотип) на подготовленное изображение.
+	 *
+	 * @param string $x Горизонтальное положение: 'left'|'center'|'right'
+	 * @param string $y Вертикальное положение: 'top'|'center'|'bottom'
+	 * @param float $gap Отступ от края в долях (по ширине штампа)
+	 * @param string $list Список таблиц/источников, для которых штамп НЕ нужен
+	 * @param string $filename Путь к PNG-файлу штампа (по умолчанию берётся из конфига проекта)
+	 * @return void
+	 */
 	public function stamp(string $x = 'right', string $y = 'bottom', float $gap = 0.1, string $list = '', string $filename = '')
 	{
 		$exit = 1;
@@ -296,6 +373,13 @@ class Images
 		$posY = round($posY);
 		imagecopy($this->target, $target, $posX, $posY, 0, 0, $width, $height);
 	}
+	/**
+	 * Заполняет целевой ресурс фоном, учитывая прозрачность для PNG и белый фон
+	 * для остальных форматов.
+	 *
+	 * @param resource $target Ресурс изображения, созданный через `imagecreatetruecolor`
+	 * @return resource Заполненный ресурс
+	 */
 	private function imagefill($target)
 	{
 		switch ($this->mime) {
@@ -311,6 +395,9 @@ class Images
 		}
 		return $target;
 	}
+	/**
+	 * Деструктор освобождает ресурсы GD и закрывает соединение с БД.
+	 */
 	function __destruct()
 	{
 		if ($this->target)

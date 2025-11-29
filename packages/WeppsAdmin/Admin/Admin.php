@@ -62,7 +62,7 @@ class Admin {
 		$this->headers->js("/packages/vendor/components/jquery/jquery.min.js");
 		$this->headers->js("/packages/vendor/components/jqueryui/jquery-ui.min.js");
 		$this->headers->css("/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css");
-		$this->headers->css("/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css");
+		// $this->headers->css("/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css");
 		$this->headers->css("/packages/vendor/twbs/bootstrap-icons/font/bootstrap-icons.min.css");
 		$this->headers->js("/packages/vendor/select2/select2/dist/js/select2.min.js");
 		$this->headers->js("/packages/vendor/select2/select2/dist/js/i18n/ru.js");
@@ -82,7 +82,7 @@ class Admin {
 		//$smarty->assign('navTpl',$smarty->fetch( __DIR__ . '/AdminNav.tpl'));
 		
 		if (Connect::$projectServices['wepps']['multilang']==1) {
-			$sql = "select * from s_NGroupsLang where DisplayOff=0 order by Priority";
+			$sql = "select * from s_NGroupsLang where IsHidden=0 order by Priority";
 			$language = Connect::$instance->fetch($sql);
 			$smarty->assign('language',$language);
 			$sql = "select * from s_Lang where Category='back' order by Priority";

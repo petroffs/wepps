@@ -12,7 +12,7 @@ class News extends Extension {
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/News/News.tpl';
-				$conditions = 't.DisplayOff=0';
+				$conditions = 't.IsHidden=0';
 				$obj = new Data("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->fetch($conditions,12,$this->page,"t.NDate desc");
@@ -25,7 +25,7 @@ class News extends Extension {
 				$this->tpl = 'packages/WeppsExtensions/News/NewsItem.tpl';
 				$res = $this->getItem("News");
 				$smarty->assign('element',$res);
-				$conditions = "t.DisplayOff=0 and t.Id!='{$res['Id']}'";
+				$conditions = "t.IsHidden=0 and t.Id!='{$res['Id']}'";
 				$obj = new Data("News");
 				$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 				$res = $obj->fetch($conditions,3,1,"t.NDate");

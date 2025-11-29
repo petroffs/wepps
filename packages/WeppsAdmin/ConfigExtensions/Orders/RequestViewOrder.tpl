@@ -38,8 +38,8 @@
 				{/if}
 				</div>
 				<div class="options w_right w_flex_16 w_flex_15_view_small w_order_2_view_small">
-					<a class="w_button list-item-save w_hide" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
-					<a class="w_button list-item-remove" href="" data-path="position" title="Удалить"><i class="fa fa-remove"></i></a>
+					<a class="w_button list-item-save w_hide" href="" title="Сохранить изменения"><i class="bi bi-save"></i></a>
+					<a class="w_button list-item-remove" href="" data-path="position" title="Удалить"><i class="bi bi-trash"></i></a>
 				</div>
 			</div>
 			{/foreach}
@@ -66,7 +66,7 @@
 				</div>
 				<div class="price sum w_flex_16 w_flex_16 w_flex_13_view_small w_order_5_view_small w_right_view_small"></div>
 				<div class="options w_right w_flex_16 w_flex_15_view_small w_order_2_view_small">
-					<a class="w_button list-item-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
+					<a class="w_button list-item-add" href="" title="Добавить"><i class="bi bi-plus-lg"></i></a>
 				</div>
 			</div>
 		</div>
@@ -86,7 +86,7 @@
 							</label>
 						</div>
 						<div class="dd w_flex_14 w_right">
-							<a class="w_button list-item-save" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
+							<a class="w_button list-item-save" href="" title="Сохранить изменения"><i class="bi bi-save"></i></a>
 						</div>
 					</div>
 					<div class="payments item w_flex w_flex_row w_flex_start">
@@ -98,7 +98,7 @@
 							{assign var="pay" value=$item|strarr}
 								<div class="even w_flex w_flex_row w_flex_row_str">
 									<div class="w_flex_12">
-										{$pay.1} <a href="/_wepps/lists/Payments/{$pay.0}/" target="_blank"><i class="fa fa-link"></i></a>
+										{$pay.1} <a href="/_wepps/lists/Payments/{$pay.0}/" target="_blank"><i class="bi bi-link"></i></a>
 										<div class="date">{$pay.3}</div>
 									</div>
 									<div class="price w_right w_flex_12"><span>{$pay.2|money:2}</span></div> 
@@ -113,7 +113,7 @@
 							</label>
 						</div>
 						<div class="dd w_flex_14 w_right">
-							<a class="w_button list-item-add" href="" title="Добавить платеж"  data-order="{$order.Id}"><i class="fa fa-plus"></i></a>
+							<a class="w_button list-item-add" href="" title="Добавить платеж"  data-order="{$order.Id}"><i class="bi bi-plus-lg"></i></a>
 						</div>
 					</div>
 					<div class="messages item w_flex w_flex_row w_flex_row_top w_flex_start">
@@ -146,12 +146,12 @@
 							*}
 						</div>
 						<div class="dd w_flex_14 w_right">
-							<a class="w_button list-item-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
+							<a class="w_button list-item-add" href="" title="Добавить"><i class="bi bi-plus-lg"></i></a>
 						</div>
 					</div>
 				</div>
 				<div class="settings client w_flex_12 w_flex_11_view_small">
-					<div class="title">Заказ <a href="/_wepps/lists/Orders/{$order.Id}/" target="_blank"><i class="fa fa-link"></i></a></div>
+					<div class="title">Заказ <a href="/_wepps/lists/Orders/{$order.Id}/" target="_blank"><i class="bi bi-link"></i></a></div>
 					<div class="item w_flex w_flex_row w_flex_start">
 						<div class="dt w_flex_13">Номер</div>
 						<div class="dd w_flex_23">{$order.Id}</div>
@@ -171,18 +171,18 @@
 								<label class="w_label w_input"><input type="text" name="delivery-tariff" value="{$order.ODeliveryTariff}"></label>
 							</div>
 							<div class="w_right">
-								<a class="w_button list-item-tariff" data-target="delivery-tariff" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
+								<a class="w_button list-item-tariff" data-target="delivery-tariff" href="" title="Сохранить изменения"><i class="bi bi-save"></i></a>
 							</div>
 						</div>
 					</div>
 					<div class="item w_flex w_flex_row w_flex_start">
-						<div class="dt w_flex_13 w_right">Скидка <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
+						<div class="dt w_flex_13 w_right">Скидка <i class="bi bi-question-circle" title="Меняет цену товаров"></i></div>
 						<div class="dd w_flex_23 w_grid w_3col">
 							<div class="w_2scol">
 								<label class="w_label w_input"><input type="text" name="delivery-discount" value="{$order.ODeliveryDiscount}"></label>
 							</div>
 							<div class="w_right">
-								<a class="w_button list-item-tariff" data-target="delivery-discount" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
+								<a class="w_button list-item-tariff" data-target="delivery-discount" href="" title="Сохранить изменения"><i class="bi bi-save"></i></a>
 							</div>
 						</div>
 					</div>
@@ -191,29 +191,29 @@
 						<div class="dd w_flex_23">{$order.OPayment_Name}</div>
 					</div>
 					<div class="item w_flex w_flex_row w_flex_start">
-						<div class="dt w_flex_13 w_right">Тариф  <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
+						<div class="dt w_flex_13 w_right">Тариф  <i class="bi bi-question-circle" title="Меняет цену товаров"></i></div>
 						<div class="dd w_flex_23 w_grid w_3col">
 							<div class="w_2scol">
 								<label class="w_label w_input"><input type="text" name="payment-tariff" value="{$order.OPaymentTariff}"></label>
 							</div>
 							<div class="w_right">
-								<a class="w_button list-item-tariff" data-target="payment-tariff" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
+								<a class="w_button list-item-tariff" data-target="payment-tariff" href="" title="Сохранить изменения"><i class="bi bi-save"></i></a>
 							</div>
 						</div>
 					</div>
 					<div class="item w_flex w_flex_row w_flex_start">
-						<div class="dt w_flex_13 w_right">Скидка  <i class="fa fa-question-circle-o" title="Меняет цену товаров"></i></div>
+						<div class="dt w_flex_13 w_right">Скидка  <i class="bi bi-question-circle" title="Меняет цену товаров"></i></div>
 						<div class="dd w_flex_23 w_grid w_3col">
 							<div class="w_2scol">
 								<label class="w_label w_input"><input type="text" name="payment-discount" value="{$order.OPaymentDiscount}"></label>
 							</div>
 							<div class="w_right">
-								<a class="w_button list-item-tariff" data-target="payment-discount" href="" title="Сохранить изменения"><i class="fa fa-save"></i></a>
+								<a class="w_button list-item-tariff" data-target="payment-discount" href="" title="Сохранить изменения"><i class="bi bi-save"></i></a>
 							</div>
 						</div>
 					</div>
 					<div class="w_interval"></div>
-					<div class="title">Клиент <a href="/_wepps/lists/s_Users/{$order.UserId}/" target="_blank"><i class="fa fa-link"></i></a></div>
+					<div class="title">Клиент <a href="/_wepps/lists/s_Users/{$order.UserId}/" target="_blank"><i class="bi bi-link"></i></a></div>
 					<div class="item w_flex w_flex_row w_flex_start">
 						<div class="dt w_flex_13">Номер</div>
 						<div class="dd w_flex_23">{$order.UserId}</div>

@@ -130,75 +130,66 @@ class LayoutWepps {
 	};
 };
 
-class UtilsWepps {
-	money(val) {
-		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
-	};
-	cookie(name) {
-		let matches = document.cookie.match(new RegExp(
-			"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-		));
-		return matches ? decodeURIComponent(matches[1]) : null;
-	};
-	theme() {
-		var savedTheme = localStorage.getItem('w_theme');
-		let prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-		var theme = savedTheme;
-		if (theme === null || theme === 'auto') {
-			theme = prefersDark ? 'dark' : 'light';
-			savedTheme = 'auto';
+class ThemeWepps {
+	constructor() {
+		this.themeSaved = localStorage.getItem('w_theme') || 'auto';
+		this.themeSystem = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		this.themeValue = (this.themeSaved == 'auto') ? this.themeSystem : this.themeSaved;
+		if (this.themeValue === 'dark') {
+			document.documentElement.setAttribute('data-theme', 'dark');
 		}
-		$('html').attr('data-theme', theme);
-		this.applyThemeIcons(savedTheme);
-		this.themeToggle();
-		return theme;
-	};
-	themeToggle() {
-		$('#theme-switcher').on('click', function () {
-			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-			const currentTheme = localStorage.getItem('w_theme') || (prefersDark ? 'dark' : 'light');
-			let newTheme;
-			switch (currentTheme) {
+	}
+	theme() {
+		var themeIcon = (theme) => {
+			$('html').attr('data-theme', theme);
+			$('.theme-icon').addClass('w_hide');
+			switch (this.themeSaved) {
 				case 'light':
-					newTheme = 'dark';
+					$('.theme-icon-light').removeClass('w_hide');
 					break;
 				case 'dark':
-					newTheme = 'auto';
+					$('.theme-icon-dark').removeClass('w_hide');
 					break;
 				case 'auto':
-					newTheme = 'light';
+					$('.theme-icon-auto').removeClass('w_hide');
+					break;
+			};
+		};
+		themeIcon(this.themeValue);
+		$('#theme-switcher').on('click', () => {
+			switch (this.themeSaved) {
+				case 'light':
+					this.themeSaved = 'dark';
+					break;
+				case 'dark':
+					this.themeSaved = 'auto';
+					break;
+				case 'auto':
+					this.themeSaved = 'light';
 					break;
 				default:
-					newTheme = 'light';
+					this.themeSaved = 'light';
 					break;
 			}
-			localStorage.setItem('w_theme', newTheme);
-			// Apply theme
+			localStorage.setItem('w_theme', this.themeSaved);
+			this.themeValue = (this.themeSaved == 'auto') ? this.themeSystem : this.themeSaved;
 			let actualTheme;
-			if (newTheme === 'auto') {
-				actualTheme = prefersDark ? 'dark' : 'light';
+			if (this.themeSaved === 'auto') {
+				actualTheme = this.themeSystem;
 			} else {
-				actualTheme = newTheme;
+				actualTheme = this.themeValue;
 			}
-			$('html').attr('data-theme', actualTheme);
-			utilsWepps.applyThemeIcons(newTheme);
+			themeIcon(actualTheme);
 		});
 	};
-	applyThemeIcons(theme) {
-		$('.theme-icon').addClass('w_hide');
-		switch (theme) {
-			case 'light':
-				$('.theme-icon-light').removeClass('w_hide');
-				break;
-			case 'dark':
-				$('.theme-icon-dark').removeClass('w_hide');
-				break;
-			case 'auto':
-				$('.theme-icon-auto').removeClass('w_hide');
-				break;
-		}
+}
+
+class UtilsWepps {
+	digit(val) {
+		return val.toString().replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, "$1 ");
 	};
 };
 
-var utilsWepps = new UtilsWepps();
 var layoutWepps = new LayoutWepps();
+let themeWepps = new ThemeWepps();
+var utilsWepps = new UtilsWepps();

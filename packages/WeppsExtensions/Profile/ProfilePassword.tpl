@@ -16,7 +16,7 @@
                     <input type="submit" value="Восстановить доступ" />
                 </label>
                 <div class="w_interval"></div>
-                {$recaptcha}
+                {$smartcaptcha}
             </section>
         </fieldset>
     </form>

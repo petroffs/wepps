@@ -4,8 +4,10 @@ require_once '../../../configloader.php';
 use WeppsCore\Request;
 use WeppsCore\Exception;
 
-class RequestExample11 extends Request {
-	public function request($action="") {
+class Request_Example11 extends Request
+{
+	public function request($action = "")
+	{
 		switch ($action) {
 			case 'test':
 				$this->assign('test', 'test1');
@@ -17,6 +19,6 @@ class RequestExample11 extends Request {
 		}
 	}
 }
-$request = new RequestExample11 ($_REQUEST);
-$smarty->assign('get',$request->get);
+$request = new Request_Example11($_REQUEST);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

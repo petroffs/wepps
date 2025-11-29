@@ -114,8 +114,8 @@ class FormWepps {
 	send(action, myform, url) {
 		$('.w_error').remove();
 		let link = $(location).attr('pathname');
-		var str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
-		var serialized = $("#" + myform).serialize();
+		let str = 'action=' + action + '&form=' + myform + '&link=' + link + '&';
+		let serialized = $("#" + myform).serialize();
 		if (!layoutWepps) {
 			var layoutWepps = new LayoutWepps();
 		};

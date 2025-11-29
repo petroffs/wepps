@@ -8,6 +8,23 @@ use WeppsCore\Validator;
 use WeppsExtensions\Addons\Jwt\Jwt;
 
 
+/**
+ * Класс для обработки REST API запросов
+ *
+ * Предоставляет маршрутизацию, валидацию, аутентификацию и структурированные ответы для REST API.
+ * Поддерживает различные версии API, типы запросов (GET, POST, PUT, DELETE, CLI) и кастомные ответы.
+ *
+ * Основные возможности:
+ * - Автоматическая маршрутизация по версии, методу и типу запроса
+ * - Валидация входных данных (JSON body и GET параметры)
+ * - Аутентификация через Bearer токены
+ * - Гибкое логирование запросов и ответов
+ * - Поддержка кастомных ответов без стандартной структуры
+ *
+ * @package WeppsExtensions\Addons\Rest
+ * @author Wepps Platform Team
+ * @version 1.0
+ */
 class Rest
 {
 	/**
@@ -138,6 +155,11 @@ class Rest
 	 * Получить HTTP заголовки
 	 * @return array|null
 	 */
+	/**
+	 * Получить заголовки запроса
+	 *
+	 * @return array|null Заголовки HTTP запроса или null для CLI
+	 */
 	public function getHeaders(): ?array
 	{
 		return $this->headers;
@@ -145,7 +167,8 @@ class Rest
 
 	/**
 	 * Получить настройки API
-	 * @return array
+	 *
+	 * @return array Массив настроек запроса (версия, метод, тип, параметры)
 	 */
 	public function getSettings(): array
 	{
@@ -154,7 +177,8 @@ class Rest
 
 	/**
 	 * Получить параметры запроса
-	 * @return array
+	 *
+	 * @return array Параметры из URL пути запроса
 	 */
 	public function getParams(): array
 	{
@@ -163,7 +187,8 @@ class Rest
 
 	/**
 	 * Получить данные пользователя
-	 * @return array|null
+	 *
+	 * @return array|null Данные аутентифицированного пользователя или null
 	 */
 	public function getUser(): ?array
 	{
@@ -172,7 +197,11 @@ class Rest
 
 	/**
 	 * Обработать запрос вручную (для тестирования)
-	 * @return array Результат обработки
+	 *
+	 * Выполняет маршрутизацию и обработку запроса без отправки HTTP ответа.
+	 * Полезно для тестирования или внутреннего использования.
+	 *
+	 * @return array Стандартизированный ответ API с status, message, data
 	 */
 	public function process(): array
 	{
@@ -192,6 +221,16 @@ class Rest
 		}
 	}
 
+	/**
+	 * Конструктор класса Rest
+	 *
+	 * Инициализирует REST API обработчик с настройками, маршрутизирует запрос
+	 * и выполняет соответствующий обработчик, если autoProcess включен.
+	 *
+	 * @param array $settings Дополнительные настройки для переопределения
+	 * @param bool $autoProcess Автоматически обработать запрос (по умолчанию true)
+	 * @param bool $forceWebMode Принудительно использовать веб-режим (по умолчанию false)
+	 */
 	public function __construct($settings = [], $autoProcess = true, $forceWebMode = false)
 	{
 		$this->config = RestConfig::getConfig();
@@ -218,11 +257,16 @@ class Rest
 		}
 		return;
 	}	/**
-		 * Выполнить обработчик запроса
-		 * 
-		 * @param object $handler Объект обработчика
-		 * @return array Результат выполнения метода
-		 */
+	 * Выполнить обработчик запроса
+	 *
+	 * Выполняет обработчик с валидацией данных, аутентификацией и вызовом метода.
+	 * Поддерживает кастомные ответы и логирование по конфигурации.
+	 *
+	 * @param object $handler Объект обработчика с методами API
+	 * @param array|null $config Конфигурация метода (валидация, аутентификация, логирование)
+	 * @return array Стандартизированный ответ API с status, message, data
+	 * @throws \Exception При ошибках валидации или выполнения
+	 */
 	private function executeHandler($handler, $config = null): array
 	{
 		try {
@@ -273,8 +317,11 @@ class Rest
 
 	/**
 	 * Проверка Bearer токена аутентификации
-	 * 
-	 * @throws \Exception Если токен отсутствует или некорректный
+	 *
+	 * Извлекает и валидирует JWT токен из заголовка Authorization.
+	 * Проверяет тип токена, наличие ID пользователя и его активность в БД.
+	 *
+	 * @throws \Exception Если токен отсутствует, некорректный или пользователь не найден
 	 */
 	private function authenticateBearerToken(): void
 	{
@@ -299,7 +346,7 @@ class Rest
 		}
 
 		if ($this->version == 'wepps') {
-			$sql = "SELECT * from s_Users where Id=? and DisplayOff=0 and ShowAdmin=1";
+			$sql = "SELECT * from s_Users where Id=? and IsHidden=0 and ShowAdmin=1";
 			$res = Connect::$instance->fetch($sql, [$bearer['payload']['id']]);
 			if (empty($res[0]['Id'])) {
 				throw new \Exception('User not found or inactive', 401);
@@ -313,8 +360,11 @@ class Rest
 
 	/**
 	 * Маршрутизация API запроса
-	 * 
-	 * @return array|null Массив с [data, message] или null если не найдено
+	 *
+	 * Определяет класс обработчика на основе версии, типа и метода запроса,
+	 * создает экземпляр обработчика с соответствующими параметрами.
+	 *
+	 * @return array|null Массив с ['data' => объект обработчика, 'config' => конфиг, 'note' => описание] или null если не найдено
 	 */
 	private function routeRequest(): ?array
 	{
@@ -340,11 +390,13 @@ class Rest
 
 	/**
 	 * Валидация входных данных на основе правил
-	 * Поддерживает объекты и массивы объектов
-	 * 
-	 * @param array $data Входные данные
-	 * @param array $rules Правила валидации
-	 * @throws \Exception Если валидация не пройдена
+	 *
+	 * Поддерживает объекты и массивы объектов. Проверяет обязательность полей,
+	 * типы данных и отсутствие лишних полей.
+	 *
+	 * @param array $data Входные данные для валидации
+	 * @param array $rules Правила валидации с ключами 'required' и 'type'
+	 * @throws \Exception Если валидация не пройдена (обязательное поле отсутствует, неверный тип, лишнее поле)
 	 */
 	private function validateData(array $data, array $rules): void
 	{
@@ -380,10 +432,13 @@ class Rest
 
 	/**
 	 * Валидация значения по типу
-	 * 
+	 *
+	 * Использует класс Validator для проверки значения на соответствие типу.
+	 * Поддерживает: int, int2, float, float2, string, date, email, phone, guid, barcode.
+	 *
 	 * @param mixed $value Значение для проверки
-	 * @param string $type Тип для проверки
-	 * @return bool Результат валидации
+	 * @param string $type Тип для проверки (int, string, email, etc.)
+	 * @return bool true если значение соответствует типу, false иначе
 	 */
 	private function validateType($value, string $type): bool
 	{
@@ -423,6 +478,15 @@ class Rest
 		}
 	}
 
+	/**
+	 * Валидация JSON строки
+	 *
+	 * Удаляет BOM, проверяет на дублирующиеся ключи, декодирует JSON
+	 * и обрабатывает возможные ошибки декодирования.
+	 *
+	 * @param string $string JSON строка для валидации
+	 * @return array Массив с 'status', 'message' и опционально 'data' при успехе
+	 */
 	protected function validateJson(string $string): array
 	{
 		// Удаление BOM
@@ -487,12 +551,14 @@ class Rest
 	}
 
 	/**
-	 * Получить конфигурацию для конкретного метода
-	 * 
-	 * @param string $version Версия API
-	 * @param string $type Тип запроса
-	 * @param string $method Метод
-	 * @return array|null Конфигурация или null
+	 * Получить конфигурацию для метода API
+	 *
+	 * Извлекает конфигурацию обработчика из массива config по версии, типу и методу.
+	 *
+	 * @param string $version Версия API (например, 'v1', 'wepps')
+	 * @param string $type Тип запроса ('get', 'post', 'put', 'delete')
+	 * @param string $method Название метода API
+	 * @return array|null Конфигурация метода или null если не найдена
 	 */
 	private function getConfig(string $version, string $type, string $method): ?array
 	{
@@ -501,9 +567,11 @@ class Rest
 
 	/**
 	 * Получить структуру обработчиков API
-	 * Структура позволяет легко добавлять новые версии, методы и типы запросов
-	 * 
-	 * @return array
+	 *
+	 * Создает экземпляры классов-обработчиков для всех настроенных методов API.
+	 * Структура позволяет легко добавлять новые версии, методы и типы запросов.
+	 *
+	 * @return array Многомерный массив с экземплярами обработчиков [$version][$type][$method] => instance
 	 */
 	private function getHandlers(): array
 	{
@@ -522,6 +590,16 @@ class Rest
 	}
 
 
+	/**
+	 * Настройка параметров запроса
+	 *
+	 * Определяет режим работы (CLI или веб), парсит входные данные,
+	 * валидирует JSON тело запроса и собирает настройки.
+	 *
+	 * @param array $settings Дополнительные настройки для CLI режима
+	 * @param bool $forceWebMode Принудительно использовать веб-режим в CLI
+	 * @return array Собранные настройки запроса
+	 */
 	protected function setSettings($settings = [], $forceWebMode = false)
 	{
 		if (php_sapi_name() === 'cli' && !$forceWebMode) {
@@ -545,7 +623,7 @@ class Rest
 			$validate = $this->validateJson($this->request);
 			if ($validate['status'] != 200) {
 				$this->status = $validate['status'];
-				return $this->sendResponse(['message' => $validate['message']]);
+				$this->sendResponse(['message' => $validate['message']]);
 			}
 
 			$this->data = &$validate['data'];
@@ -555,8 +633,10 @@ class Rest
 
 	/**
 	 * Парсинг API запроса из URL
-	 * Формат: /api/v1/methodName/param/value
-	 * 
+	 *
+	 * Разбирает строку параметров URL для извлечения версии API и метода.
+	 * Формат: /api/v1/methodName/param/value или params=v1/methodName
+	 *
 	 * @param string $params Строка параметров из URL
 	 */
 	private function parseRequest(string $params): void
@@ -576,8 +656,10 @@ class Rest
 
 	/**
 	 * Парсинг CLI запроса
-	 * 
-	 * @param array $settings Параметры CLI
+	 *
+	 * Устанавливает параметры для запросов из командной строки.
+	 *
+	 * @param array $settings Параметры CLI с командой и аргументами
 	 */
 	private function parseCliRequest(array $settings): void
 	{
@@ -589,8 +671,10 @@ class Rest
 
 	/**
 	 * Построение массива настроек
-	 * 
-	 * @return array
+	 *
+	 * Собирает все распарсенные параметры запроса в единый массив настроек.
+	 *
+	 * @return array Массив с версией, методом, типом и параметрами запроса
 	 */
 	protected function buildSettings(): array
 	{
@@ -606,9 +690,13 @@ class Rest
 
 	/**
 	 * Отправить структурированный ответ клиенту
-	 * 
-	 * @param array $output Выходные данные [status, message, data] или сообщение об ошибке
-	 * @param bool $print Выводить ли ответ клиенту
+	 *
+	 * Форматирует данные в JSON, устанавливает HTTP статус, заголовки,
+	 * нормализует данные, логирует запрос и выводит ответ.
+	 * Поддерживает кастомные ответы без обертки.
+	 *
+	 * @param array $output Выходные данные или структурированный ответ [status, message, data]
+	 * @param bool $print Выводить ли ответ клиенту (true - выводит и завершает скрипт)
 	 * @return string JSON ответ
 	 */
 	protected function sendResponse(array $output, bool $print = true)
@@ -669,6 +757,16 @@ class Rest
 	 * @param string $logType Тип логирования: 'task' или 'log'
 	 * @return bool Результат логирования
 	 */
+	/**
+	 * Логирование API запроса
+	 *
+	 * Сохраняет информацию о запросе в базу данных, если логирование включено.
+	 * Собирает данные запроса, ответа, заголовки и статус.
+	 *
+	 * @param array $responseData Данные ответа для логирования
+	 * @param string $logType Тип лога ('log' для s_Logs или 'task' для s_Tasks)
+	 * @return bool Успешность сохранения лога
+	 */
 	protected function logRequest($responseData, $logType = 'log'): bool
 	{
 		if ($this->log == 0) {
@@ -700,9 +798,11 @@ class Rest
 
 	/**
 	 * Сохранить задачу в таблицу s_Tasks
-	 * 
-	 * @param array $logData Данные логирования
-	 * @return bool Результат сохранения
+	 *
+	 * Сохраняет данные логирования в таблицу задач с использованием подготовленных запросов.
+	 *
+	 * @param array $logData Данные логирования для сохранения
+	 * @return bool true при успешном сохранении, false при ошибке
 	 */
 	protected function saveTaskLog($logData): bool
 	{
@@ -738,8 +838,10 @@ class Rest
 
 	/**
 	 * Нормализация данных для консистентной сериализации в JSON
-	 * Обеспечивает, что 'data' всегда массив в JSON, для кастомных ответов сохраняет структуру
-	 * 
+	 *
+	 * Обеспечивает, что 'data' всегда массив в JSON, для кастомных ответов сохраняет структуру.
+	 * Преобразует скаляры и null в массивы, ассоциативные массивы оборачивает при необходимости.
+	 *
 	 * @param mixed $data Данные для нормализации
 	 * @param bool $forDataField Флаг, что это для поля 'data' (требует оборачивания ассоциативных массивов)
 	 * @return array Нормализованные данные
@@ -775,6 +877,12 @@ class Rest
 		}
 		return $formatted;
 	}
+	/**
+	 * Кодировать массив в JSON строку
+	 *
+	 * @param array $array Данные для кодирования
+	 * @return string JSON строка с поддержкой Unicode
+	 */
 	protected function getJson($array = []): string
 	{
 		return (string) json_encode($array, JSON_UNESCAPED_UNICODE);

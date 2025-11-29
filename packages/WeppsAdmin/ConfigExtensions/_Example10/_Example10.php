@@ -11,6 +11,7 @@ class _Example10 extends Request
 	public $title;
 	public function request($action = "")
 	{
+
 		$smarty = Smarty::getSmarty();
 		$this->tpl = '_Example10.tpl';
 		$this->title = $this->get['ext']['Name'];

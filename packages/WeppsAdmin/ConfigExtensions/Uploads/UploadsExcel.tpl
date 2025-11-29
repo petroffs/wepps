@@ -18,7 +18,7 @@
 		<div class="w_interval_small"></div>
 		{foreach name="o" item="i" key="k" from=$uploaded.upload}
 			<p class="fileadd w_flex_11">
-				{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="fa fa-remove"></i></a>
+				{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="bi bi-x-circle"></i></a>
 			</p>
 		{/foreach}
 	</div>
@@ -34,12 +34,12 @@
 			<ul class="w_list lastUploads">
 				{foreach name="out" item="item" from=$files}
 					<li class="w_flex w_flex_row">
-						<div class="w_flex_12"><i class="fa fa-file-o"></i> <a href="/f{$item.FileUrl}">{$item.Name}</a></div>
+						<div class="w_flex_12"><i class="bi bi-file-earmark"></i> <a href="/f{$item.FileUrl}">{$item.Name}</a></div>
 						<div class="descr w_flex_12">{$item.FileDate|date_format:"%d.%m.%Y"}</div>
 					</li>
 				{/foreach}
 				<li class="w_flex w_flex_row">
-					<div class="w_flex_12"><i class="fa fa-file-o"></i> <a href="/_wepps/lists/s_UploadsSource/">Все
+					<div class="w_flex_12"><i class="bi bi-file-earmark"></i> <a href="/_wepps/lists/s_UploadsSource/">Все
 							загрузки</a></div>
 					<div class="descr w_flex_12"></div>
 				</li>

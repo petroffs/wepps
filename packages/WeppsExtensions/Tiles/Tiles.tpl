@@ -3,7 +3,7 @@
 	{assign var="images" value=$item.Images_FileUrl|strarr}
 	<section class="w_flex w_flex_row w_flex_center w_flex_margin_large">
 		<div class="img w_flex_25 w_flex_12_view_medium w_flex_11_view_small">
-			<img src="/pic/catbig{$images.0}" class="w_image"/>
+			<img src="/pic/medium{$images.0}" class="w_image"/>
 		</div>
 		<div class="text w_flex_25 w_flex_12_view_medium w_flex_11_view_small">
 			<div class="title">{$item.Name}</div>

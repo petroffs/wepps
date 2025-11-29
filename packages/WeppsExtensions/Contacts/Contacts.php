@@ -21,7 +21,7 @@ class Contacts extends Extension {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Contacts/Contacts.tpl';
 				$obj = new Data("Contacts");
-				$res = $obj->fetch("t.DisplayOff=0");
+				$res = $obj->fetch("t.IsHidden=0");
 				#Utils::debug($res,1);
 				$smarty->assign('elements',$res);
 				if (isset($_SESSION['uploads']['feedback-form'])) {

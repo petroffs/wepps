@@ -151,7 +151,7 @@
 	<section class="w_flex w_flex_row w_flex_row_str w_flex_margin w_animate">
 		<div class="img w_flex_13 w_flex_12_view_medium w_flex_11_view_small ">
 			{if $images.0}
-			<img src="/pic/catdir{$images.0}" class="w_image"/>
+			<img src="/pic/mediumsq{$images.0}" class="w_image"/>
 			{else}
 			<img src="/ext/Template/files/noimage.png" class="w_image"/>
 			{/if}

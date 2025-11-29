@@ -262,10 +262,14 @@ class Utils
 	 * @param string $name Имя куки
 	 * @param string $value Значение куки
 	 * @param int $lifetime Время жизни куки в секундах
-	 * @return void
+	 * @return string|null
 	 */
-	public static function cookies(string $name, string $value = '', int $lifetime = 86400)
+	public static function cookies(string $name, ?string $value = null, int $lifetime = 86400): string|null
 	{
+		// Если значение не передано — возвращаем текущее значение куки
+		if ($value === null) {
+			return  $_COOKIE[$name] ?? null;
+		}		
 		$settings = [
 			'expires' => time() + $lifetime,
 			'path' => '/',
@@ -278,6 +282,7 @@ class Utils
 			unset($settings['expires']);
 		}
 		setcookie($name, $value, $settings);
+		return (string) $value;
 	}
 }
 

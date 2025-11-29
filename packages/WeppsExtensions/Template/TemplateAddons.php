@@ -5,7 +5,10 @@ use WeppsCore\Extension;
 use WeppsCore\Data;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
+use WeppsCore\Utils;
 use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Legal\LegalUtils;
+use WeppsExtensions\Template\Swiper\Swiper;
 
 if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 	/**
@@ -90,28 +93,31 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			unset($obj);
 
 			/**
+			 * Установка пользовательских соглашений
+			 * @see LegalUtils::getPrivacyPolicyAgreements()
+			 */
+			$legalUtils = new LegalUtils($this->headers);
+			$smarty->assign('legalModal', $legalUtils->renderModal());
+
+			/**
 			 * Обработка и вывод карусели слайдов
 			 *
-			 * Проверяет наличие слайдов для текущего контента и подготавливает данные для отображения карусели.
-			 * Если слайды найдены:
-			 * - Передает данные слайдов в шаблонизатор Smarty
-			 * - Подключает необходимые CSS и JS файлы для работы карусели (Swiper)
-			 * - Генерирует уникальные CSS и JS файлы для текущей карусели
+			 * Проверяет наличие слайдов для текущего контента и подготавливает данные и ресурсы
+			 * для отображения карусели. При обнаружении слайдов:
+			 * - Передаёт данные слайдов в шаблонизатор Smarty
+			 * - Использует серверный класс `\WeppsExtensions\Template\Swiper\Swiper` для генерации разметки
+			 *   и регистрации необходимых CSS/JS файлов
+			 * - Оставляет клиентскую инициализацию для JS (класс `SwiperManager`, `Swiper.js`)
 			 *
-			 * @note Работает только если Navigator::$pathItem пуст (не задан конкретный путь)
+			 * Примечание:
+			 * - Клиентская инициализация выполняется через `SwiperManager.init(selector, params)` в `Swiper.js`.
+			 * - Работает только если `Navigator::$pathItem` пуст (не задан конкретный путь).
 			 */
 			if (empty(Navigator::$pathItem)) {
-				$obj = new Data("Sliders");
-				$res = $obj->fetch("t.DisplayOff=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
-				if (!empty($res[0]['Id'])) {
-					$smarty->assign('carousel', $res);
-					$carouselTpl = $smarty->fetch('packages/WeppsExtensions/Template/Swiper/Swiper.tpl');
-					$smarty->assign('carouselTpl', $carouselTpl);
-					$this->headers->css("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.css");
-					$this->headers->js("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.js");
-					$this->headers->js("/ext/Template/Swiper/Swiper.{$this->rand}.js");
-					$this->headers->css("/ext/Template/Swiper/Swiper.{$this->rand}.css");
-				}
+				$obj = new Data("Slides");
+				$res = $obj->fetch("t.IsHidden=0 and SPlace=1 and sm3.Id={$this->navigator->content['Id']}");
+				$swiprer = new Swiper($this->headers, $smarty);
+				$smarty->assign('carouselTpl', $swiprer->render($res));
 			}
 
 			/**
@@ -119,7 +125,7 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			 * @see Data::fetch()
 			 */
 			$obj = new Data("ServList");
-			$res = $obj->fetch("t.Categories='Соцсети' and t.DisplayOff=0");
+			$res = $obj->fetch("t.Categories='Соцсети' and t.IsHidden=0");
 			$smarty->assign('socials', $res);
 			unset($obj);
 

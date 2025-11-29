@@ -3,10 +3,10 @@
 }
 
 .list-search::after {
-	content: '\f002';
+	content: '\F52A';
+font-family: 'bootstrap-icons';
 	font-size: var(--font-default);
-	font-family: 'FontAwesome';
-	color: #b8b8b8;
+	color: var(--color-75);
 	position: absolute;
 	z-index: 20;
 	top: 50%;
@@ -60,7 +60,7 @@
 	border-color: var(--color-focus);
 }
 
-.controls-area a i.fa {
+.controls-area a i.bi {
 	padding-right: var(--s);
 }
 

@@ -16,13 +16,13 @@
 		{$controlsTpl}
 		{if $tabs|@count>1 || $listSettings.ActionShowIdAddons}
 			<div class="controls-area controls-tabs">
-				<a href="" class="w_button" data-id="FieldAll"><i class="fa fa-caret-down"></i> Все</a>
+				<a href="" class="w_button" data-id="FieldAll"><i class="bi bi-caret-down"></i> Все</a>
 				{foreach name="out" item="item" key="key" from=$tabs}
-					<a href="" class="w_button" data-id="{$key}"><i class="fa fa-caret-right"></i>
+					<a href="" class="w_button" data-id="{$key}"><i class="bi bi-caret-right"></i>
 						{$translate.$item|default:$item}</a>
 				{/foreach}
 				{foreach name="out" item="item" key="key" from=$listSettings.ActionShowIdAddons}
-					<a href="" class="w_button" data-id="{$item.group}"><i class="fa fa-caret-right"></i> {$item.title}</a>
+					<a href="" class="w_button" data-id="{$item.group}"><i class="bi bi-caret-right"></i> {$item.title}</a>
 				{/foreach}
 			</div>
 		{/if}
@@ -40,7 +40,7 @@
 							{/if}
 							{if $element[$key|cat:"_Table"]}
 								<a href="/_wepps/lists/{$element[$key|cat:"_Table"]}/" target="_blank">
-									<i class="fa fa-external-link"></i></a>
+									<i class="bi bi-box-arrow-up-right"></i></a>
 							{/if}
 						</div>
 						<div class="descr w_flex_23">
@@ -55,8 +55,8 @@
 							{elseif $item.0.Type=='file'}
 								<div class="field-file">
 									<a href="" class="field-file-select" data-status="0">выделить</a>
-									<a href="" class="field-file-action field-file-edit w_hide"><i class="fa fa-edit"></i></a>
-									<a href="" class="field-file-action field-file-remove w_hide"><i class="fa fa-remove"></i></a>
+									<a href="" class="field-file-action field-file-edit w_hide"><i class="bi bi-pencil"></i></a>
+									<a href="" class="field-file-action field-file-remove w_hide"><i class="bi bi-x-circle"></i></a>
 								</div>
 							{/if}
 						</div>
@@ -124,9 +124,9 @@
 											</div>
 											<div>
 												<div class="files-controls w_flex w_flex_row">
-													<a href="" class="files-item-copy-link"><i class="fa fa-copy"></i></a>
-													<a href="/_wepps/lists/s_Files/{$i.Id}/"><i class="fa fa-edit"></i></a>
-													<a href="" class="files-item-remove-link"><i class="fa fa-remove"></i></a>
+													<a href="" class="files-item-copy-link"><i class="bi bi-clipboard"></i></a>
+													<a href="/_wepps/lists/s_Files/{$i.Id}/"><i class="bi bi-pencil"></i></a>
+													<a href="" class="files-item-remove-link"><i class="bi bi-x-circle"></i></a>
 												</div>
 											</div>
 										</div>
@@ -134,12 +134,12 @@
 								</div>
 							{/if}
 							<label class="w_label w_upload">
-								<input type="file" name="{$key}" multiple="multiple" /> <span><i class="fa fa-cloud-download"></i>
+								<input type="file" name="{$key}" multiple="multiple" /> <span><i class="bi bi-cloud-download"></i>
 									Загрузить</span>
 							</label>
 							{foreach name="o" item="i" key="k" from=$uploaded[$key]}
 								<p class="fileadd w_flex_13">
-									{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="fa fa-remove"></i></a>
+									{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="bi bi-x-circle"></i></a>
 								</p>
 							{/foreach}
 						{elseif $item.0.Type|strstr:"select_multi" || $item.0.Type|strstr:"dbtable_multi"}
@@ -186,7 +186,7 @@
 										<div class="minitable-cell w_flex_16 w_flex_14_view_small">{$i}</div>
 									{/foreach}
 									<div class="minitable-cell w_flex_fix">
-										<a class="minitable-add" href="" title="Добавить"><i class="fa fa-plus"></i></a>
+										<a class="minitable-add" href="" title="Добавить"><i class="bi bi-plus-lg"></i></a>
 									</div>
 								</div>
 								<div class="minitable-body-tpl minitable-row w_flex w_flex_row w_flex_row_str w_flex_start">
@@ -194,7 +194,7 @@
 										<div class="minitable-cell w_flex_16 w_flex_14_view_small" contenteditable="true"></div>
 									{/foreach}
 									<div class="minitable-min minitable-cell w_flex_fix">
-										<a class="minitable-remove" href="" title="Удалить"><i class="fa fa-remove"></i></a>
+										<a class="minitable-remove" href="" title="Удалить"><i class="bi bi-x-circle"></i></a>
 									</div>
 								</div>
 								{if $element[$key|cat:"_Rows"]}
@@ -205,7 +205,7 @@
 													{if $item.0.$listMode!='disabled'} contenteditable="true" {/if}>{$i1.$k}</div>
 											{/foreach}
 											<div class="minitable-min minitable-cell w_flex_fix">
-												<a class="minitable-remove" href="" title="Удалить"><i class="fa fa-remove"></i></a>
+												<a class="minitable-remove" href="" title="Удалить"><i class="bi bi-x-circle"></i></a>
 											</div>
 										</div>
 									{/foreach}
@@ -231,7 +231,7 @@
 										<div class="title2">
 											{$i.Name}{if $i.PExt} <span>{$i.PExt}</span>{/if} <a
 												href="/_wepps/lists/s_Properties/{$i.Id}/" target="_blank"><i
-													class="fa fa-external-link"></i></a>
+													class="bi bi-box-arrow-up-right"></i></a>
 										</div>
 										{if $i.PDescr}
 											<div class="descr2">{$i.PDescr}</div>
@@ -247,12 +247,12 @@
 												</label>
 												<div class="w_interval"></div>
 												{if $item.0.$listMode!="disabled"}
-													<div class="w_flex w_flex_row w_flex_end">
+													<div class="w_flex w_flex_row w_flex_end w_flex_margin_small">
 														<label class="w_label w_input w_flex_12">
 															<input type="text" placeholder="новая опция" data-id="{$i.Id}" />
 														</label>
 														<div class="w_flex_fix"><a href="" class="w_button properties-item-option-add"><i
-																	class="fa fa-plus"></i></a></div>
+																	class="bi bi-plus-lg"></i></a></div>
 													</div>
 												{/if}
 											{elseif $i.PType=='text-multi'}

@@ -189,7 +189,7 @@ class Data
 				case "select_multi":
 				case "remote_multi":
 					$fields .= "t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},\n";
-					$joins .= "left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id and sk{$f}.DisplayOff=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}' left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1\n";
+					$joins .= "left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id and sk{$f}.IsHidden=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}' left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1\n";
 					$formatted['conditions'] .= "";
 					$f++;
 					break;
@@ -326,7 +326,7 @@ class Data
 				$orderBy = "field(t.Field,$ids)";
 			}
 			$sql = "select
-			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.DisplayOff,t.FGroup
+			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.IsHidden,t.FGroup
 			from s_ConfigFields as t
 			where t.TableName = '{$this->tableName}' $fields order by $orderBy";
 			$res = Connect::$instance->fetch($sql, [], 'group');

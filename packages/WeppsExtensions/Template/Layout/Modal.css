@@ -3,8 +3,7 @@
 }
 
 .w_modal_parent>*:not(.w_modal_wrapper):not(.w_nav):not(.w_loader) {
-	filter: blur(2px);
-	opacity: 0.6;
+	filter: blur(var(--s4));
 }
 
 .w_modal_wrapper {
