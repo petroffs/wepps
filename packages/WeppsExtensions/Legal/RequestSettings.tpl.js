@@ -9,7 +9,7 @@ $('input#privacy-save').on('click', function (e) {
 	});
 	serialized = serialized.slice(0, -1);
 	layoutWepps.request({ data: 'action=agree&' + serialized, url: '/ext/Legal/Request.php' });
-	// layoutWepps.remove();
+	layoutWepps.remove();
 });
 $('input#privacy-accept-all').on('click', function (e) {
 	e.preventDefault();
