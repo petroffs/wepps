@@ -31,7 +31,7 @@ section.header-wrapper-top a {
 	font-size: var(--font-tiny);
 	text-decoration: none;
 	text-align: center;
-	color: var(--color-05);
+	color: var(--color-primary);
 	margin: 0px;
 	cursor: pointer;
 	position: relative;
@@ -149,7 +149,7 @@ ul.header-nav>li {
 ul.header-nav>li>a {
 	font-weight: 600;
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 	padding: var(--s2);
 }
 
@@ -170,7 +170,7 @@ ul.header-nav>li>ul>li {
 
 ul.header-nav>li>ul>li>a {
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 	padding: var(--s2) var(--s4);
 }
 
@@ -249,7 +249,7 @@ div.w_nav ul>li {
 div.w_nav ul>li>a {
 	text-decoration: none;
 	letter-spacing: 3px;
-	color: var(--color-05);
+	color: var(--color-primary);
 	max-width: max-content;
 	position: relative;
 	display: block;
@@ -334,7 +334,7 @@ header.is-pinned nav.header-nav-wrapper:not(.w_hide_off) {
 
 .page.footer-nav>section a {
 	font-size: 1.5em;
-	color: var(--color-05);
+	color: var(--color-primary);
 	position: relative;
 }
 

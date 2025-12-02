@@ -1,5 +1,5 @@
 .legal-modal {
-    color: var(--color-05);
+    color: var(--color-primary);
     background-color: var(--color-95);
     padding: var(--s4);
     max-width: calc(var(--s) * 60);

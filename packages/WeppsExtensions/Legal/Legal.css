@@ -18,7 +18,7 @@ section.legal-wrapper>section:hover {
 section.legal-wrapper a {
 	font-size: var(--font-medium);
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-95);
 	height: 100%;
 	display: block;

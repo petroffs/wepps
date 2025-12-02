@@ -49,7 +49,7 @@ img.w_image {
 }
 
 .w_warning {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background-color: var(--color-warning);
 	border-color: var(--color-warning);
 }

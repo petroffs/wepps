@@ -15,7 +15,7 @@ section._Example11-wrapper>section:hover {
 
 section._Example11-wrapper a {
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-95);
 	height: 100%;
 	display: block;

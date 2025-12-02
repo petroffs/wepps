@@ -194,7 +194,7 @@ a:focus {
 }
 
 .ui-widget.ui-widget-content.ui-autocomplete {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-100);
 	border: var(--s-half) solid var(--color-button);
 	border-top: 0;

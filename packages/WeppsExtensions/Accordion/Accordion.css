@@ -8,7 +8,7 @@ div.accordion-items h2 {
 	letter-spacing: 2px;
 	text-transform: uppercase;
 	color: var(--color-100);
-	background: var(--color-05);
+	background: var(--color-primary);
 	padding: var(--s4) var(--s2);
 	position: relative;
 	cursor: pointer;
@@ -39,7 +39,7 @@ div.accordion-items>section.active h2:after {
 
 div.accordion-items div.text {
 	font-size: var(--font-medium);
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-95);
 	padding: var(--s4) var(--s2);
 	display: none;

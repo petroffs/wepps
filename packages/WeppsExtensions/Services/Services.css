@@ -8,7 +8,7 @@ section.services-wrapper>section {
 section.services-wrapper a {
 	font-size: var(--font-medium);
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 }
 
 div.services-title {

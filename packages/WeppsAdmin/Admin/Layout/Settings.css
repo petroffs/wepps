@@ -35,6 +35,9 @@
 	--s4: 24px;
 	--s5: 30px;
 	--s6: 36px;
+	--s10: 60px;
+	--s16: 96px;
+	--s20: 120px;
 	--width: 100%;
 	--height: 100%;
 	--font: 'Roboto', sans-serif;
@@ -66,6 +69,9 @@
 		--s4: 20px;
 		--s5: 25px;
 		--s6: 30px;
+		--s10: 50px;
+		--s16: 80px;
+		--s20: 100px;
 		--font-default: 14px;
 		--font-small: 12px;
 		--font-tiny: 10px;
@@ -85,6 +91,9 @@
 		--s4: 16px;
 		--s5: 20px;
 		--s6: 24px;
+		--s10: 40px;
+		--s16: 64px;
+		--s20: 80px;
 		--font-default: 14px;
 		--font-small: 12px;
 		--font-tiny: 10px;
@@ -107,6 +116,7 @@
 	--color-95: #292929;
 	--color-98: #181818;
 	--color-100: #0c0c0c;
+	--color-primary: var(--color-05);
 	--color-attention: #e87878;
 	--color-success: #6dd19f;
 	--color-warning: #f8f3b5;

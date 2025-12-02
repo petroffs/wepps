@@ -41,7 +41,7 @@
 
 .orders>.item.active>.item-field {
 	font-weight: 900;
-	color: var(--color-05);
+	color: var(--color-primary);
 }
 
 .orders>.item>.order-wrapper {

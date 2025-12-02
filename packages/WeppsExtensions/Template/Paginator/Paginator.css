@@ -16,7 +16,7 @@ section.paginator-wrapper>ul>li>a,
 section.paginator-wrapper>ul>li>span {
 	text-align: center;
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 	margin: 0;
 	cursor: pointer;
 	width: 100%;
@@ -31,7 +31,7 @@ section.paginator-wrapper>ul>li>span {
 }
 
 section.paginator-wrapper>ul>li:hover {
-	border-color: var(--color-05);
+	border-color: var(--color-primary);
 }
 
 section.paginator-wrapper>ul>li:hover a {

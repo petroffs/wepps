@@ -13,7 +13,7 @@ section.childs-wrapper>section:hover {
 
 section.childs-wrapper a {
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-95);
 	display: block;
 }

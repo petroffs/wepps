@@ -16,7 +16,7 @@
 }
 
 .product-price>.prices>section a.w_button {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background-color: var(--color-100);
 	margin-bottom: var(--s);
 	margin-right: var(--s);

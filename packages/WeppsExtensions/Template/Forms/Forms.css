@@ -298,7 +298,7 @@ label.w_label.w_upload+div.w_upload_add div.w_upload_file .bi:hover {
 .w_fields,
 .w_fields,
 label.w_label.w_input input {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-100);
 	width: 100%;
 	border: var(--s-half) solid var(--color-85);
@@ -322,13 +322,13 @@ label.w_label.w_input input {
 }
 
 .w_fields.w_warning {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background-color: var(--color-warning);
 	border-color: var(--color-warning);
 }
 
 label.w_label.w_area textarea {
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-100);
 	width: 100%;
 	min-height: calc(var(--s) * 20);

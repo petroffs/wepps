@@ -10,7 +10,7 @@ section.news-wrapper>section:hover {
 
 section.news-wrapper a {
 	text-decoration: none;
-	color: var(--color-05);
+	color: var(--color-primary);
 	background: var(--color-95);
 	height: 100%;
 	display: block;
