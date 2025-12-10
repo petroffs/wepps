@@ -17,31 +17,34 @@
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Уникальный идентификатор раздела |
-| `Name` | VARCHAR(255) | Название раздела (отображается в меню) |
-| `Url` | VARCHAR(255) | URL-путь раздела (например, `/catalog/products`) |
-| `ParentDir` | INT | ID родительского раздела (0 для корневых) |
-| `Template` | VARCHAR(100) | Имя шаблона (для Template расширения) |
-| `Extension` | INT | ID расширения из `s_Extensions` |
-| `LanguageId` | INT | ID языка (для мультиязычности) |
-| `IsHidden` | TINYINT(1) | Видимость раздела (0=виден, 1=скрыт) |
+| `Name` | VARCHAR(128) | Название раздела |
 | `Priority` | INT | Порядок сортировки в меню |
-| `MetaTitle` | TEXT | SEO: заголовок страницы |
+| `Text1` | TEXT | Дополнительный текст 1 |
+| `Url` | VARCHAR(255) | URL-путь раздела |
+| `ParentDir` | INT | ID родительского раздела (1 для корневых) |
+| `NGroup` | VARCHAR(128) | Группа раздела |
+| `NameMenu` | VARCHAR(255) | Название в меню |
+| `Date` | DATETIME | Дата создания/изменения |
+| `Images` | INT | Количество изображений |
+| `Files` | INT | Количество файлов |
+| `MetaKeyword` | VARCHAR(255) | SEO: ключевые слова |
 | `MetaDescription` | TEXT | SEO: описание |
-| `MetaKeywords` | TEXT | SEO: ключевые слова |
+| `MetaTitle` | VARCHAR(255) | SEO: заголовок страницы |
+| `Template` | VARCHAR(128) | Имя шаблона (для Template расширения) |
+| `Extension` | INT | ID расширения из `s_Extensions` |
+| `IsHidden` | INT | Видимость раздела (0=виден, 1=скрыт) |
+| `LanguageId` | INT | ID языка (для мультиязычности) |
+| `TableId` | INT | ID связанной таблицы данных |
+| `Text2` | TEXT | Дополнительный текст 2 |
+| `UrlMenu` | VARCHAR(255) | URL для меню |
+| `DisplayFirst` | INT | Отображать первым |
+| `IsBlocksActive` | INT | Активность блоков |
 
 **Связи:**
 - `ParentDir` → `s_Navigator.Id` (иерархия разделов)
 - `Extension` → `s_Extensions.Id` (привязка функционала)
 
-**Пример:**
-```sql
-INSERT INTO s_Navigator (Name, Url, ParentDir, Extension, IsHidden, Priority) 
-VALUES ('Каталог', '/catalog', 0, 5, 0, 10);
-
--- Вложенный раздел
-INSERT INTO s_Navigator (Name, Url, ParentDir, Extension, IsHidden, Priority) 
-VALUES ('Товары', '/catalog/products', 1, 5, 0, 1);
-```
+**Примечание:** Управление разделами осуществляется через админку в разделе «Навигация».
 
 ---
 
@@ -52,20 +55,12 @@ VALUES ('Товары', '/catalog/products', 1, 5, 0, 1);
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор расширения |
-| `Name` | VARCHAR(100) | Название расширения (класс в WeppsExtensions/) |
+| `Name` | VARCHAR(128) | Название расширения (класс в WeppsExtensions/) |
+| `Priority` | INT | Порядок сортировки |
 | `FileExt` | VARCHAR(255) | Разрешенные расширения файлов для загрузки |
-| `Lists` | TEXT | JSON-массив связанных таблиц данных |
-| `Config` | TEXT | JSON-конфигурация расширения |
-
-**Пример:**
-```sql
-INSERT INTO s_Extensions (Name, FileExt, Lists) 
-VALUES (
-    'Products', 
-    'jpg,png,webp,pdf',
-    '["Products","Brands"]'
-);
-```
+| `CopyFiles` | DECIMAL(2,1) | Версия структуры файлов (1.0 или 1.1) |
+| `Lists` | VARCHAR(255) | Связанные таблицы данных |
+| `Descr` | TEXT | Описание расширения |
 
 **Создание нового расширения:**
 1. Создается запись в `s_Extensions` через админку
@@ -81,16 +76,17 @@ VALUES (
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор |
-| `Name` | VARCHAR(100) | Название расширения |
-| `Alias` | VARCHAR(100) | Алиас для URL админки |
+| `Name` | VARCHAR(128) | Название расширения |
+| `Alias` | VARCHAR(128) | Алиас для URL админки |
+| `IsHidden` | INT | Скрыть из меню (0=виден, 1=скрыт) |
+| `Priority` | INT | Порядок сортировки |
+| `Descr` | TEXT | Описание расширения |
+| `Images` | INT | Количество изображений |
+| `Files` | INT | Количество файлов |
 | `ENav` | TEXT | JSON-массив навигационных элементов |
-| `Icon` | VARCHAR(50) | CSS-класс иконки |
+| `CopyFiles` | VARCHAR(128) | Настройки копирования файлов |
 
-**Пример:**
-```sql
-INSERT INTO s_ConfigExtensions (Name, Alias, Icon) 
-VALUES ('Настройки сайта', 'settings', 'fa-cog');
-```
+**Примечание:** Системные расширения создаются через админку в списке «Системные расширения».
 
 **Расположение:** `WeppsAdmin/ConfigExtensions/{Name}/`
 
@@ -103,17 +99,23 @@ VALUES ('Настройки сайта', 'settings', 'fa-cog');
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор |
-| `TableName` | VARCHAR(100) | Имя таблицы в БД |
+| `Category` | VARCHAR(128) | Категория группировки в меню |
+| `TableName` | VARCHAR(255) UNIQUE | Имя таблицы в БД (уникальное) |
 | `Name` | VARCHAR(255) | Отображаемое название |
-| `Category` | VARCHAR(100) | Категория группировки в меню |
 | `Priority` | INT | Порядок сортировки |
-| `IsHidden` | TINYINT(1) | Скрыть из меню админки |
+| `ItemsOnPage` | INT | Количество записей на странице |
+| `IsOrderBy` | VARCHAR(255) | Поле сортировки по умолчанию |
+| `ItemsFields` | VARCHAR(128) | Поля для отображения в списке |
+| `ActionModify` | VARCHAR(255) | Действие при изменении записи |
+| `ActionDrop` | VARCHAR(255) | Действие при удалении записи |
+| `ActionShow` | VARCHAR(255) | Действие при просмотре записи |
+| `ActionShowId` | VARCHAR(255) | ID для действия просмотра |
 
-**Пример:**
-```sql
-INSERT INTO s_Config (TableName, Name, Category, Priority) 
-VALUES ('Products', 'Товары', 'Каталог', 10);
-```
+**Создание таблицы:**
+При добавлении записи в `s_Config` через админку (раздел «Списки данных») автоматически:
+1. Создается новая таблица в БД с базовой структурой
+2. Устанавливаются стандартные индексы (PRIMARY KEY, Priority, IsActive и др.)
+3. Настраивается utf8mb4 кодировка
 
 ---
 
@@ -121,16 +123,22 @@ VALUES ('Products', 'Товары', 'Каталог', 10);
 
 Настройки полей таблиц для автогенерации форм в админке.
 
+**Примечание:** Поля можно создавать через системное расширение "Загрузки из Excel" в админке.
+
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор |
-| `TableName` | VARCHAR(100) | Имя таблицы |
-| `Field` | VARCHAR(100) | Имя поля |
-| `Name` | VARCHAR(255) | Отображаемое название поля |
-| `Type` | VARCHAR(50) | Тип поля: `text`, `textarea`, `select`, `checkbox`, `file`, `date` |
-| `Required` | TINYINT(1) | Обязательное поле |
+| `TableName` | VARCHAR(32) | Имя таблицы |
+| `Name` | VARCHAR(32) | Отображаемое название поля |
+| `Description` | TEXT | Описание поля |
+| `Field` | VARCHAR(32) | Имя поля в БД |
 | `Priority` | INT | Порядок в форме |
-| `Options` | TEXT | JSON-опции для select/checkbox |
+| `Required` | INT | Обязательное поле (0/1) |
+| `Type` | VARCHAR(128) | Тип поля: `text`, `textarea`, `select`, `checkbox`, `file`, `date` и др. |
+| `CreateMode` | ENUM('','hidden','disabled') | Режим при создании |
+| `ModifyMode` | ENUM('','hidden','disabled') | Режим при изменении |
+| `IsHidden` | INT | Скрыть поле (0/1) |
+| `FGroup` | VARCHAR(255) | Группа полей |
 
 **Типы полей:**
 - `text` - текстовое поле
@@ -142,14 +150,31 @@ VALUES ('Products', 'Товары', 'Каталог', 10);
 - `date` - дата
 - `number` - числовое поле
 
-**Пример:**
-```sql
-INSERT INTO s_ConfigFields (TableName, Field, Name, Type, Required, Priority) 
-VALUES ('Products', 'Name', 'Название товара', 'text', 1, 1);
+---
 
-INSERT INTO s_ConfigFields (TableName, Field, Name, Type, Options, Priority) 
-VALUES ('Products', 'CategoryId', 'Категория', 'select', '{"source":"Categories","value":"Id","label":"Name"}', 2);
-```
+### s_Permissions
+
+Права доступа для пользователей в административной панели.
+
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `Id` | INT PRIMARY KEY | Идентификатор уровня прав |
+| `Name` | VARCHAR(128) | Название уровня прав |
+| `Priority` | INT | Порядок сортировки |
+| `TableName` | TEXT | Список таблиц, доступных для этого уровня (через запятую) |
+| `RightView` | INT | Право просмотра записей (0/1) |
+| `RightCreate` | INT | Право создания записей (0/1) |
+| `RightDrop` | INT | Право удаления записей (0/1) |
+| `RightModify` | INT | Право изменения записей (0/1) |
+| `RightAdditional` | VARCHAR(255) | Дополнительные права (например, navigator=1) |
+| `SystemExt` | VARCHAR(255) | Доступ к системным расширениям (ID через запятую) |
+
+**Стандартные уровни:**
+- `1` - Администратор (полный доступ ко всем таблицам и системным расширениям)
+- `2` - Редактор (ограниченный доступ к контентным таблицам)
+- `3` - Посетитель сайта (нет доступа в админку)
+
+**Примечание:** Управление уровнями прав осуществляется через админку в списке "Права доступа".
 
 ---
 
@@ -160,26 +185,40 @@ VALUES ('Products', 'CategoryId', 'Категория', 'select', '{"source":"Ca
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор пользователя |
-| `Login` | VARCHAR(100) UNIQUE | Логин для входа |
+| `Login` | VARCHAR(64) UNIQUE | Логин для входа |
 | `Password` | VARCHAR(255) | Хеш пароля (password_hash) |
-| `Email` | VARCHAR(255) | Email адрес |
-| `UserPermissions` | INT | Уровень прав (0=admin, 1=manager, 2=user) |
+| `Name` | VARCHAR(128) | Имя пользователя |
+| `Priority` | INT | Порядок сортировки |
+| `IsHidden` | INT | Скрыть пользователя (0/1) |
+| `ShowAdmin` | INT | Доступ в админку (0/1) |
+| `Email` | VARCHAR(32) | Email адрес |
+| `UserPermissions` | INT | ID уровня прав из таблицы `s_Permissions` |
+| `AuthDate` | DATETIME | Дата последней авторизации |
+| `AuthIP` | VARCHAR(32) | IP последней авторизации |
+| `Phone` | VARCHAR(32) | Телефон |
+| `City` | VARCHAR(32) | Город |
+| `Address` | VARCHAR(128) | Адрес |
+| `CreateDate` | DATETIME | Дата регистрации |
+| `UComment` | TEXT | Комментарий администратора |
+| `Region` | VARCHAR(32) | Регион |
+| `PostalCode` | VARCHAR(32) | Почтовый индекс |
+| `NameFirst` | VARCHAR(128) | Имя |
+| `NameSurname` | VARCHAR(128) | Фамилия |
+| `NamePatronymic` | VARCHAR(32) | Отчество |
+| `Country` | VARCHAR(32) | Страна |
 | `JCart` | TEXT | JSON-данные корзины |
 | `JFav` | TEXT | JSON-данные избранного |
-| `CreatedAt` | DATETIME | Дата регистрации |
-| `LastLogin` | DATETIME | Последний вход |
+| `JData` | TEXT | JSON-дополнительные данные |
 
-**Уровни прав:**
-- `0` - Администратор (полный доступ)
-- `1` - Менеджер (управление контентом)
-- `2` - Пользователь (только frontend)
+**Связи:**
+- `UserPermissions` → `s_Permissions.Id` (уровень прав доступа)
 
-**Пример:**
-```sql
--- Создание администратора
-INSERT INTO s_Users (Login, Password, Email, UserPermissions) 
-VALUES ('admin', '$2y$10$...', 'admin@example.com', 0);
-```
+**Стандартные уровни прав:**
+- `1` - Администратор (полный доступ ко всем таблицам и системным расширениям)
+- `2` - Редактор (ограниченный доступ к контентным таблицам)
+- `3` - Посетитель сайта (без доступа в админку)
+
+**Примечание:** Управление пользователями осуществляется через админку в списке «Пользователи».
 
 ---
 
@@ -190,26 +229,23 @@ VALUES ('admin', '$2y$10$...', 'admin@example.com', 0);
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор файла |
-| `Name` | VARCHAR(255) | Оригинальное имя файла |
-| `InnerName` | VARCHAR(255) | Внутреннее имя (уникальное) |
-| `TableName` | VARCHAR(100) | К какой таблице привязан |
-| `TableNameId` | INT | ID записи в таблице |
-| `FileUrl` | VARCHAR(500) | Путь к файлу |
-| `FileType` | VARCHAR(50) | MIME-тип файла |
-| `FileSize` | INT | Размер файла в байтах |
+| `Name` | VARCHAR(128) | Оригинальное имя файла |
 | `Priority` | INT | Порядок сортировки |
-| `UploadedAt` | DATETIME | Дата загрузки |
+| `InnerName` | VARCHAR(255) UNIQUE | Внутреннее имя (уникальное) |
+| `TableName` | VARCHAR(128) | К какой таблице привязан |
+| `FileDate` | DATETIME | Дата загрузки |
+| `FileSize` | VARCHAR(255) | Размер файла |
+| `FileExt` | VARCHAR(255) | Расширение файла |
+| `FileType` | VARCHAR(255) | MIME-тип файла |
+| `TableNameId` | INT | ID записи в таблице |
+| `FileDescription` | VARCHAR(255) | Описание файла |
+| `TableNameField` | VARCHAR(255) | Поле таблицы для привязки |
+| `FileUrl` | VARCHAR(255) | URL файла |
 
 **Связи:**
 - `TableName` + `TableNameId` → связь с любой контентной таблицей
 
-**Пример:**
-```sql
-INSERT INTO s_Files (Name, InnerName, TableName, TableNameId, FileUrl) 
-VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc123.jpg');
-```
-
-**Структура хранения:**
+**Структура хранения:
 - Оригиналы: `/files/lists/{TableName}/`
 - Превью: `/pic/preview/files/{InnerName}`
 - Средние: `/pic/medium/files/{InnerName}`
@@ -223,18 +259,24 @@ VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc1
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор товара |
-| `Name` | VARCHAR(255) | Название товара |
-| `Url` | VARCHAR(255) | ЧПУ для товара |
-| `Description` | TEXT | Описание товара |
-| `Price` | DECIMAL(10,2) | Цена |
-| `OldPrice` | DECIMAL(10,2) | Старая цена (для скидок) |
-| `Article` | VARCHAR(100) | Артикул |
-| `BrandId` | INT | ID бренда |
-| `IsActive` | TINYINT(1) | Активность товара |
-| `IsHit` | TINYINT(1) | Хит продаж |
-| `IsNew` | TINYINT(1) | Новинка |
+| `Name` | VARCHAR(128) | Название товара |
+| `Alias` | VARCHAR(128) | Алиас для URL |
+| `IsHidden` | INT | Скрыт (0=активен, 1=скрыт) |
 | `Priority` | INT | Порядок сортировки |
-| `CreatedAt` | DATETIME | Дата создания |
+| `NavigatorId` | VARCHAR(128) | ID раздела навигатора |
+| `PriceBefore` | DECIMAL(12,2) | Старая цена (для скидок) |
+| `Images` | INT | Количество изображений |
+| `Price` | DECIMAL(12,2) | Цена |
+| `PStatus` | VARCHAR(255) | Статус товара |
+| `Article` | VARCHAR(128) | Артикул |
+| `Descr` | TEXT | Описание товара |
+| `MetaTitle` | VARCHAR(255) | SEO: заголовок |
+| `MetaDescription` | VARCHAR(255) | SEO: описание |
+| `MetaKeyword` | VARCHAR(255) | SEO: ключевые слова |
+| `PCategory` | VARCHAR(128) | Категория товара |
+| `WeightPack` | DECIMAL(10,2) | Вес упаковки |
+| `DisplayFirst` | INT | Отображать первым |
+| `Variations` | MEDIUMTEXT | Вариации товара (JSON) |
 
 **Связи:**
 - `BrandId` → `Brands.Id`
@@ -246,13 +288,17 @@ VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc1
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор новости |
-| `Name` | VARCHAR(255) | Заголовок |
-| `Url` | VARCHAR(255) | ЧПУ |
-| `Description` | TEXT | Краткое описание |
-| `Content` | TEXT | Полное содержание |
-| `PublishedAt` | DATETIME | Дата публикации |
-| `IsActive` | TINYINT(1) | Активность |
-| `Priority` | INT | Порядок |
+| `Name` | VARCHAR(128) | Заголовок |
+| `Alias` | VARCHAR(128) | Алиас для URL |
+| `IsHidden` | INT | Скрыта (0=активна, 1=скрыта) |
+| `Priority` | INT | Порядок сортировки |
+| `Images` | INT | Количество изображений |
+| `NDate` | DATETIME | Дата публикации |
+| `Announce` | TEXT | Анонс (краткое описание) |
+| `Descr` | TEXT | Полное содержание |
+| `MetaTitle` | VARCHAR(255) | SEO: заголовок |
+| `MetaDescription` | VARCHAR(255) | SEO: описание |
+| `MetaKeyword` | VARCHAR(255) | SEO: ключевые слова |
 
 ---
 
@@ -261,10 +307,13 @@ VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc1
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор |
-| `Name` | VARCHAR(255) | Название альбома/фото |
-| `Description` | TEXT | Описание |
-| `Priority` | INT | Порядок |
-| `IsActive` | TINYINT(1) | Активность |
+| `Name` | VARCHAR(128) | Название альбома/фото |
+| `Alias` | VARCHAR(128) | Алиас для URL |
+| `IsHidden` | INT | Скрыта (0=активна, 1=скрыта) |
+| `Priority` | INT | Порядок сортировки |
+| `NavigatorId` | VARCHAR(255) | ID раздела навигатора |
+| `Images` | INT | Количество изображений |
+| `Descr` | TEXT | Описание |
 
 ---
 
@@ -273,10 +322,18 @@ VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc1
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор |
-| `Type` | VARCHAR(50) | Тип контакта (phone, email, address) |
-| `Value` | VARCHAR(255) | Значение |
-| `Label` | VARCHAR(255) | Описание |
-| `Priority` | INT | Порядок |
+| `Name` | VARCHAR(128) | Название контакта |
+| `Alias` | VARCHAR(128) | Алиас |
+| `IsHidden` | INT | Скрыт (0=активен, 1=скрыт) |
+| `Priority` | INT | Порядок сортировки |
+| `Country` | VARCHAR(128) | Страна |
+| `City` | VARCHAR(128) | Город |
+| `Phone` | VARCHAR(255) | Телефон |
+| `Address` | VARCHAR(128) | Адрес |
+| `LatLng` | VARCHAR(128) | Координаты (широта, долгота) |
+| `Email` | VARCHAR(255) | Email |
+| `Image` | INT | Изображение |
+| `Descr` | TEXT | Описание |
 
 ---
 
@@ -285,11 +342,12 @@ VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc1
 | Поле | Тип | Описание |
 |------|-----|----------|
 | `Id` | INT PRIMARY KEY | Идентификатор |
-| `Name` | VARCHAR(255) | Название бренда |
-| `Url` | VARCHAR(255) | ЧПУ |
-| `Description` | TEXT | Описание бренда |
-| `IsActive` | TINYINT(1) | Активность |
-| `Priority` | INT | Порядок |
+| `Name` | VARCHAR(128) | Название бренда |
+| `Alias` | VARCHAR(128) | Алиас для URL |
+| `IsHidden` | INT | Скрыт (0=активен, 1=скрыт) |
+| `Priority` | INT | Порядок сортировки |
+| `Image` | INT | Изображение бренда |
+| `Descr` | TEXT | Описание бренда |
 
 ---
 
@@ -297,15 +355,15 @@ VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc1
 
 ### Стандартные поля
 
-Большинство контентных таблиц содержат:
+При автоматическом создании таблиц через `s_Config` создаются базовые поля:
 
 - `Id` - PRIMARY KEY AUTO_INCREMENT
 - `Name` - название/заголовок
-- `Url` - ЧПУ (человекопонятный URL)
-- `Description` - описание
+- `Alias` - алиас для URL или внутреннего использования
 - `IsActive` - флаг активности (0/1)
 - `Priority` - порядок сортировки
-- `CreatedAt` - дата создания
+
+Дополнительные поля (такие как `Url`, `Description`, `CreatedAt` и др.) добавляются через `s_ConfigFields` в зависимости от требований проекта.
 
 ### Связь с файлами
 
@@ -314,37 +372,28 @@ VALUES ('product.jpg', 'abc123.jpg', 'Products', 15, '/files/lists/Products/abc1
 ```sql
 -- Получить файлы товара
 SELECT * FROM s_Files 
-WHERE TableName = 'Products' AND TableNameId = 15
+WHERE TableName = 'Products' AND TableNameField='Images' AND TableNameId = 15
 ORDER BY Priority;
 ```
 
 ### Мультиязычность
 
-Для мультиязычных полей используется суффикс `_{LanguageId}`:
+Для реализации мультиязычности в таблицах создаются дополнительные поля:
+- `TableId` (INT) - ID записи на основном языке (связь с оригинальной записью)
+- `LanguageId` (INT) - ID языка из системной таблицы языков
 
-```sql
-ALTER TABLE Products 
-ADD COLUMN Name_en VARCHAR(255),
-ADD COLUMN Description_en TEXT;
-```
+Все языковые версии хранятся в одной таблице. Система автоматически извлекает нужные записи на основе `TableId` и `LanguageId` в соответствии с языком, выбранным на frontend.
 
-## SQL-примеры
+## Создание новых таблиц
 
-### Создание контентной таблицы
+### Через админку (рекомендуемый способ)
 
-```sql
-CREATE TABLE MyTable (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Url VARCHAR(255),
-    Description TEXT,
-    IsActive TINYINT(1) DEFAULT 1,
-    Priority INT DEFAULT 0,
-    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-```
+1. Перейти в админку → список `s_Config`
+2. Создать запись с названием таблицы
+3. Таблица будет создана автоматически со стандартными полями и индексами
+4. Настроить поля через `s_ConfigFields`
 
-### Регистрация в админке
+### Регистрация таблицы
 
 ```sql
 -- Добавить в список таблиц
@@ -360,20 +409,23 @@ INSERT INTO s_ConfigFields (TableName, Field, Name, Type, Required, Priority) VA
 
 ## Индексы и оптимизация
 
-### Рекомендуемые индексы
+### Автоматические индексы
+
+При создании таблиц через `s_Config` автоматически устанавливаются стандартные индексы:
+- `PRIMARY KEY` на поле `Id`
+- INDEX на `Priority` (для сортировки)
+- INDEX на `IsActive` (для фильтрации)
+
+### Дополнительные индексы
+
+Добавлять кастомные индексы следует в соответствии с требованиями конкретного приложения:
 
 ```sql
--- Навигация
-CREATE INDEX idx_parent ON s_Navigator(ParentDir);
-CREATE INDEX idx_url ON s_Navigator(Url);
+-- Пример: индекс для связи с другой таблицей
+CREATE INDEX idx_brand ON Products(BrandId);
 
--- Файлы
-CREATE INDEX idx_table_files ON s_Files(TableName, TableNameId);
-
--- Контентные таблицы
-CREATE INDEX idx_active ON Products(IsActive);
-CREATE INDEX idx_priority ON Products(Priority);
-CREATE INDEX idx_url ON Products(Url);
+-- Пример: составной индекс для частых запросов
+CREATE INDEX idx_active_priority ON Products(IsActive, Priority);
 ```
 
 ### Полнотекстовый поиск
