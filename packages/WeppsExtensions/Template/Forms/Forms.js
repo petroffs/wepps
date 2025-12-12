@@ -134,10 +134,11 @@ class FormWepps {
 			var layoutWepps = new LayoutWepps();
 		};
 		let settings = {
+			size: 'medium',
 			url: url,
 			data: str + serialized
 		};
-		layoutWepps.win(settings);
+		layoutWepps.modal(settings);
 	};
 	minmax() {
 		let self = this;
