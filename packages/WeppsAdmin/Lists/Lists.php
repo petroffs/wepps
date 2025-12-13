@@ -477,8 +477,12 @@ class Lists
 				if ($key == $k) {
 					if (is_array($value)) {
 						$value = implode(",", $value);
-					} elseif ($v[0]['Type'] == 'password' && strlen($value) < 60) {
-						$value = password_hash(trim($value), PASSWORD_BCRYPT);
+					} elseif ($v[0]['Type'] == 'password') {
+						if (strlen($value) < 60) {
+							$value = password_hash(trim($value), PASSWORD_BCRYPT);
+						} else {
+							continue 2; // Пропускаем обновление поля, если это уже хэш
+						}
 					} elseif ($v[0]['Type'] == 'blob') {
 						$settings[$key]['fn'] = "compress(:$key)";
 					} elseif ($v[0]['Type'] == 'guid' && empty($value)) {
