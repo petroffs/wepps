@@ -47,7 +47,7 @@ https://ваш-сайт.com/catalog/products
 ```
 
 > **Примечание:** Платформа использует mod_rewrite для ЧПУ (человекопонятных URL). 
-> Все URL автоматически преобразуются: `/about` → `/?weppsurl=/about` (внутренняя обработка).
+> Все URL автоматически преобразуются: `/about/` → `/?weppsurl=/about/` (внутренняя обработка).
 
 ### ParentDir (Родительский раздел)
 
@@ -172,7 +172,7 @@ ID языка для мультиязычных сайтов.
 
 2. **О компании**
    - Name: `О компании`
-   - Url: `/about`
+   - Url: `/about/`
    - ParentDir: `0`
    - Extension: `Template`
    - Template: `about.tpl`
@@ -180,7 +180,7 @@ ID языка для мультиязычных сайтов.
 
 3. **Каталог**
    - Name: `Каталог`
-   - Url: `/catalog`
+   - Url: `/catalog/`
    - ParentDir: `0`
    - Extension: `Products`
    - Priority: `80`
@@ -204,7 +204,7 @@ ID языка для мультиязычных сайтов.
 
 1. **Создайте родительский раздел "Каталог"**
    - Name: `Каталог`
-   - Url: `/catalog`
+   - Url: `/catalog/`
    - ParentDir: `0`
    - Extension: `Products`
    - IsHidden: `0`
