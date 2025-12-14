@@ -449,6 +449,5 @@ Connect::$db->exec("ALTER TABLE Products ADD COLUMN NewField VARCHAR(255)");
 
 ## Дополнительные материалы
 
-- [Архитектура платформы](architecture.md)
-- [Справочник API](api-reference.md)
-- [Разработка расширений](extensions-development.md)
+- [Архитектура платформы](02-architecture.md)
+- [Разработка расширений](04-extensions-development.md)

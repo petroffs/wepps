@@ -880,6 +880,5 @@ echo '<script>console.log(' . json_encode($data) . ');</script>';
 
 ## Дополнительные материалы
 
-- [Архитектура платформы](architecture.md)
-- [Справочник API](api-reference.md)
-- [Схема базы данных](database-schema.md)
+- [Архитектура платформы](02-architecture.md)
+- [Схема базы данных](03-database-schema.md)

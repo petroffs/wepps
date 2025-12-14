@@ -175,6 +175,5 @@ Priority: 60  → Контакты
 
 ## Дополнительные материалы
 
-- [Первые шаги](getting-started.md)
-- [Управление контентом](content-management.md)
-- [Работа с товарами](products.md)
+- [Первые шаги](01-getting-started.md)
+- [Управление контентом](03-content-lists.md)

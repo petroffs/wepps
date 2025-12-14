@@ -648,7 +648,5 @@ AI может:
 
 ## Дополнительные материалы
 
-- [Установка и настройка](installation.md)
-- [Схема базы данных](database-schema.md)
-- [Справочник API](api-reference.md)
-- [Деплой и обновления](deployment.md)
+- [Установка и настройка](01-installation.md)
+- [Схема базы данных](03-database-schema.md)

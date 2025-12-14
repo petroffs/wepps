@@ -281,6 +281,5 @@ chmod -R 755 files/ pic/
 
 ## Дальнейшие шаги
 
-- [Архитектура платформы](architecture.md)
-- [Разработка расширений](extensions-development.md)
-- [Справочник API](api-reference.md)
+- [Архитектура платформы](02-architecture.md)
+- [Разработка расширений](04-extensions-development.md)
