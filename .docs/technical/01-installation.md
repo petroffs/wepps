@@ -25,7 +25,7 @@ sudo service apache2 restart
 
 ### 1. Скачивание платформы
 
-Скачайте последнюю версию платформы с [wepps.dev/downloads](https://wepps.dev/downloads) и распакуйте в целевую директорию:
+Скачайте последнюю версию платформы с [wepps.dev/downloads/](https://wepps.dev/downloads/) и распакуйте в целевую директорию:
 
 ```bash
 # Создайте директорию проекта

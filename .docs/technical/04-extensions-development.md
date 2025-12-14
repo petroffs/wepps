@@ -122,15 +122,17 @@ class MyExtension extends Extension {
 
 1. В админке откройте **Навигация → s_Navigator**
 2. Создайте или отредактируйте раздел:
-   - **Url**: `/my-section`
+   - **Url**: `/my-section/`
    - **Extension**: выберите `MyExtension`
-3. Теперь раздел доступен по адресу: `/?weppsurl=my-section`
+3. Теперь раздел доступен по адресу: `/?weppsurl=/my-section/`
 
 ## Доступные свойства Extension
 
 ### $this->headers
 
 Управление CSS/JS файлами:
+
+
 
 ```php
 // Подключить CSS (короткий путь /ext/ + версионирование)
@@ -141,6 +143,8 @@ $this->headers->css('https://cdn.example.com/style.css'); // Внешний
 $this->headers->js("/ext/MyExtension/MyExtension.{$this->rand}.js");
 $this->headers->js("/ext/MyExtension/MyExtension.{$this->rand}.js", 'defer'); // С атрибутом defer
 ```
+
+**Примечание:** `$this->rand` — это строка для версионирования файлов CSS/JS, предотвращающая кэширование браузером. Устанавливается в `configloader.php` на основе настройки `debug` в `config.php`. Если `debug=1`, добавляется случайное число; если `debug=0`, используется фиксированная строка "dev-1". Разработчик может менять строку версионирования на свое усмотрение.
 
 **Подключение файлов из других расширений:**
 
