@@ -1,3 +1,8 @@
+.w_table_wrapper {
+	width: 100%;
+	overflow-x: auto;
+}
+
 table.w_table {
 	text-align: left;
 	background-color: var(--color-98);
