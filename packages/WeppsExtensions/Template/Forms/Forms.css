@@ -424,8 +424,8 @@ body span.w_button {
 	justify-content: center;
 }
 
-label.w_button.w_button_important a.w_button,
-label.w_button.w_button_important span.w_button,
+a.w_button.w_button_important,
+span.w_button.w_button_important,
 label.w_button.w_button_important input,
 label.w_button.w_button_important button {
 	font-weight: 600;

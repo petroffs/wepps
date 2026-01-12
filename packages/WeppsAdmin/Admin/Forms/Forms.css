@@ -315,8 +315,8 @@ body span.w_button {
 	justify-content: center;
 }
 
-label.w_button.w_button_important a.w_button,
-label.w_button.w_button_important span.w_button,
+a.w_button.w_button_important,
+span.w_button.w_button_important,
 label.w_button.w_button_important input,
 label.w_button.w_button_important button {
 	font-weight: 600;
@@ -555,6 +555,7 @@ form {
 
 
 @media screen and (max-width: 810px) {
+
 	.w_label.w_flex_view_medium,
 	.w_flex.w_flex_view_medium,
 	.w_button.w_flex_view_medium {
@@ -563,6 +564,7 @@ form {
 }
 
 @media screen and (max-width: 480px) {
+
 	.w_label.w_flex_view_small,
 	.w_flex.w_flex_view_small,
 	.w_button.w_flex_view_small {
