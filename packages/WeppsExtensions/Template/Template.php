@@ -74,6 +74,8 @@ class Template extends Extension {
 		if (@Connect::$projectData['user']['ShowAdmin']==1) {
 			$this->headers->css("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.css");
 			$this->headers->js("/packages/WeppsAdmin/Admin/Admin.{$this->rand}.js");
+			$this->headers->js("/packages/vendor/components/jqueryui/jquery-ui.min.js");
+			$this->headers->css("/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css");
 		}
 
 		/*
