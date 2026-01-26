@@ -87,11 +87,11 @@
 							</label>
 						{elseif $item.0.Type=="area"}
 							<label class="w_label w_area{if $item.0.Required==1} w_require{/if}">
-								<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
+								<textarea name="{$key}" id="formArea{$key}">{$element.$key|escape:'html'}</textarea>
 							</label>
 						{elseif $item.0.Type=="blob"}
 							<label class="w_label w_area">
-								<textarea name="{$key}">{$element.$key}</textarea>
+								<textarea name="{$key}">{$element.$key|escape:'html'}</textarea>
 							</label>
 						{elseif $item.0.Type=="date"}
 							<label class="w_label w_input list-item-date">
@@ -215,7 +215,7 @@
 								<div class="w_hide">
 									<div class="w_interval"></div>
 									<label class="w_label w_area">
-										<textarea name="{$key}" id="formArea{$key}">{$element.$key}</textarea>
+										<textarea name="{$key}" id="formArea{$key}">{$element.$key|escape:'html'}</textarea>
 									</label>
 								</div>
 							{/if}
