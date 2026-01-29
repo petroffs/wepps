@@ -4,14 +4,37 @@ namespace WeppsExtensions\Addons\Docs\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
+/**
+ * Класс для работы с Excel-файлами (чтение и создание)
+ * 
+ * Использует библиотеку PhpOffice\PhpSpreadsheet для работы с XLSX файлами.
+ * Поддерживает создание файлов с форматированием и чтение данных из существующих файлов.
+ */
 class Excel
 {
 	private $get;
 	private $filename = 'excel.xlsx';
+	
+	/**
+	 * Конструктор класса
+	 * 
+	 * @param mixed $get Параметры запроса
+	 */
 	public function __construct($get)
 	{
 		$this->get = $get;
 	}
+	
+	/**
+	 * Создание Excel-файла из массива данных
+	 * 
+	 * Первая строка массива используется как заголовки таблицы.
+	 * Заголовки форматируются жирным шрифтом с цветным фоном.
+	 * 
+	 * @param array $data Массив данных для записи. Первый элемент - заголовки
+	 * @param string $filename Путь для сохранения файла. Если пустой - возвращает содержимое
+	 * @return string|null Бинарное содержимое файла или null при сохранении в файл
+	 */
 	public function create(array $data, string $filename = '')
 	{
 		$spreadsheet = new Spreadsheet();
@@ -71,8 +94,43 @@ class Excel
 		$content = ob_get_clean();
 		return $content;
 	}
-	public function read(string $filename)
+	
+	/**
+	 * Чтение данных из Excel-файла
+	 * 
+	 * Считывает указанный лист из файла и возвращает массив с информацией о всех листах
+	 * и данными из выбранного листа. Первая строка содержит заголовки столбцов.
+	 * 
+	 * @param string $filename Путь к Excel-файлу для чтения
+	 * @param int $sheetIndex Индекс листа для чтения (0 - первый лист)
+	 * @return array Массив с ключами:
+	 *               - 'sheets': array Список названий всех листов
+	 *               - 'data': array Двумерный массив данных из указанного листа
+	 * @throws \PhpOffice\PhpSpreadsheet\Reader\Exception Если файл не найден или поврежден
+	 */
+	public function read(string $filename, int $sheetIndex = 0): array
 	{
-
+		if (!file_exists($filename)) {
+			throw new \Exception("Файл не найден: {$filename}");
+		}
+		
+		$spreadsheet = IOFactory::load($filename);
+		
+		// Получаем список всех листов
+		$sheets = $spreadsheet->getSheetNames();
+		
+		// Проверяем существование указанного листа
+		if ($sheetIndex < 0 || $sheetIndex >= count($sheets)) {
+			throw new \Exception("Лист с индексом {$sheetIndex} не существует. Доступно листов: " . count($sheets));
+		}
+		
+		// Читаем данные из указанного листа
+		$worksheet = $spreadsheet->getSheet($sheetIndex);
+		$data = $worksheet->toArray();
+		
+		return [
+			'sheets' => $sheets,
+			'data' => $data
+		];
 	}
 }
