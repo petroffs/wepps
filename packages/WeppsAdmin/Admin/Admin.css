@@ -38,9 +38,8 @@
 
 .w_admin_list.w_admin_panels {
 	right: inherit;
-	left: var(--s5);
-	margin-top: var(--s);
-	margin-right: var(--s4);
+	left: var(--s);
+	bottom: var(--s4);
 }
 
 .w_admin_navigator {
