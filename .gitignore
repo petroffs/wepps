@@ -16,5 +16,7 @@
 *.sql.gz
 *.7z
 *.zip
+*.mp4
 /sitemap.xml
 /robots.txt
+!md5.conf
