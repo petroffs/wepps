@@ -32,13 +32,13 @@ class SmartyPlugins
 			}
 			return explode($delimiter, $string);
 		});
-		$smarty->registerPlugin('modifier', 'format', function ($string, $nobr = '') {
+		$smarty->registerPlugin('modifier', 'format', function ($string, $br = '') {
 			$string = preg_replace('/((http|ftp|telnet|gopher):\/\/[^ \n$]+)(|.html)/iu', '<A href="\\1\\3" target="_blank">\\1\\3</A>', $string);
-			$search = ["'\n|\r\n'", "' - '", "' с '", "' в '", "' и '", "' а '", "' не '", "' для '", "' на '", "' без '", "' к '", "' о '", "' об '", "' от '", "' по '", "' при '", "' про '", "' у '", "' из '", "' за '"];
-			$replace = ["<br/>", "&nbsp;&mdash; ", " с&nbsp;", " в&nbsp;", " и&nbsp;", " а&nbsp;", " не&nbsp;", " для&nbsp;", " на&nbsp;", " без&nbsp;", " к&nbsp;", " о&nbsp;", " об&nbsp;", " от&nbsp;", " по&nbsp;", " при&nbsp;", " про&nbsp;", " у&nbsp;", " из&nbsp;", " за&nbsp;"];
-			if ($nobr == 'nobr') {
-				unset($search[0]);
-				unset($replace[0]);
+			$search = ["' - '", "' с '", "' в '", "' и '", "' а '", "' не '", "' для '", "' на '", "' без '", "' к '", "' о '", "' об '", "' от '", "' по '", "' при '", "' про '", "' у '", "' из '", "' за '"];
+			$replace = ["&nbsp;&mdash; ", " с&nbsp;", " в&nbsp;", " и&nbsp;", " а&nbsp;", " не&nbsp;", " для&nbsp;", " на&nbsp;", " без&nbsp;", " к&nbsp;", " о&nbsp;", " об&nbsp;", " от&nbsp;", " по&nbsp;", " при&nbsp;", " про&nbsp;", " у&nbsp;", " из&nbsp;", " за&nbsp;"];
+			if ($br == 'br') {
+				$search[] = "'\n|\r\n'";
+				$replace[] = "<br/>";
 			}
 			$string = preg_replace($search, $replace, $string);
 			return $string;
