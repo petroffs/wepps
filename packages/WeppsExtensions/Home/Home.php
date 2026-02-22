@@ -43,6 +43,36 @@ class Home extends Extension
 				$smarty->assign('advantages', $res);
 
 				/*
+				 * Схема (Schema.org)
+				 * Для организации (Organization Schema)
+				 */
+				$organizationSchema = [
+					'@context' => 'https://schema.org',
+					'@type' => 'Organization',
+					'name' => Connect::$projectInfo['name'],
+					'url' => 'https://' . Connect::$projectDev['host'],
+					'logo' => 'https://' . Connect::$projectDev['host'] . Connect::$projectInfo['logopng'],
+					'address' => [
+						'@type' => 'PostalAddress',
+						'streetAddress' => Connect::$projectInfo['address']['address-short'],
+						'addressLocality' => Connect::$projectInfo['address']['city'],
+						'postalCode' => Connect::$projectInfo['address']['postal-code'],
+						'addressCountry' => 'RU'
+					],
+					'contactPoint' => [
+						'@type' => 'ContactPoint',
+						'telephone' => Connect::$projectInfo['phone'],
+						'contactType' => 'customer service',
+						'areaServed' => 'RU',
+						'availableLanguage' => 'Russian'
+					],
+					// 'sameAs' => [
+					// 	'https://ваш-канал-в-соцсетях'
+					// ]
+				];
+				$this->headers->meta('<script type="application/ld+json">' . json_encode($organizationSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>');
+
+				/*
 				 * Контакты
 				 */
 				$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.js");

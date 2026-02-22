@@ -130,6 +130,12 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			unset($obj);
 
 			/**
+			 * Канонический URL
+			 * СЕО-настройки
+			 */
+			TemplateUtils::getMeta($this->navigator, $this->headers);
+
+			/**
 			 * Флаг для отображения контента
 			 */
 			$smarty->assign('normalView', 1);

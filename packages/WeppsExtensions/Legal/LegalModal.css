@@ -22,7 +22,11 @@
 }
 
 .legal-modal a.w_button {
+    font-size: var(--font-small);
+    padding-left: var(--s2);
+    padding-right: var(--s2);
     margin: 0 var(--s) var(--s) 0;
+    min-height: calc(var(--s) * 6);
 }
 
 @media screen and (max-width: 480px) {
