@@ -1,0 +1,65 @@
+.page.panel-accordion {
+	padding-top: var(--s4);
+	padding-bottom: var(--s4);
+	position: relative;
+}
+
+.page.panel-accordion .panel-header {
+	margin: 0 auto var(--s4) auto;
+	max-width: 800px;
+}
+
+.page.panel-accordion .panel-header h2 {
+	margin: 0 0 var(--s2) 0;
+}
+
+.page.panel-accordion .w_blocks {
+	margin: 0 auto;
+	max-width: 800px;
+}
+
+.block-accordion {
+	background: var(--color-100);
+	margin-top: var(--s-half);
+	position: relative;
+	cursor: pointer;
+}
+
+.block-accordion:first-child {
+	margin-top: 0;
+	border-radius: var(--s2) var(--s2) 0 0;
+}
+
+.block-accordion:last-child {
+	border-radius: 0 0 var(--s2) var(--s2);
+}
+
+.block-accordion h3 {
+	margin: 0;
+	padding: var(--s4) calc(var(--s) * 14) var(--s4) var(--s4);
+	position: relative;
+}
+
+.block-accordion h3::after {
+	content: '\F4F9';
+	/* bi-plus */
+	font-family: 'bootstrap-icons';
+	font-size: var(--font-extra);
+	color: var(--color-button);
+	display: block;
+	position: absolute;
+	top: var(--s2);
+	right: var(--s4);
+	transition: transform 0.3s ease;
+}
+
+.block-accordion.active h3:after {
+	transform: rotate(45deg);
+}
+
+.block-accordion .text {
+	padding: 0 var(--s4) var(--s4) var(--s4);
+}
+
+
+@media screen and (max-width: 480px) {}

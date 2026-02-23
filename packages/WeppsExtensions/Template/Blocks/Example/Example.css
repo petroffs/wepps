@@ -1,13 +1,28 @@
-.page>.exampletest-wrapper {
+.page.panel-example {
+	padding-top: var(--s4);
 	padding-bottom: var(--s4);
+	position: relative;
 }
 
-.exampletest-wrapper>.w_blocks>.w_block {
+.page.panel-example .panel-header {
+	margin: 0 auto var(--s4) auto;
+	max-width: 800px;
+}
+
+.page.panel-example .panel-header h2 {
+	margin: 0 0 var(--s2) 0;
+}
+
+.block-example {
 	min-height: 100px;
-	background: var(--color-warning);
+	background: var(--color-100);
+	padding: var(--s2);
 	position: relative;
 	border-radius: var(--s2);
-	display: flex;
-	justify-content: center;
-	align-items: center;
 }
+
+.block-example h1 {
+	margin-top: 0;
+}
+
+@media screen and (max-width: 480px) {}

@@ -1,6 +1,6 @@
-var blocksAccordionPanelInit = function() {
-	$('.block-accordion').children('div.title').on('click',function(){
-		var parent = $(this).parent();
+var blocksAccordionInit = function() {
+	$('.block-accordion').on('click',function(){
+		var parent = $(this);
 		if (parent.hasClass('active')) {
 			parent.removeClass('active');
 			parent.children('.text').addClass('w_hide');
@@ -10,4 +10,4 @@ var blocksAccordionPanelInit = function() {
 		};
 	});
 };
-$(document).ready(blocksAccordionPanelInit);
+$(document).ready(blocksAccordionInit);
