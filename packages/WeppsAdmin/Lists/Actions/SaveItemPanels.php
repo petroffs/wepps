@@ -1,57 +1,56 @@
 <?php
 namespace WeppsAdmin\Lists\Actions;
 
+use WeppsCore\Data;
 use WeppsCore\Request;
 use WeppsCore\Connect;
+use WeppsCore\Utils;
 
-class SaveItemExtensions extends Request {
+class SaveItemPanels extends Request
+{
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
 	public $element = [];
-	
-	
-	public function request($action="") {
-		return;
-	    $this->scheme = $this->get['listScheme'];
-	    $this->listSettings = $this->get['listSettings'];
-	    $this->element = $this->get['element'];
-	    $root = Connect::$projectDev['root'];
-	    if ($this->listSettings['TableName']=='s_Extensions') {
-	    	if ($this->element['CopyFiles'] == '1.0') {
-	    		$this->copyExts($this->element['FileExt'], ".php", "{$root}/packages/WeppsExtensions", '1.0');
-	    		$this->copyExts($this->element['FileExt'], ".tpl", "{$root}/packages/WeppsExtensions", '1.0');
-	    		$this->copyExts($this->element['FileExt'], ".css", "{$root}/packages/WeppsExtensions", '1.0');
-	    		$this->copyExts($this->element['FileExt'], ".js",  "{$root}/packages/WeppsExtensions", '1.0');
-	    	} else if ($this->element['CopyFiles'] == '1.1') {
-	    		$this->copyExts($this->element['FileExt'], "Request.php", "{$root}/packages/WeppsExtensions", '1.1');
-	    		$this->copyExts($this->element['FileExt'], ".php",        "{$root}/packages/WeppsExtensions", '1.1');
-	    		$this->copyExts($this->element['FileExt'], ".tpl",        "{$root}/packages/WeppsExtensions", '1.1');
-	    		$this->copyExts($this->element['FileExt'], "Item.tpl",	  "{$root}/packages/WeppsExtensions", '1.1');
-	    		$this->copyExts($this->element['FileExt'], ".css",        "{$root}/packages/WeppsExtensions", '1.1');
-	    		$this->copyExts($this->element['FileExt'], ".js",         "{$root}/packages/WeppsExtensions", '1.1');
-	    	}
-	    }
+
+
+	public function request($action = "")
+	{
+		$this->listSettings = $this->get['listSettings'];
+		$this->element = $this->get['element'];
+		if ($this->listSettings['TableName'] == 's_Panels') {
+			$sql = "select count(*) Co from s_Blocks where PanelId = ?";
+			$res = Connect::$instance->fetch($sql, [$this->element['Id']]);
+			if ($res[0]['Co'] == 0) {
+				$data = new Data("s_Blocks");
+				$data->add([
+					'Name' => 'Блок для панели ' . ((int) $this->element['Id']),
+					'PanelId' => $this->element['Id'],
+				]);
+			}
+			if (!empty($this->element['Template']) && $this->isStrictLatin($this->element['Template'], 'Error: Template name must be in strict Latin format') === '') {
+				$source = Connect::$projectDev['root'] . '/packages/WeppsExtensions/Template/Blocks/Example';
+				$target = Connect::$projectDev['root'] . '/packages/WeppsExtensions/Template/Blocks/' . $this->element['Template'];
+				if (is_dir($source) && !is_dir($target)) {
+					mkdir($target, 0775, true);
+					foreach (scandir($source) as $file) {
+						if ($file == '.' || $file == '..')
+							continue;
+						$content = file_get_contents($source . '/' . $file);
+						$content = str_replace('-example', '-' . strtolower($this->element['Template']), $content);
+						$content = str_replace('Example', $this->element['Template'], $content);
+						$newFileName = str_replace('Example', $this->element['Template'], $file);
+						file_put_contents($target . '/' . $newFileName, $content);
+					}
+				}
+			}
+		}
 	}
-	
-	private function copyExts($ext, $fileend, $dirstart, $stamp) {
-		$ext = ucfirst($ext);
-		$dir = "{$dirstart}/{$ext}";
-		if (! is_dir($dir)) {
-			mkdir($dir, 0755, true);
+	private function isStrictLatin(string $variable, string $errorMessage)
+	{
+		if (preg_match('/^[A-Z][a-zA-Z0-9]*$/', $variable)) {
+			return '';
 		}
-		$filename = "{$dir}/{$ext}" . $fileend;
-		$filesource = "Example{$fileend}";
-		if ($fileend == "Request.php") {
-			$filename = "{$dir}/{$fileend}";
-			$filesource = $fileend;
-		}
-		if (! is_file($filename)) {
-			// echo "{$dirstart}/_Example{$stamp}/{$filesource} //// $filename<br>";
-			copy("{$dirstart}/_Example{$stamp}/{$filesource}", $filename);
-			$fileData = file_get_contents($filename);
-			$fileData = str_replace("Example", $ext, $fileData);
-			file_put_contents($filename, $fileData);
-		}
+		return $errorMessage;
 	}
 }

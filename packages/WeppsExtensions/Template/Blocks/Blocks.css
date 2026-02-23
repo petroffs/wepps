@@ -1,17 +1,50 @@
-.w_panel {
-	width: 100%;
-	overflow: hidden;
-	margin: 0 0px;
+.page.panel-blocks {
+	padding-top: var(--s4);
+	padding-bottom: var(--s4);
 	position: relative;
 }
-.w_panel>.wrapper {
-	max-width: 1360px;
-	margin: 0 auto;
-	overflow: hidden;
+
+.page.panel-blocks .panel-header {
+	margin: 0 auto var(--s4) auto;
+	max-width: 800px;
 }
-.w_panel.blockstest>.wrapper>.w_blocks>.w_block {
+
+.page.panel-blocks .panel-header h2 {
+	margin: 0 0 var(--s2) 0;
+}
+
+.block-blocks {
 	min-height: 100px;
-	text-align: center;
-	background: red;
+	background: var(--color-100);
+	padding: var(--s2);
 	position: relative;
+	border-radius: var(--s2);
+}
+
+.block-blocks h1 {
+	margin-top: 0;
+}
+
+@media screen and (max-width: 480px) {}
+
+.fade-in {
+	opacity: 0;
+	transform: translateY(30px);
+	transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.slide-up {
+	opacity: 0;
+	transform: translateY(-36px);
+	transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.slide-up.visible {
+	opacity: 1;
+	transform: translateY(0);
 }
