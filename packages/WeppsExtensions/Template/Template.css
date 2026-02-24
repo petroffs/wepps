@@ -259,7 +259,7 @@ body .bi.bi-vk {
 	mask-position: center;
 }
 
-body #theme-switcher {
+body .theme-switcher {
 	font-size: var(--font-default);
 	color: var(--color-50);
 	background: var(--color-85);

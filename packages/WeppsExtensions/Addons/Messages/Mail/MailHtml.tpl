@@ -1,10 +1,11 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width" />
-	<style type="text/css">
+	<title>{$subject|escape:'html'}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width">
+	<style>
 		* {
 			margin: 0;
 			padding: 0;
@@ -117,6 +118,16 @@
 			text-transform: uppercase;
 		}
 
+		.container .header-link {
+			padding: 10px 0;
+			display: inline-block;
+		}
+
+		.container .header-img {
+			margin: 0;
+			display: block;
+		}
+
 		.container .content {
 			background: white;
 			padding: 30px 35px;
@@ -157,43 +168,48 @@
 
 <body>
 	<table class="body-wrap">
-		<tr>
-			<td class="container">
-				<table>
-					<tr>
-						<td align="right">
-							<a href="{$settings.host.url}" style="padding:10px 0;display:inline-block;">
-								<img src="{$settings.host.url}{$settings.logopng}" width="150" border="0"
-									style="margin:0" />
-							</a>
-						</td>
-					</tr>
-					<tr>
-						<td align="center" class="header">
-							<h1>{$subject}</h1>
-						</td>
-					</tr>
-					<tr>
-						<td class="content content-body">
-							{$text}
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td class="container">
-				<table>
-					<tr>
-						<td class="content footer" align="center">
-							<p>Отправитель <a href="{$settings.host.url}">{$settings.name}</a>,
-								{$settings.address.address}</p>
-							<p><a href="mailto:{$settings.email}">{$settings.email}</a> | {$settings.phone}</p>
-						</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
+		<tbody>
+			<tr>
+				<td class="container">
+					<table>
+						<tbody>
+							<tr>
+								<td class="text-right">
+									<a href="{$settings.host.url}" class="header-link">
+										<img src="{$settings.host.url}{$settings.logopng}" width="150"
+											alt="{$settings.name}" /></a>
+								</td>
+							</tr>
+							<tr>
+								<td class="header text-center">
+									<h1>{$subject}</h1>
+								</td>
+							</tr>
+							<tr>
+								<td class="content content-body">
+									{$text}
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td class="container">
+					<table>
+						<tbody>
+							<tr>
+								<td class="content footer text-center">
+									<p>Отправитель <a href="{$settings.host.url}">{$settings.name}</a>,
+										{$settings.address.address}</p>
+									<p><a href="mailto:{$settings.email}">{$settings.email}</a> | {$settings.phone}</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
 	</table>
 </body>
 

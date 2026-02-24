@@ -47,7 +47,7 @@
 				<div class="footer-wrapper">
 					<div class="w_flex w_flex_row w_flex_end w_flex_margin w_padding">
 						<div class="w_flex_fix w_flex_12_view_small">
-							<button id="theme-switcher" title="Переключить тему">
+							<button class="theme-switcher" title="Переключить тему">
 								<i class="bi bi-sun theme-icon theme-icon-light"></i>
 								<i class="bi bi-moon theme-icon theme-icon-dark"></i>
 								<i class="bi bi-circle-half theme-icon theme-icon-auto"></i>
