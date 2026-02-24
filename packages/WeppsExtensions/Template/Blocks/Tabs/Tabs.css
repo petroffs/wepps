@@ -1,0 +1,77 @@
+.page.panel-tabs {
+	background: var(--color-95);
+	padding-top: var(--s4);
+	padding-bottom: var(--s4);
+	position: relative;
+}
+
+.page.panel-tabs .panel-header {
+	margin: 0 auto var(--s4) auto;
+	max-width: 800px;
+}
+
+.page.panel-tabs .panel-header h2 {
+	margin: 0 0 var(--s2) 0;
+}
+
+ul.block-tabs-list {
+	list-style-type: none;
+	background: var(--color-100);
+	margin: var(--s-half) auto 0 auto;
+	padding: 0;
+	max-width: max-content;
+	position: relative;
+	cursor: pointer;
+	border-radius: var(--s2);
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: stretch;
+	gap: var(--s-half);
+}
+
+div.w_blocks ul.block-tabs-list li {
+	padding: 0;
+	margin-bottom: 0;
+	position: relative;
+}
+
+ul.block-tabs-list li a {
+	min-height: 100%;
+	border-radius: 0;
+	display: flex;
+}
+
+ul.block-tabs-list li:first-child a {
+	border-radius: var(--s2) 0 0 var(--s2);
+}
+
+ul.block-tabs-list li:last-child a {
+	border-radius: 0 var(--s2) var(--s2) 0;
+}
+
+ul.block-tabs-list li a.active {
+	background: var(--color-focus);
+	border-color: var(--color-focus);
+}
+
+
+.block-tabs-content>.block-tabs {
+	display: none;
+}
+
+.block-tabs-content>.block-tabs.active {
+	background: var(--color-100);
+	padding: var(--s2) var(--s4);
+	margin: var(--s4) auto 0 auto;
+	max-width: 800px;
+	position: relative;
+	border-radius: var(--s2);
+	display: block;
+}
+
+.block-tabs-content>.block-tabs.active:hover {
+	transform: scale(0.95);
+	outline: 2px solid var(--color-active);
+	transition: transform 0.2s ease;
+}

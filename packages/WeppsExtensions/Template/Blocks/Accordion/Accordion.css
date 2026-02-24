@@ -22,7 +22,6 @@
 	background: var(--color-100);
 	margin-top: var(--s-half);
 	position: relative;
-	cursor: pointer;
 }
 
 .block-accordion:first-child {
@@ -38,6 +37,7 @@
 	margin: 0;
 	padding: var(--s4) calc(var(--s) * 14) var(--s4) var(--s4);
 	position: relative;
+	cursor: pointer;
 }
 
 .block-accordion h3::after {

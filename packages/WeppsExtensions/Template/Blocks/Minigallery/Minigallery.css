@@ -1,0 +1,24 @@
+.page.panel-minigallery {
+	background: var(--color-98);
+	padding-top: var(--s4);
+	padding-bottom: var(--s4);
+	position: relative;
+}
+
+.page.panel-minigallery .panel-header {
+	margin: 0 auto var(--s4) auto;
+	max-width: 800px;
+}
+
+.page.panel-minigallery .panel-header h2 {
+	margin: 0 0 var(--s2) 0;
+}
+
+.block-minigallery img {
+	width: 100%;
+	max-width: 150px;
+	height: auto;
+	display: block;
+	margin: 0 auto;
+	border-radius: var(--s4);
+}
