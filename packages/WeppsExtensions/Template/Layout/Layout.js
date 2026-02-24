@@ -153,28 +153,51 @@ class ThemeWepps {
 		this.themeSaved = localStorage.getItem('w_theme') || 'auto';
 		this.themeSystem = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 		this.themeValue = (this.themeSaved == 'auto') ? this.themeSystem : this.themeSaved;
-		if (this.themeValue === 'dark') {
-			document.documentElement.setAttribute('data-theme', 'dark');
+		this.applyTheme(this.themeValue);
+	}
+	applyTheme(theme) {
+		$('html').attr('data-theme', theme);
+	}
+	applyThemeIcons(theme) {
+		$('.theme-icon').addClass('w_hide');
+		switch (theme) {
+			case 'light':
+				$('.theme-icon-light').removeClass('w_hide');
+				break;
+			case 'dark':
+				$('.theme-icon-dark').removeClass('w_hide');
+				break;
+			case 'auto':
+				$('.theme-icon-auto').removeClass('w_hide');
+				break;
+		};
+	}
+	initSelect(selector) {
+		const $select = $(selector);
+		if ($select.length === 0) return;
+		$select.val(this.themeSaved).trigger('change');
+		this.applyTheme(this.themeValue);
+		this.applyThemeIcons(this.themeSaved);
+		$select.on('select2:select', () => {
+			const selectedTheme = $select.val();
+			this.themeSaved = selectedTheme;
+			localStorage.setItem('w_theme', selectedTheme);
+			this.themeValue = (selectedTheme == 'auto') ? this.themeSystem : selectedTheme;
+			this.applyTheme(this.themeValue);
+			this.applyThemeIcons(selectedTheme);
+		});
+		if (window.matchMedia) {
+			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+				if (this.themeSaved === 'auto') {
+					this.themeSystem = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+					this.applyTheme(this.themeSystem);
+				}
+			});
 		}
 	}
 	theme() {
-		var themeIcon = (theme) => {
-			$('html').attr('data-theme', theme);
-			$('.theme-icon').addClass('w_hide');
-			switch (this.themeSaved) {
-				case 'light':
-					$('.theme-icon-light').removeClass('w_hide');
-					break;
-				case 'dark':
-					$('.theme-icon-dark').removeClass('w_hide');
-					break;
-				case 'auto':
-					$('.theme-icon-auto').removeClass('w_hide');
-					break;
-			};
-		};
-		themeIcon(this.themeValue);
-		$('#theme-switcher').on('click', () => {
+		this.applyThemeIcons(this.themeSaved);
+		$(document).off('click.theme').on('click.theme', '.theme-switcher', () => {
 			switch (this.themeSaved) {
 				case 'light':
 					this.themeSaved = 'dark';
@@ -197,7 +220,8 @@ class ThemeWepps {
 			} else {
 				actualTheme = this.themeValue;
 			}
-			themeIcon(actualTheme);
+			this.applyTheme(actualTheme);
+			this.applyThemeIcons(this.themeSaved);
 		});
 	};
 }
