@@ -1,0 +1,62 @@
+.w_tooltip {
+	position: absolute;
+	z-index: 9999;
+	max-width: 260px;
+	padding: var(--s) var(--s2);
+	border-radius: var(--s);
+	background: var(--color-20);
+	color: var(--color-100);
+	font-size: 13px;
+	line-height: 1.4;
+	white-space: normal;
+	word-break: break-word;
+	pointer-events: none;
+	opacity: 0;
+	transform: scale(0.95);
+	box-shadow: var(--shadow);
+	transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.w_tooltip.w_tooltip_visible {
+	pointer-events: auto;
+	opacity: 1;
+	transform: scale(1);
+}
+
+/* Стрелка */
+.w_tooltip::after {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 0;
+	border: var(--s-half) solid transparent;
+}
+
+.w_tooltip_top::after {
+	top: 100%;
+	left: var(--w-arrow, 50%);
+	transform: translateX(-50%);
+	border-top-color: var(--color-20);
+}
+
+.w_tooltip_bottom::after {
+	bottom: 100%;
+	left: var(--w-arrow, 50%);
+	transform: translateX(-50%);
+	border-bottom-color: var(--color-20);
+}
+
+.w_tooltip_left::after {
+	top: var(--w-arrow, 50%);
+	left: 100%;
+	transform: translateY(-50%);
+	border-left-color: var(--color-20);
+}
+
+.w_tooltip_right::after {
+	top: var(--w-arrow, 50%);
+	right: 100%;
+	transform: translateY(-50%);
+	border-right-color: var(--color-20);
+}
+

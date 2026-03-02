@@ -47,7 +47,7 @@
 				<div class="footer-wrapper">
 					<div class="w_flex w_flex_row w_flex_end w_flex_margin w_padding">
 						<div class="w_flex_fix w_flex_12_view_small">
-							<button class="theme-switcher" title="Переключить тему">
+							<button class="theme-switcher" data-tooltip="Переключить тему">
 								<i class="bi bi-sun theme-icon theme-icon-light"></i>
 								<i class="bi bi-moon theme-icon theme-icon-dark"></i>
 								<i class="bi bi-circle-half theme-icon theme-icon-auto"></i>
@@ -68,7 +68,7 @@
 						<div class="text w_flex_fix w_flex_11_view_small">
 							<ul class="footer-socials w_list w_flex w_flex_row w_flex_center w_flex_margin">
 								{foreach name=out item=item from=$socials}
-								<li><a class="bi bi-{$item.Alias}" href="{$item.Field1}" title="{$item.Name}"></a></li>
+								<li><a class="bi bi-{$item.Alias}" href="{$item.Field1}" data-tooltip="{$item.Name}"></a></li>
 								{/foreach}
 							</ul>
 						</div>

@@ -64,17 +64,17 @@ class SmartyPlugins
 			}
 			switch ($tablename) {
 				case "navigator":
-					$str = (string) '<div class="navigator w_admin_navigator"><a href="/_wepps/navigator' . $id . '" target="_blank"></a></div>';
+					$str = (string) '<div class="navigator w_admin_navigator"><a href="/_wepps/navigator' . $id . '" target="_blank" data-tooltip="Редактировать раздел"></a></div>';
 					break;
 				case "panels":
 					$str = (string) '<div class="w_admin_list w_admin_panels">
-                            <a href="/_wepps/lists/s_Panels/' . $panel . '/" target="_blank" title="Редактировать панель"></a>
-                            <a href="/_wepps/lists/s_Panels/add/?NavigatorId=' . $id . '" target="_blank" title="Добавить панель"></a>
-                            <a href="/_wepps/lists/s_Blocks/add/?PanelId=' . $panel . '" target="_blank" title="Добавить блок"></a>
+                            <a href="/_wepps/lists/s_Panels/' . $panel . '/" target="_blank" data-tooltip="Редактировать панель"></a>
+                            <a href="/_wepps/lists/s_Panels/add/?NavigatorId=' . $id . '" target="_blank" data-tooltip="Добавить панель"></a>
+                            <a href="/_wepps/lists/s_Blocks/add/?PanelId=' . $panel . '" target="_blank" data-tooltip="Добавить блок"></a>
                         </div>';
 					break;
 				default:
-					$str = (string) '<div class="default w_admin_list"><a href="/_wepps/lists/' . $tablename . '/' . $id . '/" target="_blank"></a></div>';
+					$str = (string) '<div class="default w_admin_list"><a href="/_wepps/lists/' . $tablename . '/' . $id . '/" target="_blank" data-tooltip="Редактировать элемент"></a></div>';
 					break;
 			}
 			return $str;

@@ -64,6 +64,8 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			$this->headers->css("/ext/Template/Layout/Modal.{$this->rand}.css");
 			$this->headers->js("/ext/Template/Layout/Suggestions.{$this->rand}.js");
 			$this->headers->css("/ext/Template/Layout/Suggestions.{$this->rand}.css");
+			$this->headers->js("/ext/Template/Layout/Tooltip.{$this->rand}.js");
+			$this->headers->css("/ext/Template/Layout/Tooltip.{$this->rand}.css");
 			$this->headers->js("/ext/Template/Forms/Forms.{$this->rand}.js");
 			$this->headers->css("/ext/Template/Forms/Forms.{$this->rand}.css");
 
