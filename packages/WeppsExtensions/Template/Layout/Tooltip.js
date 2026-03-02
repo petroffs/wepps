@@ -27,6 +27,7 @@ class TooltipWepps {
 		this.placement = settings.placement || 'top';
 		this.trigger   = settings.trigger   || 'hover';
 		this.delay     = settings.delay     !== undefined ? settings.delay : 100;
+		this._fixed    = settings.fixed     !== undefined ? settings.fixed : null; // null = определить автоматически
 		this._tip      = null;
 		this._showTimer = null;
 		this._hideTimer = null;
@@ -108,6 +109,8 @@ class TooltipWepps {
 
 	_build() {
 		if (this._tip && this._tip.length) return;
+		// Кешируем fixed один раз — DOM не меняется
+		if (this._fixed === null) this._fixed = this._isFixed();
 		this._tip = $('<div>')
 			.addClass('w_tooltip w_tooltip_' + this.placement);
 		this.html ? this._tip.html(this.text) : this._tip.text(this.text);
@@ -124,30 +127,41 @@ class TooltipWepps {
 		}
 	};
 
+	_isFixed() {
+		let el = this.target[0];
+		while (el && el !== document.body) {
+			if (window.getComputedStyle(el).position === 'fixed') return true;
+			el = el.parentElement;
+		}
+		return false;
+	};
+
 	_position() {
 		const tgt    = this.target[0].getBoundingClientRect();
-		const scroll = { x: window.scrollX, y: window.scrollY };
+		const fixed  = this._fixed;
+		const scroll = fixed ? { x: 0, y: 0 } : { x: window.scrollX, y: window.scrollY };
 		const vw     = window.innerWidth;
 		const vh     = window.innerHeight;
 		const tip    = this._tip;
 		const gap    = 8;
 
-		// Сброс позиции и класса flip для пересчёта реальных размеров
-		tip.css({ top: -9999, left: -9999 });
+		// Сброс позиции и класса — одна запись в DOM
+		tip[0].style.cssText += `;position:${fixed ? 'fixed' : 'absolute'};top:-9999px;left:-9999px`;
 		tip.removeClass('w_tooltip_top w_tooltip_bottom w_tooltip_left w_tooltip_right');
+
+		// Читаем размеры один раз
+		const tw = tip.outerWidth();
+		const th = tip.outerHeight();
 
 		let placement = this.placement;
 
 		// Flip: проверяем не вылезет ли тултип за viewport и меняем сторону
-		if (placement === 'top'    && tgt.top    < tip.outerHeight() + gap) placement = 'bottom';
-		else if (placement === 'bottom' && tgt.bottom + tip.outerHeight() + gap > vh)  placement = 'top';
-		else if (placement === 'left'   && tgt.left   < tip.outerWidth()  + gap) placement = 'right';
-		else if (placement === 'right'  && tgt.right  + tip.outerWidth()  + gap > vw) placement = 'left';
+		if      (placement === 'top'    && tgt.top    < th + gap)          placement = 'bottom';
+		else if (placement === 'bottom' && tgt.bottom + th + gap > vh)     placement = 'top';
+		else if (placement === 'left'   && tgt.left   < tw + gap)          placement = 'right';
+		else if (placement === 'right'  && tgt.right  + tw + gap > vw)     placement = 'left';
 
 		tip.addClass('w_tooltip_' + placement);
-
-		const tw = tip.outerWidth();
-		const th = tip.outerHeight();
 
 		let top, left;
 
