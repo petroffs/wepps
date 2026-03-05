@@ -280,9 +280,17 @@ class Rest
 			// Настройка логирования для метода
 			$this->log = $config['log'] ?? $this->log;
 
-			// Проверка аутентификации, если требуется
-			if (!empty($config['auth_required'])) {
+			// Проверка аутентификации, если требуется (или если заданы роли)
+			if (!empty($config['auth_required']) || isset($config['role_required'])) {
 				$this->authenticateBearerToken();
+			}
+
+			// Проверка прав доступа по UserPermissions
+			if (isset($config['role_required'])) {
+				$userPermissions = (int)($this->user['UserPermissions'] ?? 0);
+				if (!in_array($userPermissions, $config['role_required'], true)) {
+					throw new \Exception('Access denied: insufficient permissions', 403);
+				}
 			}
 
 			// Валидация входных данных, если задана
@@ -355,6 +363,14 @@ class Rest
 			// Сохраняем данные пользователя при успешной аутентификации
 			$this->user = $res[0];
 			#Utils::debug($this->user, 31);
+		} else {
+			$sql = "SELECT * from s_Users where Id=? and IsHidden=0";
+			$res = Connect::$instance->fetch($sql, [$bearer['payload']['id']]);
+			if (empty($res[0]['Id'])) {
+				throw new \Exception('User not found or inactive', 401);
+			}
+
+			$this->user = $res[0];
 		}
 	}
 
@@ -376,7 +392,7 @@ class Rest
 		$class = $config['class'];
 		if ($class === RestCli::class) {
 			$instance = new $class($this->settings);
-		} elseif ($class === RestAd::class) {
+		} elseif ($class === RestAd::class || $class === RestV1::class) {
 			$instance = new $class($this);
 		} else {
 			$instance = new $class($this->get, $this->post, $this->data, $this->headers);
