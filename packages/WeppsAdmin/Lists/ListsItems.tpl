@@ -90,7 +90,7 @@
 							{/foreach}
 							</td>
 							{else}
-							<td class="{$i.0.Type}"><div>{$item.$k|strip_tags|nl2br|truncate:50}</div></td>
+							<td class="{$i.0.Type}"><div>{$item.$k|strip_tags|nl2br|escape|truncate:50}</div></td>
 							{/if}
 							{/foreach}
 						</tr>
