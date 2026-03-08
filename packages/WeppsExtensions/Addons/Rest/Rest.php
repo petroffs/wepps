@@ -861,9 +861,9 @@ class Rest
 	 *
 	 * @param mixed $data Данные для нормализации
 	 * @param bool $forDataField Флаг, что это для поля 'data' (требует оборачивания ассоциативных массивов)
-	 * @return array Нормализованные данные
+	 * @return array|null Нормализованные данные
 	 */
-	private function normalizeData($data, bool $forDataField = false)
+	private function normalizeData($data, bool $forDataField = false): ?array
 	{
 		if ($data === null) {
 			return null;
