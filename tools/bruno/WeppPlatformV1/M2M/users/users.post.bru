@@ -1,0 +1,33 @@
+meta {
+  name: POST users
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/rest/v1/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "users",
+    "data": {
+      "login": "{{new_user_login}}",
+      "password": "{{new_user_password}}",
+      "name": "Иван Иванов",
+      "phone": "9001234567"
+    }
+  }
+}
+
+docs {
+  Create a new user.
+  Доступно только для M2M клиентов.
+  Поля name и phone необязательные.
+}

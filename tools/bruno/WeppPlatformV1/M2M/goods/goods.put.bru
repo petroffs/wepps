@@ -1,0 +1,32 @@
+meta {
+  name: PUT goods
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{base_url}}/rest/v1/goods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "goods",
+    "data": {
+      "id": 1,
+      "name": "Обновлённый товар",
+      "price": 1299.99
+    }
+  }
+}
+
+docs {
+  Update goods item by id.
+  Требует роль UserPermissions = 1 или 2.
+  Поля name и price необязательные.
+}

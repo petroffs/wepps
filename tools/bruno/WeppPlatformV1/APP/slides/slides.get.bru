@@ -1,0 +1,14 @@
+meta {
+  name: GET slides
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/rest/v1/slides
+  auth: none
+}
+
+docs {
+  Get list of active slides.
+}

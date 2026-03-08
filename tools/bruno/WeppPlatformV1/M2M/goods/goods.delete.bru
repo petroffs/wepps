@@ -1,0 +1,23 @@
+meta {
+  name: DELETE goods
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{base_url}}/rest/v1/goods
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+params:query {
+  id: 1
+}
+
+docs {
+  Delete goods item by id.
+  Требует роль UserPermissions = 1 или 2.
+}

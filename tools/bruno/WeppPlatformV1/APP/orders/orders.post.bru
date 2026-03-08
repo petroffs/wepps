@@ -1,0 +1,34 @@
+meta {
+  name: POST orders
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/rest/v1/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "orders",
+    "data": {
+      "name": "Иван Иванов",
+      "phone": "+79001234567",
+      "email": "user@example.com",
+      "positions": "[{\"id\":1,\"qty\":2}]"
+    }
+  }
+}
+
+docs {
+  Create a new order.
+  Требует авторизации.
+  Поле email необязательное.
+  positions — JSON-строка с позициями заказа.
+}

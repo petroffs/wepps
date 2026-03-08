@@ -1,0 +1,23 @@
+meta {
+  name: DELETE orders
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}/rest/v1/orders
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+params:query {
+  id: 1
+}
+
+docs {
+  Cancel order by id.
+  Требует авторизации. Параметр id обязателен.
+}

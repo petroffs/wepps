@@ -1,0 +1,19 @@
+meta {
+  name: GET news.item
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/rest/v1/news.item
+  auth: none
+}
+
+params:query {
+  id: 1
+}
+
+docs {
+  Get single news item by id.
+  Параметр id обязателен.
+}

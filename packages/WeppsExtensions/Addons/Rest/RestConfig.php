@@ -115,6 +115,26 @@ class RestConfig
                         'method' => 'getGoodsCategories',
                         'note' => 'Get list of goods categories',
                     ],
+                    'users' => [
+                        'class' => RestV1::class,
+                        'method' => 'getUsers',
+                        'note' => 'Get list of users (M2M)',
+                        'role_required' => [1, 2],
+                        'query_validation' => [
+                            'page' => ['type' => 'int2', 'required' => false],
+                            'limit' => ['type' => 'int2', 'required' => false],
+                            'search' => ['type' => 'string', 'required' => false],
+                        ],
+                    ],
+                    'users.item' => [
+                        'class' => RestV1::class,
+                        'method' => 'getUsersItem',
+                        'note' => 'Get single user by id (M2M)',
+                        'role_required' => [1, 2],
+                        'query_validation' => [
+                            'id' => ['type' => 'int2', 'required' => true],
+                        ],
+                    ],
                     'orders' => [
                         'class' => RestV1::class,
                         'method' => 'getOrders',
@@ -197,6 +217,18 @@ class RestConfig
                         'validation' => [
                             'token' => ['type' => 'string', 'required' => true],
                             'code'  => ['type' => 'int2',   'required' => false],
+                        ],
+                    ],
+                    'users' => [
+                        'class' => RestV1::class,
+                        'method' => 'postUsers',
+                        'note' => 'Create a new user (M2M)',
+                        'role_required' => [1, 2],
+                        'validation' => [
+                            'login' => ['type' => 'email', 'required' => true],
+                            'password' => ['type' => 'string', 'required' => true],
+                            'name' => ['type' => 'string', 'required' => false],
+                            'phone' => ['type' => 'phone', 'required' => false],
                         ],
                     ],
                     'goods' => [
@@ -290,6 +322,18 @@ class RestConfig
                         'validation' => [
                             'id' => ['type' => 'int', 'required' => true],
                             'status' => ['type' => 'string', 'required' => true],
+                        ],
+                    ],
+                    'users' => [
+                        'class' => RestV1::class,
+                        'method' => 'putUsers',
+                        'note' => 'Update user by id (M2M)',
+                        'role_required' => [1, 2],
+                        'validation' => [
+                            'id' => ['type' => 'int', 'required' => true],
+                            'name' => ['type' => 'string', 'required' => false],
+                            'phone' => ['type' => 'phone', 'required' => false],
+                            'email' => ['type' => 'email', 'required' => false],
                         ],
                     ],
                 ],

@@ -1,0 +1,33 @@
+meta {
+  name: auth.refresh
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/rest/v1/auth.refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "auth.refresh",
+    "data": {
+      "refresh_token": "{{refresh_token}}"
+    }
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    const data = res.body?.data;
+    if (data?.access_token)  bru.setVar("access_token",  data.access_token);
+    if (data?.refresh_token) bru.setVar("refresh_token", data.refresh_token);
+  }
+}
+
+docs {
+  Refresh access token using refresh token.
+  Обновляет access_token и refresh_token в переменных окружения.
+}

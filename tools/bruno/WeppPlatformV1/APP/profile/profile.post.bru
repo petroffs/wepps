@@ -1,0 +1,28 @@
+meta {
+  name: POST profile (register)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/rest/v1/profile
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "profile",
+    "data": {
+      "login": "{{new_user_login}}",
+      "password": "{{new_user_password}}",
+      "name": "Иван Иванов",
+      "phone": "+79001234567"
+    }
+  }
+}
+
+docs {
+  Register new user account.
+  Поля name и phone — необязательные.
+}

@@ -1,0 +1,23 @@
+meta {
+  name: GET orders.item
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/rest/v1/orders.item
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+params:query {
+  id: 1
+}
+
+docs {
+  Get single order by id.
+  Требует авторизации. Параметр id обязателен.
+}

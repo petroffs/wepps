@@ -1,0 +1,26 @@
+meta {
+  name: auth.confirm
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/rest/v1/auth.confirm
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "auth.confirm",
+    "data": {
+      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0eXAiOiJjb25maXJtIiwiaWQiOjEsImNvZGUiOjE1NDU2NiwiZXhwIjoxNzczMDAzMjk4fQ.RQrhPkbVeJCRxWVtPTAPtbkscKM2_7duNOLtmbmoKE4",
+      "code": 154566
+    }
+  }
+}
+
+docs {
+  Confirm login via confirm_token from email (CONFIRM_AUTH mode).
+  Поле code — необязательно (для 2FA режима).
+}

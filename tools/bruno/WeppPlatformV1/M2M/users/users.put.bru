@@ -1,0 +1,33 @@
+meta {
+  name: PUT users
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}/rest/v1/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "users",
+    "data": {
+      "id": 1,
+      "name": "Иван Иванов",
+      "phone": "9001234567",
+      "email": "user@example.com"
+    }
+  }
+}
+
+docs {
+  Update user by id.
+  Доступно только для M2M клиентов.
+  Поля name, phone, email необязательные.
+}

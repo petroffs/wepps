@@ -1,0 +1,24 @@
+meta {
+  name: GET goods
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/rest/v1/goods
+  auth: none
+}
+
+params:query {
+  page: 1
+  limit: 20
+  sort: name
+  order: asc
+  search: 
+  category: 
+}
+
+docs {
+  Get list of goods with filtering and pagination.
+  Все параметры необязательные.
+}

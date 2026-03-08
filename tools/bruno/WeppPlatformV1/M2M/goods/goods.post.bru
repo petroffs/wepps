@@ -1,0 +1,32 @@
+meta {
+  name: POST goods
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/rest/v1/goods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "goods",
+    "data": {
+      "name": "Новый товар",
+      "price": 999.99,
+      "category": 1
+    }
+  }
+}
+
+docs {
+  Create a new goods item.
+  Требует роль UserPermissions = 1 или 2.
+  Поля price и category необязательные.
+}
