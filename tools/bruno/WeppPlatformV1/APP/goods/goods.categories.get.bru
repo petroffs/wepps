@@ -6,7 +6,17 @@ meta {
 
 get {
   url: {{base_url}}/rest/v1/goods.categories
+  body: none
   auth: none
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
 }
 
 docs {

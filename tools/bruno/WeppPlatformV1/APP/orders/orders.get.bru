@@ -18,6 +18,18 @@ params:query {
   limit: 20
 }
 
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+  test("count is number", function() {
+    expect(res.body.count).to.be.a("number");
+  });
+}
+
 docs {
   Get list of current user orders.
   Требует авторизации.

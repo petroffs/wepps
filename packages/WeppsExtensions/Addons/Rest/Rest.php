@@ -430,7 +430,7 @@ class Rest
 			if ($rule['required'] && $value === null) {
 				throw new \Exception("Field '$key' is required");
 			}
-			if ($value !== null) {
+			if ($value !== null && $value !== '') {
 				if (!$this->validateType($value, $rule['type'])) {
 					throw new \Exception("Field '$key' must be {$rule['type']}");
 				}
@@ -735,11 +735,12 @@ class Rest
 		// Если это массив со структурированными данными
 		if (is_array($output) && isset($output['status'])) {
 			$this->status = $output['status'];
-			$responseData = [
-				'status' => $output['status'],
+			$extra = array_diff_key($output, array_flip(['status', 'message', 'data']));
+			$responseData = array_merge([
+				'status'  => $output['status'],
 				'message' => $output['message'] ?? '',
-				'data' => $this->normalizeData($output['data'] ?? null),
-			];
+				'data'    => $this->normalizeData($output['data'] ?? null),
+			], $extra);
 
 		} else {
 			// Если это просто данные, оборачиваем их
@@ -862,8 +863,11 @@ class Rest
 	 * @param bool $forDataField Флаг, что это для поля 'data' (требует оборачивания ассоциативных массивов)
 	 * @return array Нормализованные данные
 	 */
-	private function normalizeData($data, bool $forDataField = false): array
+	private function normalizeData($data, bool $forDataField = false)
 	{
+		if ($data === null) {
+			return null;
+		}
 		if (is_array($data)) {
 			// Для поля 'data' оборачиваем ассоциативные массивы в массив
 			if ($forDataField && !empty($data) && !is_numeric(key($data))) {

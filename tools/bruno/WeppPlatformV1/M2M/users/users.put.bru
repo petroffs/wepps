@@ -2,6 +2,7 @@ meta {
   name: PUT users
   type: http
   seq: 4
+  tags: manual
 }
 
 put {
@@ -18,12 +19,18 @@ body:json {
   {
     "type": "users",
     "data": {
-      "id": 1,
+      "id": {{user_id}},
       "name": "Иван Иванов",
       "phone": "9001234567",
       "email": "user@example.com"
     }
   }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
 }
 
 docs {

@@ -5,20 +5,38 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/v1/goods
+  url: {{base_url}}/rest/v1/goods?page=1&limit=24&category=7&f_4=botilony|bruki
+  body: none
   auth: none
 }
 
 params:query {
   page: 1
-  limit: 20
-  sort: name
-  order: asc
-  search: 
-  category: 
+  limit: 24
+  category: 7
+  f_4: botilony|bruki
+  ~f_1: cascissz|cmedl-kedl-21
+  ~sort: nameasc
+  ~search: 
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+  test("count is number", function() {
+    expect(res.body.count).to.be.a("number");
+  });
 }
 
 docs {
-  Get list of goods with filtering and pagination.
+  Get list of goods with pagination.
+  sort: priceasc | pricedesc | nameasc | (empty = by priority)
+  search: поиск по началу названия
+  category: NavigatorId категории
+  f_{PropertyId}: фильтр по свойству, несколько значений через | (например f_1=red|blue)
   Все параметры необязательные.
 }

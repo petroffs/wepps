@@ -20,6 +20,18 @@ params:query {
   search: 
 }
 
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+  test("count is number", function() {
+    expect(res.body.count).to.be.a("number");
+  });
+}
+
 docs {
   Get list of users with pagination.
   Доступно только для M2M клиентов.

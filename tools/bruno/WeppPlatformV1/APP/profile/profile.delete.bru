@@ -2,6 +2,7 @@ meta {
   name: DELETE profile
   type: http
   seq: 5
+  tags: destructive manual
 }
 
 delete {
@@ -11,6 +12,12 @@ delete {
 
 auth:bearer {
   token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
 }
 
 docs {

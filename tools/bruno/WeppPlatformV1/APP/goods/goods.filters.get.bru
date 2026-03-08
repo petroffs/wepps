@@ -1,0 +1,32 @@
+meta {
+  name: GET goods.filters
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/rest/v1/goods.filters
+  auth: none
+}
+
+params:query {
+  ~category:
+  ~search:
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is object", function() {
+    expect(res.body.data).to.be.an("object");
+  });
+}
+
+docs {
+  Get available property filters for goods list.
+  Возвращает сгруппированные по свойству значения с количеством товаров.
+  Структура: { PropertyId: [{ PropertyAlias, Name, PValue, Alias, PropertyName, Co }] }
+  Используется для построения UI-фильтров в каталоге.
+  Принимает те же category/search что и goods.get для контекстной фильтрации.
+}

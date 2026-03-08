@@ -2,6 +2,7 @@ meta {
   name: POST users
   type: http
   seq: 3
+  tags: manual
 }
 
 post {
@@ -24,6 +25,15 @@ body:json {
       "phone": "9001234567"
     }
   }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("returns created id", function() {
+    expect(res.body.data).to.have.property("id");
+  });
 }
 
 docs {

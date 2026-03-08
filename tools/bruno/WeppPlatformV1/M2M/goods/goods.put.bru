@@ -2,6 +2,7 @@ meta {
   name: PUT goods
   type: http
   seq: 5
+  tags: manual
 }
 
 put {
@@ -18,11 +19,17 @@ body:json {
   {
     "type": "goods",
     "data": {
-      "id": 1,
+      "id": {{product_id}},
       "name": "Обновлённый товар",
       "price": 1299.99
     }
   }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
 }
 
 docs {

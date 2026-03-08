@@ -13,6 +13,15 @@ auth:bearer {
   token: {{access_token}}
 }
 
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has Id", function() {
+    expect(res.body.data).to.have.property("Id");
+  });
+}
+
 docs {
   Get current user profile.
   Требует авторизации (Bearer token).

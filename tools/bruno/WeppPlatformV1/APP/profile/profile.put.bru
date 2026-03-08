@@ -2,6 +2,7 @@ meta {
   name: PUT profile
   type: http
   seq: 3
+  tags: manual
 }
 
 put {
@@ -23,6 +24,12 @@ body:json {
       "email": "user@example.com"
     }
   }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
 }
 
 docs {

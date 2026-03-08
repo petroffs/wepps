@@ -2,6 +2,7 @@ meta {
   name: POST profile (register)
   type: http
   seq: 2
+  tags: manual
 }
 
 post {
@@ -20,6 +21,15 @@ body:json {
       "phone": "+79001234567"
     }
   }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("response has message", function() {
+    expect(res.body).to.have.property("message");
+  });
 }
 
 docs {

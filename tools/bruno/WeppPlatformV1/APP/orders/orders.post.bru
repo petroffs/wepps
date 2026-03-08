@@ -2,6 +2,7 @@ meta {
   name: POST orders
   type: http
   seq: 3
+  tags: manual
 }
 
 post {
@@ -24,6 +25,15 @@ body:json {
       "positions": "[{\"id\":1,\"qty\":2}]"
     }
   }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("response has message", function() {
+    expect(res.body).to.have.property("message");
+  });
 }
 
 docs {

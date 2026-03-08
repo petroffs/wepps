@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/v1/users.item
+  url: {{base_url}}/rest/v1/users.item?id={{user_id}}
   body: none
   auth: bearer
 }
@@ -15,7 +15,16 @@ auth:bearer {
 }
 
 params:query {
-  id: 1
+  id: {{user_id}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has Id", function() {
+    expect(res.body.data).to.have.property("Id");
+  });
 }
 
 docs {

@@ -2,6 +2,7 @@ meta {
   name: PUT orders.status
   type: http
   seq: 4
+  tags: manual
 }
 
 put {
@@ -18,10 +19,16 @@ body:json {
   {
     "type": "orders.status",
     "data": {
-      "id": 1,
+      "id": {{order_id}},
       "status": "completed"
     }
   }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
 }
 
 docs {

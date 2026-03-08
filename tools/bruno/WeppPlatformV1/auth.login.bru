@@ -28,6 +28,18 @@ script:post-response {
   }
 }
 
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("returns access_token", function() {
+    expect(res.body.data).to.have.property("access_token");
+  });
+  test("returns refresh_token", function() {
+    expect(res.body.data).to.have.property("refresh_token");
+  });
+}
+
 docs {
   Authenticate user and return JWT token.
   Сохраняет access_token и refresh_token в переменные окружения.

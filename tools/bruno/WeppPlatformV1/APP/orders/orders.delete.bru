@@ -2,10 +2,11 @@ meta {
   name: DELETE orders
   type: http
   seq: 5
+  tags: destructive manual
 }
 
 delete {
-  url: {{base_url}}/rest/v1/orders
+  url: {{base_url}}/rest/v1/orders?id={{order_id}}
   auth: bearer
 }
 
@@ -14,7 +15,12 @@ auth:bearer {
 }
 
 params:query {
-  id: 1
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
 }
 
 docs {

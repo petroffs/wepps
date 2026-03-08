@@ -5,12 +5,20 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/v1/news.item
+  url: {{base_url}}/rest/v1/news.item?id={{news_id}}
   auth: none
 }
 
 params:query {
-  id: 1
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has Id", function() {
+    expect(res.body.data).to.have.property("Id");
+  });
 }
 
 docs {

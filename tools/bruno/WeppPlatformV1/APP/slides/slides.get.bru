@@ -9,6 +9,15 @@ get {
   auth: none
 }
 
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+}
+
 docs {
   Get list of active slides.
 }

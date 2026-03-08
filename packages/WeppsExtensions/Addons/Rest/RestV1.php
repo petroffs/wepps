@@ -4,6 +4,8 @@ namespace WeppsExtensions\Addons\Rest;
 use WeppsCore\Connect;
 use WeppsCore\Data;
 use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsExtensions\Products\ProductsUtils;
+use WeppsExtensions\Template\Filters\Filters;
 
 /**
  * REST обработчик для API v1
@@ -314,52 +316,121 @@ class RestV1
 		$limit = min(100, max(1, (int)($this->get['limit'] ?? 20)));
 		$search = $this->get['search'] ?? '';
 		$category = (int)($this->get['category'] ?? 0);
-		$sort = $this->get['sort'] ?? 'Priority';
-		$order = strtolower($this->get['order'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
 
-		$allowedSorts = ['Priority', 'Name', 'Price', 'NDate'];
-		if (!in_array($sort, $allowedSorts)) {
-			$sort = 'Priority';
+		switch ($this->get['sort'] ?? '') {
+			case 'priceasc':  $sorting = 't.Price asc'; break;
+			case 'pricedesc': $sorting = 't.Price desc'; break;
+			case 'nameasc':   $sorting = 't.Name asc'; break;
+			default:          $sorting = 't.Priority desc'; break;
 		}
 
-		$conditions = "t.IsHidden = 0";
+		$conditions = 't.IsHidden=0';
 		$params = [];
 
 		if ($category > 0) {
-			$conditions .= " AND t.NavigatorId = ?";
+			$conditions .= ' AND t.NavigatorId = ?';
 			$params[] = $category;
 		}
 		if ($search !== '') {
-			$conditions .= " AND lower(t.Name) LIKE lower(?)";
-			$params[] = '%' . $search . '%';
+			$conditions .= ' AND lower(t.Name) LIKE lower(?)';
+			$params[] = $search . '%';
 		}
 
-		$obj = new Data("Products");
-		if (!empty($params)) {
-			$obj->setParams($params);
+		// Фильтрация по свойствам: f_1=red|blue, f_2=xl
+		foreach ($this->get as $key => $value) {
+			if (substr($key, 0, 2) !== 'f_' || $value === '' || $value === null) {
+				continue;
+			}
+			$propId = (int)substr($key, 2);
+			if ($propId <= 0) {
+				continue;
+			}
+			$aliases = explode('|', $value);
+			$placeholders = rtrim(str_repeat('?,', count($aliases)), ',');
+			$conditions .= " AND t.Id in (select distinct TableNameId from s_PropertiesValues where IsHidden=0 and TableName='Products' and Name=? and Alias in ($placeholders))";
+			$params[] = $propId;
+			$params = array_merge($params, $aliases);
 		}
-		$res = $obj->fetch($conditions, $limit, $page, "t.{$sort} {$order}");
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $res, 'count' => $obj->count];
+		$productsUtils = new ProductsUtils();
+		$result = $productsUtils->getProducts([
+			'pages'      => $limit,
+			'page'       => $page,
+			'sorting'    => $sorting,
+			'conditions' => ['conditions' => $conditions, 'params' => $params],
+		]);
+
+		// Получаем бренды (свойство id=1) одним запросом для всей страницы
+		$brandsByProduct = [];
+		$ids = array_column($result['rows'], 'Id');
+		if (!empty($ids)) {
+			$placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+			$brandsByProduct = Connect::$instance->fetch(
+				"SELECT pv.TableNameId, pv.Name, pv.PValue, pv.Alias, p.Name as PropertyName FROM s_PropertiesValues pv LEFT JOIN s_Properties p ON p.Id = pv.Name AND p.IsHidden=0 WHERE pv.IsHidden=0 AND pv.TableName='Products' AND pv.Name=1 AND pv.TableNameId IN ($placeholders)",
+				$ids,
+				'group'
+			);
+		}
+
+		foreach ($result['rows'] as &$row) {
+			if (!empty($row['Images_FileUrl'])) {
+				$row['Images_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $row['Images_FileUrl'];
+			}
+			if (!empty($row['W_Variations'])) {
+				$row['W_Variations'] = $productsUtils->getVariationsArray($row['W_Variations']);
+			}
+			$brands = $brandsByProduct[$row['Id']] ?? null;
+			if ($brands) {
+				$byProp = [];
+				foreach ($brands as $b) { $byProp[$b['Name']][] = $b; }
+				$row['W_Attributes'] = array_values(array_map(
+					fn($id, $rows) => [
+						'id'     => $id,
+						'name'   => $rows[0]['PropertyName'] ?? '',
+						'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue']], $rows),
+					],
+					array_keys($byProp), array_values($byProp)
+				));
+			} else {
+				$row['W_Attributes'] = null;
+			}
+		}
+		unset($row);
+
+		return ['status' => 200, 'message' => 'OK', 'data' => $result['rows'], 'count' => $result['count']];
 	}
 
 	/**
-	 * GET v1/goods.item — товар по id
+	 * GET v1/goods.item — товар по id или alias
 	 */
 	public function getGoodsItem(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$id = (int)($this->get['id'] ?? 0);
+		$id = $this->get['id'] ?? '';
 
-		$obj = new Data("Products");
-		$obj->setParams([$id]);
-		$res = $obj->fetch("t.Id = ? AND t.IsHidden = 0", 1, 1);
+		if (empty($id)) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
 
-		if (empty($res[0])) {
+		$productsUtils = new ProductsUtils();
+		$item = $productsUtils->getProductsItem($id);
+
+		if (!empty($item['W_Attributes'])) {
+			$item['W_Attributes'] = array_values(array_map(
+				fn($id, $rows) => [
+					'id'     => $id,
+					'name'   => $rows[0]['PropertyName'] ?? '',
+					'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int)$r['Co']], $rows),
+				],
+				array_keys($item['W_Attributes']), array_values($item['W_Attributes'])
+			));
+		}
+
+		if (empty($item)) {
 			return ['status' => 404, 'message' => 'Item not found', 'data' => null];
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $res[0]];
+		return ['status' => 200, 'message' => 'OK', 'data' => $item];
 	}
 
 	/**
@@ -369,10 +440,47 @@ class RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Url FROM s_Navigator WHERE IsHidden = 0 AND Extension IN (SELECT Id FROM s_Extensions WHERE Name = 'Products') ORDER BY Priority DESC"
+			"SELECT Id, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",
+			[Connect::$projectServices['navigator']['catalog']??0, Connect::$projectServices['navigator']['brands']??0]
 		);
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+	}
+
+	/**
+	 * GET v1/goods.filters — доступные свойства/значения для фильтрации
+	 */
+	public function getGoodsFilters(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$category = (int)($this->get['category'] ?? 0);
+		$search = $this->get['search'] ?? '';
+
+		$conditions = 't.IsHidden=0';
+		$params = [];
+
+		if ($category > 0) {
+			$conditions .= ' AND t.NavigatorId = ?';
+			$params[] = $category;
+		}
+		if ($search !== '') {
+			$conditions .= ' AND lower(t.Name) LIKE lower(?)';
+			$params[] = $search . '%';
+		}
+
+		$filters = new Filters();
+		$result = $filters->getFilters(['conditions' => $conditions, 'params' => $params]);
+
+		$grouped = array_values(array_map(
+			fn($id, $rows) => [
+				'id'     => $id,
+				'name'   => $rows[0]['PropertyName'] ?? '',
+				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int)$r['Co']], $rows),
+			],
+			array_keys($result), array_values($result)
+		));
+
+		return ['status' => 200, 'message' => 'OK', 'data' => $grouped];
 	}
 
 	/**

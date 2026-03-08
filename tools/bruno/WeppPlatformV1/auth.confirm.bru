@@ -20,6 +20,15 @@ body:json {
   }
 }
 
+tests {
+  test("response has status field", function() {
+    expect(res.body).to.have.property("status");
+  });
+  test("response has message", function() {
+    expect(res.body).to.have.property("message");
+  });
+}
+
 docs {
   Confirm login via confirm_token from email (CONFIRM_AUTH mode).
   Поле code — необязательно (для 2FA режима).

@@ -97,7 +97,6 @@ class RestConfig
                             'page' => ['type' => 'int2', 'required' => false],
                             'limit' => ['type' => 'int2', 'required' => false],
                             'sort' => ['type' => 'string', 'required' => false],
-                            'order' => ['type' => 'string', 'required' => false],
                             'search' => ['type' => 'string', 'required' => false],
                             'category' => ['type' => 'int2', 'required' => false],
                         ],
@@ -107,13 +106,22 @@ class RestConfig
                         'method' => 'getGoodsItem',
                         'note' => 'Get single goods item by id',
                         'query_validation' => [
-                            'id' => ['type' => 'int2', 'required' => true],
+                            'id' => ['type' => 'string', 'required' => true],
                         ],
                     ],
                     'goods.categories' => [
                         'class' => RestV1::class,
                         'method' => 'getGoodsCategories',
-                        'note' => 'Get list of goods categories',
+                        'note' => 'Get list of goods categories with ParentDir for tree building',
+                    ],
+                    'goods.filters' => [
+                        'class' => RestV1::class,
+                        'method' => 'getGoodsFilters',
+                        'note' => 'Get available property filters for goods list',
+                        'query_validation' => [
+                            'category' => ['type' => 'int2', 'required' => false],
+                            'search' => ['type' => 'string', 'required' => false],
+                        ],
                     ],
                     'users' => [
                         'class' => RestV1::class,

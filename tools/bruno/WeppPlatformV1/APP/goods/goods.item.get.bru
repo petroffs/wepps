@@ -5,15 +5,24 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/v1/goods.item
+  url: {{base_url}}/rest/v1/goods.item?id={{product_id}}
   auth: none
 }
 
 params:query {
-  id: 1
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has Id", function() {
+    expect(res.body.data).to.have.property("Id");
+  });
 }
 
 docs {
-  Get single goods item by id.
-  Параметр id обязателен.
+  Get single goods item by id or alias.
+  id может быть числовым ID или строковым alias товара.
+  Возвращает вариации (W_Variations) и атрибуты (W_Attributes).
 }
