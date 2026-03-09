@@ -1,0 +1,24 @@
+meta {
+  name: GET cart.delivery
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/rest/v1/cart.delivery?citiesId=44
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+}

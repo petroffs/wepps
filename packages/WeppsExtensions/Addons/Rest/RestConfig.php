@@ -197,6 +197,24 @@ class RestConfig
                         'note' => 'Get available delivery and payment options for current cart',
                         'auth_required' => true,
                     ],
+                    'cart.city' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getCartCity',
+                        'note' => 'Search cities by query string (?q=...)',
+                        'auth_required' => true,
+                        'query_validation' => [
+                            'q' => ['type' => 'string', 'required' => true],
+                        ],
+                    ],
+                    'cart.delivery' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getCartDelivery',
+                        'note' => 'Get available delivery methods for a city (?citiesId=...)',
+                        'auth_required' => true,
+                        'query_validation' => [
+                            'citiesId' => ['type' => 'string', 'required' => true],
+                        ],
+                    ],
                 ],
                 'post' => [
                     'auth.login' => [
@@ -367,14 +385,22 @@ class RestConfig
                             'quantity' => ['type' => 'int2', 'required' => true],
                         ],
                     ],
+                    'cart.city' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'putCartCity',
+                        'note' => 'Set delivery city for cart (step 1). Returns available delivery methods.',
+                        'auth_required' => true,
+                        'validation' => [
+                            'citiesId' => ['type' => 'string', 'required' => true],
+                        ],
+                    ],
                     'cart.delivery' => [
                         'class' => RestV1APP::class,
                         'method' => 'putCartDelivery',
-                        'note' => 'Set city and/or delivery method for cart',
+                        'note' => 'Set delivery method for cart (step 2). Returns available payment methods.',
                         'auth_required' => true,
                         'validation' => [
-                            'citiesId' => ['type' => 'string', 'required' => false],
-                            'deliveryId' => ['type' => 'string', 'required' => false],
+                            'deliveryId' => ['type' => 'string', 'required' => true],
                         ],
                     ],
                     'cart.payment' => [

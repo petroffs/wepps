@@ -1,0 +1,33 @@
+meta {
+  name: PUT cart.city
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{base_url}}/rest/v1/cart.city
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "cart.city",
+    "data": {
+      "citiesId": "44"
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+}

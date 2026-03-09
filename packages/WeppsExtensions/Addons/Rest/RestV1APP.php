@@ -4,6 +4,8 @@ namespace WeppsExtensions\Addons\Rest;
 use WeppsCore\Connect;
 use WeppsCore\Data;
 use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Cart\Delivery\DeliveryUtils;
+use WeppsExtensions\Cart\Payments\PaymentsUtils;
 use WeppsExtensions\Products\ProductsUtils;
 use WeppsExtensions\Template\Filters\Filters;
 
@@ -462,6 +464,38 @@ class RestV1APP extends RestV1
 	}
 
 	/**
+	 * GET v1/cart.city — поиск городов по строке запроса (?q=Мос)
+	 */
+	public function getCartCity(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$q = trim($this->get['q'] ?? '');
+		if (strlen($q) < 2) {
+			return ['status' => 400, 'message' => 'Query too short', 'data' => null];
+		}
+		$deliveryUtils = new DeliveryUtils();
+		$cities = $deliveryUtils->getCitiesByQuery($q, 1, 20);
+		return ['status' => 200, 'message' => 'OK', 'data' => $cities];
+	}
+
+	/**
+	 * GET v1/cart.delivery — доступные способы доставки для города (?citiesId=123)
+	 */
+	public function getCartDelivery(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$citiesId = trim($this->get['citiesId'] ?? '');
+		if ($citiesId === '') {
+			return ['status' => 400, 'message' => 'citiesId is required', 'data' => null];
+		}
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->setCartSummary();
+		$deliveryUtils = new DeliveryUtils();
+		$delivery = $deliveryUtils->getTariffsByCitiesId($citiesId, $cartUtils);
+		return ['status' => 200, 'message' => 'OK', 'data' => $delivery];
+	}
+
+	/**
 	 * GET v1/cart.checkout — доступные способы доставки и оплаты
 	 */
 	public function getCartCheckout(): array
@@ -473,22 +507,43 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/cart.delivery — выбрать город и/или способ доставки
+	 * PUT v1/cart.city — выбрать город доставки (шаг 1 оформления)
+	 * Аналог case "delivery" в веб-версии Cart/Request.php.
+	 * Сохраняет город только если для него есть доступные способы доставки.
+	 */
+	public function putCartCity($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$citiesId = trim($data['data']['citiesId'] ?? '');
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->setCartSummary();
+		$deliveryUtils = new DeliveryUtils();
+		$delivery = $deliveryUtils->getTariffsByCitiesId($citiesId, $cartUtils);
+		if (empty($delivery)) {
+			return ['status' => 400, 'message' => 'No delivery options for this city', 'data' => null];
+		}
+		$cartUtils->setCartCitiesId($citiesId);
+		return ['status' => 200, 'message' => 'OK', 'data' => $delivery];
+	}
+
+	/**
+	 * PUT v1/cart.delivery — выбрать способ доставки (шаг 2 оформления)
+	 * Аналог case "payments" в веб-версии Cart/Request.php.
+	 * Сохраняет deliveryId через setCartDelivery только если для него есть способы оплаты.
 	 */
 	public function putCartDelivery($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$citiesId = trim($data['data']['citiesId'] ?? '');
 		$deliveryId = trim($data['data']['deliveryId'] ?? '');
 		$cartUtils = $this->_newCartUtils();
-		if ($citiesId !== '') {
-			$cartUtils->setCartCitiesId($citiesId);
-		}
-		if ($deliveryId !== '') {
-			$cartUtils->setCartDelivery($deliveryId);
-		}
 		$cartUtils->setCartSummary();
-		return ['status' => 200, 'message' => 'OK', 'data' => $cartUtils->getCheckoutData()];
+		$paymentsUtils = new PaymentsUtils();
+		$payments = $paymentsUtils->getByDeliveryId($deliveryId, $cartUtils);
+		if (empty($payments)) {
+			return ['status' => 400, 'message' => 'No payment options for this delivery', 'data' => null];
+		}
+		$cartUtils->setCartDelivery($deliveryId);
+		return ['status' => 200, 'message' => 'OK', 'data' => $payments];
 	}
 
 	/**

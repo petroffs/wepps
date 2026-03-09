@@ -1,7 +1,7 @@
 meta {
   name: PUT cart.delivery
   type: http
-  seq: 7
+  seq: 5
 }
 
 put {
@@ -18,8 +18,7 @@ body:json {
   {
     "type": "cart.delivery",
     "data": {
-      "citiesId": "123",
-      "deliveryId": "1"
+      "deliveryId": "4"
     }
   }
 }
@@ -36,14 +35,14 @@ tests {
 docs {
   Set city and/or delivery method for cart checkout.
   Требует авторизации.
-
+  
   citiesId — идентификатор города (из DeliveryUtils.getCitiesByQuery).
             При смене города сбрасываются deliveryId и paymentsId.
   deliveryId — идентификатор способа доставки (из GET cart.checkout → delivery).
              Поля: tariff, discount, extension сохраняются в корзину.
-
+  
   Оба поля опциональны — можно передать только citiesId (выбор города)
   или только deliveryId (если город уже задан).
-
+  
   Возвращает актуальные данные checkout (как GET cart.checkout).
 }
