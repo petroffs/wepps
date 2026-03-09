@@ -1,0 +1,49 @@
+meta {
+  name: PUT cart.delivery
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{base_url}}/rest/v1/cart.delivery
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "cart.delivery",
+    "data": {
+      "citiesId": "123",
+      "deliveryId": "1"
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has delivery", function() {
+    expect(res.body.data).to.have.property("delivery");
+  });
+}
+
+docs {
+  Set city and/or delivery method for cart checkout.
+  Требует авторизации.
+
+  citiesId — идентификатор города (из DeliveryUtils.getCitiesByQuery).
+            При смене города сбрасываются deliveryId и paymentsId.
+  deliveryId — идентификатор способа доставки (из GET cart.checkout → delivery).
+             Поля: tariff, discount, extension сохраняются в корзину.
+
+  Оба поля опциональны — можно передать только citiesId (выбор города)
+  или только deliveryId (если город уже задан).
+
+  Возвращает актуальные данные checkout (как GET cart.checkout).
+}

@@ -471,28 +471,24 @@ class CartUtils
 	{
 		return $this->memcached;
 	}
-	public function addOrder(array $get)
+	public function addOrder(array $get = [])
 	{
 		$this->setCartSummary();
 		$cartSummary = $this->getCartSummary();
-		if (empty($cartSummary['delivery']['extension'])) {
-			return [];
-		}
-		$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}\\{$cartSummary['delivery']['extension']}";
-		/**
-		 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
-		 */
-		$class = new $className([], $this);
-		$errors = $class->getErrors($get);
-		$errors = Validator::setFormErrorsIndicate($errors, $get['form']);
-		if ($errors['count'] > 0) {
-			echo $errors['html'];
-			exit();
+		if (!empty($cartSummary['delivery']['extension'])) {
+			$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}\\{$cartSummary['delivery']['extension']}";
+			/**
+			 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
+			 */
+			$class  = new $className([], $this);
+			$errors = $class->getErrors($get);
+			$errors = Validator::setFormErrorsIndicate($errors, $get['form']);
+			if ($errors['count'] > 0) {
+				return ['html' => $errors['html']];
+			}
 		}
 		if (empty($profile = @Connect::$projectData['user'])) {
-			return [
-				'html' => "<script>$('a#header-profile').trigger('click');</script>"
-			];
+			return ['html' => "<script>$('a#header-profile').trigger('click');</script>"];
 		}
 		$positions = [];
 		foreach ($cartSummary['items'] as $value) {
@@ -500,79 +496,81 @@ class CartUtils
 				continue;
 			}
 			$positions[] = [
-				'id' => $value['id'],
-				'idv' => $value['idv'],
-				'name' => $value['name'],
+				'id'       => $value['id'],
+				'idv'      => $value['idv'] ?? 0,
+				'name'     => $value['name'],
 				'quantity' => $value['quantity'],
-				'price' => $value['price'],
-				'sum' => $value['sum'],
+				'price'    => $value['price'],
+				'sum'      => $value['sum'],
 			];
 		}
-		$positions = $this->getCartPositionsRecounter($positions, $cartSummary['delivery']['discount']['price'], $cartSummary['payments']['tariff']['price'], $cartSummary['payments']['discount']['price']);
+		if (empty($positions)) {
+			return [];
+		}
+		$positions = $this->getCartPositionsRecounter(
+			$positions,
+			(float) ($cartSummary['delivery']['discount']['price'] ?? 0),
+			(float) ($cartSummary['payments']['tariff']['price'] ?? 0),
+			(float) ($cartSummary['payments']['discount']['price'] ?? 0)
+		);
 		$row = [
-			'Name' => $profile['Name'],
-			'UserId' => $profile['Id'],
-			'UserIP' => $_SERVER['REMOTE_ADDR'] ?? '',
-			'Phone' => $profile['Phone'],
-			'Email' => $profile['Email'],
-			'OStatus' => '1',
-			'OSum' => $cartSummary['sumTotal'],
-			'ODate' => date('Y-m-d H:i:s'),
-			#'OText' => '',
-			'ODelivery' => $cartSummary['delivery']['deliveryId'],
-			'ODeliveryTariff' => $cartSummary['delivery']['tariff']['price'],
-			'ODeliveryDiscount' => $cartSummary['delivery']['discount']['price'],
-			'OPayment' => $cartSummary['payments']['paymentsId'],
-			'OPaymentTariff' => $cartSummary['payments']['tariff']['price'],
-			'OPaymentDiscount' => $cartSummary['payments']['discount']['price'],
-			'Address' => $get['operations-address'] ?? '',
-			'City' => $get['operations-city'] ?? '',
-			'CityId' => $cartSummary['delivery']['citiesId'],
-			'PostalCode' => $get['operations-postal-code'] ?? '',
-			'JData' => json_encode($cartSummary, JSON_UNESCAPED_UNICODE),
-			'JPositions' => json_encode($positions, JSON_UNESCAPED_UNICODE),
+			'Name'              => $profile['Name'] ?? '',
+			'UserId'            => $profile['Id'] ?? 0,
+			'UserIP'            => $_SERVER['REMOTE_ADDR'] ?? '',
+			'Phone'             => $profile['Phone'] ?? '',
+			'Email'             => $profile['Email'] ?? $profile['Login'] ?? '',
+			'OStatus'           => '1',
+			'OSum'              => $cartSummary['sumTotal'] ?? $cartSummary['sum'],
+			'ODate'             => date('Y-m-d H:i:s'),
+			'ODelivery'         => $cartSummary['delivery']['deliveryId'] ?? '',
+			'ODeliveryTariff'   => (float) ($cartSummary['delivery']['tariff']['price'] ?? 0),
+			'ODeliveryDiscount' => (float) ($cartSummary['delivery']['discount']['price'] ?? 0),
+			'OPayment'          => $cartSummary['payments']['paymentsId'] ?? '',
+			'OPaymentTariff'    => (float) ($cartSummary['payments']['tariff']['price'] ?? 0),
+			'OPaymentDiscount'  => (float) ($cartSummary['payments']['discount']['price'] ?? 0),
+			'Address'           => $get['operations-address'] ?? '',
+			'City'              => $get['operations-city'] ?? '',
+			'CityId'            => $cartSummary['delivery']['citiesId'] ?? '',
+			'PostalCode'        => $get['operations-postal-code'] ?? '',
+			'JData'             => json_encode($cartSummary, JSON_UNESCAPED_UNICODE),
+			'JPositions'        => json_encode($positions, JSON_UNESCAPED_UNICODE),
 		];
-		$func = function (array $args) {
-			$row = $args['row'];
-			$get = $args['get'];
+		$comment = $get['comment'] ?? '';
+		$func = function (array $args): array {
+			$row     = $args['row'];
+			$comment = $args['comment'];
 			$prepare = Connect::$instance->prepare($row);
-			$insert = Connect::$db->prepare("insert Orders {$prepare['insert']}");
+			$insert  = Connect::$db->prepare("insert Orders {$prepare['insert']}");
 			$insert->execute($row);
-			$id = Connect::$db->lastInsertId();
-			if (!empty($get['comment'])) {
-				$row2 = [
-					'Name' => 'Msg',
+			$id = (int) Connect::$db->lastInsertId();
+			if (!empty($comment)) {
+				$row2     = [
+					'Name'    => 'Msg',
 					'OrderId' => $id,
-					'UserId' => $row['UserId'],
-					'EType' => 'msg',
-					'EDate' => $row['ODate'],
-					'EText' => trim(strip_tags($get['comment']))
+					'UserId'  => $row['UserId'],
+					'EType'   => 'msg',
+					'EDate'   => $row['ODate'],
+					'EText'   => trim(strip_tags($comment)),
 				];
-				$prepare = Connect::$instance->prepare($row2);
-				$insert = Connect::$db->prepare("insert OrdersEvents {$prepare['insert']}");
-				$insert->execute($row2);
+				$prepare2 = Connect::$instance->prepare($row2);
+				$insert2  = Connect::$db->prepare("insert OrdersEvents {$prepare2['insert']}");
+				$insert2->execute($row2);
+				$row['EText'] = $row2['EText'];
 			}
 			$row['Id'] = $id;
-			$row['EText'] = @$row2['EText'];
-			$text = $this->getOrderText($row);
+			$text  = $this->getOrderText($row);
 			$alias = Utils::guid($id . '_' . time() . '_' . Connect::$projectServices['wepps']['sign']);
 			Connect::$instance->query("update Orders set OText=?,Alias=? where Id=?", [$text, $alias, $id]);
-			$jdata = [
-				'id' => (int) $id,
-				'email' => true,
-				'telegram' => true,
-			];
 			$tasks = new Tasks();
-			$tasks->add('order-new', $jdata, $row['ODate'], $row['UserIP']);
+			$tasks->add('order-new', ['id' => $id, 'email' => true, 'telegram' => true], $row['ODate'], $row['UserIP']);
 			$this->removeCart();
 			return [
-				'id' => $id,
+				'id'    => $id,
 				'alias' => $alias,
-				'html' => "<script>layoutWepps.loader();window.location.href='/cart/order.html?id={$alias}'</script>"
-				#'html' => "<script>console.log('{$alias}');</script>"
+				'html'  => "<script>layoutWepps.loader();window.location.href='/cart/order.html?id={$alias}'</script>",
 			];
 		};
-		return Connect::$instance->transaction($func, ['row' => $row, 'get' => $get]);
+		return Connect::$instance->transaction($func, ['row' => $row, 'comment' => $comment]);
 	}
 	public function getOrderText(array $order): string
 	{

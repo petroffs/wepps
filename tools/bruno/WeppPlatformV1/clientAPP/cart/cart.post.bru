@@ -1,0 +1,47 @@
+meta {
+  name: POST cart
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/rest/v1/cart
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "cart",
+    "data": {
+      "id": "1",
+      "quantity": 2
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("response has data", function() {
+    expect(res.body).to.have.property("data");
+  });
+  test("data has items", function() {
+    expect(res.body.data).to.have.property("items");
+  });
+}
+
+docs {
+  Add item to cart or update its quantity if already present.
+  Требует авторизации.
+
+  id — идентификатор товара: "123" или "123-456" (товар-вариация).
+  quantity — количество (по умолчанию 1).
+
+  Возвращает обновлённую корзину целиком.
+}

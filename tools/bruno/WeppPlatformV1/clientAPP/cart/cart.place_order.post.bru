@@ -1,0 +1,39 @@
+meta {
+  name: POST cart.place_order
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/rest/v1/cart.place_order
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "cart.place_order"
+  }
+}
+
+tests {
+  test("status 200 or 400", function() {
+    expect([200, 400]).to.include(res.status);
+  });
+  test("response has message", function() {
+    expect(res.body).to.have.property("message");
+  });
+}
+
+docs {
+  Place an order from the current user cart.
+  Требует авторизации.
+  Контактные данные (имя, телефон, email) берутся из профиля пользователя.
+  Позиции берутся из активных items корзины. Корзина очищается после создания заказа.
+  Сумма заказа включает стоимость доставки и оплаты (sumTotal).
+  Возвращает 400 если корзина пуста или нет активных позиций.
+}

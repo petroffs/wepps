@@ -1,0 +1,45 @@
+meta {
+  name: PUT cart
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{base_url}}/rest/v1/cart
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "cart",
+    "data": {
+      "id": "1",
+      "quantity": 3
+    }
+  }
+}
+
+tests {
+  test("status 200 or 404", function() {
+    expect([200, 404]).to.include(res.status);
+  });
+  test("response has message", function() {
+    expect(res.body).to.have.property("message");
+  });
+}
+
+docs {
+  Update quantity of an existing cart item.
+  Требует авторизации.
+
+  id — идентификатор позиции (должна существовать в корзине).
+  quantity — новое количество (обязательно).
+
+  Возвращает 404 если товар не найден в корзине.
+  Возвращает обновлённую корзину при успехе.
+}

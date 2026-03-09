@@ -3,6 +3,7 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
 use WeppsCore\Data;
+use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Products\ProductsUtils;
 use WeppsExtensions\Template\Filters\Filters;
 
@@ -22,16 +23,24 @@ class RestV1APP extends RestV1
 	public function getGoods(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$page = max(1, (int)($this->get['page'] ?? 1));
-		$limit = min(100, max(1, (int)($this->get['limit'] ?? 20)));
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = min(100, max(1, (int) ($this->get['limit'] ?? 20)));
 		$search = $this->get['search'] ?? '';
-		$category = (int)($this->get['category'] ?? 0);
+		$category = (int) ($this->get['category'] ?? 0);
 
 		switch ($this->get['sort'] ?? '') {
-			case 'priceasc':  $sorting = 't.Price asc'; break;
-			case 'pricedesc': $sorting = 't.Price desc'; break;
-			case 'nameasc':   $sorting = 't.Name asc'; break;
-			default:          $sorting = 't.Priority desc'; break;
+			case 'priceasc':
+				$sorting = 't.Price asc';
+				break;
+			case 'pricedesc':
+				$sorting = 't.Price desc';
+				break;
+			case 'nameasc':
+				$sorting = 't.Name asc';
+				break;
+			default:
+				$sorting = 't.Priority desc';
+				break;
 		}
 
 		$conditions = 't.IsHidden=0';
@@ -42,8 +51,8 @@ class RestV1APP extends RestV1
 			$params[] = $category;
 		}
 		if ($search !== '') {
-			$conditions .= ' AND lower(t.Name) LIKE lower(?)';
-			$params[] = $search . '%';
+			$conditions .= ' AND t.Name LIKE ?';
+			$params[] = '%' . $search . '%';
 		}
 
 		// Фильтрация по свойствам: f_1=red|blue, f_2=xl
@@ -51,7 +60,7 @@ class RestV1APP extends RestV1
 			if (substr($key, 0, 2) !== 'f_' || $value === '' || $value === null) {
 				continue;
 			}
-			$propId = (int)substr($key, 2);
+			$propId = (int) substr($key, 2);
 			if ($propId <= 0) {
 				continue;
 			}
@@ -64,9 +73,9 @@ class RestV1APP extends RestV1
 
 		$productsUtils = new ProductsUtils();
 		$result = $productsUtils->getProducts([
-			'pages'      => $limit,
-			'page'       => $page,
-			'sorting'    => $sorting,
+			'pages' => $limit,
+			'page' => $page,
+			'sorting' => $sorting,
 			'conditions' => ['conditions' => $conditions, 'params' => $params],
 		]);
 
@@ -92,14 +101,17 @@ class RestV1APP extends RestV1
 			$brands = $brandsByProduct[$row['Id']] ?? null;
 			if ($brands) {
 				$byProp = [];
-				foreach ($brands as $b) { $byProp[$b['Name']][] = $b; }
+				foreach ($brands as $b) {
+					$byProp[$b['Name']][] = $b;
+				}
 				$row['W_Attributes'] = array_values(array_map(
 					fn($id, $rows) => [
-						'id'     => $id,
-						'name'   => $rows[0]['PropertyName'] ?? '',
+						'id' => $id,
+						'name' => $rows[0]['PropertyName'] ?? '',
 						'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue']], $rows),
 					],
-					array_keys($byProp), array_values($byProp)
+					array_keys($byProp),
+					array_values($byProp)
 				));
 			} else {
 				$row['W_Attributes'] = null;
@@ -128,11 +140,12 @@ class RestV1APP extends RestV1
 		if (!empty($item['W_Attributes'])) {
 			$item['W_Attributes'] = array_values(array_map(
 				fn($id, $rows) => [
-					'id'     => $id,
-					'name'   => $rows[0]['PropertyName'] ?? '',
-					'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int)$r['Co']], $rows),
+					'id' => $id,
+					'name' => $rows[0]['PropertyName'] ?? '',
+					'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
 				],
-				array_keys($item['W_Attributes']), array_values($item['W_Attributes'])
+				array_keys($item['W_Attributes']),
+				array_values($item['W_Attributes'])
 			));
 		}
 
@@ -151,7 +164,7 @@ class RestV1APP extends RestV1
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$res = Connect::$instance->fetch(
 			"SELECT Id, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",
-			[Connect::$projectServices['navigator']['catalog']??0, Connect::$projectServices['navigator']['brands']??0]
+			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
 		);
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
@@ -163,7 +176,7 @@ class RestV1APP extends RestV1
 	public function getGoodsFilters(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$category = (int)($this->get['category'] ?? 0);
+		$category = (int) ($this->get['category'] ?? 0);
 		$search = $this->get['search'] ?? '';
 
 		$conditions = 't.IsHidden=0';
@@ -184,9 +197,9 @@ class RestV1APP extends RestV1
 		$grouped = [];
 		foreach ($result as $id => $rows) {
 			$grouped[$id] = [
-				'id'     => (int)$id,
-				'name'   => $rows[0]['PropertyName'] ?? '',
-				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int)$r['Co']], $rows),
+				'id' => (int) $id,
+				'name' => $rows[0]['PropertyName'] ?? '',
+				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
 			];
 		}
 
@@ -200,8 +213,8 @@ class RestV1APP extends RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$name = $data['data']['name'] ?? '';
-		$price = (float)($data['data']['price'] ?? 0);
-		$category = (int)($data['data']['category'] ?? 0);
+		$price = (float) ($data['data']['price'] ?? 0);
+		$category = (int) ($data['data']['category'] ?? 0);
 
 		Connect::$instance->query(
 			"INSERT INTO Products (Name, Price, NavigatorId, IsHidden, Priority) VALUES (?, ?, ?, 0, 0)",
@@ -209,7 +222,7 @@ class RestV1APP extends RestV1
 		);
 		$id = Connect::$instance->db->lastInsertId();
 
-		return ['status' => 200, 'message' => 'Goods item created', 'data' => ['id' => (int)$id]];
+		return ['status' => 200, 'message' => 'Goods item created', 'data' => ['id' => (int) $id]];
 	}
 
 	/**
@@ -218,15 +231,21 @@ class RestV1APP extends RestV1
 	public function putGoods($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$id = (int)($data['data']['id'] ?? 0);
+		$id = (int) ($data['data']['id'] ?? 0);
 		$name = $data['data']['name'] ?? null;
-		$price = isset($data['data']['price']) ? (float)$data['data']['price'] : null;
+		$price = isset($data['data']['price']) ? (float) $data['data']['price'] : null;
 
 		$set = [];
 		$params = [];
 
-		if ($name !== null) { $set[] = 'Name = ?'; $params[] = $name; }
-		if ($price !== null) { $set[] = 'Price = ?'; $params[] = $price; }
+		if ($name !== null) {
+			$set[] = 'Name = ?';
+			$params[] = $name;
+		}
+		if ($price !== null) {
+			$set[] = 'Price = ?';
+			$params[] = $price;
+		}
 
 		if (empty($set)) {
 			return ['status' => 400, 'message' => 'No fields to update', 'data' => null];
@@ -244,7 +263,7 @@ class RestV1APP extends RestV1
 	public function deleteGoods(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$id = (int)($this->get['id'] ?? 0);
+		$id = (int) ($this->get['id'] ?? 0);
 
 		Connect::$instance->query("UPDATE Products SET IsHidden = 1 WHERE Id = ?", [$id]);
 
@@ -258,16 +277,37 @@ class RestV1APP extends RestV1
 	/**
 	 * GET v1/orders — список заказов пользователя
 	 */
-	public function getOrders(): array
+	public function getOrders(int $id = 0): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		$page = max(1, (int)($this->get['page'] ?? 1));
-		$limit = min(100, max(1, (int)($this->get['limit'] ?? 20)));
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = min(100, max(1, (int) ($this->get['limit'] ?? 20)));
 
 		$obj = new Data("Orders");
-		$obj->setParams([$user['Id']]);
-		$res = $obj->fetch("t.UserId = ? AND t.IsHidden = 0", $limit, $page, "t.Id desc");
+
+		if ($id > 0) {
+			$obj->setParams([$id, $user['Id']]);
+			$res = $obj->fetch("t.Id = ? AND t.UserId = ? AND t.IsHidden = 0", 1, 1, "t.Id desc");
+		} else {
+			$obj->setParams([$user['Id']]);
+			$res = $obj->fetch("t.UserId = ? AND t.IsHidden = 0", $limit, $page, "t.Id desc");
+		}
+
+		if (!empty($res)) {
+			foreach ($res as $key => &$row) {
+				$jdata = json_decode($row['JData'], true);
+				if (!empty($jdata['items'])) {
+					foreach ($jdata['items'] as $k => &$item) {
+						$jdata['items'][$k]['url'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . $item['url'];
+						$jdata['items'][$k]['image'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $item['image'];
+					}
+				}
+				$jpositions =  json_decode($row['JPositions'], true);
+				$res[$key]['JData'] = $jdata;
+				$res[$key]['JPositions'] = $jpositions;
+			}
+		}	
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res, 'count' => $obj->count];
 	}
@@ -278,39 +318,19 @@ class RestV1APP extends RestV1
 	public function getOrdersItem(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$user = $this->rest->getUser();
-		$id = (int)($this->get['id'] ?? 0);
+		$id = (int) ($this->get['id'] ?? 0);
 
-		$obj = new Data("Orders");
-		$obj->setParams([$id, $user['Id']]);
-		$res = $obj->fetch("t.Id = ? AND t.UserId = ? AND t.IsHidden = 0", 1, 1);
+		if ($id <= 0) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
 
-		if (empty($res[0])) {
+		$result = $this->getOrders($id);
+
+		if (empty($result['data'][0])) {
 			return ['status' => 404, 'message' => 'Order not found', 'data' => null];
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $res[0]];
-	}
-
-	/**
-	 * POST v1/orders — создание заказа
-	 */
-	public function postOrders($data = null): array
-	{
-		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$user = $this->rest->getUser();
-		$name = $data['data']['name'] ?? '';
-		$phone = $data['data']['phone'] ?? '';
-		$email = $data['data']['email'] ?? '';
-		$positions = $data['data']['positions'] ?? '';
-
-		Connect::$instance->query(
-			"INSERT INTO Orders (Name, OPhone, OEmail, JPositions, UserId, IsHidden, Priority) VALUES (?, ?, ?, ?, ?, 0, 0)",
-			[$name, $phone, $email, $positions, $user['Id']]
-		);
-		$id = Connect::$instance->db->lastInsertId();
-
-		return ['status' => 200, 'message' => 'Order created', 'data' => ['id' => (int)$id]];
+		return ['status' => 200, 'message' => 'OK', 'data' => $result['data'][0]];
 	}
 
 	/**
@@ -320,7 +340,7 @@ class RestV1APP extends RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		$id = (int)($data['data']['id'] ?? 0);
+		$id = (int) ($data['data']['id'] ?? 0);
 		$status = $data['data']['status'] ?? '';
 
 		$res = Connect::$instance->fetch("SELECT Id FROM Orders WHERE Id = ? AND UserId = ? AND IsHidden = 0", [$id, $user['Id']]);
@@ -340,7 +360,7 @@ class RestV1APP extends RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		$id = (int)($this->get['id'] ?? 0);
+		$id = (int) ($this->get['id'] ?? 0);
 
 		$res = Connect::$instance->fetch("SELECT Id FROM Orders WHERE Id = ? AND UserId = ? AND IsHidden = 0", [$id, $user['Id']]);
 		if (empty($res[0])) {
@@ -353,6 +373,149 @@ class RestV1APP extends RestV1
 	}
 
 	// -------------------------------------------------------------------------
+	// CART
+	// -------------------------------------------------------------------------
+
+	/**
+	 * GET v1/cart — корзина текущего пользователя
+	 */
+	public function getCart(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->setCartSummary();
+		return ['status' => 200, 'message' => 'OK', 'data' => $cartUtils->getCartSummary()];
+	}
+
+	/**
+	 * POST v1/cart — добавить товар в корзину (или обновить кол-во, если уже есть)
+	 */
+	public function postCart($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$id = trim($data['data']['id'] ?? '');
+		$quantity = max(1, (int) ($data['data']['quantity'] ?? 1));
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->add($id, $quantity);
+		$cartUtils->setCartSummary();
+		return ['status' => 200, 'message' => 'Cart updated', 'data' => $cartUtils->getCartSummary()];
+	}
+
+	/**
+	 * PUT v1/cart — обновить количество товара в корзине
+	 */
+	public function putCart($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$id = trim($data['data']['id'] ?? '');
+		$quantity = max(1, (int) ($data['data']['quantity'] ?? 1));
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->edit($id, $quantity);
+		$cartUtils->setCartSummary();
+		return ['status' => 200, 'message' => 'Cart updated', 'data' => $cartUtils->getCartSummary()];
+	}
+
+	/**
+	 * DELETE v1/cart — удалить товар из корзины по ?id=...
+	 */
+	public function deleteCart(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$id = trim($this->get['id'] ?? '');
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->remove($id);
+		$cartUtils->setCartSummary();
+		return ['status' => 200, 'message' => 'Item removed', 'data' => $cartUtils->getCartSummary()];
+	}
+
+	/**
+	 * POST v1/cart.place_order — оформить заказ из текущей корзины
+	 * Контактные данные берутся из профиля пользователя.
+	 */
+	public function postCartPlaceOrder($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user = $this->rest->getUser();
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->setCartSummary();
+		$cartSummary = $cartUtils->getCartSummary();
+
+		if (empty($cartSummary['items'])) {
+			return ['status' => 400, 'message' => 'Cart is empty', 'data' => null];
+		}
+
+		if (empty($cartSummary['delivery']['deliveryId']) || $cartSummary['delivery']['deliveryId'] === '0') {
+			return ['status' => 400, 'message' => 'Delivery method not selected', 'data' => null];
+		}
+
+		if (empty($cartSummary['payments']['paymentsId'])) {
+			return ['status' => 400, 'message' => 'Payment method not selected', 'data' => null];
+		}
+
+		$result = $cartUtils->addOrder();
+
+		if (empty($result['id'])) {
+			return ['status' => 400, 'message' => 'No active items in cart', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Order created', 'data' => $result];
+	}
+
+	/**
+	 * GET v1/cart.checkout — доступные способы доставки и оплаты
+	 */
+	public function getCartCheckout(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->setCartSummary();
+		return ['status' => 200, 'message' => 'OK', 'data' => $cartUtils->getCheckoutData()];
+	}
+
+	/**
+	 * PUT v1/cart.delivery — выбрать город и/или способ доставки
+	 */
+	public function putCartDelivery($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$citiesId = trim($data['data']['citiesId'] ?? '');
+		$deliveryId = trim($data['data']['deliveryId'] ?? '');
+		$cartUtils = $this->_newCartUtils();
+		if ($citiesId !== '') {
+			$cartUtils->setCartCitiesId($citiesId);
+		}
+		if ($deliveryId !== '') {
+			$cartUtils->setCartDelivery($deliveryId);
+		}
+		$cartUtils->setCartSummary();
+		return ['status' => 200, 'message' => 'OK', 'data' => $cartUtils->getCheckoutData()];
+	}
+
+	/**
+	 * PUT v1/cart.payment — выбрать способ оплаты
+	 */
+	public function putCartPayment($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$paymentsId = trim($data['data']['paymentsId'] ?? '');
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->setCartPayments($paymentsId);
+		$cartUtils->setCartSummary();
+		return ['status' => 200, 'message' => 'OK', 'data' => $cartUtils->getCheckoutData()];
+	}
+
+	/**
+	 * CartUtils требует пользователя через Connect::$projectData['user']
+	 * (аналогично веб-версии). Данные пользователя уже содержат JCart и JFav,
+	 * т.к. authenticateBearerToken делает SELECT * FROM s_Users.
+	 */
+	private function _newCartUtils(): CartUtils
+	{
+		Connect::$projectData['user'] = $this->rest->getUser();
+		return new CartUtils();
+	}
+
+	// -------------------------------------------------------------------------
 	// NEWS
 	// -------------------------------------------------------------------------
 
@@ -362,15 +525,15 @@ class RestV1APP extends RestV1
 	public function getNews(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$page = max(1, (int)($this->get['page'] ?? 1));
-		$limit = min(100, max(1, (int)($this->get['limit'] ?? 20)));
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = min(100, max(1, (int) ($this->get['limit'] ?? 20)));
 		$search = $this->get['search'] ?? '';
 
 		$conditions = "t.IsHidden = 0";
 		$params = [];
 
 		if ($search !== '') {
-			$conditions .= " AND lower(t.Name) LIKE lower(?)";
+			$conditions .= " AND t.Name LIKE ?";
 			$params[] = '%' . $search . '%';
 		}
 
@@ -379,6 +542,15 @@ class RestV1APP extends RestV1
 			$obj->setParams($params);
 		}
 		$res = $obj->fetch($conditions, $limit, $page, "t.NDate desc");
+
+		if (!empty($res)) {
+			foreach ($res as &$row) {
+				if (!empty($row['Images_FileUrl'])) {
+					$row['Images_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $row['Images_FileUrl'];
+				}
+			}
+			unset($row);
+		}
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res, 'count' => $obj->count];
 	}
@@ -389,7 +561,7 @@ class RestV1APP extends RestV1
 	public function getNewsItem(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$id = (int)($this->get['id'] ?? 0);
+		$id = (int) ($this->get['id'] ?? 0);
 
 		$obj = new Data("News");
 		$obj->setParams([$id]);
@@ -398,6 +570,12 @@ class RestV1APP extends RestV1
 		if (empty($res[0])) {
 			return ['status' => 404, 'message' => 'News item not found', 'data' => null];
 		}
+
+
+		if (!empty($res[0]['Images_FileUrl'])) {
+			$res[0]['Images_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $res[0]['Images_FileUrl'];
+		}
+
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res[0]];
 	}
@@ -414,6 +592,18 @@ class RestV1APP extends RestV1
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$obj = new Data("Slides");
 		$res = $obj->fetch("t.IsHidden = 0", 1000, 1, "t.Priority desc");
+
+		if (!empty($res)) {
+			foreach ($res as $key => &$row) {
+				if (!empty($row['Image_FileUrl'])) {
+					$res[$key]['Image_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/slide' . $row['Image_FileUrl'];
+				}
+				if (!empty($row['ImageMobile_FileUrl'])) {
+					$res[$key]['ImageMobile_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/slide' . $row['ImageMobile_FileUrl'];
+				}
+			}
+			unset($row);
+		}
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
 	}

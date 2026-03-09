@@ -1,0 +1,44 @@
+meta {
+  name: PUT cart.payment
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{base_url}}/rest/v1/cart.payment
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "cart.payment",
+    "data": {
+      "paymentsId": "1"
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has payments", function() {
+    expect(res.body.data).to.have.property("payments");
+  });
+}
+
+docs {
+  Set payment method for cart checkout.
+  Требует авторизации.
+
+  paymentsId — идентификатор способа оплаты (из GET cart.checkout → payments).
+             Требует предварительной установки deliveryId через PUT cart.delivery.
+             Tariff и discount оплаты сохраняются в корзину и учитываются в sumTotal.
+
+  Возвращает актуальные данные checkout (как GET cart.checkout).
+}

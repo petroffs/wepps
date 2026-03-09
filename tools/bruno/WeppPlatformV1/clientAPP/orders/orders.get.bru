@@ -5,17 +5,18 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/v1/orders
+  url: {{base_url}}/rest/v1/orders?page=1&limit=20
+  body: none
   auth: bearer
-}
-
-auth:bearer {
-  token: {{access_token}}
 }
 
 params:query {
   page: 1
   limit: 20
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 tests {

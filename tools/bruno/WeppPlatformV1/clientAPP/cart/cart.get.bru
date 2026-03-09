@@ -1,0 +1,41 @@
+meta {
+  name: GET cart
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/rest/v1/cart
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has items", function() {
+    expect(res.body.data).to.have.property("items");
+  });
+  test("data has count", function() {
+    expect(res.body.data).to.have.property("count");
+  });
+  test("data has sum", function() {
+    expect(res.body.data).to.have.property("sum");
+  });
+}
+
+docs {
+  Get current user cart with item details and totals.
+  Требует авторизации.
+
+  Ответ data:
+  - items[]: массив позиций (id, name, price, priceBefore, quantity, active, sum, sumSaving, image)
+  - count: общее количество единиц товаров
+  - sum: сумма активных позиций
+  - sumSaving: общая экономия по активным позициям
+}

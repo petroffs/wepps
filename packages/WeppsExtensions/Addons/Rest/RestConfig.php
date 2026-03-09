@@ -185,6 +185,18 @@ class RestConfig
                         'method' => 'getSlides',
                         'note' => 'Get list of active slides',
                     ],
+                    'cart' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getCart',
+                        'note' => 'Get current user cart with items and totals',
+                        'auth_required' => true,
+                    ],
+                    'cart.checkout' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getCartCheckout',
+                        'note' => 'Get available delivery and payment options for current cart',
+                        'auth_required' => true,
+                    ],
                 ],
                 'post' => [
                     'auth.login' => [
@@ -250,16 +262,20 @@ class RestConfig
                             'category' => ['type' => 'int2', 'required' => false],
                         ],
                     ],
-                    'orders' => [
+                    'cart.place_order' => [
                         'class' => RestV1APP::class,
-                        'method' => 'postOrders',
-                        'note' => 'Create a new order',
+                        'method' => 'postCartPlaceOrder',
+                        'note' => 'Place an order from current cart (contact info taken from user profile)',
+                        'auth_required' => true,
+                    ],
+                    'cart' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'postCart',
+                        'note' => 'Add item to cart or update quantity if already in cart',
                         'auth_required' => true,
                         'validation' => [
-                            'name' => ['type' => 'string', 'required' => true],
-                            'phone' => ['type' => 'phone', 'required' => true],
-                            'email' => ['type' => 'email', 'required' => false],
-                            'positions' => ['type' => 'string', 'required' => true],
+                            'id' => ['type' => 'string', 'required' => true],
+                            'quantity' => ['type' => 'int2', 'required' => false],
                         ],
                     ],
                 ],
@@ -277,6 +293,15 @@ class RestConfig
                         'role_required' => [1, 2],
                         'query_validation' => [
                             'id' => ['type' => 'int2', 'required' => true],
+                        ],
+                    ],
+                    'cart' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'deleteCart',
+                        'note' => 'Remove item from cart by id',
+                        'auth_required' => true,
+                        'query_validation' => [
+                            'id' => ['type' => 'string', 'required' => true],
                         ],
                     ],
                     'orders' => [
@@ -330,6 +355,35 @@ class RestConfig
                         'validation' => [
                             'id' => ['type' => 'int', 'required' => true],
                             'status' => ['type' => 'string', 'required' => true],
+                        ],
+                    ],
+                    'cart' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'putCart',
+                        'note' => 'Update item quantity in cart',
+                        'auth_required' => true,
+                        'validation' => [
+                            'id' => ['type' => 'string', 'required' => true],
+                            'quantity' => ['type' => 'int2', 'required' => true],
+                        ],
+                    ],
+                    'cart.delivery' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'putCartDelivery',
+                        'note' => 'Set city and/or delivery method for cart',
+                        'auth_required' => true,
+                        'validation' => [
+                            'citiesId' => ['type' => 'string', 'required' => false],
+                            'deliveryId' => ['type' => 'string', 'required' => false],
+                        ],
+                    ],
+                    'cart.payment' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'putCartPayment',
+                        'note' => 'Set payment method for cart',
+                        'auth_required' => true,
+                        'validation' => [
+                            'paymentsId' => ['type' => 'string', 'required' => true],
                         ],
                     ],
                     'users' => [

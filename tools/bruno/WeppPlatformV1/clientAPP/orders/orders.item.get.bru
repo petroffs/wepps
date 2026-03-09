@@ -6,14 +6,16 @@ meta {
 
 get {
   url: {{base_url}}/rest/v1/orders.item?id={{order_id}}
+  body: none
   auth: bearer
+}
+
+params:query {
+  id: {{order_id}}
 }
 
 auth:bearer {
   token: {{access_token}}
-}
-
-params:query {
 }
 
 tests {

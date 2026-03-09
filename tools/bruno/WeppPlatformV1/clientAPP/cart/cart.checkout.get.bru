@@ -1,0 +1,42 @@
+meta {
+  name: GET cart.checkout
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{base_url}}/rest/v1/cart.checkout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has delivery", function() {
+    expect(res.body.data).to.have.property("delivery");
+  });
+  test("data has payments", function() {
+    expect(res.body.data).to.have.property("payments");
+  });
+}
+
+docs {
+  Get available delivery and payment options for current cart.
+  Требует авторизации.
+
+  Возвращает:
+  - city: выбранный город (если задан)
+  - delivery: список доступных способов доставки
+  - deliveryActive: текущий выбранный deliveryId
+  - deliveryOperations: дополнительные операции доставки (например, адрес)
+  - payments: список доступных способов оплаты
+  - paymentsActive: текущий выбранный paymentsId
+
+  Для получения списка доставок необходимо сначала задать город через PUT cart.delivery.
+}
