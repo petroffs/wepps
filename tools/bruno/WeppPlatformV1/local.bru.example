@@ -1,0 +1,17 @@
+vars {
+  base_url: https://your-domain.local
+  refresh_token:
+  user_login: admin@example.com
+  new_user_login: user@example.com
+  product_id: 1
+  news_id: 1
+  order_id: 1
+  user_id: 1
+}
+vars:secret [
+  access_token,
+  user_password,
+  new_user_password,
+  password_old,
+  password_new
+]

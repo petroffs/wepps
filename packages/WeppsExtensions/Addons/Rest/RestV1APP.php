@@ -181,14 +181,14 @@ class RestV1APP extends RestV1
 		$filters = new Filters();
 		$result = $filters->getFilters(['conditions' => $conditions, 'params' => $params]);
 
-		$grouped = array_values(array_map(
-			fn($id, $rows) => [
-				'id'     => $id,
+		$grouped = [];
+		foreach ($result as $id => $rows) {
+			$grouped[$id] = [
+				'id'     => (int)$id,
 				'name'   => $rows[0]['PropertyName'] ?? '',
 				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int)$r['Co']], $rows),
-			],
-			array_keys($result), array_values($result)
-		));
+			];
+		}
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $grouped];
 	}
