@@ -392,7 +392,7 @@ class Rest
 		$class = $config['class'];
 		if ($class === RestCli::class) {
 			$instance = new $class($this->settings);
-		} elseif ($class === RestAd::class || $class === RestV1::class) {
+		} elseif ($class === RestAd::class || $class === RestV1::class || $class === RestV1APP::class || $class === RestV1M2M::class) {
 			$instance = new $class($this);
 		} else {
 			$instance = new $class($this->get, $this->post, $this->data, $this->headers);

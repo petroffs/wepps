@@ -90,7 +90,7 @@ class RestConfig
                         'auth_required' => true,
                     ],
                     'goods' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getGoods',
                         'note' => 'Get list of goods with filtering and pagination',
                         'query_validation' => [
@@ -102,7 +102,7 @@ class RestConfig
                         ],
                     ],
                     'goods.item' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getGoodsItem',
                         'note' => 'Get single goods item by id',
                         'query_validation' => [
@@ -110,12 +110,12 @@ class RestConfig
                         ],
                     ],
                     'goods.categories' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getGoodsCategories',
                         'note' => 'Get list of goods categories with ParentDir for tree building',
                     ],
                     'goods.filters' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getGoodsFilters',
                         'note' => 'Get available property filters for goods list',
                         'query_validation' => [
@@ -124,7 +124,7 @@ class RestConfig
                         ],
                     ],
                     'users' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1M2M::class,
                         'method' => 'getUsers',
                         'note' => 'Get list of users (M2M)',
                         'role_required' => [1, 2],
@@ -135,7 +135,7 @@ class RestConfig
                         ],
                     ],
                     'users.item' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1M2M::class,
                         'method' => 'getUsersItem',
                         'note' => 'Get single user by id (M2M)',
                         'role_required' => [1, 2],
@@ -144,7 +144,7 @@ class RestConfig
                         ],
                     ],
                     'orders' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getOrders',
                         'note' => 'Get list of current user orders',
                         'auth_required' => true,
@@ -154,7 +154,7 @@ class RestConfig
                         ],
                     ],
                     'orders.item' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getOrdersItem',
                         'note' => 'Get single order by id',
                         'auth_required' => true,
@@ -163,7 +163,7 @@ class RestConfig
                         ],
                     ],
                     'news' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getNews',
                         'note' => 'Get list of news with pagination',
                         'query_validation' => [
@@ -173,7 +173,7 @@ class RestConfig
                         ],
                     ],
                     'news.item' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getNewsItem',
                         'note' => 'Get single news item by id',
                         'query_validation' => [
@@ -181,7 +181,7 @@ class RestConfig
                         ],
                     ],
                     'slides' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'getSlides',
                         'note' => 'Get list of active slides',
                     ],
@@ -228,7 +228,7 @@ class RestConfig
                         ],
                     ],
                     'users' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1M2M::class,
                         'method' => 'postUsers',
                         'note' => 'Create a new user (M2M)',
                         'role_required' => [1, 2],
@@ -240,7 +240,7 @@ class RestConfig
                         ],
                     ],
                     'goods' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'postGoods',
                         'note' => 'Create a new goods item',
                         'role_required' => [1, 2],
@@ -251,7 +251,7 @@ class RestConfig
                         ],
                     ],
                     'orders' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'postOrders',
                         'note' => 'Create a new order',
                         'auth_required' => true,
@@ -271,7 +271,7 @@ class RestConfig
                         'auth_required' => true,
                     ],
                     'goods' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'deleteGoods',
                         'note' => 'Delete goods item by id',
                         'role_required' => [1, 2],
@@ -280,7 +280,7 @@ class RestConfig
                         ],
                     ],
                     'orders' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'deleteOrders',
                         'note' => 'Cancel order by id',
                         'auth_required' => true,
@@ -312,7 +312,7 @@ class RestConfig
                         ],
                     ],
                     'goods' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'putGoods',
                         'note' => 'Update goods item by id',
                         'role_required' => [1, 2],
@@ -323,7 +323,7 @@ class RestConfig
                         ],
                     ],
                     'orders.status' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1APP::class,
                         'method' => 'putOrdersStatus',
                         'note' => 'Update order status by id',
                         'role_required' => [1, 2],
@@ -333,7 +333,7 @@ class RestConfig
                         ],
                     ],
                     'users' => [
-                        'class' => RestV1::class,
+                        'class' => RestV1M2M::class,
                         'method' => 'putUsers',
                         'note' => 'Update user by id (M2M)',
                         'role_required' => [1, 2],
