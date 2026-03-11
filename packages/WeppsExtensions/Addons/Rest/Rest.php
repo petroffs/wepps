@@ -725,7 +725,7 @@ class Rest
 			if ($print) {
 				http_response_code($this->status);
 				header('X-API-Status: ' . $this->status);
-				header('Content-Type: application/json; charset=utf-8');
+				header('Content-Type: application/json');
 				echo $this->response;
 				exit();
 			}
@@ -759,7 +759,7 @@ class Rest
 		$this->logRequest($responseData);
 
 		if ($print == true) {
-			header('Content-Type: application/json; charset=utf-8');
+			header('Content-Type: application/json');
 			echo $this->response;
 			exit();
 		}

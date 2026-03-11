@@ -1,0 +1,119 @@
+<?php
+
+$projectSettings = [
+	'DB' => [
+		'driver' => 'mysql', // Тип базы данных
+		'host' => 'localhost', // Адрес хоста базы данных
+		'port' => '3306', // Порт базы данных
+		'dbname' => 'your_database', // Имя базы данных
+		'user' => 'your_user', // Имя пользователя базы данных
+		'password' => 'your_password', // Пароль пользователя базы данных
+		'charset' => 'utf8mb4', // Кодировка базы данных
+		'cnf' => '', // Путь к конфигурационному файлу базы данных (При установке можно оставить пустым)
+	],
+	'Dev' => [
+		'author' => 'Your Name', // Имя автора проекта
+		'email' => 'your@email.com', // Email автора проекта
+		'debug' => 0, // Флаг отладки (1 - включена, 0 - выключена)
+		'protocol' => 'https://', // Протокол для доступа к проекту
+		'host' => 'your-domain.com', // Адрес хоста проекта
+		'root' => '/var/www/your-project', // Корневая директория проекта
+	],
+	'Info' => [
+		'name' => 'Your Company', // Название команды проекта
+		'email' => 'info@your-domain.com', // Email команды проекта
+		'phone' => '+7 000 000-00-00', // Телефон команды проекта
+		'address' => [
+			'postal-code' => '000000', // Почтовый индекс
+			'city' => 'Город', // Город
+			'address' => 'Город, ул. Улица, д. 1', // Полный адрес
+			'address-short' => 'ул. Улица, д. 1', // Краткий адрес
+		],
+		'logo' => '/ext/Template/files/logo.svg', // Путь к логотипу в формате SVG
+		'logopng' => '/ext/Template/files/logo.png', // Путь к логотипу в формате PNG
+	],
+	'Services' => [
+		'wepps' => [
+			'nameconf' => 'wepps.platform', // Наименование конфигурации
+			'updates' => 'https://sh.wepps.dev', // URL для проверки обновлений
+			'multilang' => 0, // Флаг поддержки мультиязычности (1 - включена, 0 - выключена)
+			'sign' => 'CHANGE_ME', // Подпись для cookie-файлов и других случаев (ЗАМЕНИТЬ)
+			'git' => 'CHANGE_ME', // Ключ для обработки Git-вебхуков (ЗАМЕНИТЬ)
+		],
+		'navigator' => [
+			'cart' => [
+				'orderAmountMin' => 0, // Минимальная сумма заказа
+			],
+			'catalog' => 0, // ID каталога
+			'brands' => 0, // ID брендов
+			'profile' => 0, // ID профиля
+		],
+		'memcached' => [
+			'active' => false, // Флаг активности Memcached (true - активен, false - неактивен)
+			'host' => 'localhost', // Адрес хоста Memcached
+			'port' => 11211, // Порт Memcached
+			'expire' => 300, // Время жизни кэша в секундах
+		],
+		'minify' => [
+			'active' => false, // Флаг активности минификации (true - активна, false - неактивна)
+			'lifetime' => 300, // Время жизни минифицированных файлов в секундах
+		],
+		'jwt' => [
+			'secret' => 'CHANGE_ME', // Секретный ключ для JWT (ЗАМЕНИТЬ)
+		],
+		'yandexmaps' => [
+			'apikey' => 'YOUR_YANDEX_MAPS_API_KEY', // API ключ для Яндекс Карт
+		],
+		'recaptcha' => [
+			'sitekey' => 'YOUR_RECAPTCHA_SITE_KEY', // Site key для reCAPTCHA
+			'secret' => 'YOUR_RECAPTCHA_SECRET_KEY', // Secret key для reCAPTCHA
+		],
+		'smartcaptcha' => [
+			'sitekey' => 'YOUR_SMARTCAPTCHA_SITE_KEY', // Site key для SmartCaptcha
+			'secret' => 'YOUR_SMARTCAPTCHA_SECRET_KEY', // Secret key для SmartCaptcha
+		],
+		'telegram' => [
+			'bot' => 'YourBot', // Имя бота Telegram
+			'token' => 'YOUR_TELEGRAM_BOT_TOKEN', // Токен бота Telegram
+			'proxy' => '', // Прокси для Telegram
+			'dev' => '0', // ID разработчика в Telegram
+		],
+		'cdek' => [
+			'url' => 'https://api.cdek.ru', // URL API CDEK
+			'account' => 'YOUR_CDEK_ACCOUNT', // Аккаунт CDEK
+			'password' => 'YOUR_CDEK_PASSWORD', // Пароль CDEK
+			'office' => [
+				'alias' => 'spb', // Алиас офиса CDEK
+				'sender' => 0, // ID отправителя CDEK
+			]
+		],
+		'russianpost' => [
+			'url' => 'url', // URL API Почты России
+			'login' => 'login', // Логин Почты России
+			'password' => 'password', // Пароль Почты России
+			'office' => [
+				'alias' => 'spb', // Алиас офиса Почты России
+				'sender' => '000000', // Индекс отправителя Почты России
+			],
+		],
+		'dadata' => [
+			'token' => 'YOUR_DADATA_TOKEN', // Токен DaData
+			'secret' => 'YOUR_DADATA_SECRET', // Секретный ключ DaData
+			'suggestUrl' => 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address', // URL для подсказок DaData
+		],
+		'yookassa' => [
+			'dev' => [
+				'shopId' => 0, // ID магазина в тестовом режиме
+				'secretKey' => 'YOUR_YOOKASSA_TEST_SECRET_KEY', // Секретный ключ в тестовом режиме
+				'currency' => 'RUB', // Валюта в тестовом режиме
+				'vatCode' => 1, // Код НДС в тестовом режиме
+			],
+			'pro' => [
+				'shopId' => 0, // ID магазина в рабочем режиме
+				'secretKey' => 'YOUR_YOOKASSA_LIVE_SECRET_KEY', // Секретный ключ в рабочем режиме
+				'currency' => 'RUB', // Валюта в рабочем режиме
+				'vatCode' => 1, // Код НДС в рабочем режиме
+			],
+		],
+	]
+];

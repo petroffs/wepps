@@ -279,7 +279,7 @@ class RestV1APP extends RestV1
 	/**
 	 * GET v1/orders — список заказов пользователя
 	 */
-	public function getOrders(int $id = 0): array
+	public function getOrders(?int $id = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
