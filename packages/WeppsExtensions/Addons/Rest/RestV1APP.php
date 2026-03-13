@@ -305,11 +305,11 @@ class RestV1APP extends RestV1
 						$jdata['items'][$k]['image'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $item['image'];
 					}
 				}
-				$jpositions =  json_decode($row['JPositions'], true);
+				$jpositions = json_decode($row['JPositions'], true);
 				$res[$key]['JData'] = $jdata;
 				$res[$key]['JPositions'] = $jpositions;
 			}
-		}	
+		}
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res, 'count' => $obj->count];
 	}
@@ -357,19 +357,30 @@ class RestV1APP extends RestV1
 
 	/**
 	 * DELETE v1/orders — отмена заказа по id
+	 * 
+	 * Отмена возможна только для заказов в статусе "новый" или "в обработке". Статус "отменён" — 6.
+	 * Желательно, настроить уведомления (через Tasks) или транспорт данных в учетную систему, 
+	 * чтобы видеть эти изменения статусов. 
+	 * Либо, если нужно полностью удалять заказ, можно добавить дополнительный флаг IsDeleted и 
+	 * фильтровать заказы с IsDeleted=0 в методах получения.
 	 */
 	public function deleteOrders(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
 		$id = (int) ($this->get['id'] ?? 0);
+		$cancellableStatuses = [1, 2]; // допустимые статусы для отмены: 1 - новый, 2 - в обработке
+		$cansledStatus = 6; // статус "отменён"
 
-		$res = Connect::$instance->fetch("SELECT Id FROM Orders WHERE Id = ? AND UserId = ? AND IsHidden = 0", [$id, $user['Id']]);
+		$res = Connect::$instance->fetch("SELECT Id, OStatus FROM Orders WHERE Id = ? AND UserId = ? AND IsHidden = 0 AND OStatus != ?", [$id, $user['Id'], $cansledStatus]);
 		if (empty($res[0])) {
 			return ['status' => 404, 'message' => 'Order not found', 'data' => null];
 		}
+		if (!in_array((int) $res[0]['OStatus'], $cancellableStatuses)) {
+			return ['status' => 400, 'message' => 'Only new or processing orders can be cancelled', 'data' => null];
+		}
 
-		Connect::$instance->query("UPDATE Orders SET IsHidden = 1 WHERE Id = ?", [$id]);
+		Connect::$instance->query("UPDATE Orders SET OStatus = ? WHERE Id = ?", [$cansledStatus, $id]);
 
 		return ['status' => 200, 'message' => 'Order cancelled', 'data' => null];
 	}
