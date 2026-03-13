@@ -1,0 +1,33 @@
+meta {
+  name: auth.logout
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/rest/v1/auth.logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("access_token",  "");
+    bru.setVar("refresh_token", "");
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  Завершить сессию текущего пользователя.
+  Очищает access_token и refresh_token из переменных окружения.
+}

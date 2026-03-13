@@ -1,0 +1,29 @@
+meta {
+  name: GET goods.favorites
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/rest/v1/goods.favorites
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+}
+
+docs {
+  Get current user's favorite goods (from JFav).
+  Requires authorization.
+  Returns empty array if no favorites.
+}

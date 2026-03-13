@@ -16,6 +16,63 @@ use WeppsExtensions\Template\Filters\Filters;
 class RestV1APP extends RestV1
 {
 	// -------------------------------------------------------------------------
+	// HOME
+	// -------------------------------------------------------------------------
+
+	/**
+	 * GET v1/home — агрегированные данные для главного экрана приложения
+	 * Слайды, категории каталога, последние новости, последние товары.
+	 * Для авторизованных пользователей — активный заказ (OStatus=1).
+	 */
+	public function getHome(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+
+		// Если пользователь авторизован (auth_optional в конфиге) — загружаем активные заказы
+		$activeOrders = [];
+		if ($this->rest->getUser()) {
+			$activeOrders = $this->getOrders(null, [1, 2])['data'] ?? [];
+		}
+
+		// Слайды — используем getSlides()
+		$slides = $this->getSlides()['data'];
+
+		// Категории каталога — используем getGoodsCategories()
+		$categories = $this->getGoodsCategories()['data'];
+
+		// Последние новости — используем getNews() с нужными параметрами
+		$this->get['page'] = 1;
+		$this->get['limit'] = 5;
+		$this->get['search'] = '';
+		$news = $this->getNews()['data'];
+
+		// Последние товары — используем getGoods() с нужными параметрами
+		$this->get['sort'] = '';
+		$this->get['category'] = 0;
+		$goods = $this->getGoods()['data'];
+
+		// Избранные товары — доступны если пользователь авторизован
+		$goodsFavorites = $this->rest->getUser() ? $this->getGoodsFavorites()['data'] : [];
+
+		// Метрики корзины — работают для всех (анонимные через cookie, авторизованные через JCart)
+		$cartMetrics = $this->getCartMetrics()['data'];
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => [
+				'slides' => $slides,
+				'categories' => $categories,
+				'news' => $news,
+				'goods' => $goods,
+				'goods_favorites' => $goodsFavorites,
+				'active_orders' => $activeOrders,
+				'cart_metrics' => $cartMetrics,
+			],
+		];
+	}
+
+	// -------------------------------------------------------------------------
 	// GOODS
 	// -------------------------------------------------------------------------
 
@@ -209,6 +266,39 @@ class RestV1APP extends RestV1
 	}
 
 	/**
+	 * GET v1/goods.favorites — избранные товары текущего пользователя
+	 */
+	public function getGoodsFavorites(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user = $this->rest->getUser();
+
+		$jfav = json_decode($user['JFav'] ?? '', true)['items'] ?? [];
+		if (empty($jfav)) {
+			return ['status' => 200, 'message' => 'OK', 'data' => []];
+		}
+
+		$ids = array_column($jfav, 'id');
+		$in = rtrim(str_repeat('?,', count($ids)), ',');
+		$productsUtils = new ProductsUtils();
+		$result = $productsUtils->getProducts([
+			'pages' => 100,
+			'page' => 1,
+			'sorting' => 't.Priority desc',
+			'conditions' => ['conditions' => "t.IsHidden=0 AND t.Id IN ($in)", 'params' => $ids],
+		]);
+		$rows = $result['rows'] ?? [];
+		foreach ($rows as &$row) {
+			if (!empty($row['Images_FileUrl'])) {
+				$row['Images_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $row['Images_FileUrl'];
+			}
+		}
+		unset($row);
+
+		return ['status' => 200, 'message' => 'OK', 'data' => $rows];
+	}
+
+	/**
 	 * POST v1/goods — создание товара
 	 */
 	public function postGoods($data = null): array
@@ -279,7 +369,7 @@ class RestV1APP extends RestV1
 	/**
 	 * GET v1/orders — список заказов пользователя
 	 */
-	public function getOrders(?int $id = null): array
+	public function getOrders(?int $id = null, ?array $statuses = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
@@ -291,6 +381,10 @@ class RestV1APP extends RestV1
 		if ($id > 0) {
 			$obj->setParams([$id, $user['Id']]);
 			$res = $obj->fetch("t.Id = ? AND t.UserId = ? AND t.IsHidden = 0", 1, 1, "t.Id desc");
+		} elseif (!empty($statuses)) {
+			$in = rtrim(str_repeat('?,', count($statuses)), ',');
+			$obj->setParams(array_merge([$user['Id']], $statuses));
+			$res = $obj->fetch("t.UserId = ? AND t.OStatus IN ($in) AND t.IsHidden = 0", $limit, $page, "t.Id desc");
 		} else {
 			$obj->setParams([$user['Id']]);
 			$res = $obj->fetch("t.UserId = ? AND t.IsHidden = 0", $limit, $page, "t.Id desc");
@@ -388,6 +482,16 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 	// CART
 	// -------------------------------------------------------------------------
+
+	/**
+	 * GET v1/cart.metrics — счётчик позиций корзины (работает для анонимных и авторизованных)
+	 */
+	public function getCartMetrics(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$cartUtils = $this->_newCartUtils();
+		return ['status' => 200, 'message' => 'OK', 'data' => $cartUtils->getCartMetrics()];
+	}
 
 	/**
 	 * GET v1/cart — корзина текущего пользователя

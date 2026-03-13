@@ -83,6 +83,12 @@ class RestConfig
             ],
             'v1' => [
                 'get' => [
+                    'home' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getHome',
+                        'note' => 'Get aggregated home screen data: slides, categories, news, goods, active order (if authenticated)',
+                        'auth_optional' => true,
+                    ],
                     'profile' => [
                         'class' => RestV1::class,
                         'method' => 'getProfile',
@@ -113,6 +119,12 @@ class RestConfig
                         'class' => RestV1APP::class,
                         'method' => 'getGoodsCategories',
                         'note' => 'Get list of goods categories with ParentDir for tree building',
+                    ],
+                    'goods.favorites' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getGoodsFavorites',
+                        'note' => 'Get current user favorite goods',
+                        'auth_required' => true,
                     ],
                     'goods.filters' => [
                         'class' => RestV1APP::class,
@@ -185,6 +197,12 @@ class RestConfig
                         'method' => 'getSlides',
                         'note' => 'Get list of active slides',
                     ],
+                    'cart.metrics' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getCartMetrics',
+                        'note' => 'Get cart item count and item ids (works for anonymous and authenticated users)',
+                        'auth_optional' => true,
+                    ],
                     'cart' => [
                         'class' => RestV1APP::class,
                         'method' => 'getCart',
@@ -237,6 +255,13 @@ class RestConfig
                             'name' => ['type' => 'string', 'required' => false],
                             'phone' => ['type' => 'phone', 'required' => false],
                         ],
+                    ],
+                    'auth.logout' => [
+                        'class' => RestV1::class,
+                        'method' => 'postAuthLogout',
+                        'note' => 'Logout current user (client must delete both tokens from local storage)',
+                        'auth_required' => true,
+                        'log' => false,
                     ],
                     'auth.refresh' => [
                         'class' => RestV1::class,

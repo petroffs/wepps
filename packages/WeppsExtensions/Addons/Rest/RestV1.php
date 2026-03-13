@@ -222,6 +222,16 @@ class RestV1
 	// -------------------------------------------------------------------------
 
 	/**
+	 * POST v1/auth.logout — завершение сессии
+	 * Токены stateless, сервер их не хранит — клиент должен удалить оба токена из локального хранилища.
+	 */
+	public function postAuthLogout(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		return ['status' => 200, 'message' => 'Logged out successfully', 'data' => null];
+	}
+
+	/**
 	 * GET v1/profile — профиль текущего пользователя
 	 */
 	public function getProfile(): array

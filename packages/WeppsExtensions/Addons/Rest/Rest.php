@@ -283,6 +283,8 @@ class Rest
 			// Проверка аутентификации, если требуется (или если заданы роли)
 			if (!empty($config['auth_required']) || isset($config['role_required'])) {
 				$this->authenticateBearerToken();
+			} elseif (!empty($config['auth_optional'])) {
+				try { $this->authenticateBearerToken(); } catch (\Exception $e) {}
 			}
 
 			// Проверка прав доступа по UserPermissions

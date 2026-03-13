@@ -1,0 +1,46 @@
+meta {
+  name: GET home
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/rest/v1/home
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("slides is array", function() {
+    expect(res.body.data.slides).to.be.an("array");
+  });
+  test("categories is array", function() {
+    expect(res.body.data.categories).to.be.an("array");
+  });
+  test("news is array", function() {
+    expect(res.body.data.news).to.be.an("array");
+  });
+  test("goods is array", function() {
+    expect(res.body.data.goods).to.be.an("array");
+  });
+}
+
+docs {
+  Get aggregated home screen data in a single request.
+
+  Returns:
+  - slides       — active slides
+  - categories   — catalog categories
+  - news         — last 5 news items
+  - goods        — last 5 goods (by priority)
+  - active_order — current user's active order (OStatus=1), null if not authenticated
+    or no active order
+
+  Auth is optional: pass Bearer token to get active_order, omit for anonymous access.
+}
