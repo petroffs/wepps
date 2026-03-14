@@ -741,7 +741,7 @@ class Rest
 			$responseData = array_merge([
 				'status'  => $output['status'],
 				'message' => $output['message'] ?? '',
-				'data'    => $this->normalizeData($output['data'] ?? null),
+				'data'    => $this->keysToSnakeCase($this->normalizeData($output['data'] ?? null)),
 			], $extra);
 
 		} else {
@@ -881,6 +881,43 @@ class Rest
 		// Если не массив, оборачиваем в массив
 		return [$data];
 	}
+	/**
+	 * Рекурсивно конвертирует ключи массива из PascalCase в snake_case
+	 *
+	 * @param array|null $data Данные для преобразования
+	 * @return array|null Данные с ключами в snake_case
+	 */
+	private function keysToSnakeCase(?array $data): ?array
+	{
+		if ($data === null) {
+			return null;
+		}
+		$result = [];
+		foreach ($data as $key => $value) {
+			$newKey = is_string($key) ? $this->toSnakeCase($key) : $key;
+			$result[$newKey] = is_array($value) ? $this->keysToSnakeCase($value) : $value;
+		}
+		return $result;
+	}
+
+	/**
+	 * Конвертирует строку из PascalCase/camelCase в snake_case.
+	 * Корректно обрабатывает смешанный формат: Images_FileUrl → images_file_url
+	 *
+	 * @param string $key Ключ для преобразования
+	 * @return string Ключ в snake_case
+	 */
+	private function toSnakeCase(string $key): string
+	{
+		$parts = explode('_', $key);
+		$converted = array_map(function (string $part): string {
+			$part = preg_replace('/([A-Z]+)([A-Z][a-z])/', '$1_$2', $part);
+			$part = preg_replace('/([a-z\d])([A-Z])/', '$1_$2', $part);
+			return strtolower($part);
+		}, $parts);
+		return implode('_', $converted);
+	}
+
 	/**
 	 * Форматировать заголовки в строку
 	 * 
