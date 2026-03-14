@@ -741,7 +741,7 @@ class Rest
 			$responseData = array_merge([
 				'status'  => $output['status'],
 				'message' => $output['message'] ?? '',
-				'data'    => $this->keysToSnakeCase($this->normalizeData($output['data'] ?? null)),
+				'data'    => $this->keysToCamelCase($this->normalizeData($output['data'] ?? null)),
 			], $extra);
 
 		} else {
@@ -882,40 +882,46 @@ class Rest
 		return [$data];
 	}
 	/**
-	 * Рекурсивно конвертирует ключи массива из PascalCase в snake_case
+	 * Рекурсивно конвертирует ключи массива из PascalCase в camelCase
 	 *
 	 * @param array|null $data Данные для преобразования
-	 * @return array|null Данные с ключами в snake_case
+	 * @return array|null Данные с ключами в camelCase
 	 */
-	private function keysToSnakeCase(?array $data): ?array
+	private function keysToCamelCase(?array $data): ?array
 	{
 		if ($data === null) {
 			return null;
 		}
 		$result = [];
 		foreach ($data as $key => $value) {
-			$newKey = is_string($key) ? $this->toSnakeCase($key) : $key;
-			$result[$newKey] = is_array($value) ? $this->keysToSnakeCase($value) : $value;
+			$newKey = is_string($key) ? $this->toCamelCase($key) : $key;
+			$result[$newKey] = is_array($value) ? $this->keysToCamelCase($value) : $value;
 		}
 		return $result;
 	}
 
 	/**
-	 * Конвертирует строку из PascalCase/camelCase в snake_case.
-	 * Корректно обрабатывает смешанный формат: Images_FileUrl → images_file_url
+	 * Конвертирует строку из PascalCase в camelCase.
+	 * Корректно обрабатывает смешанный формат: Images_FileUrl → imagesFileUrl.
+	 * Однобуквенные префиксы убираются: OStatus → status, JData → data. 
+	 * Служебные префиксы W_ сохраняются: W_Variations → wVariations.
 	 *
 	 * @param string $key Ключ для преобразования
-	 * @return string Ключ в snake_case
+	 * @return string Ключ в camelCase
 	 */
-	private function toSnakeCase(string $key): string
+	private function toCamelCase(string $key): string
 	{
 		$parts = explode('_', $key);
-		$converted = array_map(function (string $part): string {
-			$part = preg_replace('/([A-Z]+)([A-Z][a-z])/', '$1_$2', $part);
-			$part = preg_replace('/([a-z\d])([A-Z])/', '$1_$2', $part);
-			return strtolower($part);
-		}, $parts);
-		return implode('_', $converted);
+		$result = '';
+		foreach ($parts as $part) {
+			// Убираем однобуквенный PascalCase-префикс внутри слова: OStatus → status, JData → data
+			// W_ не трогаем — это служебный префикс, даёт wVariations
+			if (preg_match('/^[A-Z]([A-Z][a-z].*)$/', $part, $m)) {
+				$part = $m[1];
+			}
+			$result .= $result === '' ? lcfirst($part) : ucfirst($part);
+		}
+		return $result;
 	}
 
 	/**
