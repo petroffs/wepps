@@ -19,9 +19,11 @@ body:json {
   {
     "type": "profile",
     "data": {
-      "name": "Иван Иванов",
-      "phone": "+79001234567",
-      "email": "user@example.com"
+      "nameSurname": "Иванов",
+      "nameFirst": "Иван",
+      "namePatronymic": "Иванович",
+      "city": "Москва",
+      "address": "ул. Пушкина, д. 1"
     }
   }
 }
@@ -33,6 +35,7 @@ tests {
 }
 
 docs {
-  Update current user profile.
+  Обновление ФИО и адреса.
+  Email и телефон меняются через отдельные эндпоинты с подтверждением кодом.
   Все поля необязательные. Требует авторизации.
 }

@@ -92,7 +92,13 @@ class RestConfig
                     'profile' => [
                         'class' => RestV1::class,
                         'method' => 'getProfile',
-                        'note' => 'Get current user profile',
+                        'note' => 'Get current user profile: personal info, contacts',
+                        'auth_required' => true,
+                    ],
+                    'profile.settings' => [
+                        'class' => RestV1::class,
+                        'method' => 'getProfileSettings',
+                        'note' => 'Get current user app settings (theme, notifications)',
                         'auth_required' => true,
                     ],
                     'goods' => [
@@ -197,12 +203,6 @@ class RestConfig
                         'method' => 'getSlides',
                         'note' => 'Get list of active slides',
                     ],
-                    'cart.metrics' => [
-                        'class' => RestV1APP::class,
-                        'method' => 'getCartMetrics',
-                        'note' => 'Get cart item count and item ids (works for anonymous and authenticated users)',
-                        'auth_optional' => true,
-                    ],
                     'cart' => [
                         'class' => RestV1APP::class,
                         'method' => 'getCart',
@@ -233,6 +233,12 @@ class RestConfig
                             'citiesId' => ['type' => 'string', 'required' => true],
                         ],
                     ],
+                    'cart.metrics' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getCartMetrics',
+                        'note' => 'Get cart item count and item ids (works for anonymous and authenticated users)',
+                        'auth_optional' => true,
+                    ],
                 ],
                 'post' => [
                     'auth.login' => [
@@ -243,17 +249,6 @@ class RestConfig
                         'validation' => [
                             'login' => ['type' => 'email', 'required' => true],
                             'password' => ['type' => 'string', 'required' => true],
-                        ],
-                    ],
-                    'profile' => [
-                        'class' => RestV1::class,
-                        'method' => 'postProfile',
-                        'note' => 'Register new user account',
-                        'validation' => [
-                            'login' => ['type' => 'email', 'required' => true],
-                            'password' => ['type' => 'string', 'required' => true],
-                            'name' => ['type' => 'string', 'required' => false],
-                            'phone' => ['type' => 'phone', 'required' => false],
                         ],
                     ],
                     'auth.logout' => [
@@ -282,6 +277,17 @@ class RestConfig
                             'code'  => ['type' => 'int2',   'required' => false],
                         ],
                     ],
+                    'profile' => [
+                        'class' => RestV1::class,
+                        'method' => 'postProfile',
+                        'note' => 'Register new user account',
+                        'validation' => [
+                            'login' => ['type' => 'email', 'required' => true],
+                            'password' => ['type' => 'string', 'required' => true],
+                            'name' => ['type' => 'string', 'required' => false],
+                            'phone' => ['type' => 'phone', 'required' => false],
+                        ],
+                    ],
                     'users' => [
                         'class' => RestV1M2M::class,
                         'method' => 'postUsers',
@@ -305,12 +311,6 @@ class RestConfig
                             'category' => ['type' => 'int2', 'required' => false],
                         ],
                     ],
-                    'cart.place_order' => [
-                        'class' => RestV1APP::class,
-                        'method' => 'postCartPlaceOrder',
-                        'note' => 'Place an order from current cart (contact info taken from user profile)',
-                        'auth_required' => true,
-                    ],
                     'cart' => [
                         'class' => RestV1APP::class,
                         'method' => 'postCart',
@@ -320,6 +320,12 @@ class RestConfig
                             'id' => ['type' => 'string', 'required' => true],
                             'quantity' => ['type' => 'int2', 'required' => false],
                         ],
+                    ],
+                    'cart.place_order' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'postCartPlaceOrder',
+                        'note' => 'Place an order from current cart (contact info taken from user profile)',
+                        'auth_required' => true,
                     ],
                 ],
                 'delete' => [
@@ -361,12 +367,45 @@ class RestConfig
                     'profile' => [
                         'class' => RestV1::class,
                         'method' => 'putProfile',
-                        'note' => 'Update current user profile',
+                        'note' => 'Update current user name (ФИО) and address. Email and phone are changed via separate endpoints with confirmation.',
                         'auth_required' => true,
                         'validation' => [
-                            'name' => ['type' => 'string', 'required' => false],
-                            'phone' => ['type' => 'phone', 'required' => false],
-                            'email' => ['type' => 'email', 'required' => false],
+                            'nameSurname'    => ['type' => 'string', 'required' => false],
+                            'nameFirst'      => ['type' => 'string', 'required' => false],
+                            'namePatronymic' => ['type' => 'string', 'required' => false],
+                            'city'           => ['type' => 'string', 'required' => false],
+                            'address'        => ['type' => 'string', 'required' => false],
+                        ],
+                    ],
+                    'profile.email' => [
+                        'class' => RestV1::class,
+                        'method' => 'putProfileEmail',
+                        'note' => 'Change email (2-step). Step 1: send {email} → receive confirmation code. Step 2: send {email, code} → confirm change.',
+                        'auth_required' => true,
+                        'validation' => [
+                            'email' => ['type' => 'email',  'required' => true],
+                            'code'  => ['type' => 'string', 'required' => false],
+                        ],
+                    ],
+                    'profile.phone' => [
+                        'class' => RestV1::class,
+                        'method' => 'putProfilePhone',
+                        'note' => 'Change phone (2-step). Step 1: send {phone} → receive code via email. Step 2: send {phone, code} → confirm change.',
+                        'auth_required' => true,
+                        'validation' => [
+                            'phone' => ['type' => 'phone',  'required' => true],
+                            'code'  => ['type' => 'string', 'required' => false],
+                        ],
+                    ],
+                    'profile.settings' => [
+                        'class' => RestV1::class,
+                        'method' => 'putProfileSettings',
+                        'note' => 'Update current user app settings (partial update)',
+                        'auth_required' => true,
+                        'validation' => [
+                            'theme'                   => ['type' => 'string', 'required' => false],
+                            'notificationsOrders'     => ['type' => 'string', 'required' => false],
+                            'notificationsPromotions' => ['type' => 'string', 'required' => false],
                         ],
                     ],
                     'profile.password' => [

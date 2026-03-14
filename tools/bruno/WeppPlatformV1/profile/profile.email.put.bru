@@ -1,0 +1,42 @@
+meta {
+  name: PUT profile.email
+  type: http
+  seq: 5
+  tags: manual
+}
+
+put {
+  url: {{base_url}}/rest/v1/profile.email
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "profile.email",
+    "data": {
+      "email": "newemail@example.com",
+      "code": ""
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  Смена e-mail (2 шага). Требует авторизации.
+
+  Шаг 1 — отправить {email} без code:
+    → код подтверждения отправляется на новый адрес.
+
+  Шаг 2 — отправить {email, code}:
+    → email и login обновляются в базе.
+}

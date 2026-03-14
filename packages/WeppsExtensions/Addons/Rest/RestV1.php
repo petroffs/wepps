@@ -2,7 +2,10 @@
 namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
+use WeppsCore\Memcached;
+use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
+use WeppsExtensions\Addons\Messages\Mail\Mail;
 
 /**
  * REST обработчик для API v1
@@ -240,39 +243,185 @@ class RestV1
 		$user = $this->rest->getUser();
 
 		return ['status' => 200, 'message' => 'OK', 'data' => [
-			'id' => $user['Id'],
-			'login' => $user['Login'],
-			'name' => $user['Name'] ?? '',
-			'phone' => $user['Phone'] ?? '',
+			'id'              => (int) $user['Id'],
+			'login'           => $user['Login'],
+			'email'           => $user['Email'] ?? '',
+			'name'            => $user['Name'] ?? '',
+			'nameSurname'     => $user['NameSurname'] ?? '',
+			'nameFirst'       => $user['NameFirst'] ?? '',
+			'namePatronymic'  => $user['NamePatronymic'] ?? '',
+			'phone'           => $user['Phone'] ?? '',
+			'city'            => $user['City'] ?? '',
+			'address'         => $user['Address'] ?? '',
 		]];
 	}
 
 	/**
 	 * PUT v1/profile — обновление профиля
 	 */
+	/**
+	 * PUT v1/profile — обновление ФИО и адреса.
+	 * Email и телефон изменяются через отдельные эндпоинты с кодом подтверждения.
+	 */
 	public function putProfile($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		$name = $data['data']['name'] ?? null;
-		$phone = $data['data']['phone'] ?? null;
-		$email = $data['data']['email'] ?? null;
+
+		$fields = [
+			'nameSurname'    => 'NameSurname',
+			'nameFirst'      => 'NameFirst',
+			'namePatronymic' => 'NamePatronymic',
+			'city'           => 'City',
+			'address'        => 'Address',
+		];
 
 		$set = [];
 		$params = [];
 
-		if ($name !== null) { $set[] = 'Name = ?'; $params[] = $name; }
-		if ($phone !== null) { $set[] = 'Phone = ?'; $params[] = $phone; }
-		if ($email !== null) { $set[] = 'Login = ?'; $params[] = strtolower($email); }
+		foreach ($fields as $key => $column) {
+			if (isset($data['data'][$key])) {
+				$set[] = "$column = ?";
+				$params[] = $data['data'][$key];
+			}
+		}
 
 		if (empty($set)) {
 			return ['status' => 400, 'message' => 'No fields to update', 'data' => null];
 		}
 
+		// Обновляем Name как склейку ФИО, если переданы именные поля
+		$surname    = $data['data']['nameSurname']    ?? $user['NameSurname']    ?? '';
+		$first      = $data['data']['nameFirst']      ?? $user['NameFirst']      ?? '';
+		$patronymic = $data['data']['namePatronymic'] ?? $user['NamePatronymic'] ?? '';
+		$set[]    = 'Name = ?';
+		$params[] = preg_replace('/\s+/', ' ', trim("$surname $first $patronymic"));
+
 		$params[] = $user['Id'];
 		Connect::$instance->query("UPDATE s_Users SET " . implode(', ', $set) . " WHERE Id = ?", $params);
 
 		return ['status' => 200, 'message' => 'Profile updated', 'data' => null];
+	}
+
+	/**
+	 * PUT v1/profile.email — 2-шаговая смена e-mail.
+	 * Шаг 1 (без code): валидирует email, отправляет код на новый адрес.
+	 * Шаг 2 (с code): проверяет код, обновляет Email и Login.
+	 */
+	public function putProfileEmail($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user  = $this->rest->getUser();
+		$email = strtolower(trim($data['data']['email'] ?? ''));
+		$code  = trim($data['data']['code'] ?? '');
+
+		if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			return ['status' => 400, 'message' => 'Неверный формат e-mail', 'data' => null];
+		}
+
+		if (!empty(Connect::$instance->fetch('SELECT Id FROM s_Users WHERE Email = ?', [$email]))) {
+			return ['status' => 409, 'message' => 'Пользователь с таким e-mail уже существует', 'data' => null];
+		}
+
+		$memcache   = new Memcached('yes');
+		$cacheKey   = 'email_change_' . md5($user['Id'] . '_' . $email);
+
+		if ($code !== '') {
+			if ($memcache->get($cacheKey) !== $code) {
+				return ['status' => 400, 'message' => 'Неверный код подтверждения', 'data' => null];
+			}
+			Connect::$instance->query('UPDATE s_Users SET Email = ?, Login = ? WHERE Id = ?', [$email, $email, $user['Id']]);
+			$memcache->delete($cacheKey);
+			return ['status' => 200, 'message' => 'E-mail обновлён', 'data' => null];
+		}
+
+		$newCode = (string) rand(10001, 99999);
+		$memcache->set($cacheKey, $newCode, 600);
+		$mail = new Mail('html');
+		$mail->mail($email, 'Подтверждение почты', 'Код подтверждения смены E-mail: <b>' . $newCode . '</b>');
+
+		return ['status' => 200, 'message' => 'Код отправлен на e-mail', 'data' => null];
+	}
+
+	/**
+	 * PUT v1/profile.phone — 2-шаговая смена телефона.
+	 * Шаг 1 (без code): валидирует номер, отправляет код на e-mail пользователя.
+	 * Шаг 2 (с code): проверяет код, обновляет Phone.
+	 */
+	public function putProfilePhone($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user  = $this->rest->getUser();
+		$phone = Utils::phone($data['data']['phone'] ?? '')['num'] ?? '';
+		$code  = trim($data['data']['code'] ?? '');
+
+		if (strlen($phone) !== 11 || substr($phone, 0, 1) !== '7') {
+			return ['status' => 400, 'message' => 'Неверный формат телефона', 'data' => null];
+		}
+
+		if (!empty(Connect::$instance->fetch('SELECT Id FROM s_Users WHERE Phone = ?', [$phone]))) {
+			return ['status' => 409, 'message' => 'Пользователь с таким телефоном уже существует', 'data' => null];
+		}
+
+		$memcache = new Memcached('yes');
+		$cacheKey = 'phone_change_' . md5($user['Id'] . '_' . $phone);
+
+		if ($code !== '') {
+			if ($memcache->get($cacheKey) !== $code) {
+				return ['status' => 400, 'message' => 'Неверный код подтверждения', 'data' => null];
+			}
+			Connect::$instance->query('UPDATE s_Users SET Phone = ? WHERE Id = ?', [$phone, $user['Id']]);
+			$memcache->delete($cacheKey);
+			return ['status' => 200, 'message' => 'Телефон обновлён', 'data' => null];
+		}
+
+		$newCode = (string) rand(10001, 99999);
+		$memcache->set($cacheKey, $newCode, 600);
+		$mail = new Mail('html');
+		$mail->mail($user['Email'], 'Подтверждение телефона', 'Код подтверждения смены номера телефона: <b>' . $newCode . '</b>');
+
+		return ['status' => 200, 'message' => 'Код отправлен на e-mail', 'data' => null];
+	}
+
+	/**
+	 * GET v1/profile.settings — настройки пользователя
+	 * Возвращает данные из JSettings с подстановкой значений по умолчанию.
+	 */
+	public function getProfileSettings(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user = $this->rest->getUser();
+		$saved = json_decode($user['JSettings'] ?? '', true) ?? [];
+
+		$defaults = [
+			'theme'                   => 'auto',
+			'notificationsOrders'     => true,
+			'notificationsPromotions' => false,
+		];
+
+		return ['status' => 200, 'message' => 'OK', 'data' => array_merge($defaults, $saved)];
+	}
+
+	/**
+	 * PUT v1/profile.settings — обновление настроек пользователя
+	 * Принимает частичное обновление — только переданные ключи перезаписываются.
+	 */
+	public function putProfileSettings($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user = $this->rest->getUser();
+		$current = json_decode($user['JSettings'] ?? '', true) ?? [];
+
+		$allowed = ['theme', 'notificationsOrders', 'notificationsPromotions'];
+		foreach ($allowed as $key) {
+			if (array_key_exists($key, $data['data'] ?? [])) {
+				$current[$key] = $data['data'][$key];
+			}
+		}
+
+		Connect::$instance->query("UPDATE s_Users SET JSettings = ? WHERE Id = ?", [json_encode($current, JSON_UNESCAPED_UNICODE), $user['Id']]);
+
+		return ['status' => 200, 'message' => 'Settings updated', 'data' => null];
 	}
 
 	/**
