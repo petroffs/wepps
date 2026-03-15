@@ -335,7 +335,10 @@ class ProfileActions
 			'nameFirst' => $row['NameFirst'],
 			'email'     => $row['Email'],
 		], $row['CreateDate'], $_SERVER['REMOTE_ADDR'] ?? '');
-		return $this->result('Регистрация завершена<br/><br/><a href="/profile/" class="w_button">Войти в личный кабинет</a>');
+
+		$result = $this->result('Регистрация завершена<br/><br/><a href="/profile/" class="w_button">Войти в личный кабинет</a>');
+		$result['data']['login'] = $row['Login'];
+		return $result;
 	}
 
 	/**

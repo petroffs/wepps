@@ -109,10 +109,10 @@ class RestV1
 	}
 
 	/**
-	 * POST v1/profile — инициация регистрации нового пользователя.
-	 * Отправляет письмо со ссылкой подтверждения; аккаунт создаётся через auth.confirmReg.
+	 * POST v1/register — инициация регистрации нового пользователя.
+	 * Отправляет письмо со ссылкой подтверждения; аккаунт создаётся через register.confirm.
 	 */
-	public function postProfile($data = null): array
+	public function postRegister($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$login          = strtolower(trim($data['data']['login'] ?? ''));
@@ -126,11 +126,11 @@ class RestV1
 	}
 
 	/**
-	 * POST v1/profile.confirmReg — подтверждение регистрации по токену из письма.
+	 * POST v1/register.confirm — подтверждение регистрации по токену из письма.
 	 * Клиент передаёт token (из ссылки в письме), password и password2.
 	 * После успеха аккаунт создан, возвращается пара access+refresh токенов.
 	 */
-	public function postProfileConfirmReg($data = null): array
+	public function postRegisterConfirm($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$token     = $data['data']['token'] ?? '';
@@ -144,32 +144,9 @@ class RestV1
 			return $result;
 		}
 
-		// Получаем только что созданного пользователя для выдачи токенов.
-		// В токене из письма поле tsk — ID задачи, из неё берём login.
-		$jwt     = new Jwt();
-		$decoded = $jwt->token_decode($token);
-		$taskRow = Connect::$instance->fetch('SELECT BRequest FROM s_Tasks WHERE Id=?', [$decoded['payload']['tsk'] ?? 0])[0] ?? null;
-		$login   = $taskRow ? (json_decode($taskRow['BRequest'], true)['login'] ?? '') : '';
-		$user    = Connect::$instance->fetch('SELECT Id FROM s_Users WHERE Login=? AND IsHidden=0', [$login])[0] ?? null;
+		$login = $result['data']['login'] ?? '';
 
-		if (empty($user)) {
-			return ['status' => 500, 'message' => 'User not found after registration', 'data' => null];
-		}
-
-		$accessLifetime  = 3600;
-		$refreshLifetime = 2592000;
-
-		$accessToken  = $jwt->token_encode(['typ' => 'auth',    'id' => $user['Id']], $accessLifetime);
-		$refreshToken = $jwt->token_encode(['typ' => 'refresh', 'id' => $user['Id']], $refreshLifetime);
-		$accessData   = $jwt->token_decode($accessToken);
-		$refreshData  = $jwt->token_decode($refreshToken);
-
-		return ['status' => 200, 'message' => 'Registration complete', 'data' => [
-			'access_token'  => $accessToken,
-			'access_exp'    => $accessData['payload']['exp'],
-			'refresh_token' => $refreshToken,
-			'refresh_exp'   => $refreshData['payload']['exp'],
-		]];
+		return $this->postAuthLogin(['data' => ['login' => $login, 'password' => $password]]);
 	}
 
 	/**

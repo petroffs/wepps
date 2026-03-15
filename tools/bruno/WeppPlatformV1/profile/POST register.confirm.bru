@@ -1,18 +1,18 @@
 meta {
-  name: profile.confirmReg
+  name: POST register.confirm
   type: http
   seq: 3
 }
 
 post {
-  url: {{base_url}}/rest/v1/profile.confirmReg
+  url: {{base_url}}/rest/v1/register.confirm
   body: json
   auth: none
 }
 
 body:json {
   {
-    "type": "profile.confirmReg",
+    "type": "register.confirm",
     "data": {
       "token": "{{reg_token}}",
       "password": "{{reg_password}}",

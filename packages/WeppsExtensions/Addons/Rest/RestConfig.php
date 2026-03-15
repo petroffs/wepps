@@ -277,9 +277,9 @@ class RestConfig
                             'code'  => ['type' => 'int2',   'required' => false],
                         ],
                     ],
-                    'profile.confirmReg' => [
+                    'register.confirm' => [
                         'class' => RestV1::class,
-                        'method' => 'postProfileConfirmReg',
+                        'method' => 'postRegisterConfirm',
                         'note' => 'Complete registration via token from email. Returns access+refresh tokens.',
                         'log' => false,
                         'validation' => [
@@ -288,9 +288,9 @@ class RestConfig
                             'password2' => ['type' => 'string', 'required' => true],
                         ],
                     ],
-                    'profile' => [
+                    'register' => [
                         'class' => RestV1::class,
-                        'method' => 'postProfile',
+                        'method' => 'postRegister',
                         'note' => 'Initiate registration: validate data and send confirmation email',
                         'validation' => [
                             'login'          => ['type' => 'email',  'required' => true],

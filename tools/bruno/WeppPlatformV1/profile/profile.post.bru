@@ -1,18 +1,18 @@
 meta {
-  name: POST profile (register)
+  name: POST register
   type: http
   seq: 2
 }
 
 post {
-  url: {{base_url}}/rest/v1/profile
+  url: {{base_url}}/rest/v1/register
   body: json
   auth: none
 }
 
 body:json {
   {
-    "type": "profile",
+    "type": "register",
     "data": {
       "login": "{{new_user_login}}",
       "phone": "79001234567",
