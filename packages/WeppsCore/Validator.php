@@ -199,7 +199,7 @@ class Validator
 	}
 
 	/**
-	 * Проверяет, является ли значение корректным номером телефона (10 цифр после очистки).
+	 * Проверяет, является ли значение корректным номером телефона (11 цифр после очистки).
 	 *
 	 * @param mixed $value Значение для проверки.
 	 * @param string $errorMessage Сообщение об ошибке.
@@ -211,7 +211,7 @@ class Validator
 			return $errorMessage;
 		}
 		$cleaned = preg_replace('/\D/', '', $value);
-		return strlen($cleaned) === 10 ? '' : $errorMessage;
+		return strlen($cleaned) === 11 ? '' : $errorMessage;
 	}
 
 	/**

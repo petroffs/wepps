@@ -23,8 +23,8 @@ body:json {
 script:post-response {
   if (res.status === 200) {
     const data = res.body?.data;
-    if (data?.access_token)  bru.setVar("access_token",  data.access_token);
-    if (data?.refresh_token) bru.setVar("refresh_token", data.refresh_token);
+    if (data?.accessToken)  bru.setVar("access_token",  data.accessToken);
+    if (data?.refreshToken) bru.setVar("refresh_token", data.refreshToken);
   }
 }
 
@@ -32,11 +32,11 @@ tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);
   });
-  test("returns access_token", function() {
-    expect(res.body.data).to.have.property("access_token");
+  test("returns accessToken", function() {
+    expect(res.body.data).to.have.property("accessToken");
   });
-  test("returns refresh_token", function() {
-    expect(res.body.data).to.have.property("refresh_token");
+  test("returns refreshToken", function() {
+    expect(res.body.data).to.have.property("refreshToken");
   });
 }
 

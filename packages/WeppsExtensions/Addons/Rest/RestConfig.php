@@ -277,15 +277,27 @@ class RestConfig
                             'code'  => ['type' => 'int2',   'required' => false],
                         ],
                     ],
+                    'profile.confirmReg' => [
+                        'class' => RestV1::class,
+                        'method' => 'postProfileConfirmReg',
+                        'note' => 'Complete registration via token from email. Returns access+refresh tokens.',
+                        'log' => false,
+                        'validation' => [
+                            'token'     => ['type' => 'string', 'required' => true],
+                            'password'  => ['type' => 'string', 'required' => true],
+                            'password2' => ['type' => 'string', 'required' => true],
+                        ],
+                    ],
                     'profile' => [
                         'class' => RestV1::class,
                         'method' => 'postProfile',
-                        'note' => 'Register new user account',
+                        'note' => 'Initiate registration: validate data and send confirmation email',
                         'validation' => [
-                            'login' => ['type' => 'email', 'required' => true],
-                            'password' => ['type' => 'string', 'required' => true],
-                            'name' => ['type' => 'string', 'required' => false],
-                            'phone' => ['type' => 'phone', 'required' => false],
+                            'login'          => ['type' => 'email',  'required' => true],
+                            'phone'          => ['type' => 'phone',  'required' => true],
+                            'nameSurname'    => ['type' => 'string', 'required' => true],
+                            'nameFirst'      => ['type' => 'string', 'required' => true],
+                            'namePatronymic' => ['type' => 'string', 'required' => false],
                         ],
                     ],
                     'users' => [

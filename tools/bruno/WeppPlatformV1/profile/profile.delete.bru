@@ -1,12 +1,12 @@
 meta {
   name: DELETE profile
   type: http
-  seq: 5
-  tags: destructive manual
+  seq: 6
 }
 
 delete {
   url: {{base_url}}/rest/v1/profile
+  body: none
   auth: bearer
 }
 

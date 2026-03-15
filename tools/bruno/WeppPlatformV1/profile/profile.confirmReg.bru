@@ -1,0 +1,46 @@
+meta {
+  name: profile.confirmReg
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/rest/v1/profile.confirmReg
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "profile.confirmReg",
+    "data": {
+      "token": "{{reg_token}}",
+      "password": "{{reg_password}}",
+      "password2": "{{reg_password}}"
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("response has accessToken", function() {
+    expect(res.body.data).to.have.property("accessToken");
+  });
+  test("response has refreshToken", function() {
+    expect(res.body.data).to.have.property("refreshToken");
+  });
+  test("save access_token", function() {
+    bru.setVar("access_token", res.body.data.accessToken);
+  });
+  test("save refresh_token", function() {
+    bru.setVar("refresh_token", res.body.data.refreshToken);
+  });
+}
+
+docs {
+  Confirm registration via token from email link.
+  Send token from email link, password and password2.
+  On success account is created and access+refresh tokens are returned.
+}

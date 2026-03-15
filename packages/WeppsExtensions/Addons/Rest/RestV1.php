@@ -6,6 +6,7 @@ use WeppsCore\Memcached;
 use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\Messages\Mail\Mail;
+use WeppsExtensions\Profile\ProfileActions;
 
 /**
  * REST обработчик для API v1
@@ -61,13 +62,14 @@ class RestV1
 		$login = strtolower(trim($data['data']['login'] ?? ''));
 		$password = $data['data']['password'] ?? '';
 
-		$res = Connect::$instance->fetch("SELECT Id, Login, Password FROM s_Users WHERE Login = ? AND IsHidden = 0", [$login]);
+		$actions = new ProfileActions(false);
+		$signInResult = $actions->signIn($login, $password);
 
-		if (empty($res[0]) || !password_verify($password, $res[0]['Password'] ?? '')) {
+		if ($signInResult['status'] !== 200) {
 			return ['status' => 401, 'message' => 'Invalid credentials', 'data' => null];
 		}
 
-		$user = $res[0];
+		$user = $signInResult['data']['user'];
 		$jwt = new Jwt();
 
 		if (self::CONFIRM_AUTH) {
@@ -107,28 +109,67 @@ class RestV1
 	}
 
 	/**
-	 * POST v1/profile — регистрация нового пользователя
+	 * POST v1/profile — инициация регистрации нового пользователя.
+	 * Отправляет письмо со ссылкой подтверждения; аккаунт создаётся через auth.confirmReg.
 	 */
 	public function postProfile($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$login = strtolower(trim($data['data']['login'] ?? ''));
-		$password = $data['data']['password'] ?? '';
-		$name = $data['data']['name'] ?? '';
-		$phone = $data['data']['phone'] ?? '';
+		$login          = strtolower(trim($data['data']['login'] ?? ''));
+		$phone          = Utils::phone($data['data']['phone'] ?? '')['num'] ?? '';
+		$nameSurname    = $data['data']['nameSurname'] ?? '';
+		$nameFirst      = $data['data']['nameFirst'] ?? '';
+		$namePatronymic = $data['data']['namePatronymic'] ?? '';
 
-		$exists = Connect::$instance->fetch("SELECT Id FROM s_Users WHERE Login = ?", [$login]);
-		if (!empty($exists[0])) {
-			return ['status' => 409, 'message' => 'User with this email already exists', 'data' => null];
+		$actions = new ProfileActions(false);
+		return $actions->register($login, $phone, $nameSurname, $nameFirst, $namePatronymic);
+	}
+
+	/**
+	 * POST v1/profile.confirmReg — подтверждение регистрации по токену из письма.
+	 * Клиент передаёт token (из ссылки в письме), password и password2.
+	 * После успеха аккаунт создан, возвращается пара access+refresh токенов.
+	 */
+	public function postProfileConfirmReg($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$token     = $data['data']['token'] ?? '';
+		$password  = $data['data']['password'] ?? '';
+		$password2 = $data['data']['password2'] ?? '';
+
+		$actions = new ProfileActions(false);
+		$result = $actions->confirmReg($token, $password, $password2);
+
+		if ($result['status'] !== 200) {
+			return $result;
 		}
 
-		$hash = password_hash($password, PASSWORD_DEFAULT);
-		Connect::$instance->query(
-			"INSERT INTO s_Users (Login, Password, Name, Phone, IsHidden) VALUES (?, ?, ?, ?, 0)",
-			[$login, $hash, $name, $phone]
-		);
+		// Получаем только что созданного пользователя для выдачи токенов.
+		// В токене из письма поле tsk — ID задачи, из неё берём login.
+		$jwt     = new Jwt();
+		$decoded = $jwt->token_decode($token);
+		$taskRow = Connect::$instance->fetch('SELECT BRequest FROM s_Tasks WHERE Id=?', [$decoded['payload']['tsk'] ?? 0])[0] ?? null;
+		$login   = $taskRow ? (json_decode($taskRow['BRequest'], true)['login'] ?? '') : '';
+		$user    = Connect::$instance->fetch('SELECT Id FROM s_Users WHERE Login=? AND IsHidden=0', [$login])[0] ?? null;
 
-		return ['status' => 200, 'message' => 'Registration successful', 'data' => null];
+		if (empty($user)) {
+			return ['status' => 500, 'message' => 'User not found after registration', 'data' => null];
+		}
+
+		$accessLifetime  = 3600;
+		$refreshLifetime = 2592000;
+
+		$accessToken  = $jwt->token_encode(['typ' => 'auth',    'id' => $user['Id']], $accessLifetime);
+		$refreshToken = $jwt->token_encode(['typ' => 'refresh', 'id' => $user['Id']], $refreshLifetime);
+		$accessData   = $jwt->token_decode($accessToken);
+		$refreshData  = $jwt->token_decode($refreshToken);
+
+		return ['status' => 200, 'message' => 'Registration complete', 'data' => [
+			'access_token'  => $accessToken,
+			'access_exp'    => $accessData['payload']['exp'],
+			'refresh_token' => $refreshToken,
+			'refresh_exp'   => $refreshData['payload']['exp'],
+		]];
 	}
 
 	/**

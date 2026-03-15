@@ -2,7 +2,6 @@ meta {
   name: POST profile (register)
   type: http
   seq: 2
-  tags: manual
 }
 
 post {
@@ -16,9 +15,10 @@ body:json {
     "type": "profile",
     "data": {
       "login": "{{new_user_login}}",
-      "password": "{{new_user_password}}",
-      "name": "Иван Иванов",
-      "phone": "+79001234567"
+      "phone": "79001234567",
+      "nameSurname": "Ivanov",
+      "nameFirst": "Ivan",
+      "namePatronymic": "Ivanovich"
     }
   }
 }
@@ -33,6 +33,7 @@ tests {
 }
 
 docs {
-  Register new user account.
-  Поля name и phone — необязательные.
+  Initiate registration: validate data and send confirmation email.
+  Account is created after confirmation via profile.confirmReg.
+  namePatronymic is optional.
 }

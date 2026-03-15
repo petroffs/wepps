@@ -1,0 +1,83 @@
+[
+  {
+    "iterationIndex": 0,
+    "results": [
+      {
+        "test": {
+          "filename": "profile\\profile.post.bru"
+        },
+        "request": {
+          "method": "POST",
+          "url": "https:/platform.wepps/rest/v1/profile",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "data": "{\n  \"type\": \"profile\",\n  \"data\": {\n    \"login\": \"test@example.com\",\n    \"phone\": \"79001234567\",\n    \"nameSurname\": \"Ivanov\",\n    \"nameFirst\": \"Ivan\",\n    \"namePatronymic\": \"Ivanovich\"\n  }\n}"
+        },
+        "response": {
+          "status": 400,
+          "statusText": "Bad Request",
+          "headers": {
+            "date": "Sun, 15 Mar 2026 22:02:03 GMT",
+            "server": "Apache",
+            "upgrade": "h2,h2c",
+            "connection": "Upgrade, close",
+            "x-powered-by": "PHP/8.4.1",
+            "x-api-status": "400",
+            "content-length": "66",
+            "content-type": "application/json"
+          },
+          "data": {
+            "status": 400,
+            "message": "Field 'phone' must be phone",
+            "data": null
+          },
+          "url": "https://platform.wepps/rest/v1/profile",
+          "responseTime": 128
+        },
+        "error": null,
+        "status": "pass",
+        "assertionResults": [],
+        "testResults": [
+          {
+            "description": "status 200",
+            "status": "fail",
+            "error": "expected 400 to equal 200",
+            "uid": "Cafe9PyoUJYIeV_L7rVth"
+          },
+          {
+            "description": "response has message",
+            "status": "pass",
+            "uid": "tqoRIJBhVbf-XBEhCpmeR"
+          }
+        ],
+        "preRequestTestResults": [],
+        "postResponseTestResults": [],
+        "shouldStopRunnerExecution": false,
+        "runDuration": 0.3668284,
+        "name": "POST profile (register)",
+        "path": "profile\\profile.post",
+        "iterationIndex": 0
+      }
+    ],
+    "summary": {
+      "totalRequests": 1,
+      "passedRequests": 0,
+      "failedRequests": 1,
+      "errorRequests": 0,
+      "skippedRequests": 0,
+      "totalAssertions": 0,
+      "passedAssertions": 0,
+      "failedAssertions": 0,
+      "totalTests": 2,
+      "passedTests": 1,
+      "failedTests": 1,
+      "totalPreRequestTests": 0,
+      "passedPreRequestTests": 0,
+      "failedPreRequestTests": 0,
+      "totalPostResponseTests": 0,
+      "passedPostResponseTests": 0,
+      "failedPostResponseTests": 0
+    }
+  }
+]
