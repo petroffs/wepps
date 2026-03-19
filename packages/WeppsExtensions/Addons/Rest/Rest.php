@@ -738,10 +738,17 @@ class Rest
 		if (is_array($output) && isset($output['status'])) {
 			$this->status = $output['status'];
 			$extra = array_diff_key($output, array_flip(['status', 'message', 'data']));
+			
+			// Для M2M используем маппинг из БД, не применяем keysToCamelCase
+			$normalizedData = $this->normalizeData($output['data'] ?? null);
+			if ($this->version !== 'v1m2m') {
+				$normalizedData = $this->keysToCamelCase($normalizedData);
+			}
+			
 			$responseData = array_merge([
 				'status'  => $output['status'],
 				'message' => $output['message'] ?? '',
-				'data'    => $this->keysToCamelCase($this->normalizeData($output['data'] ?? null)),
+				'data'    => $normalizedData,
 			], $extra);
 
 		} else {

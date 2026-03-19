@@ -223,6 +223,50 @@ class RestV1M2MManager
         return $normalized;
     }
 
+    /**
+     * Нормализовать выходящие ключи из PascalCase в camelCase (для API)
+     * Использует обратный маппинг из $inputFieldMapping
+     * 
+     * @param array $data - данные из БД (PascalCase)
+     * @return array - с нормализованными ключами (camelCase)
+     */
+    protected function normalizeOutputKeys(array $data): array
+    {
+        // Построить обратный маппинг: PascalCase (БД) → camelCase (API)
+        $reverseMapping = array_flip($this->inputFieldMapping);
+        
+        $normalized = [];
+        foreach ($data as $key => $value) {
+            // Проверить обратный маппинг
+            if (isset($reverseMapping[$key])) {
+                $normalizedKey = $reverseMapping[$key];
+            } else {
+                // По умолчанию lcfirst (PascalCase → camelCase)
+                $normalizedKey = lcfirst($key);
+            }
+            $normalized[$normalizedKey] = $value;
+        }
+        return $normalized;
+    }
+
+    /**
+     * Нормализовать выходящие строки
+     * Применяет normalizeOutputKeys к массиву строк
+     * 
+     * @param array $rows - массив строк из БД
+     * @return array - нормализованные строки
+     */
+    protected function normalizeOutputRows(array $rows): array
+    {
+        $normalized = [];
+        foreach ($rows as $row) {
+            if (is_array($row)) {
+                $normalized[] = $this->normalizeOutputKeys($row);
+            }
+        }
+        return $normalized;
+    }
+
     // ========================================================================
     // МЕТОДЫ ДЛЯ РАБОТЫ С JSON ПОЛЯМИ
     // ========================================================================
@@ -304,6 +348,9 @@ class RestV1M2MManager
         // Декодировать JSON поля если нужно
         $items = $this->decodeJsonFields($items);
 
+        // Нормализовать выходные ключи: PascalCase → camelCase (из ApiMapping в БД)
+        $items = $this->normalizeOutputRows($items);
+
         // Построить пагинатор
         $paginator = $this->buildPaginator($page, $limit, $data->count);
 
@@ -353,6 +400,9 @@ class RestV1M2MManager
 
         // Декодировать JSON поля если нужно
         $item = $this->decodeJsonFieldsInRow($item);
+
+        // Нормализовать выходные ключи: PascalCase → camelCase (из ApiMapping в БД)
+        $item = $this->normalizeOutputKeys($item);
 
         return [
             'status' => 200,
