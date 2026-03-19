@@ -1,0 +1,40 @@
+meta {
+  name: POST orders.messages
+  type: http
+  seq: 8
+
+}
+
+post {
+  url: {{base_url}}/rest/v1/orders.messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "orders.messages",
+    "data": {
+      "id": {{order_id}},
+      "message": "Тестовое сообщение от клиента"
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("response has order data", function() {
+    expect(res.body.data).to.have.property("order");
+  });
+}
+
+docs {
+  Добавить сообщение к заказу.
+  Требует авторизации.
+}

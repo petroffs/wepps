@@ -2,7 +2,6 @@
 namespace WeppsExtensions\Profile;
 
 use WeppsCore\Connect;
-use WeppsCore\Data;
 use WeppsCore\Extension;
 use WeppsCore\Navigator;
 use WeppsCore\Smarty;
@@ -12,7 +11,6 @@ use WeppsCore\Utils;
 use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 use WeppsExtensions\Addons\RemoteServices\SmartCaptcha;
-use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Products\ProductsUtils;
 use WeppsExtensions\Template\Filters\Filters;
 
@@ -95,17 +93,7 @@ class Profile extends Extension
 					$this->getOrder($this->get['id'], $smarty);
 					break;
 				}
-				$this->profileTpl = 'ProfileOrders.tpl';
-				$obj = new Data('Orders');
-				$obj->setParams([$this->user['Id']]);
-				$orders = $obj->fetch('t.IsHidden=0 and t.UserId=?', 10, (int) ($this->get['page'] ?? 1), 'Id desc');
-				$smarty->assign('paginator', $obj->paginator);
-				$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
-				$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
-				if (empty($orders)) {
-					$this->profileTpl = 'ProfileOrdersEmpty.tpl';
-				}
-				$smarty->assign('orders', $orders);
+				$this->getOrders($smarty);
 				break;
 			case 'favorites':
 				$this->profileTpl = '';
@@ -127,12 +115,28 @@ class Profile extends Extension
 	}
 	private function getOrder($id, \Smarty\Smarty $smarty): array
 	{
-		$cartUtils = new CartUtils();
-		if (empty($order = $cartUtils->getOrder($id, $this->user['Id']))) {
+		$profileActions = new ProfileActions(true);
+		if (empty($order = $profileActions->getFullOrder($id, $this->user['Id']))) {
 			Exception::error(404);
 		}
 		$smarty->assign('order', $order);
 		return $order;
+	}
+	private function getOrders(\Smarty\Smarty $smarty): void
+	{
+		$this->profileTpl = 'ProfileOrders.tpl';
+		$profileActions = new ProfileActions(true);
+		$ordersData = $profileActions->getOrdersList($this->user['Id'], (int) ($this->get['page'] ?? 1), 10);
+
+		$smarty->assign('paginator', $ordersData['paginator']);
+		$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
+		$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
+
+		if ($ordersData['isEmpty']) {
+			$this->profileTpl = 'ProfileOrdersEmpty.tpl';
+		}
+
+		$smarty->assign('orders', $ordersData['orders']);
 	}
 	private function favorites(\Smarty\Smarty $smarty, array $profileNav)
 	{

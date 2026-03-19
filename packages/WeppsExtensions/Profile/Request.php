@@ -124,9 +124,12 @@ class RequestProfile extends Request
 					(int) ($this->get['id'] ?? 0),
 					$this->get['message'] ?? ''
 				);
-				if ($result['status'] === 200 && !empty($result['data']['order'])) {
-					$this->assign('order', $result['data']['order']);
-					$this->tpl = 'ProfileOrdersItem.tpl';
+				if ($result['status'] === 200) {
+					$order = $profileActions->getFullOrder((int) ($this->get['id'] ?? 0), Connect::$projectData['user']['Id']);
+					if (!empty($order)) {
+						$this->assign('order', $order);
+						$this->tpl = 'ProfileOrdersItem.tpl';
+					}
 				}
 				break;
 			case 'change-name':

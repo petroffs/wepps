@@ -3,9 +3,11 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
 use WeppsCore\Data;
+use WeppsCore\Utils;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Delivery\DeliveryUtils;
 use WeppsExtensions\Cart\Payments\PaymentsUtils;
+use WeppsExtensions\Profile\ProfileActions;
 use WeppsExtensions\Products\ProductsUtils;
 use WeppsExtensions\Template\Filters\Filters;
 
@@ -31,7 +33,7 @@ class RestV1APP extends RestV1
 		// Если пользователь авторизован (auth_optional в конфиге) — загружаем активные заказы
 		$activeOrders = [];
 		if ($this->rest->getUser()) {
-			$activeOrders = $this->getOrders(null, [1, 2])['data'] ?? [];
+			$activeOrders = $this->getOrders([1, 2])['data'] ?? [];
 		}
 
 		// Слайды — используем getSlides()
@@ -312,7 +314,7 @@ class RestV1APP extends RestV1
 			"INSERT INTO Products (Name, Price, NavigatorId, IsHidden, Priority) VALUES (?, ?, ?, 0, 0)",
 			[$name, $price, $category]
 		);
-		$id = Connect::$instance->db->lastInsertId();
+		$id = Connect::$db->lastInsertId();
 
 		return ['status' => 200, 'message' => 'Goods item created', 'data' => ['id' => (int) $id]];
 	}
@@ -369,43 +371,34 @@ class RestV1APP extends RestV1
 	/**
 	 * GET v1/orders — список заказов пользователя
 	 */
-	public function getOrders(?int $id = null, ?array $statuses = null): array
+	public function getOrders(?array $statuses = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
 		$page = max(1, (int) ($this->get['page'] ?? 1));
 		$limit = min(100, max(1, (int) ($this->get['limit'] ?? 20)));
 
-		$obj = new Data("Orders");
+		$profileActions = new ProfileActions(false);
+		$result = $profileActions->getOrdersList($user['Id'], $page, $limit, $statuses);
 
-		if ($id > 0) {
-			$obj->setParams([$id, $user['Id']]);
-			$res = $obj->fetch("t.Id = ? AND t.UserId = ? AND t.IsHidden = 0", 1, 1, "t.Id desc");
-		} elseif (!empty($statuses)) {
-			$in = rtrim(str_repeat('?,', count($statuses)), ',');
-			$obj->setParams(array_merge([$user['Id']], $statuses));
-			$res = $obj->fetch("t.UserId = ? AND t.OStatus IN ($in) AND t.IsHidden = 0", $limit, $page, "t.Id desc");
-		} else {
-			$obj->setParams([$user['Id']]);
-			$res = $obj->fetch("t.UserId = ? AND t.IsHidden = 0", $limit, $page, "t.Id desc");
-		}
-
-		if (!empty($res)) {
-			foreach ($res as $key => &$row) {
-				$jdata = json_decode($row['JData'], true);
+		// Обработка JSON в слое адаптера REST
+		if (!empty($result['orders'])) {
+			foreach ($result['orders'] as $key => &$row) {
+				$jdata = json_decode($row['JData'] ?? '{}', true);
 				if (!empty($jdata['items'])) {
 					foreach ($jdata['items'] as $k => &$item) {
 						$jdata['items'][$k]['url'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . $item['url'];
 						$jdata['items'][$k]['image'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $item['image'];
 					}
 				}
-				$jpositions = json_decode($row['JPositions'], true);
-				$res[$key]['JData'] = $jdata;
-				$res[$key]['JPositions'] = $jpositions;
+				//$jpositions = json_decode($row['JPositions'] ?? '[]', true);
+				$result['orders'][$key]['JData'] = $jdata;
+				// $result['orders'][$key]['JPositions'] = $jpositions;
+				unset($result['orders'][$key]['JPositions']);
 			}
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $res, 'count' => $obj->count];
+		return ['status' => 200, 'message' => 'OK', 'data' => $result['orders'], 'count' => $result['count']];
 	}
 
 	/**
@@ -414,19 +407,45 @@ class RestV1APP extends RestV1
 	public function getOrdersItem(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user = $this->rest->getUser();
 		$id = (int) ($this->get['id'] ?? 0);
 
 		if ($id <= 0) {
 			return ['status' => 400, 'message' => 'id required', 'data' => null];
 		}
 
-		$result = $this->getOrders($id);
+		$profileActions = new ProfileActions(false);
+		$order = $profileActions->getFullOrder($id, $user['Id']);
 
-		if (empty($result['data'][0])) {
+		if (empty($order)) {
 			return ['status' => 404, 'message' => 'Order not found', 'data' => null];
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $result['data'][0]];
+		// Обработка JSON в слое REST адаптера
+		$jdata = json_decode($order['JData'] ?? '{}', true);
+		if (!empty($jdata['items'])) {
+			foreach ($jdata['items'] as $k => &$item) {
+				$jdata['items'][$k]['url'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . $item['url'];
+				$jdata['items'][$k]['image'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $item['image'];
+			}
+		}
+		$jpositions = json_decode($order['JPositions'] ?? '[]', true);
+
+		// Трансформируем в ответ
+		$response = array_merge([
+			'name' => $order['Name'] ?? '',
+			'date' => $order['ODate'] ?? '',
+			'phone' => $order['Phone'] ?? '',
+			'email' => $order['Email'] ?? '',
+			'status' => $order['OStatus'] ?? '',
+			'address' => $order['Address'] ?? '',
+			'postalCode' => $order['PostalCode'] ?? '',
+			'messages' => $order['W_Messages'] ?? [],
+		], $order);
+		$response['JData'] = $jdata;
+		$response['JPositions'] = $jpositions;
+
+		return ['status' => 200, 'message' => 'OK', 'data' => $response];
 	}
 
 	/**
@@ -776,5 +795,36 @@ class RestV1APP extends RestV1
 		}
 
 		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+	}
+
+	// -------------------------------------------------------------------------
+	// ORDERS MESSAGES
+	// -------------------------------------------------------------------------
+
+	/**
+	 * GET v1/orders.messages — получить сообщения по заказу
+	 */
+	public function getOrdersMessages(): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user = $this->rest->getUser();
+		$orderId = (int) ($this->get['id'] ?? 0);
+
+		$actions = new ProfileActions(false);
+		return $actions->getOrderMessages($user['Id'], $orderId);
+	}
+
+	/**
+	 * POST v1/orders.messages — добавить сообщение к заказу
+	 */
+	public function postOrdersMessages($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$user = $this->rest->getUser();
+		$orderId = (int) ($data['data']['id'] ?? 0);
+		$message = $data['data']['message'] ?? '';
+
+		$actions = new ProfileActions(false);
+		return $actions->addOrdersMessage($user['Id'], $orderId, $message);
 	}
 }

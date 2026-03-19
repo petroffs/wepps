@@ -6,7 +6,7 @@ use WeppsCore\Exception;
 use WeppsCore\Smarty;
 use WeppsCore\Data;
 use WeppsCore\TextTransforms;
-use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Profile\ProfileActions;
 use WeppsCore\Connect;
 
 class Pdf
@@ -35,8 +35,8 @@ class Pdf
 		$this->footer = $smarty->fetch('PdfFooter.tpl');
 		switch ($action) {
 			case "Order":
-				$cartUtils = new CartUtils();
-				$order = $cartUtils->getOrder($this->get['id']);
+				$profileActions = new ProfileActions(false);
+				$order = $profileActions->getFullOrder($this->get['id']);
 				$obj = new Data("TradeClientsHistory");
 				$orderPositions = $obj->fetch("OrderId='{$this->get['id']}'");
 				if ($shop['UrNDS'] != 0) {
@@ -61,8 +61,8 @@ class Pdf
 				$this->filename = "Заказ {$order['Id']}.pdf";
 				break;
 			case "Receipt":
-				$cartUtils = new CartUtils();
-				$order = $cartUtils->getOrder($this->get['id']);
+				$profileActions = new ProfileActions(false);
+				$order = $profileActions->getFullOrder($this->get['id']);
 				$obj = new Data("TradeClientsHistory");
 				$orderPositions = $obj->fetch("OrderId='{$this->get['id']}'");
 				$orderSummLetter = TextTransforms::num2str($order['Summ']);
@@ -83,8 +83,8 @@ class Pdf
 				$this->filename = "Квитанция {$order['Id']}.pdf";
 				break;
 			case "Invoice":
-				$cartUtils = new CartUtils();
-				$order = $cartUtils->getOrder($this->get['id']);
+				$profileActions = new ProfileActions(false);
+				$order = $profileActions->getFullOrder($this->get['id']);
 				$obj = new Data("TradeClientsHistory");
 				$orderPositions = $obj->fetch("OrderId='{$this->get['id']}'");
 				if ($shop['UrNDS'] != 0) {

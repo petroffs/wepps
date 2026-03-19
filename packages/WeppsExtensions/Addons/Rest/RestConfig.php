@@ -180,6 +180,15 @@ class RestConfig
                             'id' => ['type' => 'int2', 'required' => true],
                         ],
                     ],
+                    'orders.messages' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'getOrdersMessages',
+                        'note' => 'Get messages for order by id',
+                        'auth_required' => true,
+                        'query_validation' => [
+                            'id' => ['type' => 'int2', 'required' => true],
+                        ],
+                    ],
                     'news' => [
                         'class' => RestV1APP::class,
                         'method' => 'getNews',
@@ -346,6 +355,16 @@ class RestConfig
                         'method' => 'postCartPlaceOrder',
                         'note' => 'Place an order from current cart (contact info taken from user profile)',
                         'auth_required' => true,
+                    ],
+                    'orders.messages' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'postOrdersMessages',
+                        'note' => 'Add message to order',
+                        'auth_required' => true,
+                        'validation' => [
+                            'id' => ['type' => 'int2', 'required' => true],
+                            'message' => ['type' => 'string', 'required' => true],
+                        ],
                     ],
                 ],
                 'delete' => [

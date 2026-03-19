@@ -85,7 +85,7 @@ class RestV1M2M extends RestV1
 			"INSERT INTO s_Users (Login, Password, Name, Phone, IsHidden) VALUES (?, ?, ?, ?, 0)",
 			[$login, $hash, $name, $phone]
 		);
-		$id = Connect::$instance->db->lastInsertId();
+		$id = Connect::$db->lastInsertId();
 
 		return ['status' => 200, 'message' => 'User created', 'data' => ['id' => (int)$id]];
 	}

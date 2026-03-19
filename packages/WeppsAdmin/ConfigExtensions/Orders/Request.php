@@ -7,7 +7,7 @@ use WeppsCore\Exception;
 use WeppsCore\Connect;
 use WeppsCore\Data;
 use WeppsCore\TextTransforms;
-use WeppsExtensions\Cart\CartUtils;
+use WeppsExtensions\Profile\ProfileActions;
 
 class RequestOrders extends Request {
 	public function request($action="") {
@@ -177,8 +177,8 @@ class RequestOrders extends Request {
 		}
 	}
 	private function getOrder($id) {
-		$cartUtils = new CartUtils();
-		$order = $cartUtils->getOrder($id);
+		$profileActions = new ProfileActions(false);
+		$order = $profileActions->getFullOrder($id, 0); // 0 = без проверки userId (админпанель видит все заказы)
 		if (empty($order)) {
 			Exception::error(404);
 		}

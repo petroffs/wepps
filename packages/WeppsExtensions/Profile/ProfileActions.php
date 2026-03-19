@@ -548,6 +548,83 @@ class ProfileActions
 	}
 
 	/**
+	 * Получает список заказов пользователя с пагинацией и фильтрацией.
+	 * Обрабатывает только RAW данные из БД, JSON остаётся в бинарном виде.
+	 * Трансформация JSON возложена на слой адаптера (REST, веб, админка).
+	 *
+	 * @param int $userId ID пользователя
+	 * @param int $page номер страницы (по умолчанию 1)
+	 * @param int $perPage заказов на странице (по умолчанию 10)
+	 * @param array|null $statuses фильтром по статусам (опционально), например [1, 2]
+	 *
+	 * @return array{orders: array, paginator: object, isEmpty: bool, count: int}
+	 */
+	public function getOrdersList(
+		int $userId,
+		int $page = 1,
+		int $perPage = 10,
+		?array $statuses = null
+	): array
+	{
+		$obj = new \WeppsCore\Data('Orders');
+
+		// Фильтрация по статусам
+		if (!empty($statuses)) {
+			$in = rtrim(str_repeat('?,', count($statuses)), ',');
+			$obj->setParams(array_merge([$userId], $statuses));
+			$conditions = "t.UserId = ? AND t.OStatus IN ($in) AND t.IsHidden = 0";
+		}
+		// Все заказы пользователя
+		else {
+			$obj->setParams([$userId]);
+			$conditions = "t.UserId = ? AND t.IsHidden = 0";
+		}
+
+		$orders = $obj->fetch($conditions, $perPage, $page, 't.Id desc');
+
+		return [
+			'orders' => $orders,
+			'paginator' => $obj->paginator,
+			'isEmpty' => empty($orders),
+			'count' => $obj->count,
+		];
+	}
+
+	/**
+	 * Получает полные данные заказа (включая позиции, платежи, сообщения).
+	 * 
+	 * @param int $orderId ID заказа
+	 * @param int $userId ID пользователя для проверки принадлежности (опционально)
+	 * @return array Полные данные заказа
+	 */
+	public function getFullOrder(int $orderId, int $userId = 0): array
+	{
+		$cartUtils = new CartUtils();
+		return $cartUtils->getOrder($orderId, $userId);
+	}
+
+	/**
+	 * Получает сообщения по заказу пользователя.
+	 *
+	 * @return array{status: int, message: string, data: array}
+	 */
+	public function getOrderMessages(int $userId, int $orderId): array
+	{
+		// Проверяем что заказ принадлежит пользователю
+		if (empty(Connect::$instance->fetch('SELECT Id FROM Orders WHERE Id=? AND UserId=?', [$orderId, $userId]))) {
+			return ['status' => 404, 'message' => 'Order not found', 'data' => []];
+		}
+
+		// Получаем сообщения заказа
+		$messages = Connect::$instance->fetch(
+			'SELECT * FROM OrdersEvents WHERE OrderId=? AND EType=? ORDER BY EDate ASC',
+			[$orderId, 'msg']
+		);
+
+		return ['status' => 200, 'message' => 'OK', 'data' => ['messages' => $messages ?: []]];
+	}
+
+	/**
 	 * Добавляет сообщение к заказу пользователя.
 	 *
 	 * @return array{status: int, message: string, data: array}
@@ -571,10 +648,8 @@ class ProfileActions
 			'EText'   => trim(strip_tags($message)),
 		]);
 		Connect::$instance->query("INSERT INTO OrdersEvents {$arr['insert']}", $arr['row']);
+		$messageId = (int) Connect::$db->lastInsertId();
 
-		$cartUtils = new CartUtils();
-		$order = $cartUtils->getOrder($orderId, $userId);
-
-		return ['status' => 200, 'message' => 'OK', 'data' => ['order' => $order]]; // OK
+		return ['status' => 200, 'message' => 'OK', 'data' => ['messageId' => $messageId]]; // OK
 	}
 }

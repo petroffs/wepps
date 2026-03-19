@@ -1,0 +1,30 @@
+meta {
+  name: GET orders.messages
+  type: http
+  seq: 7
+
+}
+
+get {
+  url: {{base_url}}/rest/v1/orders.messages?id={{order_id}}
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("response has messages array", function() {
+    expect(res.body.data).to.have.property("messages");
+    expect(res.body.data.messages).to.be.an("array");
+  });
+}
+
+docs {
+  Получить список сообщений к заказу.
+  Требует авторизации.
+}
