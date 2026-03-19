@@ -46,6 +46,13 @@ class RestV1M2MManager
     protected array $fieldConfig = [];
 
     /**
+     * JSON поля таблицы (требуют декодирования при выводе)
+     * Переопределяется в подклассах при необходимости
+     * ['JCart', 'JFav', 'JData']
+     */
+    protected array $jsonFields = [];
+
+    /**
      * Кэш доступных полей (ключ: TableName)
      */
     private static array $fieldsCache = [];
