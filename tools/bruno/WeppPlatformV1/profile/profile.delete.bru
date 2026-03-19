@@ -6,7 +6,7 @@ meta {
 
 delete {
   url: {{base_url}}/rest/v1/profile
-  body: none
+  body: json
   auth: bearer
 }
 
@@ -14,13 +14,30 @@ auth:bearer {
   token: {{access_token}}
 }
 
+body:json {
+  {
+    "type": "profile",
+    "data": {
+      "word": "УДАЛИТЬ",
+      "code": ""
+    }
+  }
+}
+
 tests {
-  test("status 200", function() {
-    expect(res.status).to.equal(200);
+  test("status 200 or 202", function() {
+    expect([200, 202]).to.include(res.status);
   });
 }
 
 docs {
-  Delete current user account.
-  Требует авторизации.
+  Удаление профиля (2 шага). Требует авторизации.
+  
+  Шаг 1 — отправить {word: "УДАЛИТЬ"} без code:
+    → код подтверждения отправляется на e-mail пользователя.
+    → ответ 202 (Accepted).
+  
+  Шаг 2 — отправить {word: "УДАЛИТЬ", code: "12345"}:
+    → аккаунт скрывается, профиль удалён (IsHidden = 1).
+    → ответ 200 (OK).
 }

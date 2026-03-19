@@ -13,5 +13,6 @@ vars:secret [
   user_password,
   new_user_password,
   password_old,
-  password_new
+  password_new,
+  password_code
 ]

@@ -176,10 +176,18 @@ class RequestProfile extends Request
 				$result = $profileActions->changePassword(
 					Connect::$projectData['user']['Id'],
 					$this->get['password'] ?? '',
-					$this->get['password2'] ?? ''
+					$this->get['password2'] ?? '',
+					$this->get['code'] ?? ''
 				);
 				$this->errors = $profileActions->errors;
-				$this->outer($result['status'] === 200 ? $result['message'] : '');
+				if ($result['status'] === 200) {
+					$this->outer($result['message']);
+					exit();
+				}
+				if ($result['status'] === 202) {
+					echo "<script>$('.change-password-code').removeClass('w_hide');$('.change-password-code').find('input').prop('disabled',false);</script>";
+				}
+				$this->outer("", true, false);
 				break;
 			case 'remove':
 				$result = $profileActions->remove(

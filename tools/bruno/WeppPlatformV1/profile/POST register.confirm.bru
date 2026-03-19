@@ -21,6 +21,14 @@ body:json {
   }
 }
 
+script:post-response {
+  if (res.status === 200) {
+    const data = res.body?.data;
+    if (data?.accessToken)  bru.setVar("access_token",  data.accessToken);
+    if (data?.refreshToken) bru.setVar("refresh_token", data.refreshToken);
+  }
+}
+
 tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);

@@ -89,21 +89,25 @@ class ProfileActions
 		if ($code !== '') {
 			if ($memcache->get($cacheKey) !== $code) {
 				$this->errors['code'] = 'Неверный код';
-				return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]]; // Bad Request
+				return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]];
 			}
 			Connect::$instance->query('UPDATE s_Users SET Email=?,Login=? WHERE Id=?', [$email, $email, $userId]);
 			$memcache->delete($cacheKey);
-			return ['status' => 200, 'message' => 'Ваш E-mail обновлен', 'data' => []]; // OK
+			return ['status' => 200, 'message' => 'Ваш E-mail обновлен', 'data' => []];
 		}
 
 		if (!empty(array_filter($this->errors))) {
-			return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]]; // Bad Request
+			// Проверяем конфликт (email уже существует) или валидация
+			if (strpos($this->errors['login'], 'уже существует') !== false) {
+				return ['status' => 409, 'message' => $this->errors['login'], 'data' => ['errors' => $this->errors]];
+			}
+			return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]];
 		}
 
 		$newCode = (string) rand(10001, 99999);
 		$memcache->set($cacheKey, $newCode, 600);
 		(new Mail('html'))->mail($email, 'Подтверждение почты', 'Код подтверждения смены E-mail: <b>' . $newCode . '</b>');
-		return ['status' => 202, 'message' => 'Accepted', 'data' => []]; // Accepted — код отправлен
+		return ['status' => 202, 'message' => 'Код отправлен', 'data' => []];
 	}
 
 	/**
@@ -134,41 +138,76 @@ class ProfileActions
 		if ($code !== '') {
 			if ($memcache->get($cacheKey) !== $code) {
 				$this->errors['code'] = 'Неверный код';
-				return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]]; // Bad Request
+				return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]];
 			}
 			Connect::$instance->query('UPDATE s_Users SET Phone=? WHERE Id=?', [$phone, $userId]);
 			$memcache->delete($cacheKey);
-			return ['status' => 200, 'message' => 'Ваш телефон обновлен', 'data' => []]; // OK
+			return ['status' => 200, 'message' => 'Ваш телефон обновлен', 'data' => []];
 		}
 
 		if (!empty(array_filter($this->errors))) {
-			return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]]; // Bad Request
+			// Проверяем конфликт (телефон уже существует) или валидация
+			if (strpos($this->errors['phone'], 'уже существует') !== false) {
+				return ['status' => 409, 'message' => $this->errors['phone'], 'data' => ['errors' => $this->errors]];
+			}
+			return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]];
 		}
 
 		$newCode = (string) rand(10001, 99999);
 		$memcache->set($cacheKey, $newCode, 600);
 		(new Mail('html'))->mail($currentEmail, 'Подтверждение телефона', 'Код подтверждения смены номера телефона: <b>' . $newCode . '</b>');
-		return ['status' => 202, 'message' => 'Accepted', 'data' => []]; // Accepted — код отправлен
+		return ['status' => 202, 'message' => 'Код отправлен', 'data' => []];
 	}
 
 	/**
 	 * Проверяет надёжность пароля и совпадение с подтверждением.
+	 * Опционально проверяет старый пароль пользователя.
 	 * Ошибки записываются в $this->errors['password'].
+	 *
+	 * @param string $passwordNew - новый пароль
+	 * @param string $passwordNew2 - подтверждение нового пароля
+	 * @param int|null $userId - если указан, проверяет старый пароль из БД
+	 * @param string $passwordOld - тек старый пароль для проверки
 	 */
-	public function checkPassword(string $password, string $password2): bool
+	public function checkPassword(string $passwordNew, string $passwordNew2, ?int $userId = null, string $passwordOld = ''): bool
 	{
-		$password  = trim($password);
-		$password2 = trim($password2);
+		$passwordNew  = trim($passwordNew);
+		$passwordNew2 = trim($passwordNew2);
 
-		if (strlen($password) < 6) {
+		// Если требуется проверка старого пароля
+		if ($userId !== null && !empty($passwordOld)) {
+			$res = Connect::$instance->fetch('SELECT Password FROM s_Users WHERE Id=?', [$userId]);
+			if (empty($res[0])) {
+				$this->errors['password'] = 'Пользователь не найден';
+				return false;
+			}
+
+			$currentHash = $res[0]['Password'];
+			if (strlen($currentHash) == 32) {
+				// Старый формат MD5
+				if (md5($passwordOld) != $currentHash) {
+					$this->errors['password'] = 'Неверный текущий пароль';
+					return false;
+				}
+			} else {
+				// BCRYPT формат
+				if (!password_verify($passwordOld, $currentHash)) {
+					$this->errors['password'] = 'Неверный текущий пароль';
+					return false;
+				}
+			}
+		}
+
+		// Проверка надёжности нового пароля
+		if (strlen($passwordNew) < 6) {
 			$this->errors['password'] = 'Пароль должен быть не менее 6 символов';
-		} elseif (!preg_match('/[A-Z]/', $password)) {
+		} elseif (!preg_match('/[A-Z]/', $passwordNew)) {
 			$this->errors['password'] = 'Пароль должен содержать хотя бы одну заглавную букву';
-		} elseif (!preg_match('/[a-z]/', $password)) {
+		} elseif (!preg_match('/[a-z]/', $passwordNew)) {
 			$this->errors['password'] = 'Пароль должен содержать хотя бы одну строчную букву';
-		} elseif (!preg_match('/[^A-Za-z0-9]/', $password)) {
+		} elseif (!preg_match('/[^A-Za-z0-9]/', $passwordNew)) {
 			$this->errors['password'] = 'Пароль должен содержать хотя бы один спецсимвол';
-		} elseif ($password !== $password2) {
+		} elseif ($passwordNew !== $passwordNew2) {
 			$this->errors['password'] = 'Пароли не совпадают';
 		}
 
@@ -176,21 +215,58 @@ class ProfileActions
 	}
 
 	/**
-	 * Изменяет пароль пользователя (без проверки старого пароля).
+	 * Изменяет пароль пользователя (2-шаговый процесс с подтверждением по e-mail).
+	 * Шаг 1 (без code): валидирует новый пароль, отправляет код на e-mail пользователя.
+	 * Шаг 2 (с code): проверяет код, обновляет пароль.
 	 *
 	 * @return array{status: int, message: string, data: array}
 	 */
-	public function changePassword(int $userId, string $password, string $password2): array
+	public function changePassword(int $userId, string $password, string $password2, string $code = ''): array
 	{
 		$this->errors = [];
+		
+		// Получаем email пользователя
+		$user = Connect::$instance->fetch('SELECT Email FROM s_Users WHERE Id=?', [$userId]);
+		if (empty($user[0])) {
+			$this->errors['password'] = 'Пользователь не найден';
+			return $this->result();
+		}
+		$userEmail = $user[0]['Email'];
+
+		// Шаг 2: Проверяем код подтверждения
+		if (!empty($code)) {
+			$memcache = new Memcached('yes');
+			$cacheKey = 'password_code_' . $userId;
+			$savedCode = $memcache->get($cacheKey);
+
+			if ($savedCode !== $code) {
+				$this->errors['code'] = 'Неверный код';
+				return ['status' => 400, 'message' => 'Bad Request', 'data' => ['errors' => $this->errors]];
+			}
+
+			// Валидируем пароль ещё раз перед обновлением
+			if (!$this->checkPassword($password, $password2)) {
+				return $this->result();
+			}
+
+			Connect::$instance->query('UPDATE s_Users SET Password=? WHERE Id=?', [password_hash(trim($password), PASSWORD_BCRYPT), $userId]);
+			$memcache->delete($cacheKey);
+			return ['status' => 200, 'message' => 'Пароль обновлен', 'data' => []];
+		}
+
+		// Шаг 1: Валидируем новый пароль
 		if (!$this->checkPassword($password, $password2)) {
 			return $this->result();
 		}
-		Connect::$instance->query(
-			'UPDATE s_Users SET Password=? WHERE Id=?',
-			[password_hash(trim($password), PASSWORD_BCRYPT), $userId]
-		);
-		return $this->result('Пароль обновлен');
+
+		// Отправляем код подтверждения
+		$newCode = (string) rand(10001, 99999);
+		$memcache = new Memcached('yes');
+		$cacheKey = 'password_code_' . $userId;
+		$memcache->set($cacheKey, $newCode, 600);
+		(new Mail('html'))->mail($userEmail, 'Подтверждение смены пароля', 'Код подтверждения смены пароля: <b>' . $newCode . '</b>');
+		
+		return ['status' => 202, 'message' => 'Код отправлен', 'data' => []];
 	}
 
 	/**
@@ -226,7 +302,7 @@ class ProfileActions
 		$newCode = (string) rand(10001, 99999);
 		$memcache->set($cacheKey, $newCode, 600);
 		(new Mail('html'))->mail($userEmail, 'Подтверждение удаления аккаунта', 'Код подтверждения удаления аккаунта: <b>' . $newCode . '</b>');
-		return ['status' => 202, 'message' => 'Accepted', 'data' => []]; // Accepted — код отправлен
+		return ['status' => 202, 'message' => 'Код отправлен', 'data' => []]; // Accepted — код отправлен
 	}
 
 	/**

@@ -100,7 +100,6 @@
         <h2>Пароль</h2>
         <form action="javascript:formWepps.send('change-password','change-password-form','/ext/Profile/Request.php')"
             id="change-password-form" class="w_form w_flex_12 w_flex_11_view_medium" autocomplete="off">
-
             <fieldset>
                 <section>
                     <div class="title">Новый пароль</div>
@@ -112,6 +111,12 @@
                     <div class="title">Повторите пароль</div>
                     <label class="w_label w_input w_require">
                         <input type="password" name="password2" placeholder="" autocomplete="new-password" />
+                    </label>
+                </section>
+                <section class="w_hide change-password-code">
+                    <div class="title">Код подтверждения</div>
+                    <label class="w_label w_input w_require">
+                        <input type="text" name="code" value="" placeholder="" disabled />
                     </label>
                 </section>
             </fieldset>

@@ -238,6 +238,19 @@ class RestV1
 		]];
 	}
 
+	/**
+	 * POST v1/auth.password-reset — запрос на восстановление пароля.
+	 * Отправляет письмо со ссылкой и токеном для установки нового пароля.
+	 */
+	public function postAuthPasswordReset($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$login = strtolower(trim($data['data']['login'] ?? ''));
+
+		$actions = new ProfileActions(false);
+		return $actions->requestPasswordReset($login);
+	}
+
 	// -------------------------------------------------------------------------
 	// PROFILE
 	// -------------------------------------------------------------------------
@@ -286,39 +299,28 @@ class RestV1
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
 
-		$fields = [
-			'nameSurname'    => 'NameSurname',
-			'nameFirst'      => 'NameFirst',
-			'namePatronymic' => 'NamePatronymic',
-			'city'           => 'City',
-			'address'        => 'Address',
-		];
-
-		$set = [];
-		$params = [];
-
-		foreach ($fields as $key => $column) {
-			if (isset($data['data'][$key])) {
-				$set[] = "$column = ?";
-				$params[] = $data['data'][$key];
-			}
-		}
-
-		if (empty($set)) {
+		if (empty($data['data'])) {
 			return ['status' => 400, 'message' => 'No fields to update', 'data' => null];
 		}
 
-		// Обновляем Name как склейку ФИО, если переданы именные поля
-		$surname    = $data['data']['nameSurname']    ?? $user['NameSurname']    ?? '';
-		$first      = $data['data']['nameFirst']      ?? $user['NameFirst']      ?? '';
-		$patronymic = $data['data']['namePatronymic'] ?? $user['NamePatronymic'] ?? '';
-		$set[]    = 'Name = ?';
-		$params[] = preg_replace('/\s+/', ' ', trim("$surname $first $patronymic"));
+		// Проверяем наличие хотя бы одного поля ФИО
+		if (!isset($data['data']['nameSurname']) && !isset($data['data']['nameFirst']) && !isset($data['data']['namePatronymic'])) {
+			return ['status' => 400, 'message' => 'No fields to update', 'data' => null];
+		}
 
-		$params[] = $user['Id'];
-		Connect::$instance->query("UPDATE s_Users SET " . implode(', ', $set) . " WHERE Id = ?", $params);
+		$profileActions = new ProfileActions(false);
+		$result = $profileActions->changeName(
+			$user['Id'],
+			$data['data']['nameSurname'] ?? $user['NameSurname'] ?? '',
+			$data['data']['nameFirst'] ?? $user['NameFirst'] ?? '',
+			$data['data']['namePatronymic'] ?? $user['NamePatronymic'] ?? ''
+		);
 
-		return ['status' => 200, 'message' => 'Profile updated', 'data' => null];
+		return [
+			'status'  => $result['status'],
+			'message' => $result['status'] === 200 ? 'Profile updated' : $result['message'],
+			'data'    => null
+		];
 	}
 
 	/**
@@ -333,32 +335,8 @@ class RestV1
 		$email = strtolower(trim($data['data']['email'] ?? ''));
 		$code  = trim($data['data']['code'] ?? '');
 
-		if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			return ['status' => 400, 'message' => 'Неверный формат e-mail', 'data' => null];
-		}
-
-		if (!empty(Connect::$instance->fetch('SELECT Id FROM s_Users WHERE Email = ?', [$email]))) {
-			return ['status' => 409, 'message' => 'Пользователь с таким e-mail уже существует', 'data' => null];
-		}
-
-		$memcache   = new Memcached('yes');
-		$cacheKey   = 'email_change_' . md5($user['Id'] . '_' . $email);
-
-		if ($code !== '') {
-			if ($memcache->get($cacheKey) !== $code) {
-				return ['status' => 400, 'message' => 'Неверный код подтверждения', 'data' => null];
-			}
-			Connect::$instance->query('UPDATE s_Users SET Email = ?, Login = ? WHERE Id = ?', [$email, $email, $user['Id']]);
-			$memcache->delete($cacheKey);
-			return ['status' => 200, 'message' => 'E-mail обновлён', 'data' => null];
-		}
-
-		$newCode = (string) rand(10001, 99999);
-		$memcache->set($cacheKey, $newCode, 600);
-		$mail = new Mail('html');
-		$mail->mail($email, 'Подтверждение почты', 'Код подтверждения смены E-mail: <b>' . $newCode . '</b>');
-
-		return ['status' => 200, 'message' => 'Код отправлен на e-mail', 'data' => null];
+		$profileActions = new ProfileActions(false);
+		return $profileActions->changeEmail($user['Id'], $email, $code);
 	}
 
 	/**
@@ -373,32 +351,8 @@ class RestV1
 		$phone = Utils::phone($data['data']['phone'] ?? '')['num'] ?? '';
 		$code  = trim($data['data']['code'] ?? '');
 
-		if (strlen($phone) !== 11 || substr($phone, 0, 1) !== '7') {
-			return ['status' => 400, 'message' => 'Неверный формат телефона', 'data' => null];
-		}
-
-		if (!empty(Connect::$instance->fetch('SELECT Id FROM s_Users WHERE Phone = ?', [$phone]))) {
-			return ['status' => 409, 'message' => 'Пользователь с таким телефоном уже существует', 'data' => null];
-		}
-
-		$memcache = new Memcached('yes');
-		$cacheKey = 'phone_change_' . md5($user['Id'] . '_' . $phone);
-
-		if ($code !== '') {
-			if ($memcache->get($cacheKey) !== $code) {
-				return ['status' => 400, 'message' => 'Неверный код подтверждения', 'data' => null];
-			}
-			Connect::$instance->query('UPDATE s_Users SET Phone = ? WHERE Id = ?', [$phone, $user['Id']]);
-			$memcache->delete($cacheKey);
-			return ['status' => 200, 'message' => 'Телефон обновлён', 'data' => null];
-		}
-
-		$newCode = (string) rand(10001, 99999);
-		$memcache->set($cacheKey, $newCode, 600);
-		$mail = new Mail('html');
-		$mail->mail($user['Email'], 'Подтверждение телефона', 'Код подтверждения смены номера телефона: <b>' . $newCode . '</b>');
-
-		return ['status' => 200, 'message' => 'Код отправлен на e-mail', 'data' => null];
+		$profileActions = new ProfileActions(false);
+		return $profileActions->changePhone($user['Id'], $user['Email'], $phone, $code);
 	}
 
 	/**
@@ -443,36 +397,41 @@ class RestV1
 	}
 
 	/**
-	 * PUT v1/profile.password — смена пароля
+	 * PUT v1/profile.password — 2-шаговая смена пароля с подтверждением по e-mail.
+	 * Шаг 1 (без code): валидирует пароль, отправляет код на e-mail.
+	 * Шаг 2 (с code): проверяет код, обновляет пароль.
 	 */
 	public function putProfilePassword($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		$passwordOld = $data['data']['password_old'] ?? '';
 		$passwordNew = $data['data']['password_new'] ?? '';
+		$passwordNew2 = $data['data']['password_new2'] ?? '';
+		$code = trim($data['data']['code'] ?? '');
 
-		$res = Connect::$instance->fetch("SELECT Password FROM s_Users WHERE Id = ?", [$user['Id']]);
-
-		if (empty($res[0]) || !password_verify($passwordOld, $res[0]['Password'])) {
-			return ['status' => 401, 'message' => 'Current password is incorrect', 'data' => null];
-		}
-
-		$hash = password_hash($passwordNew, PASSWORD_DEFAULT);
-		Connect::$instance->query("UPDATE s_Users SET Password = ? WHERE Id = ?", [$hash, $user['Id']]);
-
-		return ['status' => 200, 'message' => 'Password changed', 'data' => null];
+		$profileActions = new ProfileActions(false);
+		return $profileActions->changePassword($user['Id'], $passwordNew, $passwordNew2, $code);
 	}
 
 	/**
-	 * DELETE v1/profile — удаление аккаунта
+	 * DELETE v1/profile — удаление аккаунта (2-step: word confirmation → code confirmation)
+	 * После успешного удаления (статус 200) клиент должен удалить обе токены из локального хранилища.
 	 */
-	public function deleteProfile(): array
+	public function deleteProfile($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		Connect::$instance->query("UPDATE s_Users SET IsHidden = 1 WHERE Id = ?", [$user['Id']]);
+		$word = trim($data['data']['word'] ?? '');
+		$code = trim($data['data']['code'] ?? '');
 
-		return ['status' => 200, 'message' => 'Account deleted', 'data' => null];
+		$profileActions = new ProfileActions(false);
+		$result = $profileActions->remove($user['Id'], $user['Login'], $user['Email'], $word, $code);
+
+		// При успешном удалении указываем клиенту удалить токены
+		if ($result['status'] === 200) {
+			$result['message'] = 'Account deleted. Please remove both access_token and refresh_token from local storage.';
+		}
+
+		return $result;
 	}
 }

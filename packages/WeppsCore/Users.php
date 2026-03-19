@@ -89,6 +89,9 @@ class Users
 		}
 		$sql = "select * from s_Users where Id=? and IsHidden=0";
 		$res = Connect::$instance->fetch($sql, [$data['payload']['id']]);
+		if (empty($res[0])) {
+			return false;
+		}
 		Connect::$projectData['user'] = $res[0];
 		return true;
 	}

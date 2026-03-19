@@ -300,6 +300,14 @@ class RestConfig
                             'namePatronymic' => ['type' => 'string', 'required' => false],
                         ],
                     ],
+                    'profile.password-reset' => [
+                        'class' => RestV1::class,
+                        'method' => 'postAuthPasswordReset',
+                        'note' => 'Request password reset: send recovery link to email',
+                        'validation' => [
+                            'login' => ['type' => 'email', 'required' => true],
+                        ],
+                    ],
                     'users' => [
                         'class' => RestV1M2M::class,
                         'method' => 'postUsers',
@@ -344,8 +352,12 @@ class RestConfig
                     'profile' => [
                         'class' => RestV1::class,
                         'method' => 'deleteProfile',
-                        'note' => 'Delete current user account',
+                        'note' => 'Delete current user account (2-step: word "УДАЛИТЬ" → code confirmation)',
                         'auth_required' => true,
+                        'validation' => [
+                            'word' => ['type' => 'string', 'required' => true],
+                            'code' => ['type' => 'string', 'required' => false],
+                        ],
                     ],
                     'goods' => [
                         'class' => RestV1APP::class,
@@ -423,11 +435,12 @@ class RestConfig
                     'profile.password' => [
                         'class' => RestV1::class,
                         'method' => 'putProfilePassword',
-                        'note' => 'Change current user password',
+                        'note' => 'Change current user password (2-step: send code → confirm with code)',
                         'auth_required' => true,
                         'validation' => [
-                            'password_old' => ['type' => 'string', 'required' => true],
                             'password_new' => ['type' => 'string', 'required' => true],
+                            'password_new2' => ['type' => 'string', 'required' => true],
+                            'code' => ['type' => 'string', 'required' => false],
                         ],
                     ],
                     'goods' => [
