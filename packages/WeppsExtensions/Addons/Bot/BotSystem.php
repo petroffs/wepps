@@ -4,6 +4,7 @@ namespace WeppsExtensions\Addons\Bot;
 use WeppsCore\Connect;
 use WeppsCore\Tasks;
 use WeppsCore\Memcached;
+use WeppsExtensions\Addons\Messages\Telegram\Telegram;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Payments\Yookassa\Yookassa;
 use WeppsExtensions\Profile\ProfileUtils;
@@ -47,6 +48,14 @@ class BotSystem extends Bot {
 					break;
 				case 'reg-complete':
 					$profileUtils->processRegCompleteTask($value,$tasks);
+					break;
+				case 'telegram_timeout':
+					$telegram = new Telegram();
+					$telegram->processTimeoutTask($value, $tasks);
+					break;
+				case 'telegram_error':
+					$telegram = new Telegram();
+					$telegram->processErrorTask($value, $tasks);
 					break;
 				default:
 					$tasks->update($value['Id'],['message'=>'task fail'],404);
