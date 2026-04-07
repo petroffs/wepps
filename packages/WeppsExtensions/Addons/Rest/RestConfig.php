@@ -141,26 +141,6 @@ class RestConfig
                             'search' => ['type' => 'string', 'required' => false],
                         ],
                     ],
-                    'users' => [
-                        'class' => RestV1M2M::class,
-                        'method' => 'getUsers',
-                        'note' => 'Get list of users (M2M)',
-                        'role_required' => [1, 2],
-                        'query_validation' => [
-                            'page' => ['type' => 'int2', 'required' => false],
-                            'limit' => ['type' => 'int2', 'required' => false],
-                            'search' => ['type' => 'string', 'required' => false],
-                        ],
-                    ],
-                    'users.item' => [
-                        'class' => RestV1M2M::class,
-                        'method' => 'getUsersItem',
-                        'note' => 'Get single user by id (M2M)',
-                        'role_required' => [1, 2],
-                        'query_validation' => [
-                            'id' => ['type' => 'int2', 'required' => true],
-                        ],
-                    ],
                     'orders' => [
                         'class' => RestV1APP::class,
                         'method' => 'getOrders',
@@ -315,18 +295,6 @@ class RestConfig
                         'note' => 'Request password reset: send recovery link to email',
                         'validation' => [
                             'login' => ['type' => 'email', 'required' => true],
-                        ],
-                    ],
-                    'users' => [
-                        'class' => RestV1M2M::class,
-                        'method' => 'postUsers',
-                        'note' => 'Create a new user (M2M)',
-                        'role_required' => [1, 2],
-                        'validation' => [
-                            'login' => ['type' => 'email', 'required' => true],
-                            'password' => ['type' => 'string', 'required' => true],
-                            'name' => ['type' => 'string', 'required' => false],
-                            'phone' => ['type' => 'phone', 'required' => false],
                         ],
                     ],
                     'goods' => [
@@ -520,18 +488,6 @@ class RestConfig
                             'paymentsId' => ['type' => 'string', 'required' => true],
                         ],
                     ],
-                    'users' => [
-                        'class' => RestV1M2M::class,
-                        'method' => 'putUsers',
-                        'note' => 'Update user by id (M2M)',
-                        'role_required' => [1, 2],
-                        'validation' => [
-                            'id' => ['type' => 'int', 'required' => true],
-                            'name' => ['type' => 'string', 'required' => false],
-                            'phone' => ['type' => 'phone', 'required' => false],
-                            'email' => ['type' => 'email', 'required' => false],
-                        ],
-                    ],
                 ],
                 'cli' => [],
             ],
@@ -566,6 +522,112 @@ class RestConfig
                 'delete' => [],
                 'put' => [],
             ],
+			'm2m' => [
+				'get' => [
+					// ===== Users =====
+					'users' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getUsers',
+						'note' => 'M2M: Get list of users (configurable via s_Config)',
+					],
+					'users.item' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getUsersItem',
+						'note' => 'M2M: Get single user by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
+					// ===== Products =====
+					'products' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getProducts',
+						'note' => 'M2M: Get list of products (configurable via s_Config)',
+					],
+					'products.item' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getProductsItem',
+						'note' => 'M2M: Get single product by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
+					// ===== Orders =====
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getOrders',
+						'note' => 'M2M: Get list of orders (configurable via s_Config)',
+					],
+					'orders.item' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getOrdersItem',
+						'note' => 'M2M: Get single order by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
+				],
+				'post' => [
+					'users' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postUsers',
+						'note' => 'M2M: Create a new user (configurable via s_Config)',
+					],
+					'products' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postProducts',
+						'note' => 'M2M: Create a new product (configurable via s_Config)',
+					],
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postOrders',
+						'note' => 'M2M: Create a new order (configurable via s_Config)',
+					],
+				],
+				'delete' => [
+					'users' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteUsers',
+						'note' => 'M2M: Delete user by id (configurable via s_Config)',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
+					'products' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteProducts',
+						'note' => 'M2M: Delete product by id (configurable via s_Config)',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteOrders',
+						'note' => 'M2M: Delete order by id (configurable via s_Config)',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
+				],
+				'put' => [
+					'users' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putUsers',
+						'note' => 'M2M: Update user by id (configurable via s_Config)',
+					],
+					'products' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putProducts',
+						'note' => 'M2M: Update product by id (configurable via s_Config)',
+					],
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putOrders',
+						'note' => 'M2M: Update order by id (configurable via s_Config)',
+					],
+				],	
+			],
             'cli' => [
                 'cli' => [
                     'removeLogLocal' => [

@@ -416,7 +416,7 @@ class Rest
 	 * @param array $rules Правила валидации с ключами 'required' и 'type'
 	 * @throws \Exception Если валидация не пройдена (обязательное поле отсутствует, неверный тип, лишнее поле)
 	 */
-	private function validateData(array $data, array $rules): void
+	public function validateData(array $data, array $rules): void
 	{
 		// Если data - массив объектов, валидируем каждый элемент
 		if (is_array($data) && isset($data[0]) && is_array($data[0])) {
@@ -458,7 +458,7 @@ class Rest
 	 * @param string $type Тип для проверки (int, string, email, etc.)
 	 * @return bool true если значение соответствует типу, false иначе
 	 */
-	private function validateType($value, string $type): bool
+	public function validateType($value, string $type): bool
 	{
 		switch ($type) {
 			case 'int':
