@@ -1,0 +1,65 @@
+meta {
+  name: POST goods.imagesVariations
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{base_url}}/rest/m2m/goods.imagesVariations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "goodsv_id": 1,
+    "name": "Variation photo",
+    "file_url": "https://external-system.com/images/variation-001.jpg"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("data.id exists", function() {
+    expect(res.body.data.id).to.be.a("number");
+  });
+}
+
+docs {
+  POST /rest/m2m/goods.imagesVariations — добавить изображение к вариации товара
+  
+  Приоритет источников:
+  1. file_url — ссылка на файл (скачаем на сервер)
+  2. file_base64 — данные в base64 (декодируем и сохраним)
+  3. multipart file — бинарный файл в body (сохраним напрямую)
+  
+  Примеры:
+  
+  # Вариант 1: по URL
+  {
+    "goodsv_id": 1,
+    "name": "Color variant photo",
+    "file_url": "https://external-system.com/photos/variant-001.jpg"
+  }
+  
+  # Вариант 2: base64 (удобно для 1С)
+  {
+    "goodsv_id": 1,
+    "name": "Color variant photo",
+    "file_name": "variant.jpg",
+    "file_base64": "iVBORw0KGgoAAAANSUhEUgAA..."
+  }
+  
+  # Вариант 3: multipart
+  Content-Type: multipart/form-data
+  goodsv_id: 1
+  name: Color variant photo
+  file: @/path/to/variant.jpg
+}
+

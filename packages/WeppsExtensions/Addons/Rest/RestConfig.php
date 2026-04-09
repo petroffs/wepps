@@ -538,21 +538,71 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => true],
 						],
 					],
-					// ===== Products =====
-					'products' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getProducts',
-						'note' => 'M2M: Get list of products (configurable via s_Config)',
+				// ===== Goods =====
+				'goods' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoods',
+					'note' => 'M2M: Get list of goods (configurable via s_Config)',
+				],
+				'goods.item' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoodsItem',
+					'note' => 'M2M: Get single goods by id',
+					'query_validation' => [
+						'id' => ['type' => 'int2', 'required' => true],
 					],
-					'products.item' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getProductsItem',
-						'note' => 'M2M: Get single product by id',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
-						],
+				],
+				'goods.categories' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoodsCategories',
+					'note' => 'M2M: Get goods categories (navigators)',
+				],
+				'goods.filters' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoodsFilters',
+					'note' => 'M2M: Get available goods filters (properties)',
+					'query_validation' => [
+						'category' => ['type' => 'int2', 'required' => false],
+						'search' => ['type' => 'string', 'required' => false],
 					],
-					// ===== Orders =====
+				],
+				'goods.stocks' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoodsStocks',
+					'note' => 'M2M: Get goods warehouse stocks',
+					'query_validation' => [
+						'goods_id' => ['type' => 'int2', 'required' => false],
+					],
+				],
+				'goods.prices' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoodsPrices',
+					'note' => 'M2M: Get goods prices',
+					'query_validation' => [
+						'goods_id' => ['type' => 'int2', 'required' => false],
+					],
+				],
+				'goods.images' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoodsImages',
+					'note' => 'M2M: Get goods images (paginated)',
+					'query_validation' => [
+						'goods_id' => ['type' => 'int2', 'required' => false],
+						'page' => ['type' => 'int2', 'required' => false],
+						'limit' => ['type' => 'int2', 'required' => false],
+					],
+				],
+				'goods.imagesVariations' => [
+					'class' => RestV1M2M::class,
+					'method' => 'getGoodsImagesVariations',
+					'note' => 'M2M: Get goods variations images (paginated)',
+					'query_validation' => [
+						'goodsv_id' => ['type' => 'int2', 'required' => false],
+						'page' => ['type' => 'int2', 'required' => false],
+						'limit' => ['type' => 'int2', 'required' => false],
+					],
+				],
+				// ===== Orders =====
 					'orders' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getOrders',
@@ -573,10 +623,20 @@ class RestConfig
 						'method' => 'postUsers',
 						'note' => 'M2M: Create a new user (configurable via s_Config)',
 					],
-					'products' => [
+					'goods' => [
 						'class' => RestV1M2M::class,
-						'method' => 'postProducts',
-						'note' => 'M2M: Create a new product (configurable via s_Config)',
+						'method' => 'postGoods',
+						'note' => 'M2M: Create a new goods (configurable via s_Config)',
+					],
+					'goods.images' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsImages',
+						'note' => 'M2M: Add image to goods',
+					],
+					'goods.imagesVariations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsImagesVariations',
+						'note' => 'M2M: Add image to goods variation',
 					],
 					'orders' => [
 						'class' => RestV1M2M::class,
@@ -593,10 +653,10 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => true],
 						],
 					],
-					'products' => [
+					'goods' => [
 						'class' => RestV1M2M::class,
-						'method' => 'deleteProducts',
-						'note' => 'M2M: Delete product by id (configurable via s_Config)',
+						'method' => 'deleteGoods',
+						'note' => 'M2M: Delete goods by id (configurable via s_Config)',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
 						],
@@ -609,6 +669,22 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => true],
 						],
 					],
+					'goods.images' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsImages',
+						'note' => 'M2M: Delete goods image by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
+					'goods.imagesVariations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsImagesVariations',
+						'note' => 'M2M: Delete goods variation image by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
 				],
 				'put' => [
 					'users' => [
@@ -616,15 +692,42 @@ class RestConfig
 						'method' => 'putUsers',
 						'note' => 'M2M: Update user by id (configurable via s_Config)',
 					],
-					'products' => [
+					'goods' => [
 						'class' => RestV1M2M::class,
-						'method' => 'putProducts',
-						'note' => 'M2M: Update product by id (configurable via s_Config)',
+						'method' => 'putGoods',
+						'note' => 'M2M: Update goods by id (configurable via s_Config)',
+					],
+					'goods.stocks' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsStocks',
+						'note' => 'M2M: Update goods warehouse stocks',
+					],
+					'goods.prices' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsPrices',
+						'note' => 'M2M: Update goods prices',
+					],
+					'goods.images' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsImages',
+						'note' => 'M2M: Update goods image by id',
+					],
+					'goods.imagesVariations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsImagesVariations',
+						'note' => 'M2M: Update goods variation image by id',
 					],
 					'orders' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putOrders',
 						'note' => 'M2M: Update order by id (configurable via s_Config)',
+					],
+				],
+				'patch' => [
+					'goods.filters' => [
+						'class' => RestV1M2M::class,
+						'method' => 'patchGoodsFilters',
+						'note' => 'M2M: Sync all goods filters/properties (overwrite)',
 					],
 				],	
 			],

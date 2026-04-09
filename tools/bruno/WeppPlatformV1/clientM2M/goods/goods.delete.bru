@@ -1,20 +1,37 @@
 meta {
   name: DELETE goods
   type: http
-  seq: 6
-  tags: destructive manual
+  seq: 10
+  tags: [
+    d
+    e
+    s
+    t
+    r
+    u
+    c
+    t
+    i
+    v
+    e
+     
+    m
+    a
+    n
+    u
+    a
+    l
+  ]
 }
 
 delete {
-  url: {{base_url}}/rest/m2m/products?id={{product_id}}
+  url: {{base_url}}/rest/m2m/goods?id={{product_id}}
+  body: none
   auth: bearer
 }
 
 auth:bearer {
   token: {{access_token}}
-}
-
-params:query {
 }
 
 tests {
@@ -24,6 +41,8 @@ tests {
 }
 
 docs {
-  Delete product/goods item by id.
-  Требует роль UserPermissions = 1 или 2.
+  Delete goods item by id.
+  Доступно только для M2M клиентов.
+  
+  id — идентификатор товара для удаления (обязательно).
 }

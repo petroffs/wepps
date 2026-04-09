@@ -1,23 +1,17 @@
 meta {
-  name: GET goods
+  name: GET products.categories
   type: http
-  seq: 1
+  seq: 4
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods
+  url: {{base_url}}/rest/m2m/products.categories
   body: none
   auth: bearer
 }
 
 auth:bearer {
   token: {{access_token}}
-}
-
-params:query {
-  page: 1
-  limit: 20
-  search: 
 }
 
 tests {
@@ -27,12 +21,11 @@ tests {
   test("data is array", function() {
     expect(res.body.data).to.be.an("array");
   });
-  test("count is number", function() {
-    expect(res.body.count).to.be.a("number");
-  });
 }
 
 docs {
-  Get list of goods/products with pagination.
+  Get products categories (categories/navigators).
   Доступно только для M2M клиентов.
+  
+  Возвращает список категорий товаров с иерархией ParentDir для построения дерева.
 }

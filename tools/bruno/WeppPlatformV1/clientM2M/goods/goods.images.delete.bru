@@ -1,0 +1,25 @@
+meta {
+  name: DELETE goods.images
+  type: http
+  seq: 19
+}
+
+delete {
+  url: {{base_url}}/rest/m2m/goods.images
+  body: none
+  auth: bearer
+}
+
+params:query {
+  id: 1
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

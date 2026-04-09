@@ -1,0 +1,43 @@
+meta {
+  name: POST goods.imagesVariations (multipart)
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{base_url}}/rest/m2m/goods.imagesVariations
+  body: multipartForm
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:multipartForm {
+  goodsv_id: 5
+  name: Blue variant photo
+  file: @/path/to/variant-blue.jpg
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("data.id exists", function() {
+    expect(res.body.data.id).to.be.a("number");
+  });
+}
+
+docs {
+  POST /rest/m2m/goods.imagesVariations (multipart) — добавить изображение вариации через загрузку файла
+  
+  Используется для загрузки файла напрямую (веб-приложения, Postman и т.д.)
+  
+  Параметры:
+  - goodsv_id: ID вариации товара (обязательно)
+  - name: Название/описание изображения (опционально)
+  - file: Бинарный файл (обязательно)
+  
+  Content-Type будет выставлен автоматически как multipart/form-data
+}

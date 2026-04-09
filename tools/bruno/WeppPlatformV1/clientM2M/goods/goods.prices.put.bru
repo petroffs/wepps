@@ -1,0 +1,29 @@
+meta {
+  name: PUT goods.prices
+  type: http
+  seq: 18
+}
+
+put {
+  url: {{base_url}}/rest/m2m/goods.prices
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "goods_id": 1,
+    "price": 99.99,
+    "price_out": 79.99
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

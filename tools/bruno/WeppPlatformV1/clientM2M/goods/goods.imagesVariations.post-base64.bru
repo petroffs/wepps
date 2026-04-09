@@ -1,0 +1,45 @@
+meta {
+  name: POST goods.imagesVariations (base64)
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{base_url}}/rest/m2m/goods.imagesVariations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "goodsv_id": 5,
+    "name": "Blue variant photo",
+    "file_name": "variant-blue.jpg",
+    "file_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("data.id exists", function() {
+    expect(res.body.data.id).to.be.a("number");
+  });
+}
+
+docs {
+  POST /rest/m2m/goods.imagesVariations (base64) — добавить изображение вариации через base64
+  
+  Параметры:
+  - goodsv_id: ID вариации товара (обязательно)
+  - name: Название/описание изображения (опционально)
+  - file_name: Имя файла с расширением (обязательно для base64)
+  - file_base64: Содержимое файла в base64 (обязательно)
+  
+  Удобно для интеграции с 1С при отправке фото разных вариантов товара (размеры, цвета и т.д.)
+}

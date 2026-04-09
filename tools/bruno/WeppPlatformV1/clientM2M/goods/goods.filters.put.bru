@@ -1,0 +1,30 @@
+meta {
+  name: PUT goods.filters
+  type: http
+  seq: 22
+}
+
+put {
+  url: {{base_url}}/rest/m2m/goods.filters
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "id": 1,
+    "name": "Size",
+    "priority": 5,
+    "is_hidden": 0
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

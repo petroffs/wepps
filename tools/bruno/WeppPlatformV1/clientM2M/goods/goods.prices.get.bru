@@ -1,0 +1,25 @@
+meta {
+  name: GET goods.prices
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{base_url}}/rest/m2m/goods.prices
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~goods_id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

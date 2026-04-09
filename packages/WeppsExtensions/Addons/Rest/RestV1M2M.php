@@ -3,6 +3,7 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Data;
 use WeppsCore\Connect;
+use WeppsExtensions\Template\Filters\Filters;
 
 /**
  * RestV1M2M - M2M API для работы с таблицами через CRUD операции
@@ -79,7 +80,6 @@ class RestV1M2M extends RestV1
 	public function getUsers(): array
 	{
 		// GET параметры - служебные (page, limit, search, sort)
-		// Валидация минимальна, правила берутся из s_ConfigFields при необходимости
 		return $this->getUtils()->fetch('s_Users', $this->get);
 	}
 
@@ -140,15 +140,15 @@ class RestV1M2M extends RestV1
 	}
 
 	// ========================================================================
-	// PRODUCTS
+	// GOODS
 	// ========================================================================
 
-	public function getProducts(): array
+	public function getGoods(): array
 	{
 		return $this->getUtils()->fetch('Products', $this->get);
 	}
 
-	public function getProductsItem(): array
+	public function getGoodsItem(): array
 	{
 		$id = $this->get['id'] ?? 0;
 		if (!$id) {
@@ -157,7 +157,7 @@ class RestV1M2M extends RestV1
 		return $this->getUtils()->item('Products', $id);
 	}
 
-	public function postProducts($data = null): array
+	public function postGoods($data = null): array
 	{
 		$data = $this->extractRequestData($data);
 		if (!$data) {
@@ -174,7 +174,7 @@ class RestV1M2M extends RestV1
 		return $this->getUtils()->add('Products', $data);
 	}
 
-	public function putProducts($data = null): array
+	public function putGoods($data = null): array
 	{
 		$data = $this->extractRequestData($data);
 		if (!$data) {
@@ -195,13 +195,731 @@ class RestV1M2M extends RestV1
 		return $this->getUtils()->set('Products', $id, $data);
 	}
 
-	public function deleteProducts(): array
+	public function deleteGoods(): array
 	{
 		$id = $this->get['id'] ?? 0;
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 		return $this->getUtils()->remove('Products', $id);
+	}
+
+	/**
+	 * M2M: GET каталог товаров (категории)
+	 */
+	public function getGoodsCategories(): array
+	{
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",
+			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
+		);
+
+		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+	}
+
+	/**
+	 * M2M: GET доступные фильтры для товаров (свойства и их значения)
+	 */
+	public function getGoodsFilters(): array
+	{
+		$category = (int) ($this->get['category'] ?? 0);
+		$search = $this->get['search'] ?? '';
+
+		$conditions = 't.IsHidden=0';
+		$params = [];
+
+		if ($category > 0) {
+			$conditions .= ' AND t.NavigatorId = ?';
+			$params[] = $category;
+		}
+		if ($search !== '') {
+			$conditions .= ' AND lower(t.Name) LIKE lower(?)';
+			$params[] = $search . '%';
+		}
+
+		$filters = new Filters();
+		$result = $filters->getFilters(['conditions' => $conditions, 'params' => $params]);
+
+		$grouped = [];
+		foreach ($result as $id => $rows) {
+			$grouped[] = [
+				'id' => (int) $id,
+				'name' => $rows[0]['PropertyName'] ?? '',
+				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
+			];
+		}
+
+		return ['status' => 200, 'message' => 'OK', 'data' => $grouped];
+	}
+
+	/**
+	 * M2M: POST перезаписать все фильтры/свойства
+	 * Удаляет отсутствующие, обновляет существующие, добавляет новые
+	 */
+	public function patchGoodsFilters($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$filtersList = $data['data'] ?? $data ?? [];
+		if (empty($filtersList)) {
+			return ['status' => 400, 'message' => 'data array required', 'data' => null];
+		}
+
+		// Получить текущие фильтры из БД
+		$existing = Connect::$instance->fetch(
+			"SELECT Id, Name FROM s_Properties ORDER BY Id"
+		);
+		$existingMap = [];
+		foreach ($existing as $item) {
+			$existingMap[(int) $item['Id']] = $item['Name'];
+		}
+
+		// Новые ID из переданного списка
+		$newIds = [];
+
+		// Обновить/добавить фильтры
+		foreach ($filtersList as $filter) {
+			$id = (int) ($filter['id'] ?? 0);
+			$name = $filter['name'] ?? '';
+
+			if (empty($name)) {
+				continue;
+			}
+
+			if ($id > 0) {
+				// Обновить существующий
+				if (isset($existingMap[$id])) {
+					Connect::$instance->query(
+						"UPDATE s_Properties SET Name = ? WHERE Id = ?",
+						[$name, $id]
+					);
+				}
+				$newIds[] = $id;
+			} else {
+				// Добавить новый
+				$newId = Connect::$instance->insert('s_Properties', [
+					'Name' => $name,
+					'Priority' => 0,
+					'IsHidden' => 0,
+				]);
+				if ($newId) {
+					$newIds[] = $newId;
+				}
+			}
+		}
+
+		// Удалить фильтры, которых нет в новом списке
+		foreach ($existingMap as $id => $name) {
+			if (!in_array($id, $newIds)) {
+				Connect::$instance->query(
+					"DELETE FROM s_Properties WHERE Id = ?",
+					[$id]
+				);
+			}
+		}
+
+		return ['status' => 200, 'message' => 'Filters updated', 'data' => null];
+	}
+
+
+
+	/**
+	 * M2M: GET запасы товаров (доступность на складах)
+	 */
+	public function getGoodsStocks(): array
+	{
+		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+		
+		// Если передан ID товара, получить его запасы
+		if ($goodsId > 0) {
+			$res = Connect::$instance->fetch(
+				"SELECT Id, Name, Amount FROM Products WHERE Id = ?",
+				[$goodsId]
+			);
+			if (empty($res)) {
+				return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
+			}
+			return ['status' => 200, 'message' => 'OK', 'data' => $res];
+		}
+		
+		// Иначе вернуть запасы всех товаров
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Name, Amount FROM Products WHERE IsDeleted = 0 ORDER BY Name"
+		);
+		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+	}
+
+	/**
+	 * M2M: GET цены товаров
+	 */
+	public function getGoodsPrices(): array
+	{
+		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+		
+		// Если передан ID товара, получить его цены
+		if ($goodsId > 0) {
+			$res = Connect::$instance->fetch(
+				"SELECT Id, Name, Price, PriceOut FROM Products WHERE Id = ?",
+				[$goodsId]
+			);
+			if (empty($res)) {
+				return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
+			}
+			return ['status' => 200, 'message' => 'OK', 'data' => $res];
+		}
+		
+		// Иначе вернуть цены всех товаров
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Name, Price, PriceOut FROM Products WHERE IsDeleted = 0 ORDER BY Name"
+		);
+		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+	}
+
+	/**
+	 * M2M: GET изображения товаров (с постраничной выборкой)
+	 */
+	public function getGoodsImages(): array
+	{
+		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = (int) ($this->get['limit'] ?? 100);
+		if ($limit > 1000) $limit = 1000;
+		if ($limit < 1) $limit = 100;
+		
+		$offset = ($page - 1) * $limit;
+		
+		// Если передан ID товара, получить его изображения
+		if ($goodsId > 0) {
+			$res = Connect::$instance->fetch(
+				"SELECT Id, TableNameId as goods_id, Name, InnerName, FileUrl FROM s_Files 
+				 WHERE TableName = 'Products' AND TableNameId = ? 
+				 ORDER BY Id DESC 
+				 LIMIT ? OFFSET ?",
+				[$goodsId, $limit, $offset]
+			);
+			// Получить общее количество
+			$count = Connect::$instance->fetch(
+				"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'Products' AND TableNameId = ?",
+				[$goodsId]
+			);
+			return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
+				'page' => $page,
+				'limit' => $limit,
+				'total' => (int) ($count[0]['total'] ?? 0),
+				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+			]];
+		}
+		
+		// Иначе вернуть все изображения товаров с пагинацией
+		$res = Connect::$instance->fetch(
+			"SELECT Id, TableNameId as goods_id, Name, InnerName, FileUrl FROM s_Files 
+			 WHERE TableName = 'Products' 
+			 ORDER BY TableNameId DESC, Id DESC 
+			 LIMIT ? OFFSET ?",
+			[$limit, $offset]
+		);
+		// Получить общее количество
+		$count = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'Products'"
+		);
+		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
+			'page' => $page,
+			'limit' => $limit,
+			'total' => (int) ($count[0]['total'] ?? 0),
+			'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+		]];
+	}
+
+	/**
+	 * M2M: POST добавить изображение товару
+	 */
+	public function postGoodsImages($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$goodsId = $data['goods_id'] ?? $data['TableNameId'] ?? 0;
+		if (!$goodsId) {
+			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
+		}
+
+		$name = $data['name'] ?? $data['Name'] ?? '';
+		$fileUrl = null;
+		$fileName = $data['file_name'] ?? '';
+
+		// Приоритет: file_url > file_base64 > multipart
+		// 1. Проверить file_url
+		if (!empty($data['file_url'])) {
+			$fileUrl = $data['file_url'];
+		}
+		// 2. Проверить file_base64
+		elseif (!empty($data['file_base64'])) {
+			if (!$fileName) {
+				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
+			}
+			$binaryData = base64_decode($data['file_base64'], true);
+			if (!$binaryData) {
+				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
+			}
+			$fileUrl = $this->saveUploadedFile($binaryData, $fileName, $goodsId);
+			if (!$fileUrl) {
+				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+			}
+		}
+		// 3. Проверить multipart файл
+		elseif (!empty($_FILES['file'])) {
+			$file = $_FILES['file'];
+			if ($file['error'] !== UPLOAD_ERR_OK) {
+				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
+			}
+			$binaryData = file_get_contents($file['tmp_name']);
+			if (!$binaryData) {
+				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
+			}
+			$fileUrl = $this->saveUploadedFile($binaryData, $file['name'], $goodsId);
+			if (!$fileUrl) {
+				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+			}
+		}
+		else {
+			return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
+		}
+
+		// Генерировать InnerName (путь к сохранённому файлу)
+		$innerName = str_replace('/pic/lists/Products/', '', $fileUrl);
+
+		// Вставить новое изображение
+		$id = Connect::$instance->insert('s_Files', [
+			'TableName' => 'Products',
+			'TableNameId' => $goodsId,
+			'Name' => $name ?: $fileName,
+			'InnerName' => $innerName,
+			'FileUrl' => $fileUrl,
+		]);
+
+		if (!$id) {
+			return ['status' => 400, 'message' => 'Failed to add image', 'data' => null];
+		}
+
+		return ['status' => 201, 'message' => 'Image added', 'data' => ['id' => $id]];
+	}
+
+	/**
+	 * M2M: PUT обновить изображение товара
+	 */
+	public function putGoodsImages($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$imageId = $data['id'] ?? 0;
+		if (!$imageId) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		// Проверить существование изображения
+		$existing = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'Products'",
+			[$imageId]
+		);
+		if (empty($existing)) {
+			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
+		}
+
+		// Подготовить данные для обновления
+		$updates = [];
+		$params = [];
+
+		if (isset($data['name']) || isset($data['Name'])) {
+			$updates[] = 'Name = ?';
+			$params[] = $data['name'] ?? $data['Name'] ?? '';
+		}
+
+		if (isset($data['inner_name']) || isset($data['InnerName'])) {
+			$updates[] = 'InnerName = ?';
+			$params[] = $data['inner_name'] ?? $data['InnerName'] ?? '';
+		}
+
+		if (isset($data['file_url']) || isset($data['FileUrl'])) {
+			$updates[] = 'FileUrl = ?';
+			$params[] = $data['file_url'] ?? $data['FileUrl'] ?? '';
+		}
+
+		if (empty($updates)) {
+			return ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
+		}
+
+		$params[] = $imageId;
+
+		// Обновить изображение
+		$result = Connect::$instance->query(
+			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
+			$params
+		);
+
+		if ($result <= 0) {
+			return ['status' => 400, 'message' => 'Failed to update image', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Image updated', 'data' => ['id' => $imageId]];
+	}
+
+	/**
+	 * M2M: GET изображения вариаций товаров (с постраничной выборкой)
+	 */
+	public function getGoodsImagesVariations(): array
+	{
+		$goodsvId = (int) ($this->get['goodsv_id'] ?? 0);
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = (int) ($this->get['limit'] ?? 100);
+		if ($limit > 1000) $limit = 1000;
+		if ($limit < 1) $limit = 100;
+		
+		$offset = ($page - 1) * $limit;
+		
+		// Если передан ID вариации, получить его изображения
+		if ($goodsvId > 0) {
+			$res = Connect::$instance->fetch(
+				"SELECT Id, TableNameId as goodsv_id, Name, InnerName, FileUrl FROM s_Files 
+				 WHERE TableName = 'ProductsVariations' AND TableNameId = ? 
+				 ORDER BY Id DESC 
+				 LIMIT ? OFFSET ?",
+				[$goodsvId, $limit, $offset]
+			);
+			// Получить общее количество
+			$count = Connect::$instance->fetch(
+				"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'ProductsVariations' AND TableNameId = ?",
+				[$goodsvId]
+			);
+			return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
+				'page' => $page,
+				'limit' => $limit,
+				'total' => (int) ($count[0]['total'] ?? 0),
+				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+			]];
+		}
+		
+		// Иначе вернуть все изображения вариаций с пагинацией
+		$res = Connect::$instance->fetch(
+			"SELECT Id, TableNameId as goodsv_id, Name, InnerName, FileUrl FROM s_Files 
+			 WHERE TableName = 'ProductsVariations' 
+			 ORDER BY TableNameId DESC, Id DESC 
+			 LIMIT ? OFFSET ?",
+			[$limit, $offset]
+		);
+		// Получить общее количество
+		$count = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'ProductsVariations'"
+		);
+		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
+			'page' => $page,
+			'limit' => $limit,
+			'total' => (int) ($count[0]['total'] ?? 0),
+			'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+		]];
+	}
+
+	/**
+	 * M2M: POST добавить изображение вариации товара
+	 */
+	public function postGoodsImagesVariations($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$goodsvId = $data['goodsv_id'] ?? $data['TableNameId'] ?? 0;
+		if (!$goodsvId) {
+			return ['status' => 400, 'message' => 'goodsv_id required', 'data' => null];
+		}
+
+		$name = $data['name'] ?? $data['Name'] ?? '';
+		$fileUrl = null;
+		$fileName = $data['file_name'] ?? '';
+
+		// Приоритет: file_url > file_base64 > multipart
+		// 1. Проверить file_url
+		if (!empty($data['file_url'])) {
+			$fileUrl = $data['file_url'];
+		}
+		// 2. Проверить file_base64
+		elseif (!empty($data['file_base64'])) {
+			if (!$fileName) {
+				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
+			}
+			$binaryData = base64_decode($data['file_base64'], true);
+			if (!$binaryData) {
+				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
+			}
+			$fileUrl = $this->saveUploadedFileVariation($binaryData, $fileName, $goodsvId);
+			if (!$fileUrl) {
+				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+			}
+		}
+		// 3. Проверить multipart файл
+		elseif (!empty($_FILES['file'])) {
+			$file = $_FILES['file'];
+			if ($file['error'] !== UPLOAD_ERR_OK) {
+				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
+			}
+			$binaryData = file_get_contents($file['tmp_name']);
+			if (!$binaryData) {
+				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
+			}
+			$fileUrl = $this->saveUploadedFileVariation($binaryData, $file['name'], $goodsvId);
+			if (!$fileUrl) {
+				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+			}
+		}
+		else {
+			return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
+		}
+
+		// Генерировать InnerName (путь к сохранённому файлу)
+		$innerName = str_replace('/pic/lists/ProductsVariations/', '', $fileUrl);
+
+		// Вставить новое изображение
+		$id = Connect::$instance->insert('s_Files', [
+			'TableName' => 'ProductsVariations',
+			'TableNameId' => $goodsvId,
+			'Name' => $name ?: $fileName,
+			'InnerName' => $innerName,
+			'FileUrl' => $fileUrl,
+		]);
+
+		if (!$id) {
+			return ['status' => 400, 'message' => 'Failed to add image', 'data' => null];
+		}
+
+		return ['status' => 201, 'message' => 'Image added', 'data' => ['id' => $id]];
+	}
+
+	/**
+	 * M2M: PUT обновить изображение вариации товара
+	 */
+	public function putGoodsImagesVariations($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$imageId = $data['id'] ?? 0;
+		if (!$imageId) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		// Проверить существование изображения
+		$existing = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'ProductsVariations'",
+			[$imageId]
+		);
+		if (empty($existing)) {
+			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
+		}
+
+		// Подготовить данные для обновления
+		$updates = [];
+		$params = [];
+
+		if (isset($data['name']) || isset($data['Name'])) {
+			$updates[] = 'Name = ?';
+			$params[] = $data['name'] ?? $data['Name'] ?? '';
+		}
+
+		if (isset($data['inner_name']) || isset($data['InnerName'])) {
+			$updates[] = 'InnerName = ?';
+			$params[] = $data['inner_name'] ?? $data['InnerName'] ?? '';
+		}
+
+		if (isset($data['file_url']) || isset($data['FileUrl'])) {
+			$updates[] = 'FileUrl = ?';
+			$params[] = $data['file_url'] ?? $data['FileUrl'] ?? '';
+		}
+
+		if (empty($updates)) {
+			return ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
+		}
+
+		$params[] = $imageId;
+
+		// Обновить изображение
+		$result = Connect::$instance->query(
+			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
+			$params
+		);
+
+		if ($result <= 0) {
+			return ['status' => 400, 'message' => 'Failed to update image', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Image updated', 'data' => ['id' => $imageId]];
+	}
+
+	/**
+	 * M2M: DELETE удалить изображение товара
+	 */
+	public function deleteGoodsImages(): array
+	{
+		$imageId = (int) ($this->get['id'] ?? 0);
+		if (!$imageId) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		// Проверить существование изображения
+		$existing = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'Products'",
+			[$imageId]
+		);
+		if (empty($existing)) {
+			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
+		}
+
+		// Удалить изображение
+		$result = Connect::$instance->query(
+			"DELETE FROM s_Files WHERE Id = ? AND TableName = 'Products'",
+			[$imageId]
+		);
+
+		if ($result <= 0) {
+			return ['status' => 400, 'message' => 'Failed to delete image', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Image deleted', 'data' => ['id' => $imageId]];
+	}
+
+	/**
+	 * M2M: DELETE удалить изображение вариации товара
+	 */
+	public function deleteGoodsImagesVariations(): array
+	{
+		$imageId = (int) ($this->get['id'] ?? 0);
+		if (!$imageId) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		// Проверить существование изображения
+		$existing = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'ProductsVariations'",
+			[$imageId]
+		);
+		if (empty($existing)) {
+			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
+		}
+
+		// Удалить изображение
+		$result = Connect::$instance->query(
+			"DELETE FROM s_Files WHERE Id = ? AND TableName = 'ProductsVariations'",
+			[$imageId]
+		);
+
+		if ($result <= 0) {
+			return ['status' => 400, 'message' => 'Failed to delete image', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Image deleted', 'data' => ['id' => $imageId]];
+	}
+
+	/**
+	 * M2M: PUT обновление запасов товара
+	 */
+	public function putGoodsStocks($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$goodsId = $data['goods_id'] ?? $data['id'] ?? 0;
+		if (!$goodsId) {
+			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
+		}
+
+		$amount = $data['amount'] ?? null;
+		if ($amount === null) {
+			return ['status' => 400, 'message' => 'amount required', 'data' => null];
+		}
+
+		// Обновить Amount в Products
+		$updated = Connect::$instance->query(
+			"UPDATE Products SET Amount = ? WHERE Id = ?",
+			[(float) $amount, $goodsId]
+		);
+
+		if ($updated <= 0) {
+			return ['status' => 400, 'message' => 'Failed to update stocks', 'data' => null];
+		}
+
+		// Вернуть обновленные данные
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Name, Amount FROM Products WHERE Id = ?",
+			[$goodsId]
+		);
+
+		return ['status' => 200, 'message' => 'Stocks updated', 'data' => $res[0] ?? null];
+	}
+
+	/**
+	 * M2M: PUT обновление цен товара
+	 */
+	public function putGoodsPrices($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$goodsId = $data['goods_id'] ?? $data['id'] ?? 0;
+		if (!$goodsId) {
+			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
+		}
+
+		// Подготовить значения цен
+		$updates = [];
+		$params = [];
+
+		if (isset($data['price'])) {
+			$updates[] = 'Price = ?';
+			$params[] = (float) $data['price'];
+		}
+
+		if (isset($data['price_out'])) {
+			$updates[] = 'PriceOut = ?';
+			$params[] = (float) $data['price_out'];
+		}
+
+		if (empty($updates)) {
+			return ['status' => 400, 'message' => 'price or price_out required', 'data' => null];
+		}
+
+		// Добавить ID в параметры
+		$params[] = $goodsId;
+
+		// Обновить цены в Products
+		$updatedCount = Connect::$instance->query(
+			"UPDATE Products SET " . implode(', ', $updates) . " WHERE Id = ?",
+			$params
+		);
+
+		if ($updatedCount <= 0) {
+			return ['status' => 400, 'message' => 'Failed to update prices', 'data' => null];
+		}
+
+		// Вернуть обновленные данные
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Name, Price, PriceOut FROM Products WHERE Id = ?",
+			[$goodsId]
+		);
+
+		return ['status' => 200, 'message' => 'Prices updated', 'data' => $res[0] ?? null];
 	}
 
 	// ========================================================================
@@ -289,4 +1007,78 @@ class RestV1M2M extends RestV1
 
 		return [];
 	}
+
+	/**
+	 * Сохранить загруженный файл (из base64 или multipart)
+	 * @param string $binaryData - бинарные данные файла
+	 * @param string $fileName - имя файла (с расширением)
+	 * @param int $goodsId - ID товара
+	 * @return string|null - путь к файлу или null если ошибка
+	 */
+	private function saveUploadedFile(string $binaryData, string $fileName, int $goodsId): ?string
+	{
+		// Определить расширение
+		$ext = pathinfo($fileName, PATHINFO_EXTENSION);
+		if (!$ext) {
+			return null;
+		}
+
+		// Генерировать InnerName (хеш имени + расширение)
+		$innerName = md5(uniqid($goodsId . '_', true)) . '.' . strtolower($ext);
+
+		// Путь для сохранения: /pic/lists/Products/{goods_id}/
+		$dir = __DIR__ . '/../../../pic/lists/Products/' . $goodsId;
+		if (!is_dir($dir)) {
+			if (!mkdir($dir, 0755, true)) {
+				return null;
+			}
+		}
+
+		// Сохранить файл
+		$filePath = $dir . '/' . $innerName;
+		if (file_put_contents($filePath, $binaryData) === false) {
+			return null;
+		}
+
+		// Вернуть путь в формате /pic/lists/Products/{goods_id}/{innerName}
+		return '/pic/lists/Products/' . $goodsId . '/' . $innerName;
+	}
+
+	/**
+	 * Сохранить загруженный файл вариации (из base64 или multipart)
+	 * @param string $binaryData - бинарные данные файла
+	 * @param string $fileName - имя файла (с расширением)
+	 * @param int $goodsvId - ID вариации товара
+	 * @return string|null - путь к файлу или null если ошибка
+	 */
+	private function saveUploadedFileVariation(string $binaryData, string $fileName, int $goodsvId): ?string
+	{
+		// Определить расширение
+		$ext = pathinfo($fileName, PATHINFO_EXTENSION);
+		if (!$ext) {
+			return null;
+		}
+
+		// Генерировать InnerName (хеш имени + расширение)
+		$innerName = md5(uniqid($goodsvId . '_', true)) . '.' . strtolower($ext);
+
+		// Путь для сохранения: /pic/lists/ProductsVariations/{goodsv_id}/
+		$dir = __DIR__ . '/../../../pic/lists/ProductsVariations/' . $goodsvId;
+		if (!is_dir($dir)) {
+			if (!mkdir($dir, 0755, true)) {
+				return null;
+			}
+		}
+
+		// Сохранить файл
+		$filePath = $dir . '/' . $innerName;
+		if (file_put_contents($filePath, $binaryData) === false) {
+			return null;
+		}
+
+		// Вернуть путь в формате /pic/lists/ProductsVariations/{goodsv_id}/{innerName}
+		return '/pic/lists/ProductsVariations/' . $goodsvId . '/' . $innerName;
+	}
 }
+
+

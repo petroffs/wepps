@@ -1,0 +1,25 @@
+meta {
+  name: GET goods.stocks
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{base_url}}/rest/m2m/goods.stocks
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~goods_id: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

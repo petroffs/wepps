@@ -1,0 +1,27 @@
+meta {
+  name: GET goods.imagesVariations
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{base_url}}/rest/m2m/goods.imagesVariations
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~goodsv_id: 
+  ~page: 1
+  ~limit: 100
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

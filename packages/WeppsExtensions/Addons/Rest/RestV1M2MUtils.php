@@ -21,7 +21,7 @@ class RestV1M2MUtils
 	 * 
 	 * @param string $tableName - имя таблицы (e.g. 's_Users', 'Products')
 	 * @param array $query - параметры: page, limit, search
-	 * @return array - {status, message, data}
+	 * @return array - {status, message, data, pagination}
 	 */
 	public function fetch(string $tableName, array $query): array
 	{
@@ -33,10 +33,16 @@ class RestV1M2MUtils
 			$data = new Data($tableName);
 			$result = $data->fetch('Id!=0', $limit, $page);
 
+			// Использовать paginator и count из Data объекта
 			return [
 				'status' => 200,
 				'message' => 'OK',
 				'data' => $result ?: [],
+				'pagination' => [
+					'count' => $data->count,
+					'limit' => $limit,
+					'page' => $page,
+				],
 			];
 		} catch (\Exception $e) {
 			return [

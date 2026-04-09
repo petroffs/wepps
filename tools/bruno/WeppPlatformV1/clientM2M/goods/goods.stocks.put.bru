@@ -1,0 +1,28 @@
+meta {
+  name: PUT goods.stocks
+  type: http
+  seq: 16
+}
+
+put {
+  url: {{base_url}}/rest/m2m/goods.stocks
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "goods_id": 1,
+    "amount": 50
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

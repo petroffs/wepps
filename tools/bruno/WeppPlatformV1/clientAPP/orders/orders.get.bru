@@ -26,8 +26,14 @@ tests {
   test("data is array", function() {
     expect(res.body.data).to.be.an("array");
   });
-  test("count is number", function() {
-    expect(res.body.count).to.be.a("number");
+  test("pagination.count is number", function() {
+    expect(res.body.pagination.count).to.be.a("number");
+  });
+  test("pagination.limit is number", function() {
+    expect(res.body.pagination.limit).to.be.a("number");
+  });
+  test("pagination.page is number", function() {
+    expect(res.body.pagination.page).to.be.a("number");
   });
 }
 

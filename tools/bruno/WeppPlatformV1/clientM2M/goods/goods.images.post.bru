@@ -1,0 +1,65 @@
+meta {
+  name: POST goods.images
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{base_url}}/rest/m2m/goods.images
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "goods_id": 1,
+    "name": "Product photo",
+    "file_url": "https://external-system.com/images/product-001.jpg"
+  }
+}
+
+tests {
+  test("status 201", function() {
+    expect(res.status).to.equal(201);
+  });
+  test("data.id exists", function() {
+    expect(res.body.data.id).to.be.a("number");
+  });
+}
+
+docs {
+  POST /rest/m2m/goods.images — добавить изображение товара
+  
+  Приоритет источников:
+  1. file_url — ссылка на файл (скачаем на сервер)
+  2. file_base64 — данные в base64 (декодируем и сохраним)
+  3. multipart file — бинарный файл в body (сохраним напрямую)
+  
+  Примеры:
+  
+  # Вариант 1: по URL
+  {
+    "goods_id": 123,
+    "name": "Main photo",
+    "file_url": "https://external-system.com/photos/img123.jpg"
+  }
+  
+  # Вариант 2: base64 (удобно для 1С)
+  {
+    "goods_id": 123,
+    "name": "Main photo",
+    "file_name": "photo.jpg",
+    "file_base64": "iVBORw0KGgoAAAANSUhEUgAA..."
+  }
+  
+  # Вариант 3: multipart (для веб-форм)
+  Content-Type: multipart/form-data
+  goods_id: 123
+  name: Main photo
+  file: @/path/to/photo.jpg
+}
+

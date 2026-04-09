@@ -1,0 +1,39 @@
+meta {
+  name: GET goods.filters
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}/rest/m2m/goods.filters
+  body: none
+  auth: bearer
+}
+
+params:query {
+  ~category: 
+  ~search: 
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+}
+
+docs {
+  Get available goods filters (properties with values).
+  Доступно только для M2M клиентов.
+  
+  category — фильтр по категории (NavigatorId) (необязательно)
+  search — поиск по названию товара (необязательно)
+  
+  Возвращает список свойств товаров с доступными значениями и их количеством.
+}

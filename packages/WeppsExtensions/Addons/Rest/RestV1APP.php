@@ -180,7 +180,12 @@ class RestV1APP extends RestV1
 		}
 		unset($row);
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $result['rows'], 'count' => $result['count']];
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $result['rows'],
+			'pagination' => ['count' => $result['count'], 'limit' => $limit, 'page' => $page],
+		];
 	}
 
 	/**
@@ -257,7 +262,7 @@ class RestV1APP extends RestV1
 
 		$grouped = [];
 		foreach ($result as $id => $rows) {
-			$grouped[$id] = [
+			$grouped[] = [
 				'id' => (int) $id,
 				'name' => $rows[0]['PropertyName'] ?? '',
 				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
@@ -297,7 +302,12 @@ class RestV1APP extends RestV1
 		}
 		unset($row);
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $rows];
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $rows,
+			'pagination' => ['count' => $result['count'], 'limit' => 100, 'page' => 1],
+		];
 	}
 
 	/**
@@ -398,7 +408,12 @@ class RestV1APP extends RestV1
 			}
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $result['orders'], 'count' => $result['count']];
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $result['orders'],
+			'pagination' => ['count' => $result['count'], 'limit' => $limit, 'page' => $page],
+		];
 	}
 
 	/**
@@ -741,7 +756,12 @@ class RestV1APP extends RestV1
 			unset($row);
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $res, 'count' => $obj->count];
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res,
+			'pagination' => ['count' => $obj->count, 'limit' => $limit, 'page' => $page],
+		];
 	}
 
 	/**
@@ -794,7 +814,12 @@ class RestV1APP extends RestV1
 			unset($row);
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res ?? [],
+			'pagination' => ['count' => $obj->count, 'limit' => 1000, 'page' => 1],
+		];
 	}
 
 	// -------------------------------------------------------------------------

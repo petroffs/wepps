@@ -1,0 +1,40 @@
+meta {
+  name: PATCH goods.filters
+  type: http
+  seq: 21
+}
+
+patch {
+  url: {{base_url}}/rest/m2m/goods.filters
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "data": [
+      {
+        "id": 1,
+        "name": "Бренд"
+      },
+      {
+        "id": 2,
+        "name": "Пол"
+      },
+      {
+        "id": 5,
+        "name": "Вид"
+      }
+    ]
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

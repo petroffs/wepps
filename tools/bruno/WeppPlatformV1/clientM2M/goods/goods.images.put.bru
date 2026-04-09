@@ -1,0 +1,30 @@
+meta {
+  name: PUT goods.images
+  type: http
+  seq: 13
+}
+
+put {
+  url: {{base_url}}/rest/m2m/goods.images
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "id": 1,
+    "name": "Updated photo",
+    "inner_name": "product-001-updated.jpg",
+    "file_url": "/pic/products/product-001-updated.jpg"
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

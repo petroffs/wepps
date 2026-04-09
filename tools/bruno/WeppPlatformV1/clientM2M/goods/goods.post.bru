@@ -1,12 +1,19 @@
 meta {
   name: POST goods
   type: http
-  seq: 4
-  tags: manual
+  seq: 7
+  tags: [
+    m
+    a
+    n
+    u
+    a
+    l
+  ]
 }
 
 post {
-  url: {{base_url}}/rest/m2m/products
+  url: {{base_url}}/rest/m2m/goods
   body: json
   auth: bearer
 }
@@ -17,7 +24,7 @@ auth:bearer {
 
 body:json {
   {
-    "type": "products",
+    "type": "goods",
     "data": {
       "name": "Новый товар",
       "price": 999.99,
@@ -36,7 +43,12 @@ tests {
 }
 
 docs {
-  Create a new product/goods item.
-  Требует роль UserPermissions = 1 или 2.
-  Поля price и category необязательные.
+  Create a new goods item.
+  Доступно только для M2M клиентов.
+  
+  name — название товара (обязательно).
+  price — цена товара (необязательно).
+  category — категория/NavigatorId (необязательно).
+  
+  Возвращает id созданного товара.
 }
