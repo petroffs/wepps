@@ -6,7 +6,7 @@ meta {
 }
 
 post {
-  url: {{base_url}}/rest/v1/goods
+  url: {{base_url}}/rest/v1/products
   body: json
   auth: bearer
 }
@@ -17,7 +17,7 @@ auth:bearer {
 
 body:json {
   {
-    "type": "goods",
+    "type": "products",
     "data": {
       "name": "Новый товар",
       "price": 999.99,
@@ -36,7 +36,7 @@ tests {
 }
 
 docs {
-  Create a new goods item.
+  Create a new product/goods item.
   Требует роль UserPermissions = 1 или 2.
   Поля price и category необязательные.
 }

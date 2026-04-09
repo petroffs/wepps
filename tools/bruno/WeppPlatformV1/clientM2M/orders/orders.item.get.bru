@@ -1,0 +1,33 @@
+meta {
+  name: GET orders.item
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/rest/v1/orders.item?id={{order_id}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+params:query {
+  id: {{order_id}}
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data has Id", function() {
+    expect(res.body.data).to.have.property("Id");
+  });
+}
+
+docs {
+  Get single order by id.
+  Доступно только для M2M клиентов.
+}

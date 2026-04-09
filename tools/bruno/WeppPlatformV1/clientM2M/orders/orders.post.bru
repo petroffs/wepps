@@ -1,0 +1,48 @@
+meta {
+  name: POST orders
+  type: http
+  seq: 3
+  tags: manual
+}
+
+post {
+  url: {{base_url}}/rest/v1/orders
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "orders",
+    "data": {
+      "user_id": 1,
+      "status": "pending",
+      "total": 9999.99,
+      "items": [
+        {
+          "product_id": 1,
+          "quantity": 2,
+          "price": 100.00
+        }
+      ]
+    }
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("returns created id", function() {
+    expect(res.body.data).to.have.property("id");
+  });
+}
+
+docs {
+  Create a new order.
+  Доступно только для M2M клиентов.
+}

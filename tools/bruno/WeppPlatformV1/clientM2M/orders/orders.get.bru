@@ -1,0 +1,38 @@
+meta {
+  name: GET orders
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/rest/v1/orders
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+params:query {
+  page: 1
+  limit: 20
+  search: 
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+  test("count is number", function() {
+    expect(res.body.count).to.be.a("number");
+  });
+}
+
+docs {
+  Get list of orders with pagination.
+  Доступно только для M2M клиентов.
+}

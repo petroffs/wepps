@@ -6,7 +6,7 @@ meta {
 }
 
 put {
-  url: {{base_url}}/rest/v1/goods
+  url: {{base_url}}/rest/v1/products
   body: json
   auth: bearer
 }
@@ -17,7 +17,7 @@ auth:bearer {
 
 body:json {
   {
-    "type": "goods",
+    "type": "products",
     "data": {
       "id": {{product_id}},
       "name": "Обновлённый товар",
@@ -33,7 +33,7 @@ tests {
 }
 
 docs {
-  Update goods item by id.
+  Update product/goods item by id.
   Требует роль UserPermissions = 1 или 2.
   Поля name и price необязательные.
 }

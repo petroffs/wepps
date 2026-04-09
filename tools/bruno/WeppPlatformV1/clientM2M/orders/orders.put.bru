@@ -1,12 +1,12 @@
 meta {
-  name: PUT orders.status
+  name: PUT orders
   type: http
   seq: 4
   tags: manual
 }
 
 put {
-  url: {{base_url}}/rest/v1/orders.status
+  url: {{base_url}}/rest/v1/orders
   body: json
   auth: bearer
 }
@@ -17,10 +17,11 @@ auth:bearer {
 
 body:json {
   {
-    "type": "orders.status",
+    "type": "orders",
     "data": {
       "id": {{order_id}},
-      "status": "completed"
+      "status": "completed",
+      "total": 9999.99
     }
   }
 }
@@ -32,6 +33,6 @@ tests {
 }
 
 docs {
-  Update order status by id.
-  Требует роль UserPermissions = 1 или 2.
+  Update order by id.
+  Доступно только для M2M клиентов.
 }

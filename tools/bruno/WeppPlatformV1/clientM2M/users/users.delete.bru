@@ -1,12 +1,12 @@
 meta {
-  name: DELETE goods
+  name: DELETE users
   type: http
-  seq: 6
+  seq: 5
   tags: destructive manual
 }
 
 delete {
-  url: {{base_url}}/rest/v1/products?id={{product_id}}
+  url: {{base_url}}/rest/v1/users?id={{user_id}}
   auth: bearer
 }
 
@@ -24,6 +24,6 @@ tests {
 }
 
 docs {
-  Delete product/goods item by id.
-  Требует роль UserPermissions = 1 или 2.
+  Delete user by id.
+  Доступно только для M2M клиентов.
 }
