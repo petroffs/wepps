@@ -3,6 +3,7 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
 use WeppsCore\Data;
+use WeppsCore\Navigator;
 use WeppsCore\Utils;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Delivery\DeliveryUtils;
@@ -79,72 +80,60 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/goods — список товаров
+	 * GET v1/goods — список товаров (или один товар если передан 'id')
 	 */
 	public function getGoods(): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$id = $this->get['id'] ?? '';
 		$page = max(1, (int) ($this->get['page'] ?? 1));
 		$limit = min(100, max(1, (int) ($this->get['limit'] ?? 20)));
-		$search = $this->get['search'] ?? '';
-		$category = (int) ($this->get['category'] ?? 0);
-
-		switch ($this->get['sort'] ?? '') {
-			case 'priceasc':
-				$sorting = 't.Price asc';
-				break;
-			case 'pricedesc':
-				$sorting = 't.Price desc';
-				break;
-			case 'nameasc':
-				$sorting = 't.Name asc';
-				break;
-			default:
-				$sorting = 't.Priority desc';
-				break;
-		}
-
-		$conditions = 't.IsHidden=0';
-		$params = [];
-
-		if ($category > 0) {
-			$conditions .= ' AND t.NavigatorId = ?';
-			$params[] = $category;
-		}
-		if ($search !== '') {
-			$conditions .= ' AND t.Name LIKE ?';
-			$params[] = '%' . $search . '%';
-		}
-
-		// Фильтрация по свойствам: f_1=red|blue, f_2=xl
-		foreach ($this->get as $key => $value) {
-			if (substr($key, 0, 2) !== 'f_' || $value === '' || $value === null) {
-				continue;
-			}
-			$propId = (int) substr($key, 2);
-			if ($propId <= 0) {
-				continue;
-			}
-			$aliases = explode('|', $value);
-			$placeholders = rtrim(str_repeat('?,', count($aliases)), ',');
-			$conditions .= " AND t.Id in (select distinct TableNameId from s_PropertiesValues where IsHidden=0 and TableName='Products' and Name=? and Alias in ($placeholders))";
-			$params[] = $propId;
-			$params = array_merge($params, $aliases);
-		}
 
 		$productsUtils = new ProductsUtils();
-		$result = $productsUtils->getProducts([
-			'pages' => $limit,
-			'page' => $page,
-			'sorting' => $sorting,
-			'conditions' => ['conditions' => $conditions, 'params' => $params],
-		]);
+		$navigator = new Navigator("/catalog/");
+		
+		// Если передан ID, ищем по ID, иначе используем фильтры и категорию
+		if (!empty($id)) {
+			$productsUtils->setNavigator($navigator, 'Products');
+			$isNumericId = (strlen((int) $id) == strlen($id));
+			$conditions = $isNumericId ? "t.Id = ?" : "binary t.Alias = ?";
+			
+			$settings = [
+				'pages' => 1,
+				'page' => 1,
+				'sorting' => 't.Priority desc',
+				'conditions' => [
+					'conditions' => $conditions,
+					'params' => [$id],
+				],
+			];
+		} else {
+			// Инициализируем Navigator для работы getConditions()
+			if (!empty($this->get['category'])) {
+				$navigator->content['Id'] = (int) $this->get['category'];
+			}
+			$productsUtils->setNavigator($navigator, 'Products');
+
+			$filters = new Filters($this->get);
+			$params = $filters->getParams();
+			$sorting = $productsUtils->getSorting();
+			$conditions = $productsUtils->getConditions($params, true);
+
+			$settings = [
+				'pages' => $limit,
+				'page' => $page,
+				'sorting' => $sorting['conditions'],
+				'conditions' => $conditions,
+			];
+		}
+
+		$result = $productsUtils->getProducts($settings);
 
 		// Получаем бренды (свойство id=1) одним запросом для всей страницы
 		$brandsByProduct = [];
 		$ids = array_column($result['rows'], 'Id');
 		if (!empty($ids)) {
-			$placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+			$placeholders = Connect::$instance->in($ids);
 			$brandsByProduct = Connect::$instance->fetch(
 				"SELECT pv.TableNameId, pv.Name, pv.PValue, pv.Alias, p.Name as PropertyName FROM s_PropertiesValues pv LEFT JOIN s_Properties p ON p.Id = pv.Name AND p.IsHidden=0 WHERE pv.IsHidden=0 AND pv.TableName='Products' AND pv.Name=1 AND pv.TableNameId IN ($placeholders)",
 				$ids,
@@ -152,13 +141,12 @@ class RestV1APP extends RestV1
 			);
 		}
 
-		foreach ($result['rows'] as &$row) {
+		foreach ($result['rows'] as $key => &$row) {
 			if (!empty($row['Images_FileUrl'])) {
 				$row['Images_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $row['Images_FileUrl'];
 			}
-			if (!empty($row['W_Variations'])) {
-				$row['W_Variations'] = $productsUtils->getVariationsArray($row['W_Variations']);
-			}
+			$row['Url'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . $row['Url'];
+			// W_Variations уже преобразован в ProductsUtils::getProducts()
 			$brands = $brandsByProduct[$row['Id']] ?? null;
 			if ($brands) {
 				$byProp = [];
@@ -190,6 +178,7 @@ class RestV1APP extends RestV1
 
 	/**
 	 * GET v1/goods.item — товар по id или alias
+	 * Вызывает getGoods() с параметром 'id' для унификации обработки
 	 */
 	public function getGoodsItem(): array
 	{
@@ -200,26 +189,14 @@ class RestV1APP extends RestV1
 			return ['status' => 400, 'message' => 'id required', 'data' => null];
 		}
 
-		$productsUtils = new ProductsUtils();
-		$item = $productsUtils->getProductsItem($id);
+		// Вызываем getGoods() с фильтрацией по ID — единая логика обработки товара
+		$result = $this->getGoods();
 
-		if (!empty($item['W_Attributes'])) {
-			$item['W_Attributes'] = array_values(array_map(
-				fn($id, $rows) => [
-					'id' => $id,
-					'name' => $rows[0]['PropertyName'] ?? '',
-					'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
-				],
-				array_keys($item['W_Attributes']),
-				array_values($item['W_Attributes'])
-			));
-		}
-
-		if (empty($item)) {
+		if (empty($result['data'])) {
 			return ['status' => 404, 'message' => 'Item not found', 'data' => null];
 		}
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $item];
+		return ['status' => 200, 'message' => 'OK', 'data' => $result['data'][0]];
 	}
 
 	/**
@@ -286,8 +263,12 @@ class RestV1APP extends RestV1
 		}
 
 		$ids = array_column($jfav, 'id');
-		$in = rtrim(str_repeat('?,', count($ids)), ',');
+		$in = Connect::$instance->in($ids);
 		$productsUtils = new ProductsUtils();
+		// Инициализируем Navigator для REST контекста
+		$navigator = new Navigator("/catalog/");
+		$productsUtils->setNavigator($navigator, 'Products');
+
 		$result = $productsUtils->getProducts([
 			'pages' => 100,
 			'page' => 1,

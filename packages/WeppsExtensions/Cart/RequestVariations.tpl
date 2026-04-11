@@ -3,11 +3,12 @@
 <div class="w_interval"></div>
 <div class="product-price">
     <div class="prices">
-        {foreach from=$element.W_Variations item="item" key="key" name="out"}
+        {foreach from=$element.W_Variations item="group" name="variations"}
+            {assign var="firstInGroup" value=$group[0]}
             <section>
-                <div class="price-title">{$key}</div>
-                {foreach from=$item item="i" name="o"}
-                    <a href="" class="w_button cart-add-v{if $i.Stocks<=0} w_disabled{/if}{if $i.Id|in_array:$cartMetrics.itemsv} cart-add-v-exists{/if}" data-id="{$i.Id}">{$i.Size}</a>
+                <div class="price-title">{$firstInGroup.color|default:'-'}</div>
+                {foreach from=$group item="item"}
+                    <a href="" class="w_button cart-add-v{if $item.stocks<=0} w_disabled{/if}{if $item.id|in_array:$cartMetrics.itemsv} cart-add-v-exists{/if}" data-id="{$item.id}">{$item.size}</a>
                 {/foreach}
             </section>
         {/foreach}

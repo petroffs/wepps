@@ -13,7 +13,7 @@ class Filters {
 		$this->setParamsFilters();
 	}
 	public function getFilters($conditions) {
-		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
+		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.TableNameId,pv.PValue,pv.Alias,
 		p.Name as PropertyName,count(*) as Co
 		from Products as t
 		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id and pv.IsHidden=0

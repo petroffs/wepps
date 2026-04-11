@@ -40,31 +40,40 @@
 						<span>{$element.PriceBefore}</span>
 					</div>
 					{/if}
-					{if $element.W_Variations.W_GROUP.0.Id}
-						{assign var="elementGroup" value=$element.W_Variations.W_GROUP.0}
+					{if $element.W_Variations}
+						{assign var="isDefaultGroup" value=false}
+						{foreach from=$element.W_Variations item="group" name="variations"}
+							{assign var="firstInGroup" value=$group[0]}
+							{if empty($firstInGroup.color)}
+								{assign var="isDefaultGroup" value=true}
+								<div class="w_interval"></div>
+								<label class="w_label w_button">
+									{if $element.Id|in_array:$cartMetrics.items}
+										<a href="/cart/" class="cart-exists"></a>
+									{/if}
+									<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="{$firstInGroup.id}" {if $firstInGroup.stocks<=0} disabled{/if} autocomplete="off"/>
+								</label>
+							{else}
+								{if $group@first}
+									<div class="w_interval"></div>
+								{/if}
+								<section>
+									<div class="price-title">{$firstInGroup.color}</div>
+									{foreach from=$group item="item"}
+										<a href="" class="w_button cart-add-v{if $item.stocks<=0} w_disabled{/if}{if $item.id|in_array:$cartMetrics.itemsv} cart-add-v-exists{/if}" data-id="{$item.id}">{$item.size}</a>
+									{/foreach}
+								</section>
+							{/if}
+						{/foreach}
+						{if !$isDefaultGroup}
 						<div class="w_interval"></div>
 						<label class="w_label w_button">
 							{if $element.Id|in_array:$cartMetrics.items}
 								<a href="/cart/" class="cart-exists"></a>
 							{/if}
-							<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="{$elementGroup.Id}" {if $elementGroup.Stocks<=0} disabled{/if} autocomplete="off"/>
+							<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="-1" disabled autocomplete="off"/>
 						</label>
-					{elseif $element.W_Variations}
-					{foreach from=$element.W_Variations item="item" key="key" name="out"}
-						<section>
-							<div class="price-title">{$key}</div>
-							{foreach from=$item item="i" name="o"}
-							<a href="" class="w_button cart-add-v{if $i.Stocks<=0} w_disabled{/if}{if $i.Id|in_array:$cartMetrics.itemsv} cart-add-v-exists{/if}" data-id="{$i.Id}">{$i.Size}</a>
-							{/foreach}
-						</section>
-					{/foreach}
-					<div class="w_interval"></div>
-					<label class="w_label w_button">
-						{if $element.Id|in_array:$cartMetrics.items}
-							<a href="/cart/" class="cart-exists"></a>
 						{/if}
-						<input type="button" value="В корзину" class="cart-add" data-id="{$element.Id}" data-idv="-1" disabled autocomplete="off"/>
-					</label>	
 					{/if}
 				</div>
 			</div>

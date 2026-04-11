@@ -35,8 +35,8 @@
 						<a href="/cart/" class="cart-exists"></a>
 					{/if}
 					{if $item.W_VariationsCount==1}
-						{assign var="idv" value=$item.W_Variations|strarr}
-						<input type="button" value="В корзину" class="cart-add" data-id="{$item.Id}" data-idv="{$idv.0}"/>
+					{assign var="firstGroup" value=$item.W_Variations[0]}
+					<input type="button" value="В корзину" class="cart-add" data-id="{$item.Id}" data-idv="{$firstGroup[0].id}"/>
 					{else}
 						<input type="button" value="В корзину" class="cart-add" data-id="{$item.Id}" data-idv="-1" data-popup-v="1"/>
 					{/if}

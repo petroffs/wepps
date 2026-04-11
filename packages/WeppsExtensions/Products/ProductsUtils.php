@@ -100,11 +100,20 @@ class ProductsUtils
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
 		$settings['sorting'] .= ",pv.Priority";
 		$res = $obj->fetch($settings['conditions']['conditions'], $settings['pages'], $settings['page'], $settings['sorting']);
+		// Преобразуем W_Variations из строки в массив (как в getProductsItem)
+		if (!empty($res)) {
+			foreach ($res as $k => &$el) {
+				if (!empty($el['W_Variations'])) {
+					$el['W_Variations'] = self::getVariationsArray($el['W_Variations']);
+				}
+				unset($res[$k]['Variations']);
+			}
+			unset($el);
+		}
 		return [
 			'rows' => $res,
 			'count' => $obj->count,
 			'paginator' => $obj->paginator,
-
 		];
 	}
 	public function getProductsItem(string|int $id): array
@@ -126,24 +135,41 @@ class ProductsUtils
 		}
 		$filters = new Filters();
 		$el['W_Attributes'] = $filters->getFilters($settings['conditions']);
-		if (!empty($el['W_Variations'])) {
-			$el['W_Variations'] = self::getVariationsArray($el['W_Variations']);
-		}
+		// W_Variations уже преобразован в getProducts(), не нужно вызывать снова
 		return $el;
 	}
 	public function getVariationsArray(string $string): array
 	{
 		$arr = Utils::arrayFromString($string,':::',"\n");
-		$keys = ['Id', 'Color', 'Size', 'Sku', 'Stocks'];
-		$variants = array_map(function($item) use ($keys) {
-			return array_combine($keys, $item);
+		$keys = ['id', 'color', 'size', 'sku', 'stocks'];
+		$types = ['id' => 'int', 'color' => 'string', 'size' => 'string', 'sku' => 'string', 'stocks' => 'int'];
+		
+		$variants = array_map(function($item) use ($keys, $types) {
+			$variant = array_combine($keys, $item);
+			// Конвертируем типы данных
+			foreach ($variant as $key => &$value) {
+				if ($types[$key] === 'int') {
+					$value = (int)$value;
+				} else {
+					$value = (string)$value;
+				}
+			}
+			unset($value);
+			return $variant;
 		}, $arr);
-		$arr = [];
+		
+		// Группируем по цветам (пустой color → группу без цвета)
+		$grouped = [];
 		foreach ($variants as $value) {
-			$color = (empty($value['Color'])) ? 'W_GROUP' : $value['Color'];
-			$arr[$color][] = $value;
+			$colorKey = empty($value['color']) ? '' : $value['color'];
+			if (!isset($grouped[$colorKey])) {
+				$grouped[$colorKey] = [];
+			}
+			$grouped[$colorKey][] = $value;
 		}
-		#Utils::debug($arr,0);
-		return $arr;
+		
+		// Преобразуем в массив массивов (без ключей)
+		$result = array_values($grouped);
+		return $result;
 	}
 }

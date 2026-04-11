@@ -3,7 +3,10 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Data;
 use WeppsCore\Connect;
+use WeppsCore\Navigator;
+use WeppsCore\Utils;
 use WeppsExtensions\Template\Filters\Filters;
+use WeppsExtensions\Products\ProductsUtils;
 
 /**
  * RestV1M2M - M2M API для работы с таблицами через CRUD операции
@@ -98,14 +101,14 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		
+
 		// Валидировать POST данные по правилам из s_ConfigFields
 		try {
 			$this->validatePostData('s_Users', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
-		
+
 		return $this->getUtils()->add('s_Users', $data);
 	}
 
@@ -119,14 +122,14 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		
+
 		// Валидировать PUT данные по правилам из s_ConfigFields
 		try {
 			$this->validatePostData('s_Users', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
-		
+
 		return $this->getUtils()->set('s_Users', $id, $data);
 	}
 
@@ -145,7 +148,125 @@ class RestV1M2M extends RestV1
 
 	public function getGoods(): array
 	{
-		return $this->getUtils()->fetch('Products', $this->get);
+		$id = $this->get['id'] ?? '';
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = min(100, max(1, (int) ($this->get['limit'] ?? 20)));
+		$search = $this->get['search'] ?? '';
+
+		$productsUtils = new ProductsUtils();
+		$navigator = new Navigator("/catalog/");
+
+		// Если передан ID, ищем по ID, иначе используем поиск и фильтры
+		if (!empty($id)) {
+			$productsUtils->setNavigator($navigator, 'Products');
+			$isNumericId = (strlen((int) $id) == strlen($id));
+			$conditions = $isNumericId ? "t.Id = ?" : "binary t.Alias = ?";
+
+			$settings = [
+				'pages' => 1,
+				'page' => 1,
+				'sorting' => 't.Priority desc',
+				'conditions' => [
+					'conditions' => $conditions,
+					'params' => [$id],
+				],
+			];
+		} else {
+			// Инициализируем Navigator для работы getConditions()
+			if (!empty($this->get['category'])) {
+				$navigator->content['Id'] = (int) $this->get['category'];
+			}
+			$productsUtils->setNavigator($navigator, 'Products');
+
+			// Условия WHERE и параметры для фильтрации
+			$conditions = "t.IsHidden=0";
+			$params = [];
+
+			if (!empty($search)) {
+				$conditions = "t.IsHidden=0 and lower(t.Name) like lower(?)";
+				$params[] = $search . "%";
+			}
+
+			$filters = new Filters($this->get);
+			$filterParams = $filters->getParams();
+			$conditionsWithFilters = $productsUtils->getConditions($filterParams, true, $conditions, $params);
+
+			// Сортировка
+			$sorting = match ($this->get['sort'] ?? '') {
+				'priceasc' => 't.Price asc',
+				'pricedesc' => 't.Price desc',
+				'nameasc' => 't.Name asc',
+				default => 't.Priority desc',
+			};
+
+			$settings = [
+				'pages' => $limit,
+				'page' => $page,
+				'sorting' => $sorting,
+				'conditions' => $conditionsWithFilters,
+			];
+		}
+
+		$result = $productsUtils->getProducts($settings);
+		$rows = $result['rows'] ?? [];
+
+		// Получаем все атрибуты для всех товаров одним вызовом Filters
+		$attributesByProductId = [];
+		$ids = array_column($rows, 'Id');
+
+		if (!empty($ids)) {
+			$placeholders = Connect::$instance->in($ids);
+			$filtersObj = new Filters();
+
+			// getFilters группирует результат, нужно разобрать структуру
+			$attributesByAlias = $filtersObj->getFilters([
+				'conditions' => "t.Id IN ($placeholders)",
+				'params' => $ids,
+			]);
+
+			// attributesByAlias имеет структуру: [Alias => [attr1, attr2, ...]]
+			// Нужно перегруппировать в: [ProductId][PropertyId] => [attr1, attr2, ...]
+			foreach ($attributesByAlias as $alias => $attributes) {
+				foreach ($attributes as $attr) {
+					$productId = $attr['TableNameId'] ?? 0;
+					$propId = (int) $attr['Name']; // Name в s_PropertiesValues это ID свойства
+
+					if (!isset($attributesByProductId[$productId])) {
+						$attributesByProductId[$productId] = [];
+					}
+					if (!isset($attributesByProductId[$productId][$propId])) {
+						$attributesByProductId[$productId][$propId] = [];
+					}
+					$attributesByProductId[$productId][$propId][] = $attr;
+				}
+			}
+		}
+
+		// Распределяем атрибуты по товарам
+		foreach ($rows as $key => &$row) {
+			$productAttrs = $attributesByProductId[$row['Id']] ?? null;
+			if ($productAttrs) {
+				$row['W_Attributes'] = array_values(array_map(
+					fn($propId, $attrs) => [
+						'id' => $propId,
+						'name' => $attrs[0]['PropertyName'] ?? '',
+						'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) ($r['Co'] ?? 0)], $attrs),
+					],
+					array_keys($productAttrs),
+					array_values($productAttrs)
+				));
+			} else {
+				$row['W_Attributes'] = null;
+			}
+		}
+		unset($row);
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $rows,
+			'pagination' => ['count' => $result['count'], 'limit' => $limit, 'page' => $page],
+		];
 	}
 
 	public function getGoodsItem(): array
@@ -154,7 +275,9 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils()->item('Products', $id);
+
+		// Используем логику getGoods() для обогащения W_Attributes
+		return $this->getGoods();
 	}
 
 	public function postGoods($data = null): array
@@ -163,14 +286,14 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		
+
 		// Валидировать POST данные по правилам из s_ConfigFields
 		try {
 			$this->validatePostData('Products', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
-		
+
 		return $this->getUtils()->add('Products', $data);
 	}
 
@@ -184,14 +307,14 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		
+
 		// Валидировать PUT данные по правилам из s_ConfigFields
 		try {
 			$this->validatePostData('Products', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
-		
+
 		return $this->getUtils()->set('Products', $id, $data);
 	}
 
@@ -332,7 +455,7 @@ class RestV1M2M extends RestV1
 	public function getGoodsStocks(): array
 	{
 		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		
+
 		// Если передан ID товара, получить его запасы
 		if ($goodsId > 0) {
 			$res = Connect::$instance->fetch(
@@ -344,7 +467,7 @@ class RestV1M2M extends RestV1
 			}
 			return ['status' => 200, 'message' => 'OK', 'data' => $res];
 		}
-		
+
 		// Иначе вернуть запасы всех товаров
 		$res = Connect::$instance->fetch(
 			"SELECT Id, Name, Amount FROM Products WHERE IsDeleted = 0 ORDER BY Name"
@@ -358,7 +481,7 @@ class RestV1M2M extends RestV1
 	public function getGoodsPrices(): array
 	{
 		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		
+
 		// Если передан ID товара, получить его цены
 		if ($goodsId > 0) {
 			$res = Connect::$instance->fetch(
@@ -370,7 +493,7 @@ class RestV1M2M extends RestV1
 			}
 			return ['status' => 200, 'message' => 'OK', 'data' => $res];
 		}
-		
+
 		// Иначе вернуть цены всех товаров
 		$res = Connect::$instance->fetch(
 			"SELECT Id, Name, Price, PriceOut FROM Products WHERE IsDeleted = 0 ORDER BY Name"
@@ -386,11 +509,13 @@ class RestV1M2M extends RestV1
 		$goodsId = (int) ($this->get['goods_id'] ?? 0);
 		$page = max(1, (int) ($this->get['page'] ?? 1));
 		$limit = (int) ($this->get['limit'] ?? 100);
-		if ($limit > 1000) $limit = 1000;
-		if ($limit < 1) $limit = 100;
-		
+		if ($limit > 1000)
+			$limit = 1000;
+		if ($limit < 1)
+			$limit = 100;
+
 		$offset = ($page - 1) * $limit;
-		
+
 		// Если передан ID товара, получить его изображения
 		if ($goodsId > 0) {
 			$res = Connect::$instance->fetch(
@@ -405,14 +530,19 @@ class RestV1M2M extends RestV1
 				"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'Products' AND TableNameId = ?",
 				[$goodsId]
 			);
-			return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
-				'page' => $page,
-				'limit' => $limit,
-				'total' => (int) ($count[0]['total'] ?? 0),
-				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
-			]];
+			return [
+				'status' => 200,
+				'message' => 'OK',
+				'data' => $res ?? [],
+				'pagination' => [
+					'page' => $page,
+					'limit' => $limit,
+					'total' => (int) ($count[0]['total'] ?? 0),
+					'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+				]
+			];
 		}
-		
+
 		// Иначе вернуть все изображения товаров с пагинацией
 		$res = Connect::$instance->fetch(
 			"SELECT Id, TableNameId as goods_id, Name, InnerName, FileUrl FROM s_Files 
@@ -425,12 +555,17 @@ class RestV1M2M extends RestV1
 		$count = Connect::$instance->fetch(
 			"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'Products'"
 		);
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
-			'page' => $page,
-			'limit' => $limit,
-			'total' => (int) ($count[0]['total'] ?? 0),
-			'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
-		]];
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res ?? [],
+			'pagination' => [
+				'page' => $page,
+				'limit' => $limit,
+				'total' => (int) ($count[0]['total'] ?? 0),
+				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+			]
+		];
 	}
 
 	/**
@@ -485,8 +620,7 @@ class RestV1M2M extends RestV1
 			if (!$fileUrl) {
 				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
 			}
-		}
-		else {
+		} else {
 			return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
 		}
 
@@ -579,11 +713,13 @@ class RestV1M2M extends RestV1
 		$goodsvId = (int) ($this->get['goodsv_id'] ?? 0);
 		$page = max(1, (int) ($this->get['page'] ?? 1));
 		$limit = (int) ($this->get['limit'] ?? 100);
-		if ($limit > 1000) $limit = 1000;
-		if ($limit < 1) $limit = 100;
-		
+		if ($limit > 1000)
+			$limit = 1000;
+		if ($limit < 1)
+			$limit = 100;
+
 		$offset = ($page - 1) * $limit;
-		
+
 		// Если передан ID вариации, получить его изображения
 		if ($goodsvId > 0) {
 			$res = Connect::$instance->fetch(
@@ -598,14 +734,19 @@ class RestV1M2M extends RestV1
 				"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'ProductsVariations' AND TableNameId = ?",
 				[$goodsvId]
 			);
-			return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
-				'page' => $page,
-				'limit' => $limit,
-				'total' => (int) ($count[0]['total'] ?? 0),
-				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
-			]];
+			return [
+				'status' => 200,
+				'message' => 'OK',
+				'data' => $res ?? [],
+				'pagination' => [
+					'page' => $page,
+					'limit' => $limit,
+					'total' => (int) ($count[0]['total'] ?? 0),
+					'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+				]
+			];
 		}
-		
+
 		// Иначе вернуть все изображения вариаций с пагинацией
 		$res = Connect::$instance->fetch(
 			"SELECT Id, TableNameId as goodsv_id, Name, InnerName, FileUrl FROM s_Files 
@@ -618,12 +759,17 @@ class RestV1M2M extends RestV1
 		$count = Connect::$instance->fetch(
 			"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'ProductsVariations'"
 		);
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? [], 'pagination' => [
-			'page' => $page,
-			'limit' => $limit,
-			'total' => (int) ($count[0]['total'] ?? 0),
-			'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
-		]];
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res ?? [],
+			'pagination' => [
+				'page' => $page,
+				'limit' => $limit,
+				'total' => (int) ($count[0]['total'] ?? 0),
+				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+			]
+		];
 	}
 
 	/**
@@ -678,8 +824,7 @@ class RestV1M2M extends RestV1
 			if (!$fileUrl) {
 				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
 			}
-		}
-		else {
+		} else {
 			return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
 		}
 
@@ -946,14 +1091,14 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		
+
 		// Валидировать POST данные по правилам из s_ConfigFields
 		try {
 			$this->validatePostData('Orders', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
-		
+
 		return $this->getUtils()->add('Orders', $data);
 	}
 
@@ -967,14 +1112,14 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		
+
 		// Валидировать PUT данные по правилам из s_ConfigFields
 		try {
 			$this->validatePostData('Orders', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
-		
+
 		return $this->getUtils()->set('Orders', $id, $data);
 	}
 
