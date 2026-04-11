@@ -13,13 +13,13 @@ class Filters {
 		$this->setParamsFilters();
 	}
 	public function getFilters($conditions) {
-		$sql = "select distinct p.Id as PropertyAlias,pv.Name,pv.TableNameId,pv.PValue,pv.Alias,
+		$sql = "select distinct concat(pv.TableNameId,'-',p.Id) as PropertyAlias,pv.Name,pv.PValue,pv.Alias,
 		p.Name as PropertyName,count(*) as Co
 		from Products as t
 		left outer join s_PropertiesValues as pv on pv.TableNameId = t.Id and pv.IsHidden=0
 		left outer join s_Properties as p on p.Id = pv.Name and p.IsHidden=0
 		where {$conditions['conditions']}
-		group by pv.Alias
+		group by pv.TableNameId,pv.Alias
 		order by p.Priority,pv.PValue
 		limit 500";
 		return Connect::$instance->fetch($sql,$conditions['params'],'group');

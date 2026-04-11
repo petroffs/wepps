@@ -218,27 +218,23 @@ class RestV1M2M extends RestV1
 			$placeholders = Connect::$instance->in($ids);
 			$filtersObj = new Filters();
 
-			// getFilters группирует результат, нужно разобрать структуру
-			$attributesByAlias = $filtersObj->getFilters([
+			// getFilters группирует результат по ключу "ProductId-PropertyId"
+			$attributesByKey = $filtersObj->getFilters([
 				'conditions' => "t.Id IN ($placeholders)",
 				'params' => $ids,
 			]);
+			// attributesByKey имеет структуру: ["ProductId-PropertyId" => [attr1, attr2, ...]]
+			// Перегруппировать в: [ProductId][PropertyId] => [attr1, attr2, ...]
+			foreach ($attributesByKey as $compositeKey => $attributes) {
+				[$productId, $propId] = explode('-', $compositeKey);
+				$productId = (int) $productId;
+				$propId = (int) $propId;
 
-			// attributesByAlias имеет структуру: [Alias => [attr1, attr2, ...]]
-			// Нужно перегруппировать в: [ProductId][PropertyId] => [attr1, attr2, ...]
-			foreach ($attributesByAlias as $alias => $attributes) {
-				foreach ($attributes as $attr) {
-					$productId = $attr['TableNameId'] ?? 0;
-					$propId = (int) $attr['Name']; // Name в s_PropertiesValues это ID свойства
-
-					if (!isset($attributesByProductId[$productId])) {
-						$attributesByProductId[$productId] = [];
-					}
-					if (!isset($attributesByProductId[$productId][$propId])) {
-						$attributesByProductId[$productId][$propId] = [];
-					}
-					$attributesByProductId[$productId][$propId][] = $attr;
+				if (!isset($attributesByProductId[$productId])) {
+					$attributesByProductId[$productId] = [];
 				}
+				// attributes уже отсортирован по Alias (размеры, цвета и т.д.)
+				$attributesByProductId[$productId][$propId] = $attributes;
 			}
 		}
 
