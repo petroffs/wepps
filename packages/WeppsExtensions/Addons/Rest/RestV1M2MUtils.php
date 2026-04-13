@@ -224,6 +224,38 @@ class RestV1M2MUtils
 	}
 
 	/**
+	 * Преобразует массив свойств в структуру W_Attributes для API
+	 * 
+	 * @param array|null $propertiesData Массив данных о свойствах (grouped по ID или rows)
+	 * @return array|null Отформатированный массив W_Attributes или null
+	 */
+	public function buildAttributesFromPropertiesValues(?array $propertiesData): ?array
+	{
+		if (empty($propertiesData)) {
+			return null;
+		}
+
+		// Входные данные: [PropertyId => rows] (после filtersByCompositeKey())
+		$grouped = [];
+		foreach ($propertiesData as $propId => $rows) {
+			if (!is_array($rows) || empty($rows)) {
+				continue;
+			}
+			$grouped[$propId] = $rows;
+		}
+
+		return array_values(array_map(
+			fn($propId, $rows) => [
+				'id' => (int) $propId,
+				'name' => $rows[0]['PropertyName'] ?? '',
+				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue']], $rows),
+			],
+			array_keys($grouped),
+			array_values($grouped)
+		));
+	}
+
+	/**
 	 * Инвалидировать кэш валидационных правил (после обновления s_ConfigFields)
 	 * 
 	 * @param string $tableName - имя таблицы (null = очистить все кэши валидации)

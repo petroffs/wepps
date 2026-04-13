@@ -91,13 +91,13 @@ class RestV1APP extends RestV1
 
 		$productsUtils = new ProductsUtils();
 		$navigator = new Navigator("/catalog/");
-		
+
 		// Если передан ID, ищем по ID, иначе используем фильтры и категорию
 		if (!empty($id)) {
 			$productsUtils->setNavigator($navigator, 'Products');
 			$isNumericId = (strlen((int) $id) == strlen($id));
 			$conditions = $isNumericId ? "t.Id = ?" : "binary t.Alias = ?";
-			
+
 			$settings = [
 				'pages' => 1,
 				'page' => 1,
@@ -129,44 +129,35 @@ class RestV1APP extends RestV1
 
 		$result = $productsUtils->getProducts($settings);
 
-		// Получаем бренды (свойство id=1) одним запросом для всей страницы
-		$brandsByProduct = [];
+		// Загружаем атрибуты для всех товаров одним вызовом
+		$filterResult = [];
 		$ids = array_column($result['rows'], 'Id');
+		
 		if (!empty($ids)) {
 			$placeholders = Connect::$instance->in($ids);
-			$brandsByProduct = Connect::$instance->fetch(
-				"SELECT pv.TableNameId, pv.Name, pv.PValue, pv.Alias, p.Name as PropertyName FROM s_PropertiesValues pv LEFT JOIN s_Properties p ON p.Id = pv.Name AND p.IsHidden=0 WHERE pv.IsHidden=0 AND pv.TableName='Products' AND pv.Name=1 AND pv.TableNameId IN ($placeholders)",
-				$ids,
-				'group'
-			);
+			$filters = new Filters();
+			$filtersByCompositeKey = $filters->getFilters([
+				'conditions' => "t.IsHidden=0 AND pv.TableName='Products' AND pv.TableNameId IN ($placeholders)",
+				'params' => $ids,
+			]);
+			
+			// Перегруппируем compositeKey в структуру [ProductId => [PropertyId => rows]]
+			$filterResult = $filters->groupByProductId($filtersByCompositeKey);
 		}
 
-		foreach ($result['rows'] as $key => &$row) {
+		// Унифицированный цикл: атрибуты и URLs для обоих случаев
+		foreach ($result['rows'] as &$row) {
+			if (!empty($filterResult)) {
+				// Распределяем атрибуты по товарам
+				$row['W_Attributes'] = $this->_buildAttributesFromPropertiesValues($filterResult[$row['Id']] ?? null);
+			}
+
+			// обработка URLs (для обоих случаев)
 			if (!empty($row['Images_FileUrl'])) {
 				$row['Images_FileUrl'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . '/pic/mediumv' . $row['Images_FileUrl'];
 			}
 			$row['Url'] = Connect::$projectDev['protocol'] . Connect::$projectDev['host'] . $row['Url'];
-			// W_Variations уже преобразован в ProductsUtils::getProducts()
-			$brands = $brandsByProduct[$row['Id']] ?? null;
-			if ($brands) {
-				$byProp = [];
-				foreach ($brands as $b) {
-					$byProp[$b['Name']][] = $b;
-				}
-				$row['W_Attributes'] = array_values(array_map(
-					fn($id, $rows) => [
-						'id' => $id,
-						'name' => $rows[0]['PropertyName'] ?? '',
-						'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue']], $rows),
-					],
-					array_keys($byProp),
-					array_values($byProp)
-				));
-			} else {
-				$row['W_Attributes'] = null;
-			}
 		}
-		unset($row);
 
 		return [
 			'status' => 200,
@@ -698,6 +689,38 @@ class RestV1APP extends RestV1
 	{
 		Connect::$projectData['user'] = $this->rest->getUser();
 		return new CartUtils();
+	}
+
+	/**
+	 * Преобразует массив свойств в структуру W_Attributes для API
+	 * 
+	 * @param array|null $propertiesData Массив данных о свойствах grouped по PropertyId: [PropertyId => rows]
+	 * @return array|null Отформатированный массив W_Attributes или null
+	 */
+	private function _buildAttributesFromPropertiesValues(?array $propertiesData): ?array
+	{
+		if (empty($propertiesData)) {
+			return null;
+		}
+
+		// Входные данные: [PropertyId => rows] (после filtersByCompositeKey())
+		$grouped = [];
+		foreach ($propertiesData as $propId => $rows) {
+			if (!is_array($rows) || empty($rows)) {
+				continue;
+			}
+			$grouped[$propId] = $rows;
+		}
+
+		return array_values(array_map(
+			fn($propId, $rows) => [
+				'id' => (int) $propId,
+				'name' => $rows[0]['PropertyName'] ?? '',
+				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue']], $rows),
+			],
+			array_keys($grouped),
+			array_values($grouped)
+		));
 	}
 
 	// -------------------------------------------------------------------------

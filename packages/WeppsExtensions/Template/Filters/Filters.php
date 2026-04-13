@@ -24,6 +24,31 @@ class Filters {
 		limit 500";
 		return Connect::$instance->fetch($sql,$conditions['params'],'group');
 	}
+	public function groupByProductId(array $filterResult): array
+	{
+		// Перегруппирует результаты getFilters() по ProductId→PropertyId
+		// Входные данные: compositeKey "ProductId-PropertyId" => rows
+		// Выходные данные: [ProductId => [PropertyId => rows]]
+		$grouped = [];
+		
+		foreach ($filterResult as $compositeKey => $rows) {
+			if (!is_array($rows) || empty($rows)) {
+				continue;
+			}
+			
+			// Парсим compositeKey "ProductId-PropertyId"
+			[$productId, $propId] = explode('-', $compositeKey);
+			$productId = (int) $productId;
+			$propId = (int) $propId;
+			
+			if (!isset($grouped[$productId])) {
+				$grouped[$productId] = [];
+			}
+			$grouped[$productId][$propId] = $rows;
+		}
+		
+		return $grouped;
+	}
 	public function getFiltersCodeJS(array $filtersActive=[],int $count=0) {
 		if (empty($filtersActive)) {
 			return '';

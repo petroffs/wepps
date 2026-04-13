@@ -211,49 +211,24 @@ class RestV1M2M extends RestV1
 		$rows = $result['rows'] ?? [];
 
 		// Получаем все атрибуты для всех товаров одним вызовом Filters
-		$attributesByProductId = [];
+		// Filters::getFilters() возвращает с группировкой по compositeKey "ProductId-PropertyId"
+		$filterResult = [];
 		$ids = array_column($rows, 'Id');
 
 		if (!empty($ids)) {
 			$placeholders = Connect::$instance->in($ids);
 			$filtersObj = new Filters();
-
-			// getFilters группирует результат по ключу "ProductId-PropertyId"
-			$attributesByKey = $filtersObj->getFilters([
-				'conditions' => "t.Id IN ($placeholders)",
+			$filtersByCompositeKey = $filtersObj->getFilters([
+				'conditions' => "t.IsHidden=0 AND pv.TableName='Products' AND pv.TableNameId IN ($placeholders)",
 				'params' => $ids,
 			]);
-			// attributesByKey имеет структуру: ["ProductId-PropertyId" => [attr1, attr2, ...]]
-			// Перегруппировать в: [ProductId][PropertyId] => [attr1, attr2, ...]
-			foreach ($attributesByKey as $compositeKey => $attributes) {
-				[$productId, $propId] = explode('-', $compositeKey);
-				$productId = (int) $productId;
-				$propId = (int) $propId;
 
-				if (!isset($attributesByProductId[$productId])) {
-					$attributesByProductId[$productId] = [];
-				}
-				// attributes уже отсортирован по Alias (размеры, цвета и т.д.)
-				$attributesByProductId[$productId][$propId] = $attributes;
-			}
+			// Перегруппируем compositeKey в структуру [ProductId => [PropertyId => rows]]
+			$filterResult = $filtersObj->groupByProductId($filtersByCompositeKey);
 		}
-
 		// Распределяем атрибуты по товарам
-		foreach ($rows as $key => &$row) {
-			$productAttrs = $attributesByProductId[$row['Id']] ?? null;
-			if ($productAttrs) {
-				$row['W_Attributes'] = array_values(array_map(
-					fn($propId, $attrs) => [
-						'id' => $propId,
-						'name' => $attrs[0]['PropertyName'] ?? '',
-						'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) ($r['Co'] ?? 0)], $attrs),
-					],
-					array_keys($productAttrs),
-					array_values($productAttrs)
-				));
-			} else {
-				$row['W_Attributes'] = null;
-			}
+		foreach ($rows as &$row) {
+			$row['W_Attributes'] = $this->getUtils()->buildAttributesFromPropertiesValues($filterResult[$row['Id']] ?? null);
 		}
 		unset($row);
 
