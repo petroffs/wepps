@@ -6,9 +6,11 @@ use WeppsCore\Navigator;
 use WeppsCore\TemplateHeaders;
 use WeppsCore\Utils;
 
-class TemplateUtils extends Utils {
-	public static function test() {
-		self::debug(1,21);
+class TemplateUtils extends Utils
+{
+	public static function test()
+	{
+		self::debug(1, 21);
 	}
 
 	public static function getMeta(Navigator &$navigator, TemplateHeaders &$headers)
@@ -48,5 +50,37 @@ class TemplateUtils extends Utils {
 		$headers->meta("<meta name=\"twitter:url\" content=\"https://" . $host . ($_SERVER['REQUEST_URI'] ?? '') . "\">");
 		$headers->meta("<meta name=\"twitter:domain\" content=\"" . $host . "\">");
 		$headers->meta("<link itemprop=\"thumbnailUrl\" href=\"" . $metaimage['src'] . "\">");
+	}
+
+	public static function getMetaOrganization(Navigator &$navigator, TemplateHeaders &$headers)
+	{
+		if ($navigator->content['Id'] != 1) {
+			return;
+		}
+		$organizationSchema = [
+			'@context' => 'https://schema.org',
+			'@type' => 'Organization',
+			'name' => Connect::$projectInfo['name'],
+			'url' => 'https://' . Connect::$projectDev['host'],
+			'logo' => 'https://' . Connect::$projectDev['host'] . Connect::$projectInfo['logopng'],
+			'address' => [
+				'@type' => 'PostalAddress',
+				'streetAddress' => Connect::$projectInfo['address']['address-short'],
+				'addressLocality' => Connect::$projectInfo['address']['city'],
+				'postalCode' => Connect::$projectInfo['address']['postal-code'],
+				'addressCountry' => 'RU'
+			],
+			'contactPoint' => [
+				'@type' => 'ContactPoint',
+				'telephone' => Connect::$projectInfo['phone'],
+				'contactType' => 'customer service',
+				'areaServed' => 'RU',
+				'availableLanguage' => 'Russian'
+			],
+			// 'sameAs' => [
+			// 	'https://ваш-канал-в-соцсетях'
+			// ]
+		];
+		$headers->meta('<script type="application/ld+json">' . json_encode($organizationSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>');
 	}
 }
