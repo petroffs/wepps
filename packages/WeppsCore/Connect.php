@@ -126,13 +126,15 @@ class Connect
 			if (!empty($this->memcached) && $isCache == 1 && !empty($res = $this->memcached->get($key))) {
 				return $res;
 			}
-			$sth = self::$db->prepare($sql);
-			$sth->execute($params);
-			if ($group == 'group') {
-				$res = $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
-			} else {
-				$res = $sth->fetchAll(PDO::FETCH_ASSOC);
-			}
+			$res = $this->executeWithRetry(function () use ($sql, $params, $group) {
+				$sth = self::$db->prepare($sql);
+				$sth->execute($params);
+				if ($group == 'group') {
+					return $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+				} else {
+					return $sth->fetchAll(PDO::FETCH_ASSOC);
+				}
+			});
 			if (!empty($this->memcached) && $isCache == 1) {
 				$this->memcached->set($key, $res);
 			}
@@ -154,14 +156,16 @@ class Connect
 	{
 		$this->count++;
 		try {
-			if (empty($params)) {
-				$state = self::$db->query($sql);
-				return $state->rowCount();
-			} else {
-				$this->sth = self::$db->prepare($sql);
-				$this->sth->execute($params);
-				return $this->sth->rowCount();
-			}
+			return $this->executeWithRetry(function () use ($sql, $params) {
+				if (empty($params)) {
+					$state = self::$db->query($sql);
+					return $state->rowCount();
+				} else {
+					$this->sth = self::$db->prepare($sql);
+					$this->sth->execute($params);
+					return $this->sth->rowCount();
+				}
+			});
 		} catch (\Exception $e) {
 			Exception::display($e);
 			return 0;
@@ -269,15 +273,17 @@ class Connect
 	 */
 	public function transaction(callable $func, array $args): array
 	{
-		Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
 		try {
-			Connect::$db->beginTransaction();
-			if (Connect::$db->inTransaction()) {
-				$response = $func($args);
-			}
-			Connect::$db->commit();
-			Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
-			return $response;
+			return $this->executeWithRetry(function () use ($func, $args) {
+				Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
+				Connect::$db->beginTransaction();
+				if (Connect::$db->inTransaction()) {
+					$response = $func($args);
+				}
+				Connect::$db->commit();
+				Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
+				return $response;
+			});
 		} catch (\Exception $e) {
 			Connect::$db->rollBack();
 			echo "Error. See debug.conf";
@@ -293,5 +299,34 @@ class Connect
 	public function cached($isActive = 'auto')
 	{
 		$this->memcached = new Memcached($isActive);
+	}
+	/**
+	 * ✅ Выполнить callback с защитой от "MySQL server has gone away"
+	 * 
+	 * @param callable $callback Функция для выполнения
+	 * @param int $retries Количество повторных попыток
+	 * @return mixed Результат callback
+	 * @throws \PDOException
+	 */
+	private function executeWithRetry(callable $callback, $retries = 1)
+	{
+		try {
+			return $callback();
+		} catch (\PDOException $e) {
+			// Только "MySQL server has gone away" (2006) и только если попытки остались
+			if (strpos($e->getMessage(), '2006') !== false && $retries > 0) {
+				try {
+					// ✅ Проверяем, живая ли БД (ping)
+					self::$db->query("SELECT 1");
+					// Если ping прошел, повторяем операцию один раз
+					return $this->executeWithRetry($callback, $retries - 1);
+				} catch (\Exception $pingError) {
+					// ❌ БД не отвечает - выбрасываем оригинальную ошибку
+					throw $e;
+				}
+			}
+			// Если это не ошибка 2006 или попыток нет - выбрасываем ошибку
+			throw $e;
+		}
 	}
 }
