@@ -171,7 +171,7 @@ class Data
 			$ex = explode("::", $value[0]['Type'], 4);
 			switch ($ex[0]) {
 				case "file":
-					$fields .= "'f{$f}' as {$key}_Coordinate,group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$key}_FileUrl,\n";
+					$fields .= "'f{$f}' as {$key}_Coordinate,group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$key}_FileUrl,group_concat(distinct f{$f}.Name order by f{$f}.Priority separator ':::') as {$key}_Name,\n";
 					$joins .= "left join s_Files as f{$f} on f{$f}.TableNameId = t.Id and f{$f}.TableNameField = '{$key}' and f{$f}.TableName = '{$this->tableName}'\n";
 					$f++;
 					break;

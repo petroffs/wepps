@@ -80,7 +80,7 @@
 							{foreach name="o2" key="k2" item="i2" from=$item[$k|cat:"_FileUrl"]|strarr|array_slice:0:2}
 							<div>
 							<a href="/f{$i2}">
-								{if $i2|stristr:"jpg" || $i2|stristr:"png"}
+								{if $i2|stristr:"jpg" || $i2|stristr:"jpeg" || $i2|stristr:"png"}
 								<img src="/pic/lists{$i2}"/>
 								{elseif $i2!=''}
 								Открыть
@@ -90,7 +90,7 @@
 							{/foreach}
 							</td>
 							{else}
-							<td class="{$i.0.Type}"><div>{$item.$k|strip_tags|nl2br|escape|truncate:50}</div></td>
+							<td class="{$i.0.Type}"><div>{$item.$k|nl2br|strip_tags|truncate:50|escape}</div></td>
 							{/if}
 							{/foreach}
 						</tr>

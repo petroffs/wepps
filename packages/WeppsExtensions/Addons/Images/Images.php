@@ -31,6 +31,7 @@ class Images
 	private $newfile;
 	private $fileinfo;
 	private $mime;
+	private $outputMime;
 	private $ratio = 0.00;
 	private $width = 0;
 	private $height = 0;
@@ -54,20 +55,24 @@ class Images
 	function __construct($get)
 	{
 		$this->get = Utils::trim($get);
-		$filename = (isset($this->get['fileUrl'])) ? $this->get['fileUrl'] : '';
+		$filename = (isset($this->get['fileUrl'])) ? ltrim(str_replace('\\', '/', $this->get['fileUrl']), '/') : '';
 		$action = (isset($this->get['pref'])) ? $this->get['pref'] : '';
-		$root = substr(getcwd(), 0, strpos(getcwd(), "packages"));
-		$rootfilename = $root . "" . $filename;
+		$root = dirname(__DIR__, 4);
+		$rootfilename = $root . DIRECTORY_SEPARATOR . $filename;
 		if (!is_file($rootfilename)) {
 			Exception::error(404);
 		}
-		$res = Connect::$instance->fetch("select * from s_Files where FileType like 'image/%' and FileUrl='/{$filename}'");
+		$res = Connect::$instance->fetch("select * from s_Files where FileType like 'image/%' and FileUrl=?", ['/' . $filename]);
 		if (count($res) == 0) {
 			Exception::error(404);
 		}
 		$this->fileinfo = $res[0];
-		$size = @getimagesize($rootfilename) or die('die.');
+		$size = @getimagesize($rootfilename);
+		if ($size === false || empty($size[0]) || empty($size[1]) || empty($size['mime'])) {
+			Exception::error(404);
+		}
 		$this->mime = $size['mime'];
+		$this->outputMime = $this->resolveOutputMime($this->mime);
 		$this->ratio = $size[0] / $size[1];
 
 		/*
@@ -139,25 +144,10 @@ class Images
 			$this->heightDst = ($this->ratio >= 1) ? $side / $this->ratio : $side;
 		}
 
-		switch ($this->mime) {
-			case "image/gif":
-				$source = imagecreatefromgif($rootfilename) or die('die gif');
-				break;
-			case "image/jpeg":
-				$source = imagecreatefromjpeg($rootfilename) or die('die jpeg');
-				break;
-			case "image/png":
-				$source = imagecreatefrompng($rootfilename) or die('die png');
-				imagealphablending($source, false);
-				imagesavealpha($source, true);
-				break;
-			default:
-				$source = imagecreatefromstring(file_get_contents($rootfilename)) or die('die');
-				break;
-		}
+		$source = $this->createSourceImage($rootfilename);
 
 		if ($this->heightDst > 0) {
-			if ($size[0] < $this->widthDst || $size[1] < $this->heightDst) {
+			if ($size[0] < $this->widthDst && $size[1] < $this->heightDst) {
 				$this->width = $size[0];
 				$this->height = $size[1];
 			} elseif ($crop == 0) {
@@ -200,14 +190,7 @@ class Images
 	 */
 	public function save()
 	{
-		switch ($this->mime) {
-			case "image/png":
-				imagepng($this->target, $this->newfile, 5);
-				break;
-			default:
-				imagejpeg($this->target, $this->newfile, 100);
-				break;
-		}
+		$this->writeImage($this->target, $this->newfile);
 	}
 	/**
 	 * Выводит подготовленное изображение в HTTP-ответ с корректными заголовками
@@ -217,16 +200,72 @@ class Images
 	 */
 	public function output()
 	{
-		header('Content-type: ' . $this->mime);
+		header('Content-type: ' . $this->outputMime);
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 		header("Expires: " . gmdate("D, d M Y H:i:s", strtotime('+1 years')) . " GMT");
 		header("Cache-Control: max-age=31536000, s-maxage=31536000, must-revalidate");
+		$this->writeImage($this->target);
+	}
+	private function resolveOutputMime(string $mime): string
+	{
+		switch ($mime) {
+			case 'image/png':
+				return 'image/png';
+			case 'image/gif':
+				return 'image/gif';
+			case 'image/webp':
+				return function_exists('imagewebp') ? 'image/webp' : 'image/jpeg';
+			case 'image/jpeg':
+			default:
+				return 'image/jpeg';
+		}
+	}
+	private function createSourceImage(string $filename)
+	{
 		switch ($this->mime) {
-			case "image/png":
-				imagepng($this->target, null, 5);
+			case 'image/gif':
+				$source = @imagecreatefromgif($filename);
+				break;
+			case 'image/jpeg':
+				$source = @imagecreatefromjpeg($filename);
+				break;
+			case 'image/png':
+				$source = @imagecreatefrompng($filename);
+				if ($source) {
+					imagealphablending($source, false);
+					imagesavealpha($source, true);
+				}
+				break;
+			case 'image/webp':
+				$source = function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($filename) : false;
 				break;
 			default:
-				imagejpeg($this->target, null, 100);
+				$contents = @file_get_contents($filename);
+				$source = ($contents !== false) ? @imagecreatefromstring($contents) : false;
+				break;
+		}
+
+		if (!$source) {
+			Exception::error(404);
+		}
+
+		return $source;
+	}
+	private function writeImage($image, ?string $filename = null): void
+	{
+		switch ($this->outputMime) {
+			case 'image/png':
+				imagepng($image, $filename, 5);
+				break;
+			case 'image/gif':
+				imagegif($image, $filename);
+				break;
+			case 'image/webp':
+				imagewebp($image, $filename, 90);
+				break;
+			case 'image/jpeg':
+			default:
+				imagejpeg($image, $filename, 100);
 				break;
 		}
 	}
@@ -242,30 +281,28 @@ class Images
 	 */
 	private function resize(float $width, float $height, float $ratio)
 	{
-		if ($ratio == 1) {
-			if ($this->ratio >= 1) {
-				$this->width = $width;
-				$this->height = $width / $this->ratio;
-			} else {
-				$this->width = $height * $this->ratio;
-				$this->height = $height;
-			}
-		} elseif ($ratio >= 1) {
-			if ($this->ratio >= 1) {
-				$this->width = $height * $this->ratio;
-				$this->height = $height;
-			} else {
-				$this->width = $height * $this->ratio;
-				$this->height = $height;
-			}
+		// Сравниваем исходное соотношение сторон с целевым и выбираем ресайз по меньшей стороне
+		if ($this->ratio > $ratio) {
+			// Исходное шире целевого — масштабируем по высоте
+			$this->height = $height;
+			$this->width = $height * $this->ratio;
 		} else {
-			if ($this->ratio >= 1) {
-				$this->width = $width;
-				$this->height = $width / $this->ratio;
-			} else {
-				$this->width = $height * $this->ratio;
-				$this->height = $height;
-			}
+			// Исходное уже целевого — масштабируем по ширине
+			$this->width = $width;
+			$this->height = $width / $this->ratio;
+		}
+		
+		// Проверяем, влезают ли результирующие размеры в целевой прямоугольник
+		// и пересчитываем, если какой-то размер выходит за границы
+		if ($this->width > $width) {
+			$scale = $width / $this->width;
+			$this->width = $width;
+			$this->height *= $scale;
+		}
+		if ($this->height > $height) {
+			$scale = $height / $this->height;
+			$this->height = $height;
+			$this->width *= $scale;
 		}
 	}
 	/**
@@ -318,9 +355,15 @@ class Images
 		if (empty($filename)) {
 			$filename = Connect::$projectDev['root'] . Connect::$projectInfo['logopng'];
 		}
-		$target = imagecreatefrompng($filename) or die($filename);
+		$target = @imagecreatefrompng($filename);
+		if (!$target) {
+			Exception::error(500);
+		}
 		imagesavealpha($target, true);
-		$size = getimagesize($filename);
+		$size = @getimagesize($filename);
+		if ($size === false || empty($size[0]) || empty($size[1])) {
+			Exception::error(500);
+		}
 		$ratio = $size[0] / $size[1];
 
 		/*
@@ -394,16 +437,5 @@ class Images
 				break;
 		}
 		return $target;
-	}
-	/**
-	 * Деструктор освобождает ресурсы GD и закрывает соединение с БД.
-	 */
-	function __destruct()
-	{
-		if ($this->target)
-			imagedestroy($this->target);
-		if ($this->source)
-			imagedestroy($this->source);
-		Connect::$instance->close();
 	}
 }

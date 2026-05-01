@@ -242,7 +242,11 @@ ol.w_list {
 }
 
 .w_wrap {
+	white-space: normal;
+	overflow-wrap: anywhere;
 	word-wrap: break-word;
+	word-break: break-word;
+	hyphens: auto;
 }
 
 @media screen and (max-width: 810px) {
