@@ -952,8 +952,8 @@ class Rest
 		$result = [];
 		foreach ($data as $key => $value) {
 			if (is_string($key) && ctype_upper($key[0])) {
-				// Ключ начинается с заглавной буквы - нормализуем его
-				$newKey = lcfirst($key);
+				// Ключ начинается с заглавной буквы - нормализуем через toCamelCase()
+				$newKey = $this->toCamelCase($key);
 			} else {
 				$newKey = $key;
 			}
