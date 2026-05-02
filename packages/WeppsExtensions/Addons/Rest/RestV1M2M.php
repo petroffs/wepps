@@ -170,6 +170,7 @@ class RestV1M2M extends RestV1
 					'conditions' => $conditions,
 					'params' => [$id],
 				],
+				'useApiMapping' => true,
 			];
 		} else {
 			// Инициализируем Navigator для работы getConditions()
@@ -204,6 +205,7 @@ class RestV1M2M extends RestV1
 				'page' => $page,
 				'sorting' => $sorting,
 				'conditions' => $conditionsWithFilters,
+				'useApiMapping' => true,
 			];
 		}
 
@@ -213,7 +215,7 @@ class RestV1M2M extends RestV1
 		// Получаем все атрибуты для всех товаров одним вызовом Filters
 		// Filters::getFilters() возвращает с группировкой по compositeKey "ProductId-PropertyId"
 		$filterResult = [];
-		$ids = array_column($rows, 'Id');
+		$ids = array_column($rows, 'id');
 
 		if (!empty($ids)) {
 			$placeholders = Connect::$instance->in($ids);
@@ -228,7 +230,7 @@ class RestV1M2M extends RestV1
 		}
 		// Распределяем атрибуты по товарам
 		foreach ($rows as &$row) {
-			$row['W_Attributes'] = $this->getUtils()->buildAttributesFromPropertiesValues($filterResult[$row['Id']] ?? null);
+			$row['W_Attributes'] = $this->getUtils()->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
 		}
 		unset($row);
 

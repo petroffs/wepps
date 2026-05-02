@@ -739,10 +739,14 @@ class Rest
 			$this->status = $output['status'];
 			$extra = array_diff_key($output, array_flip(['status', 'message', 'data']));
 			
-			// Для M2M используем маппинг из БД, не применяем keysToCamelCase
+			// Для M2M используем маппинг из БД, но нормализуем вычисляемые поля (Url, PStatus и т.д.)
 			$normalizedData = $this->normalizeData($output['data'] ?? null);
-			if ($this->version !== 'v1m2m') {
+			//Utils::debug($this->version,1);
+			if ($this->version !== 'm2m') {
 				$normalizedData = $this->keysToCamelCase($normalizedData);
+			} else {
+				// Для m2m нормализуем только поля с заглавной буквы (вычисляемые поля)
+				$normalizedData = $this->normalizeComputedFields($normalizedData);
 			}
 			
 			$responseData = array_merge([
@@ -927,6 +931,33 @@ class Rest
 				$part = $m[1];
 			}
 			$result .= $result === '' ? lcfirst($part) : ucfirst($part);
+		}
+		return $result;
+	}
+
+	/**
+	 * Рекурсивно нормализует только вычисляемые поля (начинающиеся с заглавной буквы)
+	 * 
+	 * Используется для M2M API где маппинг из БД уже применен, но нужно нормализовать
+	 * поля типа Url, PStatus, W_Variations и т.д.
+	 * 
+	 * @param array|null $data Данные для преобразования
+	 * @return array|null Данные с нормализованными вычисляемыми полями
+	 */
+	private function normalizeComputedFields(?array $data): ?array
+	{
+		if ($data === null) {
+			return null;
+		}
+		$result = [];
+		foreach ($data as $key => $value) {
+			if (is_string($key) && ctype_upper($key[0])) {
+				// Ключ начинается с заглавной буквы - нормализуем его
+				$newKey = lcfirst($key);
+			} else {
+				$newKey = $key;
+			}
+			$result[$newKey] = is_array($value) ? $this->normalizeComputedFields($value) : $value;
 		}
 		return $result;
 	}

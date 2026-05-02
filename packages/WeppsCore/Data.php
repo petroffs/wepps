@@ -100,16 +100,26 @@ class Data
 	public $lang;
 
 	/**
+	 * Флаг использования ApiMapping для трансформации ключей результатов
+	 * @var bool
+	 */
+	private $useApiMapping = false;
+
+
+
+	/**
 	 * Конструктор класса Data
 	 *
 	 * @param string $tableName Имя таблицы БД
+	 * @param array $options Опции инициализации: ['useApiMapping' => bool]
 	 */
-	public function __construct($tableName = '')
+	public function __construct($tableName = '', $options = [])
 	{
 		if ($tableName == "") {
 			exit();
 		}
 		$this->tableName = Utils::trim($tableName);
+		$this->useApiMapping = $options['useApiMapping'] ?? false;
 	}
 	/**
 	 * Получить набор строк таблицы
@@ -169,9 +179,14 @@ class Data
 		$f = 1;
 		foreach ($settings as $key => $value) {
 			$ex = explode("::", $value[0]['Type'], 4);
+			// Получить имя поля для маппинга (если включен и есть маппинг)
+			$fieldAlias = $key;
+			if ($this->useApiMapping && !empty($value[0]['ApiMapping'])) {
+				$fieldAlias = $value[0]['ApiMapping'];
+			}
 			switch ($ex[0]) {
 				case "file":
-					$fields .= "'f{$f}' as {$key}_Coordinate,group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$key}_FileUrl,group_concat(distinct f{$f}.Name order by f{$f}.Priority separator ':::') as {$key}_Name,\n";
+					$fields .= "'f{$f}' as {$fieldAlias}_Coordinate,group_concat(distinct f{$f}.FileUrl order by f{$f}.Priority separator ':::') as {$fieldAlias}_FileUrl,group_concat(distinct f{$f}.Name order by f{$f}.Priority separator ':::') as {$fieldAlias}_Name,\n";
 					$joins .= "left join s_Files as f{$f} on f{$f}.TableNameId = t.Id and f{$f}.TableNameField = '{$key}' and f{$f}.TableName = '{$this->tableName}'\n";
 					$f++;
 					break;
@@ -179,32 +194,32 @@ class Data
 				case "remote":
 					$str = "";
 					foreach (explode(",", $ex[2]) as $v) {
-						$str .= "s{$f}.{$v} as {$key}_{$v},";
+						$str .= "s{$f}.{$v} as {$fieldAlias}_{$v},";
 					}
 					$str = trim($str, ",");
-					$fields .= "t.{$key},'s{$f}' as {$key}_Coordinate,$str,\n";
+					$fields .= "t.{$key},'s{$f}' as {$fieldAlias}_Coordinate,$str,\n";
 					$joins .= "left join {$ex[1]} as s{$f} on s{$f}.Id = t.{$key}\n";
 					$f++;
 					break;
 				case "select_multi":
 				case "remote_multi":
-					$fields .= "t.{$key},'sm{$f}' as {$key}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$key}_{$ex[2]},\n";
+					$fields .= "t.{$key},'sm{$f}' as {$fieldAlias}_Coordinate,group_concat(distinct sm{$f}.{$ex[2]} order by sm{$f}.Priority separator ':::') as {$fieldAlias}_{$ex[2]},\n";
 					$joins .= "left join s_SearchKeys as sk{$f} on sk{$f}.Name = t.Id and sk{$f}.IsHidden=0 and sk{$f}.Field3 = 'List::{$this->tableName}::{$key}' left join {$ex[1]} as sm{$f} on sm{$f}.Id = sk{$f}.Field1\n";
 					$formatted['conditions'] .= "";
 					$f++;
 					break;
 				case "area":
 					if ($this->truncate != 0) {
-						$fields .= "substr(t.{$key},1,{$this->truncate}) as {$key},";
+						$fields .= "substr(t.{$key},1,{$this->truncate}) as {$fieldAlias},";
 					} else {
-						$fields .= "t.{$key},";
+						$fields .= "t.{$key} as {$fieldAlias},";
 					}
 					break;
 				case "blob":
-					$fields .= "uncompress (t.{$key}) {$key},";
+					$fields .= "uncompress (t.{$key}) as {$fieldAlias},";
 					break;
 				default:
-					$fields .= "t.{$key},";
+					$fields .= "t.{$key} as {$fieldAlias},";
 					break;
 			}
 		}
@@ -326,7 +341,8 @@ class Data
 				$orderBy = "field(t.Field,$ids)";
 			}
 			$sql = "select
-			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.IsHidden,t.FGroup
+			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.IsHidden,t.FGroup,
+			t.ApiFieldType,t.ApiMapping
 			from s_ConfigFields as t
 			where t.TableName = '{$this->tableName}' $fields order by $orderBy";
 			$res = Connect::$instance->fetch($sql, [], 'group');
@@ -480,4 +496,6 @@ class Data
 		Connect::$instance->query($sql);
 		return true;
 	}
+
+
 }

@@ -30,7 +30,7 @@ class RestV1M2MUtils
 		$search = $query['search'] ?? '';
 
 		try {
-			$data = new Data($tableName);
+			$data = new Data($tableName, ['useApiMapping' => true]);
 			$result = $data->fetch('Id!=0', $limit, $page);
 
 			// Использовать paginator и count из Data объекта
@@ -63,7 +63,7 @@ class RestV1M2MUtils
 	public function item(string $tableName, $id): array
 	{
 		try {
-			$data = new Data($tableName);
+			$data = new Data($tableName, ['useApiMapping' => true]);
 			$result = $data->fetch('t.Id = ' . (int)$id, 1);
 			
 			if (empty($result)) {

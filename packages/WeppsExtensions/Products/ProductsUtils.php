@@ -89,7 +89,8 @@ class ProductsUtils
 	}
 	public function getProducts(array $settings): array
 	{
-		$obj = new Data("Products");
+		$useApiMapping = $settings['useApiMapping'] ?? false;
+		$obj = new Data("Products", ['useApiMapping' => $useApiMapping]);
 		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url,group_concat(distinct concat(pv.Id,':::',pv.Field1,':::',pv.Field2,':::',pv.Field3,':::',pv.Field4) order by pv.Priority separator '\\n') W_Variations,count(pv.Id) W_VariationsCount");
 		$obj->setJoin("join ProductsVariations pv on pv.ProductsId=t.Id and pv.IsHidden=0");
 		if (!empty($settings['conditions']['params'])) {
