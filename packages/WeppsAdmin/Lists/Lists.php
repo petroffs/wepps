@@ -739,20 +739,25 @@ class Lists
 		if ((int) $id == 0) {
 			return "";
 		}
-		$sql = "select Id,TableName,Field,Type from s_ConfigFields where Id='$id'";
-		$res = Connect::$instance->fetch($sql);
+		$sql = "select Id,TableName,Field,Type,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
+		$res = Connect::$instance->fetch($sql,[$id]);
 		if (!isset($res[0]['Id'])) {
 			return "";
 		}
 		$element = $res[0];
+
+
+		//ApiFieldType, ApiMapping
+		$sql = "update s_ConfigFields set ApiMapping = ? where Id = ? and ApiMapping=''";
+		Connect::$instance->query($sql,[self::_fieldApiMappingToCamelCase($element['Field']), $id]);
+		$sql = "update s_ConfigFields set ApiFieldType = ? where Id = ? and ApiFieldType=''";
+		Connect::$instance->query($sql,[self::_fieldApiType($element['Type']), $id]);
+
 		$list = $element['TableName'];
 		$field = $element['Field'];
 		$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
-                WHERE TABLE_SCHEMA = '" . Connect::$projectDB['dbname'] . "' and TABLE_NAME = '$list'
-                and COLUMN_NAME = '$field'
-                ";
-		$schemeReal = Connect::$instance->fetch($sql);
-
+                WHERE TABLE_SCHEMA = ? and TABLE_NAME = ? and COLUMN_NAME = ?";
+		$schemeReal = Connect::$instance->fetch($sql, [Connect::$projectDB['dbname'], $list, $field]);
 		$alterDefault = "";
 		if ($field == 'LanguageId' || $field == 'TableId') {
 			$typeReal = "int(11)";
@@ -814,9 +819,8 @@ class Lists
 			return "";
 		}
 		$sql = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS
-                    WHERE TABLE_SCHEMA = '" . Connect::$projectDB['dbname'] . "' and TABLE_NAME = '$list'
-                ";
-		$schemeReal = Connect::$instance->fetch($sql);
+                    WHERE TABLE_SCHEMA = ? and TABLE_NAME = ?";
+		$schemeReal = Connect::$instance->fetch($sql, [Connect::$projectDB['dbname'], $list]);
 		if (count($schemeReal) > 0) {
 			return "";
 		}
@@ -938,8 +942,8 @@ class Lists
 
 		$href = "'/_wepps/lists/{$list}/'";
 		if ($path == 'navigator') {
-			$sql = "select d1.Id,d1.Url,d1.ParentDir,(select d2.Url from s_Navigator as d2 where d2.Id = d1.ParentDir) as ParentUrl from s_Navigator as d1 where d1.Id = '{$id}'";
-			$res = Connect::$instance->fetch($sql);
+			$sql = "select d1.Id,d1.Url,d1.ParentDir,(select d2.Url from s_Navigator as d2 where d2.Id = d1.ParentDir) as ParentUrl from s_Navigator as d1 where d1.Id = ?";
+			$res = Connect::$instance->fetch($sql, [$id]);
 			$href = "'/_wepps/navigator/{$res[0]['ParentUrl']}/'";
 		}
 
@@ -999,5 +1003,79 @@ class Lists
 		}
 		$str .= "update s_SearchKeys set IsHidden=IsHidden2;\n";
 		return $str;
+	}
+
+	/**
+	 * Преобразует тип поля в ApiFieldType для REST API
+	 * 
+	 * Маппинг типов:
+	 * - int → int
+	 * - flag → int
+	 * - guid → guid
+	 * - date → date
+	 * - email → email
+	 * - digit → float
+	 * - остальные → string
+	 * 
+	 * @param string $type Тип поля из s_ConfigFields
+	 * @return string ApiFieldType для использования в REST API
+	 */
+	private static function _fieldApiType(string $type = ''): string
+	{
+		switch ($type) {
+			case 'int':
+				return 'int';
+			case 'flag':
+				return 'int';
+			case 'guid':
+				return 'guid';
+			case 'date':
+				return 'date';
+			case 'email':
+				return 'email';
+			case 'digit':
+				return 'float';
+			default:
+				return 'string';
+		}
+	}
+	/**
+	 * Преобразует имя поля БД в camelCase формат для REST API
+	 * 
+	 * Правила преобразования:
+	 * - Разбивает строку по подчеркиванию
+	 * - Первое слово → строчное (camelCase)
+	 * - Остальные слова → PascalCase
+	 * - Убирает однобуквенный PascalCase-префикс: OStatus → status, JData → data
+	 * - Служебный префикс W_ не трогает (остаётся wVariations)
+	 * 
+	 * @param string $key Имя поля из БД (например: "Product_Status", "Order_Name", "w_product_list")
+	 * @return string Преобразованное имя в camelCase (например: "productStatus", "orderName", "wProductList")
+	 * 
+	 * @example
+	 * // Базовое преобразование
+	 * $result = $this->_fieldApiMappingToCamelCase('Product_Name');      // 'productName'
+	 * $result = $this->_fieldApiMappingToCamelCase('Order_Status');      // 'orderStatus'
+	 * 
+	 * // Удаление однобуквенных префиксов
+	 * $result = $this->_fieldApiMappingToCamelCase('OStatus');           // 'status'
+	 * $result = $this->_fieldApiMappingToCamelCase('JData');             // 'data'
+	 * 
+	 * // Служебный префикс W_ не удаляется
+	 * $result = $this->_fieldApiMappingToCamelCase('w_product_list');    // 'wProductList'
+	 */
+	private static function _fieldApiMappingToCamelCase(string $key): string
+	{
+		$parts = explode('_', $key);
+		$result = '';
+		foreach ($parts as $part) {
+			// Убираем однобуквенный PascalCase-префикс внутри слова: OStatus → status, JData → data
+			// W_ не трогаем — это служебный префикс, даёт wVariations
+			if (preg_match('/^[A-Z]([A-Z][a-z].*)$/', $part, $m)) {
+				$part = $m[1];
+			}
+			$result .= $result === '' ? lcfirst($part) : ucfirst($part);
+		}
+		return $result;
 	}
 }

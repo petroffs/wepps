@@ -30,7 +30,7 @@ $connect = Connect::$instance;
 $sql = "UPDATE s_ConfigFields SET ApiFieldType = CASE 
     WHEN `Type` = 'int' THEN 'int'
     WHEN `Type` = 'flag' THEN 'int'
-    WHEN `Type` = 'guid' THEN 'guid'
+    WHEN `Type` = 'guid' THEN 'gui	d'
     WHEN `Type` = 'date' THEN 'date'
     WHEN `Type` = 'email' THEN 'email'
     WHEN `Type` = 'digit' THEN 'float'
