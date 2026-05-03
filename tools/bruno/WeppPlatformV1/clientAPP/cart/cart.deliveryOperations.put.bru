@@ -1,0 +1,67 @@
+meta {
+  name: PUT cart.deliveryOperations
+  type: http
+  seq: 5.5
+}
+
+put {
+  url: {{base_url}}/rest/v1/cart.deliveryOperations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+body:json {
+  {
+    "type": "cart.deliveryOperations",
+    "data": {
+      "operations-id": "123",
+      "operations-title": "ПВЗ №123",
+      "operations-city": "Москва",
+      "operations-address-short": "ул. Примерная, 1",
+      "operations-postal-code": "109012"
+    }
+  }
+}
+
+tests {
+  test("status 200 or 400", function() {
+    expect([200, 400]).to.include(res.status);
+  });
+  test("response has message", function() {
+    expect(res.body).to.have.property("message");
+  });
+  test("if 400 - response has validation errors", function() {
+    if (res.status === 400) {
+      expect(res.body.data).to.be.an("object");
+    }
+  });
+}
+
+docs {
+  Save selected pickup point (ПВЗ) or delivery address.
+  Требует авторизации.
+  
+  Используется для тарифов с требованием выбора точки выдачи/адреса:
+  - Tariff 136 (CDEK ПВЗ) — выбор пункта выдачи
+  - Tariff 137 (CDEK Адрес) — ввод адреса доставки
+  - Способ доставки "Самовывоз" — выбор места
+  - Способ доставки "Курьер" — ввод адреса доставки
+  
+  **Параметры запроса:**
+  
+  operations-id — ID выбранного ПВЗ/места или уникальный ID адреса
+  operations-title — название ПВЗ/места или описание адреса
+  operations-city — город доставки (обязателен)
+  operations-address-short — адрес (улица, дом) (обязателен)
+  operations-postal-code — почтовый индекс (обязателен)
+  
+  **Ответ:**
+  - 200 OK - данные сохранены успешно
+  - 400 - ошибки валидации (в data массив ошибок)
+  
+  После успешного сохранения клиент может запросить GET v1/cart.checkout если требуется полная информация оформления.
+}

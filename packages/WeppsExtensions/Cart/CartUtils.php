@@ -200,6 +200,26 @@ class CartUtils
 		}
 		return $this->setCart();
 	}
+
+	/**
+	 * Установить активность товара в корзине (ac = 0 или 1)
+	 * @param string $id ID товара (может быть "325" или "325-555")
+	 * @param int $active 0 или 1
+	 * @return bool успешность операции
+	 */
+	public function setActive(string $id, int $active = 1): bool
+	{
+		$active = ($active == 1) ? 1 : 0;
+		$keys = array_column($this->cart['items'], 'id');
+		$index = array_search($id, $keys);
+		if (intval($index) >= 0) {
+			$this->cart['items'][$index]['ac'] = $active;
+			$this->setCart();
+			return true;
+		}
+		return false;
+	}
+
 	public function remove(string $id)
 	{
 		$keys = array_column($this->cart['items'], 'id');
@@ -482,9 +502,17 @@ class CartUtils
 			 */
 			$class  = new $className([], $this);
 			$errors = $class->getErrors($get);
-			$errors = Validator::setFormErrorsIndicate($errors, $get['form']);
-			if ($errors['count'] > 0) {
-				return ['html' => $errors['html']];
+			
+			// Если есть ошибки валидации
+			if (!empty(array_filter($errors))) {
+				// Для веб-версии: форматируем с HTML-визуализацией (если форма задана)
+				if (!empty($get['form'])) {
+					$errorsFormatted = Validator::setFormErrorsIndicate($errors, $get['form']);
+					return ['html' => $errorsFormatted['html'], 'errors' => []];
+				}
+				// Для REST API: возвращаем только ошибки operations-*
+				$operationErrors = array_filter($errors, fn($key) => strpos($key, 'operations-') === 0 && !empty($errors[$key]), ARRAY_FILTER_USE_KEY);
+				return ['html' => '', 'errors' => $operationErrors];
 			}
 		}
 		if (empty($profile = @Connect::$projectData['user'])) {
@@ -528,7 +556,7 @@ class CartUtils
 			'OPayment'          => $cartSummary['payments']['paymentsId'] ?? '',
 			'OPaymentTariff'    => (float) ($cartSummary['payments']['tariff']['price'] ?? 0),
 			'OPaymentDiscount'  => (float) ($cartSummary['payments']['discount']['price'] ?? 0),
-			'Address'           => $get['operations-address'] ?? '',
+			'Address'           => $get['operations-address-short'] ?? '',
 			'City'              => $get['operations-city'] ?? '',
 			'CityId'            => $cartSummary['delivery']['citiesId'] ?? '',
 			'PostalCode'        => $get['operations-postal-code'] ?? '',

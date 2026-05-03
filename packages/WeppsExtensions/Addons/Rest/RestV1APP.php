@@ -513,11 +513,23 @@ class RestV1APP extends RestV1
 	/**
 	 * POST v1/cart — добавить товар в корзину (или обновить кол-во, если уже есть)
 	 */
+	/**
+	 * POST v1/cart — добавить товар в корзину
+	 * Параметры: id (может быть "325" или "325-555"), quantity (опционально, по умолчанию 1)
+	 */
 	public function postCart($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$id = trim($data['data']['id'] ?? '');
 		$quantity = max(1, (int) ($data['data']['quantity'] ?? 1));
+
+		// Валидация товара
+		$productsUtils = new \WeppsExtensions\Products\ProductsUtils();
+		$validation = $productsUtils->validateProductId($id);
+		if (!$validation['exists']) {
+			return ['status' => 404, 'message' => $validation['message'], 'data' => null];
+		}
+
 		$cartUtils = $this->_newCartUtils();
 		$cartUtils->add($id, $quantity);
 		$cartUtils->setCartSummary();
@@ -525,15 +537,29 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/cart — обновить количество товара в корзине
+	 * PUT v1/cart — обновить количество и активность товара в корзине
+	 * Параметры: id, quantity, active (опционально, 0 или 1 по умолчанию 1)
 	 */
 	public function putCart($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$id = trim($data['data']['id'] ?? '');
 		$quantity = max(1, (int) ($data['data']['quantity'] ?? 1));
+		$active = (int) ($data['data']['active'] ?? 1);
+
+		// Валидация товара
+		$productsUtils = new \WeppsExtensions\Products\ProductsUtils();
+		$validation = $productsUtils->validateProductId($id);
+		if (!$validation['exists']) {
+			return ['status' => 404, 'message' => $validation['message'], 'data' => null];
+		}
+
 		$cartUtils = $this->_newCartUtils();
 		$cartUtils->edit($id, $quantity);
+		// Устанавливаем активность товара
+		if ($active !== 1) {
+			$cartUtils->setActive($id, $active);
+		}
 		$cartUtils->setCartSummary();
 		return ['status' => 200, 'message' => 'Cart updated', 'data' => $cartUtils->getCartSummary()];
 	}
@@ -545,6 +571,14 @@ class RestV1APP extends RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$id = trim($this->get['id'] ?? '');
+
+		// Валидация товара
+		$productsUtils = new \WeppsExtensions\Products\ProductsUtils();
+		$validation = $productsUtils->validateProductId($id);
+		if (!$validation['exists']) {
+			return ['status' => 404, 'message' => $validation['message'], 'data' => null];
+		}
+
 		$cartUtils = $this->_newCartUtils();
 		$cartUtils->remove($id);
 		$cartUtils->setCartSummary();
@@ -552,8 +586,9 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * POST v1/cart.place_order — оформить заказ из текущей корзины
+	 * POST v1/cart.placeOrder — оформить заказ из текущей корзины
 	 * Контактные данные берутся из профиля пользователя.
+	 * Валидация deliveryOperations происходит в addOrder().
 	 */
 	public function postCartPlaceOrder($data = null): array
 	{
@@ -575,10 +610,30 @@ class RestV1APP extends RestV1
 			return ['status' => 400, 'message' => 'Payment method not selected', 'data' => null];
 		}
 
-		$result = $cartUtils->addOrder();
+		// addOrder() выполняет полную валидацию и создание заказа
+		// Загружаем параметры доставки из корзины и преобразуем обратно в operations-* ключи
+		$cart = $cartUtils->getCart();
+		$operationsData = [];
+		if (!empty($cart['deliveryOperations']) && is_array($cart['deliveryOperations'])) {
+			foreach ($cart['deliveryOperations'] as $op) {
+				if ($op['id'] === (string)$cartSummary['delivery']['deliveryId'] && !empty($op['data'])) {
+					foreach ($op['data'] as $key => $value) {
+						$operationsData["operations-{$key}"] = $value;
+					}
+					break;
+				}
+			}
+		}
+		$orderData = array_merge($data['data'] ?? [], $operationsData, ['form' => 'placeOrder']);
+		$result = $cartUtils->addOrder($orderData);
+
+		// Если есть ошибка валидации
+		if (!empty($result['errors'])) {
+			return ['status' => 400, 'message' => 'Validation error', 'data' => $result['errors']];
+		}
 
 		if (empty($result['id'])) {
-			return ['status' => 400, 'message' => 'No active items in cart', 'data' => null];
+			return ['status' => 400, 'message' => 'Failed to create order', 'data' => null];
 		}
 
 		return ['status' => 200, 'message' => 'Order created', 'data' => $result];
@@ -678,6 +733,48 @@ class RestV1APP extends RestV1
 		$cartUtils->setCartPayments($paymentsId);
 		$cartUtils->setCartSummary();
 		return ['status' => 200, 'message' => 'OK', 'data' => $cartUtils->getCheckoutData()];
+	}
+
+	/**
+	 * PUT v1/cart.deliveryOperations — сохранить выбранное ПВЗ или адрес доставки
+	 * Аналог case "deliveryOperations" в веб-версии Cart/Request.php.
+	 * Сохраняет параметры доставки (выбранную точку выдачи или адрес) в корзину.
+	 * Полная валидация происходит в addOrder() при оформлении заказа.
+	 */
+	public function putCartDeliveryOperations($data = null): array
+	{
+		/** @used Метод вызывается динамически через Rest::executeHandler() */
+		$cartUtils = $this->_newCartUtils();
+		$cartUtils->setCartSummary();
+		$cartSummary = $cartUtils->getCartSummary();
+
+		// Если есть способ доставки с требованием операций - проверяем валидацию
+		if (!empty($cartSummary['delivery']['extension'])) {
+			$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}\\{$cartSummary['delivery']['extension']}";
+			/**
+			 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
+			 */
+			$class = new $className($cartSummary['delivery']['settings'] ?? [], $cartUtils);
+			$errors = $class->getErrors($data['data'] ?? []);
+			
+			// Фильтруем ошибки operations
+			$operationErrors = [];
+			foreach ($errors as $key => $error) {
+				if (strpos($key, 'operations-') === 0 && !empty($error)) {
+					$operationErrors[$key] = $error;
+				}
+			}
+			
+			if (!empty($operationErrors)) {
+				return ['status' => 400, 'message' => 'Validation errors', 'data' => $operationErrors];
+			}
+		}
+
+		// Сохраняем данные
+		$deliveryUtils = new DeliveryUtils();
+		$deliveryUtils->setOperations($data['data'] ?? [], $cartUtils);
+		
+		return ['status' => 200, 'message' => 'OK', 'data' => null];
 	}
 
 	/**

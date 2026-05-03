@@ -139,6 +139,74 @@ class ProductsUtils
 		// W_Variations уже преобразован в getProducts(), не нужно вызывать снова
 		return $el;
 	}
+
+	/**
+	 * Проверить наличие товара (с опциональной вариацией)
+	 * Параметр может быть:
+	 * - "325" — просто товар по ID
+	 * - "325-555" — товар с вариацией (ID-variationId)
+	 * 
+	 * @param string $productId ID товара или "ID-variationId"
+	 * @return array ['exists' => bool, 'message' => string, 'product' => array]
+	 */
+	public function validateProductId(string $productId): array
+	{
+		if (empty($productId)) {
+			return ['exists' => false, 'message' => 'Product ID is empty', 'product' => null];
+		}
+
+		// Парсим ID и вариацию
+		$parts = explode('-', $productId, 2);
+		$id = $parts[0];
+		$variationId = $parts[1] ?? null;
+
+		// Проверяем существование товара
+		$product = $this->getProductsItem($id);
+		if (empty($product)) {
+			return ['exists' => false, 'message' => 'Product not found', 'product' => null];
+		}
+
+		// Если указана вариация — проверяем её наличие
+		if (!empty($variationId)) {
+			$variations = $product['W_Variations'] ?? [];
+			$variationFound = false;
+			
+			// Вариации могут быть структурой [группа][вариант]
+			foreach ($variations as $group) {
+				if (!is_array($group)) {
+					continue;
+				}
+				// Проверяем вложенную структуру
+				if (isset($group[0]) && is_array($group[0])) {
+					foreach ($group as $item) {
+						if (is_array($item) && isset($item['id']) && $item['id'] == $variationId) {
+							$variationFound = true;
+							break 2;
+						}
+					}
+				}
+				// Проверяем плоскую структуру
+				else if (isset($group['id']) && $group['id'] == $variationId) {
+					$variationFound = true;
+					break;
+				}
+			}
+
+			if (!$variationFound) {
+				return ['exists' => false, 'message' => 'Variation not found', 'product' => $product];
+			}
+		}
+
+		return ['exists' => true, 'message' => 'OK', 'product' => $product];
+	}
+
+	/**
+	 * Быстрая проверка наличия товара (возвращает только true/false)
+	 */
+	public function isProductExists(string $productId): bool
+	{
+		return $this->validateProductId($productId)['exists'];
+	}
 	public function getVariationsArray(string $string): array
 	{
 		$arr = Utils::arrayFromString($string,':::',"\n");

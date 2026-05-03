@@ -318,7 +318,7 @@ class RestConfig
                             'quantity' => ['type' => 'int2', 'required' => false],
                         ],
                     ],
-                    'cart.place_order' => [
+                    'cart.placeOrder' => [
                         'class' => RestV1APP::class,
                         'method' => 'postCartPlaceOrder',
                         'note' => 'Place an order from current cart (contact info taken from user profile)',
@@ -454,11 +454,12 @@ class RestConfig
                     'cart' => [
                         'class' => RestV1APP::class,
                         'method' => 'putCart',
-                        'note' => 'Update item quantity in cart',
+                        'note' => 'Update item quantity and activity in cart',
                         'auth_required' => true,
                         'validation' => [
                             'id' => ['type' => 'string', 'required' => true],
                             'quantity' => ['type' => 'int2', 'required' => true],
+                            'active' => ['type' => 'int', 'required' => false],
                         ],
                     ],
                     'cart.city' => [
@@ -487,6 +488,12 @@ class RestConfig
                         'validation' => [
                             'paymentsId' => ['type' => 'string', 'required' => true],
                         ],
+                    ],
+                    'cart.deliveryOperations' => [
+                        'class' => RestV1APP::class,
+                        'method' => 'putCartDeliveryOperations',
+                        'note' => 'Save selected pickup point or delivery address. Sends parameters like operations-id, operations-title, etc.',
+                        'auth_required' => true,
                     ],
                 ],
                 'cli' => [],

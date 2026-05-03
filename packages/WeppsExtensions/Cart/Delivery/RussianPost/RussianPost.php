@@ -101,9 +101,9 @@ class RussianPost extends Delivery
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();
 		$errors = [];
-		$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'], "Не заполнено");
-		$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'], "Не заполнено");
-		$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+		$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'] ?? '', "Не заполнено");
+		$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'] ?? '', "Не заполнено");
+		$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'] ?? '', "Не заполнено");
 		return $errors;
 	}
 }

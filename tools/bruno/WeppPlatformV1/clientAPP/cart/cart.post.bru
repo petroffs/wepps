@@ -1,7 +1,7 @@
 meta {
   name: POST cart
   type: http
-  seq: 20
+  seq: 10
 }
 
 post {
@@ -18,7 +18,7 @@ body:json {
   {
     "type": "cart",
     "data": {
-      "id": "1",
+      "id": "477-787",
       "quantity": 2
     }
   }
@@ -39,9 +39,9 @@ tests {
 docs {
   Add item to cart or update its quantity if already present.
   Требует авторизации.
-
+  
   id — идентификатор товара: "123" или "123-456" (товар-вариация).
   quantity — количество (по умолчанию 1).
-
+  
   Возвращает обновлённую корзину целиком.
 }

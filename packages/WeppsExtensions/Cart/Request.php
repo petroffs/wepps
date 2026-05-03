@@ -124,34 +124,28 @@ class RequestCart extends Request
 		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
 			Exception::error(400);
 		}
+		
 		$this->tpl = 'RequestAddCart.tpl';
 		$productsUtils = new ProductsUtils();
-		$element = $productsUtils->getProductsItem($this->get['id']);
+		// Проверяем существование товара
+		$validation = $productsUtils->validateProductId($this->get['id']);
+		if (!$validation['exists']) {
+			Exception::error(404);
+		}
 		if (!empty($this->get['idv'])) {
 			$ex = explode(',', $this->get['idv']);
 			foreach ($ex as $value) {
 				if (!is_numeric($value)) {
 					continue;
 				}
-				$elementVariation = self::findById($element['W_Variations'], $value);
-				if (empty($elementVariation)) {
-					continue;
+				// Проверяем товар с вариацией
+				$productWithVar = "{$this->get['id']}-{$value}";
+				$varValidation = $productsUtils->validateProductId($productWithVar);
+				if (!$varValidation['exists']) {
+					continue; // пропускаем несуществующую вариацию
 				}
-				$arr = [
-					'items' => $cartUtils->getCart()['items']
-				];
 				$quantity = 1;
-				/* $elementVariationInCart = self::findById($arr, $this->get['id'] . '-' . $value, 'id');
-				$inCart = (int) ($elementVariationInCart['qu'] ?? 0);
-				$inStocks = (int) ($elementVariation['Stocks'] ?? 0);
-				if ($inCart > 0) {
-					$inCart++;
-					$quantity = $inCart;
-				}
-				if ($inCart >= $inStocks) {
-					$quantity = $inStocks;
-				} */
-				$cartUtils->add("{$this->get['id']}-{$value}", $quantity);
+				$cartUtils->add($productWithVar, $quantity);
 			}
 		} else {
 			$cartUtils->add($this->get['id']);

@@ -138,6 +138,8 @@ class Cdek extends Delivery
 					];
 					array_push($data, $row);
 				}
+				// allowBtn = true только если пункт выдачи уже выбран (есть данные в deliveryOperations)
+				$allowBtn = !empty(self::getOperationsActive($cart));
 				break;
 			case 137:
 				$citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
@@ -171,17 +173,17 @@ class Cdek extends Delivery
 		$errors = [];
 		switch (@$cartSummary['delivery']['settings']['tariff']) {
 			case 136:
-				$errors['operations-id'] = Validator::isNotEmpty($get['operations-id'], "Не заполнено");
-				$errors['operations-title'] = Validator::isNotEmpty($get['operations-title'], "Не заполнено");
-				$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'], "Не заполнено");
-				$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'], "Не заполнено");
-				$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+				$errors['operations-id'] = Validator::isNotEmpty($get['operations-id'] ?? '', "Не заполнено");
+				$errors['operations-title'] = Validator::isNotEmpty($get['operations-title'] ?? '', "Не заполнено");
+				$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'] ?? '', "Не заполнено");
+				$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'] ?? '', "Не заполнено");
+				$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'] ?? '', "Не заполнено");
 				break;
 			case 137:
 			default:
-				$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'], "Не заполнено");
-				$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'], "Не заполнено");
-				$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'], "Не заполнено");
+				$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'] ?? '', "Не заполнено");
+				$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'] ?? '', "Не заполнено");
+				$errors['operations-postal-code'] = Validator::isNotEmpty($get['operations-postal-code'] ?? '', "Не заполнено");
 				break;
 		}
 		return $errors;
