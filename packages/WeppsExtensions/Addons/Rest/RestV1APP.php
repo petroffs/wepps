@@ -136,20 +136,23 @@ class RestV1APP extends RestV1
 		if (!empty($ids)) {
 			$placeholders = Connect::$instance->in($ids);
 			$filters = new Filters();
-			$filtersByCompositeKey = $filters->getFilters([
+			$filterResult = $filters->getFilters([
 				'conditions' => "t.IsHidden=0 AND pv.TableName='Products' AND pv.TableNameId IN ($placeholders)",
 				'params' => $ids,
 			]);
-			
+			$attributesByProduct = $filters->buildAttributesForProducts($filterResult);
+
 			// Перегруппируем compositeKey в структуру [ProductId => [PropertyId => rows]]
-			$filterResult = $filters->groupByProductId($filtersByCompositeKey);
+			// $filterResult = $filters->groupByProductId($filtersByCompositeKey);
+			//Utils::debug($filterResult, 1);
 		}
 
 		// Унифицированный цикл: атрибуты и URLs для обоих случаев
 		foreach ($result['rows'] as &$row) {
 			if (!empty($filterResult)) {
 				// Распределяем атрибуты по товарам
-				$row['W_Attributes'] = $this->_buildAttributesFromPropertiesValues($filterResult[$row['Id']] ?? null);
+				// $row['W_Attributes'] = $this->_buildAttributesFromPropertiesValues($filterResult[$row['Id']] ?? null);
+				$row['W_Attributes'] = $attributesByProduct[$row['Id']] ?? null;
 			}
 
 			// обработка URLs (для обоих случаев)

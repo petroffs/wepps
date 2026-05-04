@@ -220,13 +220,13 @@ class RestV1M2M extends RestV1
 		if (!empty($ids)) {
 			$placeholders = Connect::$instance->in($ids);
 			$filtersObj = new Filters();
-			$filtersByCompositeKey = $filtersObj->getFilters([
+			$filterResult = $filtersObj->getFilters([
 				'conditions' => "t.IsHidden=0 AND pv.TableName='Products' AND pv.TableNameId IN ($placeholders)",
 				'params' => $ids,
 			]);
 
 			// Перегруппируем compositeKey в структуру [ProductId => [PropertyId => rows]]
-			$filterResult = $filtersObj->groupByProductId($filtersByCompositeKey);
+			// $filterResult = $filtersObj->groupByProductId($filtersByCompositeKey);
 		}
 		// Распределяем атрибуты по товарам
 		foreach ($rows as &$row) {
@@ -335,12 +335,11 @@ class RestV1M2M extends RestV1
 
 		$filters = new Filters();
 		$result = $filters->getFilters(['conditions' => $conditions, 'params' => $params]);
-
 		$grouped = [];
-		foreach ($result as $id => $rows) {
+		foreach ($result as $rows) {
 			$grouped[] = [
-				'id' => (int) $id,
-				'name' => $rows[0]['PropertyName'] ?? '',
+				'id' => (int) $rows[0]['PId'] ?? 0,
+				'name' => $rows[0]['PName'] ?? '',
 				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
 			];
 		}
