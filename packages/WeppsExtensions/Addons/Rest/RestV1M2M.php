@@ -422,29 +422,94 @@ class RestV1M2M extends RestV1
 
 
 	/**
+	 * Helper: расчет параметров пагинации из GET параметров
+	 */
+	private function calculatePagination(int $maxLimit = 100): array
+	{
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = (int) ($this->get['limit'] ?? 100);
+		if ($limit > $maxLimit) {
+			$limit = $maxLimit;
+		}
+		if ($limit < 1) {
+			$limit = 100;
+		}
+
+		$offset = ($page - 1) * $limit;
+
+		return [
+			'page' => $page,
+			'limit' => $limit,
+			'offset' => $offset,
+		];
+	}
+
+	/**
 	 * M2M: GET запасы товаров (доступность на складах)
 	 */
 	public function getGoodsStocks(): array
 	{
 		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(500);
+		$limit = (int) $limit;
+		$offset = (int) $offset;
 
-		// Если передан ID товара, получить его запасы
+		$skuConfig = Connect::$projectServices['api-m2m']['sku'];
+		$fieldsList = [];
+		foreach ($skuConfig as $field => $alias) {
+			$fieldsList[] = "$field $alias";
+		}
+		$fields = implode(', ', $fieldsList);
+
+		// Формируем условие WHERE
+		$conditions = "IsHidden = 0";
+		$params = [];
 		if ($goodsId > 0) {
-			$res = Connect::$instance->fetch(
-				"SELECT Id, Name, Amount FROM Products WHERE Id = ?",
-				[$goodsId]
-			);
-			if (empty($res)) {
-				return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
-			}
-			return ['status' => 200, 'message' => 'OK', 'data' => $res];
+			$conditions .= " AND ProductsId = ?";
+			$params[] = $goodsId;
 		}
 
-		// Иначе вернуть запасы всех товаров
+		// Получить данные с пагинацией
 		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Amount FROM Products WHERE IsDeleted = 0 ORDER BY Name"
+			"SELECT Id, ProductsId GoodsId, {$fields}
+			 FROM ProductsVariations
+			 WHERE {$conditions}
+			 ORDER BY Id DESC
+			 LIMIT {$offset}, {$limit}",
+			$params
 		);
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+
+		// Получить общее количество
+		$countRes = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total
+			 FROM ProductsVariations
+			 WHERE {$conditions}",
+			$params
+		);
+		$total = (int) ($countRes[0]['total'] ?? 0);
+
+		if (empty($res) && $total === 0) {
+			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
+		}
+
+		// Приводим 'stocks' к float
+		foreach ($res as &$row) {
+			if (isset($row['stocks'])) {
+				$row['stocks'] = (float) $row['stocks'];
+			}
+		}
+		unset($row);
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res ?? [],
+			'pagination' => [
+				'count' => $total,
+				'limit' => $limit,
+				'page' => $page,
+			]
+		];
 	}
 
 	/**
@@ -453,24 +518,59 @@ class RestV1M2M extends RestV1
 	public function getGoodsPrices(): array
 	{
 		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(500);
+		$limit = (int) $limit;
+		$offset = (int) $offset;
 
-		// Если передан ID товара, получить его цены
+		// Формируем условие WHERE
+		$conditions = "IsHidden = 0";
+		$params = [];
 		if ($goodsId > 0) {
-			$res = Connect::$instance->fetch(
-				"SELECT Id, Name, Price, PriceOut FROM Products WHERE Id = ?",
-				[$goodsId]
-			);
-			if (empty($res)) {
-				return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
-			}
-			return ['status' => 200, 'message' => 'OK', 'data' => $res];
+			$conditions .= " AND Id = ?";
+			$params[] = $goodsId;
 		}
 
-		// Иначе вернуть цены всех товаров
+		// Получить данные с пагинацией
 		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Price, PriceOut FROM Products WHERE IsDeleted = 0 ORDER BY Name"
+			"SELECT Id, Name, Price, PriceBefore, Article FROM Products 
+			 WHERE {$conditions}
+			 ORDER BY Name 
+			 LIMIT {$offset}, {$limit}",
+			$params
 		);
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+
+		// Получить общее количество
+		$countRes = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total FROM Products WHERE {$conditions}",
+			$params
+		);
+		$total = (int) ($countRes[0]['total'] ?? 0);
+
+		if (empty($res) && $total === 0) {
+			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
+		}
+
+		// Приводим цены к float
+		foreach ($res as &$row) {
+			if (isset($row['Price'])) {
+				$row['Price'] = (float) $row['Price'];
+			}
+			if (isset($row['PriceBefore'])) {
+				$row['PriceBefore'] = (float) $row['PriceBefore'];
+			}
+		}
+		unset($row);
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res ?? [],
+			'pagination' => [
+				'count' => $total,
+				'limit' => $limit,
+				'page' => $page,
+			]
+		];
 	}
 
 	/**
@@ -478,64 +578,48 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsImages(): array
 	{
+		$url = Connect::$projectDev['protocol'] . Connect::$projectDev['host'];
 		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		$page = max(1, (int) ($this->get['page'] ?? 1));
-		$limit = (int) ($this->get['limit'] ?? 100);
-		if ($limit > 1000)
-			$limit = 1000;
-		if ($limit < 1)
-			$limit = 100;
+		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(1000);
+		$limit = (int) $limit;
+		$offset = (int) $offset;
 
-		$offset = ($page - 1) * $limit;
-
-		// Если передан ID товара, получить его изображения
+		// Формируем условие WHERE
+		$conditions = "TableName = 'Products'";
+		$params = [];
 		if ($goodsId > 0) {
-			$res = Connect::$instance->fetch(
-				"SELECT Id, TableNameId as goods_id, Name, InnerName, FileUrl FROM s_Files 
-				 WHERE TableName = 'Products' AND TableNameId = ? 
-				 ORDER BY Id DESC 
-				 LIMIT ? OFFSET ?",
-				[$goodsId, $limit, $offset]
-			);
-			// Получить общее количество
-			$count = Connect::$instance->fetch(
-				"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'Products' AND TableNameId = ?",
-				[$goodsId]
-			);
-			return [
-				'status' => 200,
-				'message' => 'OK',
-				'data' => $res ?? [],
-				'pagination' => [
-					'page' => $page,
-					'limit' => $limit,
-					'total' => (int) ($count[0]['total'] ?? 0),
-					'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
-				]
-			];
+			$conditions .= " AND TableNameId = ?";
+			$params[] = $goodsId;
 		}
 
-		// Иначе вернуть все изображения товаров с пагинацией
+		// Получить данные с пагинацией
 		$res = Connect::$instance->fetch(
-			"SELECT Id, TableNameId as goods_id, Name, InnerName, FileUrl FROM s_Files 
-			 WHERE TableName = 'Products' 
-			 ORDER BY TableNameId DESC, Id DESC 
-			 LIMIT ? OFFSET ?",
-			[$limit, $offset]
+			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}/f', FileUrl) as FileUrl FROM s_Files 
+			 WHERE {$conditions}
+			 ORDER BY Id DESC 
+			 LIMIT {$offset}, {$limit}",
+			$params
 		);
+
 		// Получить общее количество
-		$count = Connect::$instance->fetch(
-			"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'Products'"
+		$countRes = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total FROM s_Files WHERE {$conditions}",
+			$params
 		);
+		$total = (int) ($countRes[0]['total'] ?? 0);
+
+		if (empty($res) && $total === 0) {
+			return ['status' => 404, 'message' => 'Images not found', 'data' => null];
+		}
+
 		return [
 			'status' => 200,
 			'message' => 'OK',
 			'data' => $res ?? [],
 			'pagination' => [
-				'page' => $page,
+				'count' => $total,
 				'limit' => $limit,
-				'total' => (int) ($count[0]['total'] ?? 0),
-				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+				'page' => $page,
 			]
 		];
 	}
@@ -683,63 +767,46 @@ class RestV1M2M extends RestV1
 	public function getGoodsImagesVariations(): array
 	{
 		$goodsvId = (int) ($this->get['goodsv_id'] ?? 0);
-		$page = max(1, (int) ($this->get['page'] ?? 1));
-		$limit = (int) ($this->get['limit'] ?? 100);
-		if ($limit > 1000)
-			$limit = 1000;
-		if ($limit < 1)
-			$limit = 100;
+		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(1000);
+		$limit = (int) $limit;
+		$offset = (int) $offset;
 
-		$offset = ($page - 1) * $limit;
-
-		// Если передан ID вариации, получить его изображения
+		// Формируем условие WHERE
+		$conditions = "TableName = 'ProductsVariations'";
+		$params = [];
 		if ($goodsvId > 0) {
-			$res = Connect::$instance->fetch(
-				"SELECT Id, TableNameId as goodsv_id, Name, InnerName, FileUrl FROM s_Files 
-				 WHERE TableName = 'ProductsVariations' AND TableNameId = ? 
-				 ORDER BY Id DESC 
-				 LIMIT ? OFFSET ?",
-				[$goodsvId, $limit, $offset]
-			);
-			// Получить общее количество
-			$count = Connect::$instance->fetch(
-				"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'ProductsVariations' AND TableNameId = ?",
-				[$goodsvId]
-			);
-			return [
-				'status' => 200,
-				'message' => 'OK',
-				'data' => $res ?? [],
-				'pagination' => [
-					'page' => $page,
-					'limit' => $limit,
-					'total' => (int) ($count[0]['total'] ?? 0),
-					'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
-				]
-			];
+			$conditions .= " AND TableNameId = ?";
+			$params[] = $goodsvId;
 		}
 
-		// Иначе вернуть все изображения вариаций с пагинацией
+		// Получить данные с пагинацией
 		$res = Connect::$instance->fetch(
 			"SELECT Id, TableNameId as goodsv_id, Name, InnerName, FileUrl FROM s_Files 
-			 WHERE TableName = 'ProductsVariations' 
-			 ORDER BY TableNameId DESC, Id DESC 
-			 LIMIT ? OFFSET ?",
-			[$limit, $offset]
+			 WHERE {$conditions}
+			 ORDER BY Id DESC 
+			 LIMIT {$offset}, {$limit}",
+			$params
 		);
+
 		// Получить общее количество
-		$count = Connect::$instance->fetch(
-			"SELECT COUNT(*) as total FROM s_Files WHERE TableName = 'ProductsVariations'"
+		$countRes = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total FROM s_Files WHERE {$conditions}",
+			$params
 		);
+		$total = (int) ($countRes[0]['total'] ?? 0);
+
+		if (empty($res) && $total === 0) {
+			return ['status' => 404, 'message' => 'Images not found', 'data' => null];
+		}
+
 		return [
 			'status' => 200,
 			'message' => 'OK',
 			'data' => $res ?? [],
 			'pagination' => [
-				'page' => $page,
+				'count' => $total,
 				'limit' => $limit,
-				'total' => (int) ($count[0]['total'] ?? 0),
-				'pages' => (int) ceil(($count[0]['total'] ?? 0) / $limit),
+				'page' => $page,
 			]
 		];
 	}
