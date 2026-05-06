@@ -119,6 +119,18 @@ class Rest
 	protected ?array $user = null;
 
 	/**
+	 * Корневой путь проекта
+	 * @var string
+	 */
+	protected string $root = '';
+
+	/**
+	 * URL текущего запроса
+	 * @var string
+	 */
+	protected string $url = '';
+
+	/**
 	 * Конфигурация API методов
 	 * @var array
 	 */
