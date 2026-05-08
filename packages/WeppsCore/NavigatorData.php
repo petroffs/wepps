@@ -19,6 +19,7 @@ class NavigatorData extends Data
 	 */
 	public function getNav($navLevel)
 	{
+		$this->setParams([]);
 		$condition = ($this->backOffice == 1) ? "t.IsHidden in (0,1)" : "t.IsHidden = 0";
 		if ($this->navLevel == 0) {
 			$this->nav[$this->navLevel] = $this->fetch("{$condition} and t.ParentDir in (1,0) and t.NGroup!=0 and t.TableId=0", 100, 1, "t.NGroup,t.Priority");
@@ -62,7 +63,9 @@ class NavigatorData extends Data
 	 */
 	public function getWay($id)
 	{
-		$res = $this->fetch($id);
+		$this->setParams([]);
+		$this->setParams([(int) $id]);
+		$res = $this->fetch("t.Id=?");
 		array_push($this->way, $res[0]);
 		if ($res[0]['ParentDir'] == 0)
 			return array_reverse($this->way);
@@ -77,10 +80,11 @@ class NavigatorData extends Data
 	 */
 	public function getChild($id)
 	{
+		$this->setParams([]);
 		$condition = ($this->backOffice == 1) ? "" : "and t.IsHidden = 0";
 		$this->setConcat("if (t.NameMenu!='',t.NameMenu,t.Name) as NameMenu");
-		$this->setParams([]);
-		$res = $this->fetch("t.ParentDir='{$id}' $condition");
+		$this->setParams([(int) $id]);
+		$res = $this->fetch("t.ParentDir=? {$condition}");
 		return $res;
 	}
 
@@ -91,7 +95,9 @@ class NavigatorData extends Data
 	 */
 	public function getRChild($id)
 	{
-		$res = $this->fetchmini("ParentDir='{$id}' and IsHidden=0");
+		$this->setParams([]);
+		$this->setParams([(int) $id]);
+		$res = $this->fetchmini("ParentDir=? and IsHidden=0");
 		if (isset($res[0]['Id'])) {
 			foreach ($res as $value) {
 				$this->rchild[] = $value['Id'];
@@ -110,6 +116,7 @@ class NavigatorData extends Data
 	 */
 	public function getChildTree($res = array(), $parent = 1)
 	{
+		$this->setParams([]);
 		if ($parent == 1) {
 			$sql = "select if(ParentDir=0,1,ParentDir) as ParentDir,Id,Name,NameMenu,Url,NGroup,IsHidden 
                     from s_Navigator

@@ -8,6 +8,7 @@ use WeppsCore\Exception;
 use WeppsCore\Connect;
 use WeppsCore\Validator;
 use WeppsCore\Data;
+use WeppsCore\Utils;
 use WeppsAdmin\Admin\Admin;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -26,33 +27,57 @@ class RequestLists extends Request
 		switch ($action) {
 			case "filter":
 				$this->tpl = "RequestListFilter.tpl";
-				$obj = new Data($this->get['list']);
-				$scheme = $obj->getScheme();
-				if (!isset($scheme[$this->get['field']][0])) {
+				// Валидация входных данных через белый список
+				$list = Utils::trim($this->get['list'] ?? '');
+				$field = Utils::trim($this->get['field'] ?? '');
+				
+				if (empty($list) || empty($field)) {
 					Exception::error404();
 				}
-				$type = $scheme[$this->get['field']][0]['Type'];
+				
+				$obj = new Data($list);
+				$scheme = $obj->getScheme();
+				if (!isset($scheme[$field][0])) {
+					Exception::error404();
+				}
+				$type = $scheme[$field][0]['Type'];
 				if ($type == 'area' || $type == 'file') {
 					Connect::$instance->close();
 				} elseif (strstr($type, 'select_multi')) {
 					$ex = explode("::", $type);
-					$sql = "select distinct t.Id,t.{$ex[2]} from {$ex[1]} as t 
-							inner join s_SearchKeys as sk on sk.Field1 = t.Id and sk.Field3='List::{$this->get['list']}::{$this->get['field']}'
-							inner join {$this->get['list']} as l on sk.Name=l.Id order by t.{$ex[2]}";
-					$res = Connect::$instance->fetch($sql);
+					$linkTable = $ex[1] ?? '';
+					$linkField = $ex[2] ?? '';
+					if (empty($linkTable) || empty($linkField)) {
+						Exception::error404();
+					}
+					$res = Connect::$instance->fetch(
+						"select distinct t.Id,t.$linkField from $linkTable as t 
+						inner join s_SearchKeys as sk on sk.Field1 = t.Id and sk.Field3=?
+						inner join $list as l on sk.Name=l.Id order by t.$linkField",
+						["List::$list::$field"]
+					);
 					$this->assign('fieldkey', 'Id');
-					$this->assign('fieldname', $ex[2]);
+					$this->assign('fieldname', $linkField);
 					$this->assign('filters', $res);
 				} elseif (strstr($type, 'select')) {
 					$ex = explode("::", $type);
-					$sql = "select distinct t.Id,t.{$ex[2]} from {$ex[1]} as t inner join {$this->get['list']} as l on t.Id=l.{$this->get['field']} order by t.{$ex[2]}";
-					$res = Connect::$instance->fetch($sql);
+					$linkTable = $ex[1] ?? '';
+					$linkField = $ex[2] ?? '';
+					if (empty($linkTable) || empty($linkField)) {
+						Exception::error404();
+					}
+					$res = Connect::$instance->fetch(
+						"select distinct t.Id,t.$linkField from $linkTable as t inner join $list as l on t.Id=l.$field order by t.$linkField",
+						[]
+					);
 					$this->assign('fieldkey', 'Id');
-					$this->assign('fieldname', $ex[2]);
+					$this->assign('fieldname', $linkField);
 					$this->assign('filters', $res);
 				} else {
-					$sql = "select distinct {$this->get['field']} from {$this->get['list']} order by {$this->get['field']} limit 300";
-					$res = Connect::$instance->fetch($sql);
+					$res = Connect::$instance->fetch(
+						"select distinct $field from $list order by $field limit 300",
+						[]
+					);
 					$this->assign('filters', $res);
 				}
 				break;
@@ -78,7 +103,10 @@ class RequestLists extends Request
 				if (!isset($this->get['id']) || (int) $this->get['id'] == 0)
 					Exception::error404();
 				$obj = new Data("s_Files");
-				$res = $obj->fetchmini("Id in ({$this->get['id']})");
+				$ids = array_map('intval', explode(',', $this->get['id']));
+				$placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+				$obj->setParams($ids);
+				$res = $obj->fetchmini("Id in ($placeholders)");
 				if (!isset($res[0]['Id'])) {
 					Exception::error404();
 				}
@@ -123,25 +151,25 @@ class RequestLists extends Request
 				if ($perm['status'] == 0) {
 					Exception::error404();
 				}
-				$ex = explode(",", $this->get['id']);
+				$ex = array_map('intval', explode(",", $this->get['id']));
 				$i = 1;
-				$str = "";
 				foreach ($ex as $value) {
 					if ((int) $value == 0) {
 						Exception::error404();
 					}
-					$str .= "update s_Files set Priority='$i' where Id='$value';\n";
+					Connect::$instance->query("update s_Files set Priority=? where Id=?", [$i, $value]);
 					$i++;
 				}
-				//Utils::debug($str);
-				Connect::$db->exec($str);
 				break;
 			case 'fileDescription':
 				if (empty($this->get['ids'])) {
 					Exception::error404();
 				}
-				$sql = "update s_Files set FileDescription=? where Id in ({$this->get['ids']})";
-				Connect::$instance->query($sql, [$this->get['text']]);
+				$ids = array_map('intval', explode(',', $this->get['ids']));
+				$placeholders = rtrim(str_repeat('?,', count($ids)), ',');
+				$params = array_merge([$this->get['text']], $ids);
+				$sql = "update s_Files set FileDescription=? where Id in ($placeholders)";
+				Connect::$instance->query($sql, $params);
 				break;
 			case "form":
 				echo 1;
@@ -173,10 +201,13 @@ class RequestLists extends Request
 				 */
 				if ($this->get['w_tablename'] == 's_ConfigFields' && $this->get['w_tablename_id'] == 'add') {
 					$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
-			                WHERE TABLE_SCHEMA = '" . Connect::$projectDB['dbname'] . "' and TABLE_NAME = '{$this->get['w_tablename']}'
-			                and COLUMN_NAME = '{$this->get['Field']}'
-			                ";
-					$listSchemeReal = Connect::$instance->fetch($sql);
+		                WHERE TABLE_SCHEMA = ? and TABLE_NAME = ?
+		                and COLUMN_NAME = ?";
+				$listSchemeReal = Connect::$instance->fetch($sql, [
+					Connect::$projectDB['dbname'],
+					$this->get['w_tablename'],
+					$this->get['Field']
+				]);
 					if (isset($listSchemeReal[0]['Col']) && $listSchemeReal[0]['Col'] == $this->get['Field']) {
 						$this->errors['Field'] = "Уже используется";
 					}
@@ -220,27 +251,28 @@ class RequestLists extends Request
 				if (!isset($this->get['id']) || !isset($this->get['value'])) {
 					Exception::error404();
 				}
-				$sql = "select Id,PValues from s_Properties where Id = '{$this->get['id']}'";
-				$res = Connect::$instance->fetch($sql);
+				$sql = "select Id,PValues from s_Properties where Id = ?";
+				$res = Connect::$instance->fetch($sql, [(int)$this->get['id']]);
 				if (!isset($res[0]['Id'])) {
 					Exception::error404();
 				}
 				$arr = explode("\r\n", $res[0]['PValues']);
 				array_push($arr, $this->get['value']);
 				$arr = array_unique($arr);
-				$sql = "update s_Properties set PValues = '" . implode("\r\n", $arr) . "' where Id = '{$this->get['id']}'";
-				Connect::$instance->query($sql);
+				$newValues = implode("\r\n", $arr);
+				$sql = "update s_Properties set PValues = ? where Id = ?";
+				Connect::$instance->query($sql, [$newValues, (int)$this->get['id']]);
 				break;
 			case "search":
 				if (!isset($this->get['term'])) {
 					Connect::$instance->close();
 				}
-				$id = $this->get['term'];
-				$condition = "(t.Name like '%$id%' or t.TableName like '%$id%')";
-
+				$searchTerm = '%' . str_replace(['%', '_'], ['\%', '\_'], $this->get['term']) . '%';
+				
 				$obj = new Data("s_Config");
 				$obj->setConcat("t.Id as id,t.Name as value,concat('/_wepps/lists/',t.TableName,'/') as Url");
-				$res = $obj->fetch($condition);
+				$obj->setParams([$searchTerm, $searchTerm]);
+				$res = $obj->fetch("(t.Name like ? or t.TableName like ?)");
 				if (!isset($res[0]['Id'])) {
 					Connect::$instance->close();
 				}

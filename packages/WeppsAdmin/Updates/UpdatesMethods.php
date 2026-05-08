@@ -558,8 +558,8 @@ class UpdatesMethods extends Updates
 		/*
 		 * Конфиг
 		 */
-		$sql = "select * from s_Config where TableName = '$table'";
-		$res = Connect::$instance->fetch($sql);
+		$sql = "select * from s_Config where TableName = ?";
+		$res = Connect::$instance->fetch($sql, [$table]);
 		unset($res[0]['Id']);
 		$arr = AdminUtils::query($res[0]);
 		$str .= "insert ignore into s_Config {$arr['insert']}\n\n";
@@ -567,8 +567,8 @@ class UpdatesMethods extends Updates
 		/*
 		 * Конфиг полей
 		 */
-		$sql = "select * from s_ConfigFields where TableName = '$table'";
-		$res = Connect::$instance->fetch($sql);
+		$sql = "select * from s_ConfigFields where TableName = ?";
+		$res = Connect::$instance->fetch($sql, [$table]);
 		foreach ($res as $value) {
 			$arr = AdminUtils::query($value);
 			$str .= "insert ignore into s_ConfigFields {$arr['insert']}\n";

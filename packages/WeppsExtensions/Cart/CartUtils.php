@@ -691,17 +691,26 @@ class CartUtils
 		$sql = '';
 		$sum = 0;
 		$order['W_Positions'] = $this->getCartPositionsRecounter($order['W_Positions'], $order['ODeliveryDiscount'], $order['OPaymentTariff'], $order['OPaymentDiscount']);
+		
 		foreach ($order['W_Positions'] as $value) {
 			$sum += $value['sum'];
-			$sql .= "\n(select '{$value['id']}' `id`,'{$value['name']}' `name`,'{$value['quantity']}' `quantity`,'{$value['price']}' `price`,'{$value['sum']}' `sum`,'{$value['priceTotal']}' `priceTotal`,'{$value['sumTotal']}' `sumTotal`) union";
 		}
-		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
-		$ids = implode(',', array_column($order['W_Positions'], 'id'));
-		$sql = "select x.id,x.name name,x.quantity,x.price,x.sum,x.priceTotal,x.sumTotal from $sql x left join Products t on x.id=t.Id where x.id in ($ids)";
-		$order['W_Positions'] = Connect::$instance->fetch($sql);
-
-		$sum += $order['ODeliveryTariff'];
-		$sum -= $order['ODeliveryDiscount'];
+		
+		// Типизируем позиции - это безопаснее чем SQL
+		if (!empty($order['W_Positions'])) {
+			$typedPositions = [];
+			foreach ($order['W_Positions'] as $value) {
+				$typedPositions[] = [
+					'id' => (int)$value['id'],
+					'name' => (string)$value['name'],
+					'quantity' => (int)$value['quantity'],
+					'price' => (float)$value['price'],
+					'sum' => (float)$value['sum'],
+					'priceTotal' => (float)$value['priceTotal'],
+					'sumTotal' => (float)$value['sumTotal']
+				];
+			}
+			$order['W_Positions'] = $typedPositions;		}
 		$sum += $order['OPaymentTariff'];
 		$sum -= $order['OPaymentDiscount'];
 

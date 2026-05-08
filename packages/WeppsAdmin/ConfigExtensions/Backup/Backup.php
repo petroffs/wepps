@@ -55,9 +55,13 @@ class Backup extends Request
 				/*
 				 * Списки с учетом прав доступа
 				 */
-				$fcond = "'" . implode("','", $perm['lists']) . "'";
-				$sql = "select * from s_Config as t where TableName in ($fcond) order by t.Category,t.Priority";
-				$res = Connect::$instance->fetch($sql);
+			if (!empty($perm['lists'])) {
+				$placeholders = rtrim(str_repeat('?,', count($perm['lists'])), ',');
+				$sql = "select * from s_Config as t where TableName in ($placeholders) order by t.Category,t.Priority";
+				$res = Connect::$instance->fetch($sql, $perm['lists']);
+			} else {
+				$res = [];
+			}
 				$arr = [];
 				foreach ($res as $value) {
 					$arr[$value['Category']][] = $value;

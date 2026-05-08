@@ -96,7 +96,7 @@ class RestV1APP extends RestV1
 		if (!empty($id)) {
 			$productsUtils->setNavigator($navigator, 'Products');
 			$isNumericId = (strlen((int) $id) == strlen($id));
-			$conditions = $isNumericId ? "t.Id = ?" : "binary t.Alias = ?";
+			$conditions = $isNumericId ? "t.IsHidden=0 and t.Id = ?" : "t.IsHidden=0 and binary t.Alias = ?";
 
 			$settings = [
 				'pages' => 1,
@@ -126,7 +126,6 @@ class RestV1APP extends RestV1
 				'conditions' => $conditions,
 			];
 		}
-
 		$result = $productsUtils->getProducts($settings);
 
 		// Загружаем атрибуты для всех товаров одним вызовом

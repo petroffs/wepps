@@ -118,7 +118,12 @@ class Data
 		if ($tableName == "") {
 			exit();
 		}
-		$this->tableName = Utils::trim($tableName);
+		$tableName = Utils::trim($tableName);
+		// Валидация имени таблицы: только буквы, цифры и подчеркивания
+		if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $tableName)) {
+			exit();
+		}
+		$this->tableName = $tableName;
 		$this->useApiMapping = $options['useApiMapping'] ?? false;
 	}
 	/**
@@ -144,7 +149,7 @@ class Data
 		$formatted = $this->_getFormatted($conditions, $onPage, $currentPage, $orderBy);
 		$this->sql = "select $fields $concat from {$this->tableName} where {$formatted['conditions']} {$formatted['orderBy']} {$formatted['limit']}";
 		$this->sqlCounter = "select count(*) Co from {$this->tableName} where {$formatted['conditions']}";
-		$res = Connect::$instance->fetch($this->sql);
+		$res = Connect::$instance->fetch($this->sql, $this->params);
 		if ($currentPage > 0) {
 			$paginator = $this->_getPaginator($formatted['onPage'], $formatted['currentPage']);
 			$this->paginator = $paginator;
@@ -260,7 +265,10 @@ class Data
 			$orderBy = "order by $orderBy";
 		$currentPage = ((int) $currentPage <= 0) ? 1 : (int) $currentPage;
 		$limit = ($currentPage - 1) * $onPage;
-		$conditions = (is_numeric($conditions)) ? "Id='{$conditions}'" : $conditions;
+		// Если условие это число И не содержит плейсхолдер, преобразуем в условие с типизацией
+		if (is_numeric($conditions) && strpos($conditions, '?') === false) {
+			$conditions = "Id=" . (int)$conditions;
+		}
 		return [
 			'conditions' => $conditions,
 			'onPage' => $onPage,
@@ -335,17 +343,28 @@ class Data
 		if ($this->scheme == null || $renew == 1) {
 			$fields = $this->fields;
 			$orderBy = "t.Priority";
+			$params = [$this->tableName];
+			$fieldsCondition = '';
+			
 			if (!empty($fields)) {
-				$ids = "'" . str_replace(",", "','", $fields) . "'";
-				$fields = " and t.Field in ($ids)";
-				$orderBy = "field(t.Field,$ids)";
+				// Валидация имен полей - только буквы, цифры и подчеркивания
+				$fieldsList = array_map(function($f) {
+					return preg_replace('/[^a-zA-Z0-9_]/', '', $f);
+				}, explode(',', $fields));
+				
+				$placeholders = rtrim(str_repeat('?,', count($fieldsList)), ',');
+				$fieldsCondition = " and t.Field in ($placeholders)";
+				$params = array_merge($params, $fieldsList);
+				$orderBy = "field(t.Field," . implode(',', array_map(function($f) { return "'$f'"; }, $fieldsList)) . ")";
 			}
+			
 			$sql = "select
 			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.IsHidden,t.FGroup,
 			t.ApiFieldType,t.ApiMapping
 			from s_ConfigFields as t
-			where t.TableName = '{$this->tableName}' $fields order by $orderBy";
-			$res = Connect::$instance->fetch($sql, [], 'group');
+			where t.TableName = ? $fieldsCondition order by $orderBy";
+			
+			$res = Connect::$instance->fetch($sql, $params, 'group');
 			if (count($res) == 0) {
 				http_response_code(404);
 				Utils::debug("Указанной таблицы {$this->tableName} не существует", 1);
@@ -431,8 +450,10 @@ class Data
 	public function set(int $id, array $row, array $settings = [])
 	{
 		$arr = Connect::$instance->prepare($row, $settings);
-		$this->sql = "update {$this->tableName} set {$arr['update']} where Id = '{$id}'";
-		return Connect::$instance->query($this->sql, $arr['row']);
+		$row = $arr['row'];
+		$row['Id'] = $id;
+		$this->sql = "update {$this->tableName} set {$arr['update']} where Id = ?";
+		return Connect::$instance->query($this->sql, $row);
 	}
 	/**
 	 * Добавление строки
@@ -476,8 +497,8 @@ class Data
 				unset($update['Priority']);
 			}
 			$prepare = Connect::$instance->prepare($update);
-			$sql = "update {$this->tableName} set {$prepare['update']} where Id='{$id}'";
-			Connect::$instance->query($sql, $prepare['row']);
+			$sql = "update {$this->tableName} set {$prepare['update']} where Id=?";
+			Connect::$instance->query($sql, array_merge($prepare['row'], [$id]));
 		}
 		return $id;
 	}
@@ -490,10 +511,10 @@ class Data
 	 */
 	public function remove(int $id): bool
 	{
-		$sql = "delete from {$this->tableName} where Id = '{$id}'";
-		Connect::$instance->query($sql);
-		$sql = "delete from s_Files where TableName='{$this->tableName}' and TableNameId='{$id}'";
-		Connect::$instance->query($sql);
+		$sql = "delete from {$this->tableName} where Id = ?";
+		Connect::$instance->query($sql, [$id]);
+		$sql = "delete from s_Files where TableName=? and TableNameId=?";
+		Connect::$instance->query($sql, [$this->tableName, $id]);
 		return true;
 	}
 

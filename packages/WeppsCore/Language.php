@@ -70,7 +70,8 @@ class Language
 		$ppsInterface = [];
 		$condition = ($backOffice == 0) ? "Category='front'" : "Category='back'";
 		$interfaceLangs = ($langData['default'] == 1) ? $langData['interface'] : $langData['interface'] . "," . $langData['interfaceDefault'];
-		foreach (Connect::$instance->fetch("select Name," . $interfaceLangs . " from s_Lang where $condition order by Name") as $v) {
+		$res = Connect::$instance->fetch("select Name," . $interfaceLangs . " from s_Lang where Category=? order by Name", [$backOffice == 0 ? 'front' : 'back']);
+		foreach ($res as $v) {
 			$ppsInterface[$v['Name']] = ($v[$langData['interface']] != '') ? $v[$langData['interface']] : $v[$langData['interfaceDefault']];
 		}
 		return $ppsInterface;
@@ -95,8 +96,8 @@ class Language
 		if ($resKeys == "") {
 			return $data;
 		}
-		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId='" . @$lang['id'] . "' and IsHidden=0";
-		$res2 = Connect::$instance->fetch($sql);
+		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId=? and IsHidden=0";
+		$res2 = Connect::$instance->fetch($sql, [(int)@$lang['id']]);
 		if (count($res2) == 0)
 			return $data;
 		$resParall = Utils::array($res2, 'TableId');

@@ -50,17 +50,18 @@ class ProductsUtils
 			'conditions' => $conditions
 		];
 	}
-	public function getConditions(array $params = [], bool $isFilters = false,string $conditions = '',array $prepare = []): array
+	public function getConditions(array $params = [], bool $isFilters = false, string $conditions = '', array $prepare = []): array
 	{
 		if (empty($conditions)) {
-			if ($this->navigator->content['Id']==Connect::$projectServices['navigator']['brands']) {
+			if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands']) {
 				$conditions = "t.IsHidden=0 and t.Id in (select pv.TableNameId from s_PropertiesValues pv where pv.Alias=? and pv.IsHidden=0 and pv.Name=1)";
 				$prepare[] = Navigator::$pathItem;
 			} else {
-				$conditions = "t.IsHidden=0 and t.NavigatorId='{$this->navigator->content['Id']}'";
+				$conditions = "t.IsHidden=0 and t.NavigatorId=?";
+				$prepare[] = $this->navigator->content['Id'];
 			}
 			if (!empty($params['text'])) {
-				$conditions = "t.IsHidden=0 and lower(t.Name) like lower(?)";
+				$conditions .= " and lower(t.Name) like lower(?)";
 				$prepare[] = $params['text'] . "%";
 			}
 		}
@@ -74,8 +75,9 @@ class ProductsUtils
 			if (substr($key, 0, 2) == 'f_') {
 				$ex = explode('|', $value);
 				$ids = str_repeat('?,', count($ex) - 1) . '?';
-				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where IsHidden=0 and TableName='{$this->list}' and Name ='" . str_replace('f_', '', $key) . "' and Alias in ($ids))";
-				$prepare = array_merge($prepare, $ex);
+				$fieldName = str_replace('f_', '', $key);
+				$conditions .= "\nand t.Id in (select distinct TableNameId from s_PropertiesValues where IsHidden=0 and TableName=? and Name =? and Alias in ($ids))";
+				$prepare = array_merge($prepare, [$this->list, $fieldName], $ex);
 			}
 		}
 		return [
@@ -101,6 +103,7 @@ class ProductsUtils
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
 		$settings['sorting'] .= ",pv.Priority";
 		$res = $obj->fetch($settings['conditions']['conditions'], $settings['pages'], $settings['page'], $settings['sorting']);
+		// Utils::debug($settings, 1);
 		// Преобразуем W_Variations из строки в массив (как в getProductsItem)
 		if (!empty($res)) {
 			foreach ($res as $k => &$el) {
@@ -170,7 +173,7 @@ class ProductsUtils
 		if (!empty($variationId)) {
 			$variations = $product['W_Variations'] ?? [];
 			$variationFound = false;
-			
+
 			// Вариации могут быть структурой [группа][вариант]
 			foreach ($variations as $group) {
 				if (!is_array($group)) {
@@ -209,24 +212,24 @@ class ProductsUtils
 	}
 	public function getVariationsArray(string $string): array
 	{
-		$arr = Utils::arrayFromString($string,':::',"\n");
+		$arr = Utils::arrayFromString($string, ':::', "\n");
 		$keys = ['id', 'color', 'size', 'sku', 'stocks'];
 		$types = ['id' => 'int', 'color' => 'string', 'size' => 'string', 'sku' => 'string', 'stocks' => 'int'];
-		
-		$variants = array_map(function($item) use ($keys, $types) {
+
+		$variants = array_map(function ($item) use ($keys, $types) {
 			$variant = array_combine($keys, $item);
 			// Конвертируем типы данных
 			foreach ($variant as $key => &$value) {
 				if ($types[$key] === 'int') {
-					$value = (int)$value;
+					$value = (int) $value;
 				} else {
-					$value = (string)$value;
+					$value = (string) $value;
 				}
 			}
 			unset($value);
 			return $variant;
 		}, $arr);
-		
+
 		// Группируем по цветам (пустой color → группу без цвета)
 		$grouped = [];
 		foreach ($variants as $value) {
@@ -236,7 +239,7 @@ class ProductsUtils
 			}
 			$grouped[$colorKey][] = $value;
 		}
-		
+
 		// Преобразуем в массив массивов (без ключей)
 		$result = array_values($grouped);
 		return $result;
