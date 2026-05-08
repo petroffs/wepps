@@ -452,7 +452,7 @@ class Data
 		$arr = Connect::$instance->prepare($row, $settings);
 		$row = $arr['row'];
 		$row['Id'] = $id;
-		$this->sql = "update {$this->tableName} set {$arr['update']} where Id = ?";
+		$this->sql = "update {$this->tableName} set {$arr['update']} where Id = :Id";
 		return Connect::$instance->query($this->sql, $row);
 	}
 	/**
@@ -497,8 +497,8 @@ class Data
 				unset($update['Priority']);
 			}
 			$prepare = Connect::$instance->prepare($update);
-			$sql = "update {$this->tableName} set {$prepare['update']} where Id=?";
-			Connect::$instance->query($sql, array_merge($prepare['row'], [$id]));
+			$sql = "update {$this->tableName} set {$prepare['update']} where Id=:Id";
+			Connect::$instance->query($sql, array_merge($prepare['row'], ['Id' => $id]));
 		}
 		return $id;
 	}
