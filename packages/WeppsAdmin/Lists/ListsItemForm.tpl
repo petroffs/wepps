@@ -112,6 +112,13 @@
 													<a href="/f{$i.FileUrl}" class="files-upload">{$i.Name}</a>
 												{/if}
 											</div>
+											<div>
+												<div class="files-controls w_flex w_flex_row">
+													<a href="" class="files-item-copy-link"><i class="bi bi-clipboard"></i></a>
+													<a href="/_wepps/lists/s_Files/{$i.Id}/"><i class="bi bi-pencil"></i></a>
+													<a href="" class="files-item-remove-link"><i class="bi bi-x-circle"></i></a>
+												</div>
+											</div>
 											<div class="descr{if $i.FileDescription} descr-fill{/if}">
 												<div class="input">
 													<label class="w_label w_input">
@@ -120,13 +127,6 @@
 												</div>
 												<div>
 													{$i.FileDescription}
-												</div>
-											</div>
-											<div>
-												<div class="files-controls w_flex w_flex_row">
-													<a href="" class="files-item-copy-link"><i class="bi bi-clipboard"></i></a>
-													<a href="/_wepps/lists/s_Files/{$i.Id}/"><i class="bi bi-pencil"></i></a>
-													<a href="" class="files-item-remove-link"><i class="bi bi-x-circle"></i></a>
 												</div>
 											</div>
 										</div>

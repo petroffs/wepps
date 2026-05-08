@@ -14,6 +14,8 @@ form.list-data .item:hover {
 form.list-data .item .title .title2 {
 	width: auto;
 	overflow: hidden;
+	word-break: break-word;
+	overflow-wrap: break-word;
 }
 
 form.list-data .item .title .descr {
@@ -81,22 +83,19 @@ form.list-data .item .field .files>.files-item {
 }
 
 form.list-data .item .field .files .descr {
-	position: absolute;
-	bottom: 5px;
-	left: 8px;
-	width: 1px;
-	height: 1px;
+	position: relative;
 	overflow: hidden;
 }
 
 form.list-data .item .field .files .descr.descr-fill {
-	padding: 5px 10px;
+	font-size: var(--font-small);
+	padding: var(--s) var(--s2);
 	background: rgba(255, 255, 255, 0.7);
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	width: calc(100% - 16px);
-	max-width: calc(100% - 16px);
+	box-shadow: 0 0 var(--s2) rgba(0, 0, 0, 0.1);
 	height: inherit;
-
+	border-radius: var(--s);
+	word-break: break-word;
+	overflow-wrap: break-word;
 }
 
 form.list-data .item .field .files .descr>.input {
