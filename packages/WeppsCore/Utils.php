@@ -284,6 +284,16 @@ class Utils
 		setcookie($name, $value, $settings);
 		return (string) $value;
 	}
+	/**
+	 * Кодирование массива в JSON-строку
+	 *
+	 * @param array $data Массив данных для кодирования
+	 * @return string JSON-строка с поддержкой Unicode и слешей
+	 */
+	public static function json(array $data) : string
+	{
+		return json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+	}
 }
 
 if (!function_exists('getallheaders')) {

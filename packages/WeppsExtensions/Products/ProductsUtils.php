@@ -244,4 +244,35 @@ class ProductsUtils
 		$result = array_values($grouped);
 		return $result;
 	}
+
+	/**
+	 * Загружает картинки для каждого цвета товара из s_Files
+	 * @param int $productId ID товара
+	 * @return array Ассоциативный массив [color => [images]]
+	 */
+	public function getImagesByColor(int $productId): array
+	{
+		$result = [];
+
+		// Загружаем все файлы для этого товара
+		$sql = "SELECT FileUrl, APIFilter FROM s_Files 
+				WHERE TableName = 'Products' AND TableNameId = ?
+				ORDER BY Priority, Id";
+		$files = Connect::$instance->fetch($sql, [$productId]);
+
+		// Группируем по цветам (APIFilter содержит название цвета)
+		foreach ($files as $file) {
+			$color = !empty($file['APIFilter']) ? $file['APIFilter'] : 'default';
+			if (!isset($result[$color])) {
+				$result[$color] = [];
+			}
+			// Пути: /pic/mediumv/, /pic/preview/
+			$result[$color][] = [
+				'mediumv' => '/pic/mediumv' . $file['FileUrl'],
+				'preview' => '/pic/mediumv' . $file['FileUrl'],
+			];
+		}
+
+		return $result;
+	}
 }

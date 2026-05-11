@@ -69,10 +69,21 @@ class Products extends Extension
 			$this->headers->css("/ext/Template/Paginator/Paginator.{$this->rand}.css");
 		} else {
 			$this->tpl = 'packages/WeppsExtensions/Products/ProductsItem.tpl';
+			// Подключаем Swiper для галереи товара
+			$this->headers->css("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.css");
+			$this->headers->js("/packages/vendor_local/swiper.11.2.10/swiper-bundle.min.js");
+			$this->headers->js("/ext/Template/Swiper/SwiperManager.{$this->rand}.js");
+			// Стили и скрипты товара
 			$this->headers->css("/ext/Products/ProductsItem.{$this->rand}.css");
 			$this->headers->js("/ext/Products/ProductsItem.{$this->rand}.js");
 			$this->navigator->content['Text1'] = '';
 			$res = $this->getItem("Products");
+			
+			// Загружаем картинки по цветам для динамической смены галереи
+			$imagesByColor = $this->productsUtils->getImagesByColor($res['Id']);
+			//$smarty->assign('imagesByColor', json_encode($imagesByColor, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+			$this->headers->meta('<script>var imagesByColor = ' . Utils::json($imagesByColor) . ';</script>');
+			
 			$smarty->assign('element', $res);
 			$conditions = "t.IsHidden=0 and t.Id!='{$res['Id']}'";
 			$obj = new Data("Products");

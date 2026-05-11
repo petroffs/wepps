@@ -26,6 +26,58 @@
 	grid-area: media;
 }
 
+/* Галлери свайпер */
+.swiper-gallery-main {
+	width: 100%;
+	height: auto;
+	background: var(--color-100);
+	border-radius: var(--s2);
+}
+
+.swiper-gallery-main .swiper-slide {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 400px;
+}
+
+.swiper-gallery-main .swiper-slide img {
+	width: 100%;
+	height: auto;
+	object-fit: contain;
+}
+
+/* Мини превьюшки */
+.swiper-gallery-thumbs {
+	height: auto;
+	margin-top: var(--s2);
+	padding-right: 1px;
+}
+
+.swiper-gallery-thumbs .swiper-slide {
+	height: auto;
+	opacity: 0.5;
+	cursor: pointer;
+	transition: opacity 0.3s;
+	border-radius: var(--s2);
+	overflow: hidden;
+}
+
+.swiper-gallery-thumbs .swiper-slide:hover {
+	opacity: 0.75;
+}
+
+.swiper-gallery-thumbs .swiper-slide.swiper-slide-thumb-active {
+	opacity: 1;
+	border: 2px solid var(--color-active);
+}
+
+.swiper-gallery-thumbs .swiper-slide img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
 .product-price>.prices.content-block {
 	position: sticky;
 	top: 90px;
@@ -42,6 +94,26 @@
 
 .product-title {
 	grid-area: title;
+}
+
+.gallery-switcher {
+	font-size: var(--font-small);
+	color: var(--color-primary);
+	margin-top: var(--s);
+	padding: var(--s);
+	background: rgba(0, 0, 0, 0.02);
+	border-radius: var(--s);
+	margin-bottom: var(--s);
+}
+
+.gallery-label {
+	padding: var(--s-half) var(--s);
+	background: var(--color-100);
+	border-radius: var(--s);
+	display: inline-block;
+	border: 2px solid var(--color-primary);
+	font-weight: 600;
+	cursor: default;
 }
 
 .product-price {

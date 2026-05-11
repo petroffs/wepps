@@ -148,21 +148,21 @@ class ProcessingProducts
 		foreach ($data as $value) {
 			$alias = self::getProductsVariationsHash($element['Id'],$value);
 			$stmt->execute($row = [
-				'Name' => $value[2]??trim($element['Id'].'-'.@$value[0].'-'.@$value[1],'-'),
+				'Name' => $value[2] ?? trim($element['Id'].'-'.($value[0]??'').'-'.($value[1]??''),'-'),
 				'IsHidden' => 0,
 				'Priority' => $i++,
 				'ProductsId' => $element['Id'],
-				'Field1' => trim(@$value[0]),
-				'Field2' => trim(@$value[1]),
-				'Field3' => trim(@$value[2]),
-				'Field4' => trim(@$value[3]),
+				'Field1' => trim($value[0] ?? ''),
+				'Field2' => trim($value[1] ?? ''),
+				'Field3' => trim($value[2] ?? ''),
+				'Field4' => trim($value[3] ?? ''),
 				'Alias' => $alias
 			]);
 		}
 		return;
 	}
 	public function getProductsVariationsHash(int $id,array $value) : string {
-		return md5($id.'_'.@$value[0].'_'.@$value[1].'_'.@$value[2]);
+		return md5($id.'_'.($value[0]??'').'_'.($value[1]??'').'_'.($value[2]??''));
 	}
 	public function resetProductsVariationsAll() {
 		$res = Connect::$instance->fetch("select * from Products where Variations!=''");
@@ -170,5 +170,13 @@ class ProcessingProducts
 			$this->setProductsVariations($value);
 		}
 	}
-	
+	public function setProductsFilesAPIFilter(int $id=0) {
+		$conditions = "TableName='Products' and TableNameField='ImagesV'";
+		$params = [];
+		if (!empty($id)) {
+			$conditions .= " and TableNameId=?";
+			$params = [$id];
+		}
+		Connect::$instance->query("update s_Files set APIFilter=FileDescription where {$conditions}", $params);
+	}
 }

@@ -18,6 +18,7 @@ class SaveItemProducts extends Request {
 	    if ($this->listSettings['TableName']=='Products') {
 	    	$obj = new ProcessingProducts();
 			$obj->setProductsVariations($this->element);
+			$obj->setProductsFilesAPIFilter($this->element['Id']);
 	    }
 	}
 }
