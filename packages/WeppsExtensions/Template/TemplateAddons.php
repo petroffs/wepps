@@ -117,8 +117,12 @@ if (!class_exists('WeppsExtensions\Template\TemplateAddons')) {
 			 */
 			if (empty(Navigator::$pathItem)) {
 				$obj = new Data("Slides");
-			$obj->setParams([(int)$this->navigator->content['Id']]);
-			$res = $obj->fetch("t.IsHidden=0 and SPlace=1 and sm3.Id=?",20,1,"t.Priority desc");
+				$obj->setParams([(int) $this->navigator->content['Id']]);
+				$res = $obj->fetch("t.IsHidden=0 and SPlace=1 and sm3.Id=?", 20, 1, "t.Priority desc");
+				if (!empty($res)) {
+					$swiprer = new Swiper($this->headers, $smarty);
+					$smarty->assign('carouselTpl', $swiprer->render($res));
+				}
 			}
 
 			/**
