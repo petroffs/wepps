@@ -17,6 +17,12 @@ use WeppsCore\Memcached;
 class RestV1M2MUtils
 {
 	/**
+	 * Кэш json-полей для таблиц
+	 * @var array<string,array<string,bool>>
+	 */
+	private array $jsonFieldsCache = [];
+
+	/**
 	 * Получить список записей
 	 * 
 	 * @param string $tableName - имя таблицы (e.g. 's_Users', 'Products')
@@ -34,6 +40,7 @@ class RestV1M2MUtils
 			$result = $data->fetch('Id!=0', $limit, $page);
 
 			// Использовать paginator и count из Data объекта
+			$result = $this->decodeJsonFields($result, $tableName);
 			return [
 				'status' => 200,
 				'message' => 'OK',
@@ -74,6 +81,7 @@ class RestV1M2MUtils
 				];
 			}
 
+			$result[0] = $this->decodeJsonFields([$result[0]], $tableName)[0] ?? $result[0];
 			return [
 				'status' => 200,
 				'message' => 'OK',
@@ -221,6 +229,69 @@ class RestV1M2MUtils
 			// (валидация будет пропущена)
 			return [];
 		}
+	}
+
+	/**
+	 * Декодирует JSON-поля в результатах на основе схемы Data
+	 *	
+	 * @param array $rows Строки результата
+	 * @param string $tableName Имя таблицы
+	 * @return array
+	 */
+	private function decodeJsonFields(array $rows, string $tableName): array
+	{
+		if (empty($rows)) {
+			return $rows;
+		}
+
+		$fields = $this->getJsonFields($tableName);
+		if (empty($fields)) {
+			return $rows;
+		}
+
+		foreach ($rows as &$row) {
+			foreach ($fields as $fieldName => $_) {
+				if (!isset($row[$fieldName]) || !is_string($row[$fieldName])) {
+					continue;
+				}
+
+				$decoded = json_decode($row[$fieldName], true);
+				if (json_last_error() === JSON_ERROR_NONE) {
+					$row[$fieldName] = $decoded;
+				}
+			}
+		}
+
+		return $rows;
+	}
+
+	/**
+	 * Получить список полей таблицы, которые нужно декодировать как JSON
+	 *
+	 * @param string $tableName
+	 * @return array<string,bool>
+	 */
+	private function getJsonFields(string $tableName): array
+	{
+		if (isset($this->jsonFieldsCache[$tableName])) {
+			return $this->jsonFieldsCache[$tableName];
+		}
+
+		$data = new Data($tableName, ['useApiMapping' => true]);
+		$scheme = $data->getScheme();
+		$jsonFields = [];
+
+		foreach ($scheme as $fieldName => $fieldSettings) {
+			$apiType = strtolower($fieldSettings[0]['ApiFieldType'] ?? '');
+			$type = strtolower($fieldSettings[0]['Type'] ?? '');
+			if ($apiType === 'json' || str_contains($type, 'json')) {
+				$alias = $fieldSettings[0]['ApiMapping'] ?: $fieldName;
+				$jsonFields[$alias] = true;
+			}
+		}
+
+		$this->jsonFieldsCache[$tableName] = $jsonFields;
+		return $jsonFields;
 	}
 
 	/**

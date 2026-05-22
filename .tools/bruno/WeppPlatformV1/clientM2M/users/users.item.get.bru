@@ -10,12 +10,12 @@ get {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
-
 params:query {
   id: {{user_id}}
+}
+
+auth:bearer {
+  token: {{access_token}}
 }
 
 tests {

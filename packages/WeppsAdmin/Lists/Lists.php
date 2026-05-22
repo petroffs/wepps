@@ -768,6 +768,10 @@ class Lists
 				$typeReal = 'text COLLATE utf8mb4_unicode_ci';
 				$alterDefault = "NULL default NULL";
 				break;
+			case "json":
+				$typeReal = 'longtext COLLATE utf8mb4_unicode_ci';
+				$alterDefault = "NULL default NULL";
+				break;
 			case "digit":
 				$typeReal = 'decimal(12,2)';
 				$alterDefault = "NOT NULL default '0.00'";

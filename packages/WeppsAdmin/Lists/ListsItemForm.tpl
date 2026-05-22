@@ -89,6 +89,10 @@
 							<label class="w_label w_area{if $item.0.Required==1} w_require{/if}">
 								<textarea name="{$key}" id="formArea{$key}">{$element.$key|escape:'html'}</textarea>
 							</label>
+						{elseif $item.0.Type=="json"}
+							<label class="w_label w_area{if $item.0.Required==1} w_require{/if}">
+								<textarea name="{$key}" id="formArea{$key}">{$element.$key|escape:'html'}</textarea>
+							</label>
 						{elseif $item.0.Type=="blob"}
 							<label class="w_label w_area">
 								<textarea name="{$key}">{$element.$key|escape:'html'}</textarea>

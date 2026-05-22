@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods.images
+  url: {{base_url}}/rest/m2m/goods.images?goods_id=326
   body: none
   auth: bearer
 }
 
 params:query {
-  ~goods_id: 
+  goods_id: 326
   ~page: 1
   ~limit: 100
 }

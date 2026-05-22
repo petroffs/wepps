@@ -594,7 +594,7 @@ class RestV1M2M extends RestV1
 
 		// Получить данные с пагинацией
 		$res = Connect::$instance->fetch(
-			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}', FileUrl) as FileUrl FROM s_Files 
+			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}', FileUrl) as FileUrl,'' `Filter` FROM s_Files 
 			 WHERE {$conditions}
 			 ORDER BY Priority 
 			 LIMIT {$offset}, {$limit}",
@@ -766,24 +766,25 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsImagesVariations(): array
 	{
-		$goodsvId = (int) ($this->get['goodsv_id'] ?? 0);
+		$url = Connect::$projectDev['protocol'] . Connect::$projectDev['host'];
+		$goodsId = (int) ($this->get['goods_id'] ?? 0);
 		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(1000);
 		$limit = (int) $limit;
 		$offset = (int) $offset;
 
 		// Формируем условие WHERE
-		$conditions = "TableName = 'ProductsVariations'";
+		$conditions = "TableName = 'Products' and TableNameField = 'ImagesV'";
 		$params = [];
-		if ($goodsvId > 0) {
+		if ($goodsId > 0) {
 			$conditions .= " AND TableNameId = ?";
-			$params[] = $goodsvId;
+			$params[] = $goodsId;
 		}
 
 		// Получить данные с пагинацией
 		$res = Connect::$instance->fetch(
-			"SELECT Id, TableNameId as goodsv_id, Name, InnerName, FileUrl FROM s_Files 
+			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}', FileUrl) FileUrl, APIFilter `Filter` FROM s_Files 
 			 WHERE {$conditions}
-			 ORDER BY Id DESC 
+			 ORDER BY Priority 
 			 LIMIT {$offset}, {$limit}",
 			$params
 		);
@@ -821,9 +822,9 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		$goodsvId = $data['goodsv_id'] ?? $data['TableNameId'] ?? 0;
-		if (!$goodsvId) {
-			return ['status' => 400, 'message' => 'goodsv_id required', 'data' => null];
+		$goodsId = $data['goods_id'] ?? $data['TableNameId'] ?? 0;
+		if (!$goodsId) {
+			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
 		}
 
 		$name = $data['name'] ?? $data['Name'] ?? '';
@@ -844,7 +845,7 @@ class RestV1M2M extends RestV1
 			if (!$binaryData) {
 				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
 			}
-			$fileUrl = $this->saveUploadedFileVariation($binaryData, $fileName, $goodsvId);
+			$fileUrl = $this->saveUploadedFileVariation($binaryData, $fileName, $goodsId);
 			if (!$fileUrl) {
 				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
 			}
@@ -859,7 +860,7 @@ class RestV1M2M extends RestV1
 			if (!$binaryData) {
 				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
 			}
-			$fileUrl = $this->saveUploadedFileVariation($binaryData, $file['name'], $goodsvId);
+			$fileUrl = $this->saveUploadedFileVariation($binaryData, $file['name'], $goodsId);
 			if (!$fileUrl) {
 				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
 			}
@@ -873,7 +874,7 @@ class RestV1M2M extends RestV1
 		// Вставить новое изображение
 		$id = Connect::$instance->insert('s_Files', [
 			'TableName' => 'ProductsVariations',
-			'TableNameId' => $goodsvId,
+			'TableNameId' => $goodsId,
 			'Name' => $name ?: $fileName,
 			'InnerName' => $innerName,
 			'FileUrl' => $fileUrl,
