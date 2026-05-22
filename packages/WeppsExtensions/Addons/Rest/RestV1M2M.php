@@ -585,7 +585,7 @@ class RestV1M2M extends RestV1
 		$offset = (int) $offset;
 
 		// Формируем условие WHERE
-		$conditions = "TableName = 'Products'";
+		$conditions = "TableName = 'Products' and TableNameField = 'Images'";
 		$params = [];
 		if ($goodsId > 0) {
 			$conditions .= " AND TableNameId = ?";
@@ -594,9 +594,9 @@ class RestV1M2M extends RestV1
 
 		// Получить данные с пагинацией
 		$res = Connect::$instance->fetch(
-			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}/f', FileUrl) as FileUrl FROM s_Files 
+			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}', FileUrl) as FileUrl FROM s_Files 
 			 WHERE {$conditions}
-			 ORDER BY Id DESC 
+			 ORDER BY Priority 
 			 LIMIT {$offset}, {$limit}",
 			$params
 		);

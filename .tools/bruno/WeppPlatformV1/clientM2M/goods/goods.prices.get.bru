@@ -5,15 +5,15 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods.prices?page=1&limit=1
+  url: {{base_url}}/rest/m2m/goods.prices?page=1&limit=100&goods_id=325
   body: none
   auth: bearer
 }
 
 params:query {
   page: 1
-  limit: 1
-  ~goods_id: 327
+  limit: 100
+  goods_id: 325
 }
 
 auth:bearer {
