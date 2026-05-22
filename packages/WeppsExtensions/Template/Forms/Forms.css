@@ -530,7 +530,7 @@ form {
 .select2-container .select2-selection--single,
 .select2-container .select2-selection--multiple {
 	background-color: var(--color-100);
-	height: calc(var(--s) * 8);
+	min-height: calc(var(--s) * 8);
 	border-radius: var(--s2);
 	border-color: var(--color-85);
 	border-width: var(--s-half);
@@ -590,7 +590,7 @@ form {
 	display: inline-flex;
 	flex-wrap: wrap;
 	align-items: center;
-	height: calc(var(--s) * 7);
+	min-height: calc(var(--s) * 7);
 	padding: var(--s-half) var(--s) 0 var(--s);
 }
 
