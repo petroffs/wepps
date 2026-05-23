@@ -99,4 +99,19 @@ class Memcached
 		}
 		return true;
 	}
+
+	/**
+	 * Очистить весь Memcached кэш
+	 *
+	 * @return bool Возвращает true в случае успеха
+	 */
+	public function flushAll()
+	{
+		if (!empty($this->memcache)) {
+			$this->memcache->flush();
+		} else if (!empty($this->memcached)) {
+			$this->memcached->flush();
+		}
+		return true;
+	}
 }

@@ -4,6 +4,7 @@ namespace WeppsExtensions\Addons\Rest;
 use WeppsCore\Data;
 use WeppsCore\Connect;
 use WeppsCore\Memcached;
+use WeppsCore\Utils;
 
 /**
  * RestV1M2MUtils - вспомогательный класс для CRUD операций M2M API
@@ -220,12 +221,11 @@ class RestV1M2MUtils
 
 		try {
 			// Получить все поля для таблицы из s_ConfigFields
-			$sql = "SELECT `Field`, `ApiFieldType`, `Required` FROM s_ConfigFields WHERE `TableName` = ? ORDER BY `Field` ASC";
+			$sql = "SELECT `Field`, `ApiMapping`, `ApiFieldType`, `Required` FROM s_ConfigFields WHERE `TableName` = ? ORDER BY `Field` ASC";
 			$result = Connect::$instance->fetch($sql, [$tableName]);
-
 			$rules = [];
 			foreach ($result as $field) {
-				$fieldName = $field['Field'] ?? null;
+				$fieldName = $field['ApiMapping'] ?? null;
 				$apiType = $field['ApiFieldType'] ?? 'string';
 				$required = (int) ($field['Required'] ?? 0);
 
@@ -247,6 +247,20 @@ class RestV1M2MUtils
 			// (валидация будет пропущена)
 			return [];
 		}
+	}
+
+	/**
+	 * Инвалидировать кэш validation rules для таблицы
+	 * Вызывается из админки при изменении s_ConfigFields
+	 * 
+	 * @param string $tableName - имя таблицы
+	 * @return void
+	 */
+	public static function invalidateValidationRulesCache(string $tableName): void
+	{
+		$cacheKey = 'api_validation_rules_v1_' . $tableName;
+		$memcached = new Memcached('auto', true);
+		$memcached->delete($cacheKey);
 	}
 
 	/**
