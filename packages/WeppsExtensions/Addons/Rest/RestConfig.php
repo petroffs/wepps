@@ -9,6 +9,11 @@ namespace WeppsExtensions\Addons\Rest;
  * - Объект: {"type": "test", "data": {"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}}
  * - Массив:  {"type": "test", "data": [{"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}]}
  * 
+ * M2M PUT запросы:
+ * - Вариант 1: PUT /rest/m2m/goods?id=123 с телом {"Price": 1200, "Name": "Название"}
+ * - Вариант 2: PUT /rest/m2m/goods с телом {"id": 123, "Price": 1200, "Name": "Название"}
+ * ID можно передавать либо как GET параметр ?id={{id}}, либо в теле JSON
+ * 
  * validation: валидация данных из тела JSON
  * query_validation: валидация GET-параметров, например для фильтрации и сортировки
  * type: строка с типом данных ('int', 'int2', 'float', 'float2', 'string', 'email', 'date', 'phone', 'guid', 'barcode')
@@ -743,14 +748,14 @@ class RestConfig
 						'method' => 'putUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update user by id (configurable via s_Config)',
+					'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 					],
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods by id (configurable via s_Config)',
+					'note' => 'M2M: Update goods by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 					],
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,
@@ -785,7 +790,7 @@ class RestConfig
 						'method' => 'putOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update order by id (configurable via s_Config)',
+					'note' => 'M2M: Update order by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 					],
 				],
 				'patch' => [

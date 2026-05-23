@@ -6,7 +6,7 @@ meta {
 }
 
 put {
-  url: {{base_url}}/rest/m2m/orders
+  url: {{base_url}}/rest/m2m/orders?id={{order_id}}
   body: json
   auth: bearer
 }
@@ -19,7 +19,6 @@ body:json {
   {
     "type": "orders",
     "data": {
-      "id": {{order_id}},
       "status": "completed",
       "total": 9999.99
     }

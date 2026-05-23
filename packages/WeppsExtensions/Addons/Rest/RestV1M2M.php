@@ -59,6 +59,7 @@ class RestV1M2M extends RestV1
 
 	/**
 	 * Валидировать POST данные на основе s_ConfigFields
+	 * Требует все обязательные поля (Required=1)
 	 * 
 	 * @param string $tableName - имя таблицы для получения правил
 	 * @param array $data - данные для валидации
@@ -76,6 +77,66 @@ class RestV1M2M extends RestV1
 		$this->rest->validateData($data, $rules);
 	}
 
+	/**
+	 * Валидировать PUT данные на основе s_ConfigFields
+	 * НЕ требует обязательные поля (Required=1), т.к. они уже в БД
+	 * Позволяет partial update
+	 * 
+	 * @param string $tableName - имя таблицы для получения правил
+	 * @param array $data - данные для валидации
+	 * @throws \Exception если валидация не пройдена
+	 */
+	protected function validatePutData(string $tableName, array $data): void
+	{
+		$rules = $this->getUtils()->getFieldRules($tableName);
+		if (empty($rules)) {
+			// Если правил нет в БД, используем ослабленную валидацию
+			return;
+		}
+
+		// Убираем флаг required для PUT (partial update)
+		$rulesForUpdate = [];
+		foreach ($rules as $fieldName => $rule) {
+			$rulesForUpdate[$fieldName] = [
+				'type' => $rule['type'],
+				'required' => false, // PUT позволяет обновлять отдельные поля
+			];
+		}
+
+		// Валидация через родительский класс Rest
+		$this->rest->validateData($data, $rulesForUpdate);
+	}
+
+	/**
+	 * Извлечь id из GET параметров или данных
+	 * 
+	 * Сначала проверяет GET параметр ?id={{id}}, затем данные из JSON тела.
+	 * Если $data передана, добавляет id туда если он был взят из GET параметров.
+	 * 
+	 * @param array|null &$data - данные для обновления (опционально, по ссылке)
+	 * @return int ID или 0 если не найден
+	 */
+	protected function extractIdFromGetParams(?array &$data = null): int
+	{
+		$getParams = $this->rest->getGet();
+		$id = (int)($getParams['id'] ?? 0);
+		
+		if ($id > 0) {
+			// Если id найден в GET параметрах, добавляем его в $data (если она передана)
+			if ($data !== null) {
+				$data['id'] = $id;
+			}
+			return $id;
+		}
+		
+		// Если id не в GET, ищем в $data (если она передана)
+		if ($data !== null) {
+			return (int)($data['id'] ?? $data['Id'] ?? 0);
+		}
+		
+		return 0;
+	}
+
 	// ========================================================================
 	// USERS
 	// ========================================================================
@@ -90,7 +151,7 @@ class RestV1M2M extends RestV1
 
 	public function getUsersItem(): array
 	{
-		$id = $this->get['id'] ?? 0;
+		$id = $this->extractIdFromGetParams();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -122,14 +183,15 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		$id = $data['id'] ?? $data['Id'] ?? 0;
+		// Извлечь id из GET параметра ?id={{id}} или из данных JSON
+		$id = $this->extractIdFromGetParams($data);
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 
-		// Валидировать PUT данные по правилам из s_ConfigFields
+		// Валидировать PUT данные по правилам из s_ConfigFields (без required)
 		try {
-			$this->validatePostData('s_Users', $data);
+			$this->validatePutData('s_Users', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
@@ -139,7 +201,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteUsers(): array
 	{
-		$id = $this->get['id'] ?? 0;
+		$id = $this->extractIdFromGetParams();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -248,7 +310,7 @@ class RestV1M2M extends RestV1
 
 	public function getGoodsItem(): array
 	{
-		$id = $this->get['id'] ?? 0;
+		$id = $this->extractIdFromGetParams();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -280,14 +342,15 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		$id = $data['id'] ?? $data['Id'] ?? 0;
+		// Извлечь id из GET параметра ?id={{id}} или из данных JSON
+		$id = $this->extractIdFromGetParams($data);
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 
-		// Валидировать PUT данные по правилам из s_ConfigFields
+		// Валидировать PUT данные по правилам из s_ConfigFields (без required)
 		try {
-			$this->validatePostData('Products', $data);
+			$this->validatePutData('Products', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
@@ -297,7 +360,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoods(): array
 	{
-		$id = $this->get['id'] ?? 0;
+		$id = $this->extractIdFromGetParams();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -872,7 +935,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImages(): array
 	{
-		$imageId = (int) ($this->get['id'] ?? 0);
+		$imageId = $this->extractIdFromGetParams();
 		if (!$imageId) {
 			return ['status' => 400, 'message' => 'id required', 'data' => null];
 		}
@@ -904,7 +967,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImagesVariations(): array
 	{
-		$imageId = (int) ($this->get['id'] ?? 0);
+		$imageId = $this->extractIdFromGetParams();
 		if (!$imageId) {
 			return ['status' => 400, 'message' => 'id required', 'data' => null];
 		}
@@ -1038,7 +1101,7 @@ class RestV1M2M extends RestV1
 
 	public function getOrdersItem(): array
 	{
-		$id = $this->get['id'] ?? 0;
+		$id = $this->extractIdFromGetParams();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -1070,14 +1133,15 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		$id = $data['id'] ?? $data['Id'] ?? 0;
+		// Извлечь id из GET параметра ?id={{id}} или из данных JSON
+		$id = $this->extractIdFromGetParams($data);
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 
-		// Валидировать PUT данные по правилам из s_ConfigFields
+		// Валидировать PUT данные по правилам из s_ConfigFields (без required)
 		try {
-			$this->validatePostData('Orders', $data);
+			$this->validatePutData('Orders', $data);
 		} catch (\Exception $e) {
 			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
@@ -1087,7 +1151,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteOrders(): array
 	{
-		$id = $this->get['id'] ?? 0;
+		$id = $this->extractIdFromGetParams();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}

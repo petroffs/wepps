@@ -6,7 +6,7 @@ meta {
 }
 
 put {
-  url: {{base_url}}/rest/m2m/users
+  url: {{base_url}}/rest/m2m/users?id={{user_id}}
   body: json
   auth: bearer
 }
@@ -19,7 +19,6 @@ body:json {
   {
     "type": "users",
     "data": {
-      "id": {{user_id}},
       "name": "Иван Иванов",
       "phone": "9001234567",
       "email": "user@example.com"
