@@ -535,15 +535,14 @@ class RestConfig
 					'users' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getUsers',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get list of users (configurable via s_Config)',
-						
 					],
 					'users.item' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getUsersItem',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get single user by id',
 						'query_validation' => [
@@ -554,14 +553,14 @@ class RestConfig
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoods',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get list of goods (configurable via s_Config)',
 					],
 					'goods.item' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsItem',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get single goods by id',
 						'query_validation' => [
@@ -571,14 +570,14 @@ class RestConfig
 					'goods.categories' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsCategories',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get goods categories (navigators)',
 					],
 					'goods.filters' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsFilters',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get available goods filters (properties)',
 						'query_validation' => [
@@ -589,7 +588,7 @@ class RestConfig
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsStocks',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get goods warehouse stocks',
 						'query_validation' => [
@@ -599,7 +598,7 @@ class RestConfig
 					'goods.prices' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsPrices',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get goods prices',
 						'query_validation' => [
@@ -609,7 +608,7 @@ class RestConfig
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsImages',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get goods images (paginated)',
 						'query_validation' => [
@@ -621,7 +620,7 @@ class RestConfig
 					'goods.imagesVariations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsImagesVariations',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get goods variations images (paginated)',
 						'query_validation' => [
@@ -634,14 +633,14 @@ class RestConfig
 					'orders' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getOrders',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get list of orders (configurable via s_Config)',
 					],
 					'orders.item' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getOrdersItem',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get single order by id',
 						'query_validation' => [
@@ -653,35 +652,35 @@ class RestConfig
 					'users' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postUsers',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Create a new user (configurable via s_Config)',
 					],
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoods',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Create a new goods (configurable via s_Config)',
 					],
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoodsImages',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Add image to goods',
 					],
 					'goods.imagesVariations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoodsImagesVariations',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Add image to goods variation',
 					],
 					'orders' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postOrders',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Create a new order (configurable via s_Config)',
 					],
@@ -690,7 +689,7 @@ class RestConfig
 					'users' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteUsers',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Delete user by id (configurable via s_Config)',
 						'query_validation' => [
@@ -700,7 +699,7 @@ class RestConfig
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoods',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods by id (configurable via s_Config)',
 						'query_validation' => [
@@ -710,7 +709,7 @@ class RestConfig
 					'orders' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteOrders',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Delete order by id (configurable via s_Config)',
 						'query_validation' => [
@@ -720,7 +719,7 @@ class RestConfig
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsImages',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods image by id',
 						'query_validation' => [
@@ -730,7 +729,7 @@ class RestConfig
 					'goods.imagesVariations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsImagesVariations',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods variation image by id',
 						'query_validation' => [
@@ -742,49 +741,49 @@ class RestConfig
 					'users' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putUsers',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update user by id (configurable via s_Config)',
 					],
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoods',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods by id (configurable via s_Config)',
 					],
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsStocks',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods warehouse stocks',
 					],
 					'goods.prices' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsPrices',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods prices',
 					],
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsImages',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods image by id',
 					],
 					'goods.imagesVariations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsImagesVariations',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods variation image by id',
 					],
 					'orders' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putOrders',
-								'role_required' => [1],
+						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update order by id (configurable via s_Config)',
 					],
