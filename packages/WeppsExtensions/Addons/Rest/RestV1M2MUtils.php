@@ -71,8 +71,8 @@ class RestV1M2MUtils
 	{
 		try {
 			$data = new Data($tableName, ['useApiMapping' => true]);
-			$result = $data->fetch('t.Id = ' . (int)$id, 1);
-			
+			$result = $data->fetch('t.Id = ' . (int) $id, 1);
+
 			if (empty($result)) {
 				return [
 					'status' => 404,
@@ -135,7 +135,7 @@ class RestV1M2MUtils
 	{
 		try {
 			$model = new Data($tableName);
-			$model->set((int)$id, $data);
+			$model->set((int) $id, $data);
 
 			return [
 				'status' => 200,
@@ -162,7 +162,7 @@ class RestV1M2MUtils
 	{
 		try {
 			$model = new Data($tableName);
-			$model->remove((int)$id);
+			$model->remove((int) $id);
 
 			return [
 				'status' => 200,
@@ -192,7 +192,7 @@ class RestV1M2MUtils
 	public function getFieldRules(string $tableName): array
 	{
 		$cacheKey = 'api_validation_rules_' . $tableName;
-		
+
 		// Попытка получить из кэша
 		$memcached = new Memcached();
 		$cachedRules = $memcached->get($cacheKey);
@@ -209,11 +209,11 @@ class RestV1M2MUtils
 			foreach ($result as $field) {
 				$fieldName = $field['Field'] ?? null;
 				$apiType = $field['ApiFieldType'] ?? 'string';
-				$required = (int)($field['Required'] ?? 0);
+				$required = (int) ($field['Required'] ?? 0);
 
 				if ($fieldName) {
 					$rules[$fieldName] = [
-						'type'     => $apiType ?: 'string',
+						'type' => $apiType ?: 'string',
 						'required' => $required === 1,
 					];
 				}
@@ -229,6 +229,59 @@ class RestV1M2MUtils
 			// (валидация будет пропущена)
 			return [];
 		}
+	}
+
+	/**
+	 * Получить файлы из s_Files по TableName и TableNameField
+	 *
+	 * @param string $tableName - имя таблицы в s_Files.TableName
+	 * @param string $field - значение TableNameField (например 'Images' или 'ImagesV')
+	 * @param array $query - массив GET-параметров, включает goods_id, page, limit
+	 * @return array
+	 */
+	public function getFiles(string $tableName, string $field, array $query): array
+	{
+		$url = Connect::$projectDev['protocol'] . Connect::$projectDev['host'];
+		$goodsId = (int) ($query['goods_id'] ?? 0);
+		$page = max(1, (int) ($query['page'] ?? 1));
+		$limit = min(1000, max(1, (int) ($query['limit'] ?? 1000)));
+		$offset = ($page - 1) * $limit;
+
+		$conditions = "TableName = ? AND TableNameField = ?";
+		$params = [$tableName, $field];
+		if ($goodsId > 0) {
+			$conditions .= " AND TableNameId = ?";
+			$params[] = $goodsId;
+		}
+
+		$res = Connect::$instance->fetch(
+			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}', FileUrl) as FileUrl, APIFilter `Filter` FROM s_Files 
+			 WHERE {$conditions}
+			 ORDER BY Priority 
+			 LIMIT {$offset}, {$limit}",
+			$params
+		);
+
+		$countRes = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total FROM s_Files WHERE {$conditions}",
+			$params
+		);
+		$total = (int) ($countRes[0]['total'] ?? 0);
+
+		if (empty($res) && $total === 0) {
+			return ['status' => 404, 'message' => 'Images not found', 'data' => null];
+		}
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res ?? [],
+			'pagination' => [
+				'count' => $total,
+				'limit' => $limit,
+				'page' => $page,
+			],
+		];
 	}
 
 	/**

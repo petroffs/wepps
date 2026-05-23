@@ -578,50 +578,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsImages(): array
 	{
-		$url = Connect::$projectDev['protocol'] . Connect::$projectDev['host'];
-		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(1000);
-		$limit = (int) $limit;
-		$offset = (int) $offset;
-
-		// Формируем условие WHERE
-		$conditions = "TableName = 'Products' and TableNameField = 'Images'";
-		$params = [];
-		if ($goodsId > 0) {
-			$conditions .= " AND TableNameId = ?";
-			$params[] = $goodsId;
-		}
-
-		// Получить данные с пагинацией
-		$res = Connect::$instance->fetch(
-			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}', FileUrl) as FileUrl,'' `Filter` FROM s_Files 
-			 WHERE {$conditions}
-			 ORDER BY Priority 
-			 LIMIT {$offset}, {$limit}",
-			$params
-		);
-
-		// Получить общее количество
-		$countRes = Connect::$instance->fetch(
-			"SELECT COUNT(*) as total FROM s_Files WHERE {$conditions}",
-			$params
-		);
-		$total = (int) ($countRes[0]['total'] ?? 0);
-
-		if (empty($res) && $total === 0) {
-			return ['status' => 404, 'message' => 'Images not found', 'data' => null];
-		}
-
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $res ?? [],
-			'pagination' => [
-				'count' => $total,
-				'limit' => $limit,
-				'page' => $page,
-			]
-		];
+		return $this->getUtils()->getFiles('Products', 'Images', $this->get);
 	}
 
 	/**
@@ -766,50 +723,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsImagesVariations(): array
 	{
-		$url = Connect::$projectDev['protocol'] . Connect::$projectDev['host'];
-		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(1000);
-		$limit = (int) $limit;
-		$offset = (int) $offset;
-
-		// Формируем условие WHERE
-		$conditions = "TableName = 'Products' and TableNameField = 'ImagesV'";
-		$params = [];
-		if ($goodsId > 0) {
-			$conditions .= " AND TableNameId = ?";
-			$params[] = $goodsId;
-		}
-
-		// Получить данные с пагинацией
-		$res = Connect::$instance->fetch(
-			"SELECT Id, TableNameId as goods_id, Name, InnerName, CONCAT('{$url}', FileUrl) FileUrl, APIFilter `Filter` FROM s_Files 
-			 WHERE {$conditions}
-			 ORDER BY Priority 
-			 LIMIT {$offset}, {$limit}",
-			$params
-		);
-
-		// Получить общее количество
-		$countRes = Connect::$instance->fetch(
-			"SELECT COUNT(*) as total FROM s_Files WHERE {$conditions}",
-			$params
-		);
-		$total = (int) ($countRes[0]['total'] ?? 0);
-
-		if (empty($res) && $total === 0) {
-			return ['status' => 404, 'message' => 'Images not found', 'data' => null];
-		}
-
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $res ?? [],
-			'pagination' => [
-				'count' => $total,
-				'limit' => $limit,
-				'page' => $page,
-			]
-		];
+		return $this->getUtils()->getFiles('Products', 'ImagesV', $this->get);
 	}
 
 	/**
