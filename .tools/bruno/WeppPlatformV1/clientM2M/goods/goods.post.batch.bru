@@ -1,0 +1,35 @@
+meta {
+  name: goods.post.batch
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/rest/m2m/goods
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  [
+    {
+      "name": "Batch товар 1",
+      "price": 99.99,
+      "category": "1"
+    },
+    {
+      "name": "Batch товар 2",
+      "price": 199.99,
+      "category": "2"
+    },
+    {
+      "name": "Batch товар 3",
+      "price": 299.99,
+      "category": "3"
+    }
+  ]
+}

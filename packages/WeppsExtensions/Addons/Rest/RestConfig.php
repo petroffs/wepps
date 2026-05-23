@@ -9,6 +9,11 @@ namespace WeppsExtensions\Addons\Rest;
  * - Объект: {"type": "test", "data": {"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}}
  * - Массив:  {"type": "test", "data": [{"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}]}
  * 
+ * M2M POST запросы (поддерживают batch-создание):
+ * - Одиночное: POST /rest/m2m/goods с телом {"name": "Товар", "price": 99.99}
+ * - Batch (макс 100): POST /rest/m2m/goods с телом [{"name": "Товар 1", "price": 99.99}, {"name": "Товар 2", "price": 199.99}]
+ * - Возвращает 201 для одиночного, 207 для batch с per-item status'ами
+ * 
  * M2M PUT запросы:
  * - Вариант 1: PUT /rest/m2m/goods?id=123 с телом {"Price": 1200, "Name": "Название"}
  * - Вариант 2: PUT /rest/m2m/goods с телом {"id": 123, "Price": 1200, "Name": "Название"}
@@ -305,7 +310,7 @@ class RestConfig
 					'goods' => [
 						'class' => RestV1APP::class,
 						'method' => 'postGoods',
-						'note' => 'Create a new goods item',
+					'note' => 'Create new goods item(s). Supports single item (object) or batch (array of objects, max 100). Returns 201 for single item or 207 for batch with per-item status.',
 						'role_required' => [1, 2],
 						'validation' => [
 							'name' => ['type' => 'string', 'required' => true],
@@ -659,14 +664,14 @@ class RestConfig
 						'method' => 'postUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create a new user (configurable via s_Config)',
+						'note' => 'M2M: Create user(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 					],
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create a new goods (configurable via s_Config)',
+						'note' => 'M2M: Create goods item(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 					],
 					'goods.images' => [
 						'class' => RestV1M2M::class,
@@ -687,7 +692,7 @@ class RestConfig
 						'method' => 'postOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create a new order (configurable via s_Config)',
+						'note' => 'M2M: Create order(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 					],
 				],
 				'delete' => [

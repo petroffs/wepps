@@ -39,6 +39,56 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
+	 * Batch-создание записей (одиночное или массовое)
+	 * 
+	 * @param string $tableName - имя таблицы
+	 * @param array $data - данные (массив или одна запись)
+	 * @return array - результат с status, message, data
+	 */
+	protected function batchCreate(string $tableName, array $data): array
+	{
+		// Проверяем, является ли это массивом записей (массив массивов) или одной записью
+		$isMultiple = isset($data[0]) && is_array($data[0]);
+		
+		if ($isMultiple) {
+			// Batch-создание (массив записей, макс 100)
+			if (count($data) > 100) {
+				return ['status' => 400, 'message' => 'Maximum 100 items allowed', 'data' => null];
+			}
+
+			$results = [];
+			foreach ($data as $index => $item) {
+				if (!is_array($item)) {
+					$results[$index] = ['status' => 400, 'message' => 'Item must be array', 'data' => null];
+					continue;
+				}
+
+				// Валидировать каждую запись
+				try {
+					$this->validatePostData($tableName, $item);
+				} catch (\Exception $e) {
+					$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+					continue;
+				}
+
+				// Создать запись
+				$results[$index] = $this->getUtils()->add($tableName, $item);
+			}
+
+			return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
+		} else {
+			// Одиночное создание (обратная совместимость)
+			try {
+				$this->validatePostData($tableName, $data);
+			} catch (\Exception $e) {
+				return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+			}
+
+			return $this->getUtils()->add($tableName, $data);
+		}
+	}
+
+	/**
 	 * Валидировать GET параметры на основе s_ConfigFields
 	 * 
 	 * @param string $tableName - имя таблицы для получения правил
@@ -167,14 +217,7 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		// Валидировать POST данные по правилам из s_ConfigFields
-		try {
-			$this->validatePostData('s_Users', $data);
-		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-		}
-
-		return $this->getUtils()->add('s_Users', $data);
+		return $this->batchCreate('s_Users', $data);
 	}
 
 	public function putUsers($data = null): array
@@ -326,14 +369,7 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		// Валидировать POST данные по правилам из s_ConfigFields
-		try {
-			$this->validatePostData('Products', $data);
-		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-		}
-
-		return $this->getUtils()->add('Products', $data);
+		return $this->batchCreate('Products', $data);
 	}
 
 	public function putGoods($data = null): array
@@ -1117,14 +1153,7 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		// Валидировать POST данные по правилам из s_ConfigFields
-		try {
-			$this->validatePostData('Orders', $data);
-		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-		}
-
-		return $this->getUtils()->add('Orders', $data);
+		return $this->batchCreate('Orders', $data);
 	}
 
 	public function putOrders($data = null): array

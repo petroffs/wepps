@@ -1,0 +1,30 @@
+meta {
+  name: users.post.batch
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/rest/m2m/users
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  [
+    {
+      "login": "user1@test.com",
+      "password": "password123",
+      "name": "User 1"
+    },
+    {
+      "login": "user2@test.com",
+      "password": "password123",
+      "name": "User 2"
+    }
+  ]
+}
