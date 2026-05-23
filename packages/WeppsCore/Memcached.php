@@ -10,6 +10,7 @@ class Memcached
 {
 	private $memcache;
 	private $memcached;
+	private $isSystemCache = false;
 
 	/**
 	 * Конструктор класса Memcached
@@ -17,18 +18,22 @@ class Memcached
 	 * Инициализирует соединение с Memcached сервером.
 	 *
 	 * @param string $isActive Флаг активности Memcached (yes, no, auto)
+	 * @param bool $isSystemCache Флаг системного кэша - включается независимо от конфига (system cache для метаданных)
 	 */
-	public function __construct($isActive = 'auto')
+	public function __construct($isActive = 'auto', $isSystemCache = false)
 	{
+		$this->isSystemCache = $isSystemCache;
 		switch ($isActive) {
 			case 'yes':
 				$isActive = true;
 				break;
 			case 'no':
-				$isActive = false;
+				// Для системного кэша переопределяем на yes
+				$isActive = $isSystemCache ? true : false;
 				break;
 			default:
-				$isActive = Connect::$projectServices['memcached']['active'];
+				// Если системный кэш - берём значение по умолчанию, иначе из конфига
+				$isActive = $isSystemCache ? true : Connect::$projectServices['memcached']['active'];
 				break;
 		}
 		if (class_exists('Memcache') && $isActive) {

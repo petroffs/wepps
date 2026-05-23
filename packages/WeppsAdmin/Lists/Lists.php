@@ -745,13 +745,16 @@ class Lists
 			return "";
 		}
 		$element = $res[0];
-
+		$tableName = $element['TableName'];
 
 		//ApiFieldType, ApiMapping
 		$sql = "update s_ConfigFields set ApiMapping = ? where Id = ? and ApiMapping=''";
 		Connect::$instance->query($sql,[self::_fieldApiMappingToCamelCase($element['Field']), $id]);
 		$sql = "update s_ConfigFields set ApiFieldType = ? where Id = ? and ApiFieldType=''";
 		Connect::$instance->query($sql,[self::_fieldApiType($element['Type']), $id]);
+		
+		// Инвалидировать кэш схемы после обновления ApiMapping/ApiFieldType
+		Data::invalidateSchemaCacheForTable($tableName);
 
 		$list = $element['TableName'];
 		$field = $element['Field'];

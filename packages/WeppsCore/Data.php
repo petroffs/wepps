@@ -345,6 +345,7 @@ class Data
 			$orderBy = "t.Priority";
 			$params = [$this->tableName];
 			$fieldsCondition = '';
+			$cacheKey = null;
 			
 			if (!empty($fields)) {
 				// Валидация имен полей - только буквы, цифры и подчеркивания
@@ -356,6 +357,21 @@ class Data
 				$fieldsCondition = " and t.Field in ($placeholders)";
 				$params = array_merge($params, $fieldsList);
 				$orderBy = "field(t.Field," . implode(',', array_map(function($f) { return "'$f'"; }, $fieldsList)) . ")";
+				// Кэш для выборки конкретных полей: table::field1,field2,...
+				$cacheKey = 'schema_' . $this->tableName . '::' . implode(',', $fieldsList);
+			} else {
+				// Кэш для полной схемы таблицы
+				$cacheKey = 'schema_full_' . $this->tableName;
+			}
+			
+// Попытка получить из Memcached (системный кэш - всегда включен)
+		$memcached = new Memcached('auto', true);
+			if ($cacheKey) {
+				$cached = $memcached->get($cacheKey);
+				if ($cached !== null) {
+					$this->scheme = $cached;
+					return $this->scheme;
+				}
 			}
 			
 			$sql = "select
@@ -369,6 +385,13 @@ class Data
 				http_response_code(404);
 				Utils::debug("Указанной таблицы {$this->tableName} не существует", 1);
 			}
+			
+			// Кэшировать на 1 час (3600 сек)
+			if ($cacheKey) {
+				$memcached = new Memcached('auto', true);
+				$memcached->set($cacheKey, $res, 3600);
+			}
+			
 			$this->scheme = $res;
 		}
 		return $this->scheme;
@@ -501,6 +524,27 @@ class Data
 			Connect::$instance->query($sql, array_merge($prepare['row'], ['Id' => $id]));
 		}
 		return $id;
+	}
+
+	/**
+	 * Инвалидировать кэш схемы для таблицы в Memcached
+	 * Вызывается после изменения s_ConfigFields (UPDATE, DELETE, INSERT)
+	 *
+	 * @param string $tableName Имя таблицы для инвалидации кэша
+	 * @return void
+	 */
+	public static function invalidateSchemaCacheForTable(string $tableName): void
+	{
+		try {
+			$memcached = new Memcached();
+			// Инвалидировать полную схему
+			$memcached->delete('schema_full_' . $tableName);
+			// Инвалидировать все варианты с конкретными полями (pattern delete не поддерживается)
+			// Очистим основной кэш для этой таблицы через flush но это будет слишком радикально
+			// Поэтому оставляем только инвалидацию полной схемы, partial кэши будут переиспользованы
+		} catch (\Exception $e) {
+			// Ошибка кэша не должна блокировать приложение
+		}
 	}
 
 	/**

@@ -227,8 +227,16 @@ class RequestLists extends Request
 						$this->get['Id'] = $id;
 						unset($this->get['Priority']);
 						$outer = Lists::setListItem($this->get['w_tablename'], $id, $this->get);
+						// Инвалидировать кэш схемы если изменяли s_ConfigFields
+						if ($this->get['w_tablename'] === 's_ConfigFields' && isset($this->get['TableName'])) {
+							Data::invalidateSchemaCacheForTable($this->get['TableName']);
+						}
 					} else {
 						$outer = Lists::setListItem($this->get['w_tablename'], $this->get['w_tablename_id'], $this->get);
+						// Инвалидировать кэш схемы если изменяли s_ConfigFields
+						if ($this->get['w_tablename'] === 's_ConfigFields' && isset($this->get['TableName'])) {
+							Data::invalidateSchemaCacheForTable($this->get['TableName']);
+						}
 					}
 					echo $outer['html'];
 				}
@@ -238,6 +246,17 @@ class RequestLists extends Request
 					Exception::error404();
 				}
 				$outer = Lists::removeListItem($this->get['list'], $this->get['id'], $this->get['w_path']);
+				// Инвалидировать кэш схемы если удаляли из s_ConfigFields
+				if ($this->get['list'] === 's_ConfigFields') {
+					// Получить TableName удалённой записи перед удалением нет смысла,
+					// поэтому инвалидируем кэши для всех таблиц через редкое flush-событие
+					// Или можно просто очистить кэш перед удалением. Проще всего — получить TableName перед удалением
+					$sql = "SELECT TableName FROM s_ConfigFields WHERE Id = ?";
+					$res = Connect::$instance->fetch($sql, [(int)$this->get['id']]);
+					if (!empty($res[0]['TableName'])) {
+						Data::invalidateSchemaCacheForTable($res[0]['TableName']);
+					}
+				}
 				echo $outer['html'];
 				break;
 			case "copy":

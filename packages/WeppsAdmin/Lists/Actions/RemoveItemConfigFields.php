@@ -3,6 +3,7 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Request;
 use WeppsCore\Connect;
+use WeppsCore\Data;
 
 class RemoveItemConfigFields extends Request {
 	public $noclose = 1;
@@ -17,8 +18,11 @@ class RemoveItemConfigFields extends Request {
 			$res = Connect::$instance->fetch($sql); 
 			if (isset($res[0]['Id'])) {
 				$this->element = $res[0];
-				$sql = "alter table {$this->element['TableName']} drop column {$this->element['Field']};\n";
+				$tableName = $this->element['TableName'];
+				$sql = "alter table {$tableName} drop column {$this->element['Field']};\n";
 				Connect::$instance->query($sql);
+				// Инвалидировать кэш схемы после удаления поля
+				Data::invalidateSchemaCacheForTable($tableName);
 			}
 		}
 	}

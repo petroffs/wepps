@@ -83,7 +83,9 @@ class RestV1M2M extends RestV1
 	public function getUsers(): array
 	{
 		// GET параметры - служебные (page, limit, search, sort)
-		return $this->getUtils()->fetch('s_Users', $this->get);
+		$this->getUtils()->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		$result = $this->getUtils()->fetch('s_Users', $this->get);
+		return $result;
 	}
 
 	public function getUsersItem(): array
@@ -92,7 +94,9 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils()->item('s_Users', $id);
+		$this->getUtils()->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		$result = $this->getUtils()->item('s_Users', $id);
+		return $result;
 	}
 
 	public function postUsers($data = null): array
@@ -1027,7 +1031,9 @@ class RestV1M2M extends RestV1
 
 	public function getOrders(): array
 	{
-		return $this->getUtils()->fetch('Orders', $this->get);
+		$this->getUtils()->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$result = $this->getUtils()->fetch('Orders', $this->get);
+		return $result;
 	}
 
 	public function getOrdersItem(): array
@@ -1036,7 +1042,9 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils()->item('Orders', $id);
+		$this->getUtils()->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$result = $this->getUtils()->item('Orders', $id);
+		return $result;
 	}
 
 	public function postOrders($data = null): array

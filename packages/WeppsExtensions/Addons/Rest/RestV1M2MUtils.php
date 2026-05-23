@@ -23,32 +23,53 @@ class RestV1M2MUtils
 	private array $jsonFieldsCache = [];
 
 	/**
+	 * Список полей для выборки через Data::setFields()
+	 * @var string|null
+	 */
+	private ?string $fields = null;
+
+	/**
 	 * Получить список записей
 	 * 
 	 * @param string $tableName - имя таблицы (e.g. 's_Users', 'Products')
 	 * @param array $query - параметры: page, limit, search
+	 * @param string|null $fields - список полей для вывода; если не указан, используется установленное через setFields()
 	 * @return array - {status, message, data, pagination}
 	 */
-	public function fetch(string $tableName, array $query): array
+	public function fetch(string $tableName, array $query, ?string $fields = null): array
 	{
 		$page = (int) ($query['page'] ?? 1);
 		$limit = (int) ($query['limit'] ?? 20);
-		$search = $query['search'] ?? '';
+		$id = isset($query['id']) ? (int) $query['id'] : null;
+		// $search = $query['search'] ?? '';
+
+		$conditions = 'Id!=0';
+		$skipPagination = false; // флаг для пропуска пагинации при запросе по ID
+		if ($id !== null && $id > 0) {
+			$conditions = 't.Id = ' . $id;
+			$limit = 1;
+			$page = 0; // передаём 0 чтобы пропустить пагинацию
+			$skipPagination = true;
+		}
 
 		try {
 			$data = new Data($tableName, ['useApiMapping' => true]);
-			$result = $data->fetch('Id!=0', $limit, $page);
+			$fields = $fields ?? $this->fields;
+			if ($fields !== null) {
+				$data->setFields($fields);
+			}
 
-			// Использовать paginator и count из Data объекта
+			$result = $data->fetch($conditions, $limit, $page);
 			$result = $this->decodeJsonFields($result, $tableName);
+
 			return [
 				'status' => 200,
 				'message' => 'OK',
 				'data' => $result ?: [],
 				'pagination' => [
-					'count' => $data->count,
+					'count' => $skipPagination ? count($result) : $data->count,
 					'limit' => $limit,
-					'page' => $page,
+					'page' => $skipPagination ? 1 : $page,
 				],
 			];
 		} catch (\Exception $e) {
@@ -57,6 +78,8 @@ class RestV1M2MUtils
 				'message' => $e->getMessage(),
 				'data' => null,
 			];
+		} finally {
+			$this->resetFields();
 		}
 	}
 
@@ -65,35 +88,30 @@ class RestV1M2MUtils
 	 * 
 	 * @param string $tableName - имя таблицы
 	 * @param int|string $id - ID записи
+	 * @param string|null $fields - список полей для вывода; если не указан, используется установленное через setFields()
 	 * @return array - {status, message, data}
 	 */
-	public function item(string $tableName, $id): array
+	public function item(string $tableName, $id, ?string $fields = null): array
 	{
-		try {
-			$data = new Data($tableName, ['useApiMapping' => true]);
-			$result = $data->fetch('t.Id = ' . (int) $id, 1);
+		$response = $this->fetch($tableName, ['id' => $id, 'page' => 1, 'limit' => 1], $fields);
 
-			if (empty($result)) {
-				return [
-					'status' => 404,
-					'message' => 'Not found',
-					'data' => null,
-				];
-			}
+		if ($response['status'] !== 200) {
+			return $response;
+		}
 
-			$result[0] = $this->decodeJsonFields([$result[0]], $tableName)[0] ?? $result[0];
+		if (empty($response['data'])) {
 			return [
-				'status' => 200,
-				'message' => 'OK',
-				'data' => $result[0] ?? null,
-			];
-		} catch (\Exception $e) {
-			return [
-				'status' => 500,
-				'message' => $e->getMessage(),
+				'status' => 404,
+				'message' => 'Not found',
 				'data' => null,
 			];
 		}
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $response['data'][0],
+		];
 	}
 
 	/**
@@ -193,8 +211,8 @@ class RestV1M2MUtils
 	{
 		$cacheKey = 'api_validation_rules_' . $tableName;
 
-		// Попытка получить из кэша
-		$memcached = new Memcached();
+		// Попытка получить из кэша (системный кэш - всегда включен)
+		$memcached = new Memcached('auto', true);
 		$cachedRules = $memcached->get($cacheKey);
 		if ($cachedRules !== null) {
 			return $cachedRules;
@@ -220,7 +238,7 @@ class RestV1M2MUtils
 			}
 
 			// Кэшировать на 1 час (3600 сек)
-			$memcached = new Memcached();
+			$memcached = new Memcached('auto', true);
 			$memcached->set($cacheKey, $rules, 3600);
 
 			return $rules;
@@ -229,6 +247,29 @@ class RestV1M2MUtils
 			// (валидация будет пропущена)
 			return [];
 		}
+	}
+
+	/**
+	 * Установить поля для выборки через Data::setFields()
+	 *
+	 * @param string $fields Перечисление полей через запятую
+	 * @return $this
+	 */
+	public function setFields(string $fields): self
+	{
+		$this->fields = $fields;
+		return $this;
+	}
+
+	/**
+	 * Сбросить ранее установленные поля выборки
+	 *
+	 * @return $this
+	 */
+	private function resetFields(): self
+	{
+		$this->fields = null;
+		return $this;
 	}
 
 	/**
@@ -303,7 +344,7 @@ class RestV1M2MUtils
 		}
 
 		foreach ($rows as &$row) {
-			foreach ($fields as $fieldName => $_) {
+			foreach (array_keys($fields) as $fieldName) {
 				if (!isset($row[$fieldName]) || !is_string($row[$fieldName])) {
 					continue;
 				}
@@ -330,21 +371,37 @@ class RestV1M2MUtils
 			return $this->jsonFieldsCache[$tableName];
 		}
 
-		$data = new Data($tableName, ['useApiMapping' => true]);
-		$scheme = $data->getScheme();
-		$jsonFields = [];
-
-		foreach ($scheme as $fieldName => $fieldSettings) {
-			$apiType = strtolower($fieldSettings[0]['ApiFieldType'] ?? '');
-			$type = strtolower($fieldSettings[0]['Type'] ?? '');
-			if ($apiType === 'json' || str_contains($type, 'json')) {
-				$alias = $fieldSettings[0]['ApiMapping'] ?: $fieldName;
-				$jsonFields[$alias] = true;
-			}
+		$cacheKey = 'json_fields_' . $tableName;
+		$memcached = new Memcached('auto', true);
+		$cached = $memcached->get($cacheKey);
+		if ($cached !== null) {
+			$this->jsonFieldsCache[$tableName] = $cached;
+			return $cached;
 		}
 
-		$this->jsonFieldsCache[$tableName] = $jsonFields;
-		return $jsonFields;
+		try {
+			// Получить JSON поля напрямую из s_ConfigFields
+			$sql = "SELECT Field, ApiFieldType, ApiMapping, Type FROM s_ConfigFields WHERE TableName = ? AND (ApiFieldType = 'json' OR Type LIKE '%json%')";
+			$result = Connect::$instance->fetch($sql, [$tableName]);
+
+			$jsonFields = [];
+			foreach ($result as $field) {
+				$fieldName = $field['Field'] ?? null;
+				$apiMapping = $field['ApiMapping'] ?: $fieldName;
+				if ($fieldName && $apiMapping) {
+					$jsonFields[$apiMapping] = true;
+				}
+			}
+
+			// Кэшировать на 1 час
+			$memcached = new Memcached('auto', true);
+			$memcached->set($cacheKey, $jsonFields, 3600);
+			$this->jsonFieldsCache[$tableName] = $jsonFields;
+
+			return $jsonFields;
+		} catch (\Exception $e) {
+			return [];
+		}
 	}
 
 	/**
