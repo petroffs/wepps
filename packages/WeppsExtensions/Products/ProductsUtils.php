@@ -103,7 +103,7 @@ class ProductsUtils
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
 		$settings['sorting'] .= ",pv.Priority";
 		$res = $obj->fetch($settings['conditions']['conditions'], $settings['pages'], $settings['page'], $settings['sorting']);
-		// Utils::debug($settings, 1);
+		
 		// Преобразуем W_Variations из строки в массив (как в getProductsItem)
 		if (!empty($res)) {
 			foreach ($res as $k => &$el) {

@@ -49,17 +49,27 @@ class RestV1M2M extends RestV1
 	{
 		// Проверяем, является ли это массивом записей (массив массивов) или одной записью
 		$isMultiple = isset($data[0]) && is_array($data[0]);
-		
+
 		if ($isMultiple) {
 			// Batch-создание (массив записей, макс 100)
 			if (count($data) > 100) {
 				return ['status' => 400, 'message' => 'Maximum 100 items allowed', 'data' => null];
 			}
 
+			// Получить все существующие значения уникальных полей за один запрос
+			$existingDuplicates = $this->getUtils()->checkDuplicate($tableName, $data, true);
+
 			$results = [];
 			foreach ($data as $index => $item) {
 				if (!is_array($item)) {
 					$results[$index] = ['status' => 400, 'message' => 'Item must be array', 'data' => null];
+					continue;
+				}
+
+				// Проверить дублирование на основе уже загруженных данных
+				$duplicateError = $existingDuplicates[$index] ?? null;
+				if ($duplicateError) {
+					$results[$index] = $duplicateError;
 					continue;
 				}
 
@@ -72,7 +82,7 @@ class RestV1M2M extends RestV1
 				}
 
 				// Создать запись
-				$results[$index] = $this->getUtils()->add($tableName, $item);
+				$results[$index] = $this->getUtils()->add($tableName, $item, true);
 			}
 
 			return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
@@ -169,8 +179,8 @@ class RestV1M2M extends RestV1
 	protected function extractIdFromGetParams(?array &$data = null): int
 	{
 		$getParams = $this->rest->getGet();
-		$id = (int)($getParams['id'] ?? 0);
-		
+		$id = (int) ($getParams['id'] ?? 0);
+
 		if ($id > 0) {
 			// Если id найден в GET параметрах, добавляем его в $data (если она передана)
 			if ($data !== null) {
@@ -178,12 +188,12 @@ class RestV1M2M extends RestV1
 			}
 			return $id;
 		}
-		
+
 		// Если id не в GET, ищем в $data (если она передана)
 		if ($data !== null) {
-			return (int)($data['id'] ?? $data['Id'] ?? 0);
+			return (int) ($data['id'] ?? $data['Id'] ?? 0);
 		}
-		
+
 		return 0;
 	}
 
@@ -1201,6 +1211,9 @@ class RestV1M2M extends RestV1
 		if ($input) {
 			$decoded = @json_decode($input, true);
 			if (is_array($decoded)) {
+				if (isset($decoded['data']) && is_array($decoded['data'])) {
+					return $decoded['data'];
+				}
 				return $decoded;
 			}
 		}

@@ -33,7 +33,7 @@ $sql = "UPDATE s_ConfigFields SET ApiFieldType = CASE
     WHEN `Type` = 'guid' THEN 'gui	d'
     WHEN `Type` = 'date' THEN 'date'
     WHEN `Type` = 'email' THEN 'email'
-    WHEN `Type` = 'digit' THEN 'float'
+    WHEN `Type` = 'digit' THEN 'string' -- В основном для финансовых даннвх, поэтому оставляем как string, чтобы не было проблем с точностью
     ELSE 'string'
 END
 WHERE ApiFieldType IS NULL OR ApiFieldType = ''";

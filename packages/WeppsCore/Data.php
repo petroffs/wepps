@@ -223,6 +223,9 @@ class Data
 				case "blob":
 					$fields .= "uncompress (t.{$key}) as {$fieldAlias},";
 					break;
+				// case "digit":
+				// 	$fields .= "(t.{$key}+0e0) as {$fieldAlias},";
+				// 	break;
 				default:
 					$fields .= "t.{$key} as {$fieldAlias},";
 					break;
@@ -519,9 +522,11 @@ class Data
 			if (empty($update['Priority'])) {
 				unset($update['Priority']);
 			}
-			$prepare = Connect::$instance->prepare($update);
-			$sql = "update {$this->tableName} set {$prepare['update']} where Id=:Id";
-			Connect::$instance->query($sql, array_merge($prepare['row'], ['Id' => $id]));
+			if (!empty($update)) {
+				$prepare = Connect::$instance->prepare($update);
+				$sql = "update {$this->tableName} set {$prepare['update']} where Id=:Id";
+				Connect::$instance->query($sql, array_merge($prepare['row'], ['Id' => $id]));
+			}
 		}
 		return $id;
 	}

@@ -511,8 +511,8 @@ class Rest
 	/**
 	 * Валидация JSON строки
 	 *
-	 * Удаляет BOM, проверяет на дублирующиеся ключи, декодирует JSON
-	 * и обрабатывает возможные ошибки декодирования.
+	 * Удаляет BOM, проверяет на дублирующиеся ключи (внутри объектов),
+	 * декодирует JSON и обрабатывает возможные ошибки декодирования.
 	 *
 	 * @param string $string JSON строка для валидации
 	 * @return array Массив с 'status', 'message' и опционально 'data' при успехе
@@ -522,16 +522,6 @@ class Rest
 		// Удаление BOM
 		if (0 === strpos(bin2hex($string), 'efbbbf')) {
 			$string = substr($string, 3);
-		}
-
-		// Проверка на дублирующиеся ключи
-		$keys = [];
-		preg_match_all('/"([^"]+)"\s*:/', $string, $matches);
-		foreach ($matches[1] as $key) {
-			if (in_array($key, $keys)) {
-				return ['status' => 400, 'message' => 'Duplicate key found: ' . $key];
-			}
-			$keys[] = $key;
 		}
 
 		$result = json_decode($string, true);
