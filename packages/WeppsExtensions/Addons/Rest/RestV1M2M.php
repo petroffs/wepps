@@ -29,255 +29,6 @@ class RestV1M2M extends RestV1
 	 */
 	private array $utils = [];
 
-	protected function getUtils(string $tableName): RestV1M2MUtils
-	{
-		if (!isset($this->utils[$tableName])) {
-			$this->utils[$tableName] = new RestV1M2MUtils($tableName);
-		}
-		return $this->utils[$tableName];
-	}
-
-	/**
-	 * Создание записей (одиночное или массовое).
-	 * Автоматически определяет формат: одна запись или массив записей (макс 100).
-	 *
-	 * @param string $tableName - имя таблицы
-	 * @param array $data - одна запись или массив записей
-	 * @return array - результат с status, message, data
-	 */
-	protected function create(string $tableName, array $data): array
-	{
-		$result = $this->processRecords(
-			$tableName,
-			$data,
-			true,
-			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->add($item, true),
-			fn(array $item): void => $this->validatePostData($tableName, $item)
-		);
-
-		$this->updateSearchIndex($tableName, $result);
-		return $result;
-	}
-
-	/**
-	 * Обновление записей (одиночно или batch).
-	 * Поддерживает id в теле и ?id= для одиночного обновления.
-	 *
-	 * @param string $tableName
-	 * @param array $data
-	 * @return array
-	 */
-	protected function update(string $tableName, array $data): array
-	{
-		$result = $this->processRecords(
-			$tableName,
-			$data,
-			false,
-			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->set($id, $item, true),
-			fn(array $item): void => $this->validatePutData($tableName, $item)
-		);
-
-		$this->updateSearchIndex($tableName, $result);
-		return $result;
-	}
-
-	/**
-	 * Общая обработка batch или одиночных create/update запросов.
-	 *
-	 * @param string $tableName
-	 * @param array $data
-	 * @param bool $isCreate
-	 * @param callable $operation
-	 * @param callable $validate
-	 * @return array
-	 */
-	private function processRecords(string $tableName, array $data, bool $isCreate, callable $operation, callable $validate): array
-	{
-		$isMultiple = isset($data[0]) && is_array($data[0]);
-		if ($isMultiple && count($data) > 100) {
-			return ['status' => 400, 'message' => 'Maximum 100 items allowed', 'data' => null];
-		}
-
-		$items = $isMultiple ? $data : [$data];
-		$results = [];
-
-		foreach ($items as $index => $item) {
-			if (!is_array($item)) {
-				$results[$index] = ['status' => 400, 'message' => 'Item must be array', 'data' => null];
-				continue;
-			}
-
-			try {
-				$validate($item);
-			} catch (\Exception $e) {
-				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-			}
-		}
-
-		$duplicateErrors = $this->getUtils($tableName)->checkDuplicate($items, true, !$isCreate);
-
-		foreach ($items as $index => $item) {
-			if (isset($results[$index])) {
-				continue;
-			}
-
-			$id = 0;
-			if (!$isCreate) {
-				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
-				if (!$id && !$isMultiple) {
-					$id = $this->extractIdFromGetParams($data);
-				}
-				if (!$id) {
-					$results[$index] = ['status' => 400, 'message' => 'ID required', 'data' => null];
-					continue;
-				}
-			}
-
-			if ($duplicateErrors[$index] ?? null) {
-				$results[$index] = $duplicateErrors[$index];
-				continue;
-			}
-
-			$results[$index] = $operation($item, $id);
-		}
-
-		if (!$isMultiple) {
-			return $results[0];
-		}
-
-		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
-	}
-
-	/**
-	 * Обновить поисковый индекс для созданных или обновлённых записей.
-	 *
-	 * @param string $tableName
-	 * @param array $result
-	 */
-	private function updateSearchIndex(string $tableName, array $result): void
-	{
-		$items = [];
-		if (isset($result['status'], $result['data'])) {
-			if ($result['status'] === 207 && is_array($result['data'])) {
-				$items = $result['data'];
-			} else {
-				$items = [$result];
-			}
-		} else {
-			$items = $result;
-		}
-
-		$searchSql = '';
-		foreach ($items as $item) {
-			$status = (int) ($item['status'] ?? 0);
-			if (($status === 200 || $status === 201) && isset($item['data']['id'])) {
-				$searchSql .= Lists::setSearchIndex($tableName, $item['data']['id']);
-			}
-		}
-		if (!empty($searchSql)) {
-			Connect::$db->exec($searchSql);
-		}
-	}
-
-	/**
-	 * Валидировать GET параметры на основе s_ConfigFields
-	 * 
-	 * @param string $tableName - имя таблицы для получения правил
-	 * @param array $data - данные для валидации
-	 * @throws \Exception если валидация не пройдена
-	 */
-	private function validateQueryParams(string $tableName, array $data): void
-	{
-		$rules = $this->getUtils($tableName)->getFieldRules();
-		if (empty($rules)) {
-			// Если правил нет в БД, используем ослабленную валидацию
-			return;
-		}
-
-		// Валидация через родительский класс Rest
-		$this->rest->validateData($data, $rules);
-	}
-
-	/**
-	 * Валидировать POST данные на основе s_ConfigFields
-	 * Требует все обязательные поля (Required=1)
-	 * 
-	 * @param string $tableName - имя таблицы для получения правил
-	 * @param array $data - данные для валидации
-	 * @throws \Exception если валидация не пройдена
-	 */
-	private function validatePostData(string $tableName, array $data): void
-	{
-		$rules = $this->getUtils($tableName)->getFieldRules();
-		if (empty($rules)) {
-			// Если правил нет в БД, используем ослабленную валидацию
-			return;
-		}
-
-		// Валидация через родительский класс Rest
-		$this->rest->validateData($data, $rules);
-	}
-
-	/**
-	 * Валидировать PUT данные на основе s_ConfigFields
-	 * НЕ требует обязательные поля (Required=1), т.к. они уже в БД
-	 * Позволяет partial update
-	 * 
-	 * @param string $tableName - имя таблицы для получения правил
-	 * @param array $data - данные для валидации
-	 * @throws \Exception если валидация не пройдена
-	 */
-	private function validatePutData(string $tableName, array $data): void
-	{
-		$rules = $this->getUtils($tableName)->getFieldRules();
-		if (empty($rules)) {
-			// Если правил нет в БД, используем ослабленную валидацию
-			return;
-		}
-
-		// Убираем флаг required для PUT (partial update)
-		$rulesForUpdate = [];
-		foreach ($rules as $fieldName => $rule) {
-			$rulesForUpdate[$fieldName] = [
-				'type' => $rule['type'],
-				'required' => false, // PUT позволяет обновлять отдельные поля
-			];
-		}
-
-		// Валидация через родительский класс Rest
-		$this->rest->validateData($data, $rulesForUpdate);
-	}
-
-	/**
-	 * Извлечь id из GET параметров или данных
-	 * 
-	 * Сначала проверяет GET параметр ?id={{id}}, затем данные из JSON тела.
-	 * Если $data передана, добавляет id туда если он был взят из GET параметров.
-	 * 
-	 * @param array|null &$data - данные для обновления (опционально, по ссылке)
-	 * @return int ID или 0 если не найден
-	 */
-	private function extractIdFromGetParams(?array &$data = null): int
-	{
-		$getParams = $this->rest->getGet();
-		$id = (int) ($getParams['id'] ?? 0);
-
-		if ($id > 0) {
-			// Если id найден в GET параметрах, добавляем его в $data (если она передана)
-			if ($data !== null) {
-				$data['id'] = $id;
-			}
-			return $id;
-		}
-
-		// Если id не в GET, ищем в $data (если она передана)
-		if ($data !== null) {
-			return (int) ($data['id'] ?? $data['Id'] ?? 0);
-		}
-
-		return 0;
-	}
-
 	// ========================================================================
 	// USERS
 	// ========================================================================
@@ -496,9 +247,9 @@ class RestV1M2M extends RestV1
 
 		$hasErrors = !empty(array_filter($results, fn($r) => ($r['status'] ?? 200) >= 400 && ($r['status'] ?? 200) !== 409));
 		return [
-			'status'  => $hasErrors ? 207 : 201,
+			'status' => $hasErrors ? 207 : 201,
 			'message' => 'Multi-Status',
-			'data'    => $results,
+			'data' => $results,
 		];
 	}
 
@@ -675,31 +426,6 @@ class RestV1M2M extends RestV1
 		}
 
 		return ['status' => 200, 'message' => 'Filters updated', 'data' => null];
-	}
-
-
-
-	/**
-	 * Helper: расчет параметров пагинации из GET параметров
-	 */
-	private function calculatePagination(int $maxLimit = 100): array
-	{
-		$page = max(1, (int) ($this->get['page'] ?? 1));
-		$limit = (int) ($this->get['limit'] ?? 100);
-		if ($limit > $maxLimit) {
-			$limit = $maxLimit;
-		}
-		if ($limit < 1) {
-			$limit = 100;
-		}
-
-		$offset = ($page - 1) * $limit;
-
-		return [
-			'page' => $page,
-			'limit' => $limit,
-			'offset' => $offset,
-		];
 	}
 
 	/**
@@ -1333,6 +1059,282 @@ class RestV1M2M extends RestV1
 	// ========================================================================
 	// UTILITIES
 	// ========================================================================
+
+	protected function getUtils(string $tableName): RestV1M2MUtils
+	{
+		if (!isset($this->utils[$tableName])) {
+			$this->utils[$tableName] = new RestV1M2MUtils($tableName);
+		}
+		return $this->utils[$tableName];
+	}
+
+	/**
+	 * Создание записей (одиночное или массовое).
+	 * Автоматически определяет формат: одна запись или массив записей (макс 100).
+	 *
+	 * @param string $tableName - имя таблицы
+	 * @param array $data - одна запись или массив записей
+	 * @return array - результат с status, message, data
+	 */
+	protected function create(string $tableName, array $data): array
+	{
+		$result = $this->processRecords(
+			$tableName,
+			$data,
+			true,
+			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->add($item, true),
+			function (array $item) use ($tableName): void {
+				$this->validatePostData($tableName, $item);
+			}
+		);
+
+		$this->updateSearchIndex($tableName, $result);
+		return $result;
+	}
+
+	/**
+	 * Обновление записей (одиночно или batch).
+	 * Поддерживает id в теле и ?id= для одиночного обновления.
+	 *
+	 * @param string $tableName
+	 * @param array $data
+	 * @return array
+	 */
+	protected function update(string $tableName, array $data): array
+	{
+		$result = $this->processRecords(
+			$tableName,
+			$data,
+			false,
+			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->set($id, $item, true),
+			function (array $item) use ($tableName): void {
+				$this->validatePutData($tableName, $item);
+			}
+		);
+
+		$this->updateSearchIndex($tableName, $result);
+		return $result;
+	}
+
+	/**
+	 * Общая обработка batch или одиночных create/update запросов.
+	 *
+	 * @param string $tableName
+	 * @param array $data
+	 * @param bool $isCreate
+	 * @param callable $operation
+	 * @param callable $validate
+	 * @return array
+	 */
+	private function processRecords(string $tableName, array $data, bool $isCreate, callable $operation, callable $validate): array
+	{
+		$isMultiple = isset($data[0]) && is_array($data[0]);
+		if ($isMultiple && count($data) > 100) {
+			return ['status' => 400, 'message' => 'Maximum 100 items allowed', 'data' => null];
+		}
+
+		$items = $isMultiple ? $data : [$data];
+		$results = [];
+
+		foreach ($items as $index => $item) {
+			if (!is_array($item)) {
+				$results[$index] = ['status' => 400, 'message' => 'Item must be array', 'data' => null];
+				continue;
+			}
+
+			try {
+				$validate($item);
+			} catch (\Exception $e) {
+				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+			}
+		}
+
+		$duplicateErrors = $this->getUtils($tableName)->checkDuplicate($items, true, !$isCreate);
+
+		foreach ($items as $index => $item) {
+			if (isset($results[$index])) {
+				continue;
+			}
+
+			$id = 0;
+			if (!$isCreate) {
+				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
+				if (!$id && !$isMultiple) {
+					$id = $this->extractIdFromGetParams($data);
+				}
+				if (!$id) {
+					$results[$index] = ['status' => 400, 'message' => 'ID required', 'data' => null];
+					continue;
+				}
+			}
+
+			if ($duplicateErrors[$index] ?? null) {
+				$results[$index] = $duplicateErrors[$index];
+				continue;
+			}
+
+			$results[$index] = $operation($item, $id);
+		}
+
+		if (!$isMultiple) {
+			return $results[0];
+		}
+
+		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
+	}
+
+	/**
+	 * Обновить поисковый индекс для созданных или обновлённых записей.
+	 *
+	 * @param string $tableName
+	 * @param array $result
+	 */
+	private function updateSearchIndex(string $tableName, array $result): void
+	{
+		$items = [];
+		if (isset($result['status'], $result['data'])) {
+			if ($result['status'] === 207 && is_array($result['data'])) {
+				$items = $result['data'];
+			} else {
+				$items = [$result];
+			}
+		} else {
+			$items = $result;
+		}
+
+		$searchSql = '';
+		foreach ($items as $item) {
+			$status = (int) ($item['status'] ?? 0);
+			if (($status === 200 || $status === 201) && isset($item['data']['id'])) {
+				$searchSql .= Lists::setSearchIndex($tableName, $item['data']['id']);
+			}
+		}
+		if (!empty($searchSql)) {
+			Connect::$db->exec($searchSql);
+		}
+	}
+
+	/**
+	 * Helper: расчет параметров пагинации из GET параметров
+	 */
+	private function calculatePagination(int $maxLimit = 100): array
+	{
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = (int) ($this->get['limit'] ?? 100);
+		if ($limit > $maxLimit) {
+			$limit = $maxLimit;
+		}
+		if ($limit < 1) {
+			$limit = 100;
+		}
+
+		$offset = ($page - 1) * $limit;
+
+		return [
+			'page' => $page,
+			'limit' => $limit,
+			'offset' => $offset,
+		];
+	}
+
+	/**
+	 * Валидировать GET параметры на основе s_ConfigFields
+	 * 
+	 * @param string $tableName - имя таблицы для получения правил
+	 * @param array $data - данные для валидации
+	 * @throws \Exception если валидация не пройдена
+	 */
+	private function validateQueryParams(string $tableName, array $data): void
+	{
+		$rules = $this->getUtils($tableName)->getFieldRules();
+		if (empty($rules)) {
+			// Если правил нет в БД, используем ослабленную валидацию
+			return;
+		}
+
+		// Валидация через родительский класс Rest
+		$this->rest->validateData($data, $rules);
+	}
+
+	/**
+	 * Валидировать POST данные на основе s_ConfigFields
+	 * Требует все обязательные поля (Required=1)
+	 * 
+	 * @param string $tableName - имя таблицы для получения правил
+	 * @param array $data - данные для валидации
+	 * @throws \Exception если валидация не пройдена
+	 */
+	private function validatePostData(string $tableName, array $data): void
+	{
+		$rules = $this->getUtils($tableName)->getFieldRules();
+		if (empty($rules)) {
+			// Если правил нет в БД, используем ослабленную валидацию
+			return;
+		}
+
+		// Валидация через родительский класс Rest
+		$this->rest->validateData($data, $rules);
+	}
+
+	/**
+	 * Валидировать PUT данные на основе s_ConfigFields
+	 * НЕ требует обязательные поля (Required=1), т.к. они уже в БД
+	 * Позволяет partial update
+	 * 
+	 * @param string $tableName - имя таблицы для получения правил
+	 * @param array $data - данные для валидации
+	 * @throws \Exception если валидация не пройдена
+	 */
+	private function validatePutData(string $tableName, array $data): void
+	{
+		$rules = $this->getUtils($tableName)->getFieldRules();
+		if (empty($rules)) {
+			// Если правил нет в БД, используем ослабленную валидацию
+			return;
+		}
+
+		// Убираем флаг required для PUT (partial update)
+		$rulesForUpdate = [];
+		foreach ($rules as $fieldName => $rule) {
+			$rulesForUpdate[$fieldName] = [
+				'type' => $rule['type'],
+				'required' => false, // PUT позволяет обновлять отдельные поля
+			];
+		}
+
+		// Валидация через родительский класс Rest
+		$this->rest->validateData($data, $rulesForUpdate);
+	}
+
+	/**
+	 * Извлечь id из GET параметров или данных
+	 * 
+	 * Сначала проверяет GET параметр ?id={{id}}, затем данные из JSON тела.
+	 * Если $data передана, добавляет id туда если он был взят из GET параметров.
+	 * 
+	 * @param array|null &$data - данные для обновления (опционально, по ссылке)
+	 * @return int ID или 0 если не найден
+	 */
+	private function extractIdFromGetParams(?array &$data = null): int
+	{
+		$getParams = $this->rest->getGet();
+		$id = (int) ($getParams['id'] ?? 0);
+
+		if ($id > 0) {
+			// Если id найден в GET параметрах, добавляем его в $data (если она передана)
+			if ($data !== null) {
+				$data['id'] = $id;
+			}
+			return $id;
+		}
+
+		// Если id не в GET, ищем в $data (если она передана)
+		if ($data !== null) {
+			return (int) ($data['id'] ?? $data['Id'] ?? 0);
+		}
+
+		return 0;
+	}
 
 	private function extractRequestData($data): array
 	{
