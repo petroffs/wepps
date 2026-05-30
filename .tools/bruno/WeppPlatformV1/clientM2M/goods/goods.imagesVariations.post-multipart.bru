@@ -7,12 +7,9 @@ meta {
 post {
   url: {{base_url}}/rest/m2m/goods.imagesVariations
   body: multipartForm
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:multipartForm {
   goodsv_id: 5

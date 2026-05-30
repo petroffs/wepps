@@ -7,12 +7,9 @@ meta {
 post {
   url: {{base_url}}/rest/m2m/goods.images
   body: multipartForm
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:multipartForm {
   goods_id: 123

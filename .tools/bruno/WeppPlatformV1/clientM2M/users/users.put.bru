@@ -8,16 +8,12 @@ meta {
 put {
   url: {{base_url}}/rest/m2m/users?id={{user_id}}
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {
-    "type": "users",
     "data": {
       "name": "Иван Иванов",
       "phone": "9001234567",

@@ -1,18 +1,15 @@
 meta {
   name: PUT goods.filters
   type: http
-  seq: 22
+  seq: 24
 }
 
 put {
   url: {{base_url}}/rest/m2m/goods.filters
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {

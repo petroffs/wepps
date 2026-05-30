@@ -6,28 +6,47 @@ use WeppsCore\Connect;
 use WeppsCore\Memcached;
 use WeppsCore\Utils;
 
+
 /**
  * RestV1M2MUtils - вспомогательный класс для CRUD операций M2M API
- * 
+ *
+ * Один экземпляр — одна таблица (tableName передаётся в конструктор).
+ * Инстанцируется через RestV1M2M::getUtils(tableName) с кэшированием по имени таблицы.
+ *
  * Обрабатывает:
- * - Загрузку конфига из s_Config/s_ConfigFields
- * - Валидацию данных
- * - Работу с JSON полями
- * - Маппинг API ↔ БД
+ * - CRUD: fetch(), item(), add(), set(), remove()
+ * - Проверку дублей по уникальному полю: checkDuplicate()
+ * - Правила валидации из s_ConfigFields: getFieldRules()
+ * - Маппинг camelCase API → PascalCase БД: mapApiToDbFields() / getReverseMap()
+ * - Авто-decode JSON-полей в ответах: decodeJsonFields() / getJsonFields()
+ * - Файлы из s_Files: getFiles()
+ * - Построение W_Attributes из свойств: buildAttributesFromPropertiesValues()
  */
 class RestV1M2MUtils
 {
 	/**
-	 * Кэш json-полей для таблиц
-	 * @var array<string,array<string,bool>>
+	 * Кэш JSON-полей таблицы. Используется при ЧТЕНИИ (fetch/item) для автоматического
+	 * json_decode значений в ответе. Ключ — apiMapping (camelCase), значение — true.
+	 * Заполняется лениво из s_ConfigFields (ApiFieldType='json' или Type LIKE '%json%').
+	 * Дополнительно кэшируется в Memcached на 1 час.
+	 * @var array<string,bool>|null null = ещё не загружен
 	 */
-	private array $jsonFieldsCache = [];
+	private ?array $jsonFieldsCache = null;
 
 	/**
-	 * Кэш обратного маппинга API→DB для таблиц (в рамках одного запроса)
-	 * @var array<string,array<string,string>>
+	 * Кэш обратного маппинга. Используется при ЗАПИСИ (add/set/checkDuplicate) для
+	 * преобразования camelCase-ключей входящего API-запроса в PascalCase-поля БД.
+	 * Пример: ['color' => 'Field1', 'productname' => 'Name', 'name' => 'Name'].
+	 * Заполняется лениво из s_ConfigFields (Field + ApiMapping) одним SQL на экземпляр.
+	 * @var array<string,string>|null null = ещё не загружен
 	 */
-	private array $reverseMapCache = [];
+	private ?array $reverseMapCache = null;
+
+	/**
+	 * Имя таблицы с которой работает данный экземпляр
+	 * @var string
+	 */
+	private string $tableName;
 
 	/**
 	 * Список полей для выборки через Data::setFields()
@@ -35,26 +54,33 @@ class RestV1M2MUtils
 	 */
 	private ?string $fields = null;
 
+	public function __construct(string $tableName)
+	{
+		$this->tableName = $tableName;
+		$this->jsonFieldsCache = null;
+		$this->reverseMapCache = null;
+	}
+
 	/**
 	 * Маппинг таблиц на уникальные поля для проверки дублирования
 	 * @var array<string,string>
 	 */
 	private const UNIQUE_FIELDS = [
-		'Products' => 'Alias',
-		's_Users' => 'Login',
-		'Orders' => 'Id', // нет уникального поля кроме ID
-		'News' => 'Alias',
+		'Products'           => 'Alias',
+		'ProductsVariations' => 'Alias',
+		's_Users'            => 'Login',
+		'Orders'             => 'Id', // нет уникального поля кроме ID
+		'News'               => 'Alias',
 	];
 
 	/**
 	 * Получить список записей
 	 * 
-	 * @param string $tableName - имя таблицы (e.g. 's_Users', 'Products')
 	 * @param array $query - параметры: page, limit, search
 	 * @param string|null $fields - список полей для вывода; если не указан, используется установленное через setFields()
 	 * @return array - {status, message, data, pagination}
 	 */
-	public function fetch(string $tableName, array $query, ?string $fields = null): array
+	public function fetch(array $query, ?string $fields = null): array
 	{
 		$page = (int) ($query['page'] ?? 1);
 		$limit = (int) ($query['limit'] ?? 20);
@@ -71,14 +97,14 @@ class RestV1M2MUtils
 		}
 
 		try {
-			$data = new Data($tableName, ['useApiMapping' => true]);
+			$data = new Data($this->tableName, ['useApiMapping' => true]);
 			$fields = $fields ?? $this->fields;
 			if ($fields !== null) {
 				$data->setFields($fields);
 			}
 
 			$result = $data->fetch($conditions, $limit, $page);
-			$result = $this->decodeJsonFields($result, $tableName);
+			$result = $this->decodeJsonFields($result);
 
 			return [
 				'status' => 200,
@@ -104,14 +130,13 @@ class RestV1M2MUtils
 	/**
 	 * Получить одну запись
 	 * 
-	 * @param string $tableName - имя таблицы
 	 * @param int|string $id - ID записи
 	 * @param string|null $fields - список полей для вывода; если не указан, используется установленное через setFields()
 	 * @return array - {status, message, data}
 	 */
-	public function item(string $tableName, $id, ?string $fields = null): array
+	public function item($id, ?string $fields = null): array
 	{
-		$response = $this->fetch($tableName, ['id' => $id, 'page' => 1, 'limit' => 1], $fields);
+		$response = $this->fetch(['id' => $id, 'page' => 1, 'limit' => 1], $fields);
 
 		if ($response['status'] !== 200) {
 			return $response;
@@ -135,27 +160,35 @@ class RestV1M2MUtils
 	/**
 	 * Добавить запись (аналог Data->add())
 	 * 
-	 * @param string $tableName - имя таблицы
 	 * @param array $data - данные для создания
 	 * @param bool $skipDuplicateCheck - пропустить проверку дублирования (если уже проверено в batch)
 	 * @return array - {status, message, data}
 	 */
-	public function add(string $tableName, array $data, bool $skipDuplicateCheck = false): array
+	public function add(array $data, bool $skipDuplicateCheck = false): array
 	{
 		try {
 			// Проверить дублирование по уникальному полю (если не пропущено)
 			if (!$skipDuplicateCheck) {
-				$duplicateError = $this->checkDuplicate($tableName, $data, false);
+				$duplicateError = $this->checkDuplicate($data, false);
 				if ($duplicateError) {
 					return $duplicateError;
 				}
 			}
 
-			$model = new Data($tableName);
-			$mappedData = $this->mapApiToDbFields($tableName, $data);
-			$result = $model->add($mappedData);
+			$mappedData = $this->mapApiToDbFields($data);
 
-			if ((int) $result === 0) {
+			// INSERT + UPDATE выполняются атомарно: если UPDATE упадёт,
+			// INSERT откатывается и частичная запись не остаётся в БД
+			$transactionResult = Connect::$instance->transaction(
+				function ($args) {
+					$model = new Data($args['tableName']);
+					return ['id' => $model->add($args['data'])];
+				},
+				['tableName' => $this->tableName, 'data' => $mappedData]
+			);
+			$id = $transactionResult['id'];
+
+			if ((int) $id === 0) {
 				return [
 					'status' => 409,
 					'message' => 'Insert ignored (duplicate key or constraint violation)',
@@ -166,7 +199,7 @@ class RestV1M2MUtils
 			return [
 				'status' => 201,
 				'message' => 'Created',
-				'data' => ['id' => $result],
+				'data' => ['id' => $id],
 			];
 		} catch (\Exception $e) {
 			return [
@@ -179,22 +212,31 @@ class RestV1M2MUtils
 
 	/**
 	 * Обновить запись (аналог Data->set())
-	 * 
-	 * @param string $tableName - имя таблицы
+	 *
 	 * @param int|string $id - ID записи
 	 * @param array $data - данные для обновления
+	 * @param bool $skipDuplicateCheck - пропустить проверку дублирования (если уже проверено в batch)
 	 * @return array - {status, message, data}
 	 */
-	public function set(string $tableName, $id, array $data): array
+	public function set($id, array $data, bool $skipDuplicateCheck = false): array
 	{
 		try {
-			$model = new Data($tableName);
-			$model->set((int) $id, $data);
+			// Проверить дублирование по уникальному полю (если не пропущено)
+			if (!$skipDuplicateCheck) {
+				$duplicateError = $this->checkDuplicate(array_merge($data, ['id' => $id]), false, true);
+				if ($duplicateError) {
+					return $duplicateError;
+				}
+			}
+
+			$mappedData = $this->mapApiToDbFields($data);
+			$model = new Data($this->tableName);
+			$model->set((int) $id, $mappedData);
 
 			return [
 				'status' => 200,
 				'message' => 'Updated',
-				'data' => null,
+				'data' => ['id' => (int) $id],
 			];
 		} catch (\Exception $e) {
 			return [
@@ -208,14 +250,13 @@ class RestV1M2MUtils
 	/**
 	 * Удалить запись (аналог Data->remove())
 	 * 
-	 * @param string $tableName - имя таблицы
 	 * @param int|string $id - ID записи
 	 * @return array - {status, message, data}
 	 */
-	public function remove(string $tableName, $id): array
+	public function remove($id): array
 	{
 		try {
-			$model = new Data($tableName);
+			$model = new Data($this->tableName);
 			$model->remove((int) $id);
 
 			return [
@@ -233,76 +274,87 @@ class RestV1M2MUtils
 	}
 
 	/**
-	 * Проверить дублирование для одной или нескольких записей
-	 * 
+	 * Проверить дублирование по уникальному полю таблицы.
+	 *
+	 * Режим POST (forUpdate=false): проверяет, существует ли значение в БД.
+	 * Режим PUT  (forUpdate=true):  то же, но исключает сами обновляемые записи
+	 *                               (ищет конфликт только с ДРУГИМИ записями).
+	 *
 	 * Возвращает:
-	 * - null или массив ошибки для одной записи (isBatch=false)
-	 * - массив [index => errorArray или null] для массива записей (isBatch=true)
-	 * 
-	 * @param string $tableName - имя таблицы
-	 * @param array $data - одна запись или массив записей
-	 * @param bool $isBatch - true если это массив записей
-	 * @return mixed - результат проверки
+	 * - isBatch=false: null или массив ошибки {status:409, ...}
+	 * - isBatch=true:  map [index => null | {status:409, message, data:{id}}]
+	 *
+	 * @param array $data      - одна запись или массив записей
+	 * @param bool  $isBatch   - true если массив записей
+	 * @param bool  $forUpdate - true для PUT: исключить обновляемые id из проверки
+	 * @return mixed
 	 */
-	public function checkDuplicate(string $tableName, array $data, bool $isBatch = false): mixed
+	public function checkDuplicate(array $data, bool $isBatch = false, bool $forUpdate = false): mixed
 	{
-		// Получить уникальное поле для этой таблицы
-		$uniqueField = self::UNIQUE_FIELDS[$tableName] ?? null;
+		$uniqueField = self::UNIQUE_FIELDS[$this->tableName] ?? null;
 		if (!$uniqueField || $uniqueField === 'Id') {
-			// Если нет уникального поля или это только ID, пропускаем проверку
 			return $isBatch ? array_fill_keys(array_keys($data), null) : null;
 		}
 
-		// Обернуть single запись в массив для единой обработки
-		$dataList = $isBatch ? $data : [0 => $data];
+		$dataList      = $isBatch ? $data : [0 => $data];
+		$result        = array_fill_keys(array_keys($dataList), null);
+		$uniqueValues  = [];
+		$updateIds     = [];
+		$valueIndexMap = [];
 
-		// Собрать все значения уникального поля со всех элементов
-		$uniqueValues = [];
-		$valueIndexMap = []; // Маппинг значения -> индексы элементов где оно встречается
-		
 		foreach ($dataList as $index => $item) {
 			if (!is_array($item)) {
 				continue;
 			}
-
-			// Найти значение в данных и привести к нижнему регистру
+			if ($forUpdate) {
+				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
+				if ($id > 0) {
+					$updateIds[] = $id;
+				}
+			}
 			$value = $this->extractFieldValue($item, $uniqueField);
 			if ($value !== null && $value !== '') {
-				$valueLower = strtolower((string)$value);
+				$valueLower = strtolower((string) $value);
 				$uniqueValues[] = $valueLower;
-				if (!isset($valueIndexMap[$valueLower])) {
-					$valueIndexMap[$valueLower] = [];
-				}
 				$valueIndexMap[$valueLower][] = $index;
 			}
 		}
-
-		// Инициализировать результат
-		$result = array_fill_keys(array_keys($dataList), null);
 
 		if (empty($uniqueValues)) {
 			return $isBatch ? $result : ($result[0] ?? null);
 		}
 
-		// Проверить дублирование для всех значений
-		$duplicates = $this->validateDuplicateValues($tableName, $uniqueField, $uniqueValues);
-		
-		// Отметить индексы с дублированием
-		foreach ($duplicates as $existingValue) {
-			$existingValueLower = strtolower((string)$existingValue);
-			if (isset($valueIndexMap[$existingValueLower])) {
-				foreach ($valueIndexMap[$existingValueLower] as $index) {
-					$originalValue = $this->extractFieldValue($dataList[$index], $uniqueField) ?? '';
-					$result[$index] = [
-						'status' => 409,
-						'message' => "Duplicate $uniqueField: $originalValue",
-						'data' => null,
-					];
-				}
+		$inValues      = Connect::$instance->in($uniqueValues);
+		$params        = $uniqueValues;
+		$excludeClause = '';
+
+		if ($forUpdate && !empty($updateIds)) {
+			$inIds         = Connect::$instance->in($updateIds);
+			$excludeClause = " AND Id NOT IN ($inIds)";
+			$params        = array_merge($params, $updateIds);
+		}
+
+		try {
+			$rows = Connect::$instance->fetch(
+				"SELECT Id, {$uniqueField} FROM {$this->tableName} WHERE LOWER({$uniqueField}) IN ($inValues){$excludeClause}",
+				$params
+			);
+		} catch (\Exception $e) {
+			return $isBatch ? $result : ($result[0] ?? null);
+		}
+
+		foreach ($rows as $row) {
+			$valueLower = strtolower((string) $row[$uniqueField]);
+			foreach ($valueIndexMap[$valueLower] ?? [] as $index) {
+				$originalValue = $this->extractFieldValue($dataList[$index], $uniqueField) ?? $valueLower;
+				$result[$index] = [
+					'status'  => 409,
+					'message' => "Duplicate {$uniqueField}: {$originalValue}",
+					'data'    => ['id' => (int) $row['Id']],
+				];
 			}
 		}
 
-		// Вернуть результат в нужном формате
 		return $isBatch ? $result : ($result[0] ?? null);
 	}
 
@@ -327,7 +379,6 @@ class RestV1M2MUtils
 	 * Проверить существование значений в БД (базовый метод)
 	 * Используется как checkDuplicate так и checkBatchDuplicates
 	 * 
-	 * @param string $tableName - имя таблицы
 	 * @param string $uniqueField - имя уникального поля
 	 * @param array $values - массив значений для проверки (в нижнем регистре)
 	 * @return array - массив найденных значений (которые уже существуют в БД)
@@ -336,14 +387,13 @@ class RestV1M2MUtils
 	 * Конвертировать данные из camelCase API ключей в PascalCase DB ключи
 	 * используя ApiMapping из s_ConfigFields
 	 *
-	 * @param string $tableName - имя таблицы
 	 * @param array $data - данные с camelCase ключами
 	 * @return array - данные с PascalCase ключами
 	 */
-	private function mapApiToDbFields(string $tableName, array $data): array
+	private function mapApiToDbFields(array $data): array
 	{
 		try {
-			$reverseMap = $this->getReverseMap($tableName);
+			$reverseMap = $this->getReverseMap();
 
 			$mapped = [];
 			foreach ($data as $key => $value) {
@@ -364,17 +414,16 @@ class RestV1M2MUtils
 	 * Результат кэшируется в памяти на время запроса — один SQL на таблицу,
 	 * сколько бы элементов в batch не было.
 	 *
-	 * @param string $tableName
 	 * @return array<string,string>
 	 */
-	private function getReverseMap(string $tableName): array
+	private function getReverseMap(): array
 	{
-		if (isset($this->reverseMapCache[$tableName])) {
-			return $this->reverseMapCache[$tableName];
+		if ($this->reverseMapCache !== null) {
+			return $this->reverseMapCache;
 		}
 
 		$sql = "SELECT `Field`, `ApiMapping` FROM s_ConfigFields WHERE `TableName` = ?";
-		$result = Connect::$instance->fetch($sql, [$tableName]);
+		$result = Connect::$instance->fetch($sql, [$this->tableName]);
 
 		$reverseMap = [];
 		foreach ($result as $row) {
@@ -387,36 +436,8 @@ class RestV1M2MUtils
 			$reverseMap[strtolower($dbField)] = $dbField;
 		}
 
-		$this->reverseMapCache[$tableName] = $reverseMap;
+		$this->reverseMapCache = $reverseMap;
 		return $reverseMap;
-	}
-
-	private function validateDuplicateValues(string $tableName, string $uniqueField, array $values): array
-	{
-		if (empty($values)) {
-			return [];
-		}
-
-		try {
-			// Сделать один запрос для проверки всех значений с LOWER()
-			$placeholders = implode(',', array_fill(0, count($values), '?'));
-			$existingRows = Connect::$instance->fetch(
-				"SELECT $uniqueField FROM $tableName WHERE LOWER($uniqueField) IN ($placeholders)",
-				$values
-			);
-
-			// Вернуть найденные значения (оригинальный регистр из БД)
-			$existingValues = [];
-			foreach ($existingRows as $row) {
-				$existingValues[] = $row[$uniqueField];
-			}
-
-			return $existingValues;
-		} catch (\Exception $e) {
-			// Если ошибка при проверке, игнорируем и даем идти дальше
-			// БД выдаст ошибку если понадобится
-			return [];
-		}
 	}
 
 	/**
@@ -426,13 +447,12 @@ class RestV1M2MUtils
 	 * - ApiFieldType (int, string, email, date, float, guid)
 	 * - Required (обязательность поля)
 	 * 
-	 * @param string $tableName - имя таблицы для которой получить правила
 	 * @return array - ассоциативный массив {fieldName => {type, required}}
 	 * @example ['id' => ['type' => 'int', 'required' => true], 'email' => ['type' => 'email', 'required' => false]]
 	 */
-	public function getFieldRules(string $tableName): array
+	public function getFieldRules(): array
 	{
-		$cacheKey = 'api_validation_rules_' . $tableName;
+		$cacheKey = 'api_validation_rules_' . $this->tableName;
 
 		// Попытка получить из кэша (системный кэш - всегда включен)
 		$memcached = new Memcached('auto', true);
@@ -444,7 +464,7 @@ class RestV1M2MUtils
 		try {
 			// Получить все поля для таблицы из s_ConfigFields
 			$sql = "SELECT `Field`, `ApiMapping`, `ApiFieldType`, `Required` FROM s_ConfigFields WHERE `TableName` = ? ORDER BY `Field` ASC";
-			$result = Connect::$instance->fetch($sql, [$tableName]);
+			$result = Connect::$instance->fetch($sql, [$this->tableName]);
 			$rules = [];
 			foreach ($result as $field) {
 				$fieldName = $field['ApiMapping'] ?? null;
@@ -497,12 +517,11 @@ class RestV1M2MUtils
 	/**
 	 * Получить файлы из s_Files по TableName и TableNameField
 	 *
-	 * @param string $tableName - имя таблицы в s_Files.TableName
 	 * @param string $field - значение TableNameField (например 'Images' или 'ImagesV')
 	 * @param array $query - массив GET-параметров, включает goods_id, page, limit
 	 * @return array
 	 */
-	public function getFiles(string $tableName, string $field, array $query): array
+	public function getFiles(string $field, array $query): array
 	{
 		$url = Connect::$projectDev['protocol'] . Connect::$projectDev['host'];
 		$goodsId = (int) ($query['goods_id'] ?? 0);
@@ -511,7 +530,7 @@ class RestV1M2MUtils
 		$offset = ($page - 1) * $limit;
 
 		$conditions = "TableName = ? AND TableNameField = ?";
-		$params = [$tableName, $field];
+		$params = [$this->tableName, $field];
 		if ($goodsId > 0) {
 			$conditions .= " AND TableNameId = ?";
 			$params[] = $goodsId;
@@ -551,16 +570,15 @@ class RestV1M2MUtils
 	 * Декодирует JSON-поля в результатах на основе схемы Data
 	 *	
 	 * @param array $rows Строки результата
-	 * @param string $tableName Имя таблицы
 	 * @return array
 	 */
-	private function decodeJsonFields(array $rows, string $tableName): array
+	private function decodeJsonFields(array $rows): array
 	{
 		if (empty($rows)) {
 			return $rows;
 		}
 
-		$fields = $this->getJsonFields($tableName);
+		$fields = $this->getJsonFields();
 		if (empty($fields)) {
 			return $rows;
 		}
@@ -584,27 +602,26 @@ class RestV1M2MUtils
 	/**
 	 * Получить список полей таблицы, которые нужно декодировать как JSON
 	 *
-	 * @param string $tableName
 	 * @return array<string,bool>
 	 */
-	private function getJsonFields(string $tableName): array
+	private function getJsonFields(): array
 	{
-		if (isset($this->jsonFieldsCache[$tableName])) {
-			return $this->jsonFieldsCache[$tableName];
+		if ($this->jsonFieldsCache !== null) {
+			return $this->jsonFieldsCache;
 		}
 
-		$cacheKey = 'json_fields_' . $tableName;
+		$cacheKey = 'json_fields_' . $this->tableName;
 		$memcached = new Memcached('auto', true);
 		$cached = $memcached->get($cacheKey);
 		if ($cached !== null) {
-			$this->jsonFieldsCache[$tableName] = $cached;
+			$this->jsonFieldsCache = $cached;
 			return $cached;
 		}
 
 		try {
 			// Получить JSON поля напрямую из s_ConfigFields
 			$sql = "SELECT Field, ApiFieldType, ApiMapping, Type FROM s_ConfigFields WHERE TableName = ? AND (ApiFieldType = 'json' OR Type LIKE '%json%')";
-			$result = Connect::$instance->fetch($sql, [$tableName]);
+			$result = Connect::$instance->fetch($sql, [$this->tableName]);
 
 			$jsonFields = [];
 			foreach ($result as $field) {
@@ -618,7 +635,7 @@ class RestV1M2MUtils
 			// Кэшировать на 1 час
 			$memcached = new Memcached('auto', true);
 			$memcached->set($cacheKey, $jsonFields, 3600);
-			$this->jsonFieldsCache[$tableName] = $jsonFields;
+			$this->jsonFieldsCache = $jsonFields;
 
 			return $jsonFields;
 		} catch (\Exception $e) {

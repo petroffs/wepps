@@ -7,12 +7,9 @@ meta {
 get {
   url: {{base_url}}/rest/m2m/users
   body: none
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 params:query {
   page: 1

@@ -7,12 +7,9 @@ meta {
 get {
   url: {{base_url}}/rest/m2m/goods.categories
   body: none
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 tests {
   test("status 200", function() {

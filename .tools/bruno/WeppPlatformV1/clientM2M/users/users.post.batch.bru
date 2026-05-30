@@ -7,12 +7,9 @@ meta {
 post {
   url: {{base_url}}/rest/m2m/users
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{token}}
-}
 
 body:json {
   [

@@ -8,16 +8,12 @@ meta {
 put {
   url: {{base_url}}/rest/m2m/orders?id={{order_id}}
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {
-    "type": "orders",
     "data": {
       "status": "completed",
       "total": 9999.99

@@ -7,6 +7,8 @@ use WeppsCore\Navigator;
 use WeppsCore\Utils;
 use WeppsExtensions\Template\Filters\Filters;
 use WeppsExtensions\Products\ProductsUtils;
+use WeppsAdmin\Lists\Lists;
+use WeppsAdmin\ConfigExtensions\Processing\ProcessingProducts;
 
 /**
  * RestV1M2M - M2M API для работы с таблицами через CRUD операции
@@ -25,76 +27,155 @@ class RestV1M2M extends RestV1
 	/**
 	 * Utils для CRUD операций
 	 */
-	private ?RestV1M2MUtils $utils = null;
+	private array $utils = [];
 
-	/**
-	 * Получить utils (lazy init)
-	 */
-	protected function getUtils(): RestV1M2MUtils
+	protected function getUtils(string $tableName): RestV1M2MUtils
 	{
-		if ($this->utils === null) {
-			$this->utils = new RestV1M2MUtils();
+		if (!isset($this->utils[$tableName])) {
+			$this->utils[$tableName] = new RestV1M2MUtils($tableName);
 		}
-		return $this->utils;
+		return $this->utils[$tableName];
 	}
 
 	/**
-	 * Batch-создание записей (одиночное или массовое)
-	 * 
+	 * Создание записей (одиночное или массовое).
+	 * Автоматически определяет формат: одна запись или массив записей (макс 100).
+	 *
 	 * @param string $tableName - имя таблицы
-	 * @param array $data - данные (массив или одна запись)
+	 * @param array $data - одна запись или массив записей
 	 * @return array - результат с status, message, data
 	 */
-	protected function batchCreate(string $tableName, array $data): array
+	protected function create(string $tableName, array $data): array
 	{
-		// Проверяем, является ли это массивом записей (массив массивов) или одной записью
+		$result = $this->processRecords(
+			$tableName,
+			$data,
+			true,
+			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->add($item, true),
+			fn(array $item): void => $this->validatePostData($tableName, $item)
+		);
+
+		$this->updateSearchIndex($tableName, $result);
+		return $result;
+	}
+
+	/**
+	 * Обновление записей (одиночно или batch).
+	 * Поддерживает id в теле и ?id= для одиночного обновления.
+	 *
+	 * @param string $tableName
+	 * @param array $data
+	 * @return array
+	 */
+	protected function update(string $tableName, array $data): array
+	{
+		$result = $this->processRecords(
+			$tableName,
+			$data,
+			false,
+			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->set($id, $item, true),
+			fn(array $item): void => $this->validatePutData($tableName, $item)
+		);
+
+		$this->updateSearchIndex($tableName, $result);
+		return $result;
+	}
+
+	/**
+	 * Общая обработка batch или одиночных create/update запросов.
+	 *
+	 * @param string $tableName
+	 * @param array $data
+	 * @param bool $isCreate
+	 * @param callable $operation
+	 * @param callable $validate
+	 * @return array
+	 */
+	private function processRecords(string $tableName, array $data, bool $isCreate, callable $operation, callable $validate): array
+	{
 		$isMultiple = isset($data[0]) && is_array($data[0]);
+		if ($isMultiple && count($data) > 100) {
+			return ['status' => 400, 'message' => 'Maximum 100 items allowed', 'data' => null];
+		}
 
-		if ($isMultiple) {
-			// Batch-создание (массив записей, макс 100)
-			if (count($data) > 100) {
-				return ['status' => 400, 'message' => 'Maximum 100 items allowed', 'data' => null];
+		$items = $isMultiple ? $data : [$data];
+		$results = [];
+
+		foreach ($items as $index => $item) {
+			if (!is_array($item)) {
+				$results[$index] = ['status' => 400, 'message' => 'Item must be array', 'data' => null];
+				continue;
 			}
 
-			// Получить все существующие значения уникальных полей за один запрос
-			$existingDuplicates = $this->getUtils()->checkDuplicate($tableName, $data, true);
-
-			$results = [];
-			foreach ($data as $index => $item) {
-				if (!is_array($item)) {
-					$results[$index] = ['status' => 400, 'message' => 'Item must be array', 'data' => null];
-					continue;
-				}
-
-				// Проверить дублирование на основе уже загруженных данных
-				$duplicateError = $existingDuplicates[$index] ?? null;
-				if ($duplicateError) {
-					$results[$index] = $duplicateError;
-					continue;
-				}
-
-				// Валидировать каждую запись
-				try {
-					$this->validatePostData($tableName, $item);
-				} catch (\Exception $e) {
-					$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-					continue;
-				}
-
-				// Создать запись
-				$results[$index] = $this->getUtils()->add($tableName, $item, true);
-			}
-
-			return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
-		} else {
-			// Одиночное создание (обратная совместимость)
 			try {
-				$this->validatePostData($tableName, $data);
+				$validate($item);
 			} catch (\Exception $e) {
-				return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+			}
+		}
+
+		$duplicateErrors = $this->getUtils($tableName)->checkDuplicate($items, true, !$isCreate);
+
+		foreach ($items as $index => $item) {
+			if (isset($results[$index])) {
+				continue;
 			}
 
-			return $this->getUtils()->add($tableName, $data);
+			$id = 0;
+			if (!$isCreate) {
+				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
+				if (!$id && !$isMultiple) {
+					$id = $this->extractIdFromGetParams($data);
+				}
+				if (!$id) {
+					$results[$index] = ['status' => 400, 'message' => 'ID required', 'data' => null];
+					continue;
+				}
+			}
+
+			if ($duplicateErrors[$index] ?? null) {
+				$results[$index] = $duplicateErrors[$index];
+				continue;
+			}
+
+			$results[$index] = $operation($item, $id);
+		}
+
+		if (!$isMultiple) {
+			return $results[0];
+		}
+
+		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
+	}
+
+	/**
+	 * Обновить поисковый индекс для созданных или обновлённых записей.
+	 *
+	 * @param string $tableName
+	 * @param array $result
+	 */
+	private function updateSearchIndex(string $tableName, array $result): void
+	{
+		$items = [];
+		if (isset($result['status'], $result['data'])) {
+			if ($result['status'] === 207 && is_array($result['data'])) {
+				$items = $result['data'];
+			} else {
+				$items = [$result];
+			}
+		} else {
+			$items = $result;
+		}
+
+		$searchSql = '';
+		foreach ($items as $item) {
+			$status = (int) ($item['status'] ?? 0);
+			if (($status === 200 || $status === 201) && isset($item['data']['id'])) {
+				$searchSql .= Lists::setSearchIndex($tableName, $item['data']['id']);
+			}
+		}
+		if (!empty($searchSql)) {
+			Connect::$db->exec($searchSql);
 		}
 	}
 
@@ -105,9 +186,9 @@ class RestV1M2M extends RestV1
 	 * @param array $data - данные для валидации
 	 * @throws \Exception если валидация не пройдена
 	 */
-	protected function validateQueryParams(string $tableName, array $data): void
+	private function validateQueryParams(string $tableName, array $data): void
 	{
-		$rules = $this->getUtils()->getFieldRules($tableName);
+		$rules = $this->getUtils($tableName)->getFieldRules();
 		if (empty($rules)) {
 			// Если правил нет в БД, используем ослабленную валидацию
 			return;
@@ -125,9 +206,9 @@ class RestV1M2M extends RestV1
 	 * @param array $data - данные для валидации
 	 * @throws \Exception если валидация не пройдена
 	 */
-	protected function validatePostData(string $tableName, array $data): void
+	private function validatePostData(string $tableName, array $data): void
 	{
-		$rules = $this->getUtils()->getFieldRules($tableName);
+		$rules = $this->getUtils($tableName)->getFieldRules();
 		if (empty($rules)) {
 			// Если правил нет в БД, используем ослабленную валидацию
 			return;
@@ -146,9 +227,9 @@ class RestV1M2M extends RestV1
 	 * @param array $data - данные для валидации
 	 * @throws \Exception если валидация не пройдена
 	 */
-	protected function validatePutData(string $tableName, array $data): void
+	private function validatePutData(string $tableName, array $data): void
 	{
-		$rules = $this->getUtils()->getFieldRules($tableName);
+		$rules = $this->getUtils($tableName)->getFieldRules();
 		if (empty($rules)) {
 			// Если правил нет в БД, используем ослабленную валидацию
 			return;
@@ -176,7 +257,7 @@ class RestV1M2M extends RestV1
 	 * @param array|null &$data - данные для обновления (опционально, по ссылке)
 	 * @return int ID или 0 если не найден
 	 */
-	protected function extractIdFromGetParams(?array &$data = null): int
+	private function extractIdFromGetParams(?array &$data = null): int
 	{
 		$getParams = $this->rest->getGet();
 		$id = (int) ($getParams['id'] ?? 0);
@@ -204,8 +285,8 @@ class RestV1M2M extends RestV1
 	public function getUsers(): array
 	{
 		// GET параметры - служебные (page, limit, search, sort)
-		$this->getUtils()->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
-		$result = $this->getUtils()->fetch('s_Users', $this->get);
+		$this->getUtils('s_Users')->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		$result = $this->getUtils('s_Users')->fetch($this->get);
 		return $result;
 	}
 
@@ -215,8 +296,8 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		$this->getUtils()->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
-		$result = $this->getUtils()->item('s_Users', $id);
+		$this->getUtils('s_Users')->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		$result = $this->getUtils('s_Users')->item($id);
 		return $result;
 	}
 
@@ -227,7 +308,7 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		return $this->batchCreate('s_Users', $data);
+		return $this->create('s_Users', $data);
 	}
 
 	public function putUsers($data = null): array
@@ -236,20 +317,8 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		// Извлечь id из GET параметра ?id={{id}} или из данных JSON
-		$id = $this->extractIdFromGetParams($data);
-		if (!$id) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
 
-		// Валидировать PUT данные по правилам из s_ConfigFields (без required)
-		try {
-			$this->validatePutData('s_Users', $data);
-		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-		}
-
-		return $this->getUtils()->set('s_Users', $id, $data);
+		return $this->update('s_Users', $data);
 	}
 
 	public function deleteUsers(): array
@@ -258,7 +327,7 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils()->remove('s_Users', $id);
+		return $this->getUtils('s_Users')->remove($id);
 	}
 
 	// ========================================================================
@@ -349,7 +418,7 @@ class RestV1M2M extends RestV1
 		}
 		// Распределяем атрибуты по товарам
 		foreach ($rows as &$row) {
-			$row['W_Attributes'] = $this->getUtils()->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
+			$row['W_Attributes'] = $this->getUtils('Products')->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
 		}
 		unset($row);
 
@@ -379,7 +448,7 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		return $this->batchCreate('Products', $data);
+		return $this->create('Products', $data);
 	}
 
 	public function putGoods($data = null): array
@@ -388,20 +457,96 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		// Извлечь id из GET параметра ?id={{id}} или из данных JSON
-		$id = $this->extractIdFromGetParams($data);
-		if (!$id) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
+
+		return $this->update('Products', $data);
+	}
+
+	/**
+	 * M2M: POST создание вариаций товаров (одна или batch).
+	 * Не скрывает существующие вариации — только добавляет новые.
+	 * При дубликате (Alias) возвращает 409 с id существующей.
+	 *
+	 * Формат тела: { "data": [ { "goodsId": 723, "color": "Красный", "size": "42", "sku": "..." }, ... ] }
+	 */
+	public function postGoodsVariations($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		// Валидировать PUT данные по правилам из s_ConfigFields (без required)
-		try {
-			$this->validatePutData('Products', $data);
-		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+		$isMultiple = isset($data[0]) && is_array($data[0]);
+		$items = $isMultiple ? $data : [$data];
+
+		$processing = new ProcessingProducts();
+		$results = [];
+
+		foreach ($items as $index => $item) {
+			$goodsId = (int) ($item['goodsId'] ?? $item['goods_id'] ?? 0);
+			if (!$goodsId) {
+				$results[$index] = ['status' => 400, 'message' => 'goodsId required', 'data' => null];
+				continue;
+			}
+			$results[$index] = $processing->createVariation($goodsId, $item);
 		}
 
-		return $this->getUtils()->set('Products', $id, $data);
+		if (!$isMultiple) {
+			return $results[0];
+		}
+
+		$hasErrors = !empty(array_filter($results, fn($r) => ($r['status'] ?? 200) >= 400 && ($r['status'] ?? 200) !== 409));
+		return [
+			'status'  => $hasErrors ? 207 : 201,
+			'message' => 'Multi-Status',
+			'data'    => $results,
+		];
+	}
+
+	/**
+	 * M2M: PUT обновление вариаций по id (одна или batch).
+	 * Обновляет конкретные вариации по их ID — без скрытия остальных.
+	 *
+	 * Одна запись: ?id=123 или { "data": { "id": 123, "color": "Синий" } }
+	 * Batch: { "data": [ { "id": 1, "sku": "NEW" }, { "id": 2, "color": "Зелёный" } ] }
+	 */
+	public function putGoodsVariations($data = null): array
+	{
+		$data = $this->extractRequestData($data);
+		if (!$data) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$isMultiple = isset($data[0]) && is_array($data[0]);
+		$items = $isMultiple ? $data : [$data];
+
+		// Batch-проверка дубликатов одним запросом
+		$duplicateErrors = $this->getUtils('ProductsVariations')->checkDuplicate($items, true, true);
+
+		$results = [];
+		foreach ($items as $index => $item) {
+			$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
+			if (!$id) {
+				// Для одиночного — попробовать GET-параметр ?id=
+				if (!$isMultiple) {
+					$id = $this->extractIdFromGetParams();
+				}
+				if (!$id) {
+					$results[$index] = ['status' => 400, 'message' => 'id required', 'data' => null];
+					continue;
+				}
+			}
+			if ($duplicateErrors[$index] ?? null) {
+				$results[$index] = $duplicateErrors[$index];
+				continue;
+			}
+			$results[$index] = $this->getUtils('ProductsVariations')->set($id, $item, true);
+		}
+
+		if (!$isMultiple) {
+			return $results[0];
+		}
+
+		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
 	}
 
 	public function deleteGoods(): array
@@ -410,7 +555,7 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils()->remove('Products', $id);
+		return $this->getUtils('Products')->remove($id);
 	}
 
 	/**
@@ -691,7 +836,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsImages(): array
 	{
-		return $this->getUtils()->getFiles('Products', 'Images', $this->get);
+		return $this->getUtils('Products')->getFiles('Images', $this->get);
 	}
 
 	/**
@@ -836,7 +981,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsImagesVariations(): array
 	{
-		return $this->getUtils()->getFiles('Products', 'ImagesV', $this->get);
+		return $this->getUtils('Products')->getFiles('ImagesV', $this->get);
 	}
 
 	/**
@@ -1140,8 +1285,8 @@ class RestV1M2M extends RestV1
 
 	public function getOrders(): array
 	{
-		$this->getUtils()->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		$result = $this->getUtils()->fetch('Orders', $this->get);
+		$this->getUtils('Orders')->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$result = $this->getUtils('Orders')->fetch($this->get);
 		return $result;
 	}
 
@@ -1151,8 +1296,8 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		$this->getUtils()->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		$result = $this->getUtils()->item('Orders', $id);
+		$this->getUtils('Orders')->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$result = $this->getUtils('Orders')->item($id);
 		return $result;
 	}
 
@@ -1163,7 +1308,7 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		return $this->batchCreate('Orders', $data);
+		return $this->create('Orders', $data);
 	}
 
 	public function putOrders($data = null): array
@@ -1172,20 +1317,8 @@ class RestV1M2M extends RestV1
 		if (!$data) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		// Извлечь id из GET параметра ?id={{id}} или из данных JSON
-		$id = $this->extractIdFromGetParams($data);
-		if (!$id) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
 
-		// Валидировать PUT данные по правилам из s_ConfigFields (без required)
-		try {
-			$this->validatePutData('Orders', $data);
-		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-		}
-
-		return $this->getUtils()->set('Orders', $id, $data);
+		return $this->update('Orders', $data);
 	}
 
 	public function deleteOrders(): array
@@ -1194,14 +1327,14 @@ class RestV1M2M extends RestV1
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils()->remove('Orders', $id);
+		return $this->getUtils('Orders')->remove($id);
 	}
 
 	// ========================================================================
 	// UTILITIES
 	// ========================================================================
 
-	protected function extractRequestData($data): array
+	private function extractRequestData($data): array
 	{
 		if ($data && isset($data['data']) && is_array($data['data'])) {
 			return $data['data'];

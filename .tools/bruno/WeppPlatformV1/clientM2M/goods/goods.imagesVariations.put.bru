@@ -1,18 +1,15 @@
 meta {
   name: PUT goods.imagesVariations
   type: http
-  seq: 17
+  seq: 19
 }
 
 put {
   url: {{base_url}}/rest/m2m/goods.imagesVariations
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {

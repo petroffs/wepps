@@ -8,16 +8,12 @@ meta {
 post {
   url: {{base_url}}/rest/m2m/users
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {
-    "type": "users",
     "data": {
       "login": "{{new_user_login}}",
       "password": "{{new_user_password}}",

@@ -7,12 +7,9 @@ meta {
 
 delete {
   url: {{base_url}}/rest/m2m/users?id={{user_id}}
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 params:query {
 }

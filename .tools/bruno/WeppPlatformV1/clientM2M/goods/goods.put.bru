@@ -1,7 +1,7 @@
 meta {
   name: PUT goods
   type: http
-  seq: 10
+  seq: 11
   tags: [
     m
     a
@@ -13,22 +13,25 @@ meta {
 }
 
 put {
-  url: {{base_url}}/rest/m2m/goods?id={{product_id}}
+  url: {{base_url}}/rest/m2m/goods
   body: json
-  auth: bearer
-}
-
-auth:bearer {
-  token: {{access_token}}
+  auth: inherit
 }
 
 body:json {
   {
-    "type": "goods",
-    "data": {
-      "name": "Обновлённый товар",
-      "price": 1299.99
-    }
+    "data": [
+      {
+        "id": 723,
+        "name": "Свитер Wistedi TEST-01 - PUT",
+        "displayFirst": 0
+      },
+      {
+        "id": 724,
+        "name": "Рубашка Wistedi WKT TEST 02 - PUT",
+        "displayFirst": 0
+      }
+    ]
   }
 }
 

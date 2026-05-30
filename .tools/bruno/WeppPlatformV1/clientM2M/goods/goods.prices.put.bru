@@ -1,18 +1,15 @@
 meta {
   name: PUT goods.prices
   type: http
-  seq: 18
+  seq: 20
 }
 
 put {
   url: {{base_url}}/rest/m2m/goods.prices
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {

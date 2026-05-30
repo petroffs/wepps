@@ -7,16 +7,13 @@ meta {
 get {
   url: {{base_url}}/rest/m2m/users.item?id={{user_id}}
   body: none
-  auth: bearer
+  auth: inherit
 }
 
 params:query {
   id: {{user_id}}
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 tests {
   test("status 200", function() {

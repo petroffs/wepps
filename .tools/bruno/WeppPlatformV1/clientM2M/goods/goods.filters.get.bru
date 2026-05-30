@@ -7,7 +7,7 @@ meta {
 get {
   url: {{base_url}}/rest/m2m/goods.filters
   body: none
-  auth: bearer
+  auth: inherit
 }
 
 params:query {
@@ -15,9 +15,6 @@ params:query {
   ~search: 
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 tests {
   test("status 200", function() {

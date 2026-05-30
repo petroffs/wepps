@@ -277,18 +277,14 @@ class Connect
 			return $this->executeWithRetry(function () use ($func, $args) {
 				Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
 				Connect::$db->beginTransaction();
-				if (Connect::$db->inTransaction()) {
-					$response = $func($args);
-				}
+				$response = $func($args);
 				Connect::$db->commit();
 				Connect::$db->setAttribute(PDO::ATTR_AUTOCOMMIT, 1);
 				return $response;
 			});
 		} catch (\Exception $e) {
 			Connect::$db->rollBack();
-			echo "Error. See debug.conf";
-			Utils::debug($e, 21);
-			return [];
+			throw $e;
 		}
 	}
 	/**

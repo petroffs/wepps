@@ -15,16 +15,12 @@ meta {
 post {
   url: {{base_url}}/rest/m2m/goods
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {
-    "type": "goods",
     "data": [
       {
         "name": "Свитер Wistedi TEST-01",

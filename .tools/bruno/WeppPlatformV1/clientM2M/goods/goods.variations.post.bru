@@ -1,0 +1,68 @@
+meta {
+  name: POST goods.variations
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{base_url}}/rest/m2m/goods.variations
+  body: json
+  auth: inherit
+}
+
+
+body:json {
+  {
+    "data": [
+      {
+        "goodsId": {{product_id}},
+        "color": "Красный",
+        "size": "42",
+        "sku": "S001-КРА-42"
+      },
+      {
+        "goodsId": {{product_id}},
+        "color": "Синий",
+        "size": "44",
+        "sku": "S001-СИН-44"
+      }
+    ]
+  }
+}
+
+tests {
+  test("status 201 or 207", function() {
+    expect([201, 207]).to.include(res.status);
+  });
+  test("data is array", function() {
+    expect(res.body.data).to.be.an('array');
+  });
+  test("each item has id", function() {
+    res.body.data.forEach(item => {
+      expect(item.data.id).to.be.a('number');
+    });
+  });
+}
+
+docs {
+  Создание вариаций товара.
+  Не скрывает существующие вариации — только добавляет новые.
+  При дубликате (совпадение по Alias) возвращает 409 с ID существующей вариации.
+  
+  Одна вариация: { "data": { "goodsId": 723, "color": "Красный", ... } }  → status 201
+  Batch:         { "data": [ { "goodsId": 723, ... }, ... ] }  → status 201 / 207
+  
+  Обязательные поля:
+  - goodsId — ID товара
+  
+  Опциональные поля:
+  - color — цвет (Field1)
+  - size  — размер (Field2)
+  - sku   — артикул (Field3)
+  
+  Ответ на успешное создание:
+  { "status": 201, "data": { "id": 15, "color": "Красный", "size": "42", "sku": "S001-КРА-42" } }
+  
+  При дубликате:
+  { "status": 409, "message": "Duplicate Alias: ...", "data": { "id": 10 } }
+}

@@ -1,18 +1,15 @@
 meta {
   name: POST goods.images
   type: http
-  seq: 11
+  seq: 13
 }
 
 post {
   url: {{base_url}}/rest/m2m/goods.images
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {

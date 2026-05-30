@@ -1,18 +1,15 @@
 meta {
   name: PATCH goods.filters
   type: http
-  seq: 21
+  seq: 23
 }
 
 patch {
   url: {{base_url}}/rest/m2m/goods.filters
   body: json
-  auth: bearer
+  auth: inherit
 }
 
-auth:bearer {
-  token: {{access_token}}
-}
 
 body:json {
   {
