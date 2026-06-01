@@ -43,6 +43,14 @@ class RestV1M2MUtils
 	private ?array $reverseMapCache = null;
 
 	/**
+	 * Кэш уникальных полей таблицы для checkDuplicate.
+	 * Заполняется вместе с reverseMapCache из того же SQL-запроса (IsUnique=1).
+	 * Формат: [DbField => apiName], например ['Alias' => 'alias', 'Login' => 'login'].
+	 * @var array<string,string>|null null = ещё не загружен
+	 */
+	private ?array $uniqueFieldsCache = null;
+
+	/**
 	 * Имя таблицы с которой работает данный экземпляр
 	 * @var string
 	 */
@@ -56,22 +64,13 @@ class RestV1M2MUtils
 
 	public function __construct(string $tableName)
 	{
-		$this->tableName = $tableName;
-		$this->jsonFieldsCache = null;
-		$this->reverseMapCache = null;
+		$this->tableName         = $tableName;
+		$this->jsonFieldsCache   = null;
+		$this->reverseMapCache   = null;
+		$this->uniqueFieldsCache = null;
 	}
 
-	/**
-	 * Маппинг таблиц на уникальные поля для проверки дублирования
-	 * @var array<string,string>
-	 */
-	private const UNIQUE_FIELDS = [
-		'Products'           => 'Alias',
-		'ProductsVariations' => 'Alias',
-		's_Users'            => 'Login',
-		'Orders'             => 'Id', // нет уникального поля кроме ID
-		'News'               => 'Alias',
-	];
+
 
 	/**
 	 * Получить список записей
@@ -123,7 +122,7 @@ class RestV1M2MUtils
 				'data' => null,
 			];
 		} finally {
-			$this->resetFields();
+			$this->fields = null;
 		}
 	}
 
@@ -158,204 +157,331 @@ class RestV1M2MUtils
 	}
 
 	/**
-	 * Добавить запись (аналог Data->add())
-	 * 
-	 * @param array $data - данные для создания
-	 * @param bool $skipDuplicateCheck - пропустить проверку дублирования (если уже проверено в batch)
+	 * Добавить одну запись.
+	 *
+	 * @param array $record - плоский массив полей
 	 * @return array - {status, message, data}
 	 */
-	public function add(array $data, bool $skipDuplicateCheck = false): array
+	public function add(array $record): array
 	{
+		$dupe = $this->checkDuplicate([$record], false);
+		if ($dupe[0] ?? null) {
+			return $dupe[0];
+		}
+
 		try {
-			// Проверить дублирование по уникальному полю (если не пропущено)
-			if (!$skipDuplicateCheck) {
-				$duplicateError = $this->checkDuplicate($data, false);
-				if ($duplicateError) {
-					return $duplicateError;
-				}
-			}
-
-			$mappedData = $this->mapApiToDbFields($data);
-
-			// INSERT + UPDATE выполняются атомарно: если UPDATE упадёт,
-			// INSERT откатывается и частичная запись не остаётся в БД
-			$transactionResult = Connect::$instance->transaction(
-				function ($args) {
-					$model = new Data($args['tableName']);
-					return ['id' => $model->add($args['data'])];
-				},
-				['tableName' => $this->tableName, 'data' => $mappedData]
-			);
-			$id = $transactionResult['id'];
+			$mapped = $this->mapApiToDbFields($record);
+			$model  = new Data($this->tableName);
+			$id     = $model->add($mapped);
 
 			if ((int) $id === 0) {
-				return [
-					'status' => 409,
-					'message' => 'Insert ignored (duplicate key or constraint violation)',
-					'data' => null,
-				];
+				return ['status' => 409, 'message' => 'Duplicate key or constraint violation', 'data' => null];
 			}
 
-			return [
-				'status' => 201,
-				'message' => 'Created',
-				'data' => ['id' => $id],
-			];
+			return ['status' => 201, 'message' => 'Created', 'data' => ['id' => $id]];
 		} catch (\Exception $e) {
-			return [
-				'status' => 400,
-				'message' => $e->getMessage(),
-				'data' => null,
-			];
+			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 		}
 	}
 
 	/**
-	 * Обновить запись (аналог Data->set())
+	 * Пакетная вставка записей.
 	 *
-	 * @param int|string $id - ID записи
-	 * @param array $data - данные для обновления
-	 * @param bool $skipDuplicateCheck - пропустить проверку дублирования (если уже проверено в batch)
-	 * @return array - {status, message, data}
+	 * @param array $records [index => плоский массив полей]
+	 * @return array          [index => {status, data}]
 	 */
-	public function set($id, array $data, bool $skipDuplicateCheck = false): array
+	public function addBatch(array $records): array
 	{
-		try {
-			// Проверить дублирование по уникальному полю (если не пропущено)
-			if (!$skipDuplicateCheck) {
-				$duplicateError = $this->checkDuplicate(array_merge($data, ['id' => $id]), false, true);
-				if ($duplicateError) {
-					return $duplicateError;
-				}
-			}
+		$results  = [];
+		$toInsert = [];
 
-			$mappedData = $this->mapApiToDbFields($data);
-			$model = new Data($this->tableName);
-			$model->set((int) $id, $mappedData);
-
-			return [
-				'status' => 200,
-				'message' => 'Updated',
-				'data' => ['id' => (int) $id],
-			];
-		} catch (\Exception $e) {
-			return [
-				'status' => 400,
-				'message' => $e->getMessage(),
-				'data' => null,
-			];
-		}
-	}
-
-	/**
-	 * Удалить запись (аналог Data->remove())
-	 * 
-	 * @param int|string $id - ID записи
-	 * @return array - {status, message, data}
-	 */
-	public function remove($id): array
-	{
-		try {
-			$model = new Data($this->tableName);
-			$model->remove((int) $id);
-
-			return [
-				'status' => 200,
-				'message' => 'Deleted',
-				'data' => null,
-			];
-		} catch (\Exception $e) {
-			return [
-				'status' => 400,
-				'message' => $e->getMessage(),
-				'data' => null,
-			];
-		}
-	}
-
-	/**
-	 * Проверить дублирование по уникальному полю таблицы.
-	 *
-	 * Режим POST (forUpdate=false): проверяет, существует ли значение в БД.
-	 * Режим PUT  (forUpdate=true):  то же, но исключает сами обновляемые записи
-	 *                               (ищет конфликт только с ДРУГИМИ записями).
-	 *
-	 * Возвращает:
-	 * - isBatch=false: null или массив ошибки {status:409, ...}
-	 * - isBatch=true:  map [index => null | {status:409, message, data:{id}}]
-	 *
-	 * @param array $data      - одна запись или массив записей
-	 * @param bool  $isBatch   - true если массив записей
-	 * @param bool  $forUpdate - true для PUT: исключить обновляемые id из проверки
-	 * @return mixed
-	 */
-	public function checkDuplicate(array $data, bool $isBatch = false, bool $forUpdate = false): mixed
-	{
-		$uniqueField = self::UNIQUE_FIELDS[$this->tableName] ?? null;
-		if (!$uniqueField || $uniqueField === 'Id') {
-			return $isBatch ? array_fill_keys(array_keys($data), null) : null;
-		}
-
-		$dataList      = $isBatch ? $data : [0 => $data];
-		$result        = array_fill_keys(array_keys($dataList), null);
-		$uniqueValues  = [];
-		$updateIds     = [];
-		$valueIndexMap = [];
-
-		foreach ($dataList as $index => $item) {
-			if (!is_array($item)) {
+		$dupeErrors = $this->checkDuplicate($records, false);
+		foreach ($records as $index => $record) {
+			if ($dupeErrors[$index] ?? null) {
+				$results[$index] = $dupeErrors[$index];
 				continue;
 			}
-			if ($forUpdate) {
-				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
-				if ($id > 0) {
-					$updateIds[] = $id;
-				}
-			}
-			$value = $this->extractFieldValue($item, $uniqueField);
-			if ($value !== null && $value !== '') {
-				$valueLower = strtolower((string) $value);
-				$uniqueValues[] = $valueLower;
-				$valueIndexMap[$valueLower][] = $index;
-			}
+			$toInsert[$index] = $record;
 		}
 
-		if (empty($uniqueValues)) {
-			return $isBatch ? $result : ($result[0] ?? null);
-		}
-
-		$inValues      = Connect::$instance->in($uniqueValues);
-		$params        = $uniqueValues;
-		$excludeClause = '';
-
-		if ($forUpdate && !empty($updateIds)) {
-			$inIds         = Connect::$instance->in($updateIds);
-			$excludeClause = " AND Id NOT IN ($inIds)";
-			$params        = array_merge($params, $updateIds);
+		if (empty($toInsert)) {
+			return $results;
 		}
 
 		try {
-			$rows = Connect::$instance->fetch(
-				"SELECT Id, {$uniqueField} FROM {$this->tableName} WHERE LOWER({$uniqueField}) IN ($inValues){$excludeClause}",
-				$params
+			$batch = Connect::$instance->transaction(
+				fn($args) => $this->executeBatchInsert($args['items']),
+				['items' => $toInsert]
 			);
+			$results += $batch;
 		} catch (\Exception $e) {
-			return $isBatch ? $result : ($result[0] ?? null);
-		}
-
-		foreach ($rows as $row) {
-			$valueLower = strtolower((string) $row[$uniqueField]);
-			foreach ($valueIndexMap[$valueLower] ?? [] as $index) {
-				$originalValue = $this->extractFieldValue($dataList[$index], $uniqueField) ?? $valueLower;
-				$result[$index] = [
-					'status'  => 409,
-					'message' => "Duplicate {$uniqueField}: {$originalValue}",
-					'data'    => ['id' => (int) $row['Id']],
-				];
+			foreach ($toInsert as $index => $_) {
+				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 			}
 		}
 
-		return $isBatch ? $result : ($result[0] ?? null);
+		return $results;
+	}
+
+	/**
+	 * Обновить одну запись.
+	 *
+	 * @param int $id   ID записи
+	 * @param array $data плоский массив полей для обновления
+	 * @return array - {status, message, data}
+	 */
+	public function set(int $id, array $data): array
+	{
+		$dupe = $this->checkDuplicate([array_merge($data, ['id' => $id])], true);
+		if ($dupe[0] ?? null) {
+			return $dupe[0];
+		}
+
+		try {
+			$mapped = $this->mapApiToDbFields($data);
+			$model  = new Data($this->tableName);
+			$model->set($id, $mapped);
+
+			return ['status' => 200, 'message' => 'Updated', 'data' => ['id' => $id]];
+		} catch (\Exception $e) {
+			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+		}
+	}
+
+	/**
+	 * Пакетное обновление записей.
+	 *
+	 * @param array $items [index => плоский массив полей включая 'id']
+	 * @return array        [index => {status, data}]
+	 */
+	public function setBatch(array $items): array
+	{
+		$results  = [];
+		$toUpdate = [];
+
+		foreach ($items as $index => $record) {
+			if (!isset($record['id']) && !isset($record['Id'])) {
+				$results[$index] = ['status' => 400, 'message' => 'id required', 'data' => null];
+				continue;
+			}
+			$toUpdate[$index] = $record;
+		}
+
+		if (!empty($toUpdate)) {
+			$dupeErrors = $this->checkDuplicate($toUpdate, true);
+			foreach ($toUpdate as $index => $_) {
+				if ($dupeErrors[$index] ?? null) {
+					$results[$index] = $dupeErrors[$index];
+					unset($toUpdate[$index]);
+				}
+			}
+		}
+
+		if (empty($toUpdate)) {
+			return $results;
+		}
+
+		try {
+			$batch = Connect::$instance->transaction(
+				fn($args) => $this->executeBatchUpdate($args['items']),
+				['items' => $toUpdate]
+			);
+			$results += $batch;
+		} catch (\Exception $e) {
+			foreach ($toUpdate as $index => $_) {
+				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Удалить запись.
+	 *
+	 * @param int $id ID записи
+	 * @return array - {status, message, data}
+	 */
+	public function remove(int $id): array
+	{
+		try {
+			$model = new Data($this->tableName);
+			$model->remove($id);
+
+			return ['status' => 200, 'message' => 'Deleted', 'data' => null];
+		} catch (\Exception $e) {
+			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+		}
+	}
+
+	// =========================================================================
+	// BATCH EXECUTION (private)
+	// =========================================================================
+
+	private function executeBatchInsert(array $items): array
+	{
+		$results = [];
+		$groups  = [];
+
+		foreach ($items as $index => $record) {
+			$mapped      = $this->mapApiToDbFields($record);
+			unset($mapped['Id'], $mapped['id']);
+			$hasPriority = array_key_exists('Priority', $mapped);
+			ksort($mapped);
+			$sig              = implode(',', array_keys($mapped));
+			$groups[$sig][] = ['index' => $index, 'data' => $mapped, 'hasPriority' => $hasPriority];
+		}
+
+		foreach ($groups as $group) {
+			$settings = [];
+			if (empty($group[0]['hasPriority'])) {
+				$settings['Priority'] = [
+					'fn' => "(select round((max(Priority)+5)/5)*5 from {$this->tableName} as tb)",
+					'rm' => true,
+				];
+			}
+			$prepared = Connect::$instance->prepare($group[0]['data'], $settings);
+			$sql      = "INSERT IGNORE INTO {$this->tableName} {$prepared['insert']}";
+			$sth      = Connect::$db->prepare($sql);
+
+			foreach ($group as $item) {
+				$params = $item['data'];
+				if (!empty($settings['Priority']['rm'])) {
+					unset($params['Priority']);
+				}
+				try {
+					$sth->execute($params);
+					$id                      = (int) Connect::$db->lastInsertId();
+					$results[$item['index']] = $id === 0
+						? ['status' => 409, 'message' => 'Duplicate insert', 'data' => null]
+						: ['status' => 201, 'message' => 'Created', 'data' => ['id' => $id]];
+				} catch (\Exception $e) {
+					$results[$item['index']] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+				}
+			}
+		}
+
+		return $results;
+	}
+
+	private function executeBatchUpdate(array $items): array
+	{
+		$results = [];
+		$groups  = [];
+
+		foreach ($items as $index => $record) {
+			$id     = (int) ($record['id'] ?? $record['Id'] ?? 0);
+			$data   = $record;
+			unset($data['id'], $data['Id']);
+			$mapped = $this->mapApiToDbFields($data);
+			unset($mapped['Id'], $mapped['id']);
+			ksort($mapped);
+
+			if (empty($mapped)) {
+				$results[$index] = ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
+				continue;
+			}
+
+			$sig            = implode(',', array_keys($mapped));
+			$groups[$sig][] = ['index' => $index, 'id' => $id, 'data' => $mapped];
+		}
+
+		foreach ($groups as $group) {
+			$prepared = Connect::$instance->prepare($group[0]['data']);
+			$sql      = "UPDATE {$this->tableName} SET {$prepared['update']} WHERE Id = :Id";
+			$sth      = Connect::$db->prepare($sql);
+
+			foreach ($group as $item) {
+				$params       = $item['data'];
+				$params['Id'] = $item['id'];
+				try {
+					$sth->execute($params);
+					$results[$item['index']] = ['status' => 200, 'message' => 'Updated', 'data' => ['id' => $item['id']]];
+				} catch (\Exception $e) {
+					$results[$item['index']] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+				}
+			}
+		}
+
+		return $results;
+	}
+
+	/**
+	 * Проверить конфликт уникального поля для набора записей.
+	 * Всегда возвращает [index => null | error array].
+	 *
+	 * @param array $records  [index => плоский массив полей]
+	 * @param bool  $forUpdate true = исключить собственные ID записей из проверки (PUT)
+	 * @return array           [index => null | {status:409, ...}]
+	 */
+	public function checkDuplicate(array $records, bool $forUpdate): array
+	{
+		$uniqueFields = $this->getUniqueFields(); // [DbField => apiName]
+		$result       = array_fill_keys(array_keys($records), null);
+
+		if (empty($uniqueFields)) {
+			return $result;
+		}
+
+		$updateIds = [];
+		if ($forUpdate) {
+			foreach ($records as $item) {
+				if (!is_array($item)) continue;
+				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
+				if ($id > 0) $updateIds[] = $id;
+			}
+		}
+
+		foreach ($uniqueFields as $dbField => $apiName) {
+			$uniqueValues  = [];
+			$valueIndexMap = [];
+
+			foreach ($records as $index => $item) {
+				if (!is_array($item) || ($result[$index] ?? null)) continue;
+				$value = $this->extractFieldValue($item, $dbField);
+				if ($value !== null && $value !== '') {
+					$lower                   = strtolower((string) $value);
+					$uniqueValues[]          = $lower;
+					$valueIndexMap[$lower][] = $index;
+				}
+			}
+
+			if (empty($uniqueValues)) continue;
+
+			$inValues      = Connect::$instance->in($uniqueValues);
+			$params        = $uniqueValues;
+			$excludeClause = '';
+
+			if ($forUpdate && !empty($updateIds)) {
+				$inIds         = Connect::$instance->in($updateIds);
+				$excludeClause = " AND Id NOT IN ($inIds)";
+				$params        = array_merge($params, $updateIds);
+			}
+
+			try {
+				$rows = Connect::$instance->fetch(
+					"SELECT Id, {$dbField} FROM {$this->tableName} WHERE LOWER({$dbField}) IN ($inValues){$excludeClause}",
+					$params
+				);
+			} catch (\Exception $e) {
+				continue;
+			}
+
+			foreach ($rows as $row) {
+				$lower = strtolower((string) $row[$dbField]);
+				foreach ($valueIndexMap[$lower] ?? [] as $index) {
+					if ($result[$index] !== null) continue;
+					$original       = $this->extractFieldValue($records[$index], $dbField) ?? $lower;
+					$result[$index] = [
+						'status'  => 409,
+						'message' => "Duplicate {$apiName}: {$original}",
+						'data'    => ['id' => (int) $row['Id']],
+					];
+				}
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -376,21 +502,13 @@ class RestV1M2MUtils
 	}
 
 	/**
-	 * Проверить существование значений в БД (базовый метод)
-	 * Используется как checkDuplicate так и checkBatchDuplicates
-	 * 
-	 * @param string $uniqueField - имя уникального поля
-	 * @param array $values - массив значений для проверки (в нижнем регистре)
-	 * @return array - массив найденных значений (которые уже существуют в БД)
-	 */
-	/**
 	 * Конвертировать данные из camelCase API ключей в PascalCase DB ключи
 	 * используя ApiMapping из s_ConfigFields
 	 *
 	 * @param array $data - данные с camelCase ключами
 	 * @return array - данные с PascalCase ключами
 	 */
-	private function mapApiToDbFields(array $data): array
+	public function mapApiToDbFields(array $data): array
 	{
 		try {
 			$reverseMap = $this->getReverseMap();
@@ -422,22 +540,42 @@ class RestV1M2MUtils
 			return $this->reverseMapCache;
 		}
 
-		$sql = "SELECT `Field`, `ApiMapping` FROM s_ConfigFields WHERE `TableName` = ?";
+		$sql    = "SELECT `Field`, `ApiMapping`, `IsUnique` FROM s_ConfigFields WHERE `TableName` = ?";
 		$result = Connect::$instance->fetch($sql, [$this->tableName]);
 
-		$reverseMap = [];
+		$reverseMap   = [];
+		$uniqueFields = [];
 		foreach ($result as $row) {
 			$dbField = $row['Field'];
-			$apiKey = $row['ApiMapping'] ?? null;
+			$apiKey  = $row['ApiMapping'] ?? null;
 			if ($apiKey) {
 				$reverseMap[strtolower($apiKey)] = $dbField;
 			}
 			// Fallback: lowercased DB field name -> DB field
 			$reverseMap[strtolower($dbField)] = $dbField;
+
+			if (!empty($row['IsUnique'])) {
+				$uniqueFields[$dbField] = $apiKey ? strtolower($apiKey) : strtolower($dbField);
+			}
 		}
 
-		$this->reverseMapCache = $reverseMap;
+		$this->reverseMapCache   = $reverseMap;
+		$this->uniqueFieldsCache = $uniqueFields;
 		return $reverseMap;
+	}
+
+	/**
+	 * Получить уникальные поля таблицы из s_ConfigFields (IsUnique=1).
+	 * Кэшируется вместе с reverseMapCache — дополнительный SQL не нужен.
+	 *
+	 * @return array<string,string> [DbField => apiName]
+	 */
+	private function getUniqueFields(): array
+	{
+		if ($this->uniqueFieldsCache === null) {
+			$this->getReverseMap();
+		}
+		return $this->uniqueFieldsCache ?? [];
 	}
 
 	/**
@@ -500,17 +638,6 @@ class RestV1M2MUtils
 	public function setFields(string $fields): self
 	{
 		$this->fields = $fields;
-		return $this;
-	}
-
-	/**
-	 * Сбросить ранее установленные поля выборки
-	 *
-	 * @return $this
-	 */
-	private function resetFields(): self
-	{
-		$this->fields = null;
 		return $this;
 	}
 

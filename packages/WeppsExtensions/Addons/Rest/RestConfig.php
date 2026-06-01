@@ -89,6 +89,16 @@ class RestConfig
 						'method' => 'cliTest',
 						'note' => 'Execute CLI test operations',
 					],
+					'tasks.process' => [
+						'class' => RestCli::class,
+						'method' => 'tasksProcess',
+						'note' => 'Process pending async tasks from s_Tasks queue',
+					],
+					'tasks.result' => [
+						'class' => RestCli::class,
+						'method' => 'tasksResult',
+						'note' => 'Get task result by id from s_Tasks queue',
+					],
 				],
 			],
 			'v1' => [
@@ -657,6 +667,16 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => true],
 						],
 					],
+					'tasks.result' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getTasksResult',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get async task result by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
 				],
 				'post' => [
 					'users' => [
@@ -671,6 +691,7 @@ class RestConfig
 						'method' => 'postGoods',
 						'role_required' => [1],
 						'auth_required' => true,
+						'async' => true,
 						'note' => 'M2M: Create goods item(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 					],
 					'goods.images' => [
@@ -818,6 +839,16 @@ class RestConfig
 						'class' => RestCli::class,
 						'method' => 'cliTest',
 						'note' => 'Execute CLI test operations',
+					],
+					'tasks.process' => [
+						'class' => RestCli::class,
+						'method' => 'tasksProcess',
+						'note' => 'Process pending async tasks from s_Tasks queue',
+					],
+					'tasks.result' => [
+						'class' => RestCli::class,
+						'method' => 'tasksResult',
+						'note' => 'Get task result by id from s_Tasks queue',
 					],
 				],
 			],

@@ -208,6 +208,30 @@ class Rest
 	}
 
 	/**
+	 * Установить данные запроса (JSON body) напрямую (для восстановления из очереди)
+	 */
+	public function setRequestData(?array $data): void
+	{
+		$this->data = $data;
+	}
+
+	/**
+	 * Установить GET-параметры напрямую (для восстановления из очереди)
+	 */
+	public function setRequestGet(array $get): void
+	{
+		$this->get = $get;
+	}
+
+	/**
+	 * Установить данные пользователя напрямую (для восстановления из очереди)
+	 */
+	public function setUser(?array $user): void
+	{
+		$this->user = $user;
+	}
+
+	/**
 	 * Обработать запрос вручную (для тестирования)
 	 *
 	 * Выполняет маршрутизацию и обработку запроса без отправки HTTP ответа.
@@ -325,6 +349,10 @@ class Rest
 				return ['status' => 404, 'message' => 'Method not found', 'data' => null];
 			}
 
+			if (!empty($config['async'])) {
+				return $this->queueTask($config, $handler);
+			}
+
 			if ($this->customResponse) {
 				return $handler->{$config['method']}($this->data);
 			}
@@ -335,6 +363,31 @@ class Rest
 			$this->status = $status;
 			return ['status' => $status, 'message' => $e->getMessage(), 'data' => null];
 		}
+	}
+
+	/**
+	 * Поставить вызов метода в очередь задач (async-режим)
+	 *
+	 * Сохраняет в s_Tasks: класс обработчика, метод, данные запроса и пользователя.
+	 * Возвращает 202 Accepted с ID созданной задачи.
+	 */
+	private function queueTask(array $config, $handler): array
+	{
+		(new \WeppsCore\Tasks())->add(
+			$config['method'],
+			[
+				'handler' => get_class($handler),
+				'method'  => $config['method'],
+				'data'    => $this->data,
+				'get'     => $this->get,
+				'user'    => $this->user,
+			],
+			'',
+			'',
+			'post'
+		);
+		$taskId = (int) Connect::$db->lastInsertId();
+		return ['status' => 202, 'message' => 'Accepted', 'data' => ['task_id' => $taskId]];
 	}
 
 	/**

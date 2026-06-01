@@ -4,6 +4,7 @@ namespace WeppsExtensions\Addons\Bot;
 use WeppsCore\Connect;
 use WeppsCore\Tasks;
 use WeppsCore\Memcached;
+use WeppsExtensions\Addons\Rest\RestCli;
 use WeppsExtensions\Addons\Messages\Telegram\Telegram;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Payments\Yookassa\Yookassa;
@@ -15,51 +16,50 @@ class BotSystem extends Bot {
 		parent::__construct();
 	}
 	public function tasks() {
-		$sql = "select * from s_Tasks where IsHidden=0 and InProgress in (1,0) and IsProcessed=0 order by Id,InProgress desc limit 50";
+		$sql = "select * from s_Tasks where IsHidden=0 and InProgress in (1,0) and IsProcessed=0 and COALESCE(TRequest,'') != 'post' and Url not LIKE '/rest/m2m%' order by Id,InProgress desc limit 50";
 		$res = Connect::$instance->fetch($sql);
-		if (empty($res) || $res[0]['InProgress']==1) {
-			return;
-		}
-		$ids = array_column($res,'Id');
-		new Memcached('no');
-		$tasks = new Tasks();
-		$cartUtils = new CartUtils();
-		$yookassa = new Yookassa([],$cartUtils);
-		$profileUtils = new ProfileUtils([]);
-		foreach ($res as $value) {
-			switch($value['Name']) {
-				case 'order-new':
-					$cartUtils->processTask($value, $tasks);
-					break;
-				case 'order-payment':
-					$cartUtils->processPaymentTask($value, $tasks);
-					break;
-				case 'yookassa':
-					$yookassa->processTask($value,$tasks);
-					break;
-				case 'password':
-					$profileUtils->processPasswordTask($value,$tasks);
-					break;
-				case 'password-confirm':
-					$profileUtils->processPasswordConfirmTask($value,$tasks);
-					break;
-				case 'reg-confirm':
-					$profileUtils->processRegConfirmTask($value,$tasks);
-					break;
-				case 'reg-complete':
-					$profileUtils->processRegCompleteTask($value,$tasks);
-					break;
-				case 'telegram_timeout':
-					$telegram = new Telegram();
-					$telegram->processTimeoutTask($value, $tasks);
-					break;
-				case 'telegram_error':
-					$telegram = new Telegram();
-					$telegram->processErrorTask($value, $tasks);
-					break;
-				default:
-					$tasks->update($value['Id'],['message'=>'task fail'],404);
-					break;
+		if (!empty($res) && $res[0]['InProgress'] != 1) {
+			$ids = array_column($res,'Id');
+			new Memcached('no');
+			$tasks = new Tasks();
+			$cartUtils = new CartUtils();
+			$yookassa = new Yookassa([],$cartUtils);
+			$profileUtils = new ProfileUtils([]);
+			foreach ($res as $value) {
+				switch($value['Name']) {
+					case 'order-new':
+						$cartUtils->processTask($value, $tasks);
+						break;
+					case 'order-payment':
+						$cartUtils->processPaymentTask($value, $tasks);
+						break;
+					case 'yookassa':
+						$yookassa->processTask($value,$tasks);
+						break;
+					case 'password':
+						$profileUtils->processPasswordTask($value,$tasks);
+						break;
+					case 'password-confirm':
+						$profileUtils->processPasswordConfirmTask($value,$tasks);
+						break;
+					case 'reg-confirm':
+						$profileUtils->processRegConfirmTask($value,$tasks);
+						break;
+					case 'reg-complete':
+						$profileUtils->processRegCompleteTask($value,$tasks);
+						break;
+					case 'telegram_timeout':
+						$telegram = new Telegram();
+						$telegram->processTimeoutTask($value, $tasks);
+						break;
+					case 'telegram_error':
+						$telegram = new Telegram();
+						$telegram->processErrorTask($value, $tasks);
+						break;
+					default:
+						$tasks->update($value['Id'],['message'=>'task fail'],404);
+						break;
+				}
 			}
 		}
 		/*
@@ -68,5 +68,8 @@ class BotSystem extends Bot {
 		#$in = Connect::$instance->in($ids);
 		#$sql = "update s_Tasks set InProgress=1,IsProcessed=1 where Id in ($in)";
 		#Connect::$instance->query($sql,$ids);
+
+		// Обработка async REST задач (TRequest='post'), поставленных в очередь через Rest::queueTask()
+		(new RestCli())->tasksProcess();
 	}
 }

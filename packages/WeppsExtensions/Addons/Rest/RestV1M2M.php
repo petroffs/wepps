@@ -43,38 +43,35 @@ class RestV1M2M extends RestV1
 
 	public function getUsersItem(): array
 	{
-		$id = $this->extractIdFromGetParams();
+		$id = $this->getIdFromRequest();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 		$this->getUtils('s_Users')->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
-		$result = $this->getUtils('s_Users')->item($id);
-		return $result;
+		return $this->getUtils('s_Users')->item($id);
 	}
 
 	public function postUsers($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-
-		return $this->create('s_Users', $data);
+		return $this->create('s_Users', $records);
 	}
 
 	public function putUsers($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-
-		return $this->update('s_Users', $data);
+		return $this->update('s_Users', $records);
 	}
 
 	public function deleteUsers(): array
 	{
-		$id = $this->extractIdFromGetParams();
+		$id = $this->getIdFromRequest();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -183,7 +180,7 @@ class RestV1M2M extends RestV1
 
 	public function getGoodsItem(): array
 	{
-		$id = $this->extractIdFromGetParams();
+		$id = $this->getIdFromRequest();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -194,22 +191,20 @@ class RestV1M2M extends RestV1
 
 	public function postGoods($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-
-		return $this->create('Products', $data);
+		return $this->create('Products', $records);
 	}
 
 	public function putGoods($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-
-		return $this->update('Products', $data);
+		return $this->update('Products', $records);
 	}
 
 	/**
@@ -221,35 +216,32 @@ class RestV1M2M extends RestV1
 	 */
 	public function postGoodsVariations($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		$isMultiple = isset($data[0]) && is_array($data[0]);
-		$items = $isMultiple ? $data : [$data];
-
 		$processing = new ProcessingProducts();
-		$results = [];
+		$results    = [];
 
-		foreach ($items as $index => $item) {
-			$goodsId = (int) ($item['goodsId'] ?? $item['goods_id'] ?? 0);
+		foreach ($records as $index => $record) {
+			$goodsId = (int) ($record['goodsId'] ?? $record['goods_id'] ?? 0);
 			if (!$goodsId) {
 				$results[$index] = ['status' => 400, 'message' => 'goodsId required', 'data' => null];
 				continue;
 			}
-			$results[$index] = $processing->createVariation($goodsId, $item);
+			$results[$index] = $processing->createVariation($goodsId, $record);
 		}
 
-		if (!$isMultiple) {
+		if (count($records) === 1) {
 			return $results[0];
 		}
 
 		$hasErrors = !empty(array_filter($results, fn($r) => ($r['status'] ?? 200) >= 400 && ($r['status'] ?? 200) !== 409));
 		return [
-			'status' => $hasErrors ? 207 : 201,
+			'status'  => $hasErrors ? 207 : 201,
 			'message' => 'Multi-Status',
-			'data' => $results,
+			'data'    => $results,
 		];
 	}
 
@@ -262,47 +254,16 @@ class RestV1M2M extends RestV1
 	 */
 	public function putGoodsVariations($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-
-		$isMultiple = isset($data[0]) && is_array($data[0]);
-		$items = $isMultiple ? $data : [$data];
-
-		// Batch-проверка дубликатов одним запросом
-		$duplicateErrors = $this->getUtils('ProductsVariations')->checkDuplicate($items, true, true);
-
-		$results = [];
-		foreach ($items as $index => $item) {
-			$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
-			if (!$id) {
-				// Для одиночного — попробовать GET-параметр ?id=
-				if (!$isMultiple) {
-					$id = $this->extractIdFromGetParams();
-				}
-				if (!$id) {
-					$results[$index] = ['status' => 400, 'message' => 'id required', 'data' => null];
-					continue;
-				}
-			}
-			if ($duplicateErrors[$index] ?? null) {
-				$results[$index] = $duplicateErrors[$index];
-				continue;
-			}
-			$results[$index] = $this->getUtils('ProductsVariations')->set($id, $item, true);
-		}
-
-		if (!$isMultiple) {
-			return $results[0];
-		}
-
-		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
+		return $this->update('ProductsVariations', $records);
 	}
 
 	public function deleteGoods(): array
 	{
-		$id = $this->extractIdFromGetParams();
+		$id = $this->getIdFromRequest();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -362,8 +323,8 @@ class RestV1M2M extends RestV1
 	 */
 	public function patchGoodsFilters($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$data = $this->normalizeInput()[0] ?? [];
+		if (empty($data)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
@@ -570,74 +531,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function postGoodsImages($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$goodsId = $data['goods_id'] ?? $data['TableNameId'] ?? 0;
-		if (!$goodsId) {
-			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
-		}
-
-		$name = $data['name'] ?? $data['Name'] ?? '';
-		$fileUrl = null;
-		$fileName = $data['file_name'] ?? '';
-
-		// Приоритет: file_url > file_base64 > multipart
-		// 1. Проверить file_url
-		if (!empty($data['file_url'])) {
-			$fileUrl = $data['file_url'];
-		}
-		// 2. Проверить file_base64
-		elseif (!empty($data['file_base64'])) {
-			if (!$fileName) {
-				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
-			}
-			$binaryData = base64_decode($data['file_base64'], true);
-			if (!$binaryData) {
-				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
-			}
-			$fileUrl = $this->saveUploadedFile($binaryData, $fileName, $goodsId);
-			if (!$fileUrl) {
-				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
-			}
-		}
-		// 3. Проверить multipart файл
-		elseif (!empty($_FILES['file'])) {
-			$file = $_FILES['file'];
-			if ($file['error'] !== UPLOAD_ERR_OK) {
-				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
-			}
-			$binaryData = file_get_contents($file['tmp_name']);
-			if (!$binaryData) {
-				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
-			}
-			$fileUrl = $this->saveUploadedFile($binaryData, $file['name'], $goodsId);
-			if (!$fileUrl) {
-				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
-			}
-		} else {
-			return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
-		}
-
-		// Генерировать InnerName (путь к сохранённому файлу)
-		$innerName = str_replace('/pic/lists/Products/', '', $fileUrl);
-
-		// Вставить новое изображение
-		$id = Connect::$instance->insert('s_Files', [
-			'TableName' => 'Products',
-			'TableNameId' => $goodsId,
-			'Name' => $name ?: $fileName,
-			'InnerName' => $innerName,
-			'FileUrl' => $fileUrl,
-		]);
-
-		if (!$id) {
-			return ['status' => 400, 'message' => 'Failed to add image', 'data' => null];
-		}
-
-		return ['status' => 201, 'message' => 'Image added', 'data' => ['id' => $id]];
+		return $this->handleFileCreate('Products', $this->normalizeInput()[0] ?? []);
 	}
 
 	/**
@@ -645,61 +539,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function putGoodsImages($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$imageId = $data['id'] ?? 0;
-		if (!$imageId) {
-			return ['status' => 400, 'message' => 'id required', 'data' => null];
-		}
-
-		// Проверить существование изображения
-		$existing = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'Products'",
-			[$imageId]
-		);
-		if (empty($existing)) {
-			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
-		}
-
-		// Подготовить данные для обновления
-		$updates = [];
-		$params = [];
-
-		if (isset($data['name']) || isset($data['Name'])) {
-			$updates[] = 'Name = ?';
-			$params[] = $data['name'] ?? $data['Name'] ?? '';
-		}
-
-		if (isset($data['inner_name']) || isset($data['InnerName'])) {
-			$updates[] = 'InnerName = ?';
-			$params[] = $data['inner_name'] ?? $data['InnerName'] ?? '';
-		}
-
-		if (isset($data['file_url']) || isset($data['FileUrl'])) {
-			$updates[] = 'FileUrl = ?';
-			$params[] = $data['file_url'] ?? $data['FileUrl'] ?? '';
-		}
-
-		if (empty($updates)) {
-			return ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
-		}
-
-		$params[] = $imageId;
-
-		// Обновить изображение
-		$result = Connect::$instance->query(
-			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
-			$params
-		);
-
-		if ($result <= 0) {
-			return ['status' => 400, 'message' => 'Failed to update image', 'data' => null];
-		}
-
-		return ['status' => 200, 'message' => 'Image updated', 'data' => ['id' => $imageId]];
+		return $this->handleFileUpdate('Products', $this->normalizeInput()[0] ?? []);
 	}
 
 	/**
@@ -715,74 +555,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function postGoodsImagesVariations($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$goodsId = $data['goods_id'] ?? $data['TableNameId'] ?? 0;
-		if (!$goodsId) {
-			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
-		}
-
-		$name = $data['name'] ?? $data['Name'] ?? '';
-		$fileUrl = null;
-		$fileName = $data['file_name'] ?? '';
-
-		// Приоритет: file_url > file_base64 > multipart
-		// 1. Проверить file_url
-		if (!empty($data['file_url'])) {
-			$fileUrl = $data['file_url'];
-		}
-		// 2. Проверить file_base64
-		elseif (!empty($data['file_base64'])) {
-			if (!$fileName) {
-				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
-			}
-			$binaryData = base64_decode($data['file_base64'], true);
-			if (!$binaryData) {
-				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
-			}
-			$fileUrl = $this->saveUploadedFileVariation($binaryData, $fileName, $goodsId);
-			if (!$fileUrl) {
-				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
-			}
-		}
-		// 3. Проверить multipart файл
-		elseif (!empty($_FILES['file'])) {
-			$file = $_FILES['file'];
-			if ($file['error'] !== UPLOAD_ERR_OK) {
-				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
-			}
-			$binaryData = file_get_contents($file['tmp_name']);
-			if (!$binaryData) {
-				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
-			}
-			$fileUrl = $this->saveUploadedFileVariation($binaryData, $file['name'], $goodsId);
-			if (!$fileUrl) {
-				return ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
-			}
-		} else {
-			return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
-		}
-
-		// Генерировать InnerName (путь к сохранённому файлу)
-		$innerName = str_replace('/pic/lists/ProductsVariations/', '', $fileUrl);
-
-		// Вставить новое изображение
-		$id = Connect::$instance->insert('s_Files', [
-			'TableName' => 'ProductsVariations',
-			'TableNameId' => $goodsId,
-			'Name' => $name ?: $fileName,
-			'InnerName' => $innerName,
-			'FileUrl' => $fileUrl,
-		]);
-
-		if (!$id) {
-			return ['status' => 400, 'message' => 'Failed to add image', 'data' => null];
-		}
-
-		return ['status' => 201, 'message' => 'Image added', 'data' => ['id' => $id]];
+		return $this->handleFileCreate('ProductsVariations', $this->normalizeInput()[0] ?? []);
 	}
 
 	/**
@@ -790,61 +563,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function putGoodsImagesVariations($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$imageId = $data['id'] ?? 0;
-		if (!$imageId) {
-			return ['status' => 400, 'message' => 'id required', 'data' => null];
-		}
-
-		// Проверить существование изображения
-		$existing = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'ProductsVariations'",
-			[$imageId]
-		);
-		if (empty($existing)) {
-			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
-		}
-
-		// Подготовить данные для обновления
-		$updates = [];
-		$params = [];
-
-		if (isset($data['name']) || isset($data['Name'])) {
-			$updates[] = 'Name = ?';
-			$params[] = $data['name'] ?? $data['Name'] ?? '';
-		}
-
-		if (isset($data['inner_name']) || isset($data['InnerName'])) {
-			$updates[] = 'InnerName = ?';
-			$params[] = $data['inner_name'] ?? $data['InnerName'] ?? '';
-		}
-
-		if (isset($data['file_url']) || isset($data['FileUrl'])) {
-			$updates[] = 'FileUrl = ?';
-			$params[] = $data['file_url'] ?? $data['FileUrl'] ?? '';
-		}
-
-		if (empty($updates)) {
-			return ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
-		}
-
-		$params[] = $imageId;
-
-		// Обновить изображение
-		$result = Connect::$instance->query(
-			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
-			$params
-		);
-
-		if ($result <= 0) {
-			return ['status' => 400, 'message' => 'Failed to update image', 'data' => null];
-		}
-
-		return ['status' => 200, 'message' => 'Image updated', 'data' => ['id' => $imageId]];
+		return $this->handleFileUpdate('ProductsVariations', $this->normalizeInput()[0] ?? []);
 	}
 
 	/**
@@ -852,31 +571,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImages(): array
 	{
-		$imageId = $this->extractIdFromGetParams();
-		if (!$imageId) {
-			return ['status' => 400, 'message' => 'id required', 'data' => null];
-		}
-
-		// Проверить существование изображения
-		$existing = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'Products'",
-			[$imageId]
-		);
-		if (empty($existing)) {
-			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
-		}
-
-		// Удалить изображение
-		$result = Connect::$instance->query(
-			"DELETE FROM s_Files WHERE Id = ? AND TableName = 'Products'",
-			[$imageId]
-		);
-
-		if ($result <= 0) {
-			return ['status' => 400, 'message' => 'Failed to delete image', 'data' => null];
-		}
-
-		return ['status' => 200, 'message' => 'Image deleted', 'data' => ['id' => $imageId]];
+		return $this->handleFileDelete('Products');
 	}
 
 	/**
@@ -884,31 +579,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImagesVariations(): array
 	{
-		$imageId = $this->extractIdFromGetParams();
-		if (!$imageId) {
-			return ['status' => 400, 'message' => 'id required', 'data' => null];
-		}
-
-		// Проверить существование изображения
-		$existing = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = 'ProductsVariations'",
-			[$imageId]
-		);
-		if (empty($existing)) {
-			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
-		}
-
-		// Удалить изображение
-		$result = Connect::$instance->query(
-			"DELETE FROM s_Files WHERE Id = ? AND TableName = 'ProductsVariations'",
-			[$imageId]
-		);
-
-		if ($result <= 0) {
-			return ['status' => 400, 'message' => 'Failed to delete image', 'data' => null];
-		}
-
-		return ['status' => 200, 'message' => 'Image deleted', 'data' => ['id' => $imageId]];
+		return $this->handleFileDelete('ProductsVariations');
 	}
 
 	/**
@@ -916,8 +587,8 @@ class RestV1M2M extends RestV1
 	 */
 	public function putGoodsStocks($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$data = $this->normalizeInput()[0] ?? [];
+		if (empty($data)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
@@ -955,8 +626,8 @@ class RestV1M2M extends RestV1
 	 */
 	public function putGoodsPrices($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$data = $this->normalizeInput()[0] ?? [];
+		if (empty($data)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
@@ -1018,38 +689,70 @@ class RestV1M2M extends RestV1
 
 	public function getOrdersItem(): array
 	{
-		$id = $this->extractIdFromGetParams();
+		$id = $this->getIdFromRequest();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 		$this->getUtils('Orders')->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		$result = $this->getUtils('Orders')->item($id);
-		return $result;
+		return $this->getUtils('Orders')->item($id);
+	}
+
+	public function getTasksResult(): array
+	{
+		$id = $this->getIdFromRequest();
+		if (!$id) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		$rows = Connect::$instance->fetch(
+			"SELECT Id, Name, LDate, TRequest, Url, IsProcessed, InProgress, BResponse, SResponse FROM s_Tasks WHERE Id = ?",
+			[$id]
+		);
+
+		if (empty($rows)) {
+			return ['status' => 404, 'message' => 'Task not found', 'data' => null];
+		}
+
+		$task = $rows[0];
+
+		return [
+			'status'  => 200,
+			'message' => 'OK',
+			'data'    => [
+				'id'           => (int) $task['Id'],
+				'name'         => $task['Name'],
+				'created_at'   => $task['LDate'],
+				'type'         => $task['TRequest'],
+				'url'          => $task['Url'],
+				'is_processed' => (bool) $task['IsProcessed'],
+				'in_progress'  => (bool) $task['InProgress'],
+				'http_status'  => $task['SResponse'] ? (int) $task['SResponse'] : null,
+				'response'     => $task['BResponse'] ? json_decode($task['BResponse'], true) : null,
+			],
+		];
 	}
 
 	public function postOrders($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-
-		return $this->create('Orders', $data);
+		return $this->create('Orders', $records);
 	}
 
 	public function putOrders($data = null): array
 	{
-		$data = $this->extractRequestData($data);
-		if (!$data) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-
-		return $this->update('Orders', $data);
+		return $this->update('Orders', $records);
 	}
 
 	public function deleteOrders(): array
 	{
-		$id = $this->extractIdFromGetParams();
+		$id = $this->getIdFromRequest();
 		if (!$id) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -1069,115 +772,75 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * Создание записей (одиночное или массовое).
-	 * Автоматически определяет формат: одна запись или массив записей (макс 100).
-	 *
-	 * @param string $tableName - имя таблицы
-	 * @param array $data - одна запись или массив записей
-	 * @return array - результат с status, message, data
-	 */
-	protected function create(string $tableName, array $data): array
-	{
-		$result = $this->processRecords(
-			$tableName,
-			$data,
-			true,
-			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->add($item, true),
-			function (array $item) use ($tableName): void {
-				$this->validatePostData($tableName, $item);
-			}
-		);
-
-		$this->updateSearchIndex($tableName, $result);
-		return $result;
-	}
-
-	/**
-	 * Обновление записей (одиночно или batch).
-	 * Поддерживает id в теле и ?id= для одиночного обновления.
+	 * Создать записи (одну или пакет).
 	 *
 	 * @param string $tableName
-	 * @param array $data
+	 * @param array  $records [плоские записи из normalizeInput()]
 	 * @return array
 	 */
-	protected function update(string $tableName, array $data): array
+	protected function create(string $tableName, array $records): array
 	{
-		$result = $this->processRecords(
-			$tableName,
-			$data,
-			false,
-			fn(array $item, int $id = 0): array => $this->getUtils($tableName)->set($id, $item, true),
-			function (array $item) use ($tableName): void {
-				$this->validatePutData($tableName, $item);
-			}
-		);
+		$errors = [];
+		$valid  = [];
 
-		$this->updateSearchIndex($tableName, $result);
-		return $result;
-	}
-
-	/**
-	 * Общая обработка batch или одиночных create/update запросов.
-	 *
-	 * @param string $tableName
-	 * @param array $data
-	 * @param bool $isCreate
-	 * @param callable $operation
-	 * @param callable $validate
-	 * @return array
-	 */
-	private function processRecords(string $tableName, array $data, bool $isCreate, callable $operation, callable $validate): array
-	{
-		$isMultiple = isset($data[0]) && is_array($data[0]);
-		if ($isMultiple && count($data) > 100) {
-			return ['status' => 400, 'message' => 'Maximum 100 items allowed', 'data' => null];
-		}
-
-		$items = $isMultiple ? $data : [$data];
-		$results = [];
-
-		foreach ($items as $index => $item) {
-			if (!is_array($item)) {
-				$results[$index] = ['status' => 400, 'message' => 'Item must be array', 'data' => null];
-				continue;
-			}
-
+		foreach ($records as $index => $record) {
 			try {
-				$validate($item);
+				$this->validate($tableName, $record, true);
+				$valid[$index] = $record;
 			} catch (\Exception $e) {
-				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+				$errors[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 			}
 		}
 
-		$duplicateErrors = $this->getUtils($tableName)->checkDuplicate($items, true, !$isCreate);
-
-		foreach ($items as $index => $item) {
-			if (isset($results[$index])) {
-				continue;
-			}
-
-			$id = 0;
-			if (!$isCreate) {
-				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
-				if (!$id && !$isMultiple) {
-					$id = $this->extractIdFromGetParams($data);
-				}
-				if (!$id) {
-					$results[$index] = ['status' => 400, 'message' => 'ID required', 'data' => null];
-					continue;
-				}
-			}
-
-			if ($duplicateErrors[$index] ?? null) {
-				$results[$index] = $duplicateErrors[$index];
-				continue;
-			}
-
-			$results[$index] = $operation($item, $id);
+		$results = $errors;
+		if (!empty($valid)) {
+			$results += $this->getUtils($tableName)->addBatch($valid);
 		}
 
-		if (!$isMultiple) {
-			return $results[0];
+		$this->updateSearchIndex($tableName, $results);
+
+		if (count($records) === 1) {
+			return $results[0] ?? ['status' => 400, 'message' => 'No result', 'data' => null];
+		}
+
+		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
+	}
+
+	/**
+	 * Обновить записи (одну или пакет).
+	 *
+	 * @param string $tableName
+	 * @param array  $records [плоские записи с 'id' из normalizeInput()]
+	 * @return array
+	 */
+	protected function update(string $tableName, array $records): array
+	{
+		$errors = [];
+		$valid  = [];
+
+		foreach ($records as $index => $record) {
+			$id = (int) ($record['id'] ?? $record['Id'] ?? 0);
+			if (!$id) {
+				$errors[$index] = ['status' => 400, 'message' => 'id required', 'data' => null];
+				continue;
+			}
+			try {
+				$this->validate($tableName, $record, false);
+				$valid[$index] = $record;
+			} catch (\Exception $e) {
+				$errors[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+			}
+		}
+
+		$results = $errors;
+		if (!empty($valid)) {
+			$results += $this->getUtils($tableName)->setBatch($valid);
+		}
+
+		$this->updateSearchIndex($tableName, $results);
+
+		if (count($records) === 1) {
+			return $results[0] ?? ['status' => 400, 'message' => 'No result', 'data' => null];
 		}
 
 		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
@@ -1238,122 +901,73 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * Валидировать GET параметры на основе s_ConfigFields
-	 * 
-	 * @param string $tableName - имя таблицы для получения правил
-	 * @param array $data - данные для валидации
-	 * @throws \Exception если валидация не пройдена
+	 * Валидировать запись по правилам из s_ConfigFields.
+	 *
+	 * @param string $tableName
+	 * @param array  $record
+	 * @param bool   $requireAll true = POST (обязательные поля проверяются), false = PUT (partial update)
+	 * @throws \Exception
 	 */
-	private function validateQueryParams(string $tableName, array $data): void
+	private function validate(string $tableName, array $record, bool $requireAll): void
 	{
 		$rules = $this->getUtils($tableName)->getFieldRules();
 		if (empty($rules)) {
-			// Если правил нет в БД, используем ослабленную валидацию
 			return;
 		}
 
-		// Валидация через родительский класс Rest
-		$this->rest->validateData($data, $rules);
+		if (!$requireAll) {
+			$rules = array_map(fn($r) => array_merge($r, ['required' => false]), $rules);
+		}
+
+		$this->rest->validateData($record, $rules);
 	}
 
 	/**
-	 * Валидировать POST данные на основе s_ConfigFields
-	 * Требует все обязательные поля (Required=1)
-	 * 
-	 * @param string $tableName - имя таблицы для получения правил
-	 * @param array $data - данные для валидации
-	 * @throws \Exception если валидация не пройдена
+	 * Получить ID из GET-параметра ?id=
 	 */
-	private function validatePostData(string $tableName, array $data): void
+	private function getIdFromRequest(): int
 	{
-		$rules = $this->getUtils($tableName)->getFieldRules();
-		if (empty($rules)) {
-			// Если правил нет в БД, используем ослабленную валидацию
-			return;
-		}
-
-		// Валидация через родительский класс Rest
-		$this->rest->validateData($data, $rules);
+		return (int) ($this->get['id'] ?? 0);
 	}
 
 	/**
-	 * Валидировать PUT данные на основе s_ConfigFields
-	 * НЕ требует обязательные поля (Required=1), т.к. они уже в БД
-	 * Позволяет partial update
-	 * 
-	 * @param string $tableName - имя таблицы для получения правил
-	 * @param array $data - данные для валидации
-	 * @throws \Exception если валидация не пройдена
+	 * Нормализовать входные данные в массив плоских записей.
+	 * - Разворачивает обёртку {"data": ...}.
+	 * - Одиночная запись преобразуется в [{...}].
+	 * - Для PUT-одиночного без 'id' в теле: подхватывает ?id= из GET.
+	 *
+	 * @return array [{...}] или [] если данных нет
 	 */
-	private function validatePutData(string $tableName, array $data): void
+	private function normalizeInput(): array
 	{
-		$rules = $this->getUtils($tableName)->getFieldRules();
-		if (empty($rules)) {
-			// Если правил нет в БД, используем ослабленную валидацию
-			return;
-		}
+		$raw = $this->data;
 
-		// Убираем флаг required для PUT (partial update)
-		$rulesForUpdate = [];
-		foreach ($rules as $fieldName => $rule) {
-			$rulesForUpdate[$fieldName] = [
-				'type' => $rule['type'],
-				'required' => false, // PUT позволяет обновлять отдельные поля
-			];
-		}
-
-		// Валидация через родительский класс Rest
-		$this->rest->validateData($data, $rulesForUpdate);
-	}
-
-	/**
-	 * Извлечь id из GET параметров или данных
-	 * 
-	 * Сначала проверяет GET параметр ?id={{id}}, затем данные из JSON тела.
-	 * Если $data передана, добавляет id туда если он был взят из GET параметров.
-	 * 
-	 * @param array|null &$data - данные для обновления (опционально, по ссылке)
-	 * @return int ID или 0 если не найден
-	 */
-	private function extractIdFromGetParams(?array &$data = null): int
-	{
-		$getParams = $this->rest->getGet();
-		$id = (int) ($getParams['id'] ?? 0);
-
-		if ($id > 0) {
-			// Если id найден в GET параметрах, добавляем его в $data (если она передана)
-			if ($data !== null) {
-				$data['id'] = $id;
-			}
-			return $id;
-		}
-
-		// Если id не в GET, ищем в $data (если она передана)
-		if ($data !== null) {
-			return (int) ($data['id'] ?? $data['Id'] ?? 0);
-		}
-
-		return 0;
-	}
-
-	private function extractRequestData($data): array
-	{
-		if ($data && isset($data['data']) && is_array($data['data'])) {
-			return $data['data'];
-		}
-
-		$input = file_get_contents('php://input');
-		if ($input) {
-			$decoded = @json_decode($input, true);
-			if (is_array($decoded)) {
-				if (isset($decoded['data']) && is_array($decoded['data'])) {
-					return $decoded['data'];
-				}
-				return $decoded;
+		if (empty($raw)) {
+			$input = file_get_contents('php://input');
+			if ($input) {
+				$raw = @json_decode($input, true) ?: [];
 			}
 		}
 
-		return [];
+		if (empty($raw)) {
+			return [];
+		}
+
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			$raw = $raw['data'];
+		}
+
+		$records = (isset($raw[0]) && is_array($raw[0])) ? $raw : [$raw];
+
+		// Для одиночного PUT без id в теле запроса: подхватить ?id= из GET
+		if (count($records) === 1 && !isset($records[0]['id']) && !isset($records[0]['Id'])) {
+			$id = $this->getIdFromRequest();
+			if ($id) {
+				$records[0]['id'] = $id;
+			}
+		}
+
+		return $records;
 	}
 
 	/**
@@ -1363,33 +977,25 @@ class RestV1M2M extends RestV1
 	 * @param int $goodsId - ID товара
 	 * @return string|null - путь к файлу или null если ошибка
 	 */
-	private function saveUploadedFile(string $binaryData, string $fileName, int $goodsId): ?string
+	private function saveFile(string $binary, string $fileName, string $tableName, int $entityId): ?string
 	{
-		// Определить расширение
-		$ext = pathinfo($fileName, PATHINFO_EXTENSION);
+		$ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 		if (!$ext) {
 			return null;
 		}
 
-		// Генерировать InnerName (хеш имени + расширение)
-		$innerName = md5(uniqid($goodsId . '_', true)) . '.' . strtolower($ext);
+		$innerName = md5(uniqid($entityId . '_', true)) . '.' . $ext;
+		$dir       = __DIR__ . '/../../../pic/lists/' . $tableName . '/' . $entityId;
 
-		// Путь для сохранения: /pic/lists/Products/{goods_id}/
-		$dir = __DIR__ . '/../../../pic/lists/Products/' . $goodsId;
-		if (!is_dir($dir)) {
-			if (!mkdir($dir, 0755, true)) {
-				return null;
-			}
-		}
-
-		// Сохранить файл
-		$filePath = $dir . '/' . $innerName;
-		if (file_put_contents($filePath, $binaryData) === false) {
+		if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
 			return null;
 		}
 
-		// Вернуть путь в формате /pic/lists/Products/{goods_id}/{innerName}
-		return '/pic/lists/Products/' . $goodsId . '/' . $innerName;
+		if (file_put_contents($dir . '/' . $innerName, $binary) === false) {
+			return null;
+		}
+
+		return '/pic/lists/' . $tableName . '/' . $entityId . '/' . $innerName;
 	}
 
 	/**
@@ -1399,33 +1005,153 @@ class RestV1M2M extends RestV1
 	 * @param int $goodsvId - ID вариации товара
 	 * @return string|null - путь к файлу или null если ошибка
 	 */
-	private function saveUploadedFileVariation(string $binaryData, string $fileName, int $goodsvId): ?string
+	private function resolveFileUrl(array $data, string $tableName, int $entityId): string|array
 	{
-		// Определить расширение
-		$ext = pathinfo($fileName, PATHINFO_EXTENSION);
-		if (!$ext) {
-			return null;
+		$fileName = $data['file_name'] ?? '';
+
+		if (!empty($data['file_url'])) {
+			return $data['file_url'];
 		}
 
-		// Генерировать InnerName (хеш имени + расширение)
-		$innerName = md5(uniqid($goodsvId . '_', true)) . '.' . strtolower($ext);
-
-		// Путь для сохранения: /pic/lists/ProductsVariations/{goodsv_id}/
-		$dir = __DIR__ . '/../../../pic/lists/ProductsVariations/' . $goodsvId;
-		if (!is_dir($dir)) {
-			if (!mkdir($dir, 0755, true)) {
-				return null;
+		if (!empty($data['file_base64'])) {
+			if (!$fileName) {
+				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
 			}
+			$binary = base64_decode($data['file_base64'], true);
+			if (!$binary) {
+				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
+			}
+			$url = $this->saveFile($binary, $fileName, $tableName, $entityId);
+			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
 		}
 
-		// Сохранить файл
-		$filePath = $dir . '/' . $innerName;
-		if (file_put_contents($filePath, $binaryData) === false) {
-			return null;
+		if (!empty($_FILES['file'])) {
+			$file = $_FILES['file'];
+			if ($file['error'] !== UPLOAD_ERR_OK) {
+				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
+			}
+			$binary = file_get_contents($file['tmp_name']);
+			if (!$binary) {
+				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
+			}
+			$url = $this->saveFile($binary, $file['name'], $tableName, $entityId);
+			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
 		}
 
-		// Вернуть путь в формате /pic/lists/ProductsVariations/{goodsv_id}/{innerName}
-		return '/pic/lists/ProductsVariations/' . $goodsvId . '/' . $innerName;
+		return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
+	}
+
+	private function handleFileCreate(string $tableName, array $data): array
+	{
+		if (empty($data)) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$entityId = (int) ($data['goods_id'] ?? $data['TableNameId'] ?? 0);
+		if (!$entityId) {
+			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
+		}
+
+		$fileUrl = $this->resolveFileUrl($data, $tableName, $entityId);
+		if (is_array($fileUrl)) {
+			return $fileUrl;
+		}
+
+		$name      = $data['name'] ?? $data['Name'] ?? $data['file_name'] ?? '';
+		$innerName = str_replace('/pic/lists/' . $tableName . '/', '', $fileUrl);
+
+		$id = Connect::$instance->insert('s_Files', [
+			'TableName'   => $tableName,
+			'TableNameId' => $entityId,
+			'Name'        => $name,
+			'InnerName'   => $innerName,
+			'FileUrl'     => $fileUrl,
+		]);
+
+		if (!$id) {
+			return ['status' => 400, 'message' => 'Failed to add image', 'data' => null];
+		}
+
+		return ['status' => 201, 'message' => 'Image added', 'data' => ['id' => $id]];
+	}
+
+	private function handleFileUpdate(string $tableName, array $data): array
+	{
+		if (empty($data)) {
+			return ['status' => 400, 'message' => 'No data', 'data' => null];
+		}
+
+		$imageId = (int) ($data['id'] ?? 0);
+		if (!$imageId) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		$existing = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = ?",
+			[$imageId, $tableName]
+		);
+		if (empty($existing)) {
+			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
+		}
+
+		$updates = [];
+		$params  = [];
+
+		if (isset($data['name']) || isset($data['Name'])) {
+			$updates[] = 'Name = ?';
+			$params[]  = $data['name'] ?? $data['Name'] ?? '';
+		}
+		if (isset($data['inner_name']) || isset($data['InnerName'])) {
+			$updates[] = 'InnerName = ?';
+			$params[]  = $data['inner_name'] ?? $data['InnerName'] ?? '';
+		}
+		if (isset($data['file_url']) || isset($data['FileUrl'])) {
+			$updates[] = 'FileUrl = ?';
+			$params[]  = $data['file_url'] ?? $data['FileUrl'] ?? '';
+		}
+
+		if (empty($updates)) {
+			return ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
+		}
+
+		$params[] = $imageId;
+		$result   = Connect::$instance->query(
+			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
+			$params
+		);
+
+		if ($result <= 0) {
+			return ['status' => 400, 'message' => 'Failed to update image', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Image updated', 'data' => ['id' => $imageId]];
+	}
+
+	private function handleFileDelete(string $tableName): array
+	{
+		$imageId = $this->getIdFromRequest();
+		if (!$imageId) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		$existing = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = ?",
+			[$imageId, $tableName]
+		);
+		if (empty($existing)) {
+			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
+		}
+
+		$result = Connect::$instance->query(
+			"DELETE FROM s_Files WHERE Id = ? AND TableName = ?",
+			[$imageId, $tableName]
+		);
+
+		if ($result <= 0) {
+			return ['status' => 400, 'message' => 'Failed to delete image', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Image deleted', 'data' => ['id' => $imageId]];
 	}
 }
 
