@@ -297,6 +297,106 @@ class RestV1M2MUtils
 	}
 
 	/**
+	 * Синхронизировать таблицу постранично.
+	 *
+	 * Формат pagination: ['page' => 1, 'count' => 5]
+	 * - page=1:          UPDATE {table} SET IsHidden2=1  (пометить всё кандидатом на скрытие)
+	 * - pages 1..count:  upsert записей + IsHidden2=0 для успешно обработанных
+	 * - page=count:      UPDATE {table} SET IsHidden=IsHidden2  (скрыть что не пришло)
+	 *
+	 * @param array $records    [index => плоский массив полей]
+	 * @param array $pagination ['page' => int, 'count' => int]
+	 * @return array            [index => {status, data}]
+	 */
+	public function syncBatch(array $records, array $pagination): array
+	{
+		$page  = (int) ($pagination['page'] ?? 1);
+		$count = (int) ($pagination['count'] ?? 1);
+
+		if ($page === 1) {
+			Connect::$instance->query("UPDATE {$this->tableName} SET IsHidden2 = 1");
+		}
+
+		$toUpdate = [];
+		$toInsert = [];
+		$results  = [];
+
+		foreach ($records as $index => $record) {
+			$id = (int) ($record['id'] ?? $record['Id'] ?? 0);
+			if ($id) {
+				$toUpdate[$index] = $record;
+			} else {
+				$toInsert[$index] = $record;
+			}
+		}
+
+		if (!empty($toUpdate)) {
+			$dupeErrors = $this->checkDuplicate($toUpdate, true);
+			foreach ($toUpdate as $index => $_) {
+				if ($dupeErrors[$index] ?? null) {
+					$results[$index] = $dupeErrors[$index];
+					unset($toUpdate[$index]);
+				}
+			}
+		}
+
+		if (!empty($toInsert)) {
+			$dupeErrors = $this->checkDuplicate($toInsert, false);
+			foreach ($toInsert as $index => $_) {
+				if ($dupeErrors[$index] ?? null) {
+					$results[$index] = $dupeErrors[$index];
+					unset($toInsert[$index]);
+				}
+			}
+		}
+
+		try {
+			if (!empty($toUpdate)) {
+				$results += Connect::$instance->transaction(
+					fn($args) => $this->executeBatchUpdate($args['items']),
+					['items' => $toUpdate]
+				);
+			}
+			if (!empty($toInsert)) {
+				$results += Connect::$instance->transaction(
+					fn($args) => $this->executeBatchInsert($args['items']),
+					['items' => $toInsert]
+				);
+			}
+		} catch (\Exception $e) {
+			foreach (array_merge(array_keys($toUpdate), array_keys($toInsert)) as $index) {
+				if (!isset($results[$index])) {
+					$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+				}
+			}
+		}
+
+		// Снять метку IsHidden2 с успешно обработанных записей
+		$successIds = [];
+		foreach ($results as $result) {
+			$status = (int) ($result['status'] ?? 0);
+			if (($status === 200 || $status === 201) && isset($result['data']['id'])) {
+				$successIds[] = (int) $result['data']['id'];
+			}
+		}
+
+		if (!empty($successIds)) {
+			$in = Connect::$instance->in($successIds);
+			Connect::$instance->query(
+				"UPDATE {$this->tableName} SET IsHidden2 = 0 WHERE Id IN ($in)",
+				$successIds
+			);
+		}
+
+		// На последней странице — применить скрытие
+		if ($page === $count) {
+			Connect::$instance->query("UPDATE {$this->tableName} SET IsHidden = IsHidden2");
+		}
+
+		return $results;
+	}
+
+	/**
 	 * Удалить запись.
 	 *
 	 * @param int $id ID записи

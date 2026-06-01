@@ -847,8 +847,46 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * Обновить поисковый индекс для созданных или обновлённых записей.
+	 * Синхронизировать таблицу постранично (upsert + скрытие отсутствующих).
 	 *
+	 * Используется вместе с normalizeSyncInput().
+	 * Формат запроса: {"data": [...], "pagination": {"page": 1, "count": 5}}
+	 *
+	 * @param string $tableName
+	 * @param array  $records    [плоские записи из normalizeSyncInput()]
+	 * @param array  $pagination ['page' => int, 'count' => int]
+	 * @return array
+	 */
+	protected function sync(string $tableName, array $records, array $pagination): array
+	{
+		$errors = [];
+		$valid  = [];
+
+		foreach ($records as $index => $record) {
+			try {
+				$this->validate($tableName, $record, false);
+				$valid[$index] = $record;
+			} catch (\Exception $e) {
+				$errors[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+			}
+		}
+
+		$results = $errors;
+		if (!empty($valid)) {
+			$results += $this->getUtils($tableName)->syncBatch($valid, $pagination);
+		}
+
+		$this->updateSearchIndex($tableName, $results);
+
+		if (count($records) === 1) {
+			return $results[0] ?? ['status' => 400, 'message' => 'No result', 'data' => null];
+		}
+
+		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
+	}
+
+	/**
+	 * Обновить поисковый индекс для созданных или обновлённых записей.	 *
 	 * @param string $tableName
 	 * @param array $result
 	 */
@@ -968,6 +1006,47 @@ class RestV1M2M extends RestV1
 		}
 
 		return $records;
+	}
+
+	/**
+	 * Нормализовать входные данные для sync-операции.
+	 * Дополнительно извлекает ключ pagination из тела запроса.
+	 *
+	 * Ожидаемый формат тела: {"data": [...], "pagination": {"page": 1, "count": 5}}
+	 *
+	 * @return array ['records' => [...], 'pagination' => array|null]
+	 */
+	private function normalizeSyncInput(): array
+	{
+		$raw = $this->data;
+
+		if (empty($raw)) {
+			$input = file_get_contents('php://input');
+			if ($input) {
+				$raw = @json_decode($input, true) ?: [];
+			}
+		}
+
+		if (empty($raw)) {
+			return ['records' => [], 'pagination' => null];
+		}
+
+		$pagination = (isset($raw['pagination']) && is_array($raw['pagination']))
+			? $raw['pagination']
+			: null;
+
+		$data = (isset($raw['data']) && is_array($raw['data'])) ? $raw['data'] : $raw;
+
+		$records = (isset($data[0]) && is_array($data[0])) ? $data : [$data];
+
+		if (count($records) === 1 && !isset($records[0]['id']) && !isset($records[0]['Id'])) {
+			$id = $this->getIdFromRequest();
+			if ($id) {
+				$records[0]['id'] = $id;
+			}
+		}
+
+		return ['records' => $records, 'pagination' => $pagination];
 	}
 
 	/**
