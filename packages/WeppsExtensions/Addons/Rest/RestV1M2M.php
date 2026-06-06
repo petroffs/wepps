@@ -208,6 +208,46 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
+	 * M2M: GET получить вариации товаров
+	 */
+	public function getGoodsVariations(): array
+	{
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = min(5000, max(1, (int) ($this->get['limit'] ?? 5000)));
+		$goodsId = (int) ($this->get['goodsId'] ?? 0);
+
+		$data = new Data('ProductsVariations', ['useApiMapping' => true]);
+		$data->setFields('Id,ProductsId,Field1,Field2,Field3,FIeld4');
+
+		// Условия WHERE
+		$conditions = 'IsHidden = 0';
+		$params = [];
+
+		// Если передан goodsId, фильтруем по товару
+		if ($goodsId > 0) {
+			$conditions .= ' AND ProductsId = ?';
+			$params[] = $goodsId;
+		}
+
+		if (!empty($params)) {
+			$data->setParams($params);
+		}
+
+		$result = $data->fetch($conditions, $limit, $page, 't.Priority desc');
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $result ?: [],
+			'pagination' => [
+				'count' => $data->count,
+				'limit' => $limit,
+				'page' => $page,
+			],
+		];
+	}
+
+	/**
 	 * M2M: POST создание вариаций товаров (одна или batch).
 	 * Не скрывает существующие вариации — только добавляет новые.
 	 * При дубликате (Alias) возвращает 409 с id существующей.
@@ -222,7 +262,7 @@ class RestV1M2M extends RestV1
 		}
 
 		$processing = new ProcessingProducts();
-		$results    = [];
+		$results = [];
 
 		foreach ($records as $index => $record) {
 			$goodsId = (int) ($record['goodsId'] ?? $record['goods_id'] ?? 0);
@@ -239,9 +279,9 @@ class RestV1M2M extends RestV1
 
 		$hasErrors = !empty(array_filter($results, fn($r) => ($r['status'] ?? 200) >= 400 && ($r['status'] ?? 200) !== 409));
 		return [
-			'status'  => $hasErrors ? 207 : 201,
+			'status' => $hasErrors ? 207 : 201,
 			'message' => 'Multi-Status',
-			'data'    => $results,
+			'data' => $results,
 		];
 	}
 
@@ -716,18 +756,18 @@ class RestV1M2M extends RestV1
 		$task = $rows[0];
 
 		return [
-			'status'  => 200,
+			'status' => 200,
 			'message' => 'OK',
-			'data'    => [
-				'id'           => (int) $task['Id'],
-				'name'         => $task['Name'],
-				'created_at'   => $task['LDate'],
-				'type'         => $task['TRequest'],
-				'url'          => $task['Url'],
+			'data' => [
+				'id' => (int) $task['Id'],
+				'name' => $task['Name'],
+				'created_at' => $task['LDate'],
+				'type' => $task['TRequest'],
+				'url' => $task['Url'],
 				'is_processed' => (bool) $task['IsProcessed'],
-				'in_progress'  => (bool) $task['InProgress'],
-				'http_status'  => $task['SResponse'] ? (int) $task['SResponse'] : null,
-				'response'     => $task['BResponse'] ? json_decode($task['BResponse'], true) : null,
+				'in_progress' => (bool) $task['InProgress'],
+				'http_status' => $task['SResponse'] ? (int) $task['SResponse'] : null,
+				'response' => $task['BResponse'] ? json_decode($task['BResponse'], true) : null,
 			],
 		];
 	}
@@ -781,7 +821,7 @@ class RestV1M2M extends RestV1
 	protected function create(string $tableName, array $records): array
 	{
 		$errors = [];
-		$valid  = [];
+		$valid = [];
 
 		foreach ($records as $index => $record) {
 			try {
@@ -816,7 +856,7 @@ class RestV1M2M extends RestV1
 	protected function update(string $tableName, array $records): array
 	{
 		$errors = [];
-		$valid  = [];
+		$valid = [];
 
 		foreach ($records as $index => $record) {
 			$id = (int) ($record['id'] ?? $record['Id'] ?? 0);
@@ -860,7 +900,7 @@ class RestV1M2M extends RestV1
 	protected function sync(string $tableName, array $records, array $pagination): array
 	{
 		$errors = [];
-		$valid  = [];
+		$valid = [];
 
 		foreach ($records as $index => $record) {
 			try {
@@ -1064,7 +1104,7 @@ class RestV1M2M extends RestV1
 		}
 
 		$innerName = md5(uniqid($entityId . '_', true)) . '.' . $ext;
-		$dir       = __DIR__ . '/../../../pic/lists/' . $tableName . '/' . $entityId;
+		$dir = __DIR__ . '/../../../pic/lists/' . $tableName . '/' . $entityId;
 
 		if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
 			return null;
@@ -1136,15 +1176,15 @@ class RestV1M2M extends RestV1
 			return $fileUrl;
 		}
 
-		$name      = $data['name'] ?? $data['Name'] ?? $data['file_name'] ?? '';
+		$name = $data['name'] ?? $data['Name'] ?? $data['file_name'] ?? '';
 		$innerName = str_replace('/pic/lists/' . $tableName . '/', '', $fileUrl);
 
 		$id = Connect::$instance->insert('s_Files', [
-			'TableName'   => $tableName,
+			'TableName' => $tableName,
 			'TableNameId' => $entityId,
-			'Name'        => $name,
-			'InnerName'   => $innerName,
-			'FileUrl'     => $fileUrl,
+			'Name' => $name,
+			'InnerName' => $innerName,
+			'FileUrl' => $fileUrl,
 		]);
 
 		if (!$id) {
@@ -1174,19 +1214,19 @@ class RestV1M2M extends RestV1
 		}
 
 		$updates = [];
-		$params  = [];
+		$params = [];
 
 		if (isset($data['name']) || isset($data['Name'])) {
 			$updates[] = 'Name = ?';
-			$params[]  = $data['name'] ?? $data['Name'] ?? '';
+			$params[] = $data['name'] ?? $data['Name'] ?? '';
 		}
 		if (isset($data['inner_name']) || isset($data['InnerName'])) {
 			$updates[] = 'InnerName = ?';
-			$params[]  = $data['inner_name'] ?? $data['InnerName'] ?? '';
+			$params[] = $data['inner_name'] ?? $data['InnerName'] ?? '';
 		}
 		if (isset($data['file_url']) || isset($data['FileUrl'])) {
 			$updates[] = 'FileUrl = ?';
-			$params[]  = $data['file_url'] ?? $data['FileUrl'] ?? '';
+			$params[] = $data['file_url'] ?? $data['FileUrl'] ?? '';
 		}
 
 		if (empty($updates)) {
@@ -1194,7 +1234,7 @@ class RestV1M2M extends RestV1
 		}
 
 		$params[] = $imageId;
-		$result   = Connect::$instance->query(
+		$result = Connect::$instance->query(
 			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
 			$params
 		);

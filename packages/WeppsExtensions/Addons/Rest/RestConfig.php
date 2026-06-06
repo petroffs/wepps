@@ -649,6 +649,18 @@ class RestConfig
 							'limit' => ['type' => 'int2', 'required' => false],
 						],
 					],
+					'goods.variations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getGoodsVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get goods variations (paginated)',
+						'query_validation' => [
+							'goodsId' => ['type' => 'int2', 'required' => false],
+							'page' => ['type' => 'int2', 'required' => false],
+							'limit' => ['type' => 'int2', 'required' => false],
+						],
+					],
 					// ===== Orders =====
 					'orders' => [
 						'class' => RestV1M2M::class,
