@@ -1,0 +1,180 @@
+meta {
+  name: GET goods.item (Full test suite)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/rest/v1/goods.item?id={{product_id}}
+  auth: none
+}
+
+params:query {
+}
+
+tests {
+  // ========== УРОВЕНЬ 1: Базовая корректность ответа ==========
+  
+  test("L1: Returns 200 status (when item exists)", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("L1: Response has status field", function() {
+    expect(res.body).to.have.property("status").that.equals(200);
+  });
+
+  test("L1: Response has message field", function() {
+    expect(res.body).to.have.property("message");
+  });
+
+  test("L1: Response has data field", function() {
+    expect(res.body).to.have.property("data");
+  });
+
+  // ========== УРОВЕНЬ 2: Структура данных ==========
+
+  test("L2: Data is object (not array)", function() {
+    expect(res.body.data).to.be.an("object").and.not.to.be.an("array");
+  });
+
+  test("L2: Item has all required fields", function() {
+    const item = res.body.data;
+    expect(item).to.have.property("Id");
+    expect(item).to.have.property("Name");
+    expect(item).to.have.property("Price");
+    expect(item).to.have.property("Url");
+    expect(item).to.have.property("IsHidden");
+  });
+
+  test("L2: W_Variations is array (when present)", function() {
+    if (res.body.data.W_Variations) {
+      expect(res.body.data.W_Variations).to.be.an("array");
+      res.body.data.W_Variations.forEach(v => {
+        expect(v).to.have.property("Id");
+        expect(v).to.have.property("Name");
+        expect(v).to.have.property("Price");
+      });
+    }
+  });
+
+  test("L2: W_Attributes is array (when present)", function() {
+    if (res.body.data.W_Attributes) {
+      expect(res.body.data.W_Attributes).to.be.an("array");
+      res.body.data.W_Attributes.forEach(attr => {
+        expect(attr).to.have.property("id");
+        expect(attr).to.have.property("name");
+      });
+    }
+  });
+
+  // ========== УРОВЕНЬ 3: Валидация значений ==========
+
+  test("L3: Id is positive number", function() {
+    expect(res.body.data.Id).to.be.a("number").and.to.be.greaterThan(0);
+  });
+
+  test("L3: Name is non-empty string", function() {
+    expect(res.body.data.Name).to.be.a("string").and.to.have.length.greaterThan(0);
+  });
+
+  test("L3: Price is non-negative number", function() {
+    expect(res.body.data.Price).to.be.a("number").and.to.be.at.least(0);
+  });
+
+  test("L3: Url is valid HTTP(S) URL", function() {
+    expect(res.body.data.Url).to.match(/^https?:\/\//);
+  });
+
+  test("L3: Images_FileUrl is valid URL (when present)", function() {
+    if (res.body.data.Images_FileUrl) {
+      expect(res.body.data.Images_FileUrl).to.match(/^https?:\/\//);
+    }
+  });
+
+  test("L3: Variations have valid Price and Stock", function() {
+    if (res.body.data.W_Variations) {
+      res.body.data.W_Variations.forEach(v => {
+        expect(v.Price).to.be.a("number").and.to.be.at.least(0);
+        if (v.Stock !== undefined) {
+          expect(v.Stock).to.be.a("number").and.to.be.at.least(0);
+        }
+      });
+    }
+  });
+
+  test("L3: IsHidden is 0", function() {
+    expect(res.body.data.IsHidden).to.equal(0);
+  });
+
+  // ========== УРОВЕНЬ 4: Логика и связи данных ==========
+
+  test("L4: Variation IDs are unique", function() {
+    if (res.body.data.W_Variations && res.body.data.W_Variations.length > 0) {
+      const ids = res.body.data.W_Variations.map(v => v.Id);
+      const uniqueIds = new Set(ids);
+      expect(uniqueIds.size).to.equal(ids.length);
+    }
+  });
+
+  test("L4: All variations belong to main item", function() {
+    if (res.body.data.W_Variations) {
+      res.body.data.W_Variations.forEach(v => {
+        expect(v.GoodsId || v.ProductId).to.equal(res.body.data.Id);
+      });
+    }
+  });
+
+  test("L4: Response message is OK", function() {
+    expect(res.body.message).to.equal("OK");
+  });
+
+  // ========== УРОВЕНЬ 5: Граничные случаи и ошибки ==========
+
+  test("L5: No variations is valid state", function() {
+    if (!res.body.data.W_Variations || res.body.data.W_Variations.length === 0) {
+      expect(res.status).to.equal(200);
+    }
+  });
+
+  test("L5: Item can be found by numeric ID", function() {
+    if (/^\d+$/.test(req.getQueryParam("id"))) {
+      expect(res.body.data.Id).to.be.a("number");
+    }
+  });
+
+  test("L5: Item can be found by string alias", function() {
+    if (!/^\d+$/.test(req.getQueryParam("id"))) {
+      expect(res.body.data).to.exist;
+    }
+  });
+}
+
+docs {
+  Get single goods item by Id or alias.
+
+  Parameters:
+  - id (required): числовой ID или строковый alias товара
+
+  Response structure:
+  {
+    status: 200,
+    message: "OK",
+    data: {
+      Id, Name, Price, Url, Images_FileUrl,
+      W_Variations: [ { Id, Name, Price, Stock, GoodsId } ],
+      W_Attributes: [ { id, name, values } ],
+      IsHidden, Description, ...
+    }
+  }
+
+  Error responses:
+  - 400: Missing 'id' parameter
+  - 404: Item not found
+
+  Test levels:
+  L1: Basic response structure
+  L2: Object structure and nested arrays
+  L3: Value validation and data types
+  L4: Relationships and consistency
+  L5: Edge cases (no variations, ID vs alias)
+}

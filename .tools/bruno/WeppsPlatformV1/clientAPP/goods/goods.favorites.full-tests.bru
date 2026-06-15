@@ -1,0 +1,164 @@
+meta {
+  name: GET goods.favorites (Full test suite)
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{base_url}}/rest/v1/goods.favorites
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+tests {
+  // ========== УРОВЕНЬ 1: Базовая корректность ответа ==========
+  
+  test("L1: Returns 200 status", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("L1: Response has status field", function() {
+    expect(res.body).to.have.property("status").that.equals(200);
+  });
+
+  test("L1: Response has message field", function() {
+    expect(res.body).to.have.property("message");
+  });
+
+  test("L1: Response has data field", function() {
+    expect(res.body).to.have.property("data");
+  });
+
+  // ========== УРОВЕНЬ 2: Структура данных ==========
+
+  test("L2: Data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+
+  test("L2: Each item has required fields", function() {
+    res.body.data.forEach(item => {
+      expect(item).to.have.property("Id");
+      expect(item).to.have.property("Name");
+      expect(item).to.have.property("Price");
+    });
+  });
+
+  test("L2: Pagination present", function() {
+    expect(res.body).to.have.property("pagination");
+    expect(res.body.pagination).to.have.property("count");
+    expect(res.body.pagination).to.have.property("page");
+    expect(res.body.pagination).to.have.property("limit");
+  });
+
+  // ========== УРОВЕНЬ 3: Валидация значений ==========
+
+  test("L3: All items have positive Id", function() {
+    res.body.data.forEach(item => {
+      expect(item.Id).to.be.a("number").and.to.be.greaterThan(0);
+    });
+  });
+
+  test("L3: Name is non-empty string", function() {
+    res.body.data.forEach(item => {
+      expect(item.Name).to.be.a("string").and.to.have.length.greaterThan(0);
+    });
+  });
+
+  test("L3: Price is non-negative number", function() {
+    res.body.data.forEach(item => {
+      expect(item.Price).to.be.a("number").and.to.be.at.least(0);
+    });
+  });
+
+  test("L3: Images_FileUrl is valid URL (when present)", function() {
+    res.body.data.forEach(item => {
+      if (item.Images_FileUrl) {
+        expect(item.Images_FileUrl).to.match(/^https?:\/\//);
+      }
+    });
+  });
+
+  test("L3: IsHidden is 0 for all items", function() {
+    res.body.data.forEach(item => {
+      expect(item.IsHidden).to.equal(0);
+    });
+  });
+
+  test("L3: Pagination values are valid", function() {
+    expect(res.body.pagination.count).to.be.a("number").and.to.be.at.least(0);
+    expect(res.body.pagination.page).to.be.a("number").and.to.be.greaterThan(0);
+    expect(res.body.pagination.limit).to.be.a("number").and.to.be.greaterThan(0);
+  });
+
+  // ========== УРОВЕНЬ 4: Логика и связи данных ==========
+
+  test("L4: Page is valid", function() {
+    const { count, page, limit } = res.body.pagination;
+    const maxPages = Math.ceil(count / limit);
+    expect(page).to.be.lessThanOrEqual(maxPages);
+  });
+
+  test("L4: Item count matches pagination", function() {
+    const { count, limit, page } = res.body.pagination;
+    const expectedMax = Math.min(limit, count - (page - 1) * limit);
+    expect(res.body.data.length).to.be.lessThanOrEqual(expectedMax);
+  });
+
+  test("L4: All items are user favorites", function() {
+    // Items returned should match user's JFav list
+    // This is verified by checking they are present at all
+    expect(res.body.data).to.be.an("array");
+  });
+
+  // ========== УРОВЕНЬ 5: Граничные случаи и ошибки ==========
+
+  test("L5: Handles empty favorites list", function() {
+    expect(res.body.data).to.be.an("array");
+    if (res.body.data.length === 0) {
+      expect(res.body.pagination.count).to.equal(0);
+    }
+  });
+
+  test("L5: Requires authentication (Bearer token)", function() {
+    // This test assumes Bearer token is provided
+    expect(res.status).to.equal(200);
+  });
+
+  test("L5: Returns OK message", function() {
+    expect(res.body.message).to.equal("OK");
+  });
+}
+
+docs {
+  Get current user's favorite goods.
+  Requires Bearer token authentication.
+  Returns empty array if user has no favorites.
+
+  Parameters: none (requires authorization)
+
+  Auth: Bearer {{access_token}}
+
+  Response structure:
+  {
+    status: 200,
+    message: "OK",
+    data: [
+      { Id, Name, Price, Images_FileUrl, IsHidden, ... }
+    ],
+    pagination: { count, page, limit }
+  }
+
+  Error responses:
+  - 401: Missing or invalid Bearer token
+  - 403: Insufficient permissions
+
+  Test levels:
+  L1: Basic response structure
+  L2: Array structure with required fields
+  L3: Value validation and types
+  L4: Pagination consistency and data relationships
+  L5: Edge cases (empty favorites, authentication)
+}

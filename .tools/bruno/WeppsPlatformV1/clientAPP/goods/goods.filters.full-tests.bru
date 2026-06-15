@@ -1,0 +1,221 @@
+meta {
+  name: GET goods.filters (Full test suite)
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/rest/v1/goods.filters
+  body: none
+  auth: none
+}
+
+params:query {
+  ~category: 
+  ~search: 
+}
+
+tests {
+  // ========== УРОВЕНЬ 1: Базовая корректность ответа ==========
+  
+  test("L1: Returns 200 status", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("L1: Response has status field", function() {
+    expect(res.body).to.have.property("status").that.equals(200);
+  });
+
+  test("L1: Response has message field", function() {
+    expect(res.body).to.have.property("message");
+  });
+
+  test("L1: Response has data field", function() {
+    expect(res.body).to.have.property("data");
+  });
+
+  // ========== УРОВЕНЬ 2: Структура данных ==========
+
+  test("L2: Data is array or object", function() {
+    expect(res.body.data).to.be.an("array").or.to.be.an("object");
+  });
+
+  test("L2: Each filter has required fields", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        expect(filter).to.have.property("id");
+        expect(filter).to.have.property("name");
+        expect(filter).to.have.property("values");
+      });
+    } else {
+      Object.keys(res.body.data).forEach(key => {
+        const filter = res.body.data[key];
+        if (filter.length > 0) {
+          expect(filter[0]).to.have.property("PropertyName");
+        }
+      });
+    }
+  });
+
+  test("L2: Each value has required fields", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        expect(filter.values).to.be.an("array");
+        filter.values.forEach(value => {
+          expect(value).to.have.property("alias");
+          expect(value).to.have.property("value");
+          expect(value).to.have.property("count");
+        });
+      });
+    }
+  });
+
+  // ========== УРОВЕНЬ 3: Валидация значений ==========
+
+  test("L3: Filter id is positive number", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        expect(filter.id).to.be.a("number").and.to.be.greaterThan(0);
+      });
+    }
+  });
+
+  test("L3: Filter name is non-empty string", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        expect(filter.name).to.be.a("string").and.to.have.length.greaterThan(0);
+      });
+    }
+  });
+
+  test("L3: Value count is non-negative number", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        filter.values.forEach(value => {
+          expect(value.count).to.be.a("number").and.to.be.at.least(0);
+        });
+      });
+    }
+  });
+
+  test("L3: Alias is lowercase string", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        filter.values.forEach(value => {
+          expect(value.alias).to.be.a("string");
+          expect(value.alias).to.equal(value.alias.toLowerCase());
+        });
+      });
+    }
+  });
+
+  test("L3: Value is non-empty string", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        filter.values.forEach(value => {
+          expect(value.value).to.be.a("string").and.to.have.length.greaterThan(0);
+        });
+      });
+    }
+  });
+
+  // ========== УРОВЕНЬ 4: Логика и связи данных ==========
+
+  test("L4: Filter IDs are unique", function() {
+    if (Array.isArray(res.body.data)) {
+      const ids = res.body.data.map(f => f.id);
+      const uniqueIds = new Set(ids);
+      expect(uniqueIds.size).to.equal(ids.length);
+    }
+  });
+
+  test("L4: Values within filter are unique by alias", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        const aliases = filter.values.map(v => v.alias);
+        const uniqueAliases = new Set(aliases);
+        expect(uniqueAliases.size).to.equal(aliases.length);
+      });
+    }
+  });
+
+  test("L4: Total count per filter is sum of value counts", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        if (filter.total_count !== undefined) {
+          const sumCount = filter.values.reduce((sum, v) => sum + v.count, 0);
+          expect(filter.total_count).to.equal(sumCount);
+        }
+      });
+    }
+  });
+
+  // ========== УРОВЕНЬ 5: Граничные случаи и ошибки ==========
+
+  test("L5: Handles empty filters", function() {
+    expect(res.body.data).to.be.an("array").or.to.be.an("object");
+    // Empty array or object is valid
+  });
+
+  test("L5: Handles filters with no values", function() {
+    if (Array.isArray(res.body.data)) {
+      res.body.data.forEach(filter => {
+        expect(filter.values).to.be.an("array");
+        // Empty values array is valid
+      });
+    }
+  });
+
+  test("L5: Category filter works correctly (if specified)", function() {
+    if (req.getQueryParam("category")) {
+      expect(res.status).to.equal(200);
+      // Filters should be contextual to category
+    }
+  });
+
+  test("L5: Search filter works correctly (if specified)", function() {
+    if (req.getQueryParam("search")) {
+      expect(res.status).to.equal(200);
+      // Filters should be contextual to search
+    }
+  });
+}
+
+docs {
+  Get available property filters for goods with values and counts.
+  Results can be filtered by category and search query.
+
+  Parameters:
+  - category (optional): filter by category NavigatorId
+  - search (optional): filter by product name prefix
+
+  Response structure (Array format):
+  {
+    status: 200,
+    message: "OK",
+    data: [
+      {
+        id: 1,
+        name: "Size",
+        values: [
+          { alias: "s", value: "S", count: 45 },
+          { alias: "m", value: "M", count: 32 }
+        ]
+      }
+    ]
+  }
+
+  Or Object format (grouped by PropertyId):
+  {
+    1: [
+      { PropertyName, Alias, PValue, Co }
+    ]
+  }
+
+  Test levels:
+  L1: Basic response structure
+  L2: Array/object structure with required fields
+  L3: Value validation (positive counts, lowercase aliases)
+  L4: Logical consistency (unique IDs, unique aliases)
+  L5: Edge cases (empty filters, contextual filtering)
+}

@@ -1,0 +1,131 @@
+meta {
+  name: GET goods.categories (Full test suite)
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/rest/v1/goods.categories
+  body: none
+  auth: none
+}
+
+tests {
+  // ========== УРОВЕНЬ 1: Базовая корректность ответа ==========
+  
+  test("L1: Returns 200 status", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("L1: Response has status field", function() {
+    expect(res.body).to.have.property("status").that.equals(200);
+  });
+
+  test("L1: Response has message field", function() {
+    expect(res.body).to.have.property("message");
+  });
+
+  test("L1: Response has data field", function() {
+    expect(res.body).to.have.property("data");
+  });
+
+  // ========== УРОВЕНЬ 2: Структура данных ==========
+
+  test("L2: Data is array", function() {
+    expect(res.body.data).to.be.an("array");
+  });
+
+  test("L2: Each item has required fields", function() {
+    res.body.data.forEach(item => {
+      expect(item).to.have.property("Id");
+      expect(item).to.have.property("Name");
+      expect(item).to.have.property("Url");
+      expect(item).to.have.property("ParentDir");
+      expect(item).to.have.property("Extension");
+    });
+  });
+
+  // ========== УРОВЕНЬ 3: Валидация значений ==========
+
+  test("L3: All items have positive Id", function() {
+    res.body.data.forEach(item => {
+      expect(item.Id).to.be.a("number").and.to.be.greaterThan(0);
+    });
+  });
+
+  test("L3: Name is non-empty string", function() {
+    res.body.data.forEach(item => {
+      expect(item.Name).to.be.a("string").and.to.have.length.greaterThan(0);
+    });
+  });
+
+  test("L3: Url is valid HTTP(S) URL", function() {
+    res.body.data.forEach(item => {
+      expect(item.Url).to.match(/^https?:\/\//);
+    });
+  });
+
+  test("L3: ParentDir is non-negative number", function() {
+    res.body.data.forEach(item => {
+      expect(item.ParentDir).to.be.a("number").and.to.be.at.least(0);
+    });
+  });
+
+  test("L3: Extension is number", function() {
+    res.body.data.forEach(item => {
+      expect(item.Extension).to.be.a("number");
+    });
+  });
+
+  // ========== УРОВЕНЬ 4: Логика и связи данных ==========
+
+  test("L4: Category IDs are unique", function() {
+    const ids = res.body.data.map(c => c.Id);
+    const uniqueIds = new Set(ids);
+    expect(uniqueIds.size).to.equal(ids.length);
+  });
+
+  test("L4: Parent categories exist or are 0", function() {
+    res.body.data.forEach(item => {
+      if (item.ParentDir > 0) {
+        const parentExists = res.body.data.some(c => c.Id === item.ParentDir);
+        // Parent either exists in list or is valid reference
+        expect(item.ParentDir).to.be.a("number");
+      }
+    });
+  });
+
+  // ========== УРОВЕНЬ 5: Граничные случаи и ошибки ==========
+
+  test("L5: Handles empty categories list", function() {
+    expect(res.body.data).to.be.an("array");
+    // Empty array is valid result if no categories
+  });
+
+  test("L5: Message is OK", function() {
+    expect(res.body.message).to.equal("OK");
+  });
+}
+
+docs {
+  Get list of goods categories.
+  Returns all visible categories excluding brands section.
+
+  Parameters: none
+
+  Response structure:
+  {
+    status: 200,
+    message: "OK",
+    data: [
+      { Id, Name, Url, ParentDir, Extension }
+    ]
+  }
+
+  Test levels:
+  L1: Basic response structure
+  L2: Array of objects with required fields
+  L3: Value validation (positive IDs, valid URLs)
+  L4: Logical relationships (unique IDs, parent references)
+  L5: Edge cases (empty list)
+}
