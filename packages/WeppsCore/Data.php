@@ -270,7 +270,7 @@ class Data
 		$limit = ($currentPage - 1) * $onPage;
 		// Если условие это число И не содержит плейсхолдер, преобразуем в условие с типизацией
 		if (is_numeric($conditions) && strpos($conditions, '?') === false) {
-			$conditions = "Id=" . (int)$conditions;
+			$conditions = "Id=" . (int) $conditions;
 		}
 		return [
 			'conditions' => $conditions,
@@ -349,26 +349,27 @@ class Data
 			$params = [$this->tableName];
 			$fieldsCondition = '';
 			$cacheKey = null;
-			
+
 			if (!empty($fields)) {
 				// Валидация имен полей - только буквы, цифры и подчеркивания
-				$fieldsList = array_map(function($f) {
+				$fieldsList = array_map(function ($f) {
 					return preg_replace('/[^a-zA-Z0-9_]/', '', $f);
 				}, explode(',', $fields));
-				
+
 				$placeholders = rtrim(str_repeat('?,', count($fieldsList)), ',');
 				$fieldsCondition = " and t.Field in ($placeholders)";
 				$params = array_merge($params, $fieldsList);
-				$orderBy = "field(t.Field," . implode(',', array_map(function($f) { return "'$f'"; }, $fieldsList)) . ")";
+				$orderBy = "field(t.Field," . implode(',', array_map(function ($f) {
+					return "'$f'"; }, $fieldsList)) . ")";
 				// Кэш для выборки конкретных полей: table::field1,field2,...
 				$cacheKey = 'schema_' . $this->tableName . '::' . implode(',', $fieldsList);
 			} else {
 				// Кэш для полной схемы таблицы
 				$cacheKey = 'schema_full_' . $this->tableName;
 			}
-			
-// Попытка получить из Memcached (системный кэш - всегда включен)
-		$memcached = new Memcached('auto', true);
+
+			// Попытка получить из Memcached (системный кэш - всегда включен)
+			$memcached = new Memcached('auto', true);
 			if ($cacheKey) {
 				$cached = $memcached->get($cacheKey);
 				if ($cached !== null) {
@@ -376,25 +377,25 @@ class Data
 					return $this->scheme;
 				}
 			}
-			
+
 			$sql = "select
 			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.IsHidden,t.FGroup,
 			t.ApiFieldType,t.ApiMapping
 			from s_ConfigFields as t
 			where t.TableName = ? $fieldsCondition order by $orderBy";
-			
+
 			$res = Connect::$instance->fetch($sql, $params, 'group');
 			if (count($res) == 0) {
 				http_response_code(404);
 				Utils::debug("Указанной таблицы {$this->tableName} не существует", 1);
 			}
-			
+
 			// Кэшировать на 1 час (3600 сек)
 			if ($cacheKey) {
 				$memcached = new Memcached('auto', true);
 				$memcached->set($cacheKey, $res, 3600);
 			}
-			
+
 			$this->scheme = $res;
 		}
 		return $this->scheme;

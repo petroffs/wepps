@@ -320,7 +320,7 @@ class RestConfig
 					'goods' => [
 						'class' => RestV1APP::class,
 						'method' => 'postGoods',
-					'note' => 'Create new goods item(s). Supports single item (object) or batch (array of objects, max 100). Returns 201 for single item or 207 for batch with per-item status.',
+						'note' => 'Create new goods item(s). Supports single item (object) or batch (array of objects, max 100). Returns 201 for single item or 207 for batch with per-item status.',
 						'role_required' => [1, 2],
 						'validation' => [
 							'name' => ['type' => 'string', 'required' => true],
@@ -705,6 +705,22 @@ class RestConfig
 						'auth_required' => true,
 						'async' => true,
 						'note' => 'M2M: Create goods item(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'name' => ['type' => 'string', 'required' => true],
+							'alias' => ['type' => 'string', 'required' => true],
+							'navigatorId' => ['type' => 'int2', 'required' => true],
+							'price' => ['type' => 'float', 'required' => true],
+							'article' => ['type' => 'string', 'required' => false],
+							'descr' => ['type' => 'string', 'required' => false],
+							'isHidden' => ['type' => 'int2', 'required' => false],
+							'priceBefore' => ['type' => 'float', 'required' => false],
+							'status' => ['type' => 'int2', 'required' => false],
+							'metaTitle' => ['type' => 'string', 'required' => false],
+							'metaDescription' => ['type' => 'string', 'required' => false],
+							'metaKeyword' => ['type' => 'string', 'required' => false],
+							'weightPack' => ['type' => 'float', 'required' => false],
+							'displayFirst' => ['type' => 'int2', 'required' => false],
+						],
 					],
 					'goods.images' => [
 						'class' => RestV1M2M::class,
@@ -786,14 +802,14 @@ class RestConfig
 						'method' => 'putUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-					'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 					],
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-					'note' => 'M2M: Update goods by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'note' => 'M2M: Update goods by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 					],
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,
@@ -828,7 +844,7 @@ class RestConfig
 						'method' => 'putOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-					'note' => 'M2M: Update order by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'note' => 'M2M: Update order by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 					],
 				],
 				'patch' => [

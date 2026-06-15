@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "id": 723,
+      "name": "Свитер Wistedi TEST-01 - Updated",
+      "article": "abc 01 upd"
+    },
+    {
+      "id": 724,
+      "name": "Рубашка Wistedi WKT TEST 02 - Updated",
+      "article": "abc 02 upd"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 245,
+    "note": "Marker: if 'pagination' field exists in JSON, full data overwrite will be performed"
+  }
+}

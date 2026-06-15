@@ -33,6 +33,10 @@ class Processing extends Request {
 				$this->title = "Товары";
 				$this->tpl = 'ProcessingProducts.tpl';
 				break;
+			case 'restapi':
+				$this->title = "Rest API";
+				$this->tpl = 'ProcessingRestApi.tpl';
+				break;
 			default:
 				if ($action!="") {
 					Exception::error404();

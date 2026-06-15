@@ -5,6 +5,7 @@ namespace WeppsAdmin\ConfigExtensions\Uploads;
 use WeppsAdmin\Lists\Lists;
 use WeppsCore\Data;
 use WeppsCore\Connect;
+use WeppsExtensions\Addons\Bot\BotSystem;
 
 class UploadsExcelFields {
 	private $settings;
@@ -48,6 +49,8 @@ class UploadsExcelFields {
 			}
 			if ($str != "") {
 				Connect::$db->exec($str);
+				$obj = new BotSystem();
+				$obj->clearCache();
 				return [
 						'status'=>0,
 						'message'=>'Новые поля добавлены'

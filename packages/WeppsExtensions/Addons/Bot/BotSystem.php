@@ -72,4 +72,8 @@ class BotSystem extends Bot {
 		// Обработка async REST задач (TRequest='post'), поставленных в очередь через Rest::queueTask()
 		(new RestCli())->tasksProcess();
 	}
+	public function clearCache() {
+		$mem = new Memcached('auto', true); // системный кэш
+		$mem->flushAll();
+	}
 }
