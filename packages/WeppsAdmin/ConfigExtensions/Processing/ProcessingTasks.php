@@ -4,7 +4,6 @@ namespace WeppsAdmin\ConfigExtensions\Processing;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use WeppsCore\Connect;
-use WeppsCore\Utils;
 
 class ProcessingTasks
 {
