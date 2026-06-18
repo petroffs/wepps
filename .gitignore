@@ -17,6 +17,7 @@
 *.7z
 *.zip
 *.mp4
+**/.tests/*
 /sitemap.xml
 /robots.txt
 !md5.conf
