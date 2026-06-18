@@ -64,7 +64,13 @@ class RestConfig
 					'test' => [
 						'class' => RestAd::class,
 						'method' => 'removeTest',
-						'note' => 'Remove test data by ID',
+						'note' => 'Remove test data by ID. Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => true],
+						],
 					],
 				],
 				'put' => [
@@ -359,38 +365,48 @@ class RestConfig
 					'profile' => [
 						'class' => RestV1::class,
 						'method' => 'deleteProfile',
-						'note' => 'Delete current user account (2-step: word "УДАЛИТЬ" → code confirmation)',
+						'note' => 'Delete current user account (2-step: word "УДАЛИТЬ" → code confirmation). Supports batch via body {"ids": [...]} (if implemented in handler)',
 						'auth_required' => true,
 						'validation' => [
-							'word' => ['type' => 'string', 'required' => true],
+							'word' => ['type' => 'string', 'required' => false],
 							'code' => ['type' => 'string', 'required' => false],
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 					'goods' => [
 						'class' => RestV1APP::class,
 						'method' => 'deleteGoods',
-						'note' => 'Delete goods item by id',
+						'note' => 'Delete goods item by id or batch. Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
 						'role_required' => [1, 2],
 						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 					'cart' => [
 						'class' => RestV1APP::class,
 						'method' => 'deleteCart',
-						'note' => 'Remove item from cart by id',
+						'note' => 'Remove item(s) from cart. Supports ?id=item_id or batch via body {"ids": ["item_1", "item_2", ...]}',
 						'auth_required' => true,
 						'query_validation' => [
-							'id' => ['type' => 'string', 'required' => true],
+							'id' => ['type' => 'string', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'string', 'required' => false],
 						],
 					],
 					'orders' => [
 						'class' => RestV1APP::class,
 						'method' => 'deleteOrders',
-						'note' => 'Cancel order by id',
+						'note' => 'Cancel order(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
 						'auth_required' => true,
 						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 				],
@@ -750,9 +766,12 @@ class RestConfig
 						'method' => 'deleteUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete user by id (configurable via s_Config)',
+						'note' => 'M2M: Delete user by id (configurable via s_Config). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
 						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => true],
 						],
 					],
 					'goods' => [
@@ -760,9 +779,12 @@ class RestConfig
 						'method' => 'deleteGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods by id (configurable via s_Config)',
+						'note' => 'M2M: Delete goods by id(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
 						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => true],
 						],
 					],
 					'orders' => [
@@ -770,9 +792,12 @@ class RestConfig
 						'method' => 'deleteOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete order by id (configurable via s_Config)',
+						'note' => 'M2M: Delete order(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
 						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => true],
 						],
 					],
 					'goods.images' => [
@@ -780,9 +805,12 @@ class RestConfig
 						'method' => 'deleteGoodsImages',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods image by id',
+						'note' => 'M2M: Delete goods image(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
 						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => true],
 						],
 					],
 					'goods.imagesVariations' => [
@@ -790,9 +818,12 @@ class RestConfig
 						'method' => 'deleteGoodsImagesVariations',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods variation image by id',
+						'note' => 'M2M: Delete goods variation image(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
 						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ids' => ['type' => 'int2', 'required' => true],
 						],
 					],
 				],
@@ -810,6 +841,22 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+							'name' => ['type' => 'string', 'required' => false],
+							'alias' => ['type' => 'string', 'required' => false],
+							'price' => ['type' => 'float', 'required' => false],
+							'article' => ['type' => 'string', 'required' => false],
+							'descr' => ['type' => 'string', 'required' => false],
+							'isHidden' => ['type' => 'int2', 'required' => false],
+							'priceBefore' => ['type' => 'float', 'required' => false],
+							'status' => ['type' => 'int2', 'required' => false],
+							'metaTitle' => ['type' => 'string', 'required' => false],
+							'metaDescription' => ['type' => 'string', 'required' => false],
+							'metaKeyword' => ['type' => 'string', 'required' => false],
+							'weightPack' => ['type' => 'float', 'required' => false],
+							'displayFirst' => ['type' => 'int2', 'required' => false],
+						],
 					],
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,

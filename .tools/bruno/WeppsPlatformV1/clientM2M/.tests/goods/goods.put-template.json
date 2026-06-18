@@ -1,0 +1,14 @@
+{
+    "data": [
+        {
+            "id": 722,
+            "name": "Свитер Wistedi",
+            "alias": "sviter-wistedi-722"
+        }
+    ],
+    "pagination": {
+        "page": 1,
+        "limit": 1,
+        "note": "Template for update - remove pagination if updating only selected items"
+    }
+}
