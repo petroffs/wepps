@@ -11,12 +11,11 @@ delete {
 }
 
 params:query {
-  id: 1
 }
 
 body:json {
   {
-      "ids": [
+      "data": [
           {{goods_id}}
       ]
   }
@@ -26,4 +25,11 @@ tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);
   });
+}
+
+docs {
+  Delete goods.imagesVariations by id.
+  Доступно только для M2M клиентов.
+  
+  Body format: {"data": [id1, id2, ...]} для массового удаления или ?id= для одиночного.
 }

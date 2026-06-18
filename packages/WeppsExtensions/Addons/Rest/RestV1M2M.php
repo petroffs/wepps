@@ -71,7 +71,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteUsers(): array
 	{
-		$ids = $this->getIdsFromRequest();
+		$ids = $this->getNormalizedIds();
 		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -303,7 +303,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoods(): array
 	{
-		$ids = $this->getIdsFromRequest();
+		$ids = $this->getNormalizedIds();
 		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -628,7 +628,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImages(): array
 	{
-		$ids = $this->getIdsFromRequest();
+		$ids = $this->getNormalizedIds();
 		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -640,7 +640,7 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImagesVariations(): array
 	{
-		$ids = $this->getIdsFromRequest();
+		$ids = $this->getNormalizedIds();
 		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -817,7 +817,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteOrders(): array
 	{
-		$ids = $this->getIdsFromRequest();
+		$ids = $this->getNormalizedIds();
 		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
@@ -1034,10 +1034,42 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
+	 * Получить нормализованный массив ID из:
+	 * 1. GET параметра ?id= (одиночный ID)
+	 * 2. Body параметра {"data": [1, 2, 3]} (массив ID в едином формате)
+	 * 
+	 * @return array массив ID (может быть пустым)
+	 */
+	private function getNormalizedIds(): array
+	{
+		// Сначала проверяем GET параметр ?id=
+		$id = (int) ($this->get['id'] ?? 0);
+		if ($id > 0) {
+			return [$id];
+		}
+
+		// Развёртываем {"data": [1, 2, 3]}
+		$raw = $this->data ?? [];
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			$raw = $raw['data'];
+		}
+		if (empty($raw)) {
+			return [];
+		}
+
+		// Преобразуем в целые числа и фильтруем
+		return array_filter(
+			array_map(fn($v) => (int) $v, $raw),
+			fn($v) => $v > 0
+		);
+	}
+
+	/**
 	 * Получить массив ID из:
 	 * 1. GET параметра ?id= (одиночный ID)
 	 * 2. Body параметра {"ids": [1, 2, 3]} (массив ID)
 	 * 
+	 * @deprecated Используйте getNormalizedIds() вместо этого - новый формат с {"data": [...]}
 	 * @return array массив ID (может быть пустым)
 	 */
 	private function getIdsFromRequest(): array

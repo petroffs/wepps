@@ -11,12 +11,11 @@ delete {
 }
 
 params:query {
-  id: {{goods_id}}
 }
 
 body:json {
   {
-      "ids": [
+      "data": [
           {{goods_id}}
       ]
   }
@@ -32,5 +31,5 @@ docs {
   Delete goods item by id.
   Доступно только для M2M клиентов.
   
-  id — идентификатор товара для удаления (обязательно).
+  Body format: {"data": [id1, id2, ...]} или одиночный ID через GET параметр ?id=
 }

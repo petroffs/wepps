@@ -327,7 +327,7 @@ class ProcessingRestApi
 						$ids[] = $item['id'];
 					}
 				}
-				return ['ids' => $ids];
+				return ['data' => $ids];
 
 			default:
 				return ['data' => []];
