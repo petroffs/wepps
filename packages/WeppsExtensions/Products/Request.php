@@ -22,6 +22,7 @@ class RequestProducts extends Request
 				$sorting = $productsUtils->getSorting();
 				$conditions = $productsUtils->getConditions($params, false);
 				$conditionsFilters = $productsUtils->getConditions($params, true);
+				$conditionsFilters['conditions'] .= " and length(t.Variations)>0";
 				$settings = [
 					'pages' => $productsUtils->getPages(),
 					'page' => $page,
@@ -54,6 +55,7 @@ class RequestProducts extends Request
 				$params = $filters->getParams();
 				$sorting = $productsUtils->getSorting();
 				$conditions = $productsUtils->getConditions($params, true);
+				$conditions['conditions'] .= " and length(t.Variations)>0";
 				$settings = [
 					'pages' => $productsUtils->getPages(),
 					'page' => $this->get['page'],

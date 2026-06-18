@@ -43,6 +43,7 @@ class Products extends Extension
 			$sorting = $this->productsUtils->getSorting();
 			$conditions = $this->productsUtils->getConditions($params, false);
 			$conditionsFilters = $this->productsUtils->getConditions($params, true);
+			$conditionsFilters['conditions'] .= " and length(t.Variations)>0";
 			$settings = [
 				'pages' => $this->productsUtils->getPages(),
 				'page' => $this->page,
@@ -85,7 +86,7 @@ class Products extends Extension
 			$this->headers->meta('<script>var imagesByColor = ' . Utils::json($imagesByColor) . ';</script>');
 			
 			$smarty->assign('element', $res);
-			$conditions = "t.IsHidden=0 and t.Id!='{$res['Id']}'";
+			$conditions = "t.IsHidden=0 and t.Id!='{$res['Id']}' and length(t.Variations)>0";
 			$obj = new Data("Products");
 			$obj->setConcat("concat('{$this->navigator->content['Url']}',if(t.Alias!='',t.Alias,t.Id),'.html') as Url");
 			$res = $obj->fetch($conditions, 3, 1, "t.Priority");

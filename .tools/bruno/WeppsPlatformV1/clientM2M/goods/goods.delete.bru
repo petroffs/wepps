@@ -1,35 +1,26 @@
 meta {
   name: DELETE goods
   type: http
-  seq: 10
-  tags: [
-    d
-    e
-    s
-    t
-    r
-    u
-    c
-    t
-    i
-    v
-    e
-     
-    m
-    a
-    n
-    u
-    a
-    l
-  ]
+  seq: 4
 }
 
 delete {
-  url: {{base_url}}/rest/m2m/goods?id={{product_id}}
-  body: none
+  url: {{base_url}}/rest/m2m/goods
+  body: json
   auth: inherit
 }
 
+params:query {
+  id: {{goods_id}}
+}
+
+body:json {
+  {
+      "ids": [
+          {{goods_id}}
+      ]
+  }
+}
 
 tests {
   test("status 200", function() {

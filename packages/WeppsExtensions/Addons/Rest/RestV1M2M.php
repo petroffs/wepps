@@ -71,11 +71,11 @@ class RestV1M2M extends RestV1
 
 	public function deleteUsers(): array
 	{
-		$id = $this->getIdFromRequest();
-		if (!$id) {
+		$ids = $this->getIdsFromRequest();
+		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils('s_Users')->remove($id);
+		return $this->getUtils('s_Users')->remove($ids);
 	}
 
 	// ========================================================================
@@ -214,7 +214,7 @@ class RestV1M2M extends RestV1
 	{
 		$page = max(1, (int) ($this->get['page'] ?? 1));
 		$limit = min(5000, max(1, (int) ($this->get['limit'] ?? 5000)));
-		$goodsId = (int) ($this->get['goodsId'] ?? 0);
+		$goodsId = (int) ($this->get['goods_id'] ?? 0);
 
 		$data = new Data('ProductsVariations', ['useApiMapping' => true]);
 		$data->setFields('Id,ProductsId,Field1,Field2,Field3,FIeld4');
@@ -252,7 +252,7 @@ class RestV1M2M extends RestV1
 	 * Не скрывает существующие вариации — только добавляет новые.
 	 * При дубликате (Alias) возвращает 409 с id существующей.
 	 *
-	 * Формат тела: { "data": [ { "goodsId": 723, "color": "Красный", "size": "42", "sku": "..." }, ... ] }
+	 * Формат тела: { "data": [ { "goods_id": 723, "color": "Красный", "size": "42", "sku": "..." }, ... ] }
 	 */
 	public function postGoodsVariations($data = null): array
 	{
@@ -265,9 +265,9 @@ class RestV1M2M extends RestV1
 		$results = [];
 
 		foreach ($records as $index => $record) {
-			$goodsId = (int) ($record['goodsId'] ?? $record['goods_id'] ?? 0);
+			$goodsId = (int) ($record['goods_id'] ?? 0);
 			if (!$goodsId) {
-				$results[$index] = ['status' => 400, 'message' => 'goodsId required', 'data' => null];
+				$results[$index] = ['status' => 400, 'message' => 'goods_id required', 'data' => null];
 				continue;
 			}
 			$results[$index] = $processing->createVariation($goodsId, $record);
@@ -303,11 +303,28 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoods(): array
 	{
-		$id = $this->getIdFromRequest();
-		if (!$id) {
+		$ids = $this->getIdsFromRequest();
+		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils('Products')->remove($id);
+
+		/**
+		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. Логика зависит от бизнес-требований. 
+		 */
+
+		// Например, если нужно удалить связанные вариации)
+		// $variationIds = Connect::$instance->fetch(
+		// 	"SELECT Id FROM ProductsVariations WHERE ProductId IN (...)",
+		// 	$ids
+		// );
+		// $variationIds = array_column($variationIds, 'Id');
+
+		// Удалить вариации через utils (будет 1 запрос на проверку)
+		// if (!empty($variationIds)) {
+		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
+		// }
+
+		return $this->getUtils('Products')->remove($ids);
 	}
 
 	/**
@@ -611,7 +628,11 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImages(): array
 	{
-		return $this->handleFileDelete('Products');
+		$ids = $this->getIdsFromRequest();
+		if (empty($ids)) {
+			return ['status' => 400, 'message' => 'ID required', 'data' => null];
+		}
+		return $this->getUtils('s_Files')->remove($ids, 'Products');
 	}
 
 	/**
@@ -619,7 +640,11 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImagesVariations(): array
 	{
-		return $this->handleFileDelete('ProductsVariations');
+		$ids = $this->getIdsFromRequest();
+		if (empty($ids)) {
+			return ['status' => 400, 'message' => 'ID required', 'data' => null];
+		}
+		return $this->getUtils('s_Files')->remove($ids, 'ProductsVariations');
 	}
 
 	/**
@@ -792,11 +817,11 @@ class RestV1M2M extends RestV1
 
 	public function deleteOrders(): array
 	{
-		$id = $this->getIdFromRequest();
-		if (!$id) {
+		$ids = $this->getIdsFromRequest();
+		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		return $this->getUtils('Orders')->remove($id);
+		return $this->getUtils('Orders')->remove($ids);
 	}
 
 	// ========================================================================
@@ -1009,6 +1034,35 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
+	 * Получить массив ID из:
+	 * 1. GET параметра ?id= (одиночный ID)
+	 * 2. Body параметра {"ids": [1, 2, 3]} (массив ID)
+	 * 
+	 * @return array массив ID (может быть пустым)
+	 */
+	private function getIdsFromRequest(): array
+	{
+		// Сначала проверяем GET параметр ?id=
+		$id = (int) ($this->get['id'] ?? 0);
+		if ($id > 0) {
+			return [$id];
+		}
+		if (empty($ids = ($this->data['ids'] ?? []))) {
+			return [];
+		}
+
+		// Если это массив ID - вернуть как есть
+		if (isset($ids) && is_array($ids)) {
+			return array_filter(
+				array_map(fn($v) => (int) $v, $ids),
+				fn($v) => $v > 0
+			);
+		}
+
+		return [];
+	}
+
+	/**
 	 * Нормализовать входные данные в массив плоских записей.
 	 * - Разворачивает обёртку {"data": ...}.
 	 * - Одиночная запись преобразуется в [{...}].
@@ -1018,21 +1072,12 @@ class RestV1M2M extends RestV1
 	 */
 	private function normalizeInput(): array
 	{
-		$raw = $this->data;
-
-		if (empty($raw)) {
-			$input = file_get_contents('php://input');
-			if ($input) {
-				$raw = @json_decode($input, true) ?: [];
-			}
-		}
-
-		if (empty($raw)) {
-			return [];
-		}
-
+		$raw = $this->data ?? [];
 		if (isset($raw['data']) && is_array($raw['data'])) {
 			$raw = $raw['data'];
+		}
+		if (empty($raw)) {
+			return [];
 		}
 
 		$records = (isset($raw[0]) && is_array($raw[0])) ? $raw : [$raw];
@@ -1058,15 +1103,7 @@ class RestV1M2M extends RestV1
 	 */
 	private function normalizeSyncInput(): array
 	{
-		$raw = $this->data;
-
-		if (empty($raw)) {
-			$input = file_get_contents('php://input');
-			if ($input) {
-				$raw = @json_decode($input, true) ?: [];
-			}
-		}
-
+		$raw = $this->data ?? [];
 		if (empty($raw)) {
 			return ['records' => [], 'pagination' => null];
 		}
@@ -1075,8 +1112,10 @@ class RestV1M2M extends RestV1
 			? $raw['pagination']
 			: null;
 
-		$data = (isset($raw['data']) && is_array($raw['data'])) ? $raw['data'] : $raw;
-
+		$data = $raw;
+		if (isset($raw['data']) && is_array($raw['data'])) {
+			$data = $raw['data'];
+		}
 		$records = (isset($data[0]) && is_array($data[0])) ? $data : [$data];
 
 		if (count($records) === 1 && !isset($records[0]['id']) && !isset($records[0]['Id'])) {

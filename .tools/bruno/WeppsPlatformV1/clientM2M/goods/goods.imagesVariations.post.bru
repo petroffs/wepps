@@ -1,7 +1,7 @@
 meta {
   name: POST goods.imagesVariations
   type: http
-  seq: 16
+  seq: 18
 }
 
 post {
@@ -10,12 +10,13 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
-    "goodsv_id": 1,
-    "name": "Variation photo",
-    "file_url": "https://external-system.com/images/variation-001.jpg"
+    "data": {
+      "goodsv_id": 1,
+      "name": "Variation photo",
+      "file_url": "https://external-system.com/images/variation-001.jpg"
+    }
   }
 }
 

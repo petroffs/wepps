@@ -1,6 +1,7 @@
 <?php
 namespace WeppsAdmin\ConfigExtensions\Processing;
 
+use WeppsCore\Connect;
 use WeppsCore\Request;
 use WeppsCore\Smarty;
 use WeppsCore\Exception;
@@ -66,5 +67,6 @@ class Processing extends Request
 		// Передаём в шаблон
 		$this->assign('sourceFiles', $sourceFiles);
 		$this->assign('destinationFiles', $destinationFiles);
+		$this->assign('projectDev',Connect::$projectDev);
 	}
 }

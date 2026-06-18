@@ -1,18 +1,17 @@
 meta {
   name: GET goods.item
   type: http
-  seq: 2
+  seq: 5
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods.item?id={{product_id}}
+  url: {{base_url}}/rest/m2m/goods.item?id={{goods_id}}
   body: none
   auth: inherit
 }
 
-
 params:query {
-  id: {{product_id}}
+  id: {{goods_id}}
 }
 
 tests {

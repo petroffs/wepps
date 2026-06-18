@@ -94,7 +94,7 @@ class ProductsUtils
 		$useApiMapping = $settings['useApiMapping'] ?? false;
 		$obj = new Data("Products", ['useApiMapping' => $useApiMapping]);
 		$obj->setConcat("concat(s1.Url,if(t.Alias!='',t.Alias,t.Id),'.html') as Url,group_concat(distinct concat(pv.Id,':::',pv.Field1,':::',pv.Field2,':::',pv.Field3,':::',pv.Field4) order by pv.Priority separator '\\n') W_Variations,count(pv.Id) W_VariationsCount");
-		$obj->setJoin("join ProductsVariations pv on pv.ProductsId=t.Id and pv.IsHidden=0");
+		$obj->setJoin("left join ProductsVariations pv on pv.ProductsId=t.Id and pv.IsHidden=0");
 		if (!empty($settings['conditions']['params'])) {
 			$obj->setParams($settings['conditions']['params']);
 		}
@@ -103,7 +103,7 @@ class ProductsUtils
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
 		$settings['sorting'] .= ",pv.Priority";
 		$res = $obj->fetch($settings['conditions']['conditions'], $settings['pages'], $settings['page'], $settings['sorting']);
-		
+
 		// Преобразуем W_Variations из строки в массив (как в getProductsItem)
 		if (!empty($res)) {
 			foreach ($res as $k => &$el) {
@@ -124,6 +124,7 @@ class ProductsUtils
 	{
 		$conditions = '';
 		$conditions = (strlen((int) $id) == strlen($id)) ? "{$conditions} t.Id = ?" : " {$conditions} binary t.Alias = ?";
+		$conditions .= " and length(t.Variations)>0";
 		$settings = [
 			'pages' => 1,
 			'page' => 1,

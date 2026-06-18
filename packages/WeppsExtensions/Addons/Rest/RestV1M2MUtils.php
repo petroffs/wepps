@@ -397,21 +397,107 @@ class RestV1M2MUtils
 	}
 
 	/**
-	 * Удалить запись.
+	 * Удалить записи (одну или пакет).
 	 *
-	 * @param int $id ID записи
-	 * @return array - {status, message, data}
+	 * @param array  $ids ID записей
+	 * @param string $filterTableName опционально: фильтр по TableName (для s_Files)
+	 * @return array - {status, message, data} для одного или {status, data: [{...}]} для batch
 	 */
-	public function remove(int $id): array
+	public function remove(array $ids, string $filterTableName = ''): array
 	{
-		try {
-			$model = new Data($this->tableName);
-			$model->remove($id);
-
-			return ['status' => 200, 'message' => 'Deleted', 'data' => null];
-		} catch (\Exception $e) {
-			return ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+		if (empty($ids)) {
+			return ['status' => 400, 'message' => 'No IDs provided', 'data' => null];
 		}
+
+		// Одиночное удаление
+		if (count($ids) === 1) {
+			$id = $ids[0];
+			try {
+				if (!empty($filterTableName)) {
+					// Для s_Files с фильтром по TableName
+					$existing = Connect::$instance->fetch(
+						"SELECT Id FROM {$this->tableName} WHERE Id = ? AND TableName = ?",
+						[$id, $filterTableName]
+					);
+					if (empty($existing)) {
+						return ['status' => 404, 'message' => 'Record not found', 'data' => ['id' => $id]];
+					}
+					$result = Connect::$instance->query(
+						"DELETE FROM {$this->tableName} WHERE Id = ? AND TableName = ?",
+						[$id, $filterTableName]
+					);
+				} else {
+					// Обычное удаление — сначала проверяем существование
+					$existing = Connect::$instance->fetch(
+						"SELECT Id FROM {$this->tableName} WHERE Id = ?",
+						[$id]
+					);
+					if (empty($existing)) {
+						return ['status' => 404, 'message' => 'Already deleted or not found', 'data' => ['id' => $id]];
+					}
+					$model = new Data($this->tableName);
+					$model->remove($id);
+					$result = 1;
+				}
+				return $result > 0
+					? ['status' => 200, 'message' => 'Deleted', 'data' => ['id' => $id]]
+					: ['status' => 400, 'message' => 'Failed to delete', 'data' => ['id' => $id]];
+			} catch (\Exception $e) {
+				return ['status' => 400, 'message' => $e->getMessage(), 'data' => ['id' => $id]];
+			}
+		}
+
+		// Batch удаление — получить все существующие IDs одним запросом
+		$results = [];
+
+		// Получить все существующие IDs одним запросом перед циклом
+		$in = Connect::$instance->in($ids);
+		if (!empty($filterTableName)) {
+			// Для s_Files с фильтром
+			$existingRows = Connect::$instance->fetch(
+				"SELECT Id FROM {$this->tableName} WHERE Id IN ($in) AND TableName = ?",
+				array_merge($ids, [$filterTableName])
+			);
+		} else {
+			// Для обычных таблиц
+			$existingRows = Connect::$instance->fetch(
+				"SELECT Id FROM {$this->tableName} WHERE Id IN ($in)",
+				$ids
+			);
+		}
+
+		// Преобразовать в ассоциативный массив для быстрого поиска O(1)
+		$existingIds = array_flip(array_column($existingRows, 'Id'));
+
+		foreach ($ids as $index => $id) {
+			try {
+				// Проверяем наличие в уже полученном списке
+				if (!isset($existingIds[$id])) {
+					$results[$index] = ['status' => 404, 'message' => 'Already deleted or not found', 'data' => ['id' => $id]];
+					continue;
+				}
+
+				// Удаляем запись
+				if (!empty($filterTableName)) {
+					$result = Connect::$instance->query(
+						"DELETE FROM {$this->tableName} WHERE Id = ? AND TableName = ?",
+						[$id, $filterTableName]
+					);
+				} else {
+					$model = new Data($this->tableName);
+					$model->remove($id);
+					$result = 1;
+				}
+
+				$results[$index] = $result > 0
+					? ['status' => 200, 'message' => 'Deleted', 'data' => ['id' => $id]]
+					: ['status' => 400, 'message' => 'Failed to delete', 'data' => ['id' => $id]];
+			} catch (\Exception $e) {
+				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => ['id' => $id]];
+			}
+		}
+
+		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
 	}
 
 	// =========================================================================

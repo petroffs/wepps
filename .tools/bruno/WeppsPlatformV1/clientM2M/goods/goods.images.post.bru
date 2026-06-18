@@ -1,7 +1,7 @@
 meta {
   name: POST goods.images
   type: http
-  seq: 13
+  seq: 15
 }
 
 post {
@@ -10,12 +10,13 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
-    "goods_id": 1,
-    "name": "Product photo",
-    "file_url": "https://external-system.com/images/product-001.jpg"
+    "data": {
+      "goods_id": 1,
+      "name": "Product photo",
+      "file_url": "https://external-system.com/images/product-001.jpg"
+    }
   }
 }
 

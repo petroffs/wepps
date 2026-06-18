@@ -1,7 +1,7 @@
 meta {
   name: POST goods.variations
   type: http
-  seq: 10
+  seq: 13
 }
 
 post {
@@ -10,18 +10,17 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
     "data": [
       {
-        "goodsId": {{product_id}},
+        "goodsId": {{goods_id}},
         "color": "Красный",
         "size": "42",
         "sku": "S001-КРА-42"
       },
       {
-        "goodsId": {{product_id}},
+        "goodsId": {{goods_id}},
         "color": "Синий",
         "size": "44",
         "sku": "S001-СИН-44"

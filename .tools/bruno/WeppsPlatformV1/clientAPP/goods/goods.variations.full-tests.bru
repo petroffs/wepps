@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/v1/goods.variations?goodsId={{product_id}}&page=1&limit=20
+  url: {{base_url}}/rest/v1/goods.variations?goods_id={{goods_id}}&page=1&limit=20
   body: none
   auth: none
 }
 
 params:query {
-  goodsId: {{product_id}}
+  goods_id: {{goods_id}}
   page: 1
   limit: 20
 }
@@ -22,35 +22,35 @@ tests {
   test("L1: Returns 200 status (when goodsId exists)", function() {
     expect(res.status).to.equal(200);
   });
-
+  
   test("L1: Response has status field", function() {
     expect(res.body).to.have.property("status").that.equals(200);
   });
-
+  
   test("L1: Response has message field", function() {
     expect(res.body).to.have.property("message");
   });
-
+  
   test("L1: Response has data field", function() {
     expect(res.body).to.have.property("data");
   });
-
+  
   test("L1: Returns 400 when goodsId not provided", function() {
     // This test should be run separately without goodsId parameter
     // expect(res.status).to.equal(400);
   });
-
+  
   test("L1: Returns 404 when goodsId doesn't exist", function() {
     // This test should be run separately with non-existent goodsId
     // expect(res.status).to.equal(404);
   });
-
+  
   // ========== УРОВЕНЬ 2: Структура данных ==========
-
+  
   test("L2: Data is array", function() {
     expect(res.body.data).to.be.an("array");
   });
-
+  
   test("L2: Each item has required fields", function() {
     res.body.data.forEach(item => {
       expect(item).to.have.property("Id");
@@ -60,7 +60,7 @@ tests {
       expect(item).to.have.property("Stock");
     });
   });
-
+  
   test("L2: Each item has SKU field", function() {
     res.body.data.forEach(item => {
       if (item.SKU !== undefined) {
@@ -68,7 +68,7 @@ tests {
       }
     });
   });
-
+  
   test("L2: Properties field is object or array (when present)", function() {
     res.body.data.forEach(item => {
       if (item.Properties !== undefined) {
@@ -76,47 +76,47 @@ tests {
       }
     });
   });
-
+  
   test("L2: Pagination object present", function() {
     expect(res.body).to.have.property("pagination");
     expect(res.body.pagination).to.have.property("count");
     expect(res.body.pagination).to.have.property("page");
     expect(res.body.pagination).to.have.property("limit");
   });
-
+  
   // ========== УРОВЕНЬ 3: Валидация значений ==========
-
+  
   test("L3: All items have positive Id", function() {
     res.body.data.forEach(item => {
       expect(item.Id).to.be.a("number").and.to.be.greaterThan(0);
     });
   });
-
+  
   test("L3: GoodsId matches request parameter", function() {
     const requestedGoodsId = parseInt(req.getQueryParam("goodsId"));
     res.body.data.forEach(item => {
       expect(item.GoodsId).to.equal(requestedGoodsId);
     });
   });
-
+  
   test("L3: Name is non-empty string", function() {
     res.body.data.forEach(item => {
       expect(item.Name).to.be.a("string").and.to.have.length.greaterThan(0);
     });
   });
-
+  
   test("L3: Price is non-negative number", function() {
     res.body.data.forEach(item => {
       expect(item.Price).to.be.a("number").and.to.be.at.least(0);
     });
   });
-
+  
   test("L3: Stock is non-negative number", function() {
     res.body.data.forEach(item => {
       expect(item.Stock).to.be.a("number").and.to.be.at.least(0);
     });
   });
-
+  
   test("L3: SKU is unique string (when present)", function() {
     const skus = res.body.data
       .filter(item => item.SKU !== undefined)
@@ -124,13 +124,13 @@ tests {
     const uniqueSkus = new Set(skus);
     expect(uniqueSkus.size).to.equal(skus.length);
   });
-
+  
   test("L3: Pagination values are valid", function() {
     expect(res.body.pagination.count).to.be.a("number").and.to.be.at.least(0);
     expect(res.body.pagination.page).to.be.a("number").and.to.be.greaterThan(0);
     expect(res.body.pagination.limit).to.be.a("number").and.to.be.greaterThan(0);
   });
-
+  
   test("L3: IsHidden is 0 for all items", function() {
     res.body.data.forEach(item => {
       if (item.IsHidden !== undefined) {
@@ -138,21 +138,21 @@ tests {
       }
     });
   });
-
+  
   // ========== УРОВЕНЬ 4: Логика и связи данных ==========
-
+  
   test("L4: Variation IDs are unique", function() {
     const ids = res.body.data.map(v => v.Id);
     const uniqueIds = new Set(ids);
     expect(uniqueIds.size).to.equal(ids.length);
   });
-
+  
   test("L4: All items belong to same GoodsId", function() {
     const goodsIds = res.body.data.map(item => item.GoodsId);
     const uniqueGoodsIds = new Set(goodsIds);
     expect(uniqueGoodsIds.size).to.equal(1);
   });
-
+  
   test("L4: Page is valid for total count", function() {
     const { count, page, limit } = res.body.pagination;
     if (count > 0) {
@@ -160,13 +160,13 @@ tests {
       expect(page).to.be.lessThanOrEqual(maxPages);
     }
   });
-
+  
   test("L4: Returned items count is correct", function() {
     const { count, page, limit } = res.body.pagination;
     const expectedMaxCount = Math.min(limit, count - (page - 1) * limit);
     expect(res.body.data.length).to.be.lessThanOrEqual(expectedMaxCount);
   });
-
+  
   test("L4: Properties structure is consistent", function() {
     if (res.body.data.length > 0 && res.body.data[0].Properties) {
       const firstProps = Object.keys(res.body.data[0].Properties);
@@ -179,22 +179,22 @@ tests {
       });
     }
   });
-
+  
   // ========== УРОВЕНЬ 5: Граничные случаи и ошибки ==========
-
+  
   test("L5: Handles empty variations list", function() {
     expect(res.body.data).to.be.an("array");
     if (res.body.data.length === 0) {
       expect(res.body.pagination.count).to.equal(0);
     }
   });
-
+  
   test("L5: Single variation is valid state", function() {
     if (res.body.data.length === 1) {
       expect(res.body.pagination.count).to.equal(1);
     }
   });
-
+  
   test("L5: Large stock values are handled correctly", function() {
     res.body.data.forEach(item => {
       if (item.Stock > 1000000) {
@@ -202,7 +202,7 @@ tests {
       }
     });
   });
-
+  
   test("L5: Zero stock is valid state", function() {
     res.body.data.forEach(item => {
       if (item.Stock === 0) {
@@ -210,12 +210,12 @@ tests {
       }
     });
   });
-
+  
   test("L5: Page limit is enforced", function() {
     const limit = parseInt(req.getQueryParam("limit")) || 20;
     expect(res.body.data.length).to.be.lessThanOrEqual(Math.min(limit, 100));
   });
-
+  
   test("L5: Message is OK", function() {
     expect(res.body.message).to.equal("OK");
   });
@@ -223,12 +223,12 @@ tests {
 
 docs {
   Get list of variations for a specific goods item.
-
+  
   Parameters:
   - goodsId (required): ID товара
   - page (optional, default 1): номер страницы
   - limit (optional, default 20, max 100): кол-во вариаций на странице
-
+  
   Response structure:
   {
     status: 200,
@@ -254,18 +254,18 @@ docs {
       limit: 20
     }
   }
-
+  
   Error responses:
   - 400: Missing 'goodsId' parameter
   - 404: Goods not found
-
+  
   Notes:
   - Each variation represents a specific combination of properties (size, color, etc.)
   - Properties field contains the attribute values for this variation
   - Stock represents available quantity for this specific variation
   - SKU is unique identifier for inventory management
   - Variations should be sorted by creation date or priority
-
+  
   Test levels:
   L1: Basic response structure (status 200, fields present, error handling)
   L2: Array structure with required fields and nested objects

@@ -1,7 +1,7 @@
 meta {
   name: POST goods.images (base64)
   type: http
-  seq: 15
+  seq: 17
 }
 
 post {
@@ -10,13 +10,14 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
-    "goods_id": 123,
-    "name": "Product photo imported from 1C",
-    "file_name": "photo.jpg",
-    "file_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    "data": {
+      "goods_id": 123,
+      "name": "Product photo imported from 1C",
+      "file_name": "photo.jpg",
+      "file_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 meta {
   name: PUT goods.images
   type: http
-  seq: 14
+  seq: 16
 }
 
 put {
@@ -10,13 +10,14 @@ put {
   auth: inherit
 }
 
-
 body:json {
   {
-    "id": 1,
-    "name": "Updated photo",
-    "inner_name": "product-001-updated.jpg",
-    "file_url": "/pic/products/product-001-updated.jpg"
+    "data": {
+      "id": 1,
+      "name": "Updated photo",
+      "inner_name": "product-001-updated.jpg",
+      "file_url": "/pic/products/product-001-updated.jpg"
+    }
   }
 }
 

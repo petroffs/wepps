@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/m2m/tasks.result?id=1
+  url: {{base_url}}/rest/m2m/tasks.result?id=20
   body: none
   auth: inherit
 }
 
 params:query {
-  id: 1
+  id: 20
 }
 
 tests {
@@ -29,10 +29,10 @@ tests {
 docs {
   Get async task result by id from s_Tasks queue.
   Используется для polling статуса задачи после получения task_id из async-эндпоинта (202 Accepted).
-
+  
   Ответ пока задача ожидает:
     is_processed: false, http_status: null, response: null
-
+  
   Ответ после выполнения:
     is_processed: true, http_status: 201, response: { status: 201, data: { id: N } }
 }

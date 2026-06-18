@@ -1,7 +1,7 @@
 meta {
   name: PUT goods
   type: http
-  seq: 11
+  seq: 3
   tags: [
     m
     a
@@ -20,18 +20,18 @@ put {
 
 body:json {
   {
-    "data": [
-      {
-        "id": 723,
-        "name": "Свитер Wistedi TEST-01 - PUT1",
-        "displayFirst": 0
-      },
-      {
-        "id": 724,
-        "name": "Рубашка Wistedi WKT TEST 02 - PUT1",
-        "displayFirst": 0
+      "data": [
+          {
+              "id": 722,
+              "name": "Свитер Wistedi-abc",
+              "alias": "sviter-wistedi-722-abc"
+          }
+      ],
+      "pagination": {
+          "page": 1,
+          "limit": 1,
+          "note": "Template for update - remove pagination if updating only selected items"
       }
-    ]
   }
 }
 

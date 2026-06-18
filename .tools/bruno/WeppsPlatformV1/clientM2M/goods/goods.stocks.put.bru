@@ -1,7 +1,7 @@
 meta {
   name: PUT goods.stocks
   type: http
-  seq: 18
+  seq: 20
 }
 
 put {
@@ -10,11 +10,12 @@ put {
   auth: inherit
 }
 
-
 body:json {
   {
-    "goods_id": 1,
-    "amount": 50
+    "data": {
+      "goods_id": 1,
+      "amount": 50
+    }
   }
 }
 

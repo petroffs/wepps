@@ -7,7 +7,8 @@
 			<label class="w_label w_button"><input type="submit" value="Выполнить маппинг типов" /></label>
 		</div>
 		<div class="w_flex_12 w_flex_11_view_medium">
-			Заполнение ApiFieldType в <a href="/_wepps/lists/s_ConfigFields/">s_ConfigFields</a>. <br />Маппинг типов БД
+			Заполнение ApiFieldType в <a href="/_wepps/lists/s_ConfigFields/">s_ConfigFields</a>. <br /><br />Маппинг
+			типов БД
 			на REST API типы: <br />
 			int → int<br />
 			flag → int<br />
@@ -27,7 +28,7 @@
 			<label class="w_label w_button"><input type="submit" value="Выполнить маппинг наименований" /></label>
 		</div>
 		<div class="w_flex_12 w_flex_11_view_medium">
-			Заполнение ApiMapping в <a href="/_wepps/lists/s_ConfigFields/">s_ConfigFields</a>. <br />
+			Заполнение ApiMapping в <a href="/_wepps/lists/s_ConfigFields/">s_ConfigFields</a>. <br /><br />
 			Преобразует имена полей БД в camelCase формат для REST API: <br />
 			Product_Name → productName<br />
 			Order_Status → orderStatus<br />
@@ -74,7 +75,8 @@
 			<label class="w_label w_button"><input type="submit" value="Создать тесты" /></label>
 		</div>
 		<div class="w_flex_12 w_flex_11_view_medium">
-			Сгенерировать тестовые запросы для REST API
+			Сгенерировать тестовые запросы для REST API<br /><br />
+			Файлы сохранятся в {$projectDev.root}/.tools/bruno/WeppsPlatformV1/clientM2M/.tests/*
 		</div>
 	</div>
 </form>

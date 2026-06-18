@@ -1,12 +1,12 @@
 meta {
   name: DELETE goods.imagesVariations
   type: http
-  seq: 22
+  seq: 24
 }
 
 delete {
   url: {{base_url}}/rest/m2m/goods.imagesVariations
-  body: none
+  body: json
   auth: inherit
 }
 
@@ -14,6 +14,13 @@ params:query {
   id: 1
 }
 
+body:json {
+  {
+      "ids": [
+          {{goods_id}}
+      ]
+  }
+}
 
 tests {
   test("status 200", function() {

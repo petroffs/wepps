@@ -1,7 +1,7 @@
 meta {
   name: PUT goods.variations
   type: http
-  seq: 12
+  seq: 14
 }
 
 put {
@@ -9,7 +9,6 @@ put {
   body: json
   auth: inherit
 }
-
 
 body:json {
   {
@@ -45,23 +44,23 @@ tests {
 docs {
   Обновление вариаций по их ID.
   Не скрывает другие вариации — только обновляет указанные.
-
+  
   Одна вариация: { "data": { "id": 1, "color": "Синий" } }  → status 200
   Batch:         { "data": [ { "id": 1, ... }, { "id": 2, ... } ] }  → status 207
-
+  
   Поддерживает ?id=123 для одиночного обновления без тела.
-
+  
   Обязательные поля:
   - id — ID вариации
-
+  
   Опциональные поля:
   - color — цвет (Field1)
   - size  — размер (Field2)
   - sku   — артикул (Field3)
-
+  
   Ответ на успешное обновление (одиночный):
   { "status": 200, "message": "Updated", "data": null }
-
+  
   Ответ на batch:
   { "status": 207, "message": "Multi-Status", "data": [ { "status": 200, ... }, ... ] }
 }

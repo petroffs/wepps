@@ -1,7 +1,7 @@
 meta {
   name: PUT goods.filters
   type: http
-  seq: 24
+  seq: 26
 }
 
 put {
@@ -10,13 +10,14 @@ put {
   auth: inherit
 }
 
-
 body:json {
   {
-    "id": 1,
-    "name": "Size",
-    "priority": 5,
-    "is_hidden": 0
+    "data": {
+      "id": 1,
+      "name": "Size",
+      "priority": 5,
+      "is_hidden": 0
+    }
   }
 }
 

@@ -69,7 +69,7 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => false],
 						],
 						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => true],
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 				],
@@ -672,7 +672,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Get goods variations (paginated)',
 						'query_validation' => [
-							'goodsId' => ['type' => 'int2', 'required' => false],
+							'goods_id' => ['type' => 'int2', 'required' => false],
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
 						],
@@ -725,16 +725,16 @@ class RestConfig
 							'name' => ['type' => 'string', 'required' => true],
 							'alias' => ['type' => 'string', 'required' => true],
 							'navigatorId' => ['type' => 'int2', 'required' => true],
-							'price' => ['type' => 'float', 'required' => true],
+							'price' => ['type' => 'float2', 'required' => true],
 							'article' => ['type' => 'string', 'required' => false],
 							'descr' => ['type' => 'string', 'required' => false],
 							'isHidden' => ['type' => 'int2', 'required' => false],
-							'priceBefore' => ['type' => 'float', 'required' => false],
+							'priceBefore' => ['type' => 'float2', 'required' => false],
 							'status' => ['type' => 'int2', 'required' => false],
 							'metaTitle' => ['type' => 'string', 'required' => false],
 							'metaDescription' => ['type' => 'string', 'required' => false],
 							'metaKeyword' => ['type' => 'string', 'required' => false],
-							'weightPack' => ['type' => 'float', 'required' => false],
+							'weightPack' => ['type' => 'float2', 'required' => false],
 							'displayFirst' => ['type' => 'int2', 'required' => false],
 						],
 					],
@@ -771,7 +771,7 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => false],
 						],
 						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => true],
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 					'goods' => [
@@ -784,7 +784,7 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => false],
 						],
 						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => true],
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 					'orders' => [
@@ -797,7 +797,7 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => false],
 						],
 						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => true],
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 					'goods.images' => [
@@ -810,7 +810,7 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => false],
 						],
 						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => true],
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 					'goods.imagesVariations' => [
@@ -823,7 +823,7 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => false],
 						],
 						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => true],
+							'ids' => ['type' => 'int2', 'required' => false],
 						],
 					],
 				],

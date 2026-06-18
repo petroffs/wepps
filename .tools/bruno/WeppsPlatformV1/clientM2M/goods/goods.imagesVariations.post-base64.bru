@@ -1,7 +1,7 @@
 meta {
   name: POST goods.imagesVariations (base64)
   type: http
-  seq: 17
+  seq: 19
 }
 
 post {
@@ -10,13 +10,14 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
-    "goodsv_id": 5,
-    "name": "Blue variant photo",
-    "file_name": "variant-blue.jpg",
-    "file_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    "data": {
+      "goodsv_id": 5,
+      "name": "Blue variant photo",
+      "file_name": "variant-blue.jpg",
+      "file_base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+    }
   }
 }
 
