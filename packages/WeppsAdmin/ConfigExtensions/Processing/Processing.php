@@ -37,7 +37,7 @@ class Processing extends Request
 				$this->tpl = 'ProcessingProducts.tpl';
 				break;
 			case 'restapi':
-				$this->title = "Rest API";
+				$this->title = "REST API";
 				$this->tpl = 'ProcessingRestApi.tpl';
 				$this->prepareRestApiData();
 				break;

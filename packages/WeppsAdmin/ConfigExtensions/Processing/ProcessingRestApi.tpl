@@ -69,7 +69,7 @@
 			</label>
 			<div class="w_interval"></div>
 			<label class="w_label w_input">
-				<input type="text" name="m2m_token" placeholder="Токен M2M API (Bearer)" />
+				<input type="text" name="m2m_token" placeholder="Токен M2M API (Bearer)" autocomplete="off"/>
 			</label>
 			<div class="w_interval"></div>
 			<label class="w_label w_button"><input type="submit" value="Создать тесты" /></label>

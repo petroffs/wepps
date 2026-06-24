@@ -738,6 +738,22 @@ class RestConfig
 							'displayFirst' => ['type' => 'int2', 'required' => false],
 						],
 					],
+					'goods.variations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'async' => true,
+						'note' => 'M2M: Create goods variation(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							//'name' => ['type' => 'string', 'required' => true],
+							'goodsId' => ['type' => 'int', 'required' => true],
+							'color' => ['type' => 'string', 'required' => false],
+							'size' => ['type' => 'string', 'required' => false],
+							'sku' => ['type' => 'string', 'required' => true],
+							'stocks' => ['type' => 'int', 'required' => false],
+						],
+					],
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoodsImages',

@@ -2,6 +2,7 @@
 namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
+use WeppsCore\Tasks;
 use WeppsCore\Users;
 use WeppsCore\Utils;
 use WeppsCore\Validator;
@@ -293,16 +294,16 @@ class Rest
 		}
 		return;
 	}	/**
-	 * Выполнить обработчик запроса
-	 *
-	 * Выполняет обработчик с валидацией данных, аутентификацией и вызовом метода.
-	 * Поддерживает кастомные ответы и логирование по конфигурации.
-	 *
-	 * @param object $handler Объект обработчика с методами API
-	 * @param array|null $config Конфигурация метода (валидация, аутентификация, логирование)
-	 * @return array Стандартизированный ответ API с status, message, data
-	 * @throws \Exception При ошибках валидации или выполнения
-	 */
+		 * Выполнить обработчик запроса
+		 *
+		 * Выполняет обработчик с валидацией данных, аутентификацией и вызовом метода.
+		 * Поддерживает кастомные ответы и логирование по конфигурации.
+		 *
+		 * @param object $handler Объект обработчика с методами API
+		 * @param array|null $config Конфигурация метода (валидация, аутентификация, логирование)
+		 * @return array Стандартизированный ответ API с status, message, data
+		 * @throws \Exception При ошибках валидации или выполнения
+		 */
 	private function executeHandler($handler, $config = null): array
 	{
 		try {
@@ -320,12 +321,15 @@ class Rest
 			if (!empty($config['auth_required']) || isset($config['role_required'])) {
 				$this->authenticateBearerToken();
 			} elseif (!empty($config['auth_optional'])) {
-				try { $this->authenticateBearerToken(); } catch (\Exception $e) {}
+				try {
+					$this->authenticateBearerToken();
+				} catch (\Exception $e) {
+				}
 			}
 
 			// Проверка прав доступа по UserPermissions
 			if (isset($config['role_required'])) {
-				$userPermissions = (int)($this->user['UserPermissions'] ?? 0);
+				$userPermissions = (int) ($this->user['UserPermissions'] ?? 0);
 				if (!in_array($userPermissions, $config['role_required'], true)) {
 					throw new \Exception('Access denied: insufficient permissions', 403);
 				}
@@ -373,14 +377,22 @@ class Rest
 	 */
 	private function queueTask(array $config, $handler): array
 	{
-		(new \WeppsCore\Tasks())->add(
+		$user = [
+			'Id' => $this->user['Id'] ?? null,
+			'Name' => $this->user['Name'] ?? null,
+			'UserPermissions' => $this->user['UserPermissions'] ?? null,
+			'IsHidden' => $this->user['IsHidden'] ?? null,
+			'ShowAdmin' => $this->user['ShowAdmin'] ?? null,
+		];
+		$user = $this->keysToCamelCase($user);
+		(new Tasks())->add(
 			$config['method'],
 			[
 				'handler' => get_class($handler),
-				'method'  => $config['method'],
-				'data'    => $this->data,
-				'get'     => $this->get,
-				'user'    => $this->user,
+				'method' => $config['method'],
+				'data' => $this->data,
+				'get' => $this->get,
+				'user' => $user,
 			],
 			'',
 			'',
@@ -793,7 +805,7 @@ class Rest
 		if (is_array($output) && isset($output['status'])) {
 			$this->status = $output['status'];
 			$extra = array_diff_key($output, array_flip(['status', 'message', 'data']));
-			
+
 			// Для M2M используем маппинг из БД, но нормализуем вычисляемые поля (Url, PStatus и т.д.)
 			$normalizedData = $this->normalizeData($output['data'] ?? null);
 			//Utils::debug($this->version,1);
@@ -803,11 +815,11 @@ class Rest
 				// Для m2m нормализуем только поля с заглавной буквы (вычисляемые поля)
 				$normalizedData = $this->normalizeComputedFields($normalizedData);
 			}
-			
+
 			$responseData = array_merge([
-				'status'  => $output['status'],
+				'status' => $output['status'],
 				'message' => $output['message'] ?? '',
-				'data'    => $normalizedData,
+				'data' => $normalizedData,
 			], $extra);
 
 		} else {

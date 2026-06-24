@@ -1,0 +1,32 @@
+meta {
+  name: DELETE goods.variations
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{base_url}}/rest/m2m/goods.vatiations
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+      "data": [
+          {{goodsv_id}}
+      ]
+  }
+}
+
+tests {
+  test("status 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}
+
+docs {
+  Delete goods item by id.
+  Доступно только для M2M клиентов.
+  
+  Body format: {"data": [id1, id2, ...]} или одиночный ID через GET параметр ?id=
+}

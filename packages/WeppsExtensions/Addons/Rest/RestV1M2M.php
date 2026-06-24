@@ -252,7 +252,8 @@ class RestV1M2M extends RestV1
 	 * Не скрывает существующие вариации — только добавляет новые.
 	 * При дубликате (Alias) возвращает 409 с id существующей.
 	 *
-	 * Формат тела: { "data": [ { "goods_id": 723, "color": "Красный", "size": "42", "sku": "..." }, ... ] }
+	 * Валидация по RestConfig уже выполнена в Rest::executeHandler() перед вызовом метода!
+	 * Формат тела: { "data": [ { "goodsId": 723, "name": "Вариант", "sku": "SKU001", "color": "Красный", "size": "42" }, ... ] }
 	 */
 	public function postGoodsVariations($data = null): array
 	{
@@ -264,12 +265,9 @@ class RestV1M2M extends RestV1
 		$processing = new ProcessingProducts();
 		$results = [];
 
+		// Данные уже валидированы в Rest::executeHandler()
 		foreach ($records as $index => $record) {
-			$goodsId = (int) ($record['goods_id'] ?? 0);
-			if (!$goodsId) {
-				$results[$index] = ['status' => 400, 'message' => 'goods_id required', 'data' => null];
-				continue;
-			}
+			$goodsId = (int) ($record['goodsId'] ?? 0);
 			$results[$index] = $processing->createVariation($goodsId, $record);
 		}
 
