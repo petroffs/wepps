@@ -363,7 +363,7 @@ class Rest
 
 			return $handler->{$config['method']}($this->data);
 		} catch (\Exception $e) {
-			$status = $e->getCode() ?: 400;
+			$status = (int) ($e->getCode() ?: 400);
 			$this->status = $status;
 			return ['status' => $status, 'message' => $e->getMessage(), 'data' => null];
 		}
@@ -423,7 +423,7 @@ class Rest
 		$bearer = $jwt->bearer();
 
 		if ($bearer['status'] != 200) {
-			throw new \Exception('Authentication failed: ' . $bearer['message'], $bearer['status']);
+			throw new \Exception('Authentication failed: ' . $bearer['message'], (int) $bearer['status']);
 		}
 
 		if ($bearer['payload']['typ'] != 'auth') {

@@ -207,6 +207,32 @@ class RestV1M2M extends RestV1
 		return $this->update('Products', $records);
 	}
 
+	public function deleteGoods(): array
+	{
+		$ids = $this->getNormalizedIds();
+		if (empty($ids)) {
+			return ['status' => 400, 'message' => 'ID required', 'data' => null];
+		}
+
+		/**
+		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. Логика зависит от бизнес-требований. 
+		 */
+
+		// Например, если нужно удалить связанные вариации)
+		// $variationIds = Connect::$instance->fetch(
+		// 	"SELECT Id FROM ProductsVariations WHERE ProductId IN (...)",
+		// 	$ids
+		// );
+		// $variationIds = array_column($variationIds, 'Id');
+
+		// Удалить вариации через utils (будет 1 запрос на проверку)
+		// if (!empty($variationIds)) {
+		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
+		// }
+
+		return $this->getUtils('Products')->remove($ids);
+	}
+
 	/**
 	 * M2M: GET получить вариации товаров
 	 */
@@ -249,11 +275,11 @@ class RestV1M2M extends RestV1
 
 	/**
 	 * M2M: POST создание вариаций товаров (одна или batch).
+	 * Сгруппировывает по goodsId и вызывает upsertVariations() batch-ом.
 	 * Не скрывает существующие вариации — только добавляет новые.
-	 * При дубликате (Alias) возвращает 409 с id существующей.
 	 *
 	 * Валидация по RestConfig уже выполнена в Rest::executeHandler() перед вызовом метода!
-	 * Формат тела: { "data": [ { "goodsId": 723, "name": "Вариант", "sku": "SKU001", "color": "Красный", "size": "42" }, ... ] }
+	 * Формат тела: { "data": [ { "goodsId": 723, "sku": "SKU001", "color": "Красный", "size": "42", "stocks": "10" }, ... ] }
 	 */
 	public function postGoodsVariations($data = null): array
 	{
@@ -262,30 +288,47 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
 
-		$processing = new ProcessingProducts();
-		$results = [];
-
-		// Данные уже валидированы в Rest::executeHandler()
-		foreach ($records as $index => $record) {
+		// Сгруппировать по goodsId
+		$byGoodsId = [];
+		foreach ($records as $record) {
 			$goodsId = (int) ($record['goodsId'] ?? 0);
-			$results[$index] = $processing->createVariation($goodsId, $record);
+			if (!$goodsId) {
+				return ['status' => 400, 'message' => 'goodsId required', 'data' => null];
+			}
+			if (!isset($byGoodsId[$goodsId])) {
+				$byGoodsId[$goodsId] = [];
+			}
+			// Преобразовать в индексированный формат [color, size, sku, stocks]
+			$byGoodsId[$goodsId][] = [
+				trim($record['color'] ?? ''),
+				trim($record['size'] ?? ''),
+				trim($record['sku'] ?? ''),
+				trim($record['stocks'] ?? ''),
+			];
 		}
 
-		if (count($records) === 1) {
-			return $results[0];
+		// Batch-обновление для каждого товара
+		$processing = new ProcessingProducts();
+		$created = [];
+		$updated = [];
+		foreach ($byGoodsId as $goodsId => $variations) {
+			$results = $processing->upsertVariations($goodsId, $variations, false); // false = не скрывать старые
+			foreach ($results as $result) {
+				if ($result['action'] === 'created') {
+					$created[] = $result['id'];
+				} else {
+					$updated[] = $result['id'];
+				}
+			}
 		}
 
-		$hasErrors = !empty(array_filter($results, fn($r) => ($r['status'] ?? 200) >= 400 && ($r['status'] ?? 200) !== 409));
-		return [
-			'status' => $hasErrors ? 207 : 201,
-			'message' => 'Multi-Status',
-			'data' => $results,
-		];
+		return ['status' => 201, 'message' => 'Variations processed', 'data' => ['created' => $created, 'updated' => $updated]];
 	}
 
 	/**
 	 * M2M: PUT обновление вариаций по id (одна или batch).
-	 * Обновляет конкретные вариации по их ID — без скрытия остальных.
+	 * Переформировывает alias если изменились color/size/sku.
+	 * Проверяет уникальность новых alias перед обновлением.
 	 *
 	 * Одна запись: ?id=123 или { "data": { "id": 123, "color": "Синий" } }
 	 * Batch: { "data": [ { "id": 1, "sku": "NEW" }, { "id": 2, "color": "Зелёный" } ] }
@@ -296,33 +339,38 @@ class RestV1M2M extends RestV1
 		if (empty($records)) {
 			return ['status' => 400, 'message' => 'No data', 'data' => null];
 		}
-		return $this->update('ProductsVariations', $records);
-	}
 
-	public function deleteGoods(): array
-	{
-		$ids = $this->getNormalizedIds();
-		if (empty($ids)) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
+		// Используем ProcessingProducts для обновления с переформированием alias
+		$processing = new ProcessingProducts();
+		$results = $processing->updateVariations($records);
+
+		if (empty($results['updated']) && empty($results['skipped']) && empty($results['conflict']) && empty($results['notFound'])) {
+			return ['status' => 400, 'message' => 'No variations found', 'data' => null];
 		}
 
-		/**
-		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. Логика зависит от бизнес-требований. 
-		 */
+		// Одиночное обновление
+		if (count($records) === 1) {
+			$recordId = (int) ($records[0]['id'] ?? 0);
+			if (isset($results['notFound']) && in_array($recordId, $results['notFound'])) {
+				return ['status' => 404, 'message' => 'Variation not found', 'data' => null];
+			}
+			if (isset($results['conflict']) && in_array($recordId, $results['conflict'])) {
+				return ['status' => 409, 'message' => 'Alias already in use', 'data' => null];
+			}
+			if (isset($results['skipped']) && in_array($recordId, $results['skipped'])) {
+				return ['status' => 200, 'message' => 'No changes', 'data' => ['id' => $recordId]];
+			}
+			if (isset($results['updated']) && in_array($recordId, $results['updated'])) {
+				return ['status' => 200, 'message' => 'Variation updated', 'data' => ['id' => $recordId]];
+			}
+		}
 
-		// Например, если нужно удалить связанные вариации)
-		// $variationIds = Connect::$instance->fetch(
-		// 	"SELECT Id FROM ProductsVariations WHERE ProductId IN (...)",
-		// 	$ids
-		// );
-		// $variationIds = array_column($variationIds, 'Id');
-
-		// Удалить вариации через utils (будет 1 запрос на проверку)
-		// if (!empty($variationIds)) {
-		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
-		// }
-
-		return $this->getUtils('Products')->remove($ids);
+		// Batch-обновление
+		return [
+			'status' => 200,
+			'message' => 'Variations processed',
+			'data' => $results,
+		];
 	}
 
 	/**

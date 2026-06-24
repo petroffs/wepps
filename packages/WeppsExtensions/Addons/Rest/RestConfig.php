@@ -743,7 +743,9 @@ class RestConfig
 						'method' => 'postGoodsVariations',
 						'role_required' => [1],
 						'auth_required' => true,
-						'async' => true,
+						'async' => false,
+						// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
+						// 'async' => true,
 						'note' => 'M2M: Create goods variation(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 						'validation' => [
 							//'name' => ['type' => 'string', 'required' => true],
@@ -872,6 +874,24 @@ class RestConfig
 							'metaKeyword' => ['type' => 'string', 'required' => false],
 							'weightPack' => ['type' => 'float', 'required' => false],
 							'displayFirst' => ['type' => 'int2', 'required' => false],
+						],
+					],
+					'goods.variations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'async' => false,
+						// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
+						// 'async' => true,
+						'note' => 'M2M: Update goods variation(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							//'goodsId' => ['type' => 'int', 'required' => true],
+							'color' => ['type' => 'string', 'required' => false],
+							'size' => ['type' => 'string', 'required' => false],
+							'sku' => ['type' => 'string', 'required' => false],
+							'stocks' => ['type' => 'int', 'required' => false],
 						],
 					],
 					'goods.stocks' => [
