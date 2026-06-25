@@ -543,7 +543,7 @@ class Lists
 				$str .= self::addListProperty($list, $id, $propField, $propId, $v);
 			}
 			if ($str != "") {
-				$str .= "update s_PropertiesValues set IsHidden=IsHidden2;\n";
+				$str .= "update s_PropertiesValues set IsHidden=IsHiddenCandidate;\n";
 				Connect::$db->exec($str);
 			}
 		}
@@ -714,7 +714,7 @@ class Lists
 			'TableNameField' => $field,
 		);
 		$arr = AdminUtils::query($row);
-		$str = "update s_PropertiesValues set IsHidden2=1 where {$arr['condition']};\n";
+		$str = "update s_PropertiesValues set IsHiddenCandidate=1 where {$arr['condition']};\n";
 		$ex = explode(":::", $value);
 		foreach ($ex as $v) {
 			$hash = md5($list . $field . $id . $prop . $v);
@@ -726,7 +726,7 @@ class Lists
 				'TableNameField' => $field,
 				'Alias' => TextTransforms::translit($v, 2),
 				'PValue' => $v,
-				'IsHidden2' => 0,
+				'IsHiddenCandidate' => 0,
 			);
 			$arr2 = AdminUtils::query($row);
 			$str .= "update s_PropertiesValues set {$arr2['update']} where HashValue = '{$hash}';\n";
@@ -977,7 +977,7 @@ class Lists
 				$conditions2 = "";
 				break;
 			default:
-				$str = "update s_SearchKeys sk set sk.IsHidden2=1 where sk.Name=$id and sk.Field3 regexp 'List::{$list}::';\n";
+				$str = "update s_SearchKeys sk set sk.IsHiddenCandidate=1 where sk.Name=$id and sk.Field3 regexp 'List::{$list}::';\n";
 				$conditions = "and TableName='$list'";
 				$conditions2 = "where Id=$id";
 				break;
@@ -1000,7 +1000,7 @@ class Lists
 					$rowData['Field1'] = $v2;
 					$rowData['Field2'] = "";
 					$rowData['Field3'] = "List::$tableName::$fieldName";
-					$rowData['IsHidden2'] = 0;
+					$rowData['IsHiddenCandidate'] = 0;
 					$arr = AdminUtils::query($rowData);
 					$md5 = md5($rowData['Name'] . "::" . $rowData['Field1'] . "::" . $rowData['Field2'] . "::" . $rowData['Field3']);
 					$str .= "insert ignore into s_SearchKeys (Alias) values ('$md5');\n";
@@ -1008,7 +1008,7 @@ class Lists
 				}
 			}
 		}
-		$str .= "update s_SearchKeys set IsHidden=IsHidden2;\n";
+		$str .= "update s_SearchKeys set IsHidden=IsHiddenCandidate;\n";
 		return $str;
 	}
 

@@ -300,9 +300,9 @@ class RestV1M2MUtils
 	 * Синхронизировать таблицу постранично.
 	 *
 	 * Формат pagination: ['page' => 1, 'count' => 5]
-	 * - page=1:          UPDATE {table} SET IsHidden2=1  (пометить всё кандидатом на скрытие)
-	 * - pages 1..count:  upsert записей + IsHidden2=0 для успешно обработанных
-	 * - page=count:      UPDATE {table} SET IsHidden=IsHidden2  (скрыть что не пришло)
+	 * - page=1:          UPDATE {table} SET IsHiddenCandidate=1  (пометить всё кандидатом на скрытие)
+	 * - pages 1..count:  upsert записей + IsHiddenCandidate=0 для успешно обработанных
+	 * - page=count:      UPDATE {table} SET IsHidden=IsHiddenCandidate  (скрыть что не пришло)
 	 *
 	 * @param array $records    [index => плоский массив полей]
 	 * @param array $pagination ['page' => int, 'count' => int]
@@ -314,7 +314,7 @@ class RestV1M2MUtils
 		$count = (int) ($pagination['count'] ?? 1);
 
 		if ($page === 1) {
-			Connect::$instance->query("UPDATE {$this->tableName} SET IsHidden2 = 1");
+			Connect::$instance->query("UPDATE {$this->tableName} SET IsHiddenCandidate = 1");
 		}
 
 		$toUpdate = [];
@@ -371,7 +371,7 @@ class RestV1M2MUtils
 			}
 		}
 
-		// Снять метку IsHidden2 с успешно обработанных записей
+		// Снять метку IsHiddenCandidate с успешно обработанных записей
 		$successIds = [];
 		foreach ($results as $result) {
 			$status = (int) ($result['status'] ?? 0);
@@ -383,14 +383,14 @@ class RestV1M2MUtils
 		if (!empty($successIds)) {
 			$in = Connect::$instance->in($successIds);
 			Connect::$instance->query(
-				"UPDATE {$this->tableName} SET IsHidden2 = 0 WHERE Id IN ($in)",
+				"UPDATE {$this->tableName} SET IsHiddenCandidate = 0 WHERE Id IN ($in)",
 				$successIds
 			);
 		}
 
 		// На последней странице — применить скрытие
 		if ($page === $count) {
-			Connect::$instance->query("UPDATE {$this->tableName} SET IsHidden = IsHidden2");
+			Connect::$instance->query("UPDATE {$this->tableName} SET IsHidden = IsHiddenCandidate");
 		}
 
 		return $results;
