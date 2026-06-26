@@ -778,73 +778,6 @@ class RestConfig
 						'note' => 'M2M: Create order(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 					],
 				],
-				'delete' => [
-					'users' => [
-						'class' => RestV1M2M::class,
-						'method' => 'deleteUsers',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Delete user by id (configurable via s_Config). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => false],
-						],
-						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'goods' => [
-						'class' => RestV1M2M::class,
-						'method' => 'deleteGoods',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Delete goods by id(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => false],
-						],
-						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'orders' => [
-						'class' => RestV1M2M::class,
-						'method' => 'deleteOrders',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Delete order(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => false],
-						],
-						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'goods.images' => [
-						'class' => RestV1M2M::class,
-						'method' => 'deleteGoodsImages',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Delete goods image(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => false],
-						],
-						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'goods.imagesVariations' => [
-						'class' => RestV1M2M::class,
-						'method' => 'deleteGoodsImagesVariations',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Delete goods variation image(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => false],
-						],
-						'validation' => [
-							'ids' => ['type' => 'int2', 'required' => false],
-						],
-					],
-				],
 				'put' => [
 					'users' => [
 						'class' => RestV1M2M::class,
@@ -936,6 +869,86 @@ class RestConfig
 						'method' => 'patchGoodsFilters',
 						'auth_required' => true,
 						'note' => 'M2M: Sync all goods filters/properties (overwrite)',
+					],
+				],
+				'delete' => [
+					'users' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteUsers',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete user by id (configurable via s_Config). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ARRAY' => ['type' => 'int2', 'required' => false],
+						],
+					],
+					'goods' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoods',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods by id(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ARRAY' => ['type' => 'int2', 'required' => false],
+						],
+					],
+					'goods.variations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods variations by id(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ARRAY' => ['type' => 'int2', 'required' => false],
+						],
+					],
+					'goods.images' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsImages',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods image(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ARRAY' => ['type' => 'int2', 'required' => false],
+						],
+					],
+					'goods.imagesVariations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsImagesVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods variation image(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ARRAY' => ['type' => 'int2', 'required' => false],
+						],
+					],
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteOrders',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete order(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => false],
+						],
+						'validation' => [
+							'ARRAY' => ['type' => 'int2', 'required' => false],
+						],
 					],
 				],
 			],

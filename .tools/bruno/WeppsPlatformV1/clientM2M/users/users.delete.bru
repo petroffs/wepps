@@ -2,16 +2,21 @@ meta {
   name: DELETE users
   type: http
   seq: 5
-  tags: destructive manual
 }
 
 delete {
   url: {{base_url}}/rest/m2m/users?id={{user_id}}
+  body: json
   auth: inherit
 }
 
-
-params:query {
+body:json {
+  {
+    "data": [
+      500,
+      501
+    ]
+  }
 }
 
 tests {

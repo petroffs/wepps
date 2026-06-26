@@ -64,9 +64,9 @@ class RestV1M2MUtils
 
 	public function __construct(string $tableName)
 	{
-		$this->tableName         = $tableName;
-		$this->jsonFieldsCache   = null;
-		$this->reverseMapCache   = null;
+		$this->tableName = $tableName;
+		$this->jsonFieldsCache = null;
+		$this->reverseMapCache = null;
 		$this->uniqueFieldsCache = null;
 	}
 
@@ -171,8 +171,8 @@ class RestV1M2MUtils
 
 		try {
 			$mapped = $this->mapApiToDbFields($record);
-			$model  = new Data($this->tableName);
-			$id     = $model->add($mapped);
+			$model = new Data($this->tableName);
+			$id = $model->add($mapped);
 
 			if ((int) $id === 0) {
 				return ['status' => 409, 'message' => 'Duplicate key or constraint violation', 'data' => null];
@@ -192,7 +192,7 @@ class RestV1M2MUtils
 	 */
 	public function addBatch(array $records): array
 	{
-		$results  = [];
+		$results = [];
 		$toInsert = [];
 
 		$dupeErrors = $this->checkDuplicate($records, false);
@@ -239,7 +239,7 @@ class RestV1M2MUtils
 
 		try {
 			$mapped = $this->mapApiToDbFields($data);
-			$model  = new Data($this->tableName);
+			$model = new Data($this->tableName);
 			$model->set($id, $mapped);
 
 			return ['status' => 200, 'message' => 'Updated', 'data' => ['id' => $id]];
@@ -256,7 +256,7 @@ class RestV1M2MUtils
 	 */
 	public function setBatch(array $items): array
 	{
-		$results  = [];
+		$results = [];
 		$toUpdate = [];
 
 		foreach ($items as $index => $record) {
@@ -310,7 +310,7 @@ class RestV1M2MUtils
 	 */
 	public function syncBatch(array $records, array $pagination): array
 	{
-		$page  = (int) ($pagination['page'] ?? 1);
+		$page = (int) ($pagination['page'] ?? 1);
 		$count = (int) ($pagination['count'] ?? 1);
 
 		if ($page === 1) {
@@ -319,7 +319,7 @@ class RestV1M2MUtils
 
 		$toUpdate = [];
 		$toInsert = [];
-		$results  = [];
+		$results = [];
 
 		foreach ($records as $index => $record) {
 			$id = (int) ($record['id'] ?? $record['Id'] ?? 0);
@@ -507,14 +507,14 @@ class RestV1M2MUtils
 	private function executeBatchInsert(array $items): array
 	{
 		$results = [];
-		$groups  = [];
+		$groups = [];
 
 		foreach ($items as $index => $record) {
-			$mapped      = $this->mapApiToDbFields($record);
+			$mapped = $this->mapApiToDbFields($record);
 			unset($mapped['Id'], $mapped['id']);
 			$hasPriority = array_key_exists('Priority', $mapped);
 			ksort($mapped);
-			$sig              = implode(',', array_keys($mapped));
+			$sig = implode(',', array_keys($mapped));
 			$groups[$sig][] = ['index' => $index, 'data' => $mapped, 'hasPriority' => $hasPriority];
 		}
 
@@ -527,8 +527,8 @@ class RestV1M2MUtils
 				];
 			}
 			$prepared = Connect::$instance->prepare($group[0]['data'], $settings);
-			$sql      = "INSERT IGNORE INTO {$this->tableName} {$prepared['insert']}";
-			$sth      = Connect::$db->prepare($sql);
+			$sql = "INSERT IGNORE INTO {$this->tableName} {$prepared['insert']}";
+			$sth = Connect::$db->prepare($sql);
 
 			foreach ($group as $item) {
 				$params = $item['data'];
@@ -537,7 +537,7 @@ class RestV1M2MUtils
 				}
 				try {
 					$sth->execute($params);
-					$id                      = (int) Connect::$db->lastInsertId();
+					$id = (int) Connect::$db->lastInsertId();
 					$results[$item['index']] = $id === 0
 						? ['status' => 409, 'message' => 'Duplicate insert', 'data' => null]
 						: ['status' => 201, 'message' => 'Created', 'data' => ['id' => $id]];
@@ -553,11 +553,11 @@ class RestV1M2MUtils
 	private function executeBatchUpdate(array $items): array
 	{
 		$results = [];
-		$groups  = [];
+		$groups = [];
 
 		foreach ($items as $index => $record) {
-			$id     = (int) ($record['id'] ?? $record['Id'] ?? 0);
-			$data   = $record;
+			$id = (int) ($record['id'] ?? $record['Id'] ?? 0);
+			$data = $record;
 			unset($data['id'], $data['Id']);
 			$mapped = $this->mapApiToDbFields($data);
 			unset($mapped['Id'], $mapped['id']);
@@ -568,17 +568,17 @@ class RestV1M2MUtils
 				continue;
 			}
 
-			$sig            = implode(',', array_keys($mapped));
+			$sig = implode(',', array_keys($mapped));
 			$groups[$sig][] = ['index' => $index, 'id' => $id, 'data' => $mapped];
 		}
 
 		foreach ($groups as $group) {
 			$prepared = Connect::$instance->prepare($group[0]['data']);
-			$sql      = "UPDATE {$this->tableName} SET {$prepared['update']} WHERE Id = :Id";
-			$sth      = Connect::$db->prepare($sql);
+			$sql = "UPDATE {$this->tableName} SET {$prepared['update']} WHERE Id = :Id";
+			$sth = Connect::$db->prepare($sql);
 
 			foreach ($group as $item) {
-				$params       = $item['data'];
+				$params = $item['data'];
 				$params['Id'] = $item['id'];
 				try {
 					$sth->execute($params);
@@ -603,7 +603,7 @@ class RestV1M2MUtils
 	public function checkDuplicate(array $records, bool $forUpdate): array
 	{
 		$uniqueFields = $this->getUniqueFields(); // [DbField => apiName]
-		$result       = array_fill_keys(array_keys($records), null);
+		$result = array_fill_keys(array_keys($records), null);
 
 		if (empty($uniqueFields)) {
 			return $result;
@@ -612,36 +612,40 @@ class RestV1M2MUtils
 		$updateIds = [];
 		if ($forUpdate) {
 			foreach ($records as $item) {
-				if (!is_array($item)) continue;
+				if (!is_array($item))
+					continue;
 				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
-				if ($id > 0) $updateIds[] = $id;
+				if ($id > 0)
+					$updateIds[] = $id;
 			}
 		}
 
 		foreach ($uniqueFields as $dbField => $apiName) {
-			$uniqueValues  = [];
+			$uniqueValues = [];
 			$valueIndexMap = [];
 
 			foreach ($records as $index => $item) {
-				if (!is_array($item) || ($result[$index] ?? null)) continue;
+				if (!is_array($item) || ($result[$index] ?? null))
+					continue;
 				$value = $this->extractFieldValue($item, $dbField);
 				if ($value !== null && $value !== '') {
-					$lower                   = strtolower((string) $value);
-					$uniqueValues[]          = $lower;
+					$lower = strtolower((string) $value);
+					$uniqueValues[] = $lower;
 					$valueIndexMap[$lower][] = $index;
 				}
 			}
 
-			if (empty($uniqueValues)) continue;
+			if (empty($uniqueValues))
+				continue;
 
-			$inValues      = Connect::$instance->in($uniqueValues);
-			$params        = $uniqueValues;
+			$inValues = Connect::$instance->in($uniqueValues);
+			$params = $uniqueValues;
 			$excludeClause = '';
 
 			if ($forUpdate && !empty($updateIds)) {
-				$inIds         = Connect::$instance->in($updateIds);
+				$inIds = Connect::$instance->in($updateIds);
 				$excludeClause = " AND Id NOT IN ($inIds)";
-				$params        = array_merge($params, $updateIds);
+				$params = array_merge($params, $updateIds);
 			}
 
 			try {
@@ -656,12 +660,13 @@ class RestV1M2MUtils
 			foreach ($rows as $row) {
 				$lower = strtolower((string) $row[$dbField]);
 				foreach ($valueIndexMap[$lower] ?? [] as $index) {
-					if ($result[$index] !== null) continue;
-					$original       = $this->extractFieldValue($records[$index], $dbField) ?? $lower;
+					if ($result[$index] !== null)
+						continue;
+					$original = $this->extractFieldValue($records[$index], $dbField) ?? $lower;
 					$result[$index] = [
-						'status'  => 409,
+						'status' => 409,
 						'message' => "Duplicate {$apiName}: {$original}",
-						'data'    => ['id' => (int) $row['Id']],
+						'data' => ['id' => (int) $row['Id']],
 					];
 				}
 			}
@@ -726,14 +731,14 @@ class RestV1M2MUtils
 			return $this->reverseMapCache;
 		}
 
-		$sql    = "SELECT `Field`, `ApiMapping`, `IsUnique` FROM s_ConfigFields WHERE `TableName` = ?";
+		$sql = "SELECT `Field`, `ApiMapping`, `IsUnique` FROM s_ConfigFields WHERE `TableName` = ?";
 		$result = Connect::$instance->fetch($sql, [$this->tableName]);
 
-		$reverseMap   = [];
+		$reverseMap = [];
 		$uniqueFields = [];
 		foreach ($result as $row) {
 			$dbField = $row['Field'];
-			$apiKey  = $row['ApiMapping'] ?? null;
+			$apiKey = $row['ApiMapping'] ?? null;
 			if ($apiKey) {
 				$reverseMap[strtolower($apiKey)] = $dbField;
 			}
@@ -745,7 +750,7 @@ class RestV1M2MUtils
 			}
 		}
 
-		$this->reverseMapCache   = $reverseMap;
+		$this->reverseMapCache = $reverseMap;
 		$this->uniqueFieldsCache = $uniqueFields;
 		return $reverseMap;
 	}
@@ -959,7 +964,10 @@ class RestV1M2MUtils
 	/**
 	 * Преобразует массив свойств в структуру W_Attributes для API
 	 * 
-	 * @param array|null $propertiesData Массив данных о свойствах (grouped по ID или rows)
+	 * Входные данные от buildAttributesForProducts: [PropertyId => [rows для этого свойства]]
+	 * Возвращает отформатированный массив W_Attributes для всех свойств товара
+	 * 
+	 * @param array|null $propertiesData [PropertyId => [rows]] структура из buildAttributesForProducts
 	 * @return array|null Отформатированный массив W_Attributes или null
 	 */
 	public function buildAttributesFromPropertiesValues(?array $propertiesData): ?array
@@ -968,23 +976,32 @@ class RestV1M2MUtils
 			return null;
 		}
 
-		// Входные данные: [PropertyId => rows] (после filtersByCompositeKey())
-		$grouped = [];
+		// $propertiesData имеет структуру [PropertyId => [row1, row2, ...]]
+		// Преобразуем в формат W_Attributes
+		$attributes = [];
+
 		foreach ($propertiesData as $propId => $rows) {
 			if (!is_array($rows) || empty($rows)) {
 				continue;
 			}
-			$grouped[$propId] = $rows;
+
+			// Берём первую строку как основание (в ней PId и PName одинаковые для всех rows)
+			$firstRow = $rows[0];
+			$propName = $firstRow['PName'] ?? '';
+
+			// Собираем значения для этого свойства
+			$values = array_map(
+				fn($r) => ['alias' => $r['Alias'] ?? '', 'value' => $r['PValue'] ?? ''],
+				$rows
+			);
+
+			$attributes[] = [
+				'id' => (int) ($firstRow['PId'] ?? 0),
+				'name' => $propName,
+				'values' => $values,
+			];
 		}
 
-		return array_values(array_map(
-			fn($propId, $rows) => [
-				'id' => (int) $propId,
-				'name' => $rows[0]['PropertyName'] ?? '',
-				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue']], $rows),
-			],
-			array_keys($grouped),
-			array_values($grouped)
-		));
+		return !empty($attributes) ? $attributes : null;
 	}
 }

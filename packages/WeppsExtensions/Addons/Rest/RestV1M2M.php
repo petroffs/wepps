@@ -149,21 +149,22 @@ class RestV1M2M extends RestV1
 		$rows = $result['rows'] ?? [];
 
 		// Получаем все атрибуты для всех товаров одним вызовом Filters
-		// Filters::getFilters() возвращает с группировкой по compositeKey "ProductId-PropertyId"
+		// Filters::getFilters() возвращает с группировкой по compositeKey "PropertyId-Alias"
+		// Нужно трансформировать в [ProductId => [PropertyId => rows]] через buildAttributesForProducts()
 		$filterResult = [];
 		$ids = array_column($rows, 'id');
 
 		if (!empty($ids)) {
 			$placeholders = Connect::$instance->in($ids);
 			$filtersObj = new Filters();
-			$filterResult = $filtersObj->getFilters([
+			$rawFilters = $filtersObj->getFilters([
 				'conditions' => "t.IsHidden=0 AND pv.TableName='Products' AND pv.TableNameId IN ($placeholders)",
 				'params' => $ids,
 			]);
-
-			// Перегруппируем compositeKey в структуру [ProductId => [PropertyId => rows]]
-			// $filterResult = $filtersObj->groupByProductId($filtersByCompositeKey);
+			// Трансформируем в структуру [ProductId => [PropertyId => rows]]
+			$filterResult = $filtersObj->buildAttributesForProducts($rawFilters);
 		}
+
 		// Распределяем атрибуты по товарам
 		foreach ($rows as &$row) {
 			$row['W_Attributes'] = $this->getUtils('Products')->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
@@ -371,6 +372,16 @@ class RestV1M2M extends RestV1
 			'message' => 'Variations processed',
 			'data' => $results,
 		];
+	}
+
+	public function deleteGoodsVariations(): array
+	{
+		$ids = $this->getNormalizedIds();
+		if (empty($ids)) {
+			return ['status' => 400, 'message' => 'ID required', 'data' => null];
+		}
+		
+		return $this->getUtils('ProductsVariations')->remove($ids);
 	}
 
 	/**

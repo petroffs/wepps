@@ -488,6 +488,10 @@ class Rest
 	 *
 	 * Поддерживает объекты и массивы объектов. Проверяет обязательность полей,
 	 * типы данных и отсутствие лишних полей.
+	 * 
+	 * Поддерживаемые типы:
+	 * - Примитивные: int, int2, float, float2, string, date, email, phone, guid, barcode
+	 * - Массивы: int[], int2[], float[], float2[], string[], date[], email[], phone[], guid[], barcode[]
 	 *
 	 * @param array $data Входные данные для валидации
 	 * @param array $rules Правила валидации с ключами 'required' и 'type'
@@ -495,6 +499,30 @@ class Rest
 	 */
 	public function validateData(array $data, array $rules): void
 	{
+		// ✨ Если в rules есть 'ARRAY' - валидируем весь массив целиком
+		if (isset($rules['ARRAY'])) {
+			$rule = $rules['ARRAY'];
+			$type = $rule['type'];
+			
+			// Если тип без [], добавляем [] автоматически для массива
+			if (!str_ends_with($type, '[]')) {
+				$type = $type . '[]';
+			}
+			
+			// Проверка required
+			if ($rule['required'] && (empty($data) && $data !== '0')) {
+				throw new \Exception("Array data is required");
+			}
+			
+			// Валидация типа
+			if (!empty($data) || !$rule['required']) {
+				if (!$this->validateType($data, $type)) {
+					throw new \Exception("Array data must be {$rule['type']}");
+				}
+			}
+			return;  // Выходим, не проверяя "лишние поля"
+		}
+
 		// Если data - массив объектов, валидируем каждый элемент
 		if (is_array($data) && isset($data[0]) && is_array($data[0])) {
 			foreach ($data as $item) {
@@ -529,14 +557,32 @@ class Rest
 	 * Валидация значения по типу
 	 *
 	 * Использует класс Validator для проверки значения на соответствие типу.
-	 * Поддерживает: int, int2, float, float2, string, date, email, phone, guid, barcode.
+	 * Поддерживает примитивные типы: int, int2, float, float2, string, date, email, phone, guid, barcode.
+	 * Поддерживает массивы типов (заканчиваются на []): int[], int2[], float[], float2[], string[], date[], email[], phone[], guid[], barcode[].
 	 *
 	 * @param mixed $value Значение для проверки
-	 * @param string $type Тип для проверки (int, string, email, etc.)
+	 * @param string $type Тип для проверки (int, string, int2[], email[], etc.)
 	 * @return bool true если значение соответствует типу, false иначе
 	 */
 	public function validateType($value, string $type): bool
 	{
+		// Проверка массивов (типы заканчиваются на [])
+		if (str_ends_with($type, '[]')) {
+			if (!is_array($value)) {
+				return false;
+			}
+			// Извлекаем тип элементов (убираем [])
+			$elementType = substr($type, 0, -2);
+			// Валидируем каждый элемент массива
+			foreach ($value as $item) {
+				if (!$this->validateType($item, $elementType)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		// Валидация примитивных типов
 		switch ($type) {
 			case 'int':
 				$errorMessage = 'must be an integer';

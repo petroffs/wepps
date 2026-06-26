@@ -1,7 +1,7 @@
 meta {
   name: DELETE goods
   type: http
-  seq: 4
+  seq: 5
 }
 
 delete {
@@ -10,14 +10,11 @@ delete {
   auth: inherit
 }
 
-params:query {
-}
-
 body:json {
   {
-      "data": [
-          {{goods_id}}
-      ]
+    "data": [
+        {{goods_id}}
+    ]
   }
 }
 

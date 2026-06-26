@@ -1,20 +1,20 @@
 meta {
   name: DELETE goods.variations
   type: http
-  seq: 8
+  seq: 9
 }
 
 delete {
-  url: {{base_url}}/rest/m2m/goods.vatiations
+  url: {{base_url}}/rest/m2m/goods.variations
   body: json
   auth: inherit
 }
 
 body:json {
   {
-      "data": [
+    "data": [
           {{goodsv_id}}
-      ]
+    ]
   }
 }
 

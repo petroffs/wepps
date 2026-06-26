@@ -110,7 +110,7 @@ class ProductsUtils
 				if (!empty($el['W_Variations'])) {
 					$el['W_Variations'] = self::getVariationsArray($el['W_Variations']);
 				}
-				unset($res[$k]['Variations']);
+				unset($res[$k]['variations']);
 			}
 			unset($el);
 		}
