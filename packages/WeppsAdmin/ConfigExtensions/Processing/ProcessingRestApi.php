@@ -313,8 +313,9 @@ class ProcessingRestApi
 				return [
 					'data' => $items,
 					'pagination' => [
+						'count' => 1,
+						'limit' => 100,
 						'page' => 1,
-						'limit' => count($items),
 						'note' => 'Template for update - remove pagination if updating only selected items'
 					]
 				];

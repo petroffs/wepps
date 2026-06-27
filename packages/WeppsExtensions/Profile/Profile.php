@@ -166,7 +166,7 @@ class Profile extends Extension
 		$conditions = $productsUtils->getConditions($params, false, $conditionsPrepared, $ids);
 		$conditionsFilters = $productsUtils->getConditions($params, true, $conditionsPrepared, $ids);
 		$settings = [
-			'pages' => $productsUtils->getPages(),
+			'limit' => $productsUtils->getLimit(),
 			'page' => $this->page,
 			'sorting' => $sorting['conditions'],
 			'conditions' => $conditionsFilters,

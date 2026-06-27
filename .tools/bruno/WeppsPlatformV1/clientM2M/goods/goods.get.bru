@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods
+  url: {{base_url}}/rest/m2m/goods?page=3&limit=50
   body: none
   auth: inherit
 }
 
 params:query {
-  ~page: 1
-  ~limit: 20
+  page: 3
+  limit: 50
   ~search: 
 }
 

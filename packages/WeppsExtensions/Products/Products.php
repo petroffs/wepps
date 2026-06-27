@@ -45,7 +45,7 @@ class Products extends Extension
 			$conditionsFilters = $this->productsUtils->getConditions($params, true);
 			$conditionsFilters['conditions'] .= " and length(t.Variations)>0";
 			$settings = [
-				'pages' => $this->productsUtils->getPages(),
+				'limit' => $this->productsUtils->getLimit(),
 				'page' => $this->page,
 				'sorting' => $sorting['conditions'],
 				'conditions' => $conditionsFilters,

@@ -99,7 +99,7 @@ class RestV1M2M extends RestV1
 			$conditions = $isNumericId ? "t.Id = ?" : "binary t.Alias = ?";
 
 			$settings = [
-				'pages' => 1,
+				'limit' => 1,
 				'page' => 1,
 				'sorting' => 't.Priority desc',
 				'conditions' => [
@@ -137,7 +137,7 @@ class RestV1M2M extends RestV1
 			};
 
 			$settings = [
-				'pages' => $limit,
+				'limit' => $limit,
 				'page' => $page,
 				'sorting' => $sorting,
 				'conditions' => $conditionsWithFilters,
@@ -170,12 +170,12 @@ class RestV1M2M extends RestV1
 			$row['W_Attributes'] = $this->getUtils('Products')->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
 		}
 		unset($row);
-
+//Utils::debug(,1);
 		return [
 			'status' => 200,
 			'message' => 'OK',
 			'data' => $rows,
-			'pagination' => ['count' => $result['count'], 'limit' => $limit, 'page' => $page],
+			'pagination' => ['count' => $result['paginator']['count'], 'limit' => $limit, 'page' => $page],
 		];
 	}
 
@@ -267,7 +267,7 @@ class RestV1M2M extends RestV1
 			'message' => 'OK',
 			'data' => $result ?: [],
 			'pagination' => [
-				'count' => $data->count,
+				'count' => $data->paginator['count'] ?? 1,
 				'limit' => $limit,
 				'page' => $page,
 			],
@@ -426,7 +426,7 @@ class RestV1M2M extends RestV1
 			'message' => 'OK',
 			'data' => $result ?: [],
 			'pagination' => [
-				'count' => $data->count,
+				'count' => $data->paginator['count'] ?? 1,
 				'limit' => $limit,
 				'page' => $page,
 			]

@@ -85,7 +85,7 @@ class ProductsUtils
 			'params' => $prepare
 		];
 	}
-	public function getPages()
+	public function getLimit()
 	{
 		return 12;
 	}
@@ -98,11 +98,11 @@ class ProductsUtils
 		if (!empty($settings['conditions']['params'])) {
 			$obj->setParams($settings['conditions']['params']);
 		}
-		$settings['pages'] = (!empty($settings['pages'])) ? (int) $settings['pages'] : 20;
+		$settings['limit'] = (!empty($settings['limit'])) ? (int) $settings['limit'] : 12;
 		$settings['page'] = (!empty($settings['page'])) ? (int) $settings['page'] : 1;
 		$settings['sorting'] = (!empty($settings['sorting'])) ? (string) $settings['sorting'] : "t.Priority desc";
 		$settings['sorting'] .= ",pv.Priority";
-		$res = $obj->fetch($settings['conditions']['conditions'], $settings['pages'], $settings['page'], $settings['sorting']);
+		$res = $obj->fetch($settings['conditions']['conditions'], $settings['limit'], $settings['page'], $settings['sorting']);
 
 		// Преобразуем W_Variations из строки в массив (как в getProductsItem)
 		if (!empty($res)) {
@@ -126,7 +126,7 @@ class ProductsUtils
 		$conditions = (strlen((int) $id) == strlen($id)) ? "{$conditions} t.Id = ?" : " {$conditions} binary t.Alias = ?";
 		$conditions .= " and length(t.Variations)>0";
 		$settings = [
-			'pages' => 1,
+			'limit' => 1,
 			'page' => 1,
 			'sorting' => '',
 			'conditions' => [

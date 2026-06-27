@@ -99,7 +99,7 @@ class RestV1APP extends RestV1
 			$conditions = $isNumericId ? "t.IsHidden=0 and t.Id = ?" : "t.IsHidden=0 and binary t.Alias = ?";
 
 			$settings = [
-				'pages' => 1,
+				'limit' => 1,
 				'page' => 1,
 				'sorting' => 't.Priority desc',
 				'conditions' => [
@@ -120,7 +120,7 @@ class RestV1APP extends RestV1
 			$conditions = $productsUtils->getConditions($params, true);
 
 			$settings = [
-				'pages' => $limit,
+				'limit' => $limit,
 				'page' => $page,
 				'sorting' => $sorting['conditions'],
 				'conditions' => $conditions,
@@ -263,7 +263,7 @@ class RestV1APP extends RestV1
 		$productsUtils->setNavigator($navigator, 'Products');
 
 		$result = $productsUtils->getProducts([
-			'pages' => 100,
+			'limit' => 100,
 			'page' => 1,
 			'sorting' => 't.Priority desc',
 			'conditions' => ['conditions' => "t.IsHidden=0 AND t.Id IN ($in)", 'params' => $ids],
