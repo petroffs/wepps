@@ -1,19 +1,19 @@
 meta {
   name: GET goods.stocks
   type: http
-  seq: 12
+  seq: 10
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods.stocks?goods_id=326&page=1&limit=100
+  url: {{base_url}}/rest/m2m/goods.stocks?page=1&limit=100&goods_id={{goods_id}}
   body: none
   auth: inherit
 }
 
 params:query {
-  goods_id: 326
   page: 1
   limit: 100
+  goods_id: {{goods_id}}
 }
 
 tests {

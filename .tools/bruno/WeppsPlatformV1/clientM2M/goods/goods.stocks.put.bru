@@ -1,7 +1,7 @@
 meta {
   name: PUT goods.stocks
   type: http
-  seq: 21
+  seq: 11
 }
 
 put {
@@ -12,10 +12,18 @@ put {
 
 body:json {
   {
-    "data": {
-      "goods_id": 1,
-      "amount": 50
-    }
+      "data": [
+          {
+              "id": 2103,
+              "goodsId": 325,
+              "stocks": 4
+          }
+      ],
+      "pagination": {
+          "page": 1,
+          "limit": 1,
+          "note": "Template for update - remove pagination if updating only selected items"
+      }
   }
 }
 

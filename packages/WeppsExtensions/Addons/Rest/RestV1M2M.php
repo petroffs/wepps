@@ -380,8 +380,118 @@ class RestV1M2M extends RestV1
 		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-		
+
 		return $this->getUtils('ProductsVariations')->remove($ids);
+	}
+
+	/**
+	 * M2M: GET запасы товаров (доступность на складах)
+	 */
+	public function getGoodsStocks(): array
+	{
+		$page = max(1, (int) ($this->get['page'] ?? 1));
+		$limit = min(500, max(1, (int) ($this->get['limit'] ?? 500)));
+		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+
+		$data = new Data('ProductsVariations', ['useApiMapping' => true]);
+		$data->setFields('Id,ProductsId,Field4');
+
+		// Условия WHERE
+		$conditions = 'IsHidden = 0';
+		$params = [];
+
+		// Если передан goodsId, фильтруем по товару
+		if ($goodsId > 0) {
+			$conditions .= ' AND ProductsId = ?';
+			$params[] = $goodsId;
+			$data->setParams($params);
+		}
+
+		$result = $data->fetch($conditions, $limit, $page, 't.Id DESC');
+
+		if (empty($result) && $data->count === 0) {
+			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
+		}
+
+		// Приводим 'stocks' к float
+		foreach ($result as &$row) {
+			if (isset($row['stocks'])) {
+				$row['stocks'] = (float) $row['stocks'];
+			}
+		}
+		unset($row);
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $result ?: [],
+			'pagination' => [
+				'count' => $data->count,
+				'limit' => $limit,
+				'page' => $page,
+			]
+		];
+	}
+
+	/**
+	 * M2M: GET цены товаров
+	 */
+	public function getGoodsPrices(): array
+	{
+		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(500);
+		$limit = (int) $limit;
+		$offset = (int) $offset;
+
+		// Формируем условие WHERE
+		$conditions = "IsHidden = 0";
+		$params = [];
+		if ($goodsId > 0) {
+			$conditions .= " AND Id = ?";
+			$params[] = $goodsId;
+		}
+
+		// Получить данные с пагинацией
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Name, Price, PriceBefore, Article FROM Products 
+			 WHERE {$conditions}
+			 ORDER BY Name 
+			 LIMIT {$offset}, {$limit}",
+			$params
+		);
+
+		// Получить общее количество
+		$countRes = Connect::$instance->fetch(
+			"SELECT COUNT(*) as total FROM Products WHERE {$conditions}",
+			$params
+		);
+		$total = (int) ($countRes[0]['total'] ?? 0);
+
+		if (empty($res) && $total === 0) {
+			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
+		}
+
+		// Приводим цены к float
+		foreach ($res as &$row) {
+			if (isset($row['Price'])) {
+				$row['Price'] = (float) $row['Price'];
+			}
+			if (isset($row['PriceBefore'])) {
+				$row['PriceBefore'] = (float) $row['PriceBefore'];
+			}
+		}
+		unset($row);
+
+		return [
+			'status' => 200,
+			'message' => 'OK',
+			'data' => $res ?? [],
+			'pagination' => [
+				'count' => $total,
+				'limit' => $limit,
+				'page' => $page,
+			]
+		];
 	}
 
 	/**
@@ -501,135 +611,6 @@ class RestV1M2M extends RestV1
 		}
 
 		return ['status' => 200, 'message' => 'Filters updated', 'data' => null];
-	}
-
-	/**
-	 * M2M: GET запасы товаров (доступность на складах)
-	 */
-	public function getGoodsStocks(): array
-	{
-		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(500);
-		$limit = (int) $limit;
-		$offset = (int) $offset;
-
-		$skuConfig = Connect::$projectServices['api-m2m']['sku'];
-		$fieldsList = [];
-		foreach ($skuConfig as $field => $alias) {
-			$fieldsList[] = "$field $alias";
-		}
-		$fields = implode(', ', $fieldsList);
-
-		// Формируем условие WHERE
-		$conditions = "IsHidden = 0";
-		$params = [];
-		if ($goodsId > 0) {
-			$conditions .= " AND ProductsId = ?";
-			$params[] = $goodsId;
-		}
-
-		// Получить данные с пагинацией
-		$res = Connect::$instance->fetch(
-			"SELECT Id, ProductsId GoodsId, {$fields}
-			 FROM ProductsVariations
-			 WHERE {$conditions}
-			 ORDER BY Id DESC
-			 LIMIT {$offset}, {$limit}",
-			$params
-		);
-
-		// Получить общее количество
-		$countRes = Connect::$instance->fetch(
-			"SELECT COUNT(*) as total
-			 FROM ProductsVariations
-			 WHERE {$conditions}",
-			$params
-		);
-		$total = (int) ($countRes[0]['total'] ?? 0);
-
-		if (empty($res) && $total === 0) {
-			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
-		}
-
-		// Приводим 'stocks' к float
-		foreach ($res as &$row) {
-			if (isset($row['stocks'])) {
-				$row['stocks'] = (float) $row['stocks'];
-			}
-		}
-		unset($row);
-
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $res ?? [],
-			'pagination' => [
-				'count' => $total,
-				'limit' => $limit,
-				'page' => $page,
-			]
-		];
-	}
-
-	/**
-	 * M2M: GET цены товаров
-	 */
-	public function getGoodsPrices(): array
-	{
-		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(500);
-		$limit = (int) $limit;
-		$offset = (int) $offset;
-
-		// Формируем условие WHERE
-		$conditions = "IsHidden = 0";
-		$params = [];
-		if ($goodsId > 0) {
-			$conditions .= " AND Id = ?";
-			$params[] = $goodsId;
-		}
-
-		// Получить данные с пагинацией
-		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Price, PriceBefore, Article FROM Products 
-			 WHERE {$conditions}
-			 ORDER BY Name 
-			 LIMIT {$offset}, {$limit}",
-			$params
-		);
-
-		// Получить общее количество
-		$countRes = Connect::$instance->fetch(
-			"SELECT COUNT(*) as total FROM Products WHERE {$conditions}",
-			$params
-		);
-		$total = (int) ($countRes[0]['total'] ?? 0);
-
-		if (empty($res) && $total === 0) {
-			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
-		}
-
-		// Приводим цены к float
-		foreach ($res as &$row) {
-			if (isset($row['Price'])) {
-				$row['Price'] = (float) $row['Price'];
-			}
-			if (isset($row['PriceBefore'])) {
-				$row['PriceBefore'] = (float) $row['PriceBefore'];
-			}
-		}
-		unset($row);
-
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $res ?? [],
-			'pagination' => [
-				'count' => $total,
-				'limit' => $limit,
-				'page' => $page,
-			]
-		];
 	}
 
 	/**
