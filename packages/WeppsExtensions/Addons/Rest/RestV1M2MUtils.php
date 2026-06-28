@@ -16,12 +16,15 @@ use WeppsAdmin\Lists\Lists;
  *
  * Обрабатывает:
  * - CRUD: fetch(), item(), add(), set(), remove()
+ * - Пакетные операции: addBatch(), setBatch() с before/after callbacks
+ * - Callbacks для пакетных операций: setBefore(), setAfter(), handlePagination()
  * - Проверку дублей по уникальному полю: checkDuplicate()
  * - Правила валидации из s_ConfigFields: getFieldRules()
  * - Маппинг camelCase API → PascalCase БД: mapApiToDbFields() / getReverseMap()
  * - Авто-decode JSON-полей в ответах: decodeJsonFields() / getJsonFields()
- * - Файлы из s_Files: getFiles()
+ * - Файлы из s_Files: getFiles(), handleFileCreate(), handleFileUpdate()
  * - Построение W_Attributes из свойств: buildAttributesFromPropertiesValues()
+ * - Обновление поискового индекса: updateSearchIndex()
  */
 class RestV1M2MUtils
 {
@@ -92,12 +95,12 @@ class RestV1M2MUtils
 	}
 
 	/**
-	 * Установить callback вызываемый перед update() для каждой записи.
-	 * Callback получает (record: array, tableName: string) и должен вернуть:
-	 * - модифицированный массив для продолжения операции
-	 * - false для пропуска записи (вернёт 400 ошибку)
+	 * Установить callback вызываемый перед пакетной вставкой/обновлением (addBatch, setBatch).
+	 * Callback получает (items: array, tableName: string) где items - массив отфильтрованных записей.
+	 * Может модифицировать items и вернуть обновленный массив, или вернуть null.
+	 * Выполняется ВНУТРИ транзакции; исключение откатит все изменения.
 	 * 
-	 * @param callable $callback fn(array $record, string $tableName): array|false
+	 * @param callable $callback fn(array $items, string $tableName): array|null
 	 * @return self для цепочки вызовов
 	 */
 	public function setBefore(callable $callback): self
@@ -107,10 +110,12 @@ class RestV1M2MUtils
 	}
 
 	/**
-	 * Установить callback вызываемый после update() для каждой успешной записи.
-	 * Callback получает (record: array, result: array, tableName: string) для дополнительной обработки.
+	 * Установить callback вызываемый после пакетной вставки/обновления (addBatch, setBatch).
+	 * Callback получает (results: array, tableName: string) где results - массив результатов операций.
+	 * Может выполнять дополнительную обработку (логирование, soft-delete и т.д.).
+	 * Выполняется ВНУТРИ транзакции перед COMMIT; исключение откатит все.
 	 * 
-	 * @param callable $callback fn(array $record, array $result, string $tableName): void
+	 * @param callable $callback fn(array $results, string $tableName): void
 	 * @return self для цепочки вызовов
 	 */
 	public function setAfter(callable $callback): self

@@ -42,12 +42,8 @@ class RestV1M2M extends RestV1
 
 	public function getUsersItem(): array
 	{
-		$id = $this->getIdFromRequest();
-		if (!$id) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
 		$this->getUtils('s_Users')->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
-		return $this->getUtils('s_Users')->item($id);
+		return $this->getUtils('s_Users')->item((int) ($this->get['id'] ?? 0));
 	}
 
 	public function postUsers(): array
@@ -55,13 +51,13 @@ class RestV1M2M extends RestV1
 		$records = $this->normalizeInput();
 		['before' => $callbackBefore, 'after' => $callbackAfter] = $this->getUtils('s_Users')
 			->handlePagination($this->data['pagination'] ?? null);
-		
+
 		if ($callbackBefore || $callbackAfter) {
 			$this->getUtils('s_Users')
 				->setBefore($callbackBefore)
 				->setAfter($callbackAfter);
 		}
-		
+
 		return $this->create('s_Users', $records);
 	}
 
@@ -73,10 +69,11 @@ class RestV1M2M extends RestV1
 
 	public function deleteUsers(): array
 	{
-		$ids = $this->getNormalizedIds();
-		if (empty($ids)) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
+		$ids = array_column($records, 'id');
 		return $this->getUtils('s_Users')->remove($ids);
 	}
 
@@ -183,11 +180,6 @@ class RestV1M2M extends RestV1
 
 	public function getGoodsItem(): array
 	{
-		$id = $this->getIdFromRequest();
-		if (!$id) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
-
 		// Используем логику getGoods() для обогащения W_Attributes
 		return $this->getGoods();
 	}
@@ -206,27 +198,24 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoods(): array
 	{
-		$ids = $this->getNormalizedIds();
-		if (empty($ids)) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-
+		$ids = array_column($records, 'id');
 		/**
 		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. Логика зависит от бизнес-требований. 
 		 */
-
 		// Например, если нужно удалить связанные вариации)
 		// $variationIds = Connect::$instance->fetch(
 		// 	"SELECT Id FROM ProductsVariations WHERE ProductId IN (...)",
 		// 	$ids
 		// );
 		// $variationIds = array_column($variationIds, 'Id');
-
 		// Удалить вариации через utils (будет 1 запрос на проверку)
 		// if (!empty($variationIds)) {
 		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
 		// }
-
 		return $this->getUtils('Products')->remove($ids);
 	}
 
@@ -366,11 +355,11 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoodsVariations(): array
 	{
-		$ids = $this->getNormalizedIds();
-		if (empty($ids)) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
-
+		$ids = array_column($records, 'id');
 		return $this->getUtils('ProductsVariations')->remove($ids);
 	}
 
@@ -686,10 +675,11 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImages(): array
 	{
-		$ids = $this->getNormalizedIds();
-		if (empty($ids)) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
+		$ids = array_column($records, 'id');
 		return $this->getUtils('s_Files')->remove($ids, 'Products');
 	}
 
@@ -698,10 +688,11 @@ class RestV1M2M extends RestV1
 	 */
 	public function deleteGoodsImagesVariations(): array
 	{
-		$ids = $this->getNormalizedIds();
-		if (empty($ids)) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
+		$ids = array_column($records, 'id');
 		return $this->getUtils('s_Files')->remove($ids, 'ProductsVariations');
 	}
 
@@ -718,21 +709,13 @@ class RestV1M2M extends RestV1
 
 	public function getOrdersItem(): array
 	{
-		$id = $this->getIdFromRequest();
-		if (!$id) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
 		$this->getUtils('Orders')->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		return $this->getUtils('Orders')->item($id);
+		return $this->getUtils('Orders')->item((int) ($this->get['id'] ?? 0));
 	}
 
 	public function getTasksResult(): array
 	{
-		$id = $this->getIdFromRequest();
-		if (!$id) {
-			return ['status' => 400, 'message' => 'id required', 'data' => null];
-		}
-
+		$id = (int) ($this->get['id'] ?? 0);
 		$rows = Connect::$instance->fetch(
 			"SELECT Id, Name, LDate, TRequest, Url, IsProcessed, InProgress, BResponse, SResponse FROM s_Tasks WHERE Id = ?",
 			[$id]
@@ -775,10 +758,11 @@ class RestV1M2M extends RestV1
 
 	public function deleteOrders(): array
 	{
-		$ids = $this->getNormalizedIds();
-		if (empty($ids)) {
+		$records = $this->normalizeInput();
+		if (empty($records)) {
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
+		$ids = array_column($records, 'id');
 		return $this->getUtils('Orders')->remove($ids);
 	}
 
@@ -859,7 +843,7 @@ class RestV1M2M extends RestV1
 		if (!empty($valid)) {
 			$ids = array_filter(
 				array_column($valid, 'id'),
-				fn($v) => (int)$v > 0
+				fn($v) => (int) $v > 0
 			);
 
 			if (!empty($ids)) {
@@ -872,7 +856,7 @@ class RestV1M2M extends RestV1
 
 				// Для не найденных ID добавляем в ошибки
 				foreach ($valid as $index => $record) {
-					$recordId = (int)($record['id'] ?? 0);
+					$recordId = (int) ($record['id'] ?? 0);
 					if ($recordId && !in_array($recordId, $existingIds)) {
 						$errors[$index] = ['status' => 404, 'message' => 'Record not found', 'data' => null];
 						unset($valid[$index]);
@@ -894,7 +878,6 @@ class RestV1M2M extends RestV1
 
 		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
 	}
-
 
 	/**
 	 * Helper: расчет параметров пагинации из GET параметров
@@ -919,8 +902,6 @@ class RestV1M2M extends RestV1
 		];
 	}
 
-
-
 	/**
 	 * Валидировать запись по правилам из s_ConfigFields.
 	 *
@@ -944,71 +925,26 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * Получить ID из GET-параметра ?id=
-	 */
-	private function getIdFromRequest(): int
-	{
-		return (int) ($this->get['id'] ?? 0);
-	}
-
-	/**
-	 * Получить нормализованный массив ID из:
-	 * 1. GET параметра ?id= (одиночный ID)
-	 * 2. Body параметра {"data": [1, 2, 3]} (массив ID в едином формате)
-	 * 
-	 * @return array массив ID (может быть пустым)
-	 */
-	private function getNormalizedIds(): array
-	{
-		// Сначала проверяем GET параметр ?id=
-		$id = (int) ($this->get['id'] ?? 0);
-		if ($id > 0) {
-			return [$id];
-		}
-
-		// Развёртываем {"data": [1, 2, 3]}
-		$raw = $this->data ?? [];
-		if (isset($raw['data']) && is_array($raw['data'])) {
-			$raw = $raw['data'];
-		}
-		if (empty($raw)) {
-			return [];
-		}
-
-		// Преобразуем в целые числа и фильтруем
-		return array_filter(
-			array_map(fn($v) => (int) $v, $raw),
-			fn($v) => $v > 0
-		);
-	}
-
-	/**
 	 * Нормализовать входные данные в массив плоских записей.
 	 * - Разворачивает обёртку {"data": ...}.
 	 * - Одиночная запись преобразуется в [{...}].
-	 * - Для PUT-одиночного без 'id' в теле: подхватывает ?id= из GET.
 	 *
 	 * @return array [{...}] или [] если данных нет
 	 */
 	private function normalizeInput(): array
 	{
 		$raw = $this->data ?? [];
+
+		// Распаковываем {"data": ...} если она есть
 		if (isset($raw['data']) && is_array($raw['data'])) {
 			$raw = $raw['data'];
 		}
+
 		if (empty($raw)) {
 			return [];
 		}
 
 		$records = (isset($raw[0]) && is_array($raw[0])) ? $raw : [$raw];
-
-		// Для одиночного PUT без id в теле запроса: подхватить ?id= из GET
-		if (count($records) === 1 && !isset($records[0]['id']) && !isset($records[0]['Id'])) {
-			$id = $this->getIdFromRequest();
-			if ($id) {
-				$records[0]['id'] = $id;
-			}
-		}
 
 		return $records;
 	}
