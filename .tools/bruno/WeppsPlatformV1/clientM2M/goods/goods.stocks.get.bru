@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods.stocks?page=1&limit=100&goods_id={{goods_id}}
+  url: {{base_url}}/rest/m2m/goods.stocks?page=1&limit=100
   body: none
   auth: inherit
 }
@@ -13,7 +13,7 @@ get {
 params:query {
   page: 1
   limit: 100
-  goods_id: {{goods_id}}
+  ~goodsId: {{goods_id}}
 }
 
 tests {

@@ -37,8 +37,7 @@ class RestV1M2M extends RestV1
 	{
 		// GET параметры - служебные (page, limit, search, sort)
 		$this->getUtils('s_Users')->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
-		$result = $this->getUtils('s_Users')->fetch($this->get);
-		return $result;
+		return $this->getUtils('s_Users')->fetch($this->get);
 	}
 
 	public function getUsersItem(): array
@@ -51,21 +50,77 @@ class RestV1M2M extends RestV1
 		return $this->getUtils('s_Users')->item($id);
 	}
 
-	public function postUsers($data = null): array
+	public function postUsers(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
+		// Before callback: валидация и подготовка перед вставкой
+		$beforeCallback = function(array $items, string $tableName) {
+			// $items — это отфильтрованные записи (прошли проверку дублей и валидацию)
+			// может быть меньше, чем исходный $records!
+			// Можно добавить дополнительную валидацию, логирование, нормализацию данных
+			
+			// Пример: проверка и отбрасывание исключения откатит всю транзакцию
+			// foreach ($items as $item) {
+			//     if (!isset($item['email']) || empty($item['email'])) {
+			//         throw new \Exception('Email is required for all users');
+			//     }
+			// }
+			if (!empty($this->data['pagination'])) {
+				if (($this->data['pagination']['page'] ?? 0) == 1) {
+					// На первой странице можно добавить дополнительную обработку
+					// Например, логирование или уведомление
+					$sql = "UPDATE {$tableName} SET IsHiddenCandidate = 1 WHERE IsHiddenCandidate = 0";
+					Connect::$instance->query($sql);
+				}
+			}
+			return $items; // Возвращаем (возможно модифицированные) данные
+		};
+		
+		// After callback: логирование результатов после успешной вставки
+		$afterCallback = function(array $results, string $tableName) {
+			// Здесь можно отправить уведомления, обновить кэш, залогировать события
+			// Находится внутри транзакции, но перед commit()
+			
+			// Пример: если в before проставили IsHiddenCandidate, 
+			// то в after финализируем скрытие (если всё успешно)
+			// foreach ($results as $result) {
+			//     if (($result['status'] ?? 0) === 201) {
+			//         $id = $result['data']['id'] ?? 0;
+			//         // Копируем флаг-кандидат в финальный флаг скрытия
+			//         Connect::$instance->query(
+			//             "UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE Id = ?",
+			//             [$id]
+			//         );
+			//     }
+			// }
+			
+			// Успешно созданные записи с ID: $result['data']['id']
+			// foreach ($results as $result) {
+			// 	if (($result['status'] ?? 0) === 201) {
+			// 		
+			// 	}
+			// }
+			if (!empty($this->data['pagination'])) {
+				if (($this->data['pagination']['page'] ?? 0) == ($this->data['pagination']['count'] ?? 1)) {
+					// На последней странице можно добавить дополнительную обработку
+					// Например, логирование или уведомление
+					$sql = "UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE IsHiddenCandidate = 1";
+					Connect::$instance->query($sql);
+				}
+			}
+		};
+		
+		// Установить callback в utils и вызвать create()
+		$this->getUtils('s_Users')
+			->setBefore($beforeCallback)
+			->setAfter($afterCallback);
+		
 		return $this->create('s_Users', $records);
 	}
 
-	public function putUsers($data = null): array
+	public function putUsers(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 		return $this->update('s_Users', $records);
 	}
 
@@ -170,7 +225,7 @@ class RestV1M2M extends RestV1
 			$row['W_Attributes'] = $this->getUtils('Products')->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
 		}
 		unset($row);
-//Utils::debug(,1);
+		//Utils::debug(,1);
 		return [
 			'status' => 200,
 			'message' => 'OK',
@@ -190,21 +245,15 @@ class RestV1M2M extends RestV1
 		return $this->getGoods();
 	}
 
-	public function postGoods($data = null): array
+	public function postGoods(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 		return $this->create('Products', $records);
 	}
 
-	public function putGoods($data = null): array
+	public function putGoods(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 		return $this->update('Products', $records);
 	}
 
@@ -282,12 +331,9 @@ class RestV1M2M extends RestV1
 	 * Валидация по RestConfig уже выполнена в Rest::executeHandler() перед вызовом метода!
 	 * Формат тела: { "data": [ { "goodsId": 723, "sku": "SKU001", "color": "Красный", "size": "42", "stocks": "10" }, ... ] }
 	 */
-	public function postGoodsVariations($data = null): array
+	public function postGoodsVariations(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 
 		// Сгруппировать по goodsId
 		$byGoodsId = [];
@@ -334,12 +380,9 @@ class RestV1M2M extends RestV1
 	 * Одна запись: ?id=123 или { "data": { "id": 123, "color": "Синий" } }
 	 * Batch: { "data": [ { "id": 1, "sku": "NEW" }, { "id": 2, "color": "Зелёный" } ] }
 	 */
-	public function putGoodsVariations($data = null): array
+	public function putGoodsVariations(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 
 		// Используем ProcessingProducts для обновления с переформированием alias
 		$processing = new ProcessingProducts();
@@ -389,48 +432,29 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsStocks(): array
 	{
-		$page = max(1, (int) ($this->get['page'] ?? 1));
-		$limit = min(500, max(1, (int) ($this->get['limit'] ?? 500)));
-		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-
-		$data = new Data('ProductsVariations', ['useApiMapping' => true]);
-		$data->setFields('Id,ProductsId,Field4');
-
-		// Условия WHERE
-		$conditions = 'IsHidden = 0';
-		$params = [];
-
-		// Если передан goodsId, фильтруем по товару
-		if ($goodsId > 0) {
-			$conditions .= ' AND ProductsId = ?';
-			$params[] = $goodsId;
-			$data->setParams($params);
+		// GET параметры - служебные (page, limit, search, sort)
+		$obj = $this->getUtils('ProductsVariations');
+		$obj->setFields('Id,ProductsId,Field4');
+		if (!empty($this->get['goodsId'])) {
+			$obj->setParams([(int) $this->get['goodsId']]);
+			$conditions = 't.ProductsId = ?';
 		}
+		return $obj->fetch($this->get, $conditions ?? null);
+	}
 
-		$result = $data->fetch($conditions, $limit, $page, 't.Id DESC');
-
-		if (empty($result) && $data->count === 0) {
-			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
-		}
-
-		// Приводим 'stocks' к float
-		foreach ($result as &$row) {
-			if (isset($row['stocks'])) {
-				$row['stocks'] = (float) $row['stocks'];
-			}
-		}
-		unset($row);
-
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $result ?: [],
-			'pagination' => [
-				'count' => $data->paginator['count'] ?? 1,
-				'limit' => $limit,
-				'page' => $page,
-			]
-		];
+	/**
+	 * M2M: PUT обновление запасов товара (одна или batch).
+	 * Обновляет Field4 (stocks) в ProductsVariations по id.
+	 * Использует универсальный метод update().
+	 *
+	 * Валидация по RestConfig уже выполнена в Rest::executeHandler() перед вызовом метода!
+	 * Одна запись: { "data": { "id": 123, "stocks": 10 } }
+	 * Batch: { "data": [ { "id": 1, "stocks": 5 }, { "id": 2, "stocks": 10 } ] }
+	 */
+	public function putGoodsStocks(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->update('ProductsVariations', $records);
 	}
 
 	/**
@@ -495,6 +519,58 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
+	 * M2M: PUT обновление цен товара
+	 */
+	public function putGoodsPrices(): array
+	{
+		$data = $this->normalizeInput()[0] ?? [];
+
+		$goodsId = $data['goods_id'] ?? $data['id'] ?? 0;
+		if (!$goodsId) {
+			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
+		}
+
+		// Подготовить значения цен
+		$updates = [];
+		$params = [];
+
+		if (isset($data['price'])) {
+			$updates[] = 'Price = ?';
+			$params[] = (float) $data['price'];
+		}
+
+		if (isset($data['price_out'])) {
+			$updates[] = 'PriceOut = ?';
+			$params[] = (float) $data['price_out'];
+		}
+
+		if (empty($updates)) {
+			return ['status' => 400, 'message' => 'price or price_out required', 'data' => null];
+		}
+
+		// Добавить ID в параметры
+		$params[] = $goodsId;
+
+		// Обновить цены в Products
+		$updatedCount = Connect::$instance->query(
+			"UPDATE Products SET " . implode(', ', $updates) . " WHERE Id = ?",
+			$params
+		);
+
+		if ($updatedCount <= 0) {
+			return ['status' => 400, 'message' => 'Failed to update prices', 'data' => null];
+		}
+
+		// Вернуть обновленные данные
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Name, Price, PriceOut FROM Products WHERE Id = ?",
+			[$goodsId]
+		);
+
+		return ['status' => 200, 'message' => 'Prices updated', 'data' => $res[0] ?? null];
+	}
+
+	/**
 	 * M2M: GET каталог товаров (категории)
 	 */
 	public function getGoodsCategories(): array
@@ -545,12 +621,9 @@ class RestV1M2M extends RestV1
 	 * M2M: POST перезаписать все фильтры/свойства
 	 * Удаляет отсутствующие, обновляет существующие, добавляет новые
 	 */
-	public function patchGoodsFilters($data = null): array
+	public function patchGoodsFilters(): array
 	{
 		$data = $this->normalizeInput()[0] ?? [];
-		if (empty($data)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 
 		$filtersList = $data['data'] ?? $data ?? [];
 		if (empty($filtersList)) {
@@ -624,17 +697,17 @@ class RestV1M2M extends RestV1
 	/**
 	 * M2M: POST добавить изображение товару
 	 */
-	public function postGoodsImages($data = null): array
+	public function postGoodsImages(): array
 	{
-		return $this->handleFileCreate('Products', $this->normalizeInput()[0] ?? []);
+		return $this->getUtils('Products')->handleFileCreate($this->normalizeInput()[0] ?? []);
 	}
 
 	/**
 	 * M2M: PUT обновить изображение товара
 	 */
-	public function putGoodsImages($data = null): array
+	public function putGoodsImages(): array
 	{
-		return $this->handleFileUpdate('Products', $this->normalizeInput()[0] ?? []);
+		return $this->getUtils('Products')->handleFileUpdate($this->normalizeInput()[0] ?? []);
 	}
 
 	/**
@@ -648,17 +721,17 @@ class RestV1M2M extends RestV1
 	/**
 	 * M2M: POST добавить изображение вариации товара
 	 */
-	public function postGoodsImagesVariations($data = null): array
+	public function postGoodsImagesVariations(): array
 	{
-		return $this->handleFileCreate('ProductsVariations', $this->normalizeInput()[0] ?? []);
+		return $this->getUtils('ProductsVariations')->handleFileCreate($this->normalizeInput()[0] ?? []);
 	}
 
 	/**
 	 * M2M: PUT обновить изображение вариации товара
 	 */
-	public function putGoodsImagesVariations($data = null): array
+	public function putGoodsImagesVariations(): array
 	{
-		return $this->handleFileUpdate('ProductsVariations', $this->normalizeInput()[0] ?? []);
+		return $this->getUtils('ProductsVariations')->handleFileUpdate($this->normalizeInput()[0] ?? []);
 	}
 
 	/**
@@ -683,100 +756,6 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 		return $this->getUtils('s_Files')->remove($ids, 'ProductsVariations');
-	}
-
-	/**
-	 * M2M: PUT обновление запасов товара
-	 */
-	public function putGoodsStocks($data = null): array
-	{
-		$data = $this->normalizeInput()[0] ?? [];
-		if (empty($data)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$goodsId = $data['goods_id'] ?? $data['id'] ?? 0;
-		if (!$goodsId) {
-			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
-		}
-
-		$amount = $data['amount'] ?? null;
-		if ($amount === null) {
-			return ['status' => 400, 'message' => 'amount required', 'data' => null];
-		}
-
-		// Обновить Amount в Products
-		$updated = Connect::$instance->query(
-			"UPDATE Products SET Amount = ? WHERE Id = ?",
-			[(float) $amount, $goodsId]
-		);
-
-		if ($updated <= 0) {
-			return ['status' => 400, 'message' => 'Failed to update stocks', 'data' => null];
-		}
-
-		// Вернуть обновленные данные
-		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Amount FROM Products WHERE Id = ?",
-			[$goodsId]
-		);
-
-		return ['status' => 200, 'message' => 'Stocks updated', 'data' => $res[0] ?? null];
-	}
-
-	/**
-	 * M2M: PUT обновление цен товара
-	 */
-	public function putGoodsPrices($data = null): array
-	{
-		$data = $this->normalizeInput()[0] ?? [];
-		if (empty($data)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$goodsId = $data['goods_id'] ?? $data['id'] ?? 0;
-		if (!$goodsId) {
-			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
-		}
-
-		// Подготовить значения цен
-		$updates = [];
-		$params = [];
-
-		if (isset($data['price'])) {
-			$updates[] = 'Price = ?';
-			$params[] = (float) $data['price'];
-		}
-
-		if (isset($data['price_out'])) {
-			$updates[] = 'PriceOut = ?';
-			$params[] = (float) $data['price_out'];
-		}
-
-		if (empty($updates)) {
-			return ['status' => 400, 'message' => 'price or price_out required', 'data' => null];
-		}
-
-		// Добавить ID в параметры
-		$params[] = $goodsId;
-
-		// Обновить цены в Products
-		$updatedCount = Connect::$instance->query(
-			"UPDATE Products SET " . implode(', ', $updates) . " WHERE Id = ?",
-			$params
-		);
-
-		if ($updatedCount <= 0) {
-			return ['status' => 400, 'message' => 'Failed to update prices', 'data' => null];
-		}
-
-		// Вернуть обновленные данные
-		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Price, PriceOut FROM Products WHERE Id = ?",
-			[$goodsId]
-		);
-
-		return ['status' => 200, 'message' => 'Prices updated', 'data' => $res[0] ?? null];
 	}
 
 	// ========================================================================
@@ -835,21 +814,15 @@ class RestV1M2M extends RestV1
 		];
 	}
 
-	public function postOrders($data = null): array
+	public function postOrders(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 		return $this->create('Orders', $records);
 	}
 
-	public function putOrders($data = null): array
+	public function putOrders(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
 		return $this->update('Orders', $records);
 	}
 
@@ -900,7 +873,7 @@ class RestV1M2M extends RestV1
 			$results += $this->getUtils($tableName)->addBatch($valid);
 		}
 
-		$this->updateSearchIndex($tableName, $results);
+		$this->getUtils($tableName)->updateSearchIndex($results);
 
 		if (count($records) === 1) {
 			return $results[0] ?? ['status' => 400, 'message' => 'No result', 'data' => null];
@@ -935,12 +908,38 @@ class RestV1M2M extends RestV1
 			}
 		}
 
+		// Проверяем существование всех ID перед обновлением
+		if (!empty($valid)) {
+			$ids = array_filter(
+				array_column($valid, 'id'),
+				fn($v) => (int)$v > 0
+			);
+
+			if (!empty($ids)) {
+				$placeholders = Connect::$instance->in($ids);
+				$existing = Connect::$instance->fetch(
+					"SELECT Id FROM $tableName WHERE Id IN ($placeholders)",
+					$ids
+				);
+				$existingIds = array_column($existing, 'Id');
+
+				// Для не найденных ID добавляем в ошибки
+				foreach ($valid as $index => $record) {
+					$recordId = (int)($record['id'] ?? 0);
+					if ($recordId && !in_array($recordId, $existingIds)) {
+						$errors[$index] = ['status' => 404, 'message' => 'Record not found', 'data' => null];
+						unset($valid[$index]);
+					}
+				}
+			}
+		}
+
 		$results = $errors;
 		if (!empty($valid)) {
 			$results += $this->getUtils($tableName)->setBatch($valid);
 		}
 
-		$this->updateSearchIndex($tableName, $results);
+		$this->getUtils($tableName)->updateSearchIndex($results);
 
 		if (count($records) === 1) {
 			return $results[0] ?? ['status' => 400, 'message' => 'No result', 'data' => null];
@@ -949,74 +948,6 @@ class RestV1M2M extends RestV1
 		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
 	}
 
-	/**
-	 * Синхронизировать таблицу постранично (upsert + скрытие отсутствующих).
-	 *
-	 * Используется вместе с normalizeSyncInput().
-	 * Формат запроса: {"data": [...], "pagination": {"page": 1, "count": 5}}
-	 *
-	 * @param string $tableName
-	 * @param array  $records    [плоские записи из normalizeSyncInput()]
-	 * @param array  $pagination ['page' => int, 'count' => int]
-	 * @return array
-	 */
-	protected function sync(string $tableName, array $records, array $pagination): array
-	{
-		$errors = [];
-		$valid = [];
-
-		foreach ($records as $index => $record) {
-			try {
-				$this->validate($tableName, $record, false);
-				$valid[$index] = $record;
-			} catch (\Exception $e) {
-				$errors[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-			}
-		}
-
-		$results = $errors;
-		if (!empty($valid)) {
-			$results += $this->getUtils($tableName)->syncBatch($valid, $pagination);
-		}
-
-		$this->updateSearchIndex($tableName, $results);
-
-		if (count($records) === 1) {
-			return $results[0] ?? ['status' => 400, 'message' => 'No result', 'data' => null];
-		}
-
-		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
-	}
-
-	/**
-	 * Обновить поисковый индекс для созданных или обновлённых записей.	 *
-	 * @param string $tableName
-	 * @param array $result
-	 */
-	private function updateSearchIndex(string $tableName, array $result): void
-	{
-		$items = [];
-		if (isset($result['status'], $result['data'])) {
-			if ($result['status'] === 207 && is_array($result['data'])) {
-				$items = $result['data'];
-			} else {
-				$items = [$result];
-			}
-		} else {
-			$items = $result;
-		}
-
-		$searchSql = '';
-		foreach ($items as $item) {
-			$status = (int) ($item['status'] ?? 0);
-			if (($status === 200 || $status === 201) && isset($item['data']['id'])) {
-				$searchSql .= Lists::setSearchIndex($tableName, $item['data']['id']);
-			}
-		}
-		if (!empty($searchSql)) {
-			Connect::$db->exec($searchSql);
-		}
-	}
 
 	/**
 	 * Helper: расчет параметров пагинации из GET параметров
@@ -1103,36 +1034,6 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * Получить массив ID из:
-	 * 1. GET параметра ?id= (одиночный ID)
-	 * 2. Body параметра {"ids": [1, 2, 3]} (массив ID)
-	 * 
-	 * @deprecated Используйте getNormalizedIds() вместо этого - новый формат с {"data": [...]}
-	 * @return array массив ID (может быть пустым)
-	 */
-	private function getIdsFromRequest(): array
-	{
-		// Сначала проверяем GET параметр ?id=
-		$id = (int) ($this->get['id'] ?? 0);
-		if ($id > 0) {
-			return [$id];
-		}
-		if (empty($ids = ($this->data['ids'] ?? []))) {
-			return [];
-		}
-
-		// Если это массив ID - вернуть как есть
-		if (isset($ids) && is_array($ids)) {
-			return array_filter(
-				array_map(fn($v) => (int) $v, $ids),
-				fn($v) => $v > 0
-			);
-		}
-
-		return [];
-	}
-
-	/**
 	 * Нормализовать входные данные в массив плоских записей.
 	 * - Разворачивает обёртку {"data": ...}.
 	 * - Одиночная запись преобразуется в [{...}].
@@ -1161,225 +1062,6 @@ class RestV1M2M extends RestV1
 		}
 
 		return $records;
-	}
-
-	/**
-	 * Нормализовать входные данные для sync-операции.
-	 * Дополнительно извлекает ключ pagination из тела запроса.
-	 *
-	 * Ожидаемый формат тела: {"data": [...], "pagination": {"page": 1, "count": 5}}
-	 *
-	 * @return array ['records' => [...], 'pagination' => array|null]
-	 */
-	private function normalizeSyncInput(): array
-	{
-		$raw = $this->data ?? [];
-		if (empty($raw)) {
-			return ['records' => [], 'pagination' => null];
-		}
-
-		$pagination = (isset($raw['pagination']) && is_array($raw['pagination']))
-			? $raw['pagination']
-			: null;
-
-		$data = $raw;
-		if (isset($raw['data']) && is_array($raw['data'])) {
-			$data = $raw['data'];
-		}
-		$records = (isset($data[0]) && is_array($data[0])) ? $data : [$data];
-
-		if (count($records) === 1 && !isset($records[0]['id']) && !isset($records[0]['Id'])) {
-			$id = $this->getIdFromRequest();
-			if ($id) {
-				$records[0]['id'] = $id;
-			}
-		}
-
-		return ['records' => $records, 'pagination' => $pagination];
-	}
-
-	/**
-	 * Сохранить загруженный файл (из base64 или multipart)
-	 * @param string $binaryData - бинарные данные файла
-	 * @param string $fileName - имя файла (с расширением)
-	 * @param int $goodsId - ID товара
-	 * @return string|null - путь к файлу или null если ошибка
-	 */
-	private function saveFile(string $binary, string $fileName, string $tableName, int $entityId): ?string
-	{
-		$ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-		if (!$ext) {
-			return null;
-		}
-
-		$innerName = md5(uniqid($entityId . '_', true)) . '.' . $ext;
-		$dir = __DIR__ . '/../../../pic/lists/' . $tableName . '/' . $entityId;
-
-		if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
-			return null;
-		}
-
-		if (file_put_contents($dir . '/' . $innerName, $binary) === false) {
-			return null;
-		}
-
-		return '/pic/lists/' . $tableName . '/' . $entityId . '/' . $innerName;
-	}
-
-	/**
-	 * Сохранить загруженный файл вариации (из base64 или multipart)
-	 * @param string $binaryData - бинарные данные файла
-	 * @param string $fileName - имя файла (с расширением)
-	 * @param int $goodsvId - ID вариации товара
-	 * @return string|null - путь к файлу или null если ошибка
-	 */
-	private function resolveFileUrl(array $data, string $tableName, int $entityId): string|array
-	{
-		$fileName = $data['file_name'] ?? '';
-
-		if (!empty($data['file_url'])) {
-			return $data['file_url'];
-		}
-
-		if (!empty($data['file_base64'])) {
-			if (!$fileName) {
-				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
-			}
-			$binary = base64_decode($data['file_base64'], true);
-			if (!$binary) {
-				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
-			}
-			$url = $this->saveFile($binary, $fileName, $tableName, $entityId);
-			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
-		}
-
-		if (!empty($_FILES['file'])) {
-			$file = $_FILES['file'];
-			if ($file['error'] !== UPLOAD_ERR_OK) {
-				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
-			}
-			$binary = file_get_contents($file['tmp_name']);
-			if (!$binary) {
-				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
-			}
-			$url = $this->saveFile($binary, $file['name'], $tableName, $entityId);
-			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
-		}
-
-		return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
-	}
-
-	private function handleFileCreate(string $tableName, array $data): array
-	{
-		if (empty($data)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$entityId = (int) ($data['goods_id'] ?? $data['TableNameId'] ?? 0);
-		if (!$entityId) {
-			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
-		}
-
-		$fileUrl = $this->resolveFileUrl($data, $tableName, $entityId);
-		if (is_array($fileUrl)) {
-			return $fileUrl;
-		}
-
-		$name = $data['name'] ?? $data['Name'] ?? $data['file_name'] ?? '';
-		$innerName = str_replace('/pic/lists/' . $tableName . '/', '', $fileUrl);
-
-		$id = Connect::$instance->insert('s_Files', [
-			'TableName' => $tableName,
-			'TableNameId' => $entityId,
-			'Name' => $name,
-			'InnerName' => $innerName,
-			'FileUrl' => $fileUrl,
-		]);
-
-		if (!$id) {
-			return ['status' => 400, 'message' => 'Failed to add image', 'data' => null];
-		}
-
-		return ['status' => 201, 'message' => 'Image added', 'data' => ['id' => $id]];
-	}
-
-	private function handleFileUpdate(string $tableName, array $data): array
-	{
-		if (empty($data)) {
-			return ['status' => 400, 'message' => 'No data', 'data' => null];
-		}
-
-		$imageId = (int) ($data['id'] ?? 0);
-		if (!$imageId) {
-			return ['status' => 400, 'message' => 'id required', 'data' => null];
-		}
-
-		$existing = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = ?",
-			[$imageId, $tableName]
-		);
-		if (empty($existing)) {
-			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
-		}
-
-		$updates = [];
-		$params = [];
-
-		if (isset($data['name']) || isset($data['Name'])) {
-			$updates[] = 'Name = ?';
-			$params[] = $data['name'] ?? $data['Name'] ?? '';
-		}
-		if (isset($data['inner_name']) || isset($data['InnerName'])) {
-			$updates[] = 'InnerName = ?';
-			$params[] = $data['inner_name'] ?? $data['InnerName'] ?? '';
-		}
-		if (isset($data['file_url']) || isset($data['FileUrl'])) {
-			$updates[] = 'FileUrl = ?';
-			$params[] = $data['file_url'] ?? $data['FileUrl'] ?? '';
-		}
-
-		if (empty($updates)) {
-			return ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
-		}
-
-		$params[] = $imageId;
-		$result = Connect::$instance->query(
-			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
-			$params
-		);
-
-		if ($result <= 0) {
-			return ['status' => 400, 'message' => 'Failed to update image', 'data' => null];
-		}
-
-		return ['status' => 200, 'message' => 'Image updated', 'data' => ['id' => $imageId]];
-	}
-
-	private function handleFileDelete(string $tableName): array
-	{
-		$imageId = $this->getIdFromRequest();
-		if (!$imageId) {
-			return ['status' => 400, 'message' => 'id required', 'data' => null];
-		}
-
-		$existing = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = ?",
-			[$imageId, $tableName]
-		);
-		if (empty($existing)) {
-			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
-		}
-
-		$result = Connect::$instance->query(
-			"DELETE FROM s_Files WHERE Id = ? AND TableName = ?",
-			[$imageId, $tableName]
-		);
-
-		if ($result <= 0) {
-			return ['status' => 400, 'message' => 'Failed to delete image', 'data' => null];
-		}
-
-		return ['status' => 200, 'message' => 'Image deleted', 'data' => ['id' => $imageId]];
 	}
 }
 

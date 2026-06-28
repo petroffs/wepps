@@ -5,6 +5,7 @@ use WeppsCore\Data;
 use WeppsCore\Connect;
 use WeppsCore\Memcached;
 use WeppsCore\Utils;
+use WeppsAdmin\Lists\Lists;
 
 
 /**
@@ -62,6 +63,22 @@ class RestV1M2MUtils
 	 */
 	private ?string $fields = null;
 
+	private ?array $params = null;
+
+	/**
+	 * Callback вызываемый перед update() для каждой записи.
+	 * Получает (record, tableName) и должен вернуть модифицированную запись или false для пропуска.
+	 * @var mixed
+	 */
+	private mixed $beforeCallback = null;
+
+	/**
+	 * Callback вызываемый после update() для каждой успешной записи.
+	 * Получает (record, result, tableName) для дополнительной обработки.
+	 * @var mixed
+	 */
+	private mixed $afterCallback = null;
+
 	public function __construct(string $tableName)
 	{
 		$this->tableName = $tableName;
@@ -70,47 +87,81 @@ class RestV1M2MUtils
 		$this->uniqueFieldsCache = null;
 	}
 
+	/**
+	 * Установить callback вызываемый перед update() для каждой записи.
+	 * Callback получает (record: array, tableName: string) и должен вернуть:
+	 * - модифицированный массив для продолжения операции
+	 * - false для пропуска записи (вернёт 400 ошибку)
+	 * 
+	 * @param callable $callback fn(array $record, string $tableName): array|false
+	 * @return self для цепочки вызовов
+	 */
+	public function setBefore(callable $callback): self
+	{
+		$this->beforeCallback = $callback;
+		return $this;
+	}
+
+	/**
+	 * Установить callback вызываемый после update() для каждой успешной записи.
+	 * Callback получает (record: array, result: array, tableName: string) для дополнительной обработки.
+	 * 
+	 * @param callable $callback fn(array $record, array $result, string $tableName): void
+	 * @return self для цепочки вызовов
+	 */
+	public function setAfter(callable $callback): self
+	{
+		$this->afterCallback = $callback;
+		return $this;
+	}
+
 
 
 	/**
 	 * Получить список записей
 	 * 
 	 * @param array $query - параметры: page, limit, search
-	 * @param string|null $fields - список полей для вывода; если не указан, используется установленное через setFields()
+	 * @param string|null $conditions - дополнительные условия WHERE (без WHERE)
 	 * @return array - {status, message, data, pagination}
 	 */
-	public function fetch(array $query, ?string $fields = null): array
+	public function fetch(array $query, ?string $conditions = null): array
 	{
+
+		if ($conditions !== null) {
+			$conditions = $conditions . 'AND ';
+		} else {
+			$conditions = '';
+		}
+
 		$page = (int) ($query['page'] ?? 1);
 		$limit = (int) ($query['limit'] ?? 20);
 		$id = isset($query['id']) ? (int) $query['id'] : null;
 		// $search = $query['search'] ?? '';
 
-		$conditions = 'Id!=0';
+		$conditions .= 't.Id!=0';
 		$skipPagination = false; // флаг для пропуска пагинации при запросе по ID
 		if ($id !== null && $id > 0) {
-			$conditions = 't.Id = ' . $id;
+			$conditions .= 't.Id = ' . $id;
 			$limit = 1;
 			$page = 0; // передаём 0 чтобы пропустить пагинацию
 			$skipPagination = true;
 		}
-
 		try {
 			$data = new Data($this->tableName, ['useApiMapping' => true]);
-			$fields = $fields ?? $this->fields;
-			if ($fields !== null) {
-				$data->setFields($fields);
+			if ($this->fields !== null) {
+				$data->setFields($this->fields);
 			}
-
+			if ($this->params !== null) {
+				$data->setParams($this->params);
+			}
 			$result = $data->fetch($conditions, $limit, $page);
 			$result = $this->decodeJsonFields($result);
-
 			return [
 				'status' => 200,
 				'message' => 'OK',
 				'data' => $result ?: [],
 				'pagination' => [
-					'count' => $skipPagination ? count($result) : $data->count,
+					'count' => $skipPagination ? count($result) : $data->paginator['count']??1,
 					'limit' => $limit,
 					'page' => $skipPagination ? 1 : $page,
 				],
@@ -210,7 +261,23 @@ class RestV1M2MUtils
 
 		try {
 			$batch = Connect::$instance->transaction(
-				fn($args) => $this->executeBatchInsert($args['items']),
+				function($args) {
+					// Before callback ВНУТРИ транзакции
+					if ($this->beforeCallback !== null) {
+						$callback = $this->beforeCallback;
+						$args['items'] = $callback($args['items'], $this->tableName) ?? $args['items'];
+					}
+
+					// Выполнить пакетную вставку
+					$results = $this->executeBatchInsert($args['items']);
+
+					// After callback ВНУТРИ транзакции (перед коммитом)
+					if ($this->afterCallback !== null) {
+						$callback = $this->afterCallback;
+						$callback($results, $this->tableName);
+					}
+					return $results;
+				},
 				['items' => $toInsert]
 			);
 			$results += $batch;
@@ -283,7 +350,21 @@ class RestV1M2MUtils
 
 		try {
 			$batch = Connect::$instance->transaction(
-				fn($args) => $this->executeBatchUpdate($args['items']),
+				function($args) {
+					// Before callback ВНУТРИ транзакции
+					if ($this->beforeCallback !== null) {
+						$callback = $this->beforeCallback;
+						$args['items'] = $callback($args['items'], $this->tableName) ?? $args['items'];
+					}
+					$results = $this->executeBatchUpdate($args['items']);
+
+					// After callback ВНУТРИ транзакции (перед коммитом)
+					if ($this->afterCallback !== null) {
+						$callback = $this->afterCallback;
+						$callback($results, $this->tableName);
+					}
+					return $results;
+				},
 				['items' => $toUpdate]
 			);
 			$results += $batch;
@@ -296,105 +377,6 @@ class RestV1M2MUtils
 		return $results;
 	}
 
-	/**
-	 * Синхронизировать таблицу постранично.
-	 *
-	 * Формат pagination: ['page' => 1, 'count' => 5]
-	 * - page=1:          UPDATE {table} SET IsHiddenCandidate=1  (пометить всё кандидатом на скрытие)
-	 * - pages 1..count:  upsert записей + IsHiddenCandidate=0 для успешно обработанных
-	 * - page=count:      UPDATE {table} SET IsHidden=IsHiddenCandidate  (скрыть что не пришло)
-	 *
-	 * @param array $records    [index => плоский массив полей]
-	 * @param array $pagination ['page' => int, 'count' => int]
-	 * @return array            [index => {status, data}]
-	 */
-	public function syncBatch(array $records, array $pagination): array
-	{
-		$page = (int) ($pagination['page'] ?? 1);
-		$count = (int) ($pagination['count'] ?? 1);
-
-		if ($page === 1) {
-			Connect::$instance->query("UPDATE {$this->tableName} SET IsHiddenCandidate = 1");
-		}
-
-		$toUpdate = [];
-		$toInsert = [];
-		$results = [];
-
-		foreach ($records as $index => $record) {
-			$id = (int) ($record['id'] ?? $record['Id'] ?? 0);
-			if ($id) {
-				$toUpdate[$index] = $record;
-			} else {
-				$toInsert[$index] = $record;
-			}
-		}
-
-		if (!empty($toUpdate)) {
-			$dupeErrors = $this->checkDuplicate($toUpdate, true);
-			foreach ($toUpdate as $index => $_) {
-				if ($dupeErrors[$index] ?? null) {
-					$results[$index] = $dupeErrors[$index];
-					unset($toUpdate[$index]);
-				}
-			}
-		}
-
-		if (!empty($toInsert)) {
-			$dupeErrors = $this->checkDuplicate($toInsert, false);
-			foreach ($toInsert as $index => $_) {
-				if ($dupeErrors[$index] ?? null) {
-					$results[$index] = $dupeErrors[$index];
-					unset($toInsert[$index]);
-				}
-			}
-		}
-
-		try {
-			if (!empty($toUpdate)) {
-				$results += Connect::$instance->transaction(
-					fn($args) => $this->executeBatchUpdate($args['items']),
-					['items' => $toUpdate]
-				);
-			}
-			if (!empty($toInsert)) {
-				$results += Connect::$instance->transaction(
-					fn($args) => $this->executeBatchInsert($args['items']),
-					['items' => $toInsert]
-				);
-			}
-		} catch (\Exception $e) {
-			foreach (array_merge(array_keys($toUpdate), array_keys($toInsert)) as $index) {
-				if (!isset($results[$index])) {
-					$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
-				}
-			}
-		}
-
-		// Снять метку IsHiddenCandidate с успешно обработанных записей
-		$successIds = [];
-		foreach ($results as $result) {
-			$status = (int) ($result['status'] ?? 0);
-			if (($status === 200 || $status === 201) && isset($result['data']['id'])) {
-				$successIds[] = (int) $result['data']['id'];
-			}
-		}
-
-		if (!empty($successIds)) {
-			$in = Connect::$instance->in($successIds);
-			Connect::$instance->query(
-				"UPDATE {$this->tableName} SET IsHiddenCandidate = 0 WHERE Id IN ($in)",
-				$successIds
-			);
-		}
-
-		// На последней странице — применить скрытие
-		if ($page === $count) {
-			Connect::$instance->query("UPDATE {$this->tableName} SET IsHidden = IsHiddenCandidate");
-		}
-
-		return $results;
-	}
 
 	/**
 	 * Удалить записи (одну или пакет).
@@ -833,6 +815,18 @@ class RestV1M2MUtils
 	}
 
 	/**
+	 * Установить параметры для выборки через Data::fetch()
+	 *
+	 * @param array $params Параметры для выборки
+	 * @return $this
+	 */
+	public function setParams(array $params): self
+	{
+		$this->params = $params;
+		return $this;
+	}
+
+	/**
 	 * Получить файлы из s_Files по TableName и TableNameField
 	 *
 	 * @param string $field - значение TableNameField (например 'Images' или 'ImagesV')
@@ -900,8 +894,8 @@ class RestV1M2MUtils
 		if (empty($fields)) {
 			return $rows;
 		}
-
 		foreach ($rows as &$row) {
+			
 			foreach (array_keys($fields) as $fieldName) {
 				if (!isset($row[$fieldName]) || !is_string($row[$fieldName])) {
 					continue;
@@ -1003,5 +997,192 @@ class RestV1M2MUtils
 		}
 
 		return !empty($attributes) ? $attributes : null;
+	}
+
+	/**
+	 * Обновить поисковый индекс для созданных или обновлённых записей.
+	 * @param array $result результаты CRUD операций
+	 */
+	public function updateSearchIndex(array $result): void
+	{
+		$items = [];
+		if (isset($result['status'], $result['data'])) {
+			if ($result['status'] === 207 && is_array($result['data'])) {
+				$items = $result['data'];
+			} else {
+				$items = [$result];
+			}
+		} else {
+			$items = $result;
+		}
+
+		$searchSql = '';
+		foreach ($items as $item) {
+			$status = (int) ($item['status'] ?? 0);
+			if (($status === 200 || $status === 201) && isset($item['data']['id'])) {
+				$searchSql .= Lists::setSearchIndex($this->tableName, $item['data']['id']);
+			}
+		}
+		if (!empty($searchSql)) {
+			Connect::$db->exec($searchSql);
+		}
+	}
+
+	/**
+	 * Сохранить загруженный файл (из base64 или multipart)
+	 * @param string $binary - бинарные данные файла
+	 * @param string $fileName - имя файла (с расширением)
+	 * @param int $entityId - ID сущности (товара, вариации и т.д.)
+	 * @return string|null - путь к файлу или null если ошибка
+	 */
+	public function saveFile(string $binary, string $fileName, int $entityId): ?string
+	{
+		$ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+		if (!$ext) {
+			return null;
+		}
+
+		$innerName = md5(uniqid($entityId . '_', true)) . '.' . $ext;
+		$dir = __DIR__ . '/../../../pic/lists/' . $this->tableName . '/' . $entityId;
+
+		if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
+			return null;
+		}
+
+		if (file_put_contents($dir . '/' . $innerName, $binary) === false) {
+			return null;
+		}
+
+		return '/pic/lists/' . $this->tableName . '/' . $entityId . '/' . $innerName;
+	}
+
+	/**
+	 * Разрешить file_url из разных источников (file_url, file_base64 или multipart)
+	 * @param array $data - данные с одним из источников
+	 * @param int $entityId - ID сущности
+	 * @return string|array - URL файла или error array
+	 */
+	public function resolveFileUrl(array $data, int $entityId): string|array
+	{
+		$fileName = $data['file_name'] ?? '';
+
+		if (!empty($data['file_url'])) {
+			return $data['file_url'];
+		}
+
+		if (!empty($data['file_base64'])) {
+			if (!$fileName) {
+				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
+			}
+			$binary = base64_decode($data['file_base64'], true);
+			if (!$binary) {
+				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
+			}
+			$url = $this->saveFile($binary, $fileName, $entityId);
+			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+		}
+
+		if (!empty($_FILES['file'])) {
+			$file = $_FILES['file'];
+			if ($file['error'] !== UPLOAD_ERR_OK) {
+				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
+			}
+			$binary = file_get_contents($file['tmp_name']);
+			if (!$binary) {
+				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
+			}
+			$url = $this->saveFile($binary, $file['name'], $entityId);
+			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+		}
+
+		return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
+	}
+
+	/**
+	 * Создать новый файл (запись в s_Files)
+	 * @param array $data - данные с file_url/file_base64/multipart и goods_id
+	 * @return array - {status, message, data}
+	 */
+	public function handleFileCreate(array $data): array
+	{
+		$entityId = (int) ($data['goods_id'] ?? $data['TableNameId'] ?? 0);
+		if (!$entityId) {
+			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
+		}
+
+		$fileUrl = $this->resolveFileUrl($data, $entityId);
+		if (is_array($fileUrl)) {
+			return $fileUrl;
+		}
+
+		$name = $data['name'] ?? $data['Name'] ?? $data['file_name'] ?? '';
+		$innerName = str_replace('/pic/lists/' . $this->tableName . '/', '', $fileUrl);
+
+		$id = Connect::$instance->insert('s_Files', [
+			'TableName' => $this->tableName,
+			'TableNameId' => $entityId,
+			'Name' => $name,
+			'InnerName' => $innerName,
+			'FileUrl' => $fileUrl,
+		]);
+
+		if (!$id) {
+			return ['status' => 400, 'message' => 'Failed to add image', 'data' => null];
+		}
+
+		return ['status' => 201, 'message' => 'Image added', 'data' => ['id' => $id]];
+	}
+
+	/**
+	 * Обновить существующий файл
+	 * @param array $data - данные с id и полями для обновления
+	 * @return array - {status, message, data}
+	 */
+	public function handleFileUpdate(array $data): array
+	{
+		$imageId = (int) ($data['id'] ?? 0);
+		if (!$imageId) {
+			return ['status' => 400, 'message' => 'id required', 'data' => null];
+		}
+
+		$existing = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id = ? AND TableName = ?",
+			[$imageId, $this->tableName]
+		);
+		if (empty($existing)) {
+			return ['status' => 404, 'message' => 'Image not found', 'data' => null];
+		}
+
+		$updates = [];
+		$params = [];
+
+		if (isset($data['name']) || isset($data['Name'])) {
+			$updates[] = 'Name = ?';
+			$params[] = $data['name'] ?? $data['Name'] ?? '';
+		}
+		if (isset($data['inner_name']) || isset($data['InnerName'])) {
+			$updates[] = 'InnerName = ?';
+			$params[] = $data['inner_name'] ?? $data['InnerName'] ?? '';
+		}
+		if (isset($data['file_url']) || isset($data['FileUrl'])) {
+			$updates[] = 'FileUrl = ?';
+			$params[] = $data['file_url'] ?? $data['FileUrl'] ?? '';
+		}
+
+		if (empty($updates)) {
+			return ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
+		}
+
+		$params[] = $imageId;
+		$result = Connect::$instance->query(
+			"UPDATE s_Files SET " . implode(', ', $updates) . " WHERE Id = ?",
+			$params
+		);
+
+		if ($result <= 0) {
+			return ['status' => 400, 'message' => 'Failed to update image', 'data' => null];
+		}
+
+		return ['status' => 200, 'message' => 'Image updated', 'data' => ['id' => $imageId]];
 	}
 }

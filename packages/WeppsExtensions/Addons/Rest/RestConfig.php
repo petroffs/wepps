@@ -833,6 +833,11 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods warehouse stocks',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'goodsId' => ['type' => 'int', 'required' => false],
+							'stocks' => ['type' => 'int', 'required' => true]
+						]
 					],
 					'goods.prices' => [
 						'class' => RestV1M2M::class,

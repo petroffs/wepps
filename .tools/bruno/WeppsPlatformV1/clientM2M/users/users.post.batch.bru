@@ -10,7 +10,6 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
     "data": [
@@ -24,6 +23,12 @@ body:json {
         "password": "password123",
         "name": "User 2"
       }
-    ]
+    ],
+    "pagination": {
+      "count": 2,
+      "page": 1,
+      "limit": 1,
+      "note": "Template for update - remove pagination if updating only selected items"
+    }
   }
 }
