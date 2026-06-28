@@ -2,7 +2,6 @@ meta {
   name: POST users
   type: http
   seq: 3
-  tags: manual
 }
 
 post {
@@ -11,29 +10,25 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
-    "data": {
-      "login": "{{new_user_login}}",
-      "password": "{{new_user_password}}",
-      "name": "Иван Иванов",
-      "phone": "9001234567"
+    "data": [
+      {
+        "login": "user1@test.com",
+        "password": "password123",
+        "name": "User 1"
+      },
+      {
+        "login": "user2@test.com",
+        "password": "password123",
+        "name": "User 2"
+      }
+    ],
+    "pagination": {
+      "count": 2,
+      "page": 1,
+      "limit": 1,
+      "note": "Template for update - remove pagination if updating only selected items"
     }
   }
-}
-
-tests {
-  test("status 200", function() {
-    expect(res.status).to.equal(200);
-  });
-  test("returns created id", function() {
-    expect(res.body.data).to.have.property("id");
-  });
-}
-
-docs {
-  Create a new user.
-  Доступно только для M2M клиентов.
-  Поля name и phone необязательные.
 }
