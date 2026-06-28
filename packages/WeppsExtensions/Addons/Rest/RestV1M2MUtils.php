@@ -73,18 +73,18 @@ class RestV1M2MUtils
 	 * Получает (items: array, tableName: string) где items - массив отфильтрованных записей.
 	 * Может модифицировать items и вернуть обновленный массив, или вернуть null.
 	 * Выполняется ВНУТРИ транзакции; исключение откатит все изменения.
-	 * @var mixed
+	 * @var array<callable>
 	 */
-	private mixed $beforeCallback = null;
+	private array $beforeCallbacks = [];
 
 	/**
-	 * Callback вызываемый после пакетной вставки/обновления (addBatch, setBatch).
-	 * Получает (results: array, tableName: string) где results - массив результатов операций.
+	 * Callbacks вызываемые после пакетной вставки/обновления (addBatch, setBatch).
+	 * Каждый callback получает (results: array, tableName: string) где results - массив результатов операций.
 	 * Может выполнять дополнительную обработку (логирование, soft-delete и т.д.).
-	 * Выполняется ВНУТРИ транзакции перед COMMIT; исключение откатит все.
-	 * @var mixed
+	 * Выполняются ВНУТРИ транзакции перед COMMIT; исключение откатит все.
+	 * @var array<callable>
 	 */
-	private mixed $afterCallback = null;
+	private array $afterCallbacks = [];
 
 	public function __construct(string $tableName)
 	{
@@ -92,6 +92,8 @@ class RestV1M2MUtils
 		$this->jsonFieldsCache = null;
 		$this->reverseMapCache = null;
 		$this->uniqueFieldsCache = null;
+		$this->beforeCallbacks = [];
+		$this->afterCallbacks = [];
 	}
 
 	/**
@@ -99,13 +101,14 @@ class RestV1M2MUtils
 	 * Callback получает (items: array, tableName: string) где items - массив отфильтрованных записей.
 	 * Может модифицировать items и вернуть обновленный массив, или вернуть null.
 	 * Выполняется ВНУТРИ транзакции; исключение откатит все изменения.
+	 * Можно вызвать несколько раз для добавления нескольких callbacks.
 	 * 
 	 * @param callable $callback fn(array $items, string $tableName): array|null
 	 * @return self для цепочки вызовов
 	 */
 	public function setBefore(callable $callback): self
 	{
-		$this->beforeCallback = $callback;
+		$this->beforeCallbacks[] = $callback;
 		return $this;
 	}
 
@@ -114,13 +117,14 @@ class RestV1M2MUtils
 	 * Callback получает (results: array, tableName: string) где results - массив результатов операций.
 	 * Может выполнять дополнительную обработку (логирование, soft-delete и т.д.).
 	 * Выполняется ВНУТРИ транзакции перед COMMIT; исключение откатит все.
+	 * Можно вызвать несколько раз для добавления нескольких callbacks.
 	 * 
 	 * @param callable $callback fn(array $results, string $tableName): void
 	 * @return self для цепочки вызовов
 	 */
 	public function setAfter(callable $callback): self
 	{
-		$this->afterCallback = $callback;
+		$this->afterCallbacks[] = $callback;
 		return $this;
 	}
 
@@ -148,7 +152,7 @@ class RestV1M2MUtils
 
 		// Before callback: вызывается на первой странице
 		$beforeCallback = $currentPage === 1
-			? function(array $items, string $tableName) {
+			? function (array $items, string $tableName) {
 				// На первой странице пакета
 				// Пример: маркировка кандидатов на скрытие
 				Connect::$instance->query(
@@ -160,11 +164,14 @@ class RestV1M2MUtils
 
 		// After callback: вызывается на последней странице
 		$afterCallback = $currentPage === $totalPages
-			? function(array $results, string $tableName) {
+			? function (array $results, string $tableName) {
 				// На последней странице пакета
 				// Пример: финализация скрытия
 				Connect::$instance->query(
 					"UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE IsHiddenCandidate = 1"
+				);
+				Connect::$instance->query(
+					"UPDATE {$tableName} SET IsHiddenCandidate = 0 WHERE IsHiddenCandidate = 1"
 				);
 			}
 			: null;
@@ -200,7 +207,8 @@ class RestV1M2MUtils
 		$conditions .= 't.Id!=0';
 		$skipPagination = false; // флаг для пропуска пагинации при запросе по ID
 		if ($id !== null && $id > 0) {
-			$conditions .= 't.Id = ' . $id;
+			$conditions .= ' AND t.Id = ' . $id;
+			//Utils::debug($conditions,1);
 			$limit = 1;
 			$page = 0; // передаём 0 чтобы пропустить пагинацию
 			$skipPagination = true;
@@ -220,7 +228,7 @@ class RestV1M2MUtils
 				'message' => 'OK',
 				'data' => $result ?: [],
 				'pagination' => [
-					'count' => $skipPagination ? count($result) : $data->paginator['count']??1,
+					'count' => $skipPagination ? count($result) : $data->paginator['count'] ?? 1,
 					'limit' => $limit,
 					'page' => $skipPagination ? 1 : $page,
 				],
@@ -320,19 +328,17 @@ class RestV1M2MUtils
 
 		try {
 			$batch = Connect::$instance->transaction(
-				function($args) {
-					// Before callback ВНУТРИ транзакции
-					if ($this->beforeCallback !== null) {
-						$callback = $this->beforeCallback;
+				function ($args) {
+					// Before callbacks ВНУТРИ транзакции
+					foreach ($this->beforeCallbacks as $callback) {
 						$args['items'] = $callback($args['items'], $this->tableName) ?? $args['items'];
 					}
 
 					// Выполнить пакетную вставку
 					$results = $this->executeBatchInsert($args['items']);
 
-					// After callback ВНУТРИ транзакции (перед коммитом)
-					if ($this->afterCallback !== null) {
-						$callback = $this->afterCallback;
+					// After callbacks ВНУТРИ транзакции (перед коммитом)
+					foreach ($this->afterCallbacks as $callback) {
 						$callback($results, $this->tableName);
 					}
 					return $results;
@@ -409,17 +415,15 @@ class RestV1M2MUtils
 
 		try {
 			$batch = Connect::$instance->transaction(
-				function($args) {
-					// Before callback ВНУТРИ транзакции
-					if ($this->beforeCallback !== null) {
-						$callback = $this->beforeCallback;
+				function ($args) {
+					// Before callbacks ВНУТРИ транзакции
+					foreach ($this->beforeCallbacks as $callback) {
 						$args['items'] = $callback($args['items'], $this->tableName) ?? $args['items'];
 					}
 					$results = $this->executeBatchUpdate($args['items']);
 
-					// After callback ВНУТРИ транзакции (перед коммитом)
-					if ($this->afterCallback !== null) {
-						$callback = $this->afterCallback;
+					// After callbacks ВНУТРИ транзакции (перед коммитом)
+					foreach ($this->afterCallbacks as $callback) {
 						$callback($results, $this->tableName);
 					}
 					return $results;
@@ -438,101 +442,41 @@ class RestV1M2MUtils
 
 
 	/**
-	 * Удалить записи (одну или пакет).
+	 * Удалить записи (batch).
 	 *
-	 * @param array  $ids ID записей
-	 * @param string $filterTableName опционально: фильтр по TableName (для s_Files)
-	 * @return array - {status, message, data} для одного или {status, data: [{...}]} для batch
+	 * @param array $ids ID записей
+	 * @return array - {status, message, data: [{...}]}
 	 */
-	public function remove(array $ids, string $filterTableName = ''): array
+	public function remove(array $ids): array
 	{
 		if (empty($ids)) {
 			return ['status' => 400, 'message' => 'No IDs provided', 'data' => null];
 		}
 
-		// Одиночное удаление
-		if (count($ids) === 1) {
-			$id = $ids[0];
-			try {
-				if (!empty($filterTableName)) {
-					// Для s_Files с фильтром по TableName
-					$existing = Connect::$instance->fetch(
-						"SELECT Id FROM {$this->tableName} WHERE Id = ? AND TableName = ?",
-						[$id, $filterTableName]
-					);
-					if (empty($existing)) {
-						return ['status' => 404, 'message' => 'Record not found', 'data' => ['id' => $id]];
-					}
-					$result = Connect::$instance->query(
-						"DELETE FROM {$this->tableName} WHERE Id = ? AND TableName = ?",
-						[$id, $filterTableName]
-					);
-				} else {
-					// Обычное удаление — сначала проверяем существование
-					$existing = Connect::$instance->fetch(
-						"SELECT Id FROM {$this->tableName} WHERE Id = ?",
-						[$id]
-					);
-					if (empty($existing)) {
-						return ['status' => 404, 'message' => 'Already deleted or not found', 'data' => ['id' => $id]];
-					}
-					$model = new Data($this->tableName);
-					$model->remove($id);
-					$result = 1;
-				}
-				return $result > 0
-					? ['status' => 200, 'message' => 'Deleted', 'data' => ['id' => $id]]
-					: ['status' => 400, 'message' => 'Failed to delete', 'data' => ['id' => $id]];
-			} catch (\Exception $e) {
-				return ['status' => 400, 'message' => $e->getMessage(), 'data' => ['id' => $id]];
-			}
-		}
-
-		// Batch удаление — получить все существующие IDs одним запросом
 		$results = [];
 
-		// Получить все существующие IDs одним запросом перед циклом
+		// Получить все существующие IDs одним запросом
 		$in = Connect::$instance->in($ids);
-		if (!empty($filterTableName)) {
-			// Для s_Files с фильтром
-			$existingRows = Connect::$instance->fetch(
-				"SELECT Id FROM {$this->tableName} WHERE Id IN ($in) AND TableName = ?",
-				array_merge($ids, [$filterTableName])
-			);
-		} else {
-			// Для обычных таблиц
-			$existingRows = Connect::$instance->fetch(
-				"SELECT Id FROM {$this->tableName} WHERE Id IN ($in)",
-				$ids
-			);
-		}
+		$existingRows = Connect::$instance->fetch(
+			"SELECT Id FROM {$this->tableName} WHERE Id IN ($in)",
+			$ids
+		);
 
 		// Преобразовать в ассоциативный массив для быстрого поиска O(1)
 		$existingIds = array_flip(array_column($existingRows, 'Id'));
 
+		// Удалить каждый ID
 		foreach ($ids as $index => $id) {
 			try {
-				// Проверяем наличие в уже полученном списке
 				if (!isset($existingIds[$id])) {
 					$results[$index] = ['status' => 404, 'message' => 'Already deleted or not found', 'data' => ['id' => $id]];
 					continue;
 				}
 
-				// Удаляем запись
-				if (!empty($filterTableName)) {
-					$result = Connect::$instance->query(
-						"DELETE FROM {$this->tableName} WHERE Id = ? AND TableName = ?",
-						[$id, $filterTableName]
-					);
-				} else {
-					$model = new Data($this->tableName);
-					$model->remove($id);
-					$result = 1;
-				}
+				$model = new Data($this->tableName);
+				$model->remove($id);
 
-				$results[$index] = $result > 0
-					? ['status' => 200, 'message' => 'Deleted', 'data' => ['id' => $id]]
-					: ['status' => 400, 'message' => 'Failed to delete', 'data' => ['id' => $id]];
+				$results[$index] = ['status' => 200, 'message' => 'Deleted', 'data' => ['id' => $id]];
 			} catch (\Exception $e) {
 				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => ['id' => $id]];
 			}
@@ -954,7 +898,7 @@ class RestV1M2MUtils
 			return $rows;
 		}
 		foreach ($rows as &$row) {
-			
+
 			foreach (array_keys($fields) as $fieldName) {
 				if (!isset($row[$fieldName]) || !is_string($row[$fieldName])) {
 					continue;

@@ -5,7 +5,7 @@ meta {
 }
 
 delete {
-  url: {{base_url}}/rest/m2m/users?id={{user_id}}
+  url: {{base_url}}/rest/m2m/users
   body: json
   auth: inherit
 }
@@ -13,8 +13,7 @@ delete {
 body:json {
   {
     "data": [
-      500,
-      501
+      2,3
     ]
   }
 }

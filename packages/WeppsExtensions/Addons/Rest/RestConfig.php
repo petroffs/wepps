@@ -713,6 +713,15 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Create user(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'name' => ['type' => 'string', 'required' => true],
+							'nameFirst' => ['type' => 'string', 'required' => true],
+							'nameSurname' => ['type' => 'string', 'required' => true],
+							'namePatronymic' => ['type' => 'string', 'required' => false],
+							'login' => ['type' => 'string', 'required' => true],
+							'email' => ['type' => 'string', 'required' => true],
+							'phone' => ['type' => 'string', 'required' => true]
+						],
 					],
 					'goods' => [
 						'class' => RestV1M2M::class,
@@ -785,6 +794,16 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'name' => ['type' => 'string', 'required' => false],
+							'nameFirst' => ['type' => 'string', 'required' => false],
+							'nameSurname' => ['type' => 'string', 'required' => false],
+							'namePatronymic' => ['type' => 'string', 'required' => false],
+							'login' => ['type' => 'string', 'required' => false],
+							'email' => ['type' => 'string', 'required' => false],
+							'phone' => ['type' => 'string', 'required' => false]
+						]
 					],
 					'goods' => [
 						'class' => RestV1M2M::class,
@@ -793,20 +812,20 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Update goods by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 						'validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
+							'id' => ['type' => 'int', 'required' => true],
 							'name' => ['type' => 'string', 'required' => false],
 							'alias' => ['type' => 'string', 'required' => false],
 							'price' => ['type' => 'float', 'required' => false],
 							'article' => ['type' => 'string', 'required' => false],
 							'descr' => ['type' => 'string', 'required' => false],
-							'isHidden' => ['type' => 'int2', 'required' => false],
+							'isHidden' => ['type' => 'int', 'required' => false],
 							'priceBefore' => ['type' => 'float', 'required' => false],
-							'status' => ['type' => 'int2', 'required' => false],
+							'status' => ['type' => 'int', 'required' => false],
 							'metaTitle' => ['type' => 'string', 'required' => false],
 							'metaDescription' => ['type' => 'string', 'required' => false],
 							'metaKeyword' => ['type' => 'string', 'required' => false],
 							'weightPack' => ['type' => 'float', 'required' => false],
-							'displayFirst' => ['type' => 'int2', 'required' => false],
+							'displayFirst' => ['type' => 'int', 'required' => false],
 						],
 					],
 					'goods.variations' => [
@@ -884,7 +903,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete user by id(s) via body. Format: {"data": [123, 456, ...]}',
 						'validation' => [
-							'ARRAY' => ['type' => 'int2', 'required' => true],
+							'ARRAY' => ['type' => 'int', 'required' => true],
 						],
 					],
 					'goods' => [
@@ -894,7 +913,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods by id(s) via body. Format: {"data": [123, 456, ...]}',
 						'validation' => [
-							'ARRAY' => ['type' => 'int2', 'required' => true],
+							'ARRAY' => ['type' => 'int', 'required' => true],
 						],
 					],
 					'goods.variations' => [
@@ -904,7 +923,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}',
 						'validation' => [
-							'ARRAY' => ['type' => 'int2', 'required' => true],
+							'ARRAY' => ['type' => 'int', 'required' => true],
 						],
 					],
 					'goods.images' => [
@@ -914,7 +933,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods image(s) via body. Format: {"data": [123, 456, ...]}',
 						'validation' => [
-							'ARRAY' => ['type' => 'int2', 'required' => true],
+							'ARRAY' => ['type' => 'int', 'required' => true],
 						],
 					],
 					'goods.imagesVariations' => [
@@ -924,7 +943,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods variation image(s) via body. Format: {"data": [123, 456, ...]}',
 						'validation' => [
-							'ARRAY' => ['type' => 'int2', 'required' => true],
+							'ARRAY' => ['type' => 'int', 'required' => true],
 						],
 					],
 					'orders' => [
@@ -934,7 +953,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete order(s) via body. Format: {"data": [123, 456, ...]}',
 						'validation' => [
-							'ARRAY' => ['type' => 'int2', 'required' => true],
+							'ARRAY' => ['type' => 'int', 'required' => true],
 						],
 					],
 				],

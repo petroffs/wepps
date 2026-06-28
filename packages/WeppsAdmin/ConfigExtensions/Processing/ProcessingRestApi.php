@@ -131,7 +131,6 @@ class ProcessingRestApi
 		foreach ($result as &$group) {
 			ksort($group);
 		}
-
 		return $result;
 	}
 	public function addTests(): void
@@ -414,44 +413,20 @@ class ProcessingRestApi
 		
 		$response = curl_exec($ch);
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		$curlError = curl_error($ch);
 		curl_close($ch);
 		
-		
 		if ($httpCode !== 200) {
-			// Получаем заголовок Location если есть (для редиректов)
-			$locationHeader = '';
-			if (in_array($httpCode, [301, 302, 303, 307, 308])) {
-				// Для редиректов пытаемся получить Location из headers
-				$locationHeader = curl_getinfo($ch, CURLINFO_REDIRECT_URL) ?: 'Не найден';
-			}
-			
-			$errorParts = [
-				'HTTP ' . $httpCode,
-				'URL: ' . $url
-			];
-			
-			if ($locationHeader) {
-				$errorParts[] = 'Location: ' . $locationHeader;
-			}
-			if ($curlError) {
-				$errorParts[] = 'Ошибка: ' . $curlError;
-			}
-			if (!empty($response)) {
-				$preview = substr($response, 0, 200);
-				$errorParts[] = 'Ответ: ' . ($preview ? $preview : '(пусто)');
-			}
-			
-			// Объединяем в одну строку с | как разделитель для UI
-			$errorMsg = implode(' | ', $errorParts);
-			
-			throw new \Exception($errorMsg);
+			throw new \Exception("HTTP {$httpCode}");
 		}
 		
 		$data = json_decode($response, true);
 		
-		if (empty($data) || !isset($data['data']) || !is_array($data['data'])) {
-			throw new \Exception('Некорректный формат ответа от API, ожидается {data: [...]}\nПолучено: ' . substr($response, 0, 200));
+		if (!is_array($data)) {
+			throw new \Exception('Invalid JSON response');
+		}
+		
+		if (!isset($data['data']) || !is_array($data['data'])) {
+			throw new \Exception("Missing 'data' in response");
 		}
 		
 		return $data['data'];

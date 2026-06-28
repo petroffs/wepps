@@ -49,9 +49,7 @@ class RestV1M2M extends RestV1
 	public function postUsers(): array
 	{
 		$records = $this->normalizeInput();
-		['before' => $callbackBefore, 'after' => $callbackAfter] = $this->getUtils('s_Users')
-			->handlePagination($this->data['pagination'] ?? null);
-
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $this->getUtils('s_Users')->handlePagination($this->data['pagination'] ?? null);
 		if ($callbackBefore || $callbackAfter) {
 			$this->getUtils('s_Users')
 				->setBefore($callbackBefore)
@@ -64,17 +62,30 @@ class RestV1M2M extends RestV1
 	public function putUsers(): array
 	{
 		$records = $this->normalizeInput();
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $this->getUtils('s_Users')->handlePagination($this->data['pagination'] ?? null);
+		if ($callbackBefore || $callbackAfter) {
+			$this->getUtils('s_Users')
+				->setBefore($callbackBefore)
+				->setAfter($callbackAfter);
+		}
+		// After callback ВНУТРИ транзакции (перед коммитом)
+		// Например, можем создать личные кабинеты и разослать уведомления после обновления пользователей
+		// $this->getUtils('s_Users')->setAfter(function ($results, $tableName) {
+
+		// 	if (empty($results['data'])) {
+		// 		return;
+		// 	}
+		// 	foreach ($results['data'] as $value) {
+
+		// 	}
+		// });
 		return $this->update('s_Users', $records);
 	}
 
 	public function deleteUsers(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
-		$ids = array_column($records, 'id');
-		return $this->getUtils('s_Users')->remove($ids);
+		return $this->getUtils('s_Users')->remove($records);
 	}
 
 	// ========================================================================
@@ -680,7 +691,14 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 		$ids = array_column($records, 'id');
-		return $this->getUtils('s_Files')->remove($ids, 'Products');
+		// Фильтровать только файлы таблицы Products
+		$in = Connect::$instance->in($ids);
+		$validIds = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id IN ($in) AND TableName = 'Products'",
+			$ids
+		);
+		$validIds = array_column($validIds, 'Id');
+		return $this->getUtils('s_Files')->remove($validIds);
 	}
 
 	/**
@@ -693,7 +711,14 @@ class RestV1M2M extends RestV1
 			return ['status' => 400, 'message' => 'ID required', 'data' => null];
 		}
 		$ids = array_column($records, 'id');
-		return $this->getUtils('s_Files')->remove($ids, 'ProductsVariations');
+		// Фильтровать только файлы таблицы ProductsVariations
+		$in = Connect::$instance->in($ids);
+		$validIds = Connect::$instance->fetch(
+			"SELECT Id FROM s_Files WHERE Id IN ($in) AND TableName = 'ProductsVariations'",
+			$ids
+		);
+		$validIds = array_column($validIds, 'Id');
+		return $this->getUtils('s_Files')->remove($validIds);
 	}
 
 	// ========================================================================
@@ -943,9 +968,7 @@ class RestV1M2M extends RestV1
 		if (empty($raw)) {
 			return [];
 		}
-
-		$records = (isset($raw[0]) && is_array($raw[0])) ? $raw : [$raw];
-
+		$records = (isset($raw[0]) && (is_array($raw[0]) || is_int($raw[0]))) ? $raw : [$raw];
 		return $records;
 	}
 }
