@@ -66,15 +66,19 @@ class RestV1M2MUtils
 	private ?array $params = null;
 
 	/**
-	 * Callback вызываемый перед update() для каждой записи.
-	 * Получает (record, tableName) и должен вернуть модифицированную запись или false для пропуска.
+	 * Callback вызываемый перед пакетной вставкой/обновлением (addBatch, setBatch).
+	 * Получает (items: array, tableName: string) где items - массив отфильтрованных записей.
+	 * Может модифицировать items и вернуть обновленный массив, или вернуть null.
+	 * Выполняется ВНУТРИ транзакции; исключение откатит все изменения.
 	 * @var mixed
 	 */
 	private mixed $beforeCallback = null;
 
 	/**
-	 * Callback вызываемый после update() для каждой успешной записи.
-	 * Получает (record, result, tableName) для дополнительной обработки.
+	 * Callback вызываемый после пакетной вставки/обновления (addBatch, setBatch).
+	 * Получает (results: array, tableName: string) где results - массив результатов операций.
+	 * Может выполнять дополнительную обработку (логирование, soft-delete и т.д.).
+	 * Выполняется ВНУТРИ транзакции перед COMMIT; исключение откатит все.
 	 * @var mixed
 	 */
 	private mixed $afterCallback = null;
@@ -115,6 +119,56 @@ class RestV1M2MUtils
 		return $this;
 	}
 
+	/**
+	 * Создать callbacks для обработки пакетных операций с учётом пагинации.
+	 * 
+	 * Поддерживает паттерн:
+	 * - Before callback на первой странице: подготовка перед первой партией (например, маркировка кандидатов на удаление)
+	 * - After callback на последней странице: финализация после последней партии (например, финализация скрытия)
+	 * 
+	 * Если pagination не содержит 'page' и 'count', callbacks вернут null.
+	 * 
+	 * @param array|null $pagination {page: int, count: int} или null
+	 * @return array {before: callable|null, after: callable|null}
+	 */
+	public function handlePagination(?array $pagination): array
+	{
+		$currentPage = (int) ($pagination['page'] ?? 0);
+		$totalPages = (int) ($pagination['count'] ?? 0);
+
+		// Если pagination не содержит нужных данных, вернуть пустые callbacks
+		if ($currentPage === 0 || $totalPages === 0) {
+			return ['before' => null, 'after' => null];
+		}
+
+		// Before callback: вызывается на первой странице
+		$beforeCallback = $currentPage === 1
+			? function(array $items, string $tableName) {
+				// На первой странице пакета
+				// Пример: маркировка кандидатов на скрытие
+				Connect::$instance->query(
+					"UPDATE {$tableName} SET IsHiddenCandidate = 1 WHERE IsHiddenCandidate = 0"
+				);
+				return $items;
+			}
+			: null;
+
+		// After callback: вызывается на последней странице
+		$afterCallback = $currentPage === $totalPages
+			? function(array $results, string $tableName) {
+				// На последней странице пакета
+				// Пример: финализация скрытия
+				Connect::$instance->query(
+					"UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE IsHiddenCandidate = 1"
+				);
+			}
+			: null;
+
+		return [
+			'before' => $beforeCallback,
+			'after' => $afterCallback,
+		];
+	}
 
 
 	/**

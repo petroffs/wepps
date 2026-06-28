@@ -53,67 +53,14 @@ class RestV1M2M extends RestV1
 	public function postUsers(): array
 	{
 		$records = $this->normalizeInput();
-		// Before callback: валидация и подготовка перед вставкой
-		$beforeCallback = function(array $items, string $tableName) {
-			// $items — это отфильтрованные записи (прошли проверку дублей и валидацию)
-			// может быть меньше, чем исходный $records!
-			// Можно добавить дополнительную валидацию, логирование, нормализацию данных
-			
-			// Пример: проверка и отбрасывание исключения откатит всю транзакцию
-			// foreach ($items as $item) {
-			//     if (!isset($item['email']) || empty($item['email'])) {
-			//         throw new \Exception('Email is required for all users');
-			//     }
-			// }
-			if (!empty($this->data['pagination'])) {
-				if (($this->data['pagination']['page'] ?? 0) == 1) {
-					// На первой странице можно добавить дополнительную обработку
-					// Например, логирование или уведомление
-					$sql = "UPDATE {$tableName} SET IsHiddenCandidate = 1 WHERE IsHiddenCandidate = 0";
-					Connect::$instance->query($sql);
-				}
-			}
-			return $items; // Возвращаем (возможно модифицированные) данные
-		};
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $this->getUtils('s_Users')
+			->handlePagination($this->data['pagination'] ?? null);
 		
-		// After callback: логирование результатов после успешной вставки
-		$afterCallback = function(array $results, string $tableName) {
-			// Здесь можно отправить уведомления, обновить кэш, залогировать события
-			// Находится внутри транзакции, но перед commit()
-			
-			// Пример: если в before проставили IsHiddenCandidate, 
-			// то в after финализируем скрытие (если всё успешно)
-			// foreach ($results as $result) {
-			//     if (($result['status'] ?? 0) === 201) {
-			//         $id = $result['data']['id'] ?? 0;
-			//         // Копируем флаг-кандидат в финальный флаг скрытия
-			//         Connect::$instance->query(
-			//             "UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE Id = ?",
-			//             [$id]
-			//         );
-			//     }
-			// }
-			
-			// Успешно созданные записи с ID: $result['data']['id']
-			// foreach ($results as $result) {
-			// 	if (($result['status'] ?? 0) === 201) {
-			// 		
-			// 	}
-			// }
-			if (!empty($this->data['pagination'])) {
-				if (($this->data['pagination']['page'] ?? 0) == ($this->data['pagination']['count'] ?? 1)) {
-					// На последней странице можно добавить дополнительную обработку
-					// Например, логирование или уведомление
-					$sql = "UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE IsHiddenCandidate = 1";
-					Connect::$instance->query($sql);
-				}
-			}
-		};
-		
-		// Установить callback в utils и вызвать create()
-		$this->getUtils('s_Users')
-			->setBefore($beforeCallback)
-			->setAfter($afterCallback);
+		if ($callbackBefore || $callbackAfter) {
+			$this->getUtils('s_Users')
+				->setBefore($callbackBefore)
+				->setAfter($callbackAfter);
+		}
 		
 		return $this->create('s_Users', $records);
 	}
@@ -971,6 +918,8 @@ class RestV1M2M extends RestV1
 			'offset' => $offset,
 		];
 	}
+
+
 
 	/**
 	 * Валидировать запись по правилам из s_ConfigFields.
