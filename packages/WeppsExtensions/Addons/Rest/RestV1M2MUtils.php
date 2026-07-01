@@ -14,17 +14,22 @@ use WeppsAdmin\Lists\Lists;
  * Один экземпляр — одна таблица (tableName передаётся в конструктор).
  * Инстанцируется через RestV1M2M::getUtils(tableName) с кэшированием по имени таблицы.
  *
- * Обрабатывает:
- * - CRUD: fetch(), item(), add(), set(), remove()
- * - Пакетные операции: addBatch(), setBatch() с before/after callbacks
- * - Callbacks для пакетных операций: setBefore(), setAfter(), handlePagination()
- * - Проверку дублей по уникальному полю: checkDuplicate()
- * - Правила валидации из s_ConfigFields: getFieldRules()
- * - Маппинг camelCase API → PascalCase БД: mapApiToDbFields() / getReverseMap()
- * - Авто-decode JSON-полей в ответах: decodeJsonFields() / getJsonFields()
- * - Файлы из s_Files: getFiles(), handleFileCreate(), handleFileUpdate()
- * - Построение W_Attributes из свойств: buildAttributesFromPropertiesValues()
- * - Обновление поискового индекса: updateSearchIndex()
+ * Архитектура методов:
+ * - Read: fetch(), item() — выборка данных, возвращают {status, message, data, pagination?}
+ * - Write single: add(), set() — изменение одной записи, возвращают {status, message, data}
+ * - Write batch: addBatch(), setBatch(), remove() — изменение множества, возвращают 207 Multi-Status с массивом результатов
+ * - remove() работает ТОЛЬКО с batch-формат (array $ids), фильтрация — задача вызывающего кода
+ *
+ * Функциональность:
+ * - Callbacks для batch операций: setBefore(), setAfter() — несколько callbacks на операцию
+ * - Пагинация с triggers: handlePagination() — автоматические before/after на первой/последней странице
+ * - Проверка дублей: checkDuplicate() — по уникальным полям из s_ConfigFields
+ * - Валидация: getFieldRules() — типы и обязательность полей из s_ConfigFields
+ * - Маппинг: mapApiToDbFields() / getReverseMap() — camelCase API ↔ PascalCase БД
+ * - JSON-поля: decodeJsonFields() / getJsonFields() — авто-decode в ответах
+ * - Файлы: getFiles(), handleFileCreate(), handleFileUpdate() — управление s_Files
+ * - W_Attributes: buildAttributesFromPropertiesValues() — построение структуры свойств
+ * - Поиск: updateSearchIndex() — синхронизация поискового индекса
  */
 class RestV1M2MUtils
 {
@@ -61,12 +66,29 @@ class RestV1M2MUtils
 	private string $tableName;
 
 	/**
-	 * Список полей для выборки через Data::setFields()
-	 * @var string|null
+	 * Список полей для выборки через Data::setFields().
+	 * Используется при вызове fetch() для ограничения выбираемых полей.
+	 * Устанавливается через setFields(), сбрасывается после выполнения fetch().
+	 * @var string|null null = используются все поля
 	 */
 	private ?string $fields = null;
 
+	/**
+	 * Параметры для выборки через Data::fetch().
+	 * Используется для передачи дополнительных опций (фильтры, сортировка и т.д.) в метод fetch().
+	 * Устанавливается через setParams(), сбрасывается после выполнения fetch().
+	 * @var array|null
+	 */
 	private ?array $params = null;
+
+	/**
+	 * Порядок сортировки результатов через Data::setOrderBy().
+	 * Используется при вызове fetch() и item() для сортировки результатов по указанным полям.
+	 * Устанавливается через setOrderBy(), сбрасывается после выполнения fetch().
+	 * Пример: 'Priority DESC, Name ASC'
+	 * @var string|null null = без сортировки
+	 */
+	private ?string $orderBy = null;
 
 	/**
 	 * Callback вызываемый перед пакетной вставкой/обновлением (addBatch, setBatch).
@@ -221,7 +243,10 @@ class RestV1M2MUtils
 			if ($this->params !== null) {
 				$data->setParams($this->params);
 			}
-			$result = $data->fetch($conditions, $limit, $page);
+			if ($this->orderBy !== null) {
+				$orderBy = $this->orderBy;
+			}
+			$result = $data->fetch($conditions, $limit, $page, $orderBy ?? null);
 			$result = $this->decodeJsonFields($result);
 			return [
 				'status' => 200,
@@ -241,6 +266,7 @@ class RestV1M2MUtils
 			];
 		} finally {
 			$this->fields = null;
+			$this->orderBy = null;
 		}
 	}
 
@@ -826,6 +852,18 @@ class RestV1M2MUtils
 	public function setParams(array $params): self
 	{
 		$this->params = $params;
+		return $this;
+	}
+
+	/**
+	 * Установить порядок сортировки для выборки
+	 *
+	 * @param string $orderBy Порядок сортировки (например: 'Priority DESC, Name ASC')
+	 * @return $this для цепочки вызовов
+	 */
+	public function setOrderBy(string $orderBy): self
+	{
+		$this->orderBy = $orderBy;
 		return $this;
 	}
 

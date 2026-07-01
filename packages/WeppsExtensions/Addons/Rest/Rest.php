@@ -531,8 +531,19 @@ class Rest
 			return;
 		}
 
-		// Валидация как объекта
+		// Разделяем rules на простые и вложенные (с dot-notation: items[].field)
+		$simpleRules = [];
+		$nestedRules = [];
 		foreach ($rules as $key => $rule) {
+			if (strpos($key, '[]') !== false) {
+				$nestedRules[$key] = $rule;
+			} else {
+				$simpleRules[$key] = $rule;
+			}
+		}
+
+		// Валидация простых полей как объекта
+		foreach ($simpleRules as $key => $rule) {
 			$value = $data[$key] ?? null;
 			if ($rule['required'] && $value === null) {
 				throw new \Exception("Field '$key' is required");
@@ -544,13 +555,94 @@ class Rest
 			}
 		}
 
-		// Проверка на лишние поля
-		$allowedKeys = array_keys($rules);
+		// Валидация вложенных полей (items[].name или data.items[].name → path, field)
+		foreach ($nestedRules as $path => $rule) {
+			$matches = [];
+			// Pattern: path.to.array[].field или просто array[].field
+			if (!preg_match('/^(.+)\[\]\.([a-zA-Z_]\w*)$/', $path, $matches)) {
+				throw new \Exception("Invalid nested validation path: '$path'");
+			}
+
+			$arrayPath = $matches[1];  // "items" или "data.items"
+			$fieldKey = $matches[2];   // "name"
+
+			// Получаем значение по пути (поддерживаем точки для вложенности)
+			$arrayValue = $this->getValueByPath($data, $arrayPath);
+
+			if ($arrayValue === null) {
+				if ($rule['required']) {
+					throw new \Exception("Array '$arrayPath' is required");
+				}
+				continue;
+			}
+
+			if (!is_array($arrayValue)) {
+				throw new \Exception("Field '$arrayPath' must be an array");
+			}
+
+			// Валидируем каждый элемент вложенного массива
+			foreach ($arrayValue as $index => $item) {
+				if (!is_array($item)) {
+					throw new \Exception("Item at '$arrayPath[$index]' must be an object");
+				}
+
+				$value = $item[$fieldKey] ?? null;
+				if ($rule['required'] && $value === null) {
+					throw new \Exception("Field '{$arrayPath}[].{$fieldKey}' at index $index is required");
+				}
+
+				if ($value !== null && $value !== '') {
+					if (!$this->validateType($value, $rule['type'])) {
+						throw new \Exception("Field '{$arrayPath}[].{$fieldKey}' at index $index must be {$rule['type']}");
+					}
+				}
+			}
+		}
+
+		// Проверка на лишние поля (простые ключи + ключи из вложенных правил)
+		$allowedSimpleKeys = array_keys($simpleRules);
+		$allowedNestedArrays = [];
+		foreach ($nestedRules as $path => $rule) {
+			// Извлекаем путь до массива (например, "data" из "data.items[]")
+			if (preg_match('/^(.+?)\[\]/', $path, $matches)) {
+				$arrayPath = $matches[1];  // "data.items" или "items"
+				$topKey = explode('.', $arrayPath)[0];  // "data" или "items"
+				if (!in_array($topKey, $allowedNestedArrays)) {
+					$allowedNestedArrays[] = $topKey;
+				}
+			}
+		}
+		$allowedKeys = array_merge($allowedSimpleKeys, $allowedNestedArrays);
+
 		foreach ($data as $key => $value) {
 			if (!in_array($key, $allowedKeys)) {
 				throw new \Exception("Unexpected field '$key'");
 			}
 		}
+	}
+
+	/**
+	 * Получить значение из массива по пути с точками
+	 * 
+	 * Поддерживает многоуровневые пути: "data.items" → $array['data']['items']
+	 * 
+	 * @param array $data Исходный массив
+	 * @param string $path Путь к значению, разделенный точками (например, "data.items")
+	 * @return mixed Значение или null если не найдено
+	 */
+	private function getValueByPath(array $data, string $path): mixed
+	{
+		$keys = explode('.', $path);
+		$value = $data;
+		
+		foreach ($keys as $key) {
+			if (!is_array($value) || !isset($value[$key])) {
+				return null;
+			}
+			$value = $value[$key];
+		}
+		
+		return $value;
 	}
 
 	/**

@@ -20,6 +20,16 @@ namespace WeppsExtensions\Addons\Rest;
  * ID можно передавать либо как GET параметр ?id={{id}}, либо в теле JSON
  * 
  * validation: валидация данных из тела JSON
+ * - Простые поля: 'name' => ['type' => 'string', 'required' => true]
+ * - Вложенные поля (dot-notation): 'items[].name' => ['type' => 'string', 'required' => true] или 'data.items[].name'
+ *   Пример 1: заказ с массивом товаров в items
+ *   POST body: {"name": "Заказ 1", "items": [{"name": "Товар 1", "quantity": 2, "sum": 100}]}
+ *   Конфиг: 'items[].name' валидирует поле name в каждом элементе items[]
+ *   
+ *   Пример 2: заказ с массивом товаров в data.items (nested data)
+ *   POST body: {"name": "Заказ 1", "data": {"items": [{"name": "Товар 1", "quantity": 2, "sum": 100}]}}
+ *   Конфиг: 'data.items[].name' валидирует поле name в каждом элементе data.items[]
+ * 
  * query_validation: валидация GET-параметров, например для фильтрации и сортировки
  * type: строка с типом данных ('int', 'int2', 'float', 'float2', 'string', 'email', 'date', 'phone', 'guid', 'barcode')
  * custom_response: если true, ответ возвращается без стандартной структуры status/message/data
@@ -784,7 +794,43 @@ class RestConfig
 						'method' => 'postOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create order(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: Create order(s). Batch only (array, max 100). Returns 207 with per-item status. Supports nested items[] for order lines.',
+						'validation' => [
+							'name' => ['type' => 'string', 'required' => true],
+							'isHidden' => ['type' => 'int', 'required' => false],
+							'userId' => ['type' => 'int', 'required' => true],
+							'phone' => ['type' => 'string', 'required' => true],
+							'email' => ['type' => 'string', 'required' => true],
+							'status' => ['type' => 'string', 'required' => true],
+							'sum' => ['type' => 'float2', 'required' => true],
+							'date' => ['type' => 'date', 'required' => true],
+							'delivery' => ['type' => 'int2', 'required' => true],
+							'payment' => ['type' => 'int2', 'required' => true],
+							'postalCode' => ['type' => 'string', 'required' => false],
+							'address' => ['type' => 'string', 'required' => false],
+							'city' => ['type' => 'string', 'required' => false],
+							'region' => ['type' => 'string', 'required' => false],
+							'country' => ['type' => 'string', 'required' => false],
+							// Вложенная валидация: data.items[].field (dot-notation, nested)
+							'data' => ['type' => 'object', 'required' => true],
+							'data.items[]' => ['type' => 'object[]', 'required' => true],
+							'data.items[].id' => ['type' => 'int', 'required' => true],
+							'data.items[].idv' => ['type' => 'int', 'required' => true],
+							'data.items[].name' => ['type' => 'string', 'required' => true],
+							'data.items[].quantity' => ['type' => 'int', 'required' => true],
+							'data.items[].stocks' => ['type' => 'int', 'required' => false],
+							'data.items[].active' => ['type' => 'int', 'required' => false],
+							'data.items[].price' => ['type' => 'float2', 'required' => false],
+							'data.items[].sum' => ['type' => 'float2', 'required' => true],
+							'data.items[].priceBefore' => ['type' => 'float2', 'required' => false],
+							'data.items[].sumBefore' => ['type' => 'float2', 'required' => false],
+							'data.items[].sumBeforeTotal' => ['type' => 'float2', 'required' => false],
+							'data.items[].sumSaving' => ['type' => 'float2', 'required' => false],
+							'data.items[].quantityActive' => ['type' => 'int', 'required' => false],
+							'data.items[].sumActive' => ['type' => 'float2', 'required' => false],
+							'data.items[].url' => ['type' => 'string', 'required' => false],
+							'data.items[].image' => ['type' => 'string', 'required' => false],
+						],
 					],
 				],
 				'put' => [

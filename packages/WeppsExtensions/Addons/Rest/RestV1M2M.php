@@ -727,15 +727,19 @@ class RestV1M2M extends RestV1
 
 	public function getOrders(): array
 	{
-		$this->getUtils('Orders')->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		$result = $this->getUtils('Orders')->fetch($this->get);
+		$obj = $this->getUtils('Orders');
+		$obj->setOrderBy('Id desc');
+		$obj->setFields('Id,Alias,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$result = $obj->fetch($this->get);
 		return $result;
 	}
 
 	public function getOrdersItem(): array
 	{
-		$this->getUtils('Orders')->setFields('Id,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		return $this->getUtils('Orders')->item((int) ($this->get['id'] ?? 0));
+		$obj = $this->getUtils('Orders');
+		$obj->setOrderBy('Id desc');
+		$obj->setFields('Id,Alias,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		return $obj->item((int) ($this->get['id'] ?? 0));
 	}
 
 	public function getTasksResult(): array
