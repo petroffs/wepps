@@ -796,6 +796,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Create order(s). Batch only (array, max 100). Returns 207 with per-item status. Supports nested items[] for order lines.',
 						'validation' => [
+							'hash' => ['type' => 'string', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
 							'isHidden' => ['type' => 'int', 'required' => false],
 							'userId' => ['type' => 'int', 'required' => true],
