@@ -587,15 +587,15 @@ class CartUtils
 			}
 			$row['Id'] = $id;
 			$text  = $this->getOrderText($row);
-			$alias = Utils::guid($id . '_' . time() . '_' . Connect::$projectServices['wepps']['sign']);
-			Connect::$instance->query("update Orders set OText=?,Alias=? where Id=?", [$text, $alias, $id]);
+			$guid = Utils::guid($id . '_' . time() . '_' . Connect::$projectServices['wepps']['sign']);
+			Connect::$instance->query("update Orders set OText=?,Guid=? where Id=?", [$text, $guid, $id]);
 			$tasks = new Tasks();
 			$tasks->add('order-new', ['id' => $id, 'email' => true, 'telegram' => true], $row['ODate'], $row['UserIP']);
 			$this->removeCart();
 			return [
 				'id'    => $id,
-				'alias' => $alias,
-				'html'  => "<script>layoutWepps.loader();window.location.href='/cart/order.html?id={$alias}'</script>",
+				'guid' => $guid,
+				'html'  => "<script>layoutWepps.loader();window.location.href='/cart/order.html?id={$guid}'</script>",
 			];
 		};
 		return Connect::$instance->transaction($func, ['row' => $row, 'comment' => $comment]);
@@ -735,7 +735,7 @@ class CartUtils
 		$obj = new Data("Orders");
 		$obj->setParams([$guid]);
 		$obj->setConcat("if(s3.PaymentsExt!='',PaymentsExt,'PaymentsDefault') PaymentsExt,s3.DescrFinish PaymentDescrFinish");
-		$order = @$obj->fetch("t.Alias = ?")[0];
+		$order = @$obj->fetch("t.Guid = ?")[0];
 		return $order;
 	}
 	public function processTask(array $request, Tasks $tasks)

@@ -729,7 +729,7 @@ class RestV1M2M extends RestV1
 	{
 		$obj = $this->getUtils('Orders');
 		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Alias,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
 		$result = $obj->fetch($this->get);
 		return $result;
 	}
@@ -738,7 +738,7 @@ class RestV1M2M extends RestV1
 	{
 		$obj = $this->getUtils('Orders');
 		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Alias,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
 		return $obj->item((int) ($this->get['id'] ?? 0));
 	}
 
@@ -776,6 +776,17 @@ class RestV1M2M extends RestV1
 	public function postOrders(): array
 	{
 		$records = $this->normalizeInput();
+
+		// Авто-генерация Guid для новых заказов, если не передан
+		$this->getUtils('Orders')->setBefore(function (array $items, string $tableName) {
+			foreach ($items as $i => $item) {
+				if (empty($item['Guid'] ?? $item['guid'] ?? '')) {
+					$items[$i]['Guid'] = Utils::guid(uniqid(rand(), true));
+				}
+			}
+			return $items;
+		});
+
 		return $this->create('Orders', $records);
 	}
 

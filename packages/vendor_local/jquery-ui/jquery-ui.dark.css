@@ -1,0 +1,69 @@
+/* jQuery UI Dialog — тёмная тема для [data-theme="dark"] */
+/* Переопределяются только цвета, всё остальное — из базовой темы */
+[data-theme="dark"] {
+	.ui-widget-overlay {
+		background: #000;
+		opacity: 0.6;
+	}
+
+	.ui-dialog {
+		background: var(--color-98);
+		border-color: var(--color-85);
+	}
+
+	.ui-dialog .ui-dialog-titlebar {
+		background: var(--color-95);
+		color: var(--color-20);
+		border-color: var(--color-85);
+	}
+
+	.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close .ui-icon-closethick::before {
+		color: var(--color-50);
+	}
+
+	.ui-dialog .ui-dialog-content {
+		background: var(--color-98);
+		color: var(--color-20);
+		border-color: var(--color-85);
+	}
+
+	.ui-dialog .ui-dialog-buttonpane {
+		background: var(--color-95);
+	}
+
+	.ui-dialog .ui-button {
+		background: var(--color-85);
+		color: var(--color-20);
+		border-color: var(--color-85);
+	}
+
+	.ui-dialog .ui-button:hover {
+		background: var(--color-75);
+		color: var(--color-20);
+	}
+
+	.ui-dialog .ui-button:active {
+		background: var(--color-95);
+		color: var(--color-20);
+		border-color: var(--color-85);
+	}
+
+	.ui-dialog .ui-button:active .ui-icon {
+		background-image: url("/packages/vendor/components/jqueryui/themes/base/images/ui-icons_777777_256x240.png");
+	}
+
+	.ui-dialog .ui-button:focus {
+		background: var(--color-75);
+		
+		color: var(--color-20);
+		border-color: var(--color-85);
+	}
+
+	.ui-dialog .ui-button:focus .ui-icon {
+		background-image: url("/packages/vendor/components/jqueryui/themes/base/images/ui-icons_ffffff_256x240.png");
+	}
+
+	.ui-widget-content {
+		border-color: var(--color-85);
+	}
+}

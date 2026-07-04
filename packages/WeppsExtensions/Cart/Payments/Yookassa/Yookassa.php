@@ -50,7 +50,7 @@ class Yookassa extends Payments
 		if (empty($this->settings['id'])) {
 			Exception::error404();
 		}
-		$sql = "select * from Orders where Alias=?";
+		$sql = "select * from Orders where Guid=?";
 		$res = Connect::$instance->fetch($sql, [$this->settings['id']]);
 		## https://platform.wepps/cart/order.html?id=48cf279e-17c7-54bc-4999-499eb6feb56c
 		## https://platform.wepps/ext/Cart/Payments/Yookassa/Request.php?action=form&id=48cf279e-17c7-54bc-4999-499eb6feb56c
@@ -164,7 +164,7 @@ class Yookassa extends Payments
 			]
 		];
 		try {
-			$payment = $this->client->createPayment($paymentData, md5($order['Alias'] . rand()));
+			$payment = $this->client->createPayment($paymentData, md5($order['Guid'] . rand()));
 			$jdata = $payment->jsonSerialize();
 			$url = $jdata['confirmation']['confirmation_url'];
 			$mid = $jdata['id'];

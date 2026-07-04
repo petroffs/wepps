@@ -6,18 +6,19 @@ use WeppsCore\Utils;
 use WeppsCore\Connect;
 
 class AdminUtils extends Utils {
-	public static function modal(string $message = '', Cli $cli = null)
+	public static function modal(string $message = '', ?Cli $cli = null)
 	{
 		if (!empty($cli)) {
 			$cli->info($message);
 			Connect::$instance->close();
 			return;
 		}
-
+		$message = str_replace(["\r", "\n"], '', $message);
+		$messageJs = str_replace("'", "\\'", $message);
 		$js = "
 			<script>
 				var dialogWidth = (window.screen.width<400) ? '90%' : 400;
-				$('#dialog').html('<p>{$message}</p>').dialog({
+				$('#dialog').html('<p>{$messageJs}</p>').dialog({
 					title:'Сообщение',
 					modal: true,
 					resizable: false,

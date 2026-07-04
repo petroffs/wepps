@@ -62,6 +62,7 @@ class Admin {
 		$this->headers->js("/packages/vendor/components/jquery/jquery.min.js");
 		$this->headers->js("/packages/vendor/components/jqueryui/jquery-ui.min.js");
 		$this->headers->css("/packages/vendor/components/jqueryui/themes/base/jquery-ui.min.css");
+		$this->headers->css("/packages/vendor_local/jquery-ui/jquery-ui.dark.css");
 		// $this->headers->css("/packages/vendor/fortawesome/font-awesome/css/font-awesome.min.css");
 		$this->headers->css("/packages/vendor/twbs/bootstrap-icons/font/bootstrap-icons.min.css");
 		$this->headers->js("/packages/vendor/select2/select2/dist/js/select2.min.js");

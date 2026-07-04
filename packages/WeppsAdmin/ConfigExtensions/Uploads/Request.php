@@ -8,15 +8,17 @@ use WeppsCore\Connect;
 use WeppsCore\Data;
 use WeppsAdmin\Lists\Lists;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use WeppsCore\Utils;
 
 class RequestUploads extends Request
 {
 	public function request($action = "")
 	{
 		$this->tpl = '';
-		if (@Connect::$projectData['user']['ShowAdmin'] != 1) {
+		if ((Connect::$projectData['user']['ShowAdmin']??0) != 1) {
 			Exception::error404();
 		}
+		
 		switch ($action) {
 			case "excel":
 				if (!isset($_SESSION)) {

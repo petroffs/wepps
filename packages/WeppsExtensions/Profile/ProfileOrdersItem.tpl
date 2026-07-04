@@ -113,7 +113,7 @@
 								</div>
 							{elseif $order.OPayment==1}
 								<div class="w_interval_small"></div>
-								<div><a href="/ext/Cart/Payments/Yookassa/Request.php?action=form&id={$order.Alias}" class="w_button">Оплатить</a></div>
+								<div><a href="/ext/Cart/Payments/Yookassa/Request.php?action=form&id={$order.Guid}" class="w_button">Оплатить</a></div>
 							{/if}
 						</td>
 					</tr>

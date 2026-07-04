@@ -7,82 +7,113 @@ use WeppsCore\Data;
 use WeppsCore\Connect;
 use WeppsExtensions\Addons\Bot\BotSystem;
 
-class UploadsExcelFields {
+class UploadsExcelFields
+{
 	private $settings;
 	private $validator;
 	private $tableName = 's_ConfigFields';
-	
-	public function __construct($settings) {
+
+	public function __construct($settings)
+	{
 		$this->settings = $settings;
 		$this->validator = $this->getValidator();
 	}
-	
-	public function setData() {
-		if ($this->validator['status']==0) {
-			/*
-			 * Запись/обновление данных
-			 */
-			$obj = new Data($this->tableName);
-			$str = "";
+
+	public function setData()
+	{
+		if ($this->validator['status'] == 200) {
+			// Шаг 1: собрать DDL и данные для вставки
+			$ddlStatements = [];
+			$rows = [];
 			unset($this->settings['data'][1]);
 			foreach ($this->settings['data'] as $value) {
 				if (!empty($value['A']) && !empty($value['B']) && !empty($value['C']) && !empty($value['D'])) {
-					$row1 = array(
-							"TableName"=>$value['A'],
-							"Name"=>$value['B'],
-							"Description"=>(!empty($value['F']))?$value['F']:'',
-							"Field"=>$value['C'],
-							"Type"=>$value['D'],
-							"FGroup"=>$value['E'],
-					);
-					$sql = "delete from s_ConfigFields where TableName='' and Field=''";
-					Connect::$instance->query($sql);
-					$res = $obj->fetchmini("TableName = '{$row1['TableName']}' and Field = '{$row1['Field']}'");
-					#Utils::debug($res);
-					if (!isset($res[0]['Id'])) {
-						$id = $obj->add($row1);
-						if ((int)$id!=0) {
-							$str .= Lists::addListField($id,$row1['Type']).";\n";
-						}
-					}
+					$row = [
+						"TableName" => $value['A'],
+						"Name" => $value['B'],
+						"Description" => (!empty($value['F'])) ? $value['F'] : '',
+						"Field" => $value['C'],
+						"Type" => $value['D'],
+						"FGroup" => $value['E'],
+					];
+					$rows[] = $row;
+					$ddlStatements[] = Lists::addListFieldDdl($row['TableName'], $row['Field'], $row['Type']);
 				}
 			}
-			if ($str != "") {
-				Connect::$db->exec($str);
-				$obj = new BotSystem();
-				$obj->clearCache();
+
+			if (empty($ddlStatements)) {
+				return ['status' => 400, 'message' => '❌ Нет полей для добавления'];
+			}
+
+			// Шаг 2: выполнить DDL (ALTER TABLE) — если упадёт, данные не запишутся
+			$ddlSql = implode(";\n", $ddlStatements) . ";";
+			try {
+				Connect::$db->exec($ddlSql);
+			} catch (\Exception $e) {
 				return [
-						'status'=>0,
-						'message'=>'Новые поля добавлены'
+					'status' => 500,
+					'message' => '❌ Ошибка SQL: ' . $e->getMessage(),
 				];
 			}
-			return [
-					'status'=>3,
-					'message'=>'Новые поля не добавлены'
-			];
-		} else {
-			return $this->validator;
+
+			// Шаг 3: INSERT'ы в s_ConfigFields — в транзакции
+			try {
+				$insertedIds = Connect::$instance->transaction(function ($args) use ($rows) {
+					$obj = new Data($this->tableName);
+					$ids = [];
+					foreach ($rows as $row) {
+						$sql = "delete from s_ConfigFields where TableName='' and Field=''";
+						Connect::$instance->query($sql);
+						$res = $obj->fetchmini("TableName = '{$row['TableName']}' and Field = '{$row['Field']}'");
+						if (!isset($res[0]['Id'])) {
+							$id = $obj->add($row);
+							if ((int) $id != 0) {
+								$ids[] = $id;
+							}
+						}
+					}
+					return $ids;
+				}, []);
+			} catch (\Exception $e) {
+				return [
+					'status' => 500,
+					'message' => '❌ Ошибка при добавлении полей: ' . $e->getMessage(),
+				];
+			}
+
+			// Шаг 4: обновить ApiMapping/ApiFieldType для новых полей
+			foreach ($insertedIds as $id) {
+				Lists::updateListFieldApi($id);
+			}
+
+			$obj = new BotSystem();
+			$obj->clearCache();
+			return ['status' => 200, 'message' => '✅ Новые поля добавлены'];
 		}
-		
+		return $this->validator;
 	}
-	
-	private function getValidator() {
+
+	private function getValidator()
+	{
 		if (!empty($this->settings['data'][1])) {
-			if ($this->settings['data'][1]['A']=='Список' && 
-				$this->settings['data'][1]['B']=='Наименование' && 
-				$this->settings['data'][1]['C']=='Alias' && 
-				$this->settings['data'][1]['D']=='Тип' && 
-				$this->settings['data'][1]['E']=='Группа' && 
-				$this->settings['data'][1]['F']=='Описание') {
-					return ['status' => '0',
-							'message' => 'no errors'];
+			if (
+				$this->settings['data'][1]['A'] == 'Список' &&
+				$this->settings['data'][1]['B'] == 'Наименование' &&
+				$this->settings['data'][1]['C'] == 'Alias' &&
+				$this->settings['data'][1]['D'] == 'Тип' &&
+				$this->settings['data'][1]['E'] == 'Группа' &&
+				$this->settings['data'][1]['F'] == 'Описание'
+			) {
+				return [
+					'status' => 200,
+					'message' => '✅ Формат OK'
+				];
 			}
 		}
 		$out = [
-				'status' => '1',
-				'message' => 'format error'
+			'status' => 400,
+			'message' => '❌ Формат некорректный'
 		];
 		return $out;
 	}
 }
-?>

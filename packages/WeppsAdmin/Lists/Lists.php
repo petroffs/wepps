@@ -745,22 +745,45 @@ class Lists
 			return "";
 		}
 		$element = $res[0];
-		$tableName = $element['TableName'];
 
-		//ApiFieldType, ApiMapping
+		self::updateListFieldApi($id);
+
+		return self::addListFieldDdl($element['TableName'], $element['Field'], $element['Type']);
+	}
+
+	/**
+	 * Обновить ApiMapping/ApiFieldType для поля и инвалидировать кэш схемы.
+	 * Выполняется после того, как поле уже создано в БД и запись есть в s_ConfigFields.
+	 */
+	public static function updateListFieldApi($id)
+	{
+		if ((int) $id == 0) {
+			return;
+		}
+		$sql = "select Id,TableName,Field,Type,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
+		$res = Connect::$instance->fetch($sql, [$id]);
+		if (!isset($res[0]['Id'])) {
+			return;
+		}
+		$element = $res[0];
+
 		$sql = "update s_ConfigFields set ApiMapping = ? where Id = ? and ApiMapping=''";
-		Connect::$instance->query($sql,[self::_fieldApiMappingToCamelCase($element['Field']), $id]);
+		Connect::$instance->query($sql, [self::_fieldApiMappingToCamelCase($element['Field']), $id]);
 		$sql = "update s_ConfigFields set ApiFieldType = ? where Id = ? and ApiFieldType=''";
-		Connect::$instance->query($sql,[self::_fieldApiType($element['Type']), $id]);
-		
-		// Инвалидировать кэш схемы после обновления ApiMapping/ApiFieldType
-		Data::invalidateSchemaCacheForTable($tableName);
+		Connect::$instance->query($sql, [self::_fieldApiType($element['Type']), $id]);
 
-		$list = $element['TableName'];
-		$field = $element['Field'];
+		Data::invalidateSchemaCacheForTable($element['TableName']);
+	}
+
+	/**
+	 * Сгенерировать DDL (ALTER TABLE) для добавления/изменения поля без обращения к s_ConfigFields.
+	 * Используется для выполнения DDL до записи в s_ConfigFields.
+	 */
+	public static function addListFieldDdl($tableName, $field, $type)
+	{
 		$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
                 WHERE TABLE_SCHEMA = ? and TABLE_NAME = ? and COLUMN_NAME = ?";
-		$schemeReal = Connect::$instance->fetch($sql, [Connect::$projectDB['dbname'], $list, $field]);
+		$schemeReal = Connect::$instance->fetch($sql, [Connect::$projectDB['dbname'], $tableName, $field]);
 		$alterDefault = "";
 		if ($field == 'LanguageId' || $field == 'TableId') {
 			$typeReal = "int(11)";
@@ -810,9 +833,9 @@ class Lists
 
 		$str = "";
 		if (isset($schemeReal[0]['Col'])) {
-			$str = "ALTER TABLE $list CHANGE $field $field $typeReal $alterDefault";
+			$str = "ALTER TABLE $tableName CHANGE $field $field $typeReal $alterDefault";
 		} else {
-			$str = "ALTER TABLE $list ADD $field $typeReal $alterDefault";
+			$str = "ALTER TABLE $tableName ADD $field $typeReal $alterDefault";
 		}
 		return $str;
 	}
@@ -835,7 +858,7 @@ class Lists
 		$sql = "CREATE TABLE IF NOT EXISTS {$list} (
 				Id int(11) NOT NULL auto_increment,
 				Name varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL default '',
-				Alias varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL default '',
+				Guid char(36) COLLATE utf8mb4_unicode_ci NOT NULL default '',
 				IsHidden int(11) NOT NULL default '0',
 				Priority int(11) NOT NULL default '0',
 				PRIMARY KEY (Id)
@@ -844,7 +867,7 @@ class Lists
 		$sql .= "DELETE FROM s_ConfigFields WHERE TableName = '{$list}';\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','ID','Идентификатор','Id',1,0,'int','hidden','disabled','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Заголовок','','Name',2,0,'text','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Ключ','','Alias',3,0,'latin','','','FieldDefault');\n";
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','Guid',3,0,'guid','','','FieldIntegration');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Скрыть','','IsHidden',4,0,'flag','','','FieldDefault');\n";
 		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Приоритет','','Priority',5,0,'int','hidden','','FieldDefault');\n";
 		#$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','GUID',6,0,'guid','','','FieldIntegration');\n";

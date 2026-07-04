@@ -41,7 +41,7 @@ class Validator
 		}
 		return $errorMessage;
 	}
-	
+
 	/**
 	 * Проверяет, является ли переменная целым числом (строго тип int).
 	 *
@@ -332,11 +332,13 @@ class Validator
 	 * @param string $js      Дополнительный JavaScript-код для выполнения
 	 * @return array          Массив с HTML-контентом
 	 */
-	public static function setFormSuccess($message, $form, $js = ""): array
+	public static function setFormSuccess(string $message, string $form, string $js = ""): array
 	{
+		$message = str_replace(["\r", "\n"], '', $message);
+		$messageJs = trim(json_encode($message, JSON_UNESCAPED_UNICODE), '"');
 		$str = "
 			<script>
-			$('#{$form}').html('{$message}');
+			$('#{$form}').html('{$messageJs}');
 			$('#{$form}').addClass('w_success');
 			$('#{$form}').fadeIn();
 			$js

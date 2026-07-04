@@ -5,7 +5,7 @@
     {else}
         {$operationsData.data.order.PaymentDescrFinish}
         <label class="w_label w_button w_button_important">
-            <a href="/ext/Cart/Payments/Yookassa/Request.php?action=form&id={$operationsData.data.order.Alias}" class="w_button">Оплатить заказ</a>
+            <a href="/ext/Cart/Payments/Yookassa/Request.php?action=form&id={$operationsData.data.order.Guid}" class="w_button">Оплатить заказ</a>
         </label>
     {/if}
     </div>
