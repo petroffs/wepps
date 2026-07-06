@@ -21,4 +21,4 @@
 /sitemap.xml
 /robots.txt
 !md5.conf
-environments/
+**/environments/*
