@@ -127,7 +127,7 @@ class Lists
 			if (isset($this->get['field']) && isset($this->get['search'])) {
 				$listCondition = "t.{$this->get['field']} like '%{$this->get['search']}%'";
 			} elseif (isset($this->get['field']) && isset($this->get['filter'])) {
-				if (strstr($listScheme[$this->get['field']][0]['Type'], 'select')) {
+				if (strstr($listScheme[$this->get['field']][0]['FType'], 'select')) {
 					/*
 					 * Затем подсветка иконки, чтобы было ясно что данные отфильтрованы
 					 */
@@ -288,8 +288,8 @@ class Lists
 		 * Select|Select-multi
 		 */
 		foreach ($listScheme as $key => $value) {
-			if (strstr($value[0]['Type'], 'remote')) {
-				$ex = explode("::", $value[0]["Type"]);
+			if (strstr($value[0]['FType'], 'remote')) {
+				$ex = explode("::", $value[0]["FType"]);
 				$ex[2] = (strstr($ex[2], ",")) ? substr($ex[2], 0, strpos($ex[2], ",")) : $ex[2];
 				$tablename = $ex[1];
 
@@ -304,8 +304,8 @@ class Lists
 					$selected[$v['Id']] = "{$v[$ex[2]]} ({$v['Id']})";
 				}
 				$element[0]["{$key}_SelectChecked"] = $selected;
-			} elseif (strstr($value[0]['Type'], 'select')) {
-				$ex = explode("::", $value[0]["Type"]);
+			} elseif (strstr($value[0]['FType'], 'select')) {
+				$ex = explode("::", $value[0]["FType"]);
 				$ex[2] = (strstr($ex[2], ",")) ? substr($ex[2], 0, strpos($ex[2], ",")) : $ex[2];
 				$tablename = $ex[1];
 
@@ -365,7 +365,7 @@ class Lists
 				}
 				$element[0]["{$key}_SelectOptionsSizeView"] = $optionsCounter;
 
-			} elseif (strstr($value[0]['Type'], 'dbtable')) {
+			} elseif (strstr($value[0]['FType'], 'dbtable')) {
 				$sql = "select TableName,Name from s_ConfigFields order by TableName";
 				$res = Connect::$instance->fetch($sql, [], 'group');
 				$options = [];
@@ -392,9 +392,9 @@ class Lists
 				}
 				$element[0]["{$key}_SelectOptionsSizeView"] = $optionsCounter;
 
-			} elseif (strstr($value[0]['Type'], 'properties') && $id != 'add') {
+			} elseif (strstr($value[0]['FType'], 'properties') && $id != 'add') {
 				$condition = "";
-				$ex = explode("::", $value[0]["Type"]);
+				$ex = explode("::", $value[0]["FType"]);
 				if (!empty($ex[1])) {
 					$condition = "and {$ex[1]}";
 				}
@@ -453,8 +453,8 @@ class Lists
 				$element[0]["{$key}_Properties"] = $properties;
 				$element[0]["{$key}_PropertiesOptions"] = $options2;
 				$element[0]["{$key}_PropertiesSelected"] = $selected2;
-			} elseif (strstr($value[0]['Type'], 'minitable')) {
-				$ex = explode("::", $value[0]["Type"]);
+			} elseif (strstr($value[0]['FType'], 'minitable')) {
+				$ex = explode("::", $value[0]["FType"]);
 				$element[0]["{$key}_Headers"] = explode(';', $ex[1]);
 				$element[0]["{$key}_Rows"] = [];
 				if (!empty($element[0][$key])) {
@@ -477,15 +477,15 @@ class Lists
 				if ($key == $k) {
 					if (is_array($value)) {
 						$value = implode(",", $value);
-					} elseif ($v[0]['Type'] == 'password') {
+					} elseif ($v[0]['FType'] == 'password') {
 						if (strlen($value) < 60) {
 							$value = password_hash(trim($value), PASSWORD_BCRYPT);
 						} else {
 							continue 2; // Пропускаем обновление поля, если это уже хэш
 						}
-					} elseif ($v[0]['Type'] == 'blob') {
+					} elseif ($v[0]['FType'] == 'blob') {
 						$settings[$key]['fn'] = "compress(:$key)";
-					} elseif ($v[0]['Type'] == 'guid' && empty($value)) {
+					} elseif ($v[0]['FType'] == 'guid' && empty($value)) {
 						$settings[$key]['fn'] = "uuid()";
 						$settings[$key]['rm'] = 1;
 					}
@@ -501,9 +501,9 @@ class Lists
 			}
 		}
 		foreach ($listScheme as $k => $v) {
-			if ($v[0]['Type'] == 'flag' && !isset($data[$k])) {
+			if ($v[0]['FType'] == 'flag' && !isset($data[$k])) {
 				$row[$k] = 0;
-			} elseif (strstr($v[0]['Type'], '_multi') && !isset($data[$k])) {
+			} elseif (strstr($v[0]['FType'], '_multi') && !isset($data[$k])) {
 				$row[$k] = '';
 			}
 		}
@@ -739,7 +739,7 @@ class Lists
 		if ((int) $id == 0) {
 			return "";
 		}
-		$sql = "select Id,TableName,Field,Type,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
+		$sql = "select Id,TableName,TableField,FType,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
 		$res = Connect::$instance->fetch($sql,[$id]);
 		if (!isset($res[0]['Id'])) {
 			return "";
@@ -748,7 +748,7 @@ class Lists
 
 		self::updateListFieldApi($id);
 
-		return self::addListFieldDdl($element['TableName'], $element['Field'], $element['Type']);
+		return self::addListFieldDdl($element['TableName'], $element['TableField'], $element['FType']);
 	}
 
 	/**
@@ -760,7 +760,7 @@ class Lists
 		if ((int) $id == 0) {
 			return;
 		}
-		$sql = "select Id,TableName,Field,Type,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
+		$sql = "select Id,TableName,TableField,FType,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
 		$res = Connect::$instance->fetch($sql, [$id]);
 		if (!isset($res[0]['Id'])) {
 			return;
@@ -768,9 +768,9 @@ class Lists
 		$element = $res[0];
 
 		$sql = "update s_ConfigFields set ApiMapping = ? where Id = ? and ApiMapping=''";
-		Connect::$instance->query($sql, [self::_fieldApiMappingToCamelCase($element['Field']), $id]);
+		Connect::$instance->query($sql, [self::_fieldApiMappingToCamelCase($element['TableField']), $id]);
 		$sql = "update s_ConfigFields set ApiFieldType = ? where Id = ? and ApiFieldType=''";
-		Connect::$instance->query($sql, [self::_fieldApiType($element['Type']), $id]);
+		Connect::$instance->query($sql, [self::_fieldApiType($element['FType']), $id]);
 
 		Data::invalidateSchemaCacheForTable($element['TableName']);
 	}
@@ -865,12 +865,12 @@ class Lists
 			)
 				ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;\n";
 		$sql .= "DELETE FROM s_ConfigFields WHERE TableName = '{$list}';\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','ID','Идентификатор','Id',1,0,'int','hidden','disabled','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Заголовок','','Name',2,0,'text','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','Guid',3,0,'guid','','','FieldIntegration');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Скрыть','','IsHidden',4,0,'flag','','','FieldDefault');\n";
-		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Приоритет','','Priority',5,0,'int','hidden','','FieldDefault');\n";
-		#$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,Field,Priority,Required,Type,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','GUID',6,0,'guid','','','FieldIntegration');\n";
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','ID','Идентификатор','Id',1,0,'int','hidden','disabled','FieldDefault');\n";
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Заголовок','','Name',2,0,'text','','','FieldDefault');\n";
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','Guid',3,0,'guid','','','FieldIntegration');\n";
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Скрыть','','IsHidden',4,0,'flag','','','FieldDefault');\n";
+		$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','Приоритет','','Priority',5,0,'int','hidden','','FieldDefault');\n";
+		#$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','GUID',6,0,'guid','','','FieldIntegration');\n";
 		return $sql;
 	}
 	public static function copyListItem($list = "", $id = 0, $path = "lists")
@@ -1005,11 +1005,11 @@ class Lists
 				$conditions2 = "where Id=$id";
 				break;
 		}
-		$sql = "select * from s_ConfigFields where Type like 'select_multi%' $conditions order by TableName,Priority";
+		$sql = "select * from s_ConfigFields where FType like 'select_multi%' $conditions order by TableName,Priority";
 		$res = Connect::$instance->fetch($sql);
 		foreach ($res as $value) {
 			$tableName = $value['TableName'];
-			$fieldName = $value['Field'];
+			$fieldName = $value['TableField'];
 			$sql = "select Id,$fieldName as FieldName from $tableName $conditions2";
 			$t = Connect::$instance->fetch($sql);
 			foreach ($t as $v) {

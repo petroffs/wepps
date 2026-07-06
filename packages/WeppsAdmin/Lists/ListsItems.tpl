@@ -24,8 +24,8 @@
 						action="javascript:function ret() { return false }">
 						<label class="w_label w_select w_flex_13"> <select>
 								{foreach name="o" item="i" key="k" from=$listScheme} {if
-								$i.0.Type!='file' && $i.0.Type!='flag' &&
-								!$i.0.Type|strstr:"select"}
+								$i.0.FType!='file' && $i.0.FType!='flag' &&
+								!$i.0.FType|strstr:"select"}
 								<option value="{$k}"{if $smarty.get.field==$k} selected="selected"{/if}>{$i.0.Name}</option> {/if} {/foreach}
 						</select>
 						</label> <label class="w_label w_input w_flex_23"> <input
@@ -47,15 +47,15 @@
 					<thead>
 						<tr class="titles">
 							{foreach name="o" item="i" key="k" from=$listScheme}
-							<th class="{$i.0.Type}" valign="top" align="left"><div>
+							<th class="{$i.0.FType}" valign="top" align="left"><div>
 									{$i.0.Name}
 								</div></th> {/foreach}
 						</tr>
 						<tr class="filters">
 							{foreach name="o" item="i" key="k" from=$listScheme}
-							<th class="{$i.0.Type}" valign="top"><div class="w_nowrap">
+							<th class="{$i.0.FType}" valign="top"><div class="w_nowrap">
 									<a href="{$paginatorUrl}?orderby={if $smarty.get.orderby==$k}{$k}+desc{else}{$k}{/if}{if $smarty.get.field}&field={$smarty.get.field}{/if}{if $smarty.get.filter}&filter={$smarty.get.filter}{elseif $smarty.get.search}&search={$smarty.get.search}{/if}" class="sort{if $orderField==$k} active{/if}"><i class="bi {if $smarty.get.orderby==$k|cat:' desc'}bi-sort-down{else}bi-sort-up{/if}"></i></a>
-									{if $i.0.Type != 'file' && $i.0.Type != 'area'} <a
+									{if $i.0.FType != 'file' && $i.0.FType != 'area'} <a
 										href="" class="filter{if $smarty.get.field==$k} active{/if}" data-list="{$i.0.TableName}"
 										data-field="{$k}" data-orderby="{$smarty.get.orderby}">
 										<i class="bi bi-funnel"></i></a> {/if}
@@ -68,15 +68,15 @@
 							data-url="/_wepps/lists/{$listSettings.TableName}/{$item.Id}/"
 							data-id="{$item.Id}">
 							{foreach name="o" item="i" key="k" from=$listScheme}
-							{if $i.0.Type|@strstr:"select"}
-							<td class="{$i.0.Type}">
-							{assign var="typex" value=$i.0.Type|split:'::'}
+							{if $i.0.FType|@strstr:"select"}
+							<td class="{$i.0.FType}">
+							{assign var="typex" value=$i.0.FType|split:'::'}
 							{foreach name="o2" item="i2" from=$item[$k|cat:'_'|cat:$typex.2]|strarr}
 							<div>{$i2}</div>
 							{/foreach}
 							</td>
-							{elseif $i.0.Type=='file'}
-							<td class="{$i.0.Type}">
+							{elseif $i.0.FType=='file'}
+							<td class="{$i.0.FType}">
 							{foreach name="o2" key="k2" item="i2" from=$item[$k|cat:"_FileUrl"]|strarr|array_slice:0:2}
 							<div>
 							<a href="/f{$i2}">
@@ -90,7 +90,7 @@
 							{/foreach}
 							</td>
 							{else}
-							<td class="{$i.0.Type}"><div>{$item.$k|nl2br|strip_tags|truncate:50|escape}</div></td>
+							<td class="{$i.0.FType}"><div>{$item.$k|nl2br|strip_tags|truncate:50|escape}</div></td>
 							{/if}
 							{/foreach}
 						</tr>

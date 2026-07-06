@@ -355,12 +355,12 @@ class ProcessingProducts
 
 	public function getVariationsFieldMap(): array
 	{
-		$sql = "SELECT `Field`, `ApiMapping` FROM s_ConfigFields WHERE `TableName` = 'ProductsVariations' order by Priority asc";
+		$sql = "SELECT `TableField`, `ApiMapping` FROM s_ConfigFields WHERE `TableName` = 'ProductsVariations' order by Priority asc";
 		$rows = Connect::$instance->fetch($sql);
 		$reverseMap = []; // API-ключ (lowercase) → DB-поле (PascalCase)
 		$forwardMap = []; // DB-поле (PascalCase) → API-ключ
 		foreach ($rows as $row) {
-			$dbField = $row['Field'];
+			$dbField = $row['TableField'];
 			$apiKey = $row['ApiMapping'] ?? null;
 			if ($apiKey) {
 				$reverseMap[strtolower($apiKey)] = $dbField;

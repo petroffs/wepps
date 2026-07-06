@@ -8,7 +8,7 @@
 		<input type="hidden" name="w_tablename_mode" value="{$listMode}" />
 		<input type="hidden" name="w_path" value="{$weppspath}" />
 		{foreach name="out" item="item" key="key" from=$listScheme}
-			{if ($item.0.$listMode=="hidden" || $item.0.$listMode=="disabled") && !$item.0.Type|strstr:'minitable'}
+			{if ($item.0.$listMode=="hidden" || $item.0.$listMode=="disabled") && !$item.0.FType|strstr:'minitable'}
 				<input type="hidden" name="{$key}" value="{$element.$key|escape:'html'}" />
 			{/if}
 		{/foreach}
@@ -50,9 +50,9 @@
 							{if $item.0.Description}<div>{$item.0.Description}</div>{/if}
 							{if $key=="Alias"}
 								<div><a href="" class="field-translit">траслит</a></div>
-							{elseif $item.0.Type=="area"}
+							{elseif $item.0.FType=="area"}
 								<div><a href="" class="field-ve">визуальный редактор</a></div>
-							{elseif $item.0.Type=='file'}
+							{elseif $item.0.FType=='file'}
 								<div class="field-file">
 									<a href="" class="field-file-select" data-status="0">выделить</a>
 									<a href="" class="field-file-action field-file-edit w_hide"><i class="bi bi-pencil"></i></a>
@@ -62,46 +62,46 @@
 						</div>
 					</div>
 					<div class="field w_flex_23">
-						{if $item.0.$listMode=="disabled" && $item.0.Type!='properties' && !$item.0.Type|strstr:'minitable'}
+						{if $item.0.$listMode=="disabled" && $item.0.FType!='properties' && !$item.0.FType|strstr:'minitable'}
 							{$element.$key}
-						{elseif $item.0.Type=="digit"}
-							<label class="w_label w_input list-item-int{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType=="digit"}
+							<label class="w_label w_input list-item-int{if $item.0.IsRequired==1} w_require{/if}">
 								<input type="text" name="{$key}" value="{$element.$key}" />
 							</label>
-						{elseif $item.0.Type=="int"}
-							<label class="w_label w_input list-item-int{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType=="int"}
+							<label class="w_label w_input list-item-int{if $item.0.IsRequired==1} w_require{/if}">
 								<input type="number" name="{$key}" value="{$element.$key}" />
 							</label>
-						{elseif $item.0.Type=="date"}
-							<label class="w_label w_input list-item-date{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType=="date"}
+							<label class="w_label w_input list-item-date{if $item.0.IsRequired==1} w_require{/if}">
 								<input type="datetime" name="{$key}" value="{$element.$key|escape:'html'}" />
 							</label>
-						{elseif $item.0.Type=="password"}
-							<label class="w_label w_input{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType=="password"}
+							<label class="w_label w_input{if $item.0.IsRequired==1} w_require{/if}">
 								<input type="text" name="{$key}" value="{$element.$key|escape:'html'}" />
 							</label>
-						{elseif $item.0.Type=="flag"}
+						{elseif $item.0.FType=="flag"}
 							<label class="w_label w_checkbox">
 								<input type="checkbox" name="{$key}" value="1" {if $element.$key==1} checked="true" {/if} />
 								<span>{$item.0.Name}</span>
 							</label>
-						{elseif $item.0.Type=="area"}
-							<label class="w_label w_area{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType=="area"}
+							<label class="w_label w_area{if $item.0.IsRequired==1} w_require{/if}">
 								<textarea name="{$key}" id="formArea{$key}">{$element.$key|escape:'html'}</textarea>
 							</label>
-						{elseif $item.0.Type=="json"}
-							<label class="w_label w_area{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType=="json"}
+							<label class="w_label w_area{if $item.0.IsRequired==1} w_require{/if}">
 								<textarea name="{$key}" id="formArea{$key}">{$element.$key|escape:'html'}</textarea>
 							</label>
-						{elseif $item.0.Type=="blob"}
+						{elseif $item.0.FType=="blob"}
 							<label class="w_label w_area">
 								<textarea name="{$key}">{$element.$key|escape:'html'}</textarea>
 							</label>
-						{elseif $item.0.Type=="date"}
+						{elseif $item.0.FType=="date"}
 							<label class="w_label w_input list-item-date">
 								<input type="datetime" name="{$k}" value="{$element.$key}" />
 							</label>
-						{elseif $item.0.Type=="file"}
+						{elseif $item.0.FType=="file"}
 							{if $element.$key.0}
 								<div
 									class="files w_animate_none w_flex w_flex_row w_flex_row_str w_flex_start w_flex_margin_small">
@@ -146,22 +146,22 @@
 									{$i.title} <a href="" class="file-remove" rel="{$i.url}"><i class="bi bi-x-circle"></i></a>
 								</p>
 							{/foreach}
-						{elseif $item.0.Type|strstr:"select_multi" || $item.0.Type|strstr:"dbtable_multi"}
+						{elseif $item.0.FType|strstr:"select_multi" || $item.0.FType|strstr:"dbtable_multi"}
 							{assign var="optionsCounter" value=$element[$key|cat:"_SelectOptionsSizeView"]}
 							<label class="w_label w_select w_select_multi">
 								<select name="{$key}[]" multiple="multiple" size="{$optionsCounter}">
 									{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"] multiple="multiple"}
 								</select>
 							</label>
-						{elseif $item.0.Type|strstr:"select" || $item.0.Type|strstr:"dbtable"}
+						{elseif $item.0.FType|strstr:"select" || $item.0.FType|strstr:"dbtable"}
 							<label class="w_label w_select">
 								<select name="{$key}">
 									{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 								</select>
 							</label>
-						{elseif $item.0.Type|strstr:"remote"}
-							{if $item.0.Type|strstr:"remote_multi"}
-								<label class="w_label w_select{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType|strstr:"remote"}
+							{if $item.0.FType|strstr:"remote_multi"}
+								<label class="w_label w_select{if $item.0.IsRequired==1} w_require{/if}">
 									<select name="{$key}[]" id="remote_{$key}" multiple="multiple">
 										{foreach name="o" item="i" key="k" from=$element[$key|cat:"_SelectChecked"]}
 											<option value="{$k}" selected="selected">{$i}</option>
@@ -182,7 +182,7 @@
 									getSelectRemote({ id:"#remote_{$key}",url:"/rest/wepps/list_items?list={$item.0.TableName}&field={$item.0.Id}",token: "{$smarty.cookies.wepps_token}" });
 								});
 							</script>
-						{elseif $item.0.Type|strstr:"minitable"}
+						{elseif $item.0.FType|strstr:"minitable"}
 							<div class="minitable {if $item.0.$listMode=='disabled'}minitable-disabled{else}minitable-active{/if}"
 								data-field="{$key}">
 								<div class="minitable-headers minitable-row w_flex w_flex_row w_flex_start">
@@ -223,8 +223,8 @@
 									</label>
 								</div>
 							{/if}
-						{elseif $item.0.Type|strstr:"properties"}
-							<label class="w_label w_select list-item-properties{if $item.0.Required==1} w_require{/if}">
+						{elseif $item.0.FType|strstr:"properties"}
+							<label class="w_label w_select list-item-properties{if $item.0.IsRequired==1} w_require{/if}">
 								<select name="{$key}" {if $item.0.$listMode=="disabled"} disabled="disabled" {/if}>
 									{html_options name=$colname options=$element[$key|cat:"_SelectOptions"] selected=$element[$key|cat:"_SelectChecked"]}
 								</select>
@@ -242,7 +242,7 @@
 										{/if}
 										<div class="labels2">
 											{if $i.PType=='select'}
-												<label class="w_label w_select w_select_multi{if $item.0.Required==1} w_require{/if}">
+												<label class="w_label w_select w_select_multi{if $item.0.IsRequired==1} w_require{/if}">
 													<select multiple="multiple" name="w_property_{$key}_{$i.Id}[]"
 														{if $item.0.$listMode=="disabled"} disabled="disabled" {/if}>
 														<option>-</option>
@@ -271,7 +271,7 @@
 								{/foreach}
 							</div>
 						{else}
-							<label class="w_label w_input{if $item.0.Required==1} w_require{/if} list-item-text">
+							<label class="w_label w_input{if $item.0.IsRequired==1} w_require{/if} list-item-text">
 								<input type="text" name="{$key}" value="{$element.$key|escape:'html'}" />
 							</label>
 						{/if}

@@ -183,7 +183,7 @@ class Data
 		$joinCustom = $this->join;
 		$f = 1;
 		foreach ($settings as $key => $value) {
-			$ex = explode("::", $value[0]['Type'], 4);
+			$ex = explode("::", $value[0]['FType'], 4);
 			// Получить имя поля для маппинга (если включен и есть маппинг)
 			$fieldAlias = $key;
 			if ($this->useApiMapping && !empty($value[0]['ApiMapping'])) {
@@ -357,9 +357,9 @@ class Data
 				}, explode(',', $fields));
 
 				$placeholders = rtrim(str_repeat('?,', count($fieldsList)), ',');
-				$fieldsCondition = " and t.Field in ($placeholders)";
+				$fieldsCondition = " and t.TableField in ($placeholders)";
 				$params = array_merge($params, $fieldsList);
-				$orderBy = "field(t.Field," . implode(',', array_map(function ($f) {
+				$orderBy = "field(t.TableField," . implode(',', array_map(function ($f) {
 					return "'$f'"; }, $fieldsList)) . ")";
 				// Кэш для выборки конкретных полей: table::field1,field2,...
 				$cacheKey = 'schema_' . $this->tableName . '::' . implode(',', $fieldsList);
@@ -379,7 +379,7 @@ class Data
 			}
 
 			$sql = "select
-			t.Field,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.Required,t.Type,t.CreateMode,t.ModifyMode,t.IsHidden,t.FGroup,
+			t.TableField,t.Id,t.TableName,t.Name,t.Description,t.Priority,t.IsRequired,t.FType,t.CreateMode,t.ModifyMode,t.IsHidden,t.FGroup,
 			t.ApiFieldType,t.ApiMapping
 			from s_ConfigFields as t
 			where t.TableName = ? $fieldsCondition order by $orderBy";
@@ -496,7 +496,7 @@ class Data
 		$insert = [];
 		$update = [];
 		foreach ($scheme as $key => $value) {
-			if ($value[0]['Required'] == 1) {
+			if ($value[0]['IsRequired'] == 1) {
 				if (empty($row[$key])) {
 					throw new \RuntimeException("Field \"$key\" is empty");
 				}

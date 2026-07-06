@@ -1,23 +1,23 @@
 div.w_error {
 	color: var(--color-100);
 	background: var(--color-attention);
-	background-size: 15px 15px;
 	padding-left: var(--s2);
 	padding-right: var(--s6);
-	min-height: calc(var(--s6) - 2px);
-	border-radius: 1px;
+	max-width: calc(100% - var(--s4));
+	min-height: calc(var(--s) * 6);
+	border-radius: var(--s2);
 	cursor: pointer;
 	position: absolute;
 	z-index: 10;
-	right: 1px;
-	top: 1px;
+	right: var(--s);
+	top: var(--s);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 }
 
 div.w_error:after {
-	content: '\F622';
+	content: '\f622';
 	font-family: 'bootstrap-icons';
 	font-size: var(--font-default);
 	position: absolute;

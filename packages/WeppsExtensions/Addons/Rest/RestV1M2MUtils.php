@@ -36,7 +36,7 @@ class RestV1M2MUtils
 	/**
 	 * Кэш JSON-полей таблицы. Используется при ЧТЕНИИ (fetch/item) для автоматического
 	 * json_decode значений в ответе. Ключ — apiMapping (camelCase), значение — true.
-	 * Заполняется лениво из s_ConfigFields (ApiFieldType='json' или Type LIKE '%json%').
+	 * Заполняется лениво из s_ConfigFields (ApiFieldType='json' или FType LIKE '%json%').
 	 * Дополнительно кэшируется в Memcached на 1 час.
 	 * @var array<string,bool>|null null = ещё не загружен
 	 */
@@ -46,7 +46,7 @@ class RestV1M2MUtils
 	 * Кэш обратного маппинга. Используется при ЗАПИСИ (add/set/checkDuplicate) для
 	 * преобразования camelCase-ключей входящего API-запроса в PascalCase-поля БД.
 	 * Пример: ['color' => 'Field1', 'productname' => 'Name', 'name' => 'Name'].
-	 * Заполняется лениво из s_ConfigFields (Field + ApiMapping) одним SQL на экземпляр.
+	 * Заполняется лениво из s_ConfigFields (TableField + ApiMapping) одним SQL на экземпляр.
 	 * @var array<string,string>|null null = ещё не загружен
 	 */
 	private ?array $reverseMapCache = null;
@@ -742,13 +742,13 @@ class RestV1M2MUtils
 			return $this->reverseMapCache;
 		}
 
-		$sql = "SELECT `Field`, `ApiMapping`, `IsUnique` FROM s_ConfigFields WHERE `TableName` = ?";
+		$sql = "SELECT `TableField`, `ApiMapping`, `IsUnique` FROM s_ConfigFields WHERE `TableName` = ?";
 		$result = Connect::$instance->fetch($sql, [$this->tableName]);
 
 		$reverseMap = [];
 		$uniqueFields = [];
 		foreach ($result as $row) {
-			$dbField = $row['Field'];
+			$dbField = $row['TableField'];
 			$apiKey = $row['ApiMapping'] ?? null;
 			if ($apiKey) {
 				$reverseMap[strtolower($apiKey)] = $dbField;
@@ -803,13 +803,13 @@ class RestV1M2MUtils
 
 		try {
 			// Получить все поля для таблицы из s_ConfigFields
-			$sql = "SELECT `Field`, `ApiMapping`, `ApiFieldType`, `Required` FROM s_ConfigFields WHERE `TableName` = ? ORDER BY `Field` ASC";
+			$sql = "SELECT `TableField`, `ApiMapping`, `ApiFieldType`, `IsRequired` FROM s_ConfigFields WHERE `TableName` = ? ORDER BY `TableField` ASC";
 			$result = Connect::$instance->fetch($sql, [$this->tableName]);
 			$rules = [];
 			foreach ($result as $field) {
 				$fieldName = $field['ApiMapping'] ?? null;
 				$apiType = $field['ApiFieldType'] ?? 'string';
-				$required = (int) ($field['Required'] ?? 0);
+				$required = (int) ($field['IsRequired'] ?? 0);
 
 				if ($fieldName) {
 					$rules[$fieldName] = [
@@ -973,12 +973,12 @@ class RestV1M2MUtils
 
 		try {
 			// Получить JSON поля напрямую из s_ConfigFields
-			$sql = "SELECT Field, ApiFieldType, ApiMapping, Type FROM s_ConfigFields WHERE TableName = ? AND (ApiFieldType = 'json' OR Type LIKE '%json%')";
+			$sql = "SELECT TableField, ApiFieldType, ApiMapping, FType FROM s_ConfigFields WHERE TableName = ? AND (ApiFieldType = 'json' OR FType LIKE '%json%')";
 			$result = Connect::$instance->fetch($sql, [$this->tableName]);
 
 			$jsonFields = [];
 			foreach ($result as $field) {
-				$fieldName = $field['Field'] ?? null;
+				$fieldName = $field['TableField'] ?? null;
 				$apiMapping = $field['ApiMapping'] ?: $fieldName;
 				if ($fieldName && $apiMapping) {
 					$jsonFields[$apiMapping] = true;

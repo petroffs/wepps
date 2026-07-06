@@ -117,7 +117,7 @@ class RestAd
 			];
 		}
 
-		$ex = explode('::', $res[0]['Type']);
+		$ex = explode('::', $res[0]['FType']);
 		$list = $ex[1] ?? '';
 		$field = $ex[2] ?? '';
 		$condition = $ex[3] ?? '';

@@ -19,7 +19,7 @@ class RemoveItemConfigFields extends Request {
 			if (isset($res[0]['Id'])) {
 				$this->element = $res[0];
 				$tableName = $this->element['TableName'];
-				$sql = "alter table {$tableName} drop column {$this->element['Field']};\n";
+				$sql = "alter table {$tableName} drop column {$this->element['TableField']};\n";
 				Connect::$instance->query($sql);
 				// Инвалидировать кэш схемы после удаления поля
 				Data::invalidateSchemaCacheForTable($tableName);

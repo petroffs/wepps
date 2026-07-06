@@ -40,7 +40,7 @@ class RequestLists extends Request
 				if (!isset($scheme[$field][0])) {
 					Exception::error404();
 				}
-				$type = $scheme[$field][0]['Type'];
+				$type = $scheme[$field][0]['FType'];
 				if ($type == 'area' || $type == 'file') {
 					Connect::$instance->close();
 				} elseif (strstr($type, 'select_multi')) {
@@ -179,7 +179,7 @@ class RequestLists extends Request
 					Exception::error404();
 				}
 
-				$sql = "delete from s_ConfigFields where TableName='' and Field=''";
+				$sql = "delete from s_ConfigFields where TableName='' and TableField=''";
 				Connect::$instance->query($sql);
 
 				/*
@@ -190,7 +190,7 @@ class RequestLists extends Request
 				$this->errors = [];
 				foreach ($listScheme as $key => $value) {
 					if ($value[0][$this->get['w_tablename_mode']] != 'disabled' && $value[0][$this->get['w_tablename_mode']] != 'hidden') {
-						if ($value[0]['Required'] == 1) {
+						if ($value[0]['IsRequired'] == 1) {
 							$this->errors[$key] = Validator::isNotEmpty(@$this->get[$key], "Не заполнено");
 						}
 					}
@@ -206,10 +206,10 @@ class RequestLists extends Request
 				$listSchemeReal = Connect::$instance->fetch($sql, [
 					Connect::$projectDB['dbname'],
 					$this->get['w_tablename'],
-					$this->get['Field']
+					$this->get['TableField']
 				]);
-					if (isset($listSchemeReal[0]['Col']) && $listSchemeReal[0]['Col'] == $this->get['Field']) {
-						$this->errors['Field'] = "Уже используется";
+					if (isset($listSchemeReal[0]['Col']) && $listSchemeReal[0]['Col'] == $this->get['TableField']) {
+						$this->errors['TableField'] = "Уже используется";
 					}
 				}
 				/*

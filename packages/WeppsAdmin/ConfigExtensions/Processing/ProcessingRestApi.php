@@ -11,12 +11,12 @@ class ProcessingRestApi
 	public function mappingTypes(): void
 	{
 		$sql = "UPDATE s_ConfigFields SET ApiFieldType = CASE 
-			WHEN `Type` = 'int' THEN 'int'
-			WHEN `Type` = 'flag' THEN 'int'
-			WHEN `Type` = 'guid' THEN 'guid'
-			WHEN `Type` = 'date' THEN 'date'
-			WHEN `Type` = 'email' THEN 'email'
-			WHEN `Type` = 'digit' THEN 'string' -- В основном для финансовых даннвх, поэтому оставляем как string, чтобы не было проблем с точностью
+			WHEN `FType` = 'int' THEN 'int'
+			WHEN `FType` = 'flag' THEN 'int'
+			WHEN `FType` = 'guid' THEN 'guid'
+			WHEN `FType` = 'date' THEN 'date'
+			WHEN `FType` = 'email' THEN 'email'
+			WHEN `FType` = 'digit' THEN 'string' -- В основном для финансовых даннвх, поэтому оставляем как string, чтобы не было проблем с точностью
 			ELSE 'string'
 		END
 		WHERE ApiFieldType IS NULL OR ApiFieldType = ''";
@@ -24,7 +24,7 @@ class ProcessingRestApi
 	}
 	public function mappingNames(): void
 	{
-		$sql = "SELECT Id, Field FROM s_ConfigFields WHERE ApiMapping IS NULL OR ApiMapping = '' ORDER BY TableName, Field";
+		$sql = "SELECT Id, TableField FROM s_ConfigFields WHERE ApiMapping IS NULL OR ApiMapping = '' ORDER BY TableName, TableField";
 		$fields = Connect::$instance->fetch($sql);
 
 		if (empty($fields)) {
@@ -35,7 +35,7 @@ class ProcessingRestApi
 		$updatedCount = 0;
 
 		foreach ($fields as $field) {
-			$apiMapping = $this->fieldApiMappingToCamelCase($field['Field']);
+			$apiMapping = $this->fieldApiMappingToCamelCase($field['TableField']);
 			$result = Connect::$instance->query($updateSql, [$apiMapping, $field['Id']]);
 			if ($result > 0) {
 				$updatedCount++;

@@ -32,12 +32,12 @@ class UploadsExcelFields
 						"TableName" => $value['A'],
 						"Name" => $value['B'],
 						"Description" => (!empty($value['F'])) ? $value['F'] : '',
-						"Field" => $value['C'],
-						"Type" => $value['D'],
+						"TableField" => $value['C'],
+						"FType" => $value['D'],
 						"FGroup" => $value['E'],
 					];
 					$rows[] = $row;
-					$ddlStatements[] = Lists::addListFieldDdl($row['TableName'], $row['Field'], $row['Type']);
+					$ddlStatements[] = Lists::addListFieldDdl($row['TableName'], $row['TableField'], $row['FType']);
 				}
 			}
 
@@ -62,9 +62,9 @@ class UploadsExcelFields
 					$obj = new Data($this->tableName);
 					$ids = [];
 					foreach ($rows as $row) {
-						$sql = "delete from s_ConfigFields where TableName='' and Field=''";
+						$sql = "delete from s_ConfigFields where TableName='' and TableField=''";
 						Connect::$instance->query($sql);
-						$res = $obj->fetchmini("TableName = '{$row['TableName']}' and Field = '{$row['Field']}'");
+						$res = $obj->fetchmini("TableName = '{$row['TableName']}' and TableField = '{$row['TableField']}'");
 						if (!isset($res[0]['Id'])) {
 							$id = $obj->add($row);
 							if ((int) $id != 0) {

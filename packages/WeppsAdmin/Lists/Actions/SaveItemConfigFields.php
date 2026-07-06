@@ -19,7 +19,7 @@ class SaveItemConfigFields extends Request
 		$this->listSettings = $this->get['listSettings'];
 		$this->element = $this->get['element'];
 		if ($this->listSettings['TableName'] == 's_ConfigFields') {
-			$str = Lists::addListField($this->element['Id'], $this->element['Type']);
+			$str = Lists::addListField($this->element['Id'], $this->element['FType']);
 			if ($str != "") {
 				Connect::$instance->query($str);
 				// ! Обновляем REST API mapping для новых полей (в addListField есть инвалидация кэша, требуется тестирование)
