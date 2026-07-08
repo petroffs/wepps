@@ -530,11 +530,12 @@ class RestV1M2MUtils
 
 		foreach ($items as $index => $record) {
 			$mapped = $this->mapApiToDbFields($record);
+			$guid = $mapped['Guid'] ?? null;
 			unset($mapped['Id'], $mapped['id']);
 			$hasPriority = array_key_exists('Priority', $mapped);
 			ksort($mapped);
 			$sig = implode(',', array_keys($mapped));
-			$groups[$sig][] = ['index' => $index, 'data' => $mapped, 'hasPriority' => $hasPriority];
+			$groups[$sig][] = ['index' => $index, 'data' => $mapped, 'hasPriority' => $hasPriority, 'guid' => $guid];
 		}
 
 		foreach ($groups as $group) {
@@ -557,9 +558,13 @@ class RestV1M2MUtils
 				try {
 					$sth->execute($params);
 					$id = (int) Connect::$db->lastInsertId();
+					$responseData = ['id' => $id];
+					if ($item['guid'] !== null) {
+						$responseData['guid'] = $item['guid'];
+					}
 					$results[$item['index']] = $id === 0
 						? ['status' => 409, 'message' => 'Duplicate insert', 'data' => null]
-						: ['status' => 201, 'message' => 'Created', 'data' => ['id' => $id]];
+						: ['status' => 201, 'message' => 'Created', 'data' => $responseData];
 				} catch (\Exception $e) {
 					$results[$item['index']] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 				}
@@ -579,6 +584,7 @@ class RestV1M2MUtils
 			$data = $record;
 			unset($data['id'], $data['Id']);
 			$mapped = $this->mapApiToDbFields($data);
+			$guid = $mapped['Guid'] ?? null;
 			unset($mapped['Id'], $mapped['id']);
 			ksort($mapped);
 
@@ -588,7 +594,7 @@ class RestV1M2MUtils
 			}
 
 			$sig = implode(',', array_keys($mapped));
-			$groups[$sig][] = ['index' => $index, 'id' => $id, 'data' => $mapped];
+			$groups[$sig][] = ['index' => $index, 'id' => $id, 'data' => $mapped, 'guid' => $guid];
 		}
 
 		foreach ($groups as $group) {
@@ -601,7 +607,11 @@ class RestV1M2MUtils
 				$params['Id'] = $item['id'];
 				try {
 					$sth->execute($params);
-					$results[$item['index']] = ['status' => 200, 'message' => 'Updated', 'data' => ['id' => $item['id']]];
+					$responseData = ['id' => $item['id']];
+					if ($item['guid'] !== null) {
+						$responseData['guid'] = $item['guid'];
+					}
+					$results[$item['index']] = ['status' => 200, 'message' => 'Updated', 'data' => $responseData];
 				} catch (\Exception $e) {
 					$results[$item['index']] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 				}
