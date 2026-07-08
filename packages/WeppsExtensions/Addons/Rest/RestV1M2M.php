@@ -36,13 +36,13 @@ class RestV1M2M extends RestV1
 	public function getUsers(): array
 	{
 		// GET параметры - служебные (page, limit, search, sort)
-		$this->getUtils('s_Users')->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		$this->getUtils('s_Users')->setFields('Id,Guid,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
 		return $this->getUtils('s_Users')->fetch($this->get);
 	}
 
 	public function getUsersItem(): array
 	{
-		$this->getUtils('s_Users')->setFields('Id,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		$this->getUtils('s_Users')->setFields('Id,Guid,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
 		return $this->getUtils('s_Users')->item((int) ($this->get['id'] ?? 0));
 	}
 
@@ -987,5 +987,3 @@ class RestV1M2M extends RestV1
 		return $records;
 	}
 }
-
-

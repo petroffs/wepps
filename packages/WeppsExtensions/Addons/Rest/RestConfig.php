@@ -724,6 +724,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Create user(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 						'validation' => [
+							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
 							'nameFirst' => ['type' => 'string', 'required' => true],
 							'nameSurname' => ['type' => 'string', 'required' => true],
@@ -843,6 +844,7 @@ class RestConfig
 						'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
+							'guid' => ['type' => 'guid', 'required' => false],
 							'name' => ['type' => 'string', 'required' => false],
 							'nameFirst' => ['type' => 'string', 'required' => false],
 							'nameSurname' => ['type' => 'string', 'required' => false],

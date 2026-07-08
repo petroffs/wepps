@@ -5,26 +5,25 @@ meta {
 }
 
 put {
-  url: {{base_url}}/rest/m2m/users?id={{user_id}}
+  url: {{base_url}}/rest/m2m/users
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "data": [
-      {
-        "id": 2,
-        "name": "weppsadmin13",
-        "nameFirst": "Admin13"
+      "data": [
+          {
+              "id": 1,
+              "name": "weppsadmin-ultra"
+          }
+      ],
+      "pagination": {
+          "count": 1,
+          "limit": 100,
+          "page": 1,
+          "note": "Template for update - remove pagination if updating only selected items"
       }
-    ],
-    "pagination2": {
-      "count": 1,
-      "limit": 100,
-      "page": 1,
-      "note": "Template for update - remove pagination if updating only selected items"
-    }
   }
 }
 

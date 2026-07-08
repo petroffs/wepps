@@ -172,31 +172,39 @@ class RestV1M2MUtils
 			return ['before' => null, 'after' => null];
 		}
 
-		// Before callback: вызывается на первой странице
-		$beforeCallback = $currentPage === 1
-			? function (array $items, string $tableName) {
-				// На первой странице пакета
-				// Пример: маркировка кандидатов на скрытие
+		// Before callback: вызывается на каждой странице
+		$beforeCallback = function (array $items, string $tableName) use ($currentPage) {
+			// На первой странице: маркировка всех записей как кандидатов на скрытие
+			if ($currentPage === 1) {
 				Connect::$instance->query(
-					"UPDATE {$tableName} SET IsHiddenCandidate = 1 WHERE IsHiddenCandidate = 0"
+					"UPDATE {$tableName} SET IsHiddenCandidate = 1 WHERE IsHiddenCandidate = 0 or IsHiddenCandidate IS NULL"
 				);
-				return $items;
 			}
-			: null;
+			// На каждой странице: сброс флага для записей, которые мы обновляем
+			$ids = array_filter(array_column($items, 'id'), fn($v) => (int) $v > 0);
+			if (!empty($ids)) {
+				$in = Connect::$instance->in($ids);
+				Connect::$instance->query(
+					"UPDATE {$tableName} SET IsHiddenCandidate = 0 WHERE Id IN ($in)",
+					$ids
+				);
+			}
+			return $items;
+		};
 
-		// After callback: вызывается на последней странице
-		$afterCallback = $currentPage === $totalPages
-			? function (array $results, string $tableName) {
-				// На последней странице пакета
-				// Пример: финализация скрытия
-				Connect::$instance->query(
-					"UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE IsHiddenCandidate = 1"
-				);
-				Connect::$instance->query(
-					"UPDATE {$tableName} SET IsHiddenCandidate = 0 WHERE IsHiddenCandidate = 1"
-				);
+		// After callback: вызывается на каждой странице
+		$afterCallback = function (array $results, string $tableName) use ($currentPage, $totalPages) {
+			// Только на последней странице: финализация скрытия
+			if ($currentPage !== $totalPages) {
+				return;
 			}
-			: null;
+			Connect::$instance->query(
+				"UPDATE {$tableName} SET IsHidden = IsHiddenCandidate WHERE IsHiddenCandidate = 1"
+			);
+			Connect::$instance->query(
+				"UPDATE {$tableName} SET IsHiddenCandidate = 0 WHERE IsHiddenCandidate = 1"
+			);
+		};
 
 		return [
 			'before' => $beforeCallback,
