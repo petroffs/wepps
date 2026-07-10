@@ -16,6 +16,7 @@ class ProcessingRestApi
 			WHEN `FType` = 'guid' THEN 'guid'
 			WHEN `FType` = 'date' THEN 'date'
 			WHEN `FType` = 'email' THEN 'email'
+			WHEN `FType` = 'json' THEN 'json'
 			WHEN `FType` = 'digit' THEN 'string' -- В основном для финансовых даннвх, поэтому оставляем как string, чтобы не было проблем с точностью
 			ELSE 'string'
 		END
