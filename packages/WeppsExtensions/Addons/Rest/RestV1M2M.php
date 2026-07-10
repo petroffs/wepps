@@ -180,7 +180,6 @@ class RestV1M2M extends RestV1
 			$row['W_Attributes'] = $this->getUtils('Products')->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
 		}
 		unset($row);
-		//Utils::debug(,1);
 		return [
 			'status' => 200,
 			'message' => 'OK',
@@ -945,6 +944,9 @@ class RestV1M2M extends RestV1
 	/**
 	 * Валидировать запись по правилам из s_ConfigFields.
 	 *
+	 * Примечание: REST конфиг валидация уже пройдена в Rest::executeHandler(),
+	 * здесь проверяем только дополнительные правила из БД.
+	 *
 	 * @param string $tableName
 	 * @param array  $record
 	 * @param bool   $requireAll true = POST (обязательные поля проверяются), false = PUT (partial update)
@@ -952,9 +954,17 @@ class RestV1M2M extends RestV1
 	 */
 	private function validate(string $tableName, array $record, bool $requireAll): void
 	{
+		// Получаем правила из БД - REST конфиг уже был применен в Rest::executeHandler()
 		$rules = $this->getUtils($tableName)->getFieldRules();
+
 		if (empty($rules)) {
 			return;
+		}
+
+		foreach ($rules as $field => $rule) {
+			if ($rule['type'] === 'json') {
+				unset($record[$field]); // Исключаем JSON-поля из валидации, они проверяются REST-конфигом
+			}
 		}
 
 		if (!$requireAll) {

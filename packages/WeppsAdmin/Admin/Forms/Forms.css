@@ -79,6 +79,7 @@ label.w_label select {
 	font-family: var(--font);
 	font-weight: 300;
 	letter-spacing: 0.03em;
+	color: var(--color-primary);
 	outline: none;
 	resize: none;
 	overflow: hidden;

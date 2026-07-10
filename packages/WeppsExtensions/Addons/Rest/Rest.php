@@ -108,6 +108,12 @@ class Rest
 	protected string $type = 'GET';
 
 	/**
+	 * Конфигурация валидации из REST конфига (для использования в подклассах)
+	 * @var array|null
+	 */
+	protected ?array $validationConfig = null;
+
+	/**
 	 * Флаг кастомного ответа (без стандартной структуры status/message/data)
 	 * @var bool
 	 */
@@ -337,20 +343,24 @@ class Rest
 
 			// Валидация входных данных, если задана
 			if (isset($config['validation']) && $this->data) {
+				$this->validationConfig = $config['validation'];
 				$this->validateData($this->data['data'] ?? [], $config['validation']);
 			}
 
 			// Валидация GET-параметров, если задана
 			if (isset($config['query_validation'])) {
-				$queryData = [];
-				foreach ($config['query_validation'] as $key => $rule) {
-					$queryData[$key] = $this->get[$key] ?? null;
-				}
+				$queryData = $this->get;
+				unset($queryData['params']);
 				$this->validateData($queryData, $config['query_validation']);
 			}
 
 			if (!method_exists($handler, $config['method'])) {
 				return ['status' => 404, 'message' => 'Method not found', 'data' => null];
+			}
+
+			// Передать конфиг валидации в handler (если это RestV1 или подкласс)
+			if (isset($config['validation']) && property_exists($handler, 'validationConfig')) {
+				$handler->validationConfig = $config['validation'];
 			}
 
 			if (!empty($config['async'])) {
@@ -441,7 +451,6 @@ class Rest
 
 			// Сохраняем данные пользователя при успешной аутентификации
 			$this->user = $res[0];
-			#Utils::debug($this->user, 31);
 		} else {
 			$sql = "SELECT * from s_Users where Id=? and IsHidden=0";
 			$res = Connect::$instance->fetch($sql, [$bearer['payload']['id']]);
@@ -503,17 +512,17 @@ class Rest
 		if (isset($rules['ARRAY'])) {
 			$rule = $rules['ARRAY'];
 			$type = $rule['type'];
-			
+
 			// Если тип без [], добавляем [] автоматически для массива
 			if (!str_ends_with($type, '[]')) {
 				$type = $type . '[]';
 			}
-			
+
 			// Проверка required
 			if ($rule['required'] && (empty($data) && $data !== '0')) {
 				throw new \Exception("Array data is required");
 			}
-			
+
 			// Валидация типа
 			if (!empty($data) || !$rule['required']) {
 				if (!$this->validateType($data, $type)) {
@@ -555,16 +564,16 @@ class Rest
 			}
 		}
 
-		// Валидация вложенных полей (items[].name или data.items[].name → path, field)
+		// Валидация вложенных полей (items[] или items[].name или data.items[] или data.items[].name → path, field)
 		foreach ($nestedRules as $path => $rule) {
 			$matches = [];
-			// Pattern: path.to.array[].field или просто array[].field
-			if (!preg_match('/^(.+)\[\]\.([a-zA-Z_]\w*)$/', $path, $matches)) {
+			// Pattern: path.to.array[] или path.to.array[].field
+			if (!preg_match('/^(.+)\[\](?:\.([a-zA-Z_]\w*))?$/', $path, $matches)) {
 				throw new \Exception("Invalid nested validation path: '$path'");
 			}
 
 			$arrayPath = $matches[1];  // "items" или "data.items"
-			$fieldKey = $matches[2];   // "name"
+			$fieldKey = $matches[2] ?? null;   // "name" или пусто
 
 			// Получаем значение по пути (поддерживаем точки для вложенности)
 			$arrayValue = $this->getValueByPath($data, $arrayPath);
@@ -580,7 +589,15 @@ class Rest
 				throw new \Exception("Field '$arrayPath' must be an array");
 			}
 
-			// Валидируем каждый элемент вложенного массива
+			// Если нет поля после [] - валидируем весь массив по типу
+			if ($fieldKey === null) {
+				if (!$this->validateType($arrayValue, $rule['type'])) {
+					throw new \Exception("Array '$arrayPath' must be {$rule['type']}");
+				}
+				continue;
+			}
+
+			// Валидируем каждый элемент вложенного массива по полю
 			foreach ($arrayValue as $index => $item) {
 				if (!is_array($item)) {
 					throw new \Exception("Item at '$arrayPath[$index]' must be an object");
@@ -634,14 +651,14 @@ class Rest
 	{
 		$keys = explode('.', $path);
 		$value = $data;
-		
+
 		foreach ($keys as $key) {
 			if (!is_array($value) || !isset($value[$key])) {
 				return null;
 			}
 			$value = $value[$key];
 		}
-		
+
 		return $value;
 	}
 
@@ -706,6 +723,8 @@ class Rest
 			case 'barcode':
 				$errorMessage = 'must be a valid EAN13 barcode';
 				return Validator::isBarcode($value, $errorMessage) === '';
+			case 'object':
+				return is_array($value);
 			default:
 				return false;
 		}
@@ -924,8 +943,6 @@ class Rest
 	 */
 	protected function sendResponse(array $output, bool $print = true)
 	{
-		#Utils::debug('sendResponse customResponse: ' . ($this->customResponse ? 'true' : 'false'), 31);
-
 		// Если кастомный ответ, отправляем данные напрямую
 		if ($this->customResponse) {
 			$this->response = $this->getJson($this->normalizeData($output, false));
@@ -946,7 +963,6 @@ class Rest
 
 			// Для M2M используем маппинг из БД, но нормализуем вычисляемые поля (Url, PStatus и т.д.)
 			$normalizedData = $this->normalizeData($output['data'] ?? null);
-			//Utils::debug($this->version,1);
 			if ($this->version !== 'm2m') {
 				$normalizedData = $this->keysToCamelCase($normalizedData);
 			} else {
@@ -1047,7 +1063,6 @@ class Rest
 			Connect::$instance->query($sql, $prepare['row']);
 			return true;
 		} catch (\Exception $e) {
-			Utils::debug("Error saving task log: " . $e->getMessage(), 31);
 			return false;
 		}
 	}

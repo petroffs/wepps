@@ -2,7 +2,6 @@ meta {
   name: POST orders
   type: http
   seq: 3
-  tags: manual
 }
 
 post {
@@ -11,21 +10,120 @@ post {
   auth: inherit
 }
 
-
 body:json {
   {
-    "data": {
-      "user_id": 1,
-      "status": "pending",
-      "total": 9999.99,
-      "items": [
-        {
-          "product_id": 1,
-          "quantity": 2,
-          "price": 100.00
+    "data": [
+      {
+        "guid": "26a5a7b0-520a-fb8d-4b24-23451de424e6",
+        "name": "weppsadmin",
+        "userId": 1,
+        "phone": "79001234567",
+        "email": "admin@wepps.loc",
+        "status": "1",
+        "sum": "11880.00",
+        "date": "2025-11-13 18:09:20",
+        "delivery": "8",
+        "payment": "5",
+        "data": {
+          "items": [
+            {
+              "id": 423,
+              "idv": 492,
+              "name": "Блузка Nephepu / Черный, 44",
+              "quantity": 2,
+              "stocks": 43,
+              "active": 1,
+              "price": 3960,
+              "sum": 7920,
+              "priceBefore": 0,
+              "sumBefore": 0,
+              "sumBeforeTotal": 7920,
+              "sumSaving": 0,
+              "quantityActive": 2,
+              "sumActive": 7920,
+              "url": "/women/bluzka-nephepu-423.html",
+              "image": "/files/lists/Products/000423_Images_1740179267_003.jpg"
+            },
+            {
+              "id": 423,
+              "idv": 494,
+              "name": "Блузка Nephepu / Фиолетовый, 44",
+              "quantity": 1,
+              "stocks": 43,
+              "active": 1,
+              "price": 3960,
+              "sum": 3960,
+              "priceBefore": 0,
+              "sumBefore": 0,
+              "sumBeforeTotal": 3960,
+              "sumSaving": 0,
+              "quantityActive": 1,
+              "sumActive": 3960,
+              "url": "/women/bluzka-nephepu-423.html",
+              "image": "/files/lists/Products/000423_Images_1740179267_003.jpg"
+            }
+          ],
+          "quantity": 3,
+          "quantityActive": 3,
+          "sum": 11880,
+          "sumSaving": 0,
+          "sumBefore": 11880,
+          "sumActive": 11880,
+          "sumTotal": 12395,
+          "date": "2025-11-13 18:09:08",
+          "delivery": {
+            "citiesId": "137",
+            "deliveryId": "8",
+            "extension": "Cdek",
+            "settings": {
+              "tariff": 137,
+              "weight": 1,
+              "length": 40,
+              "width": 40,
+              "height": 10
+            },
+            "tariff": {
+              "status": 200,
+              "title": "CDEK: Курьерская доставка до дверей",
+              "price": 515,
+              "period": "1-2"
+            },
+            "discount": {
+              "status": 0,
+              "title": "CDEK: Курьерская доставка до дверей",
+              "text": "Скидка за выбранный способ доставки",
+              "price": 0
+            }
+          },
+          "payments": {
+            "paymentsId": "5",
+            "extension": "DefaultPayments",
+            "tariff": {
+              "status": 0,
+              "title": "В кредит",
+              "text": "Наценка за выбранный способ оплаты",
+              "price": 0
+            },
+            "discount": {
+              "status": 0,
+              "title": "В кредит",
+              "text": "Скидка за выбранный способ оплаты",
+              "price": 0
+            }
+          },
+          "favorites": {
+            "items": [
+              {
+                "id": 325
+              }
+            ],
+            "date": "2025-03-28 00:44:24"
+          },
+          "isSumActiveEnough": 1,
+          "stocksErrors": 0
         }
-      ]
-    }
+      }
+    ]
   }
 }
 

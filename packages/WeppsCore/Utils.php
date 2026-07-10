@@ -210,20 +210,38 @@ class Utils
 		return array_filter($array, fn($v) => $v[$key] === $value, ARRAY_FILTER_USE_BOTH);
 	}
 	/**
-	 * Генерация GUID
+	 * Генерация GUID (UUID).
 	 *
-	 * @param string $string Входная строка для генерации GUID (опционально)
-	 * @return string Сгенерированный GUID
+	 * Если параметр `$string` пустой, возвращает случайный UUID версии 4.
+	 * Если передана строка, возвращает детерминированный UUID версии 3 или 5
+	 * на основе хэша от этой строки.
+	 *
+	 * @param string $string Входная строка для детерминированного GUID (опционально)
+	 * @param int $version Версия UUID для генерации, 3 или 5 при ненулевой строке.
+	 *                     Для пустой строки всегда используется версия 4.
+	 * @return string Сгенерированный UUID в формате 8-4-4-4-12.
 	 */
-	public static function guid(string $string = ''): string
+	public static function guid(string $string = '', int $version = 4): string
 	{
-		$charid = ($string == '') ? strtolower(md5(uniqid(rand(), true))) : strtolower(md5($string));
-		$guid = substr($charid, 0, 8) . '-' .
-			substr($charid, 8, 4) . '-' .
-			substr($charid, 12, 4) . '-' .
-			substr($charid, 16, 4) . '-' .
-			substr($charid, 20, 12);
-		return $guid;
+		if ($string === '') {
+			// v4: Случайный UUID
+			$data = random_bytes(16);
+			$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // Версия 4
+			$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // Вариант RFC 4122
+		} else {
+			if ($version === 3) {
+				// v3: На основе MD5 (быстрее, но менее безопасен)
+				$data = md5($string, true);
+				$data[6] = chr(ord($data[6]) & 0x0f | 0x30); // Версия 3
+			} else {
+				// v5: На основе SHA-1 (медленнее, но безопаснее)
+				$data = sha1($string, true);
+				$data[6] = chr(ord($data[6]) & 0x0f | 0x50); // Версия 5
+			}
+			$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // Вариант RFC 4122
+		}
+
+		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 	}
 	/**
 	 * Округление числа
@@ -239,7 +257,7 @@ class Utils
 		if ($type == 'str') {
 			return number_format($number, $scale, ".", " ");
 		}
-		return (float)number_format($number, $scale, ".", "");
+		return (float) number_format($number, $scale, ".", "");
 	}
 	/**
 	 * Получение всех HTTP-заголовков
@@ -268,8 +286,8 @@ class Utils
 	{
 		// Если значение не передано — возвращаем текущее значение куки
 		if ($value === null) {
-			return  $_COOKIE[$name] ?? null;
-		}		
+			return $_COOKIE[$name] ?? null;
+		}
 		$settings = [
 			'expires' => time() + $lifetime,
 			'path' => '/',
@@ -290,9 +308,9 @@ class Utils
 	 * @param array $data Массив данных для кодирования
 	 * @return string JSON-строка с поддержкой Unicode и слешей
 	 */
-	public static function json(array $data) : string
+	public static function json(array $data): string
 	{
-		return json_encode($data,JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+		return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 	}
 }
 

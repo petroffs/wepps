@@ -238,7 +238,6 @@ class RestV1M2MUtils
 		$skipPagination = false; // флаг для пропуска пагинации при запросе по ID
 		if ($id !== null && $id > 0) {
 			$conditions .= ' AND t.Id = ' . $id;
-			//Utils::debug($conditions,1);
 			$limit = 1;
 			$page = 0; // передаём 0 чтобы пропустить пагинацию
 			$skipPagination = true;
@@ -532,29 +531,26 @@ class RestV1M2MUtils
 			$mapped = $this->mapApiToDbFields($record);
 			$guid = $mapped['Guid'] ?? null;
 			unset($mapped['Id'], $mapped['id']);
-			$hasPriority = array_key_exists('Priority', $mapped);
 			ksort($mapped);
 			$sig = implode(',', array_keys($mapped));
-			$groups[$sig][] = ['index' => $index, 'data' => $mapped, 'hasPriority' => $hasPriority, 'guid' => $guid];
+			$groups[$sig][] = ['index' => $index, 'data' => $mapped, 'guid' => $guid];
 		}
 
 		foreach ($groups as $group) {
-			$settings = [];
-			if (empty($group[0]['hasPriority'])) {
-				$settings['Priority'] = [
-					'fn' => "(select round((max(Priority)+5)/5)*5 from {$this->tableName} as tb)",
-					'rm' => true,
-				];
-			}
-			$prepared = Connect::$instance->prepare($group[0]['data'], $settings);
+			$prepared = Connect::$instance->prepare($group[0]['data']);
 			$sql = "INSERT IGNORE INTO {$this->tableName} {$prepared['insert']}";
 			$sth = Connect::$db->prepare($sql);
 
 			foreach ($group as $item) {
 				$params = $item['data'];
-				if (!empty($settings['Priority']['rm'])) {
-					unset($params['Priority']);
+				
+				// JSON-кодируем массивы перед сохранением в БД
+				foreach ($params as $key => $value) {
+					if (is_array($value)) {
+						$params[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
+					}
 				}
+				
 				try {
 					$sth->execute($params);
 					$id = (int) Connect::$db->lastInsertId();
@@ -604,6 +600,14 @@ class RestV1M2MUtils
 
 			foreach ($group as $item) {
 				$params = $item['data'];
+				
+				// JSON-кодируем массивы перед сохранением в БД
+				foreach ($params as $key => $value) {
+					if (is_array($value)) {
+						$params[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
+					}
+				}
+				
 				$params['Id'] = $item['id'];
 				try {
 					$sth->execute($params);

@@ -735,7 +735,7 @@ class CartUtils
 		$obj = new Data("Orders");
 		$obj->setParams([$guid]);
 		$obj->setConcat("if(s3.PaymentsExt!='',PaymentsExt,'PaymentsDefault') PaymentsExt,s3.DescrFinish PaymentDescrFinish");
-		$order = @$obj->fetch("t.Guid = ?")[0];
+		$order = $obj->fetch("t.Guid = ?")[0]??[];
 		return $order;
 	}
 	public function processTask(array $request, Tasks $tasks)

@@ -742,6 +742,7 @@ class RestConfig
 						'async' => true,
 						'note' => 'M2M: Create goods item(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 						'validation' => [
+							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
 							'alias' => ['type' => 'string', 'required' => true],
 							'navigatorId' => ['type' => 'int2', 'required' => true],
@@ -764,7 +765,7 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'async' => false,
-						// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
+						// ! сделать асинхронным (т.е. через s_Tasks, после тестирования), т.к. может быть много вариаций и долго обрабатываться
 						// 'async' => true,
 						'note' => 'M2M: Create goods variation(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 						'validation' => [
@@ -797,7 +798,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Create order(s). Batch only (array, max 100). Returns 207 with per-item status. Supports nested items[] for order lines.',
 						'validation' => [
-							'hash' => ['type' => 'string', 'required' => true],
+							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
 							'isHidden' => ['type' => 'int', 'required' => false],
 							'userId' => ['type' => 'int', 'required' => true],
