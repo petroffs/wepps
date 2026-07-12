@@ -527,6 +527,7 @@ class Lists
 						'FileType' => $file['type'],
 						'TableNameField' => $file['field'],
 						'FileUrl' => $file['url'],
+						'Guid' => Utils::guid()
 					);
 					$objFile->add($rowFile);
 					self::removeUpload($key, $v['url']);
@@ -717,8 +718,8 @@ class Lists
 		$str = "update s_PropertiesValues set IsHiddenCandidate=1 where {$arr['condition']};\n";
 		$ex = explode(":::", $value);
 		foreach ($ex as $v) {
-			$hash = md5($list . $field . $id . $prop . $v);
-			$str .= "insert ignore into s_PropertiesValues (HashValue) values ('{$hash}');\n";
+			$guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
+			$str .= "insert ignore into s_PropertiesValues (Guid) values ('{$guid}');\n";
 			$row = array(
 				'Name' => $prop,
 				'TableName' => $list,
@@ -729,7 +730,7 @@ class Lists
 				'IsHiddenCandidate' => 0,
 			);
 			$arr2 = AdminUtils::query($row);
-			$str .= "update s_PropertiesValues set {$arr2['update']} where HashValue = '{$hash}';\n";
+			$str .= "update s_PropertiesValues set {$arr2['update']} where Guid = '{$guid}';\n";
 		}
 		return $str;
 	}
@@ -931,7 +932,7 @@ class Lists
 					$pv = $value;
 					unset($pv['Id']);
 					$pv['TableNameId'] = $newId;
-					$pv['HashValue'] = md5($pv['TableName'] . $pv['TableNameField'] . $pv['TableNameId'] . $pv['Name'] . $pv['PValue']);
+					$pv['Guid'] = Utils::guid($pv['TableName'] . '_' . $pv['TableNameField'] . '_' . $pv['TableNameId'] . '_' . $pv['Name'] . '_' . $pv['PValue']);
 					$objProps->add($pv);
 				}
 			}

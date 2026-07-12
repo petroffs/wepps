@@ -31,7 +31,7 @@ class RequestUploads extends Request
 					foreach ($_SESSION['uploads']['list-data-form'] as $value) {
 						foreach ($value as $v) {
 							$file = Lists::getUploadFileName($v, $list, "Files", $id);
-							$rowFile = array(
+							$rowFile = [
 								'Name' => $file['title'],
 								'TableNameId' => $id,
 								'InnerName' => $file['inner'],
@@ -43,7 +43,8 @@ class RequestUploads extends Request
 								'TableNameField' => $file['field'],
 								'FileUrl' => $file['url'],
 								'FileDescription' => json_encode(['source' => $id], JSON_UNESCAPED_UNICODE),
-							);
+								'Guid' => Utils::guid()
+							];
 							$objFile->add($rowFile);
 							Lists::removeUpload("upload", $v['url']);
 							break;

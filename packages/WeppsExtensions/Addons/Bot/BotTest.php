@@ -24,10 +24,12 @@ class BotTest extends Bot {
 			$id = $value['TableNameId'];
 			$prop = $value['Name'];
 			$v = $value['PValue'];
-			$hash = md5($list . $field . $id . $prop . $v);
-			$str .= "update s_PropertiesValues set HashValue='{$hash}' where Id='{$value['Id']}';\n";
+			$guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
+			$str .= "update s_PropertiesValues set Guid='{$guid}' where Id='{$value['Id']}';\n";
 		}
-		Utils::debug($str,2);
+		Connect::$db->exec($str);
+		echo 'Processed ' . count($res) . ' rows';
+		return;
 	}
 	public function telegram() {
 		/*

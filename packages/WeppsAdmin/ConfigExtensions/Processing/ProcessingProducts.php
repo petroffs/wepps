@@ -137,7 +137,7 @@ class ProcessingProducts
 		$insertedIds = [];
 
 		if (!empty($toInsert)) {
-			$stmt = Connect::$db->prepare("insert ignore into ProductsVariations (Alias) values (?)");
+			$stmt = Connect::$db->prepare("insert ignore into ProductsVariations (Alias,Guid) values (?,uuid())");
 			foreach ($toInsert as $alias) {
 				$stmt->execute([$alias]);
 				$insertedIds[$alias] = Connect::$db->lastInsertId();
@@ -163,7 +163,7 @@ class ProcessingProducts
 				'Field2' => $v[1], // size
 				'Field3' => $v[2], // sku
 				'Field4' => $v[3], // stocks
-				'Alias' => $alias,
+				'Alias' => $alias
 			]);
 			// Определяем тип действия (создана новая или обновлена существующая)
 			if (isset($insertedIds[$alias])) {
