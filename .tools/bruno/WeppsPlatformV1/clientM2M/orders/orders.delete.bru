@@ -2,16 +2,20 @@ meta {
   name: DELETE orders
   type: http
   seq: 6
-  tags: destructive manual
 }
 
 delete {
-  url: {{base_url}}/rest/m2m/orders?id={{order_id}}
+  url: {{base_url}}/rest/m2m/orders
+  body: json
   auth: inherit
 }
 
-
-params:query {
+body:json {
+  {
+    "data": [
+      2
+    ]
+  }
 }
 
 tests {

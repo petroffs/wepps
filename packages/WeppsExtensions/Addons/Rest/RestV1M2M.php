@@ -89,6 +89,45 @@ class RestV1M2M extends RestV1
 	}
 
 	// ========================================================================
+	// ORDERS
+	// ========================================================================
+
+	public function getOrders(): array
+	{
+		$obj = $this->getUtils('Orders');
+		$obj->setOrderBy('Id desc');
+		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		$result = $obj->fetch($this->get);
+		return $result;
+	}
+
+	public function getOrdersItem(): array
+	{
+		$obj = $this->getUtils('Orders');
+		$obj->setOrderBy('Id desc');
+		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		return $obj->item((int) ($this->get['id'] ?? 0));
+	}
+
+	public function postOrders(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->create('Orders', $records);
+	}
+
+	public function putOrders(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->update('Orders', $records);
+	}
+
+	public function deleteOrders(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->getUtils('Orders')->remove($records);
+	}
+
+	// ========================================================================
 	// GOODS
 	// ========================================================================
 
@@ -721,25 +760,8 @@ class RestV1M2M extends RestV1
 	}
 
 	// ========================================================================
-	// ORDERS
+	// TASKS
 	// ========================================================================
-
-	public function getOrders(): array
-	{
-		$obj = $this->getUtils('Orders');
-		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		$result = $obj->fetch($this->get);
-		return $result;
-	}
-
-	public function getOrdersItem(): array
-	{
-		$obj = $this->getUtils('Orders');
-		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		return $obj->item((int) ($this->get['id'] ?? 0));
-	}
 
 	public function getTasksResult(): array
 	{
@@ -770,39 +792,6 @@ class RestV1M2M extends RestV1
 				'response' => $task['BResponse'] ? json_decode($task['BResponse'], true) : null,
 			],
 		];
-	}
-
-	public function postOrders(): array
-	{
-		$records = $this->normalizeInput();
-
-		// Авто-генерация Guid для новых заказов, если не передан
-		$this->getUtils('Orders')->setBefore(function (array $items, string $tableName) {
-			foreach ($items as $i => $item) {
-				if (empty($item['Guid'] ?? $item['guid'] ?? '')) {
-					$items[$i]['Guid'] = Utils::guid(uniqid(rand(), true));
-				}
-			}
-			return $items;
-		});
-
-		return $this->create('Orders', $records);
-	}
-
-	public function putOrders(): array
-	{
-		$records = $this->normalizeInput();
-		return $this->update('Orders', $records);
-	}
-
-	public function deleteOrders(): array
-	{
-		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
-		$ids = array_column($records, 'id');
-		return $this->getUtils('Orders')->remove($ids);
 	}
 
 	// ========================================================================

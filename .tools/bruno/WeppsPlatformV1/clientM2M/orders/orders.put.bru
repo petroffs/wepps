@@ -2,22 +2,23 @@ meta {
   name: PUT orders
   type: http
   seq: 4
-  tags: manual
 }
 
 put {
-  url: {{base_url}}/rest/m2m/orders?id={{order_id}}
+  url: {{base_url}}/rest/m2m/orders
   body: json
   auth: inherit
 }
 
-
 body:json {
   {
-    "data": {
-      "status": "completed",
-      "total": 9999.99
-    }
+    "data": [
+      {
+        "id": 4,
+        "guid": "b6a5a7b0-520a-fb8d-4b24-23451de424e6",
+        "name": "weppsadmintest2"
+      }
+    ]
   }
 }
 

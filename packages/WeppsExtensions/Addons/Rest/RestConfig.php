@@ -1,6 +1,8 @@
 <?php
 namespace WeppsExtensions\Addons\Rest;
 
+use WeppsCore\Utils;
+
 /**
  * Конфигурация REST API методов
  * Используется для маршрутизации и автодокументации
@@ -39,7 +41,7 @@ class RestConfig
 {
 	public static function getConfig(): array
 	{
-		return [
+		$config = [
 			'v0' => [
 				'get' => [
 					'test' => [
@@ -595,6 +597,24 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => true],
 						],
 					],
+					// ===== Orders =====
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getOrders',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get list of orders (configurable via s_Config)',
+					],
+					'orders.item' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getOrdersItem',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get single order by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
 					// ===== Goods =====
 					'goods' => [
 						'class' => RestV1M2M::class,
@@ -687,24 +707,6 @@ class RestConfig
 							'limit' => ['type' => 'int2', 'required' => false],
 						],
 					],
-					// ===== Orders =====
-					'orders' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getOrders',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Get list of orders (configurable via s_Config)',
-					],
-					'orders.item' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getOrdersItem',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Get single order by id',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
-						],
-					],
 					'tasks.result' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getTasksResult',
@@ -717,6 +719,7 @@ class RestConfig
 					],
 				],
 				'post' => [
+					// ===== Users =====
 					'users' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postUsers',
@@ -734,6 +737,52 @@ class RestConfig
 							'phone' => ['type' => 'string', 'required' => true]
 						],
 					],
+					// ===== Orders =====
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postOrders',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Create order(s). Batch only (array, max 100). Returns 207 with per-item status. Supports nested items[] for order lines.',
+						'validation' => [
+							'guid' => ['type' => 'guid', 'required' => true],
+							'name' => ['type' => 'string', 'required' => true],
+							'isHidden' => ['type' => 'int', 'required' => false],
+							'userId' => ['type' => 'int', 'required' => true],
+							'phone' => ['type' => 'string', 'required' => true],
+							'email' => ['type' => 'string', 'required' => true],
+							'status' => ['type' => 'string', 'required' => true],
+							'sum' => ['type' => 'float2', 'required' => true],
+							'date' => ['type' => 'date', 'required' => true],
+							'delivery' => ['type' => 'int2', 'required' => true],
+							'payment' => ['type' => 'int2', 'required' => true],
+							'postalCode' => ['type' => 'string', 'required' => false],
+							'address' => ['type' => 'string', 'required' => false],
+							'city' => ['type' => 'string', 'required' => false],
+							'region' => ['type' => 'string', 'required' => false],
+							'country' => ['type' => 'string', 'required' => false],
+							// Вложенная валидация: data.items[].field (dot-notation, nested)
+							'data' => ['type' => 'object', 'required' => true],
+							'data.items[]' => ['type' => 'object[]', 'required' => true],
+							'data.items[].id' => ['type' => 'int', 'required' => true],
+							'data.items[].idv' => ['type' => 'int', 'required' => true],
+							'data.items[].name' => ['type' => 'string', 'required' => true],
+							'data.items[].quantity' => ['type' => 'int', 'required' => true],
+							'data.items[].stocks' => ['type' => 'int', 'required' => false],
+							'data.items[].active' => ['type' => 'int', 'required' => false],
+							'data.items[].price' => ['type' => 'float2', 'required' => false],
+							'data.items[].sum' => ['type' => 'float2', 'required' => true],
+							'data.items[].priceBefore' => ['type' => 'float2', 'required' => false],
+							'data.items[].sumBefore' => ['type' => 'float2', 'required' => false],
+							'data.items[].sumBeforeTotal' => ['type' => 'float2', 'required' => false],
+							'data.items[].sumSaving' => ['type' => 'float2', 'required' => false],
+							'data.items[].quantityActive' => ['type' => 'int', 'required' => false],
+							'data.items[].sumActive' => ['type' => 'float2', 'required' => false],
+							'data.items[].url' => ['type' => 'string', 'required' => false],
+							'data.items[].image' => ['type' => 'string', 'required' => false],
+						],
+					],
+					// ===== Goods =====
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoods',
@@ -791,92 +840,37 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Add image to goods variation',
 					],
-					'orders' => [
-						'class' => RestV1M2M::class,
-						'method' => 'postOrders',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Create order(s). Batch only (array, max 100). Returns 207 with per-item status. Supports nested items[] for order lines.',
-						'validation' => [
-							'guid' => ['type' => 'guid', 'required' => true],
-							'name' => ['type' => 'string', 'required' => true],
-							'isHidden' => ['type' => 'int', 'required' => false],
-							'userId' => ['type' => 'int', 'required' => true],
-							'phone' => ['type' => 'string', 'required' => true],
-							'email' => ['type' => 'string', 'required' => true],
-							'status' => ['type' => 'string', 'required' => true],
-							'sum' => ['type' => 'float2', 'required' => true],
-							'date' => ['type' => 'date', 'required' => true],
-							'delivery' => ['type' => 'int2', 'required' => true],
-							'payment' => ['type' => 'int2', 'required' => true],
-							'postalCode' => ['type' => 'string', 'required' => false],
-							'address' => ['type' => 'string', 'required' => false],
-							'city' => ['type' => 'string', 'required' => false],
-							'region' => ['type' => 'string', 'required' => false],
-							'country' => ['type' => 'string', 'required' => false],
-							// Вложенная валидация: data.items[].field (dot-notation, nested)
-							'data' => ['type' => 'object', 'required' => true],
-							'data.items[]' => ['type' => 'object[]', 'required' => true],
-							'data.items[].id' => ['type' => 'int', 'required' => true],
-							'data.items[].idv' => ['type' => 'int', 'required' => true],
-							'data.items[].name' => ['type' => 'string', 'required' => true],
-							'data.items[].quantity' => ['type' => 'int', 'required' => true],
-							'data.items[].stocks' => ['type' => 'int', 'required' => false],
-							'data.items[].active' => ['type' => 'int', 'required' => false],
-							'data.items[].price' => ['type' => 'float2', 'required' => false],
-							'data.items[].sum' => ['type' => 'float2', 'required' => true],
-							'data.items[].priceBefore' => ['type' => 'float2', 'required' => false],
-							'data.items[].sumBefore' => ['type' => 'float2', 'required' => false],
-							'data.items[].sumBeforeTotal' => ['type' => 'float2', 'required' => false],
-							'data.items[].sumSaving' => ['type' => 'float2', 'required' => false],
-							'data.items[].quantityActive' => ['type' => 'int', 'required' => false],
-							'data.items[].sumActive' => ['type' => 'float2', 'required' => false],
-							'data.items[].url' => ['type' => 'string', 'required' => false],
-							'data.items[].image' => ['type' => 'string', 'required' => false],
-						],
-					],
 				],
 				'put' => [
+					// ===== Users =====
 					'users' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putUsers',
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
-						'validation' => [
-							'id' => ['type' => 'int', 'required' => true],
-							'guid' => ['type' => 'guid', 'required' => false],
-							'name' => ['type' => 'string', 'required' => false],
-							'nameFirst' => ['type' => 'string', 'required' => false],
-							'nameSurname' => ['type' => 'string', 'required' => false],
-							'namePatronymic' => ['type' => 'string', 'required' => false],
-							'login' => ['type' => 'string', 'required' => false],
-							'email' => ['type' => 'string', 'required' => false],
-							'phone' => ['type' => 'string', 'required' => false]
-						]
+						// validation - необязательный в put, inheritance от post, но можно переопределить.
+						// при этом id - ставится обязательным, т.к. без него не понятно что обновлять. 
+						// Остальные поля - необязательные, т.к. put - частичное обновление.
+						// 'validation' => [
+						// 	'id' => ['type' => 'int', 'required' => true],
+						// ]
 					],
+					// ===== Orders =====
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putOrders',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update order by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+					],
+					// ===== Goods =====
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoods',
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
-						'validation' => [
-							'id' => ['type' => 'int', 'required' => true],
-							'name' => ['type' => 'string', 'required' => false],
-							'alias' => ['type' => 'string', 'required' => false],
-							'price' => ['type' => 'float', 'required' => false],
-							'article' => ['type' => 'string', 'required' => false],
-							'descr' => ['type' => 'string', 'required' => false],
-							'isHidden' => ['type' => 'int', 'required' => false],
-							'priceBefore' => ['type' => 'float', 'required' => false],
-							'status' => ['type' => 'int', 'required' => false],
-							'metaTitle' => ['type' => 'string', 'required' => false],
-							'metaDescription' => ['type' => 'string', 'required' => false],
-							'metaKeyword' => ['type' => 'string', 'required' => false],
-							'weightPack' => ['type' => 'float', 'required' => false],
-							'displayFirst' => ['type' => 'int', 'required' => false],
-						],
 					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
@@ -887,14 +881,6 @@ class RestConfig
 						// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
 						// 'async' => true,
 						'note' => 'M2M: Update goods variation(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
-						'validation' => [
-							'id' => ['type' => 'int', 'required' => true],
-							//'goodsId' => ['type' => 'int', 'required' => true],
-							'color' => ['type' => 'string', 'required' => false],
-							'size' => ['type' => 'string', 'required' => false],
-							'sku' => ['type' => 'string', 'required' => false],
-							'stocks' => ['type' => 'int', 'required' => false],
-						],
 					],
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,
@@ -902,11 +888,6 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Update goods warehouse stocks',
-						'validation' => [
-							'id' => ['type' => 'int', 'required' => true],
-							'goodsId' => ['type' => 'int', 'required' => false],
-							'stocks' => ['type' => 'int', 'required' => true]
-						]
 					],
 					'goods.prices' => [
 						'class' => RestV1M2M::class,
@@ -929,82 +910,63 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Update goods variation image by id',
 					],
-					'orders' => [
-						'class' => RestV1M2M::class,
-						'method' => 'putOrders',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Update order by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
-					],
-				],
-				'patch' => [
-					'goods.filters' => [
-						'class' => RestV1M2M::class,
-						'method' => 'patchGoodsFilters',
-						'auth_required' => true,
-						'note' => 'M2M: Sync all goods filters/properties (overwrite)',
-					],
 				],
 				'delete' => [
+					// ===== Users =====
 					'users' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete user by id(s) via body. Format: {"data": [123, 456, ...]}',
-						'validation' => [
-							'ARRAY' => ['type' => 'int', 'required' => true],
-						],
+						'note' => 'M2M: Delete user by id(s) via body. Format: {"data": [123, 456, ...]}'
+						// validation - необязательный в delete, т.к. генерируется автоматически 
+						// в inheritEndpointConfig() и требует массив id для удаления.
 					],
+					// ===== Orders =====
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteOrders',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete order(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					// ===== Goods =====
 					'goods' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods by id(s) via body. Format: {"data": [123, 456, ...]}',
-						'validation' => [
-							'ARRAY' => ['type' => 'int', 'required' => true],
-						],
+						'note' => 'M2M: Delete goods by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsVariations',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}',
-						'validation' => [
-							'ARRAY' => ['type' => 'int', 'required' => true],
-						],
+						'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsImages',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods image(s) via body. Format: {"data": [123, 456, ...]}',
-						'validation' => [
-							'ARRAY' => ['type' => 'int', 'required' => true],
-						],
+						'note' => 'M2M: Delete goods image(s) via body. Format: {"data": [123, 456, ...]}'
 					],
 					'goods.imagesVariations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsImagesVariations',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods variation image(s) via body. Format: {"data": [123, 456, ...]}',
-						'validation' => [
-							'ARRAY' => ['type' => 'int', 'required' => true],
-						],
+						'note' => 'M2M: Delete goods variation image(s) via body. Format: {"data": [123, 456, ...]}'
 					],
-					'orders' => [
+				],
+				// ===== PATCH - experimental =====
+				'patch' => [
+					'goods.filters' => [
 						'class' => RestV1M2M::class,
-						'method' => 'deleteOrders',
-						'role_required' => [1],
+						'method' => 'patchGoodsFilters',
 						'auth_required' => true,
-						'note' => 'M2M: Delete order(s) via body. Format: {"data": [123, 456, ...]}',
-						'validation' => [
-							'ARRAY' => ['type' => 'int', 'required' => true],
-						],
+						'note' => 'M2M: Sync all goods filters/properties (overwrite)',
 					],
 				],
 			],
@@ -1033,5 +995,32 @@ class RestConfig
 				],
 			],
 		];
+
+		$config['m2m'] = self::inheritEndpointConfig($config['m2m']);
+		return $config;
+	}
+
+	private static function inheritEndpointConfig(array $baseConfig, array $overrides = []): array
+	{
+		foreach ($baseConfig['put']??[] as $key => $value) {
+			$putValidation = $value['validation'] ?? [
+				'id' => ['type' => 'int', 'required' => true],
+			];
+			$postValidation = $baseConfig['post'][$key]['validation'] ?? [];
+			if (!empty($postValidation)) {
+				foreach ($postValidation as $field => $rules) {
+					$putValidation[$field] = $rules;
+					$putValidation[$field]['required'] = false;
+				}
+			}
+			$baseConfig['put'][$key]['validation'] = $putValidation;
+		}
+		foreach ($baseConfig['delete']??[] as $key => $value) {
+			$deleteValidation = $value['validation'] ?? [
+				'ARRAY' => ['type' => 'int', 'required' => true],
+			];
+			$baseConfig['delete'][$key]['validation'] = $deleteValidation;
+		}
+		return $baseConfig;
 	}
 }
