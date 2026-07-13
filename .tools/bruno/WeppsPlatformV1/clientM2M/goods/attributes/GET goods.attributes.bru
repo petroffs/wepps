@@ -1,18 +1,18 @@
 meta {
-  name: GET goods.filters
+  name: GET goods.attributes
   type: http
-  seq: 13
+  seq: 1
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods.filters
+  url: {{base_url}}/rest/m2m/goods.attributes
   body: none
   auth: inherit
 }
 
 params:query {
-  ~category: 7
-  ~search: 
+  ~page: 1
+  ~limit: 100
 }
 
 tests {

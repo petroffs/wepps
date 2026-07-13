@@ -1,19 +1,18 @@
 meta {
   name: GET goods
   type: http
-  seq: 1
+  seq: 5
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods?page=3&limit=50
+  url: {{base_url}}/rest/m2m/goods?page=1&limit=2
   body: none
   auth: inherit
 }
 
 params:query {
-  page: 3
-  limit: 50
-  ~search: 
+  page: 1
+  limit: 2
 }
 
 tests {

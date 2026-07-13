@@ -1,0 +1,15 @@
+meta {
+  name: DELETE goods.attributes
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{base_url}}/rest/m2m/goods.attributes
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+}

@@ -1,11 +1,11 @@
 meta {
-  name: PUT goods.prices
+  name: PUT goods.attributes
   type: http
-  seq: 23
+  seq: 2
 }
 
 put {
-  url: {{base_url}}/rest/m2m/goods.prices
+  url: {{base_url}}/rest/m2m/goods.filters
   body: json
   auth: inherit
 }
@@ -13,9 +13,10 @@ put {
 body:json {
   {
     "data": {
-      "goods_id": 1,
-      "price": 99.99,
-      "price_out": 79.99
+      "id": 1,
+      "name": "Size",
+      "priority": 5,
+      "is_hidden": 0
     }
   }
 }

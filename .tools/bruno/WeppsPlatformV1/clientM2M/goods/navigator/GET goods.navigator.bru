@@ -1,13 +1,18 @@
 meta {
-  name: GET goods.categories
+  name: GET goods.navigator
   type: http
   seq: 12
 }
 
 get {
-  url: {{base_url}}/rest/m2m/goods.categories
+  url: {{base_url}}/rest/m2m/goods.navigator?page=1&limit=100
   body: none
   auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 100
 }
 
 tests {

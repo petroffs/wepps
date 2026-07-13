@@ -97,8 +97,7 @@ class RestV1M2M extends RestV1
 		$obj = $this->getUtils('Orders');
 		$obj->setOrderBy('Id desc');
 		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		$result = $obj->fetch($this->get);
-		return $result;
+		return $obj->fetch($this->get);
 	}
 
 	public function getOrdersItem(): array
@@ -131,106 +130,19 @@ class RestV1M2M extends RestV1
 	// GOODS
 	// ========================================================================
 
-	public function getGoods(): array
-	{
-		$id = $this->get['id'] ?? '';
-		$page = max(1, (int) ($this->get['page'] ?? 1));
-		$limit = min(100, max(1, (int) ($this->get['limit'] ?? 20)));
-		$search = $this->get['search'] ?? '';
-
-		$productsUtils = new ProductsUtils();
-		$navigator = new Navigator("/catalog/");
-
-		// Если передан ID, ищем по ID, иначе используем поиск и фильтры
-		if (!empty($id)) {
-			$productsUtils->setNavigator($navigator, 'Products');
-			$isNumericId = (strlen((int) $id) == strlen($id));
-			$conditions = $isNumericId ? "t.Id = ?" : "binary t.Alias = ?";
-
-			$settings = [
-				'limit' => 1,
-				'page' => 1,
-				'sorting' => 't.Priority desc',
-				'conditions' => [
-					'conditions' => $conditions,
-					'params' => [$id],
-				],
-				'useApiMapping' => true,
-			];
-		} else {
-			// Инициализируем Navigator для работы getConditions()
-			if (!empty($this->get['category'])) {
-				$navigator->content['Id'] = (int) $this->get['category'];
-			}
-			$productsUtils->setNavigator($navigator, 'Products');
-
-			// Условия WHERE и параметры для фильтрации
-			$conditions = "t.IsHidden=0";
-			$params = [];
-
-			if (!empty($search)) {
-				$conditions = "t.IsHidden=0 and lower(t.Name) like lower(?)";
-				$params[] = $search . "%";
-			}
-
-			$filters = new Filters($this->get);
-			$filterParams = $filters->getParams();
-			$conditionsWithFilters = $productsUtils->getConditions($filterParams, true, $conditions, $params);
-
-			// Сортировка
-			$sorting = match ($this->get['sort'] ?? '') {
-				'priceasc' => 't.Price asc',
-				'pricedesc' => 't.Price desc',
-				'nameasc' => 't.Name asc',
-				default => 't.Priority desc',
-			};
-
-			$settings = [
-				'limit' => $limit,
-				'page' => $page,
-				'sorting' => $sorting,
-				'conditions' => $conditionsWithFilters,
-				'useApiMapping' => true,
-			];
-		}
-
-		$result = $productsUtils->getProducts($settings);
-		$rows = $result['rows'] ?? [];
-
-		// Получаем все атрибуты для всех товаров одним вызовом Filters
-		// Filters::getFilters() возвращает с группировкой по compositeKey "PropertyId-Alias"
-		// Нужно трансформировать в [ProductId => [PropertyId => rows]] через buildAttributesForProducts()
-		$filterResult = [];
-		$ids = array_column($rows, 'id');
-
-		if (!empty($ids)) {
-			$placeholders = Connect::$instance->in($ids);
-			$filtersObj = new Filters();
-			$rawFilters = $filtersObj->getFilters([
-				'conditions' => "t.IsHidden=0 AND pv.TableName='Products' AND pv.TableNameId IN ($placeholders)",
-				'params' => $ids,
-			]);
-			// Трансформируем в структуру [ProductId => [PropertyId => rows]]
-			$filterResult = $filtersObj->buildAttributesForProducts($rawFilters);
-		}
-
-		// Распределяем атрибуты по товарам
-		foreach ($rows as &$row) {
-			$row['W_Attributes'] = $this->getUtils('Products')->buildAttributesFromPropertiesValues($filterResult[$row['id']] ?? null);
-		}
-		unset($row);
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $rows,
-			'pagination' => ['count' => $result['paginator']['count'], 'limit' => $limit, 'page' => $page],
-		];
+	public function getGoods() {
+		$obj = $this->getUtils('Products');
+		$obj->setOrderBy('Id desc');
+		$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
+		return $obj->fetch($this->get);
 	}
 
 	public function getGoodsItem(): array
 	{
-		// Используем логику getGoods() для обогащения W_Attributes
-		return $this->getGoods();
+		$obj = $this->getUtils('Products');
+		$obj->setOrderBy('Id desc');
+		$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
+		return $obj->item((int) ($this->get['id'] ?? 0));
 	}
 
 	public function postGoods(): array
@@ -248,14 +160,13 @@ class RestV1M2M extends RestV1
 	public function deleteGoods(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
-		$ids = array_column($records, 'id');
 		/**
-		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. Логика зависит от бизнес-требований. 
+		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. 
+		 * Логика зависит от бизнес-требований. 
+		 * Рекомендуется обернуть в транзакцию Connect::$instance->transaction(...), чтобы избежать частичного удаления.
 		 */
-		// Например, если нужно удалить связанные вариации)
+
+		// Например, если нужно удалить связанные вариации
 		// $variationIds = Connect::$instance->fetch(
 		// 	"SELECT Id FROM ProductsVariations WHERE ProductId IN (...)",
 		// 	$ids
@@ -265,7 +176,7 @@ class RestV1M2M extends RestV1
 		// if (!empty($variationIds)) {
 		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
 		// }
-		return $this->getUtils('Products')->remove($ids);
+		return $this->getUtils('Products')->remove($records);
 	}
 
 	/**
@@ -556,9 +467,9 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: GET каталог товаров (категории)
+	 * M2M: GET каталог товаров (navigator)
 	 */
-	public function getGoodsCategories(): array
+	public function getGoodsNavigator(): array
 	{
 		$res = Connect::$instance->fetch(
 			"SELECT Id, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",

@@ -161,7 +161,7 @@ class RestConfig
 					],
 					'goods.categories' => [
 						'class' => RestV1APP::class,
-						'method' => 'getGoodsCategories',
+						'method' => 'getGoodsNavigator',
 						'note' => 'Get list of goods categories with ParentDir for tree building',
 					],
 					'goods.favorites' => [
@@ -635,7 +635,7 @@ class RestConfig
 					],
 					'goods.categories' => [
 						'class' => RestV1M2M::class,
-						'method' => 'getGoodsCategories',
+						'method' => 'getGoodsNavigator',
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get goods categories (navigators)',
@@ -1002,7 +1002,14 @@ class RestConfig
 
 	private static function inheritEndpointConfig(array $baseConfig, array $overrides = []): array
 	{
-		foreach ($baseConfig['put']??[] as $key => $value) {
+		foreach ($baseConfig['get'] ?? [] as $key => $value) {
+			$getValidation = $value['query_validation'] ?? [
+				'page' => ['type' => 'int2', 'required' => false],
+				'limit' => ['type' => 'int2', 'required' => false],
+			];
+			$baseConfig['get'][$key]['query_validation'] = $getValidation;
+		}
+		foreach ($baseConfig['put'] ?? [] as $key => $value) {
 			$putValidation = $value['validation'] ?? [
 				'id' => ['type' => 'int', 'required' => true],
 			];
@@ -1015,7 +1022,7 @@ class RestConfig
 			}
 			$baseConfig['put'][$key]['validation'] = $putValidation;
 		}
-		foreach ($baseConfig['delete']??[] as $key => $value) {
+		foreach ($baseConfig['delete'] ?? [] as $key => $value) {
 			$deleteValidation = $value['validation'] ?? [
 				'ARRAY' => ['type' => 'int', 'required' => true],
 			];
