@@ -1,11 +1,11 @@
 meta {
-  name: Untitled
+  name: GET files
   type: http
   seq: 1
 }
 
 get {
-  url: {{base_url}}/rest/m2m/files?page=1&limit=100&list=Products&listId=720
+  url: {{base_url}}/rest/m2m/files?page=1&limit=100&list=Products&listId=7200
   body: none
   auth: inherit
 }
@@ -14,7 +14,7 @@ params:query {
   page: 1
   limit: 100
   list: Products
-  listId: 720
+  listId: 7200
   ~: 
   ~: 
 }

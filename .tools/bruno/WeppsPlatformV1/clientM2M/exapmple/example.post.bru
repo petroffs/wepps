@@ -1,0 +1,22 @@
+meta {
+  name: POST example
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/rest/m2m/example
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "data": [
+      "guid": "string",
+      "name": "string",
+      "priority": 0,
+      "is_hidden": 0
+    ]
+  }
+}

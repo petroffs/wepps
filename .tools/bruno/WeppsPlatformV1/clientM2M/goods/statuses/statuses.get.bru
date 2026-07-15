@@ -1,0 +1,16 @@
+meta {
+  name: GET statuses
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/rest/m2m/statuses?page=1&limit=100
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 100
+}

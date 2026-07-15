@@ -579,6 +579,16 @@ class RestConfig
 			],
 			'm2m' => [
 				'get' => [
+					'tasks.result' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getTasksResult',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get async task result by id',
+						'query_validation' => [
+							'id' => ['type' => 'int2', 'required' => true],
+						],
+					],
 					// ===== Users =====
 					'users' => [
 						'class' => RestV1M2M::class,
@@ -633,40 +643,30 @@ class RestConfig
 							'id' => ['type' => 'int2', 'required' => true],
 						],
 					],
-					'goods.categories' => [
+					'goods.navigator' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsNavigator',
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get goods categories (navigators)',
 					],
-					'goods.filters' => [
+					'goods.attributes' => [
 						'class' => RestV1M2M::class,
-						'method' => 'getGoodsFilters',
+						'method' => 'getGoodsAttributes',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get available goods filters (properties)',
+						'note' => 'M2M: Get available goods attributes (properties)',
 						'query_validation' => [
 							'category' => ['type' => 'int2', 'required' => false],
 							'search' => ['type' => 'string', 'required' => false],
 						],
 					],
-					'goods.stocks' => [
+					'goods.variations' => [
 						'class' => RestV1M2M::class,
-						'method' => 'getGoodsStocks',
+						'method' => 'getGoodsVariations',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get goods warehouse stocks',
-						'query_validation' => [
-							'goods_id' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'goods.prices' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getGoodsPrices',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Get goods prices',
+						'note' => 'M2M: Get goods variations (sku, prices, stocks)',
 						'query_validation' => [
 							'goods_id' => ['type' => 'int2', 'required' => false],
 						],
@@ -693,28 +693,6 @@ class RestConfig
 							'goodsv_id' => ['type' => 'int2', 'required' => false],
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'goods.variations' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getGoodsVariations',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Get goods variations (paginated)',
-						'query_validation' => [
-							'goods_id' => ['type' => 'int2', 'required' => false],
-							'page' => ['type' => 'int2', 'required' => false],
-							'limit' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'tasks.result' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getTasksResult',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Get async task result by id',
-						'query_validation' => [
-							'id' => ['type' => 'int2', 'required' => true],
 						],
 					],
 				],
@@ -806,6 +784,20 @@ class RestConfig
 							'metaKeyword' => ['type' => 'string', 'required' => false],
 							'weightPack' => ['type' => 'float2', 'required' => false],
 							'displayFirst' => ['type' => 'int2', 'required' => false],
+						],
+					],
+					'goods.navigator' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsNavigator',
+						'role_required' => [1],
+						'auth_required' => true,
+						'async' => false, //выполнять немедленно
+						'note' => 'M2M: Create goods item(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'guid' => ['type' => 'guid', 'required' => true],
+							'name' => ['type' => 'string', 'required' => true],
+							'url' => ['type' => 'string', 'required' => true],
+							'parentDir' => ['type' => 'int2', 'required' => true],
 						],
 					],
 					'goods.variations' => [

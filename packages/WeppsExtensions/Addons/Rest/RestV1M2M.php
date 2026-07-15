@@ -130,7 +130,8 @@ class RestV1M2M extends RestV1
 	// GOODS
 	// ========================================================================
 
-	public function getGoods() {
+	public function getGoods()
+	{
 		$obj = $this->getUtils('Products');
 		$obj->setOrderBy('Id desc');
 		$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
@@ -177,6 +178,44 @@ class RestV1M2M extends RestV1
 		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
 		// }
 		return $this->getUtils('Products')->remove($records);
+	}
+
+	/**
+	 * M2M: GET каталог товаров (navigator)
+	 */
+	public function getGoodsNavigator(): array
+	{
+		$res = Connect::$instance->fetch(
+			"SELECT Id, Guid, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",
+			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
+		);
+
+		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+	}
+
+	// public function getGoods() {
+	// 	$obj = $this->getUtils('Products');
+	// 	$obj->setOrderBy('Id desc');
+	// 	$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
+	// 	return $obj->fetch($this->get);
+	// }
+
+	public function postGoodsNavigator(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->create('Navigator', $records);
+	}
+
+	public function putGoodsNavigator(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->update('Navigator', $records);
+	}
+
+	public function deleteGoodsNavigator(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->getUtils('Navigator')->remove($records);
 	}
 
 	/**
@@ -464,19 +503,6 @@ class RestV1M2M extends RestV1
 		);
 
 		return ['status' => 200, 'message' => 'Prices updated', 'data' => $res[0] ?? null];
-	}
-
-	/**
-	 * M2M: GET каталог товаров (navigator)
-	 */
-	public function getGoodsNavigator(): array
-	{
-		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",
-			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
-		);
-
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
 	}
 
 	/**

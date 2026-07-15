@@ -1,0 +1,25 @@
+meta {
+  name: PUT goods.navigator
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{base_url}}/rest/m2m/goods.navigator
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "data": [
+      {
+        "id": 0,
+        "guid": "string",
+        "name": "string",
+        "priority": 0,
+        "is_hidden": 0
+      }
+    ]
+  }
+}

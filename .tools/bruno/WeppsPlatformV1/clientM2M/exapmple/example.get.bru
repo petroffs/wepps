@@ -1,0 +1,16 @@
+meta {
+  name: GET example
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/rest/m2m/example?page=1&limit=100
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 100
+}

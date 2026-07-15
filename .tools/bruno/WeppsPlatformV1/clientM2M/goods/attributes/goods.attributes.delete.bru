@@ -6,10 +6,19 @@ meta {
 
 delete {
   url: {{base_url}}/rest/m2m/goods.attributes
-  body: none
+  body: json
   auth: inherit
+}
+
+body:json {
+  {
+    "data": [
+      5
+    ]
+  }
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
