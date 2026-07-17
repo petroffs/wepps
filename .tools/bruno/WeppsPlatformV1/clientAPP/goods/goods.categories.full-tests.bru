@@ -40,7 +40,7 @@ tests {
       expect(item).to.have.property("Id");
       expect(item).to.have.property("Name");
       expect(item).to.have.property("Url");
-      expect(item).to.have.property("ParentDir");
+      expect(item).to.have.property("ParentId");
       expect(item).to.have.property("Extension");
     });
   });
@@ -65,9 +65,9 @@ tests {
     });
   });
 
-  test("L3: ParentDir is non-negative number", function() {
+  test("L3: ParentId is non-negative number", function() {
     res.body.data.forEach(item => {
-      expect(item.ParentDir).to.be.a("number").and.to.be.at.least(0);
+      expect(item.ParentId).to.be.a("number").and.to.be.at.least(0);
     });
   });
 
@@ -87,10 +87,10 @@ tests {
 
   test("L4: Parent categories exist or are 0", function() {
     res.body.data.forEach(item => {
-      if (item.ParentDir > 0) {
-        const parentExists = res.body.data.some(c => c.Id === item.ParentDir);
+      if (item.ParentId > 0) {
+        const parentExists = res.body.data.some(c => c.Id === item.ParentId);
         // Parent either exists in list or is valid reference
-        expect(item.ParentDir).to.be.a("number");
+        expect(item.ParentId).to.be.a("number");
       }
     });
   });
@@ -118,7 +118,7 @@ docs {
     status: 200,
     message: "OK",
     data: [
-      { Id, Name, Url, ParentDir, Extension }
+      { Id, Name, Url, ParentId, Extension }
     ]
   }
 

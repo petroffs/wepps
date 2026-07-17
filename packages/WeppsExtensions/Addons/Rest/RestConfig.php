@@ -162,7 +162,7 @@ class RestConfig
 					'goods.categories' => [
 						'class' => RestV1APP::class,
 						'method' => 'getGoodsNavigator',
-						'note' => 'Get list of goods categories with ParentDir for tree building',
+						'note' => 'Get list of goods categories with ParentId for tree building',
 					],
 					'goods.favorites' => [
 						'class' => RestV1APP::class,
@@ -797,7 +797,6 @@ class RestConfig
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
 							'url' => ['type' => 'string', 'required' => true],
-							'parentDir' => ['type' => 'int2', 'required' => true],
 						],
 					],
 					'goods.variations' => [
@@ -854,7 +853,7 @@ class RestConfig
 						'method' => 'putOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update order by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'note' => 'M2M: Update order by id. ID can be passed in JSON body {"id": 123, ...}',
 					],
 					// ===== Goods =====
 					'goods' => [
@@ -862,7 +861,18 @@ class RestConfig
 						'method' => 'putGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'note' => 'M2M: Update goods by id. ID can be passed in JSON body {"id": 123, ...}',
+					],
+					'goods.navigator' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsNavigator',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods.navigator by id. ID can be passed in JSON body {"id": 123, ...}',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'parentId' => ['type' => 'int', 'required' => false],
+						],
 					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,

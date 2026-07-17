@@ -113,7 +113,7 @@ class Navigator
 			Exception::error404();
 		}
 		$this->child = $this->data->getChild($this->content['Id']);
-		$this->parent = $this->data->getChild($this->content['ParentDir']);
+		$this->parent = $this->data->getChild($this->content['ParentId']);
 		$this->data->setConcat("if (t.NameMenu!='',t.NameMenu,t.Name) as NameMenu");
 		$this->way = $this->data->getWay($this->content['Id']);
 		$this->nav = $this->data->getNav($this->navLevel);

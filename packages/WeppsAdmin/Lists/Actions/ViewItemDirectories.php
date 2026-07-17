@@ -17,7 +17,7 @@ class ViewItemDirectories extends Request {
 			}
 			$this->element['Id'] = 'add'; 
 			$this->element['Name'] = 'Новый раздел'; 
-			$this->element['ParentDir_SelectChecked'] = $element['Id']; 
+			$this->element['ParentId_SelectChecked'] = $element['Id']; 
 			$this->element['Template_SelectChecked'] = ""; 
 			$this->element['Extension_SelectChecked'] = "";
 		}

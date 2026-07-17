@@ -199,7 +199,7 @@ class RestV1APP extends RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",
+			"SELECT Id, Name, Url, ParentId, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentId = ? AND Id not in (?) ORDER BY Priority DESC",
 			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
 		);
 

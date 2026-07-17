@@ -186,7 +186,7 @@ class RestV1M2M extends RestV1
 	public function getGoodsNavigator(): array
 	{
 		$res = Connect::$instance->fetch(
-			"SELECT Id, Guid, Name, Url, ParentDir, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentDir = ? AND Id not in (?) ORDER BY Priority DESC",
+			"SELECT Id, Guid, Name, Url, ParentId, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentId = ? AND Id not in (?) ORDER BY Priority DESC",
 			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
 		);
 
@@ -203,19 +203,36 @@ class RestV1M2M extends RestV1
 	public function postGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
-		return $this->create('Navigator', $records);
+		$this->getUtils('s_Navigator')->setAfter(function ($results, $tableName) {
+			if (empty($results)) {
+				return null;
+			}
+			$ids = [];
+			foreach ($results as $value) {
+				if ($value['status'] === 201 && isset($value['data']['id'])) {
+					$ids[] = (int) $value['data']['id'];
+				}
+			}
+			if (empty($ids)) {
+				return null;
+			}
+			$sql = "UPDATE s_Navigator SET ParentId=?, Extension=? where Id in (" . Connect::$instance->in($ids) . ")";
+			Connect::$instance->query($sql, [(Connect::$projectServices['navigator']['catalog'] ?? 0), (Connect::$projectServices['extensions']['catalog'] ?? 0), ...$ids]);
+			//Utils::debug($results,21);
+		});
+		return $this->create('s_Navigator', $records);
 	}
 
 	public function putGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
-		return $this->update('Navigator', $records);
+		return $this->update('s_Navigator', $records);
 	}
 
 	public function deleteGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
-		return $this->getUtils('Navigator')->remove($records);
+		return $this->getUtils('s_Navigator')->remove($records);
 	}
 
 	/**

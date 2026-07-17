@@ -113,8 +113,8 @@ class Language
 					$resParall2[$key]['Template'] = $value['Template'];
 				if (isset($value['NGroup']))
 					$resParall2[$key]['NGroup'] = $value['NGroup'];
-				if (isset($value['ParentDir']))
-					$resParall2[$key]['ParentDir'] = $value['ParentDir'];
+				if (isset($value['ParentId']))
+					$resParall2[$key]['ParentId'] = $value['ParentId'];
 				if (isset($value['Alias']))
 					$resParall2[$key]['Alias'] = $value['Alias'];
 				if (isset($value['Url']))
