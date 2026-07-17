@@ -226,12 +226,33 @@ class RestV1M2M extends RestV1
 	public function putGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
+		$ids = array_column($records, 'id');
+		$sql = "SELECT Id as id FROM s_Navigator WHERE Extension != '" . (Connect::$projectServices['extensions']['catalog']) . "' AND Id IN (" . Connect::$instance->in($ids) . ")";
+		$res = Connect::$instance->fetch($sql, $ids);
+		if (!empty($res)) {
+			$invalidIds = array_column($res, 'id');
+			return [
+				'status' => 400,
+				'message' => 'Invalid id values provided',
+				'data' => ['invalid_ids' => $invalidIds],
+			];
+		}
 		return $this->update('s_Navigator', $records);
 	}
 
 	public function deleteGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
+		$sql = "SELECT Id as id FROM s_Navigator WHERE Extension != '" . (Connect::$projectServices['extensions']['catalog']) . "' AND Id IN (" . Connect::$instance->in($records) . ")";
+		$res = Connect::$instance->fetch($sql, $records);
+		if (!empty($res)) {
+			$invalidIds = array_column($res, 'id');
+			return [
+				'status' => 400,
+				'message' => 'Invalid id values provided',
+				'data' => ['invalid_ids' => $invalidIds],
+			];
+		}
 		return $this->getUtils('s_Navigator')->remove($records);
 	}
 
