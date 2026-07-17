@@ -940,6 +940,13 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
+					'goods.navigator' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsNavigator',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods.navigator by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsVariations',
