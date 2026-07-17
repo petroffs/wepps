@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{base_url}}/rest/m2m/statuses
+  url: {{base_url}}/rest/m2m/goods.statuses
   body: json
   auth: inherit
 }
@@ -13,10 +13,16 @@ post {
 body:json {
   {
     "data": [
-      "guid": "string",
-      "name": "string",
-      "priority": 0,
-      "is_hidden": 0
+      {
+        "guid": "1af5f666-81eb-11f1-8589-00090ffe0001",
+        "name": "Статус Тест",
+        "alias": "statusNew"
+      },
+      {
+        "guid": "202eb10c-81eb-11f1-8589-00090ffe0001",
+        "name": "Статус Тест 2",
+        "alias": "statusNew2"
+      }
     ]
   }
 }

@@ -5,7 +5,7 @@ meta {
 }
 
 put {
-  url: {{base_url}}/rest/m2m/statuses
+  url: {{base_url}}/rest/m2m/goods.statuses
   body: json
   auth: inherit
 }
@@ -14,11 +14,13 @@ body:json {
   {
     "data": [
       {
-        "id": 0,
-        "guid": "string",
-        "name": "string",
-        "priority": 0,
-        "is_hidden": 0
+        "id": 6,
+        "name": "Статус Тест 6",
+        "priority" : 20
+      },
+      {
+        "id": 1,
+        "name": "Статус Тест 7"
       }
     ]
   }

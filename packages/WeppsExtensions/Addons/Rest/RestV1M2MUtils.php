@@ -671,6 +671,20 @@ class RestV1M2MUtils
 			if (empty($uniqueValues))
 				continue;
 
+			// Проверка дубликатов в текущем batch по уникальному полю
+			foreach ($valueIndexMap as $lower => $indexes) {
+				if (count($indexes) > 1) {
+					$original = $this->extractFieldValue($records[$indexes[0]], $dbField) ?? $lower;
+					foreach ($indexes as $index) {
+						$result[$index] = [
+							'status' => 409,
+							'message' => "Duplicate {$apiName}: {$original}",
+							'data' => null,
+						];
+					}
+				}
+			}
+
 			$inValues = Connect::$instance->in($uniqueValues);
 			$params = $uniqueValues;
 			$excludeClause = '';

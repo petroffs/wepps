@@ -650,6 +650,13 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Get goods categories (navigators)',
 					],
+					'goods.statuses' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getGoodsStatuses',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get goods statuses',
+					],
 					'goods.attributes' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsAttributes',
@@ -799,6 +806,19 @@ class RestConfig
 							'url' => ['type' => 'string', 'required' => true],
 						],
 					],
+					'goods.statuses' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsStatuses',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Create goods status(es). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'guid' => ['type' => 'guid', 'required' => true],
+							'name' => ['type' => 'string', 'required' => true],
+							'alias' => ['type' => 'string', 'required' => true],
+							'priority' => ['type' => 'int', 'required' => false],
+						],
+					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoodsVariations',
@@ -874,6 +894,13 @@ class RestConfig
 							'parentId' => ['type' => 'int', 'required' => false],
 						],
 					],
+					'goods.statuses' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsStatuses',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods.statuses by id. ID can be passed in JSON body {"id": 123, ...}',
+					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsVariations',
@@ -946,6 +973,13 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods.navigator by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					'goods.statuses' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsStatuses',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods.statuses by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,

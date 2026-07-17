@@ -216,7 +216,7 @@ class RestV1M2M extends RestV1
 			if (empty($ids)) {
 				return null;
 			}
-			$sql = "UPDATE s_Navigator SET ParentId=?, Extension=? where Id in (" . Connect::$instance->in($ids) . ")";
+			$sql = "UPDATE {$tableName} SET ParentId=?, Extension=? where Id in (" . Connect::$instance->in($ids) . ")";
 			Connect::$instance->query($sql, [(Connect::$projectServices['navigator']['catalog'] ?? 0), (Connect::$projectServices['extensions']['catalog'] ?? 0), ...$ids]);
 			//Utils::debug($results,21);
 		});
@@ -234,6 +234,77 @@ class RestV1M2M extends RestV1
 		$records = $this->normalizeInput();
 		return $this->getUtils('s_Navigator')->remove($records);
 	}
+
+	public function getGoodsStatuses(): array
+	{
+		$obj = $this->getUtils('s_Vars');
+		$obj->setOrderBy('Priority asc');
+		$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority');
+		$obj->setParams(['ПродукцияСтатусы']);
+		return $obj->fetch($this->get, 't.VarsGroup = ?');
+	}
+
+	public function postGoodsStatuses(): array
+	{
+		$records = $this->normalizeInput();
+		$this->getUtils('s_Vars')->setAfter(function ($results, $tableName) {
+			if (empty($results)) {
+				return null;
+			}
+			$ids = [];
+			foreach ($results as $value) {
+				if ($value['status'] === 201 && isset($value['data']['id'])) {
+					$ids[] = (int) $value['data']['id'];
+				}
+			}
+			if (empty($ids)) {
+				return null;
+			}
+			$sql = "SELECT MAX(Priority) Co FROM s_Vars WHERE VarsGroup = 'ПродукцияСтатусы'";
+			$max = Connect::$instance->fetch($sql)[0]['Co'] ?? 0;
+			$max = round($max / 5) * 5;
+			foreach ($ids as $id) {
+				$max += 5;
+				Connect::$instance->query("UPDATE {$tableName} SET VarsGroup='ПродукцияСтатусы',Priority=? where Id=?", [$max, $id]);
+			}
+		});
+		return $this->create('s_Vars', $records);
+	}
+
+	public function putGoodsStatuses(): array
+	{
+		$records = $this->normalizeInput();
+		$ids = array_column($records, 'id');
+		$sql = "SELECT Id as id FROM s_Vars WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($ids) . ")";
+		$res = Connect::$instance->fetch($sql, $ids);
+		if (!empty($res)) {
+			$invalidIds = array_column($res, 'id');
+			return [
+				'status' => 400,
+				'message' => 'Invalid id values provided',
+				'data' => ['invalid_ids' => $invalidIds],
+			];
+		}
+		return $this->update('s_Vars', $records);
+	}
+
+	public function deleteGoodsStatuses(): array
+	{
+		$records = $this->normalizeInput();
+		$sql = "SELECT Id as id FROM s_Vars WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($records) . ")";
+		$res = Connect::$instance->fetch($sql, $records);
+		if (!empty($res)) {
+			$invalidIds = array_column($res, 'id');
+			return [
+				'status' => 400,
+				'message' => 'Invalid id values provided',
+				'data' => ['invalid_ids' => $invalidIds],
+			];
+		}
+		return $this->getUtils('s_Vars')->remove($records);
+	}
+
+
 
 	/**
 	 * M2M: GET получить вариации товаров
