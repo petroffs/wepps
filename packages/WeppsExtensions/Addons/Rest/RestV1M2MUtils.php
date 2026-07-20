@@ -91,13 +91,22 @@ class RestV1M2MUtils
 	private ?string $orderBy = null;
 
 	/**
-	 * Callback вызываемый перед пакетной вставкой/обновлением (addBatch, setBatch).
-	 * Получает (items: array, tableName: string) где items - массив отфильтрованных записей.
+	 * Callback вызываемый перед пакетной вставкой/обновлением (addBatch, setBatch, remove).
+	 * Получает (items: array, tableName: string, utils: self) где items - массив элементов batch-операции.
+	 * Для addBatch/setBatch это записи, для remove() это массив id или ['id' => int] элементов.
 	 * Может модифицировать items и вернуть обновленный массив, или вернуть null.
 	 * Выполняется ВНУТРИ транзакции; исключение откатит все изменения.
 	 * @var array<callable>
 	 */
 	private array $beforeCallbacks = [];
+
+	/**
+	 * Временное хранилище ошибок валидации, выставляемых callback-ами.
+	 * Формат: [index => ['status' => int, 'message' => string, 'data' => mixed], ...]
+	 * Используется только внутренне для batch-операций addBatch/setBatch/remove.
+	 * @var array<int,array>
+	 */
+	private array $validationErrors = [];
 
 	/**
 	 * Callbacks вызываемые после пакетной вставки/обновления (addBatch, setBatch).
@@ -119,13 +128,14 @@ class RestV1M2MUtils
 	}
 
 	/**
-	 * Установить callback вызываемый перед пакетной вставкой/обновлением (addBatch, setBatch).
-	 * Callback получает (items: array, tableName: string) где items - массив отфильтрованных записей.
+	 * Установить callback вызываемый перед пакетной вставкой/обновлением (addBatch, setBatch, remove).
+	 * Callback получает (items: array, tableName: string, utils: self) где items - массив элементов batch-операции.
+	 * Для addBatch/setBatch это записи, для remove() это массив id или ['id' => int] элементов.
 	 * Может модифицировать items и вернуть обновленный массив, или вернуть null.
 	 * Выполняется ВНУТРИ транзакции; исключение откатит все изменения.
 	 * Можно вызвать несколько раз для добавления нескольких callbacks.
 	 * 
-	 * @param callable $callback fn(array $items, string $tableName): array|null
+	 * @param callable $callback fn(array $items, string $tableName, self $utils): array|null
 	 * @return self для цепочки вызовов
 	 */
 	public function setBefore(callable $callback): self
@@ -136,18 +146,75 @@ class RestV1M2MUtils
 
 	/**
 	 * Установить callback вызываемый после пакетной вставки/обновления (addBatch, setBatch).
-	 * Callback получает (results: array, tableName: string) где results - массив результатов операций.
-	 * Может выполнять дополнительную обработку (логирование, soft-delete и т.д.).
-	 * Выполняется ВНУТРИ транзакции перед COMMIT; исключение откатит все.
+	 * Callback получает (results: array, tableName: string, utils: self) где results - массив результатов операций.
+	 * Может выполнить дополнительную обработку (логирование, soft-delete и т.д.).
+	 * Если возвращает массив, он заменяет текущие результаты.
+	 * Выполняются ВНУТРИ транзакции перед COMMIT; исключение откатит все.
 	 * Можно вызвать несколько раз для добавления нескольких callbacks.
 	 * 
-	 * @param callable $callback fn(array $results, string $tableName): void
+	 * @param callable $callback fn(array $results, string $tableName, self $utils): array|null
 	 * @return self для цепочки вызовов
 	 */
 	public function setAfter(callable $callback): self
 	{
 		$this->afterCallbacks[] = $callback;
 		return $this;
+	}
+
+	private function runBeforeCallbacks(array $items): array
+	{
+		foreach ($this->beforeCallbacks as $callback) {
+			$result = $callback($items, $this->tableName, $this);
+			if (is_array($result)) {
+				$items = $result;
+			}
+		}
+		return $items;
+	}
+
+	/**
+	 * Установить встроенные validation errors по индексам batch-операции.
+	 *
+	 * Формат: [index => ['status' => int, 'message' => string, 'data' => mixed], ...]
+	 * Это позволяет callback-ам разнести ошибки по отдельным элементам без изменения структуры items.
+	 *
+	 * @param array $errors
+	 * @return self
+	 */
+	public function setValidationErrors(array $errors): self
+	{
+		$this->validationErrors = $errors;
+		return $this;
+	}
+
+	private function getValidationErrors(array $items): array
+	{
+		$errors = $this->validationErrors;
+		$this->validationErrors = [];
+		$normalized = [];
+
+		foreach ($errors as $index => $error) {
+			$normalized[$index] = is_array($error)
+				? [
+					'status' => $error['status'] ?? 400,
+					'message' => $error['message'] ?? 'Validation error',
+					'data' => $error['data'] ?? null,
+				]
+				: ['status' => 400, 'message' => (string) $error, 'data' => null];
+		}
+
+		return ['records' => $items, 'errors' => $normalized];
+	}
+
+	private function runAfterCallbacks(array $results): array
+	{
+		foreach ($this->afterCallbacks as $callback) {
+			$result = $callback($results, $this->tableName, $this);
+			if (is_array($result)) {
+				$results = $result;
+			}
+		}
+		return $results;
 	}
 
 	/**
@@ -173,7 +240,7 @@ class RestV1M2MUtils
 		}
 
 		// Before callback: вызывается на каждой странице
-		$beforeCallback = function (array $items, string $tableName) use ($currentPage) {
+		$beforeCallback = function (array $items, string $tableName, self $utils) use ($currentPage) {
 			// На первой странице: маркировка всех записей как кандидатов на скрытие
 			if ($currentPage === 1) {
 				Connect::$instance->query(
@@ -193,7 +260,7 @@ class RestV1M2MUtils
 		};
 
 		// After callback: вызывается на каждой странице
-		$afterCallback = function (array $results, string $tableName) use ($currentPage, $totalPages) {
+		$afterCallback = function (array $results, string $tableName, self $utils) use ($currentPage, $totalPages) {
 			// Только на последней странице: финализация скрытия
 			if ($currentPage !== $totalPages) {
 				return;
@@ -362,19 +429,34 @@ class RestV1M2MUtils
 		try {
 			$batch = Connect::$instance->transaction(
 				function ($args) {
-					// Before callbacks ВНУТРИ транзакции
-					foreach ($this->beforeCallbacks as $callback) {
-						$args['items'] = $callback($args['items'], $this->tableName) ?? $args['items'];
+					$args['items'] = $this->runBeforeCallbacks($args['items']);
+					$validation = $this->getValidationErrors($args['items']);
+					$records = $validation['records'];
+					$recordsErrors = $validation['errors'];
+					$results = $recordsErrors;
+					$validItems = [];
+
+					foreach ($records as $index => $record) {
+						if (isset($recordsErrors[$index])) {
+							continue;
+						}
+						$validItems[$index] = $record;
 					}
 
-					// Выполнить пакетную вставку
-					$results = $this->executeBatchInsert($args['items']);
+					// Выполнить пакетную вставку только по валидным записям
+					if (!empty($validItems)) {
+						$results += $this->executeBatchInsert($validItems);
+					}
 
 					// After callbacks ВНУТРИ транзакции (перед коммитом)
-					foreach ($this->afterCallbacks as $callback) {
-						$callback($results, $this->tableName);
+					$results = $this->runAfterCallbacks($results);
+					$ordered = [];
+					foreach ($records as $index => $_) {
+						if (isset($results[$index])) {
+							$ordered[$index] = $results[$index];
+						}
 					}
-					return $results;
+					return $ordered;
 				},
 				['items' => $toInsert]
 			);
@@ -422,15 +504,7 @@ class RestV1M2MUtils
 	public function setBatch(array $items): array
 	{
 		$results = [];
-		$toUpdate = [];
-
-		foreach ($items as $index => $record) {
-			if (!isset($record['id']) && !isset($record['Id'])) {
-				$results[$index] = ['status' => 400, 'message' => 'id required', 'data' => null];
-				continue;
-			}
-			$toUpdate[$index] = $record;
-		}
+		$toUpdate = $items;
 
 		if (!empty($toUpdate)) {
 			$dupeErrors = $this->checkDuplicate($toUpdate, true);
@@ -449,17 +523,34 @@ class RestV1M2MUtils
 		try {
 			$batch = Connect::$instance->transaction(
 				function ($args) {
-					// Before callbacks ВНУТРИ транзакции
-					foreach ($this->beforeCallbacks as $callback) {
-						$args['items'] = $callback($args['items'], $this->tableName) ?? $args['items'];
+					$args['items'] = $this->runBeforeCallbacks($args['items']);
+					$validation = $this->getValidationErrors($args['items']);
+					$records = $validation['records'];
+					$recordsErrors = $validation['errors'];
+					$results = $recordsErrors;
+					$validItems = [];
+
+					foreach ($records as $index => $record) {
+						if (isset($recordsErrors[$index])) {
+							continue;
+						}
+						$validItems[$index] = $record;
 					}
-					$results = $this->executeBatchUpdate($args['items']);
+
+					// Выполнить пакетное обновление только по валидным записям
+					if (!empty($validItems)) {
+						$results += $this->executeBatchUpdate($validItems);
+					}
 
 					// After callbacks ВНУТРИ транзакции (перед коммитом)
-					foreach ($this->afterCallbacks as $callback) {
-						$callback($results, $this->tableName);
+					$results = $this->runAfterCallbacks($results);
+					$ordered = [];
+					foreach ($records as $index => $_) {
+						if (isset($results[$index])) {
+							$ordered[$index] = $results[$index];
+						}
 					}
-					return $results;
+					return $ordered;
 				},
 				['items' => $toUpdate]
 			);
@@ -486,36 +577,43 @@ class RestV1M2MUtils
 			return ['status' => 400, 'message' => 'No IDs provided', 'data' => null];
 		}
 
-		$results = [];
+		$records = $this->runBeforeCallbacks($ids);
+		$validation = $this->getValidationErrors($records);
+		$records = $validation['records'];
+		$recordsErrors = $validation['errors'];
+		$results = $recordsErrors;
 
-		// Получить все существующие IDs одним запросом
-		$in = Connect::$instance->in($ids);
-		$existingRows = Connect::$instance->fetch(
-			"SELECT Id FROM {$this->tableName} WHERE Id IN ($in)",
-			$ids
-		);
+		$validItems = [];
+		foreach ($records as $index => $item) {
+			if (isset($recordsErrors[$index])) {
+				continue;
+			}
 
-		// Преобразовать в ассоциативный массив для быстрого поиска O(1)
-		$existingIds = array_flip(array_column($existingRows, 'Id'));
+			$id = (int) $item;
+			if ($id === 0) {
+				$results[$index] = ['status' => 404, 'message' => 'Already deleted or not found', 'data' => ['id' => $id]];
+				continue;
+			}
 
-		// Удалить каждый ID
-		foreach ($ids as $index => $id) {
-			try {
-				if (!isset($existingIds[$id])) {
-					$results[$index] = ['status' => 404, 'message' => 'Already deleted or not found', 'data' => ['id' => $id]];
-					continue;
-				}
+			$validItems[$index] = $id;
+		}
 
-				$model = new Data($this->tableName);
-				$model->remove($id);
+		if (!empty($validItems)) {
+			$results += $this->executeBatchRemove($validItems);
+		}
 
-				$results[$index] = ['status' => 200, 'message' => 'Deleted', 'data' => ['id' => $id]];
-			} catch (\Exception $e) {
-				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => ['id' => $id]];
+		foreach ($this->afterCallbacks as $callback) {
+			$callback($results, $this->tableName);
+		}
+
+		$ordered = [];
+		foreach ($records as $index => $_) {
+			if (isset($results[$index])) {
+				$ordered[$index] = $results[$index];
 			}
 		}
 
-		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
+		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $ordered];
 	}
 
 	// =========================================================================
@@ -543,14 +641,14 @@ class RestV1M2MUtils
 
 			foreach ($group as $item) {
 				$params = $item['data'];
-				
+
 				// JSON-кодируем массивы перед сохранением в БД
 				foreach ($params as $key => $value) {
 					if (is_array($value)) {
 						$params[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
 					}
 				}
-				
+
 				try {
 					$sth->execute($params);
 					$id = (int) Connect::$db->lastInsertId();
@@ -600,14 +698,14 @@ class RestV1M2MUtils
 
 			foreach ($group as $item) {
 				$params = $item['data'];
-				
+
 				// JSON-кодируем массивы перед сохранением в БД
 				foreach ($params as $key => $value) {
 					if (is_array($value)) {
 						$params[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
 					}
 				}
-				
+
 				$params['Id'] = $item['id'];
 				try {
 					$sth->execute($params);
@@ -620,6 +718,40 @@ class RestV1M2MUtils
 					$results[$item['index']] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 				}
 			}
+		}
+
+		return $results;
+	}
+
+	private function executeBatchRemove(array $items): array
+	{
+		$results = [];
+		$uniqueIds = array_values(array_unique($items));
+		$placeholders = Connect::$instance->in($uniqueIds);
+		$existingRows = Connect::$instance->fetch(
+			"SELECT Id FROM {$this->tableName} WHERE Id IN ($placeholders)",
+			$uniqueIds
+		);
+		$existingIds = array_flip(array_column($existingRows, 'Id'));
+
+		$model = new Data($this->tableName);
+		$resolved = [];
+		foreach ($items as $index => $id) {
+			if (!isset($existingIds[$id])) {
+				$results[$index] = ['status' => 404, 'message' => 'Already deleted or not found', 'data' => ['id' => $id]];
+				continue;
+			}
+
+			if (!isset($resolved[$id])) {
+				try {
+					$model->remove($id);
+					$resolved[$id] = ['status' => 200, 'message' => 'Deleted', 'data' => ['id' => $id]];
+				} catch (\Exception $e) {
+					$resolved[$id] = ['status' => 400, 'message' => $e->getMessage(), 'data' => ['id' => $id]];
+				}
+			}
+
+			$results[$index] = $resolved[$id];
 		}
 
 		return $results;

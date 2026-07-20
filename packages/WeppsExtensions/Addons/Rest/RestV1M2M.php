@@ -85,7 +85,8 @@ class RestV1M2M extends RestV1
 	public function deleteUsers(): array
 	{
 		$records = $this->normalizeInput();
-		return $this->getUtils('s_Users')->remove($records);
+		$ids = $this->normalizeIds($records);
+		return $this->getUtils('s_Users')->remove($ids);
 	}
 
 	// ========================================================================
@@ -123,7 +124,8 @@ class RestV1M2M extends RestV1
 	public function deleteOrders(): array
 	{
 		$records = $this->normalizeInput();
-		return $this->getUtils('Orders')->remove($records);
+		$ids = $this->normalizeIds($records);
+		return $this->getUtils('Orders')->remove($ids);
 	}
 
 	// ========================================================================
@@ -161,6 +163,7 @@ class RestV1M2M extends RestV1
 	public function deleteGoods(): array
 	{
 		$records = $this->normalizeInput();
+		$ids = $this->normalizeIds($records);
 		/**
 		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. 
 		 * Логика зависит от бизнес-требований. 
@@ -177,7 +180,7 @@ class RestV1M2M extends RestV1
 		// if (!empty($variationIds)) {
 		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
 		// }
-		return $this->getUtils('Products')->remove($records);
+		return $this->getUtils('Products')->remove($ids);
 	}
 
 	/**
@@ -203,7 +206,7 @@ class RestV1M2M extends RestV1
 	public function postGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
-		$this->getUtils('s_Navigator')->setAfter(function ($results, $tableName) {
+		$this->getUtils('s_Navigator')->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
 			if (empty($results)) {
 				return null;
 			}
@@ -218,7 +221,6 @@ class RestV1M2M extends RestV1
 			}
 			$sql = "UPDATE {$tableName} SET ParentId=?, Extension=? where Id in (" . Connect::$instance->in($ids) . ")";
 			Connect::$instance->query($sql, [(Connect::$projectServices['navigator']['catalog'] ?? 0), (Connect::$projectServices['extensions']['catalog'] ?? 0), ...$ids]);
-			//Utils::debug($results,21);
 		});
 		return $this->create('s_Navigator', $records);
 	}
@@ -226,34 +228,60 @@ class RestV1M2M extends RestV1
 	public function putGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
-		$ids = array_column($records, 'id');
-		$sql = "SELECT Id as id FROM s_Navigator WHERE Extension != '" . (Connect::$projectServices['extensions']['catalog']) . "' AND Id IN (" . Connect::$instance->in($ids) . ")";
-		$res = Connect::$instance->fetch($sql, $ids);
-		if (!empty($res)) {
-			$invalidIds = array_column($res, 'id');
-			return [
-				'status' => 400,
-				'message' => 'Invalid id values provided',
-				'data' => ['invalid_ids' => $invalidIds],
-			];
-		}
+		$this->getUtils('s_Navigator')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			$ids = array_column($records, 'id');
+			$extensionsId = Connect::$projectServices['extensions']['catalog'] ?? 0;
+			$catalogId = Connect::$projectServices['navigator']['catalog'] ?? 0;
+			$brandsId = Connect::$projectServices['navigator']['brands'] ?? 0;
+			$sql = "SELECT Id as id FROM {$tableName} WHERE (Extension != '{$extensionsId}' OR Id in ({$catalogId},{$brandsId})) AND Id IN (" . Connect::$instance->in($ids) . ")";
+			$res = Connect::$instance->fetch($sql, $ids);
+			if (!empty($res)) {
+				$invalidIds = array_column($res, 'id');
+				$validationErrors = [];
+				foreach ($records as $index => $record) {
+					if (in_array($record['id'] ?? 0, $invalidIds, true)) {
+						$validationErrors[$index] = [
+							'status' => 400,
+							'message' => 'Invalid id values provided',
+							'data' => ['id' => $record['id'] ?? 0],
+						];
+					}
+				}
+				$utils->setValidationErrors($validationErrors);
+			}
+			return $records;
+		});
+
 		return $this->update('s_Navigator', $records);
 	}
 
 	public function deleteGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
-		$sql = "SELECT Id as id FROM s_Navigator WHERE Extension != '" . (Connect::$projectServices['extensions']['catalog']) . "' AND Id IN (" . Connect::$instance->in($records) . ")";
-		$res = Connect::$instance->fetch($sql, $records);
-		if (!empty($res)) {
-			$invalidIds = array_column($res, 'id');
-			return [
-				'status' => 400,
-				'message' => 'Invalid id values provided',
-				'data' => ['invalid_ids' => $invalidIds],
-			];
-		}
-		return $this->getUtils('s_Navigator')->remove($records);
+		$ids = $this->normalizeIds($records);
+		$this->getUtils('s_Navigator')->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
+			$extensionsId = Connect::$projectServices['extensions']['catalog'] ?? 0;
+			$catalogId = Connect::$projectServices['navigator']['catalog'] ?? 0;
+			$brandsId = Connect::$projectServices['navigator']['brands'] ?? 0;
+			$sql = "SELECT Id as id FROM {$tableName} WHERE (Extension != '{$extensionsId}' OR Id in ({$catalogId},{$brandsId})) AND Id IN (" . Connect::$instance->in($ids) . ")";
+			$res = Connect::$instance->fetch($sql, $ids);
+			if (!empty($res)) {
+				$invalidIds = array_column($res, 'id');
+				$validationErrors = [];
+				foreach ($ids as $index => $id) {
+					if (in_array((int) $id, $invalidIds, true)) {
+						$validationErrors[$index] = [
+							'status' => 400,
+							'message' => 'Invalid id values provided',
+							'data' => ['id' => (int) $id],
+						];
+					}
+				}
+				$utils->setValidationErrors($validationErrors);
+			}
+			return $ids;
+		});
+		return $this->getUtils('s_Navigator')->remove($ids);
 	}
 
 	public function getGoodsStatuses(): array
@@ -268,7 +296,7 @@ class RestV1M2M extends RestV1
 	public function postGoodsStatuses(): array
 	{
 		$records = $this->normalizeInput();
-		$this->getUtils('s_Vars')->setAfter(function ($results, $tableName) {
+		$this->getUtils('s_Vars')->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
 			if (empty($results)) {
 				return null;
 			}
@@ -312,8 +340,9 @@ class RestV1M2M extends RestV1
 	public function deleteGoodsStatuses(): array
 	{
 		$records = $this->normalizeInput();
-		$sql = "SELECT Id as id FROM s_Vars WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($records) . ")";
-		$res = Connect::$instance->fetch($sql, $records);
+		$ids = $this->normalizeIds($records);
+		$sql = "SELECT Id as id FROM s_Vars WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($ids) . ")";
+		$res = Connect::$instance->fetch($sql, $ids);
 		if (!empty($res)) {
 			$invalidIds = array_column($res, 'id');
 			return [
@@ -322,7 +351,7 @@ class RestV1M2M extends RestV1
 				'data' => ['invalid_ids' => $invalidIds],
 			];
 		}
-		return $this->getUtils('s_Vars')->remove($records);
+		return $this->getUtils('s_Vars')->remove($ids);
 	}
 
 
@@ -878,6 +907,10 @@ class RestV1M2M extends RestV1
 			$results += $this->getUtils($tableName)->addBatch($valid);
 		}
 
+		if (!empty($results)) {
+			ksort($results);
+		}
+
 		$this->getUtils($tableName)->updateSearchIndex($results);
 
 		if (count($records) === 1) {
@@ -942,6 +975,10 @@ class RestV1M2M extends RestV1
 		$results = $errors;
 		if (!empty($valid)) {
 			$results += $this->getUtils($tableName)->setBatch($valid);
+		}
+
+		if (!empty($results)) {
+			ksort($results);
 		}
 
 		$this->getUtils($tableName)->updateSearchIndex($results);
@@ -1030,5 +1067,20 @@ class RestV1M2M extends RestV1
 		}
 		$records = (isset($raw[0]) && (is_array($raw[0]) || is_int($raw[0]))) ? $raw : [$raw];
 		return $records;
+	}
+
+	private function normalizeIds(array $records): array
+	{
+		$ids = [];
+		foreach ($records as $record) {
+			if (is_scalar($record)) {
+				$ids[] = (int) $record;
+				continue;
+			}
+			if (is_array($record) && isset($record['id'])) {
+				$ids[] = (int) $record['id'];
+			}
+		}
+		return array_values(array_filter($ids, fn($id) => $id > 0));
 	}
 }
