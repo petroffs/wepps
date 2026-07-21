@@ -228,6 +228,8 @@ class RestV1M2M extends RestV1
 	public function putGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
+
+		// Проверяем, допустимы ли идентификаторы из входящего массива
 		$this->getUtils('s_Navigator')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
 			$ids = array_column($records, 'id');
 			$extensionsId = Connect::$projectServices['extensions']['catalog'] ?? 0;
@@ -236,18 +238,7 @@ class RestV1M2M extends RestV1
 			$sql = "SELECT Id as id FROM {$tableName} WHERE (Extension != '{$extensionsId}' OR Id in ({$catalogId},{$brandsId})) AND Id IN (" . Connect::$instance->in($ids) . ")";
 			$res = Connect::$instance->fetch($sql, $ids);
 			if (!empty($res)) {
-				$invalidIds = array_column($res, 'id');
-				$validationErrors = [];
-				foreach ($records as $index => $record) {
-					if (in_array($record['id'] ?? 0, $invalidIds, true)) {
-						$validationErrors[$index] = [
-							'status' => 400,
-							'message' => 'Invalid id values provided',
-							'data' => ['id' => $record['id'] ?? 0],
-						];
-					}
-				}
-				$utils->setValidationErrors($validationErrors);
+				$utils->setValidationErrors($this->buildInvalidIdValidationErrors($records, array_column($res, 'id')));
 			}
 			return $records;
 		});
@@ -259,6 +250,8 @@ class RestV1M2M extends RestV1
 	{
 		$records = $this->normalizeInput();
 		$ids = $this->normalizeIds($records);
+
+		// Проверяем, допустимы ли идентификаторы из входящего массива
 		$this->getUtils('s_Navigator')->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
 			$extensionsId = Connect::$projectServices['extensions']['catalog'] ?? 0;
 			$catalogId = Connect::$projectServices['navigator']['catalog'] ?? 0;
@@ -266,18 +259,7 @@ class RestV1M2M extends RestV1
 			$sql = "SELECT Id as id FROM {$tableName} WHERE (Extension != '{$extensionsId}' OR Id in ({$catalogId},{$brandsId})) AND Id IN (" . Connect::$instance->in($ids) . ")";
 			$res = Connect::$instance->fetch($sql, $ids);
 			if (!empty($res)) {
-				$invalidIds = array_column($res, 'id');
-				$validationErrors = [];
-				foreach ($ids as $index => $id) {
-					if (in_array((int) $id, $invalidIds, true)) {
-						$validationErrors[$index] = [
-							'status' => 400,
-							'message' => 'Invalid id values provided',
-							'data' => ['id' => (int) $id],
-						];
-					}
-				}
-				$utils->setValidationErrors($validationErrors);
+				$utils->setValidationErrors($this->buildInvalidIdValidationErrors($ids, array_column($res, 'id')));
 			}
 			return $ids;
 		});
@@ -296,6 +278,8 @@ class RestV1M2M extends RestV1
 	public function postGoodsStatuses(): array
 	{
 		$records = $this->normalizeInput();
+
+		// После создания новых статусов, обновляем их Priority по возрастанию (5, 10, 15, ...)
 		$this->getUtils('s_Vars')->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
 			if (empty($results)) {
 				return null;
@@ -317,23 +301,25 @@ class RestV1M2M extends RestV1
 				Connect::$instance->query("UPDATE {$tableName} SET VarsGroup='ПродукцияСтатусы',Priority=? where Id=?", [$max, $id]);
 			}
 		});
+
 		return $this->create('s_Vars', $records);
 	}
 
 	public function putGoodsStatuses(): array
 	{
 		$records = $this->normalizeInput();
-		$ids = array_column($records, 'id');
-		$sql = "SELECT Id as id FROM s_Vars WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($ids) . ")";
-		$res = Connect::$instance->fetch($sql, $ids);
-		if (!empty($res)) {
-			$invalidIds = array_column($res, 'id');
-			return [
-				'status' => 400,
-				'message' => 'Invalid id values provided',
-				'data' => ['invalid_ids' => $invalidIds],
-			];
-		}
+
+		// Проверяем, допустимы ли идентификаторы из входящего массива
+		$this->getUtils('s_Vars')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			$ids = array_column($records, 'id');
+			$sql = "SELECT Id as id FROM $tableName WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($ids) . ")";
+			$res = Connect::$instance->fetch($sql, $ids);
+			if (!empty($res)) {
+				$utils->setValidationErrors($this->buildInvalidIdValidationErrors($records, array_column($res, 'id')));
+			}
+			return $records;
+		});
+
 		return $this->update('s_Vars', $records);
 	}
 
@@ -341,16 +327,16 @@ class RestV1M2M extends RestV1
 	{
 		$records = $this->normalizeInput();
 		$ids = $this->normalizeIds($records);
-		$sql = "SELECT Id as id FROM s_Vars WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($ids) . ")";
-		$res = Connect::$instance->fetch($sql, $ids);
-		if (!empty($res)) {
-			$invalidIds = array_column($res, 'id');
-			return [
-				'status' => 400,
-				'message' => 'Invalid id values provided',
-				'data' => ['invalid_ids' => $invalidIds],
-			];
-		}
+
+		// Проверяем, допустимы ли идентификаторы из входящего массива
+		$this->getUtils('s_Vars')->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
+			$sql = "SELECT Id as id FROM $tableName WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($ids) . ")";
+			$res = Connect::$instance->fetch($sql, $ids);
+			if (!empty($res)) {
+				$utils->setValidationErrors($this->buildInvalidIdValidationErrors($ids, array_column($res, 'id')));
+			}
+			return $ids;
+		});
 		return $this->getUtils('s_Vars')->remove($ids);
 	}
 
@@ -1067,6 +1053,22 @@ class RestV1M2M extends RestV1
 		}
 		$records = (isset($raw[0]) && (is_array($raw[0]) || is_int($raw[0]))) ? $raw : [$raw];
 		return $records;
+	}
+
+	private function buildInvalidIdValidationErrors(array $records, array $invalidIds): array
+	{
+		$errors = [];
+		foreach ($records as $index => $record) {
+			$id = is_array($record) ? (int) ($record['id'] ?? 0) : (int) $record;
+			if (in_array($id, $invalidIds, true)) {
+				$errors[$index] = [
+					'status' => 400,
+					'message' => 'Invalid id values provided',
+					'data' => ['id' => $id],
+				];
+			}
+		}
+		return $errors;
 	}
 
 	private function normalizeIds(array $records): array
