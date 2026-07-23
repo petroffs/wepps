@@ -95,18 +95,18 @@ class RestV1M2M extends RestV1
 
 	public function getOrders(): array
 	{
-		$obj = $this->getUtils('Orders');
-		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		return $obj->fetch($this->get);
+		$utils = $this->getUtils('Orders');
+		$utils->setOrderBy('Id desc');
+		$utils->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		return $utils->fetch($this->get);
 	}
 
 	public function getOrdersItem(): array
 	{
-		$obj = $this->getUtils('Orders');
-		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
-		return $obj->item((int) ($this->get['id'] ?? 0));
+		$utils = $this->getUtils('Orders');
+		$utils->setOrderBy('Id desc');
+		$utils->setFields('Id,Guid,Name,IsHidden,UserId,Phone,Email,OStatus,OSum,ODate,ODelivery,OPayment,PostalCode,Address,City,Region,Country,JData,ODeliveryTariff,OPaymentTariff,ODeliveryDiscount,OPaymentDiscount');
+		return $utils->item((int) ($this->get['id'] ?? 0));
 	}
 
 	public function postOrders(): array
@@ -134,18 +134,18 @@ class RestV1M2M extends RestV1
 
 	public function getGoods()
 	{
-		$obj = $this->getUtils('Products');
-		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
-		return $obj->fetch($this->get);
+		$utils = $this->getUtils('Products');
+		$utils->setOrderBy('Id desc');
+		$utils->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
+		return $utils->fetch($this->get);
 	}
 
 	public function getGoodsItem(): array
 	{
-		$obj = $this->getUtils('Products');
-		$obj->setOrderBy('Id desc');
-		$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
-		return $obj->item((int) ($this->get['id'] ?? 0));
+		$utils = $this->getUtils('Products');
+		$utils->setOrderBy('Id desc');
+		$utils->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
+		return $utils->item((int) ($this->get['id'] ?? 0));
 	}
 
 	public function postGoods(): array
@@ -165,21 +165,9 @@ class RestV1M2M extends RestV1
 		$records = $this->normalizeInput();
 		$ids = $this->normalizeIds($records);
 		/**
-		 * ! Можем удалять связанные данные, например, вариации товара при удалении его изображения. 
+		 * ! Используйте setAfter() для удаления связанных данных (например, вариаций, изображений, файлов и т.д.)
 		 * Логика зависит от бизнес-требований. 
-		 * Рекомендуется обернуть в транзакцию Connect::$instance->transaction(...), чтобы избежать частичного удаления.
 		 */
-
-		// Например, если нужно удалить связанные вариации
-		// $variationIds = Connect::$instance->fetch(
-		// 	"SELECT Id FROM ProductsVariations WHERE ProductId IN (...)",
-		// 	$ids
-		// );
-		// $variationIds = array_column($variationIds, 'Id');
-		// Удалить вариации через utils (будет 1 запрос на проверку)
-		// if (!empty($variationIds)) {
-		// 	$this->getUtils('ProductsVariations')->remove($variationIds);
-		// }
 		return $this->getUtils('Products')->remove($ids);
 	}
 
@@ -188,20 +176,12 @@ class RestV1M2M extends RestV1
 	 */
 	public function getGoodsNavigator(): array
 	{
-		$res = Connect::$instance->fetch(
-			"SELECT Id, Guid, Name, Url, ParentId, Extension FROM s_Navigator WHERE IsHidden = 0 AND ParentId = ? AND Id not in (?) ORDER BY Priority DESC",
-			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
-		);
-
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+		$utils = $this->getUtils('s_Navigator');
+		$utils->setOrderBy('t.Priority asc');
+		$utils->setFields('Id, Guid, Name, Url, ParentId, Extension');
+		$utils->setParams([(Connect::$projectServices['navigator']['catalog'] ?? 0), (Connect::$projectServices['extensions']['catalog'] ?? 0)]);
+		return $utils->fetch($this->get, "t.IsHidden = 0 AND t.ParentId = ? AND t.Id not in (?)");
 	}
-
-	// public function getGoods() {
-	// 	$obj = $this->getUtils('Products');
-	// 	$obj->setOrderBy('Id desc');
-	// 	$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
-	// 	return $obj->fetch($this->get);
-	// }
 
 	public function postGoodsNavigator(): array
 	{
@@ -268,11 +248,11 @@ class RestV1M2M extends RestV1
 
 	public function getGoodsStatuses(): array
 	{
-		$obj = $this->getUtils('s_Vars');
-		$obj->setOrderBy('Priority asc');
-		$obj->setFields('Id,Guid,Name,Alias,IsHidden,Priority');
-		$obj->setParams(['ПродукцияСтатусы']);
-		return $obj->fetch($this->get, 't.VarsGroup = ?');
+		$utils = $this->getUtils('s_Vars');
+		$utils->setOrderBy('Priority asc');
+		$utils->setFields('Id,Guid,Name,Alias,IsHidden,Priority');
+		$utils->setParams(['ПродукцияСтатусы']);
+		return $utils->fetch($this->get, 't.VarsGroup = ?');
 	}
 
 	public function postGoodsStatuses(): array
@@ -293,7 +273,7 @@ class RestV1M2M extends RestV1
 			if (empty($ids)) {
 				return null;
 			}
-			$sql = "SELECT MAX(Priority) Co FROM s_Vars WHERE VarsGroup = 'ПродукцияСтатусы'";
+			$sql = "SELECT MAX(Priority) Co FROM {$tableName} WHERE VarsGroup = 'ПродукцияСтатусы'";
 			$max = Connect::$instance->fetch($sql)[0]['Co'] ?? 0;
 			$max = round($max / 5) * 5;
 			foreach ($ids as $id) {
@@ -340,7 +320,71 @@ class RestV1M2M extends RestV1
 		return $this->getUtils('s_Vars')->remove($ids);
 	}
 
+	/**
+	 * M2M: GET доступные фильтры для товаров (свойства и их значения)
+	 */
+	public function getGoodsAttributes(): array
+	{
+		$utils = $this->getUtils('s_Properties');
+		$utils->setOrderBy('Priority asc');
+		$utils->setFields('Id, Guid, Name, Alias, Priority, PGroup');
 
+		return $utils->fetch($this->get);
+	}
+
+	/**
+	 * M2M: GET доступные группы фильтров для товаров
+	 */
+	public function getGoodsAttributesGroups(): array
+	{
+		$utils = $this->getUtils('s_PropertiesGroups');
+		$utils->setOrderBy('Priority asc');
+		$utils->setFields('Id, Guid, Name, Alias, Priority');
+
+		return $utils->fetch($this->get);
+	}
+
+	/**
+	 * M2M: POST перезаписать все фильтры/свойства
+	 * Удаляет отсутствующие, обновляет существующие, добавляет новые
+	 */
+	public function postGoodsAttributes(): array
+	{
+		$records = $this->normalizeInput();
+		$this->getUtils('s_Properties')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			foreach ($records as &$value) {
+				$value['type'] = 'text-multi';
+				$value['group'] = $value['group'] ?? 1;
+			}
+			//Utils::debug($records, 1);
+			return $records;
+		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+			$sql = "SELECT MAX(Priority) Co FROM {$tableName} WHERE PGroup = 1";
+			$max = Connect::$instance->fetch($sql)[0]['Co'] ?? 0;
+			$max = round($max / 5) * 5;
+			foreach ($results as $value) {
+				$id = (int) ($value['data']['id'] ?? 0);
+				$max += 5;
+				Connect::$instance->query("UPDATE {$tableName} SET Priority=? where Id=?", [$max, $id]);
+			}
+			return $results;
+		});
+
+		return $this->create('s_Properties', $records);
+	}
+
+	public function putGoodsAttributes(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->update('s_Properties', $records);
+	}
+
+	public function deleteGoodsAttributes(): array
+	{
+		$records = $this->normalizeInput();
+		$ids = $this->normalizeIds($records);
+		return $this->getUtils('s_Properties')->remove($ids);
+	}
 
 	/**
 	 * M2M: GET получить вариации товаров
@@ -627,109 +671,6 @@ class RestV1M2M extends RestV1
 		);
 
 		return ['status' => 200, 'message' => 'Prices updated', 'data' => $res[0] ?? null];
-	}
-
-	/**
-	 * M2M: GET доступные фильтры для товаров (свойства и их значения)
-	 */
-	public function getGoodsFilters(): array
-	{
-		$category = (int) ($this->get['category'] ?? 0);
-		$search = $this->get['search'] ?? '';
-
-		$conditions = 't.IsHidden=0';
-		$params = [];
-
-		if ($category > 0) {
-			$conditions .= ' AND t.NavigatorId = ?';
-			$params[] = $category;
-		}
-		if ($search !== '') {
-			$conditions .= ' AND lower(t.Name) LIKE lower(?)';
-			$params[] = $search . '%';
-		}
-
-		$filters = new Filters();
-		$result = $filters->getFilters(['conditions' => $conditions, 'params' => $params]);
-		$grouped = [];
-		foreach ($result as $rows) {
-			$grouped[] = [
-				'id' => (int) $rows[0]['PId'] ?? 0,
-				'name' => $rows[0]['PName'] ?? '',
-				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
-			];
-		}
-
-		return ['status' => 200, 'message' => 'OK', 'data' => $grouped];
-	}
-
-	/**
-	 * M2M: POST перезаписать все фильтры/свойства
-	 * Удаляет отсутствующие, обновляет существующие, добавляет новые
-	 */
-	public function patchGoodsFilters(): array
-	{
-		$data = $this->normalizeInput()[0] ?? [];
-
-		$filtersList = $data['data'] ?? $data ?? [];
-		if (empty($filtersList)) {
-			return ['status' => 400, 'message' => 'data array required', 'data' => null];
-		}
-
-		// Получить текущие фильтры из БД
-		$existing = Connect::$instance->fetch(
-			"SELECT Id, Name FROM s_Properties ORDER BY Id"
-		);
-		$existingMap = [];
-		foreach ($existing as $item) {
-			$existingMap[(int) $item['Id']] = $item['Name'];
-		}
-
-		// Новые ID из переданного списка
-		$newIds = [];
-
-		// Обновить/добавить фильтры
-		foreach ($filtersList as $filter) {
-			$id = (int) ($filter['id'] ?? 0);
-			$name = $filter['name'] ?? '';
-
-			if (empty($name)) {
-				continue;
-			}
-
-			if ($id > 0) {
-				// Обновить существующий
-				if (isset($existingMap[$id])) {
-					Connect::$instance->query(
-						"UPDATE s_Properties SET Name = ? WHERE Id = ?",
-						[$name, $id]
-					);
-				}
-				$newIds[] = $id;
-			} else {
-				// Добавить новый
-				$newId = Connect::$instance->insert('s_Properties', [
-					'Name' => $name,
-					'Priority' => 0,
-					'IsHidden' => 0,
-				]);
-				if ($newId) {
-					$newIds[] = $newId;
-				}
-			}
-		}
-
-		// Удалить фильтры, которых нет в новом списке
-		foreach ($existingMap as $id => $name) {
-			if (!in_array($id, $newIds)) {
-				Connect::$instance->query(
-					"DELETE FROM s_Properties WHERE Id = ?",
-					[$id]
-				);
-			}
-		}
-
-		return ['status' => 200, 'message' => 'Filters updated', 'data' => null];
 	}
 
 	/**

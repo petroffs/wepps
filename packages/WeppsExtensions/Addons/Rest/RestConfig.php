@@ -663,11 +663,17 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Get available goods attributes (properties)',
-						'query_validation' => [
-							'category' => ['type' => 'int2', 'required' => false],
-							'search' => ['type' => 'string', 'required' => false],
-						],
 					],
+					'goods.attributesGroups' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getGoodsAttributesGroups',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get available goods attributes (properties)',
+					],
+
+
+
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsVariations',
@@ -819,6 +825,24 @@ class RestConfig
 							'priority' => ['type' => 'int', 'required' => false],
 						],
 					],
+					'goods.attributes' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsAttributes',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Create goods attribute(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'guid' => ['type' => 'guid', 'required' => true],
+							'name' => ['type' => 'string', 'required' => true],
+							'alias' => ['type' => 'string', 'required' => true],
+							'group' => ['type' => 'int', 'required' => false],
+							'priority' => ['type' => 'int', 'required' => false],
+						],
+					],
+
+
+
+
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoodsVariations',
@@ -901,6 +925,17 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Update goods.statuses by id. ID can be passed in JSON body {"id": 123, ...}',
 					],
+					'goods.attributes' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsAttributes',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods.attributes by id. ID can be passed in JSON body {"id": 123, ...}',
+					],
+
+
+
+
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsVariations',
@@ -981,6 +1016,17 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods.statuses by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
+					'goods.attributes' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsAttributes',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods.attributes by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+
+
+
+
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsVariations',
@@ -1001,15 +1047,6 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods variation image(s) via body. Format: {"data": [123, 456, ...]}'
-					],
-				],
-				// ===== PATCH - experimental =====
-				'patch' => [
-					'goods.filters' => [
-						'class' => RestV1M2M::class,
-						'method' => 'patchGoodsFilters',
-						'auth_required' => true,
-						'note' => 'M2M: Sync all goods filters/properties (overwrite)',
 					],
 				],
 			],
