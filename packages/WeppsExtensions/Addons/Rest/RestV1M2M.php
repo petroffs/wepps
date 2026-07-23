@@ -386,6 +386,74 @@ class RestV1M2M extends RestV1
 		return $this->getUtils('s_Properties')->remove($ids);
 	}
 
+	public function getGoodsAttributesValues(): array
+	{
+		$list = $this->get['list'] ?? '';
+		$listId = (int) ($this->get['listId'] ?? 0);
+		$listField = $this->get['listField'] ?? '';
+
+		$conditions = [];
+		$params = [];
+
+		if ($list !== '') {
+			$conditions[] = 't.TableName = ?';
+			$params[] = $list;
+		}
+
+		if ($listId > 0) {
+			$conditions[] = 't.TableNameId = ?';
+			$params[] = $listId;
+		}
+
+		if ($listField !== '') {
+			$conditions[] = 't.TableNameField = ?';
+			$params[] = $listField;
+		}
+
+		$utils = $this->getUtils('s_PropertiesValues');
+		$utils->setOrderBy('Priority asc');
+		$utils->setFields('Id, Guid, Name, Alias, TableName, TableNameId, TableNameField, PValue');
+
+		if (!empty($params)) {
+			$utils->setParams($params);
+		}
+
+		return $utils->fetch($this->get, $conditions ? implode(' AND ', $conditions) : null);
+	}
+
+	public function postGoodsAttributesValues(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->create('s_PropertiesValues', $records);
+	}
+
+	public function putGoodsAttributesValues(): array
+	{
+		$records = $this->normalizeInput();
+		return $this->update('s_PropertiesValues', $records);
+	}
+
+	public function deleteGoodsAttributesValues(): array
+	{
+		$records = $this->normalizeInput();
+		$ids = $this->normalizeIds($records);
+		return $this->getUtils('s_PropertiesValues')->remove($ids);
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * M2M: GET получить вариации товаров
 	 */

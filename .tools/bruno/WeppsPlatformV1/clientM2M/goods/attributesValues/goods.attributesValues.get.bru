@@ -11,8 +11,11 @@ get {
 }
 
 params:query {
+  ~listId: {{goods_id}}
+  ~listField: PCategory
+  ~list: Products
   ~page: 1
-  ~limit: 100
+  ~limit: 2
 }
 
 tests {
