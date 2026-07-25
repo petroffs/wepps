@@ -134,6 +134,11 @@ a:focus {
 	content: '';
 }
 
+.sidebar>ul {
+	position: sticky;
+	top: 0;
+}
+
 .sidebar label.list-search input:focus {
 	border-radius: var(--s2) var(--s2) 0 0;
 	border-bottom: 1px solid var(--color-active);
@@ -144,10 +149,9 @@ a:focus {
 	font-weight: 500;
 	line-height: 1.2;
 	padding: var(--s6) 0 var(--s) 0;
-}
-
-.sidebar .title.title-search {
-	padding-top: var(--s5);
+	overflow-wrap: anywhere;
+	word-break: break-word;
+	hyphens: auto;
 }
 
 .sidebar ul.dir>ul.dir {
@@ -170,6 +174,11 @@ a:focus {
 
 .sidebar>ul {
 	padding-bottom: var(--s2);
+}
+
+.centercontent>div {
+	position: sticky;
+	top: 0;
 }
 
 .centercontent>div h2 {

@@ -412,7 +412,7 @@ class RestV1M2M extends RestV1
 
 		$utils = $this->getUtils('s_PropertiesValues');
 		$utils->setOrderBy('Priority asc');
-		$utils->setFields('Id, Guid, Name, Alias, TableName, TableNameId, TableNameField, PValue');
+		$utils->setFields('Id, GuidSync, Name, Alias, TableName, TableNameId, TableNameField, PValue');
 
 		if (!empty($params)) {
 			$utils->setParams($params);
@@ -424,12 +424,24 @@ class RestV1M2M extends RestV1
 	public function postGoodsAttributesValues(): array
 	{
 		$records = $this->normalizeInput();
+		$this->getUtils('s_PropertiesValues')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			foreach ($records as &$value) {
+				$value['w_guid'] = Lists::getPropertiesValuesGuid((string) $value['list'], (string) $value['listField'], (string) $value['listId'], (string) $value['attributesId'], (string) $value['value']);
+			}
+			return $records;
+		});
 		return $this->create('s_PropertiesValues', $records);
 	}
 
 	public function putGoodsAttributesValues(): array
 	{
 		$records = $this->normalizeInput();
+		$this->getUtils('s_PropertiesValues')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			foreach ($records as &$value) {
+				$value['w_guid'] = Lists::getPropertiesValuesGuid((string) $value['list'], (string) $value['listField'], (string) $value['listId'], (string) $value['attributesId'], (string) $value['value']);
+			}
+			return $records;
+		});
 		return $this->update('s_PropertiesValues', $records);
 	}
 

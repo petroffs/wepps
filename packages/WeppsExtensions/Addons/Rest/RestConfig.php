@@ -865,6 +865,7 @@ class RestConfig
 						'note' => 'M2M: Create goods attribute values(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
+							'w_guid' => ['type' => 'guid', 'required' => false],
 							'attributesId' => ['type' => 'int', 'required' => true],
 							'alias' => ['type' => 'string', 'required' => true],
 							'list' => ['type' => 'string', 'required' => true],
@@ -872,6 +873,7 @@ class RestConfig
 							'listField' => ['type' => 'string', 'required' => true],
 							'value' => ['type' => 'string', 'required' => true],
 						],
+					],
 
 
 
@@ -879,266 +881,265 @@ class RestConfig
 
 
 
-						'goods.variations' => [
-							'class' => RestV1M2M::class,
-							'method' => 'postGoodsVariations',
-							'role_required' => [1],
-							'auth_required' => true,
-							'async' => false,
-							// ! сделать асинхронным (т.е. через s_Tasks, после тестирования), т.к. может быть много вариаций и долго обрабатываться
-							// 'async' => true,
-							'note' => 'M2M: Create goods variation(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
-							'validation' => [
-								//'name' => ['type' => 'string', 'required' => true],
-								'goodsId' => ['type' => 'int', 'required' => true],
-								'color' => ['type' => 'string', 'required' => false],
-								'size' => ['type' => 'string', 'required' => false],
-								'sku' => ['type' => 'string', 'required' => true],
-								'stocks' => ['type' => 'int', 'required' => false],
-							],
-						],
-						'goods.images' => [
-							'class' => RestV1M2M::class,
-							'method' => 'postGoodsImages',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Add image to goods',
-						],
-						'goods.imagesVariations' => [
-							'class' => RestV1M2M::class,
-							'method' => 'postGoodsImagesVariations',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Add image to goods variation',
+					'goods.variations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'async' => false,
+						// ! сделать асинхронным (т.е. через s_Tasks, после тестирования), т.к. может быть много вариаций и долго обрабатываться
+						// 'async' => true,
+						'note' => 'M2M: Create goods variation(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							//'name' => ['type' => 'string', 'required' => true],
+							'goodsId' => ['type' => 'int', 'required' => true],
+							'color' => ['type' => 'string', 'required' => false],
+							'size' => ['type' => 'string', 'required' => false],
+							'sku' => ['type' => 'string', 'required' => true],
+							'stocks' => ['type' => 'int', 'required' => false],
 						],
 					],
-					'put' => [
-						// ===== Users =====
-						'users' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putUsers',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
-							// validation - необязательный в put, inheritance от post, но можно переопределить.
-							// при этом id - ставится обязательным, т.к. без него не понятно что обновлять. 
-							// Остальные поля - необязательные, т.к. put - частичное обновление.
-							// 'validation' => [
-							// 	'id' => ['type' => 'int', 'required' => true],
-							// ]
-						],
-						// ===== Orders =====
-						'orders' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putOrders',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update order by id. ID can be passed in JSON body {"id": 123, ...}',
-						],
-						// ===== Goods =====
-						'goods' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoods',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods by id. ID can be passed in JSON body {"id": 123, ...}',
-						],
-						'goods.navigator' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsNavigator',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods.navigator by id. ID can be passed in JSON body {"id": 123, ...}',
-							'validation' => [
-								'id' => ['type' => 'int', 'required' => true],
-								'parentId' => ['type' => 'int', 'required' => false],
-							],
-						],
-						'goods.statuses' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsStatuses',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods.statuses by id. ID can be passed in JSON body {"id": 123, ...}',
-						],
-						'goods.attributes' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsAttributes',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods.attributes by id. ID can be passed in JSON body {"id": 123, ...}',
-						],
-						'goods.attributesValues' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsAttributesValues',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods.attributesValues by id. ID can be passed in JSON body {"id": 123, ...}',
-							'validation' => [
-								'id' => ['type' => 'int', 'required' => true],
-								'guid' => ['type' => 'guid', 'required' => false],
-								'attributesId' => ['type' => 'int', 'required' => true],
-								'alias' => ['type' => 'string', 'required' => true],
-								'list' => ['type' => 'string', 'required' => true],
-								'listId' => ['type' => 'int', 'required' => true],
-								'listField' => ['type' => 'string', 'required' => true],
-								'value' => ['type' => 'string', 'required' => true],
-							],
-						],
-
-
-
-
-
-
-						'goods.variations' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsVariations',
-							'role_required' => [1],
-							'auth_required' => true,
-							'async' => false,
-							// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
-							// 'async' => true,
-							'note' => 'M2M: Update goods variation(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
-						],
-						'goods.stocks' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsStocks',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods warehouse stocks',
-						],
-						'goods.prices' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsPrices',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods prices',
-						],
-						'goods.images' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsImages',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods image by id',
-						],
-						'goods.imagesVariations' => [
-							'class' => RestV1M2M::class,
-							'method' => 'putGoodsImagesVariations',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Update goods variation image by id',
-						],
+					'goods.images' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsImages',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Add image to goods',
 					],
-					'delete' => [
-						// ===== Users =====
-						'users' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteUsers',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete user by id(s) via body. Format: {"data": [123, 456, ...]}'
-							// validation - необязательный в delete, т.к. генерируется автоматически 
-							// в inheritEndpointConfig() и требует массив id для удаления.
-						],
-						// ===== Orders =====
-						'orders' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteOrders',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete order(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-						// ===== Goods =====
-						'goods' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoods',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods by id(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-						'goods.navigator' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoodsNavigator',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods.navigator by id(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-						'goods.statuses' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoodsStatuses',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods.statuses by id(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-						'goods.attributes' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoodsAttributes',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods.attributes by id(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-						'goods.attributesValues' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoodsAttributesValues',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods.attributesValues by id(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-
-
-
-
-
-
-						'goods.variations' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoodsVariations',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-						'goods.images' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoodsImages',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods image(s) via body. Format: {"data": [123, 456, ...]}'
-						],
-						'goods.imagesVariations' => [
-							'class' => RestV1M2M::class,
-							'method' => 'deleteGoodsImagesVariations',
-							'role_required' => [1],
-							'auth_required' => true,
-							'note' => 'M2M: Delete goods variation image(s) via body. Format: {"data": [123, 456, ...]}'
-						],
+					'goods.imagesVariations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postGoodsImagesVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Add image to goods variation',
 					],
 				],
+				'put' => [
+					// ===== Users =====
+					'users' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putUsers',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						// validation - необязательный в put, inheritance от post, но можно переопределить.
+						// при этом id - ставится обязательным, т.к. без него не понятно что обновлять. 
+						// Остальные поля - необязательные, т.к. put - частичное обновление.
+						// 'validation' => [
+						// 	'id' => ['type' => 'int', 'required' => true],
+						// ]
+					],
+					// ===== Orders =====
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putOrders',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update order by id. ID can be passed in JSON body {"id": 123, ...}',
+					],
+					// ===== Goods =====
+					'goods' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoods',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods by id. ID can be passed in JSON body {"id": 123, ...}',
+					],
+					'goods.navigator' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsNavigator',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods.navigator by id. ID can be passed in JSON body {"id": 123, ...}',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'parentId' => ['type' => 'int', 'required' => false],
+						],
+					],
+					'goods.statuses' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsStatuses',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods.statuses by id. ID can be passed in JSON body {"id": 123, ...}',
+					],
+					'goods.attributes' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsAttributes',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods.attributes by id. ID can be passed in JSON body {"id": 123, ...}',
+					],
+					'goods.attributesValues' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsAttributesValues',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods.attributesValues by id. ID can be passed in JSON body {"id": 123, ...}',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'guid' => ['type' => 'guid', 'required' => false],
+							'attributesId' => ['type' => 'int', 'required' => true],
+							'alias' => ['type' => 'string', 'required' => true],
+							'list' => ['type' => 'string', 'required' => true],
+							'listId' => ['type' => 'int', 'required' => true],
+							'listField' => ['type' => 'string', 'required' => true],
+							'value' => ['type' => 'string', 'required' => true],
+						],
+					],
+
+
+
+
+
+
+					'goods.variations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'async' => false,
+						// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
+						// 'async' => true,
+						'note' => 'M2M: Update goods variation(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+					],
+					'goods.stocks' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsStocks',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods warehouse stocks',
+					],
+					'goods.prices' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsPrices',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods prices',
+					],
+					'goods.images' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsImages',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods image by id',
+					],
+					'goods.imagesVariations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putGoodsImagesVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update goods variation image by id',
+					],
+				],
+				'delete' => [
+					// ===== Users =====
+					'users' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteUsers',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete user by id(s) via body. Format: {"data": [123, 456, ...]}'
+						// validation - необязательный в delete, т.к. генерируется автоматически 
+						// в inheritEndpointConfig() и требует массив id для удаления.
+					],
+					// ===== Orders =====
+					'orders' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteOrders',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete order(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					// ===== Goods =====
+					'goods' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoods',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					'goods.navigator' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsNavigator',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods.navigator by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					'goods.statuses' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsStatuses',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods.statuses by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					'goods.attributes' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsAttributes',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods.attributes by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					'goods.attributesValues' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsAttributesValues',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods.attributesValues by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+
+
+
+
+
+
+					'goods.variations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					'goods.images' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsImages',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods image(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					'goods.imagesVariations' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteGoodsImagesVariations',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete goods variation image(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+				],
+			],
+			'cli' => [
 				'cli' => [
-					'cli' => [
-						'removeLogLocal' => [
-							'class' => RestCli::class,
-							'method' => 'removeLogLocal',
-							'note' => 'Remove local log files',
-						],
-						'test' => [
-							'class' => RestCli::class,
-							'method' => 'cliTest',
-							'note' => 'Execute CLI test operations',
-						],
-						'tasks.process' => [
-							'class' => RestCli::class,
-							'method' => 'tasksProcess',
-							'note' => 'Process pending async tasks from s_Tasks queue',
-						],
-						'tasks.result' => [
-							'class' => RestCli::class,
-							'method' => 'tasksResult',
-							'note' => 'Get task result by id from s_Tasks queue',
-						],
+					'removeLogLocal' => [
+						'class' => RestCli::class,
+						'method' => 'removeLogLocal',
+						'note' => 'Remove local log files',
+					],
+					'test' => [
+						'class' => RestCli::class,
+						'method' => 'cliTest',
+						'note' => 'Execute CLI test operations',
+					],
+					'tasks.process' => [
+						'class' => RestCli::class,
+						'method' => 'tasksProcess',
+						'note' => 'Process pending async tasks from s_Tasks queue',
+					],
+					'tasks.result' => [
+						'class' => RestCli::class,
+						'method' => 'tasksResult',
+						'note' => 'Get task result by id from s_Tasks queue',
 					],
 				],
-			]
+			],
 		];
 
 		$config['m2m'] = self::inheritEndpointConfig($config['m2m']);

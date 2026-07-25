@@ -1,4 +1,4 @@
-<div class="lists-items-item w_flex_max">
+<div class="lists-items-item">
 	<h2>{$content.Name}</h2>
 	<form class="list-data"
 		action="javascript:formWepps.send('save','list-data-form','/packages/WeppsAdmin/Lists/Request.php')"

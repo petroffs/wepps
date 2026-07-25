@@ -1,5 +1,5 @@
 <div class="sidebar w_flex_15 w_flex_11_view_medium w_flex w_flex_col w_hide w_flex_view_medium">
-	<ul class="w_list w_flex_max">
+	<ul class="w_list">
 		<li>
 			<div class="title">
 				<a href="" id="sidebar-show"><i class="bi bi-list"></i></a>
@@ -8,7 +8,7 @@
 	</ul>
 </div>
 <div class="sidebar w_flex_15 w_flex_11_view_medium w_flex w_flex_col w_hide_view_medium">
-	<ul class="w_list w_flex_max">
+	<ul class="w_list">
 		<li>
 			<div class="title title-search">
 				<label class="w_label w_input list-search">

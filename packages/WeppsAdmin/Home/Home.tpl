@@ -5,8 +5,8 @@
 	</ul>
 </div>
 <div class="w_flex w_flex_row w_flex_row_str">
-	<div class="w_flex_11 w_flex w_flex_col centercontent">
-		<div class="w_flex_max w_padding">
+	<div class="centercontent w_flex_11 w_flex w_flex_col">
+		<div class="w_padding">
 			<h2>{$content.Name}</h2>
 			<div class="w_overflow_auto">
 				<div class="lists-items w_flex w_flex_row w_flex_row_str w_flex_start w_flex_margin">

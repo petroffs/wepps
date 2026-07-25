@@ -24,7 +24,8 @@ class BotTest extends Bot {
 			$id = $value['TableNameId'];
 			$prop = $value['Name'];
 			$v = $value['PValue'];
-			$guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
+			// $guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
+			$guid = Lists::getPropertiesValuesGuid((string)$list,(string)$field,(string)$id,(string)$prop,(string)$v);
 			$str .= "update s_PropertiesValues set Guid='{$guid}' where Id='{$value['Id']}';\n";
 		}
 		Connect::$db->exec($str);

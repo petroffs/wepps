@@ -412,6 +412,7 @@ class RestV1M2MUtils
 	{
 		$results = [];
 		$toInsert = [];
+		$inputIndexes = array_keys($records);
 
 		$dupeErrors = $this->checkDuplicate($records, false);
 		foreach ($records as $index => $record) {
@@ -422,52 +423,37 @@ class RestV1M2MUtils
 			$toInsert[$index] = $record;
 		}
 
-		if (empty($toInsert)) {
-			return $results;
-		}
+		if (!empty($toInsert)) {
+			$items = $this->runBeforeCallbacks($toInsert);
+			$validation = $this->getValidationErrors($items);
+			$validatedRecords = $validation['records'];
+			$recordsErrors = $validation['errors'];
+			$validItems = [];
 
-		try {
-			$batch = Connect::$instance->transaction(
-				function ($args) {
-					$args['items'] = $this->runBeforeCallbacks($args['items']);
-					$validation = $this->getValidationErrors($args['items']);
-					$records = $validation['records'];
-					$recordsErrors = $validation['errors'];
-					$results = $recordsErrors;
-					$validItems = [];
+			foreach ($validatedRecords as $index => $record) {
+				if (isset($recordsErrors[$index])) {
+					$results[$index] = $recordsErrors[$index];
+					continue;
+				}
+				$validItems[$index] = $record;
+			}
 
-					foreach ($records as $index => $record) {
-						if (isset($recordsErrors[$index])) {
-							continue;
-						}
-						$validItems[$index] = $record;
-					}
-
-					// Выполнить пакетную вставку только по валидным записям
-					if (!empty($validItems)) {
-						$results += $this->executeBatchInsert($validItems);
-					}
-
-					// After callbacks ВНУТРИ транзакции (перед коммитом)
-					$results = $this->runAfterCallbacks($results);
-					$ordered = [];
-					foreach ($records as $index => $_) {
-						if (isset($results[$index])) {
-							$ordered[$index] = $results[$index];
-						}
-					}
-					return $ordered;
-				},
-				['items' => $toInsert]
-			);
-			$results += $batch;
-		} catch (\Exception $e) {
-			foreach ($toInsert as $index => $_) {
-				$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+			if (!empty($validItems)) {
+				$batchResults = $this->executeBatchInsert($validItems);
+				foreach ($batchResults as $index => $result) {
+					$results[$index] = $result;
+				}
 			}
 		}
 
-		return $results;
+		$ordered = [];
+		foreach ($inputIndexes as $index) {
+			if (isset($results[$index])) {
+				$ordered[$index] = $results[$index];
+			}
+		}
+
+		return $ordered;
 	}
 
 	/**
@@ -627,45 +613,76 @@ class RestV1M2MUtils
 
 		foreach ($items as $index => $record) {
 			$mapped = $this->mapApiToDbFields($record);
-			$guid = $mapped['Guid'] ?? null;
+			$guid = $this->extractFieldValue($record, 'guid');
 			unset($mapped['Id'], $mapped['id']);
 			ksort($mapped);
 			$sig = implode(',', array_keys($mapped));
 			$groups[$sig][] = ['index' => $index, 'data' => $mapped, 'guid' => $guid];
 		}
 
-		foreach ($groups as $group) {
-			$prepared = Connect::$instance->prepare($group[0]['data']);
-			$sql = "INSERT IGNORE INTO {$this->tableName} {$prepared['insert']}";
-			$sth = Connect::$db->prepare($sql);
+		try {
+			$results = Connect::$instance->transaction(
+				function ($args) {
+					$results = [];
+					foreach ($args['groups'] as $group) {
+						$prepared = Connect::$instance->prepare($group[0]['data']);
+						$sql = "INSERT INTO {$this->tableName} {$prepared['insert']} ON DUPLICATE KEY UPDATE `Id` = LAST_INSERT_ID(`Id`)";
+						$sth = Connect::$db->prepare($sql);
 
-			foreach ($group as $item) {
-				$params = $item['data'];
+						foreach ($group as $item) {
+							$params = $item['data'];
 
-				// JSON-кодируем массивы перед сохранением в БД
-				foreach ($params as $key => $value) {
-					if (is_array($value)) {
-						$params[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
+							// JSON-кодируем массивы перед сохранением в БД
+							foreach ($params as $key => $value) {
+								if (is_array($value)) {
+									$params[$key] = json_encode($value, JSON_UNESCAPED_UNICODE);
+								}
+							}
+
+							$sth->execute($params);
+							$affectedRows = $sth->rowCount();
+							$id = (int) Connect::$db->lastInsertId();
+							$responseData = ['id' => $id, 'guid' => $item['guid']];
+
+							if ($affectedRows === 0 && $id > 0) {
+								// Дубликат — запись с таким уникальным ключом уже существует
+								$results[$item['index']] = [
+									'status' => 409,
+									'message' => 'Duplicate key constraint',
+									'data' => ['id' => $id, 'guid' => $item['guid']]
+								];
+							} elseif ($id > 0) {
+								$results[$item['index']] = ['status' => 201, 'message' => 'Created', 'data' => $responseData];
+							} else {
+								$results[$item['index']] = ['status' => 400, 'message' => 'Failed to insert record', 'data' => null];
+							}
+						}
 					}
-				}
 
-				try {
-					$sth->execute($params);
-					$id = (int) Connect::$db->lastInsertId();
-					$responseData = ['id' => $id];
-					if ($item['guid'] !== null) {
-						$responseData['guid'] = $item['guid'];
-					}
-					$results[$item['index']] = $id === 0
-						? ['status' => 409, 'message' => 'Duplicate insert', 'data' => null]
-						: ['status' => 201, 'message' => 'Created', 'data' => $responseData];
-				} catch (\Exception $e) {
-					$results[$item['index']] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
+					return $this->runAfterCallbacks($results);
+				},
+				['groups' => $groups]
+			);
+		} catch (\Exception $e) {
+			foreach ($items as $index => $_) {
+				if (!isset($results[$index])) {
+					$results[$index] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
 				}
 			}
+		} finally {
+			$this->resetAutoIncrement();
 		}
 
 		return $results;
+	}
+
+	private function resetAutoIncrement(): void
+	{
+		try {
+			Connect::$instance->query("ALTER TABLE `{$this->tableName}` AUTO_INCREMENT = 1");
+		} catch (\Exception $e) {
+			// Игнорируем ошибки сброса AUTO_INCREMENT
+		}
 	}
 
 	private function executeBatchUpdate(array $items): array
@@ -678,7 +695,7 @@ class RestV1M2MUtils
 			$data = $record;
 			unset($data['id'], $data['Id']);
 			$mapped = $this->mapApiToDbFields($data);
-			$guid = $mapped['Guid'] ?? null;
+			$guid = $this->extractFieldValue($record, 'guid');
 			unset($mapped['Id'], $mapped['id']);
 			ksort($mapped);
 
@@ -709,10 +726,7 @@ class RestV1M2MUtils
 				$params['Id'] = $item['id'];
 				try {
 					$sth->execute($params);
-					$responseData = ['id' => $item['id']];
-					if ($item['guid'] !== null) {
-						$responseData['guid'] = $item['guid'];
-					}
+					$responseData = ['id' => $item['id'], 'guid' => $item['guid']];
 					$results[$item['index']] = ['status' => 200, 'message' => 'Updated', 'data' => $responseData];
 				} catch (\Exception $e) {
 					$results[$item['index']] = ['status' => 400, 'message' => $e->getMessage(), 'data' => null];
@@ -767,9 +781,12 @@ class RestV1M2MUtils
 	 */
 	public function checkDuplicate(array $records, bool $forUpdate): array
 	{
-		$uniqueFields = $this->getUniqueFields(); // [DbField => apiName]
 		$result = array_fill_keys(array_keys($records), null);
+		if (empty($records)) {
+			return $result;
+		}
 
+		$uniqueFields = $this->getUniqueFields(); // [DbField => apiName]
 		if (empty($uniqueFields)) {
 			return $result;
 		}
@@ -777,11 +794,13 @@ class RestV1M2MUtils
 		$updateIds = [];
 		if ($forUpdate) {
 			foreach ($records as $item) {
-				if (!is_array($item))
+				if (!is_array($item)) {
 					continue;
+				}
 				$id = (int) ($item['id'] ?? $item['Id'] ?? 0);
-				if ($id > 0)
+				if ($id > 0) {
 					$updateIds[] = $id;
+				}
 			}
 		}
 
@@ -790,30 +809,33 @@ class RestV1M2MUtils
 			$valueIndexMap = [];
 
 			foreach ($records as $index => $item) {
-				if (!is_array($item) || ($result[$index] ?? null))
+				if (!is_array($item) || ($result[$index] ?? null)) {
 					continue;
-				$value = $this->extractFieldValue($item, $dbField);
+				}
+				$value = $this->extractFieldValue($item, $apiName);
 				if ($value !== null && $value !== '') {
 					$lower = strtolower((string) $value);
 					$uniqueValues[] = $lower;
-					$valueIndexMap[$lower][] = $index;
+					$valueIndexMap[$lower][] = ['index' => $index, 'original' => $value, 'guid' => $this->extractFieldValue($item, 'guid')];
 				}
 			}
 
-			if (empty($uniqueValues))
+			if (empty($uniqueValues)) {
 				continue;
+			}
 
 			// Проверка дубликатов в текущем batch по уникальному полю
-			foreach ($valueIndexMap as $lower => $indexes) {
-				if (count($indexes) > 1) {
-					$original = $this->extractFieldValue($records[$indexes[0]], $dbField) ?? $lower;
-					foreach ($indexes as $index) {
-						$result[$index] = [
-							'status' => 409,
-							'message' => "Duplicate {$apiName}: {$original}",
-							'data' => null,
-						];
-					}
+			foreach ($valueIndexMap as $entries) {
+				if (count($entries) <= 1) {
+					continue;
+				}
+				$original = $entries[0]['original'];
+				foreach ($entries as $entry) {
+					$result[$entry['index']] = [
+						'status' => 409,
+						'message' => "Duplicate key constraint: {$apiName} = {$original}",
+						'data' => ['guid' => $entry['guid'], $apiName => $original],
+					];
 				}
 			}
 
@@ -823,13 +845,13 @@ class RestV1M2MUtils
 
 			if ($forUpdate && !empty($updateIds)) {
 				$inIds = Connect::$instance->in($updateIds);
-				$excludeClause = " AND Id NOT IN ($inIds)";
+				$excludeClause = " AND `Id` NOT IN ($inIds)";
 				$params = array_merge($params, $updateIds);
 			}
 
 			try {
 				$rows = Connect::$instance->fetch(
-					"SELECT Id, {$dbField} FROM {$this->tableName} WHERE LOWER({$dbField}) IN ($inValues){$excludeClause}",
+					"SELECT `Id`, `{$dbField}` FROM `{$this->tableName}` WHERE `{$dbField}` IN ($inValues){$excludeClause}",
 					$params
 				);
 			} catch (\Exception $e) {
@@ -838,14 +860,15 @@ class RestV1M2MUtils
 
 			foreach ($rows as $row) {
 				$lower = strtolower((string) $row[$dbField]);
-				foreach ($valueIndexMap[$lower] ?? [] as $index) {
-					if ($result[$index] !== null)
+				foreach ($valueIndexMap[$lower] ?? [] as $entry) {
+					$index = $entry['index'];
+					if ($result[$index] !== null) {
 						continue;
-					$original = $this->extractFieldValue($records[$index], $dbField) ?? $lower;
+					}
 					$result[$index] = [
 						'status' => 409,
-						'message' => "Duplicate {$apiName}: {$original}",
-						'data' => ['id' => (int) $row['Id']],
+						'message' => "Duplicate key constraint: {$apiName} = {$entry['original']}",
+						'data' => ['id' => (int) $row['Id'], 'guid' => $entry['guid'], $apiName => $entry['original']],
 					];
 				}
 			}

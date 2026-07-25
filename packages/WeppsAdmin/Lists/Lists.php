@@ -718,7 +718,8 @@ class Lists
 		$str = "update s_PropertiesValues set IsHiddenCandidate=1 where {$arr['condition']};\n";
 		$ex = explode(":::", $value);
 		foreach ($ex as $v) {
-			$guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
+			//$guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
+			$guid = self::getPropertiesValuesGuid((string)$list,(string)$field,(string)$id,(string)$prop,(string)$v);
 			$str .= "insert ignore into s_PropertiesValues (Guid) values ('{$guid}');\n";
 			$row = array(
 				'Name' => $prop,
@@ -1034,6 +1035,11 @@ class Lists
 		}
 		$str .= "update s_SearchKeys set IsHidden=IsHiddenCandidate;\n";
 		return $str;
+	}
+
+	public static function getPropertiesValuesGuid(string $list, string $field, string $id, string $prop, string $v) : string
+	 {
+		return Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
 	}
 
 	/**

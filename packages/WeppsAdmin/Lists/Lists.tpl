@@ -6,8 +6,8 @@
 </div>
 <div class="w_flex w_flex_row w_flex_row_str w_flex_margin w_animate">
 	{$listsNavTpl}
-	<div class="w_flex_45 w_flex_11_view_medium w_flex w_flex_col">
-		<div class="w_flex_max">
+	<div class="centercontent w_flex_45 w_flex_11_view_medium w_flex w_flex_col">
+		<div>
 			<h2>{$content.Name}</h2>
 			<div class="lists-items w_flex w_flex_row w_flex_row_str w_flex_start w_flex_margin">
 				{foreach name="out" item="item" key="key" from=$lists}
