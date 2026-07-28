@@ -543,7 +543,6 @@ class RestV1M2M extends RestV1
 
 			$sql = "SELECT DISTINCT ProductsId FROM {$tableName} WHERE Id IN (" . Connect::$instance->in($skuIds) . ")";
 			$goodsIds = array_column(Connect::$instance->fetch($sql, $skuIds), 'ProductsId');
-			// Utils::debug($goodsIds, 2);
 			$processing = new ProcessingProducts();
 			$processing->rebuildProductsVariations($goodsIds);
 			return $results;
@@ -571,13 +570,6 @@ class RestV1M2M extends RestV1
 		})->setAfter(function (array $results, string $tableName) use (&$goodsIds) {
 			if (empty($results)) {
 				return $results;
-			}
-			foreach ($results as $index => $value) {
-				if (!isset($value['data']['id']) || $value['status'] !== 200) {
-					continue;
-				}
-				$id = (int) $value['data']['id'];
-				$skuIds[] = $id;
 			}
 			if (!empty($goodsIds)) {
 				$processing = new ProcessingProducts();
