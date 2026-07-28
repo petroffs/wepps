@@ -84,8 +84,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteUsers(): array
 	{
-		$records = $this->normalizeInput();
-		$ids = $this->normalizeIds($records);
+		$ids = $this->normalizeIds($this->normalizeInput());
 		return $this->getUtils('s_Users')->remove($ids);
 	}
 
@@ -123,8 +122,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteOrders(): array
 	{
-		$records = $this->normalizeInput();
-		$ids = $this->normalizeIds($records);
+		$ids = $this->normalizeIds($this->normalizeInput());
 		return $this->getUtils('Orders')->remove($ids);
 	}
 
@@ -162,8 +160,8 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoods(): array
 	{
-		$records = $this->normalizeInput();
-		$ids = $this->normalizeIds($records);
+		$ids = $this->normalizeIds($this->normalizeInput());
+
 		/**
 		 * ! Используйте setAfter() для удаления связанных данных (например, вариаций, изображений, файлов и т.д.)
 		 * Логика зависит от бизнес-требований. 
@@ -228,8 +226,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoodsNavigator(): array
 	{
-		$records = $this->normalizeInput();
-		$ids = $this->normalizeIds($records);
+		$ids = $this->normalizeIds($this->normalizeInput());
 
 		// Проверяем, допустимы ли идентификаторы из входящего массива
 		$this->getUtils('s_Navigator')->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
@@ -305,8 +302,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoodsStatuses(): array
 	{
-		$records = $this->normalizeInput();
-		$ids = $this->normalizeIds($records);
+		$ids = $this->normalizeIds($this->normalizeInput());
 
 		// Проверяем, допустимы ли идентификаторы из входящего массива
 		$this->getUtils('s_Vars')->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
@@ -381,8 +377,7 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoodsAttributes(): array
 	{
-		$records = $this->normalizeInput();
-		$ids = $this->normalizeIds($records);
+		$ids = $this->normalizeIds($this->normalizeInput());
 		return $this->getUtils('s_Properties')->remove($ids);
 	}
 
@@ -447,63 +442,27 @@ class RestV1M2M extends RestV1
 
 	public function deleteGoodsAttributesValues(): array
 	{
-		$records = $this->normalizeInput();
-		$ids = $this->normalizeIds($records);
+		$ids = $this->normalizeIds($this->normalizeInput());
 		return $this->getUtils('s_PropertiesValues')->remove($ids);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * M2M: GET получить вариации товаров
 	 */
 	public function getGoodsVariations(): array
 	{
-		$page = max(1, (int) ($this->get['page'] ?? 1));
-		$limit = min(5000, max(1, (int) ($this->get['limit'] ?? 5000)));
-		$goodsId = (int) ($this->get['goods_id'] ?? 0);
+		$utils = $this->getUtils('ProductsVariations');
+		$utils->setOrderBy('t.ProductsId,t.Priority');
+		$utils->setFields('Id, Guid, Guid, ProductsId, Field1, Field2, Field3, Field4');
 
-		$data = new Data('ProductsVariations', ['useApiMapping' => true]);
-		$data->setFields('Id,ProductsId,Field1,Field2,Field3,FIeld4');
+		$conditions = 't.IsHidden = 0';
 
-		// Условия WHERE
-		$conditions = 'IsHidden = 0';
-		$params = [];
-
-		// Если передан goodsId, фильтруем по товару
-		if ($goodsId > 0) {
-			$conditions .= ' AND ProductsId = ?';
-			$params[] = $goodsId;
+		if (!empty($this->get['goodsId'])) {
+			$conditions .= ' AND t.ProductsId = ?';
+			$utils->setParams([(int) $this->get['goodsId']]);
 		}
 
-		if (!empty($params)) {
-			$data->setParams($params);
-		}
-
-		$result = $data->fetch($conditions, $limit, $page, 't.Priority desc');
-
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $result ?: [],
-			'pagination' => [
-				'count' => $data->paginator['count'] ?? 1,
-				'limit' => $limit,
-				'page' => $page,
-			],
-		];
+		return $utils->fetch($this->get, $conditions);
 	}
 
 	/**
@@ -517,42 +476,36 @@ class RestV1M2M extends RestV1
 	public function postGoodsVariations(): array
 	{
 		$records = $this->normalizeInput();
-
-		// Сгруппировать по goodsId
-		$byGoodsId = [];
-		foreach ($records as $record) {
-			$goodsId = (int) ($record['goodsId'] ?? 0);
-			if (!$goodsId) {
-				return ['status' => 400, 'message' => 'goodsId required', 'data' => null];
-			}
-			if (!isset($byGoodsId[$goodsId])) {
-				$byGoodsId[$goodsId] = [];
-			}
-			// Преобразовать в индексированный формат [color, size, sku, stocks]
-			$byGoodsId[$goodsId][] = [
-				trim($record['color'] ?? ''),
-				trim($record['size'] ?? ''),
-				trim($record['sku'] ?? ''),
-				trim($record['stocks'] ?? ''),
-			];
-		}
-
-		// Batch-обновление для каждого товара
-		$processing = new ProcessingProducts();
-		$created = [];
-		$updated = [];
-		foreach ($byGoodsId as $goodsId => $variations) {
-			$results = $processing->upsertVariations($goodsId, $variations, false); // false = не скрывать старые
-			foreach ($results as $result) {
-				if ($result['action'] === 'created') {
-					$created[] = $result['id'];
-				} else {
-					$updated[] = $result['id'];
+		$goodsIds = array_unique(array_column($records, 'goodsId'));
+		$utils = $this->getUtils('ProductsVariations');
+		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) use ($goodsIds) {
+			$maxByGoods = [];
+			if (!empty($goodsIds)) {
+				$sql = "SELECT ProductsId, MAX(Priority) Co FROM {$tableName} WHERE IsHidden = 0 AND ProductsId IN (" . Connect::$instance->in($goodsIds) . ") GROUP BY ProductsId";
+				$rows = Connect::$instance->fetch($sql, $goodsIds);
+				foreach ($rows as $row) {
+					$maxByGoods[(int) $row['ProductsId']] = (int) ($row['Co'] ?? 0);
 				}
 			}
-		}
+			$processing = new ProcessingProducts();
+			foreach ($records as &$value) {
+				$goodsId = (int) ($value['goodsId'] ?? 0);
+				$maxByGoods[$goodsId] = ($maxByGoods[$goodsId] ?? 0) + 1;
+				$value['name'] = $value['sku'] ?? '';
+				$value['alias'] = $processing->getProductsVariationsAlias($goodsId, [$value['color'] ?? '', $value['size'] ?? '', $value['sku'] ?? '']);
+				$value['priority'] = $maxByGoods[$goodsId];
+			}
+			return $records;
+		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) use ($goodsIds) {
+			if (empty($results)) {
+				return $results;
+			}
+			$processing = new ProcessingProducts();
+			$processing->rebuildProductsVariations($goodsIds);
+			return $results;
+		});
 
-		return ['status' => 201, 'message' => 'Variations processed', 'data' => ['created' => $created, 'updated' => $updated]];
+		return $this->create('ProductsVariations', $records);
 	}
 
 	/**
@@ -566,192 +519,80 @@ class RestV1M2M extends RestV1
 	public function putGoodsVariations(): array
 	{
 		$records = $this->normalizeInput();
-
-		// Используем ProcessingProducts для обновления с переформированием alias
-		$processing = new ProcessingProducts();
-		$results = $processing->updateVariations($records);
-
-		if (empty($results['updated']) && empty($results['skipped']) && empty($results['conflict']) && empty($results['notFound'])) {
-			return ['status' => 400, 'message' => 'No variations found', 'data' => null];
-		}
-
-		// Одиночное обновление
-		if (count($records) === 1) {
-			$recordId = (int) ($records[0]['id'] ?? 0);
-			if (isset($results['notFound']) && in_array($recordId, $results['notFound'])) {
-				return ['status' => 404, 'message' => 'Variation not found', 'data' => null];
+		$utils = $this->getUtils('ProductsVariations');
+		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			$processing = new ProcessingProducts();
+			foreach ($records as &$value) {
+				$goodsId = (int) ($value['goodsId'] ?? 0);
+				$value['name'] = $value['sku'] ?? '';
+				$value['alias'] = $processing->getProductsVariationsAlias($goodsId, [$value['color'] ?? '', $value['size'] ?? '', $value['sku'] ?? '']);
 			}
-			if (isset($results['conflict']) && in_array($recordId, $results['conflict'])) {
-				return ['status' => 409, 'message' => 'Alias already in use', 'data' => null];
+			return $records;
+		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+			if (empty($results)) {
+				return $results;
 			}
-			if (isset($results['skipped']) && in_array($recordId, $results['skipped'])) {
-				return ['status' => 200, 'message' => 'No changes', 'data' => ['id' => $recordId]];
-			}
-			if (isset($results['updated']) && in_array($recordId, $results['updated'])) {
-				return ['status' => 200, 'message' => 'Variation updated', 'data' => ['id' => $recordId]];
-			}
-		}
 
-		// Batch-обновление
-		return [
-			'status' => 200,
-			'message' => 'Variations processed',
-			'data' => $results,
-		];
+			foreach ($results as $value) {
+				$skuIds = [];
+				if (!isset($value['data']['id']) || $value['status'] !== 200) {
+					continue;
+				}
+				$skuIds[] = (int) $value['data']['id'];
+			}
+
+			$sql = "SELECT DISTINCT ProductsId FROM {$tableName} WHERE Id IN (" . Connect::$instance->in($skuIds) . ")";
+			$goodsIds = array_column(Connect::$instance->fetch($sql, $skuIds), 'ProductsId');
+			// Utils::debug($goodsIds, 2);
+			$processing = new ProcessingProducts();
+			$processing->rebuildProductsVariations($goodsIds);
+			return $results;
+		});
+
+		return $this->update('ProductsVariations', $records);
 	}
 
 	public function deleteGoodsVariations(): array
 	{
-		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
-		$ids = array_column($records, 'id');
+		$ids = $this->normalizeIds($this->normalizeInput());
+		$goodsIds = [];
+		$utils = $this->getUtils('ProductsVariations');
+		$utils->setBefore(function (array $ids, string $tableName) use (&$goodsIds) {
+			if (empty($ids)) {
+				return $ids;
+			}
+			$sql = "SELECT ProductsId FROM {$tableName} WHERE Id IN (" . Connect::$instance->in($ids) . ")";
+			$rows = Connect::$instance->fetch($sql, $ids);
+			foreach ($rows as $row) {
+				$goodsId = (int) $row['ProductsId'];
+				$goodsIds[$goodsId] = $goodsId;
+			}
+			return $ids;
+		})->setAfter(function (array $results, string $tableName) use (&$goodsIds) {
+			if (empty($results)) {
+				return $results;
+			}
+			foreach ($results as $index => $value) {
+				if (!isset($value['data']['id']) || $value['status'] !== 200) {
+					continue;
+				}
+				$id = (int) $value['data']['id'];
+				$skuIds[] = $id;
+			}
+			if (!empty($goodsIds)) {
+				$processing = new ProcessingProducts();
+				$processing->rebuildProductsVariations(array_unique($goodsIds));
+			}
+			return $results;
+		});
 		return $this->getUtils('ProductsVariations')->remove($ids);
 	}
 
-	/**
-	 * M2M: GET запасы товаров (доступность на складах)
-	 */
-	public function getGoodsStocks(): array
-	{
-		// GET параметры - служебные (page, limit, search, sort)
-		$obj = $this->getUtils('ProductsVariations');
-		$obj->setFields('Id,ProductsId,Field4');
-		if (!empty($this->get['goodsId'])) {
-			$obj->setParams([(int) $this->get['goodsId']]);
-			$conditions = 't.ProductsId = ?';
-		}
-		return $obj->fetch($this->get, $conditions ?? null);
-	}
 
-	/**
-	 * M2M: PUT обновление запасов товара (одна или batch).
-	 * Обновляет Field4 (stocks) в ProductsVariations по id.
-	 * Использует универсальный метод update().
-	 *
-	 * Валидация по RestConfig уже выполнена в Rest::executeHandler() перед вызовом метода!
-	 * Одна запись: { "data": { "id": 123, "stocks": 10 } }
-	 * Batch: { "data": [ { "id": 1, "stocks": 5 }, { "id": 2, "stocks": 10 } ] }
-	 */
-	public function putGoodsStocks(): array
-	{
-		$records = $this->normalizeInput();
-		return $this->update('ProductsVariations', $records);
-	}
 
-	/**
-	 * M2M: GET цены товаров
-	 */
-	public function getGoodsPrices(): array
-	{
-		$goodsId = (int) ($this->get['goods_id'] ?? 0);
-		['page' => $page, 'limit' => $limit, 'offset' => $offset] = $this->calculatePagination(500);
-		$limit = (int) $limit;
-		$offset = (int) $offset;
 
-		// Формируем условие WHERE
-		$conditions = "IsHidden = 0";
-		$params = [];
-		if ($goodsId > 0) {
-			$conditions .= " AND Id = ?";
-			$params[] = $goodsId;
-		}
 
-		// Получить данные с пагинацией
-		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Price, PriceBefore, Article FROM Products 
-			 WHERE {$conditions}
-			 ORDER BY Name 
-			 LIMIT {$offset}, {$limit}",
-			$params
-		);
 
-		// Получить общее количество
-		$countRes = Connect::$instance->fetch(
-			"SELECT COUNT(*) as total FROM Products WHERE {$conditions}",
-			$params
-		);
-		$total = (int) ($countRes[0]['total'] ?? 0);
-
-		if (empty($res) && $total === 0) {
-			return ['status' => 404, 'message' => 'Goods not found', 'data' => null];
-		}
-
-		// Приводим цены к float
-		foreach ($res as &$row) {
-			if (isset($row['Price'])) {
-				$row['Price'] = (float) $row['Price'];
-			}
-			if (isset($row['PriceBefore'])) {
-				$row['PriceBefore'] = (float) $row['PriceBefore'];
-			}
-		}
-		unset($row);
-
-		return [
-			'status' => 200,
-			'message' => 'OK',
-			'data' => $res ?? [],
-			'pagination' => [
-				'count' => $total,
-				'limit' => $limit,
-				'page' => $page,
-			]
-		];
-	}
-
-	/**
-	 * M2M: PUT обновление цен товара
-	 */
-	public function putGoodsPrices(): array
-	{
-		$data = $this->normalizeInput()[0] ?? [];
-
-		$goodsId = $data['goods_id'] ?? $data['id'] ?? 0;
-		if (!$goodsId) {
-			return ['status' => 400, 'message' => 'goods_id required', 'data' => null];
-		}
-
-		// Подготовить значения цен
-		$updates = [];
-		$params = [];
-
-		if (isset($data['price'])) {
-			$updates[] = 'Price = ?';
-			$params[] = (float) $data['price'];
-		}
-
-		if (isset($data['price_out'])) {
-			$updates[] = 'PriceOut = ?';
-			$params[] = (float) $data['price_out'];
-		}
-
-		if (empty($updates)) {
-			return ['status' => 400, 'message' => 'price or price_out required', 'data' => null];
-		}
-
-		// Добавить ID в параметры
-		$params[] = $goodsId;
-
-		// Обновить цены в Products
-		$updatedCount = Connect::$instance->query(
-			"UPDATE Products SET " . implode(', ', $updates) . " WHERE Id = ?",
-			$params
-		);
-
-		if ($updatedCount <= 0) {
-			return ['status' => 400, 'message' => 'Failed to update prices', 'data' => null];
-		}
-
-		// Вернуть обновленные данные
-		$res = Connect::$instance->fetch(
-			"SELECT Id, Name, Price, PriceOut FROM Products WHERE Id = ?",
-			[$goodsId]
-		);
-
-		return ['status' => 200, 'message' => 'Prices updated', 'data' => $res[0] ?? null];
-	}
 
 	/**
 	 * M2M: GET изображения товаров (с постраничной выборкой)

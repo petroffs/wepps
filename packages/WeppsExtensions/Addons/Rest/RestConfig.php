@@ -685,13 +685,6 @@ class RestConfig
 							'limit' => ['type' => 'int2', 'required' => false],
 						],
 					],
-
-
-
-
-
-
-
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsVariations',
@@ -699,9 +692,19 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Get goods variations (sku, prices, stocks)',
 						'query_validation' => [
-							'goods_id' => ['type' => 'int2', 'required' => false],
+							'page' => ['type' => 'int2', 'required' => false],
+							'limit' => ['type' => 'int2', 'required' => false],
+							'goodsId' => ['type' => 'int2', 'required' => false],
 						],
 					],
+
+
+
+
+
+
+
+
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsImages',
@@ -874,13 +877,6 @@ class RestConfig
 							'value' => ['type' => 'string', 'required' => true],
 						],
 					],
-
-
-
-
-
-
-
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoodsVariations',
@@ -893,12 +889,20 @@ class RestConfig
 						'validation' => [
 							//'name' => ['type' => 'string', 'required' => true],
 							'goodsId' => ['type' => 'int', 'required' => true],
+							'guid' => ['type' => 'guid', 'required' => true],
 							'color' => ['type' => 'string', 'required' => false],
 							'size' => ['type' => 'string', 'required' => false],
 							'sku' => ['type' => 'string', 'required' => true],
-							'stocks' => ['type' => 'int', 'required' => false],
+							'priority' => ['type' => 'int', 'required' => false],
 						],
 					],
+
+
+
+
+
+
+
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'postGoodsImages',
@@ -987,12 +991,6 @@ class RestConfig
 							'value' => ['type' => 'string', 'required' => true],
 						],
 					],
-
-
-
-
-
-
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsVariations',
@@ -1002,7 +1000,23 @@ class RestConfig
 						// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
 						// 'async' => true,
 						'note' => 'M2M: Update goods variation(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'goodsId' => ['type' => 'int', 'required' => false],
+							'guid' => ['type' => 'guid', 'required' => false],
+							'color' => ['type' => 'string', 'required' => true],
+							'size' => ['type' => 'string', 'required' => true],
+							'sku' => ['type' => 'string', 'required' => true],
+							'priority' => ['type' => 'int', 'required' => false],
+						],
 					],
+
+
+
+
+
+
+
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsStocks',
@@ -1087,12 +1101,6 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods.attributesValues by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
-
-
-
-
-
-
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsVariations',
@@ -1100,6 +1108,12 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
+
+
+
+
+
+
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsImages',

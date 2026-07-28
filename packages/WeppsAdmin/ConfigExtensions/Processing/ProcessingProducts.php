@@ -109,6 +109,76 @@ class ProcessingProducts
 		$this->upsertVariations((int) $element['Id'], $data);
 	}
 
+	/**
+	 * Пересобрать поле Products.Variations по существующим записям ProductsVariations.
+	 *
+	 * @param int $productId
+	 * @return string Сформированная строка вариаций в формате color:::size:::sku:::stocks
+	 */
+	public function rebuildProductVariations(int $productId): string
+	{
+		$result = $this->rebuildProductsVariations([$productId]);
+		return $result[$productId] ?? '';
+	}
+
+	/**
+	 * Batch-пересборка поля Products.Variations по массиву ProductsId.
+	 *
+	 * @param array $productIds
+	 * @return array Массив [productId => variationsString]
+	 */
+	public function rebuildProductsVariations(array $productIds): array
+	{
+		$productIds = array_values(array_filter(array_map('intval', $productIds)));
+		if (empty($productIds)) {
+			return [];
+		}
+
+		$in = Connect::$instance->in($productIds);
+		$rows = Connect::$instance->fetch(
+			"select Id, ProductsId, Field1, Field2, Field3, Field4 from ProductsVariations where ProductsId in ($in) and IsHidden=0 order by ProductsId, Priority",
+			$productIds
+		);
+
+		$groups = [];
+		foreach ($rows as $row) {
+			$pid = (int) $row['ProductsId'];
+			$groups[$pid][] = $row;
+		}
+
+		// Пометить все вариации как кандидат на скрытие
+		Connect::$instance->query("update ProductsVariations set IsHiddenCandidate=1 where ProductsId in ($in)", $productIds);
+
+		// Сбросить IsHiddenCandidate=0 для тех записей, которые остаются видимыми
+		$visibleIds = array_map(static fn($row) => (int) $row['Id'], $rows);
+
+		if (!empty($visibleIds)) {
+			$visibleIn = Connect::$instance->in($visibleIds);
+			Connect::$instance->query("update ProductsVariations set IsHiddenCandidate=0 where Id in ($visibleIn)", $visibleIds);
+			Connect::$instance->query("update ProductsVariations set IsHidden = IsHiddenCandidate where Id in ($visibleIn)", $visibleIds);
+		}
+
+		$results = [];
+		foreach ($productIds as $productId) {
+			$variations = '';
+			if (!empty($groups[$productId])) {
+				$lines = [];
+				foreach ($groups[$productId] as $row) {
+					$color = $row['Field1'] ?? '';
+					$size = $row['Field2'] ?? '';
+					$sku = $row['Field3'] ?? '';
+					$stocks = $row['Field4'] ?? '';
+					$lines[] = "{$color}:::{$size}:::{$sku}:::{$stocks}";
+				}
+				$variations = implode("\n", $lines);
+				Connect::$instance->query("update Products set Variations=? where Id=?", [$variations, $productId]);
+			}
+			$results[$productId] = $variations;
+		}
+
+		return $results;
+	}
+
 	public function upsertVariations(int $productId, array $variations, bool $hideExisting = true): array
 	{
 		if ($hideExisting) {
@@ -122,7 +192,7 @@ class ProcessingProducts
 		// Подготовим хеши и дані разом
 		$aliasesMap = [];
 		foreach ($variations as $v) {
-			$alias = $this->getProductsVariationsHash($productId, $v);
+			$alias = $this->getProductsVariationsAlias($productId, $v);
 			$aliasesMap[$alias] = $v;
 		}
 
@@ -175,7 +245,7 @@ class ProcessingProducts
 
 		return $resultIds;
 	}
-	public function getProductsVariationsHash(int $id, array $value): string
+	public function getProductsVariationsAlias(int $id, array $value): string
 	{
 		return md5($id . '_' . ($value[0] ?? '') . '_' . ($value[1] ?? '') . '_' . ($value[2] ?? ''));
 	}
@@ -266,7 +336,7 @@ class ProcessingProducts
 
 			// Старый и новый alias
 			$oldAlias = $curr['Alias'];
-			$newAlias = $this->getProductsVariationsHash($productId, [$newColor, $newSize, $newSku]);
+			$newAlias = $this->getProductsVariationsAlias($productId, [$newColor, $newSize, $newSku]);
 			$aliasChanged = ($oldAlias !== $newAlias);
 
 			// Проверяем, изменилось ли хотя бы что-то

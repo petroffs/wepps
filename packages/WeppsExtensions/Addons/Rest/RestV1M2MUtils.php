@@ -291,7 +291,7 @@ class RestV1M2MUtils
 	{
 
 		if ($conditions !== null) {
-			$conditions = $conditions . 'AND ';
+			$conditions = $conditions . ' AND ';
 		} else {
 			$conditions = '';
 		}
@@ -589,7 +589,7 @@ class RestV1M2MUtils
 		}
 
 		foreach ($this->afterCallbacks as $callback) {
-			$callback($results, $this->tableName);
+			$callback($results, $this->tableName, $this);
 		}
 
 		$ordered = [];
@@ -648,7 +648,7 @@ class RestV1M2MUtils
 								// Дубликат — запись с таким уникальным ключом уже существует
 								$results[$item['index']] = [
 									'status' => 409,
-									'message' => 'Duplicate key constraint',
+									'message' => 'Record not created: duplicate unique key or conflicting existing data',
 									'data' => ['id' => $id, 'guid' => $item['guid']]
 								];
 							} elseif ($id > 0) {
