@@ -49,11 +49,10 @@ class RestV1M2M extends RestV1
 	public function postUsers(): array
 	{
 		$records = $this->normalizeInput();
-		['before' => $callbackBefore, 'after' => $callbackAfter] = $this->getUtils('s_Users')->handlePagination($this->data['pagination'] ?? null);
+		$utils = $this->getUtils('s_Users');
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $utils->handlePagination($this->data['pagination'] ?? null);
 		if ($callbackBefore || $callbackAfter) {
-			$this->getUtils('s_Users')
-				->setBefore($callbackBefore)
-				->setAfter($callbackAfter);
+			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
 		}
 
 		return $this->create('s_Users', $records);
@@ -62,11 +61,10 @@ class RestV1M2M extends RestV1
 	public function putUsers(): array
 	{
 		$records = $this->normalizeInput();
-		['before' => $callbackBefore, 'after' => $callbackAfter] = $this->getUtils('s_Users')->handlePagination($this->data['pagination'] ?? null);
+		$utils = $this->getUtils('s_Users');
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $utils->handlePagination($this->data['pagination'] ?? null);
 		if ($callbackBefore || $callbackAfter) {
-			$this->getUtils('s_Users')
-				->setBefore($callbackBefore)
-				->setAfter($callbackAfter);
+			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
 		}
 		// After callback ВНУТРИ транзакции (перед коммитом)
 		// Например, можем создать личные кабинеты и разослать уведомления после обновления пользователей
@@ -155,6 +153,11 @@ class RestV1M2M extends RestV1
 	public function putGoods(): array
 	{
 		$records = $this->normalizeInput();
+		$utils = $this->getUtils('Products');
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $utils->handlePagination($this->data['pagination'] ?? null);
+		if ($callbackBefore || $callbackAfter) {
+			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
+		}
 		return $this->update('Products', $records);
 	}
 
@@ -372,6 +375,11 @@ class RestV1M2M extends RestV1
 	public function putGoodsAttributes(): array
 	{
 		$records = $this->normalizeInput();
+		$utils = $this->getUtils('s_Properties');
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $utils->handlePagination($this->data['pagination'] ?? null);
+		if ($callbackBefore || $callbackAfter) {
+			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
+		}
 		return $this->update('s_Properties', $records);
 	}
 
@@ -431,7 +439,12 @@ class RestV1M2M extends RestV1
 	public function putGoodsAttributesValues(): array
 	{
 		$records = $this->normalizeInput();
-		$this->getUtils('s_PropertiesValues')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+		$utils = $this->getUtils('s_PropertiesValues');
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $utils->handlePagination($this->data['pagination'] ?? null);
+		if ($callbackBefore || $callbackAfter) {
+			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
+		}
+		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
 			foreach ($records as &$value) {
 				$value['w_guid'] = Lists::getPropertiesValuesGuid((string) $value['list'], (string) $value['listField'], (string) $value['listId'], (string) $value['attributesId'], (string) $value['value']);
 			}
@@ -520,6 +533,10 @@ class RestV1M2M extends RestV1
 	{
 		$records = $this->normalizeInput();
 		$utils = $this->getUtils('ProductsVariations');
+		['before' => $callbackBefore, 'after' => $callbackAfter] = $utils->handlePagination($this->data['pagination'] ?? null);
+		if ($callbackBefore || $callbackAfter) {
+			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
+		}
 		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
 			$processing = new ProcessingProducts();
 			foreach ($records as &$value) {

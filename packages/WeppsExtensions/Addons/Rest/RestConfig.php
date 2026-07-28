@@ -831,6 +831,7 @@ class RestConfig
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
 							'url' => ['type' => 'string', 'required' => true],
+							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
 					'goods.statuses' => [
@@ -844,6 +845,7 @@ class RestConfig
 							'name' => ['type' => 'string', 'required' => true],
 							'alias' => ['type' => 'string', 'required' => true],
 							'priority' => ['type' => 'int', 'required' => false],
+							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
 					'goods.attributes' => [
@@ -858,6 +860,7 @@ class RestConfig
 							'alias' => ['type' => 'string', 'required' => true],
 							'group' => ['type' => 'int', 'required' => false],
 							'priority' => ['type' => 'int', 'required' => false],
+							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
 					'goods.attributesValues' => [
@@ -875,6 +878,7 @@ class RestConfig
 							'listId' => ['type' => 'int', 'required' => true],
 							'listField' => ['type' => 'string', 'required' => true],
 							'value' => ['type' => 'string', 'required' => true],
+							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
 					'goods.variations' => [
@@ -894,6 +898,7 @@ class RestConfig
 							'size' => ['type' => 'string', 'required' => false],
 							'sku' => ['type' => 'string', 'required' => true],
 							'priority' => ['type' => 'int', 'required' => false],
+							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
 
@@ -989,6 +994,7 @@ class RestConfig
 							'listId' => ['type' => 'int', 'required' => true],
 							'listField' => ['type' => 'string', 'required' => true],
 							'value' => ['type' => 'string', 'required' => true],
+							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
 					'goods.variations' => [
@@ -1008,6 +1014,7 @@ class RestConfig
 							'size' => ['type' => 'string', 'required' => true],
 							'sku' => ['type' => 'string', 'required' => true],
 							'priority' => ['type' => 'int', 'required' => false],
+							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
 
