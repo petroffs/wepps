@@ -652,7 +652,49 @@ class RestV1M2M extends RestV1
 		return $this->update('ProductsVariations', $records);
 	}
 
+	/**
+	 * M2M: GET файлы (с постраничной выборкой)
+	 */
+	public function getFiles(): array
+	{
+		$utils = $this->getUtils('s_Files');
+		$utils->setOrderBy('t.TableNameField, t.TableNameId, t.Priority');
+		$utils->setFields('Id, Guid, TableName, TableNameField, TableNameId, Priority, FileDescription, ApiFilter,FileType, FieSize, FileUrl');
 
+		$conditions = [];
+		$params = [];
+
+		if (!empty($this->get['goodsId'])) {
+			$conditions[] = 't.TableNameId = ?';
+			$params[] = (int) $this->get['goodsId'];
+		}
+
+		if (!empty($this->get['list'])) {
+			$conditions[] = 't.TableName = ?';
+			$params[] = $this->get['list'];
+		}
+
+		if (!empty($this->get['listId'])) {
+			$conditions[] = 't.TableNameId = ?';
+			$params[] = (int) $this->get['listId'];
+		}
+
+		if (!empty($this->get['filter'])) {
+			$conditions[] = 't.ApiFilter = ?';
+			$params[] = $this->get['filter'];
+		}
+
+		if (!empty($this->get['listField'])) {
+			$conditions[] = 't.TableNameField = ?';
+			$params[] = $this->get['listField'];
+		}
+
+		if (!empty($params)) {
+			$utils->setParams($params);
+		}
+
+		return $utils->fetch($this->get, $conditions ? implode(' AND ', $conditions) : null);
+	}
 
 
 	/**

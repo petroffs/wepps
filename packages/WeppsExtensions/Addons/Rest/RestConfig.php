@@ -709,6 +709,22 @@ class RestConfig
 							'goodsId' => ['type' => 'int2', 'required' => false],
 						],
 					],
+					'files' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getFiles',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get files (paginated)',
+						'query_validation' => [
+							'page' => ['type' => 'int2', 'required' => false],
+							'limit' => ['type' => 'int2', 'required' => false],
+							'list' => ['type' => 'string', 'required' => false],
+							'listField' => ['type' => 'string', 'required' => false],
+							'listId' => ['type' => 'int2', 'required' => false],
+							'description' => ['type' => 'string', 'required' => false],
+							'filter' => ['type' => 'string', 'required' => false],
+						],
+					],
 
 
 
@@ -724,7 +740,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Get goods images (paginated)',
 						'query_validation' => [
-							'goods_id' => ['type' => 'int2', 'required' => false],
+							'goodsId' => ['type' => 'int2', 'required' => false],
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
 						],
@@ -736,7 +752,7 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Get goods variations images (paginated)',
 						'query_validation' => [
-							'goodsv_id' => ['type' => 'int2', 'required' => false],
+							'goodsId' => ['type' => 'int2', 'required' => false],
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
 						],
