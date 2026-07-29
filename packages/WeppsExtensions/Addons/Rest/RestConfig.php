@@ -697,6 +697,18 @@ class RestConfig
 							'goodsId' => ['type' => 'int2', 'required' => false],
 						],
 					],
+					'goods.stocks' => [
+						'class' => RestV1M2M::class,
+						'method' => 'getGoodsStocks',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Get goods stocks (sku, quantities)',
+						'query_validation' => [
+							'page' => ['type' => 'int2', 'required' => false],
+							'limit' => ['type' => 'int2', 'required' => false],
+							'goodsId' => ['type' => 'int2', 'required' => false],
+						],
+					],
 
 
 
@@ -1017,27 +1029,22 @@ class RestConfig
 							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
-
-
-
-
-
-
-
 					'goods.stocks' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsStocks',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods warehouse stocks',
+						'async' => false,
+						'note' => 'M2M: Update goods stock(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'stocks' => ['type' => 'int', 'required' => true],
+						],
 					],
-					'goods.prices' => [
-						'class' => RestV1M2M::class,
-						'method' => 'putGoodsPrices',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Update goods prices',
-					],
+
+
+
+
 					'goods.images' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsImages',

@@ -466,7 +466,7 @@ class RestV1M2M extends RestV1
 	{
 		$utils = $this->getUtils('ProductsVariations');
 		$utils->setOrderBy('t.ProductsId,t.Priority');
-		$utils->setFields('Id, Guid, Guid, ProductsId, Field1, Field2, Field3, Field4');
+		$utils->setFields('Id, Guid, ProductsId, Field1, Field2, Field3, Field4');
 
 		$conditions = 't.IsHidden = 0';
 
@@ -597,8 +597,60 @@ class RestV1M2M extends RestV1
 		return $this->getUtils('ProductsVariations')->remove($ids);
 	}
 
+	/**
+	 * M2M: GET получить остатки товаров
+	 */
+	public function getGoodsStocks(): array
+	{
+		$utils = $this->getUtils('ProductsVariations');
+		$utils->setOrderBy('t.ProductsId,t.Priority');
+		$utils->setFields('Id, Guid, ProductsId, Field4');
 
+		$conditions = 't.IsHidden = 0';
 
+		if (!empty($this->get['goodsId'])) {
+			$conditions .= ' AND t.ProductsId = ?';
+			$utils->setParams([(int) $this->get['goodsId']]);
+		}
+
+		return $utils->fetch($this->get, $conditions);
+	}
+
+	/**
+	 * M2M: PUT обновление вариаций по id (одна или batch).
+	 * Переформировывает alias если изменились color/size/sku.
+	 * Проверяет уникальность новых alias перед обновлением.
+	 *
+	 * Одна запись: ?id=123 или { "data": { "id": 123, "color": "Синий" } }
+	 * Batch: { "data": [ { "id": 1, "sku": "NEW" }, { "id": 2, "color": "Зелёный" } ] }
+	 */
+	public function putGoodsStocks(): array
+	{
+		$records = $this->normalizeInput();
+		$utils = $this->getUtils('ProductsVariations');
+		// Если передана пагинация, то первая страница запускает обнуление всех остатков.
+		// Это нужно для полной перезагрузки остатков товара при пакетной синхронизации.
+		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			$pagination = $this->data['pagination'] ?? null;
+			if (isset($pagination['count']) && isset($pagination['page'])) {
+				if ((int) $pagination['page'] == 1) {
+					$sql = "UPDATE {$tableName} SET Field4 = 0 WHERE 1";
+					Connect::$instance->query($sql);
+				}
+			}
+			return $records;
+		});
+		$utils->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+			if (empty($results)) {
+				return $results;
+			}
+			foreach ($results as &$value) {
+				unset($value['data']['guid']);
+			}
+			return $results;
+		});
+		return $this->update('ProductsVariations', $records);
+	}
 
 
 
