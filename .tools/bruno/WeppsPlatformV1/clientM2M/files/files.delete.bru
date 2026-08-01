@@ -1,17 +1,21 @@
 meta {
-  name: DELETE goods.images
+  name: DELETE files
   type: http
-  seq: 24
+  seq: 5
 }
 
 delete {
   url: {{base_url}}/rest/m2m/goods.images
-  body: none
+  body: json
   auth: inherit
 }
 
-params:query {
-  id: 1
+body:json {
+  {
+    "data": [
+        -1
+    ]
+  }
 }
 
 tests {

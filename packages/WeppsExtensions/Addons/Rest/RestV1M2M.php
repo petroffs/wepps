@@ -36,14 +36,16 @@ class RestV1M2M extends RestV1
 	public function getUsers(): array
 	{
 		// GET параметры - служебные (page, limit, search, sort)
-		$this->getUtils('s_Users')->setFields('Id,Guid,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
-		return $this->getUtils('s_Users')->fetch($this->get);
+		$utils = $this->getUtils('s_Users');
+		$utils->setFields('Id,Guid,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		return $utils->fetch($this->get);
 	}
 
 	public function getUsersItem(): array
 	{
-		$this->getUtils('s_Users')->setFields('Id,Guid,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
-		return $this->getUtils('s_Users')->item((int) ($this->get['id'] ?? 0));
+		$utils = $this->getUtils('s_Users');
+		$utils->setFields('Id,Guid,Name,NameFirst,NameSurname,NamePatronymic,IsHidden,UserPermissions,CreateDate,Login,Email,Phone,Comment,Country,Region,City,Address,PostalCode');
+		return $utils->item((int) ($this->get['id'] ?? 0));
 	}
 
 	public function postUsers(): array
@@ -230,9 +232,10 @@ class RestV1M2M extends RestV1
 	public function deleteGoodsNavigator(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
+		$utils = $this->getUtils('s_Navigator');
 
 		// Проверяем, допустимы ли идентификаторы из входящего массива
-		$this->getUtils('s_Navigator')->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
+		$utils->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
 			$extensionsId = Connect::$projectServices['extensions']['catalog'] ?? 0;
 			$catalogId = Connect::$projectServices['navigator']['catalog'] ?? 0;
 			$brandsId = Connect::$projectServices['navigator']['brands'] ?? 0;
@@ -243,7 +246,7 @@ class RestV1M2M extends RestV1
 			}
 			return $ids;
 		});
-		return $this->getUtils('s_Navigator')->remove($ids);
+		return $utils->remove($ids);
 	}
 
 	public function getGoodsStatuses(): array
@@ -306,9 +309,10 @@ class RestV1M2M extends RestV1
 	public function deleteGoodsStatuses(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
+		$utils = $this->getUtils('s_Vars');
 
 		// Проверяем, допустимы ли идентификаторы из входящего массива
-		$this->getUtils('s_Vars')->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
+		$utils->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) {
 			$sql = "SELECT Id as id FROM $tableName WHERE VarsGroup != 'ПродукцияСтатусы' AND Id IN (" . Connect::$instance->in($ids) . ")";
 			$res = Connect::$instance->fetch($sql, $ids);
 			if (!empty($res)) {
@@ -316,7 +320,7 @@ class RestV1M2M extends RestV1
 			}
 			return $ids;
 		});
-		return $this->getUtils('s_Vars')->remove($ids);
+		return $utils->remove($ids);
 	}
 
 	/**
@@ -594,7 +598,7 @@ class RestV1M2M extends RestV1
 			}
 			return $results;
 		});
-		return $this->getUtils('ProductsVariations')->remove($ids);
+		return $utils->remove($ids);
 	}
 
 	/**
@@ -659,7 +663,7 @@ class RestV1M2M extends RestV1
 	{
 		$utils = $this->getUtils('s_Files');
 		$utils->setOrderBy('t.TableNameField, t.TableNameId, t.Priority');
-		$utils->setFields('Id, Guid, TableName, TableNameField, TableNameId, Priority, FileDescription, ApiFilter,FileType, FieSize, FileUrl');
+		$utils->setFields('Id, Guid, Name, TableName, TableNameField, TableNameId, Priority, FileDescription, ApiFilter,FileType, FieSize, FileUrl');
 
 		$conditions = [];
 		$params = [];
@@ -696,93 +700,65 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get, $conditions ? implode(' AND ', $conditions) : null);
 	}
 
-
-	/**
-	 * M2M: GET изображения товаров (с постраничной выборкой)
-	 */
-	public function getGoodsImages(): array
-	{
-		return $this->getUtils('Products')->getFiles('Images', $this->get);
-	}
-
-	/**
-	 * M2M: POST добавить изображение товару
-	 */
-	public function postGoodsImages(): array
-	{
-		return $this->getUtils('Products')->handleFileCreate($this->normalizeInput()[0] ?? []);
-	}
-
-	/**
-	 * M2M: PUT обновить изображение товара
-	 */
-	public function putGoodsImages(): array
-	{
-		return $this->getUtils('Products')->handleFileUpdate($this->normalizeInput()[0] ?? []);
-	}
-
-	/**
-	 * M2M: GET изображения вариаций товаров (с постраничной выборкой)
-	 */
-	public function getGoodsImagesVariations(): array
-	{
-		return $this->getUtils('Products')->getFiles('ImagesV', $this->get);
-	}
-
-	/**
-	 * M2M: POST добавить изображение вариации товара
-	 */
-	public function postGoodsImagesVariations(): array
-	{
-		return $this->getUtils('ProductsVariations')->handleFileCreate($this->normalizeInput()[0] ?? []);
-	}
-
-	/**
-	 * M2M: PUT обновить изображение вариации товара
-	 */
-	public function putGoodsImagesVariations(): array
-	{
-		return $this->getUtils('ProductsVariations')->handleFileUpdate($this->normalizeInput()[0] ?? []);
-	}
-
-	/**
-	 * M2M: DELETE удалить изображение товара
-	 */
-	public function deleteGoodsImages(): array
+	public function postFiles(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
-		$ids = array_column($records, 'id');
-		// Фильтровать только файлы таблицы Products
-		$in = Connect::$instance->in($ids);
-		$validIds = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id IN ($in) AND TableName = 'Products'",
-			$ids
-		);
-		$validIds = array_column($validIds, 'Id');
-		return $this->getUtils('s_Files')->remove($validIds);
+		$utils = $this->getUtils('s_Files');
+		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			// Парсим base64 проверяем на разрешенные типы и размеры, сохраняем в файловую систему и формируем FileUrl
+			// foreach ($records as &$value) {
+			// 	$value['FileType'] = $value['FileType'] ?? '';
+			// 	$value['FieSize'] = $value['FieSize'] ?? 0;
+			// 	$value['FileUrl'] = $value['FileUrl'] ?? '';
+			// 	$value['ApiFilter'] = $value['ApiFilter'] ?? '';
+			// }
+			return $records;
+		});
+		return $this->create('s_Files', $records);
 	}
 
-	/**
-	 * M2M: DELETE удалить изображение вариации товара
-	 */
-	public function deleteGoodsImagesVariations(): array
+	public function putFiles(): array
 	{
 		$records = $this->normalizeInput();
-		if (empty($records)) {
-			return ['status' => 400, 'message' => 'ID required', 'data' => null];
-		}
-		$ids = array_column($records, 'id');
-		// Фильтровать только файлы таблицы ProductsVariations
-		$in = Connect::$instance->in($ids);
-		$validIds = Connect::$instance->fetch(
-			"SELECT Id FROM s_Files WHERE Id IN ($in) AND TableName = 'ProductsVariations'",
-			$ids
-		);
-		$validIds = array_column($validIds, 'Id');
-		return $this->getUtils('s_Files')->remove($validIds);
+		$utils = $this->getUtils('s_Files');
+		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+			// Парсим base64 проверяем на разрешенные типы и размеры, сохраняем в файловую систему и формируем FileUrl
+			// foreach ($records as &$value) {
+			// 	$value['FileType'] = $value['FileType'] ?? '';
+			// 	$value['FieSize'] = $value['FieSize']?? 0;
+			// 	$value['FileUrl'] = $value['FileUrl'] ?? '';
+			// 	$value['ApiFilter'] = $value['ApiFilter'] ?? '';
+			// }
+			return $records;
+		});
+		return $this->update('s_Files', $records);
+	}
+
+	public function deleteFiles(): array
+	{
+		$ids = $this->normalizeIds($this->normalizeInput());
+		$uils = $this->getUtils('s_Files');
+		$uils->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+			// Удаляем файлы из файловой системы
+			foreach ($results as $value) {
+				if ($value['status'] === 200 && isset($value['data']['id'])) {
+					// Удаляем файл из файловой системы, если он существует
+					// $fileId = (int) $value['data']['id'];
+					// $row = Connect::$instance->fetch("SELECT FileUrl FROM {$tableName} WHERE Id = ?", [$fileId]);
+					// if (!empty($row)) {
+					// 	$fileUrl = $row[0]['FileUrl'] ?? '';
+					// 	if ($fileUrl) {
+					// 		$path = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($fileUrl, '/');
+					// 		if (file_exists($path)) {
+					// 			unlink($path);
+					// 		}
+					// 	}
+					// }
+				}
+			}
+			return $results;
+		});
+		return $this->getUtils('s_Files')->remove($ids);
 	}
 
 	// ========================================================================

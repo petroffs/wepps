@@ -929,6 +929,21 @@ class RestConfig
 							'isHidden' => ['type' => 'int', 'required' => false],
 						],
 					],
+					'files' => [
+						'class' => RestV1M2M::class,
+						'method' => 'postFiles',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Create files (paginated). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'guid' => ['type' => 'guid', 'required' => true],
+							'list' => ['type' => 'string', 'required' => true],
+							'listField' => ['type' => 'string', 'required' => true],
+							'listId' => ['type' => 'int', 'required' => true],
+							'description' => ['type' => 'string', 'required' => false],
+							'filter' => ['type' => 'string', 'required' => false],
+						],
+					],
 
 
 
@@ -1057,6 +1072,27 @@ class RestConfig
 							'stocks' => ['type' => 'int', 'required' => true],
 						],
 					],
+					'files' => [
+						'class' => RestV1M2M::class,
+						'method' => 'putFiles',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Update files. Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+						'validation' => [
+							'id' => ['type' => 'int', 'required' => true],
+							'guid' => ['type' => 'guid', 'required' => false],
+							'list' => ['type' => 'string', 'required' => true],
+							'listField' => ['type' => 'string', 'required' => true],
+							'listId' => ['type' => 'int', 'required' => true],
+							'description' => ['type' => 'string', 'required' => false],
+							'filter' => ['type' => 'string', 'required' => false],
+						],
+					],
+
+
+
+
+
 
 
 
@@ -1138,6 +1174,14 @@ class RestConfig
 						'auth_required' => true,
 						'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}'
 					],
+					'files' => [
+						'class' => RestV1M2M::class,
+						'method' => 'deleteFiles',
+						'role_required' => [1],
+						'auth_required' => true,
+						'note' => 'M2M: Delete files by id(s) via body. Format: {"data": [123, 456, ...]}'
+					],
+					
 
 
 
