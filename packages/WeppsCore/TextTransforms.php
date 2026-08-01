@@ -302,6 +302,44 @@ class TextTransforms {
 	 * @return string Транслитерированная строка
 	 */
 	public static function translit($string,$rule=1) {
+		$str = $string;
+		if (extension_loaded('intl') && class_exists('Transliterator')) {
+			$transliterator = \Transliterator::create('Any-Latin; Latin-ASCII');
+			if ($transliterator !== null) {
+				$result = $transliterator->transliterate($string);
+				if ($result !== null) {
+					$str = $result;
+				}
+			}
+		}
+		if ($str === $string) {
+			$str = self::translitFallback($string);
+		}
+
+		switch ($rule) {
+			case 3:
+				$str = preg_replace('~[^A-Za-z0-9_\.\/\-]+~u', '-', $str);
+				break;
+			case 2:
+				$str = preg_replace('~[^A-Za-z0-9_\.\-]+~u', '-', $str);
+				$str = mb_strtolower(str_replace('.', '', $str), 'UTF-8');
+				break;
+			case 1:
+			default:
+				$str = preg_replace('~[^A-Za-z0-9_\.\-]+~u', '-', $str);
+				break;
+		}
+		$str = trim(preg_replace('/--+/', '-', $str), '-');
+		return trim($str);
+	}
+
+	/**
+	 * Резервный ручной транслит для кириллицы
+	 *
+	 * @param string $string
+	 * @return string
+	 */
+	private static function translitFallback($string) {
 		$tr = array(
 				"Ґ"=>"G","Ё"=>"YO","Є"=>"E","Ї"=>"YI","І"=>"I",
 				"і"=>"i","ґ"=>"g","ё"=>"yo","№"=>"#","є"=>"e",
@@ -319,22 +357,6 @@ class TextTransforms {
 				"ц"=>"ts","ч"=>"ch","ш"=>"sh","щ"=>"sch","ъ"=>"",
 				"ы"=>"y","ь"=>"","э"=>"e","ю"=>"u","я"=>"ya"
 		);
-		$str = strtr($string,$tr);
-		switch ($rule) {
-			case 3:
-				$str = preg_replace('~[^-a-z-A-Z0-9_\.\/]+~u', '-', $str);
-				break;
-			case 2:
-				$str = preg_replace('~[^-a-z-A-Z0-9_\.]+~u', '-', $str);
-				$str = strtolower(str_replace(".","",$str));
-				break;
-			case 1:
-			default:
-				$str = preg_replace('~[^-a-z-A-Z0-9_\.]+~u', '-', $str);
-				break;
-		}
-		$str = trim(preg_replace('/--+/', '-',$str),'-');
-		$str = trim($str, "-");
-		return trim($str);
+		return strtr($string, $tr);
 	}
 }

@@ -43,7 +43,7 @@ class RequestUploads extends Request
 								'TableNameField' => $file['field'],
 								'FileUrl' => $file['url'],
 								'FileDescription' => json_encode(['source' => $id], JSON_UNESCAPED_UNICODE),
-								'Guid' => Utils::guid()
+								'Guid' => $file['guid'],
 							];
 							$objFile->add($rowFile);
 							Lists::removeUpload("upload", $v['url']);

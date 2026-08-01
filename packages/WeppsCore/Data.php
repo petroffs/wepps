@@ -508,7 +508,7 @@ class Data
 		}
 		$insert['Priority'] = 0;
 		$settings = [
-			'Priority' => ['fn' => "(select round((max(Priority)+5)/5)*5 from {$this->tableName} as tb)"]
+			'Priority' => ['fn' => "(select round((max(Priority)+3)/3)*3 from {$this->tableName} as tb)"]
 		];
 		$prepare = Connect::$instance->prepare($insert, $settings);
 		unset($prepare['row']['Priority']);

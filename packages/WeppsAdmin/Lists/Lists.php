@@ -527,7 +527,7 @@ class Lists
 						'FileType' => $file['type'],
 						'TableNameField' => $file['field'],
 						'FileUrl' => $file['url'],
-						'Guid' => Utils::guid()
+						'Guid' => $file['guid']
 					);
 					$objFile->add($rowFile);
 					self::removeUpload($key, $v['url']);
@@ -600,23 +600,18 @@ class Lists
 	public static function getUploadFileName($upload, $list, $field, $id)
 	{
 		$pathinfo = pathinfo($upload['path']);
-		$translit = TextTransforms::translit($upload['title']);
-		$prefix = sprintf("%06d", $id) . "_{$field}_" . date("U") . "_";
-		$lengthMax = 36;
-		$translitPos = strrpos($translit, '.');
-		if ($translitPos > $lengthMax) {
-			$translit = substr($translit, $translitPos - $lengthMax);
-		}
-		$folder = "/files/lists/{$list}/";
-		$destination = $prefix . $translit;
+		$folder = "/files/lists/{$list}/" . floor($id / 500) * 500 . "/";
+		$guid = Utils::guid();
+		$destination = sprintf("%06d", $id) . "_" . $field . "_" . $guid . "." . $pathinfo['extension'];
 		$url = $folder . $destination;
 		$upload['list'] = $list;
 		$upload['field'] = $field;
 		$upload['ext'] = strtolower($pathinfo['extension']);
 		$upload['inner'] = $destination;
 		$upload['url'] = $url;
+		$upload['guid'] = $guid;
 		if (!is_dir(Connect::$projectDev['root'] . $folder)) {
-			mkdir(Connect::$projectDev['root'] . $folder, 0777);
+			mkdir(Connect::$projectDev['root'] . $folder, 0755, true);
 		}
 		if (!is_file(Connect::$projectDev['root'] . $url)) {
 			copy($upload['path'], Connect::$projectDev['root'] . $url);
@@ -719,7 +714,7 @@ class Lists
 		$ex = explode(":::", $value);
 		foreach ($ex as $v) {
 			//$guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
-			$guid = self::getPropertiesValuesGuid((string)$list,(string)$field,(string)$id,(string)$prop,(string)$v);
+			$guid = self::getPropertiesValuesGuid((string) $list, (string) $field, (string) $id, (string) $prop, (string) $v);
 			$str .= "insert ignore into s_PropertiesValues (Guid) values ('{$guid}');\n";
 			$row = array(
 				'Name' => $prop,
@@ -742,7 +737,7 @@ class Lists
 			return "";
 		}
 		$sql = "select Id,TableName,TableField,FType,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
-		$res = Connect::$instance->fetch($sql,[$id]);
+		$res = Connect::$instance->fetch($sql, [$id]);
 		if (!isset($res[0]['Id'])) {
 			return "";
 		}
@@ -1037,8 +1032,8 @@ class Lists
 		return $str;
 	}
 
-	public static function getPropertiesValuesGuid(string $list, string $field, string $id, string $prop, string $v) : string
-	 {
+	public static function getPropertiesValuesGuid(string $list, string $field, string $id, string $prop, string $v): string
+	{
 		return Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
 	}
 
