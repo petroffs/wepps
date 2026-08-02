@@ -601,7 +601,7 @@ class Lists
 	{
 		$pathinfo = pathinfo($upload['path']);
 		$folder = "/files/lists/{$list}/" . floor($id / 500) * 500 . "/";
-		$guid = Utils::guid();
+		$guid = $upload['guid'] ?? Utils::guid();
 		$destination = sprintf("%06d", $id) . "_" . $field . "_" . $guid . "." . $pathinfo['extension'];
 		$url = $folder . $destination;
 		$upload['list'] = $list;

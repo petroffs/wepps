@@ -5,19 +5,23 @@ meta {
 }
 
 put {
-  url: {{base_url}}/rest/m2m/goods.images
+  url: {{base_url}}/rest/m2m/files
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "data": {
-      "id": 1,
-      "name": "Updated photo",
-      "inner_name": "product-001-updated.jpg",
-      "file_url": "/pic/products/product-001-updated.jpg"
-    }
+    "data": [
+      {
+        "id": 833,
+        "name": "testurl_URDATED.jpg"
+      },
+      {
+        "id": 832,
+        "name": "testbase64_URDATED.jpg"
+      }
+    ]
   }
 }
 

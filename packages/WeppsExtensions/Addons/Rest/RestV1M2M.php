@@ -704,62 +704,163 @@ class RestV1M2M extends RestV1
 	{
 		$records = $this->normalizeInput();
 		$utils = $this->getUtils('s_Files');
-		
-		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
-			// Парсим base64 проверяем на разрешенные типы и размеры, сохраняем в файловую систему и формируем FileUrl
-			// foreach ($records as &$value) {
-			// 	$value['FileType'] = $value['FileType'] ?? '';
-			// 	$value['FieSize'] = $value['FieSize'] ?? 0;
-			// 	$value['FileUrl'] = $value['FileUrl'] ?? '';
-			// 	$value['ApiFilter'] = $value['ApiFilter'] ?? '';
-			// }
+		$uploadContext = [];
+
+		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) use (&$uploadContext) {
+			$priorityGroups = [];
+			$groups = [];
+			foreach ($records as $record) {
+				$list = $record['list'] ?? '';
+				$listField = $record['listField'] ?? '';
+				$tableNameId = (int) ($record['listId'] ?? 0);
+				if ($list === '' || $listField === '' || $tableNameId === 0) {
+					continue;
+				}
+
+				$groupKey = "{$list}|{$listField}|{$tableNameId}";
+				if (!isset($groups[$groupKey])) {
+					$groups[$groupKey] = [$list, $listField, $tableNameId];
+				}
+			}
+
+			if (!empty($groups)) {
+				$where = implode(' OR ', array_fill(0, count($groups), 'TableName = ? AND TableNameField = ? AND TableNameId = ?'));
+				$params = [];
+				foreach ($groups as $group) {
+					$params = array_merge($params, $group);
+				}
+				$rows = Connect::$instance->fetch(
+					"SELECT TableName, TableNameField, TableNameId, MAX(Priority) AS max_priority FROM {$tableName} WHERE {$where} GROUP BY TableName, TableNameField, TableNameId",
+					$params
+				);
+				foreach ($rows as $row) {
+					$groupKey = "{$row['TableName']}|{$row['TableNameField']}|{$row['TableNameId']}";
+					$priorityGroups[$groupKey] = (int) ($row['max_priority'] ?? 0);
+				}
+			}
+
+			foreach ($records as $index => &$record) {
+				$base64 = trim((string) ($record['base64'] ?? ''));
+				$url = trim((string) ($record['url'] ?? ''));
+				$uploadTemp = null;
+
+				if ($base64 !== '') {
+					$uploadTemp = $utils->prepareUploadFromBase64($base64, $record['name'] ?? 'file');
+				}
+
+				if ($uploadTemp === null && $url !== '') {
+					$uploadTemp = $utils->prepareUploadFromUrl($url, $record['name'] ?? 'file');
+				}
+
+				if ($uploadTemp === null || isset($uploadTemp['error'])) {
+					$utils->setValidationErrors([
+						$index => [
+							'status' => 400,
+							'message' => $uploadTemp['error'] ?? 'Either valid base64 or valid url required',
+							'data' => $record['guid'] ?? null,
+						],
+					]);
+					continue;
+				}
+
+				$list = $record['list'];
+				$listField = $record['listField'];
+				$tableNameId = (int) $record['listId'];
+				$groupKey = "{$list}|{$listField}|{$tableNameId}";
+				$priorityGroups[$groupKey] = ($priorityGroups[$groupKey] ?? 0) + 1;
+				$record['priority'] = $priorityGroups[$groupKey];
+
+				$upload = [
+					'path' => $uploadTemp['path'],
+					'name' => $uploadTemp['name'],
+					'type' => $uploadTemp['type'],
+					'size' => $uploadTemp['size'],
+					'guid' => $record['guid'],
+				];
+
+				$upload = Lists::getUploadFileName($upload, $list, $listField, $tableNameId);
+
+				$record['name'] = $record['name'] ?? $uploadTemp['name'];
+				$record['type'] = $upload['type'];
+				$record['size'] = $upload['size'];
+				$record['url'] = $upload['url'];
+				$record['innerName'] = $upload['inner'];
+				$record['ext'] = $upload['ext'];
+
+				$uploadContext[$index] = [
+					'upload_temp' => $uploadTemp,
+					'destination' => Connect::$projectDev['root'] . $upload['url'],
+					'fileUrl' => $upload['url'],
+				];
+				$record['base64'] = '';
+				//unset($record['base64']);
+			}
 			return $records;
+		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) use (&$uploadContext) {
+			foreach ($results as $index => &$result) {
+				$context = $uploadContext[$index] ?? null;
+				if (empty($context['upload_temp'])) {
+					continue;
+				}
+
+				@unlink($context['upload_temp']['path']);
+
+				if ($result['status'] === 201 && !empty($result['data']['id'])) {
+					$result['data']['url'] = $context['fileUrl'];
+				} elseif (!empty($context['destination']) && is_file($context['destination'])) {
+					@unlink($context['destination']);
+				}
+			}
+
+			return $results;
 		});
+
 		return $this->create('s_Files', $records);
 	}
 
 	public function putFiles(): array
 	{
 		$records = $this->normalizeInput();
-		$utils = $this->getUtils('s_Files');
-		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
-			// Парсим base64 проверяем на разрешенные типы и размеры, сохраняем в файловую систему и формируем FileUrl
-			// foreach ($records as &$value) {
-			// 	$value['FileType'] = $value['FileType'] ?? '';
-			// 	$value['FieSize'] = $value['FieSize']?? 0;
-			// 	$value['FileUrl'] = $value['FileUrl'] ?? '';
-			// 	$value['ApiFilter'] = $value['ApiFilter'] ?? '';
-			// }
-			return $records;
-		});
 		return $this->update('s_Files', $records);
 	}
 
 	public function deleteFiles(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
-		$uils = $this->getUtils('s_Files');
-		$uils->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
-			// Удаляем файлы из файловой системы
+		$utils = $this->getUtils('s_Files');
+		$fileUrls = [];
+		$utils->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) use (&$fileUrls) {
+			if (empty($ids)) {
+				return $ids;
+			}
+
+			$rows = Connect::$instance->fetch(
+				"SELECT Id, FileUrl FROM {$tableName} WHERE Id IN (" . Connect::$instance->in($ids) . ")",
+				$ids
+			);
+			foreach ($rows as $row) {
+				$fileId = (int) ($row['Id'] ?? 0);
+				$fileUrl = $row['FileUrl'] ?? '';
+				if ($fileId && $fileUrl !== '') {
+					$fileUrls[$fileId] = Connect::$projectDev['root'] . $fileUrl;
+				}
+			}
+			return $ids;
+		});
+		$utils->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) use (&$fileUrls) {
 			foreach ($results as $value) {
-				if ($value['status'] === 200 && isset($value['data']['id'])) {
-					// Удаляем файл из файловой системы, если он существует
-					// $fileId = (int) $value['data']['id'];
-					// $row = Connect::$instance->fetch("SELECT FileUrl FROM {$tableName} WHERE Id = ?", [$fileId]);
-					// if (!empty($row)) {
-					// 	$fileUrl = $row[0]['FileUrl'] ?? '';
-					// 	if ($fileUrl) {
-					// 		$path = $_SERVER['DOCUMENT_ROOT'] . '/' . ltrim($fileUrl, '/');
-					// 		if (file_exists($path)) {
-					// 			unlink($path);
-					// 		}
-					// 	}
-					// }
+				if ($value['status'] !== 200 || empty($value['data']['id'])) {
+					continue;
+				}
+				$fileId = (int) $value['data']['id'];
+				$path = $fileUrls[$fileId] ?? '';
+				if ($path && is_file($path)) {
+					@unlink($path);
 				}
 			}
 			return $results;
 		});
-		return $this->getUtils('s_Files')->remove($ids);
+		return $utils->remove($ids);
 	}
 
 	// ========================================================================
@@ -996,6 +1097,7 @@ class RestV1M2M extends RestV1
 		$records = (isset($raw[0]) && (is_array($raw[0]) || is_int($raw[0]))) ? $raw : [$raw];
 		return $records;
 	}
+
 
 	private function buildInvalidIdValidationErrors(array $records, array $invalidIds): array
 	{

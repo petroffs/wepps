@@ -1084,36 +1084,15 @@ class RestConfig
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
 							'guid' => ['type' => 'guid', 'required' => false],
-							'list' => ['type' => 'string', 'required' => true],
-							'listField' => ['type' => 'string', 'required' => true],
-							'listId' => ['type' => 'int', 'required' => true],
+							'name' => ['type' => 'string', 'required' => false],
+							'list' => ['type' => 'string', 'required' => false],
+							'listField' => ['type' => 'string', 'required' => false],
+							'listId' => ['type' => 'int', 'required' => false],
 							'description' => ['type' => 'string', 'required' => false],
 							'filter' => ['type' => 'string', 'required' => false],
-						],
-					],
-
-
-
-
-
-
-
-
-
-					'goods.images' => [
-						'class' => RestV1M2M::class,
-						'method' => 'putGoodsImages',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Update goods image by id',
-					],
-					'goods.imagesVariations' => [
-						'class' => RestV1M2M::class,
-						'method' => 'putGoodsImagesVariations',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Update goods variation image by id',
-					],
+							'priority' => ['type' => 'int', 'required' => false],
+						]
+					]
 				],
 				'delete' => [
 					// ===== Users =====

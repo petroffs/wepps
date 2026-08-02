@@ -1260,73 +1260,143 @@ class RestV1M2MUtils
 		}
 	}
 
-	/**
-	 * Сохранить загруженный файл (из base64 или multipart)
-	 * @param string $binary - бинарные данные файла
-	 * @param string $fileName - имя файла (с расширением)
-	 * @param int $entityId - ID сущности (товара, вариации и т.д.)
-	 * @return string|null - путь к файлу или null если ошибка
-	 */
-	public function saveFile(string $binary, string $fileName, int $entityId): ?string
+	public function prepareUploadFromBase64(string $base64, string $fileName): array
 	{
-		$ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-		if (!$ext) {
-			return null;
+		$binary = base64_decode($base64, true);
+		if ($binary === false) {
+			return ['error' => 'Invalid base64 data'];
 		}
 
-		$innerName = md5(uniqid($entityId . '_', true)) . '.' . $ext;
-		$dir = __DIR__ . '/../../../pic/lists/' . $this->tableName . '/' . $entityId;
-
-		if (!is_dir($dir) && !mkdir($dir, 0755, true)) {
-			return null;
+		$mime = $this->detectMimeType($binary);
+		if ($mime === null) {
+			return ['error' => 'Unable to detect mime type'];
 		}
 
-		if (file_put_contents($dir . '/' . $innerName, $binary) === false) {
-			return null;
+		$ext = $this->resolveExtensionByMime($mime, $fileName);
+		if ($ext === null) {
+			return ['error' => 'Unsupported mime type: ' . $mime];
 		}
 
-		return '/pic/lists/' . $this->tableName . '/' . $entityId . '/' . $innerName;
+		$tmpPath = $this->saveTempFile($binary, $ext);
+		if ($tmpPath === null) {
+			return ['error' => 'Failed to save temporary file'];
+		}
+
+		return [
+			'path' => $tmpPath,
+			'name' => $fileName ?: 'file.' . $ext,
+			'type' => $mime,
+			'size' => strlen($binary),
+		];
 	}
 
-	/**
-	 * Разрешить file_url из разных источников (file_url, file_base64 или multipart)
-	 * @param array $data - данные с одним из источников
-	 * @param int $entityId - ID сущности
-	 * @return string|array - URL файла или error array
-	 */
-	public function resolveFileUrl(array $data, int $entityId): string|array
+	public function prepareUploadFromUrl(string $url, string $fileName): array
 	{
-		$fileName = $data['file_name'] ?? '';
-
-		if (!empty($data['file_url'])) {
-			return $data['file_url'];
+		if (!filter_var($url, FILTER_VALIDATE_URL)) {
+			return ['error' => 'Invalid url'];
 		}
 
-		if (!empty($data['file_base64'])) {
-			if (!$fileName) {
-				return ['status' => 400, 'message' => 'file_name required for base64', 'data' => null];
-			}
-			$binary = base64_decode($data['file_base64'], true);
-			if (!$binary) {
-				return ['status' => 400, 'message' => 'Invalid base64 data', 'data' => null];
-			}
-			$url = $this->saveFile($binary, $fileName, $entityId);
-			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+		$binary = @file_get_contents($url);
+		if ($binary === false || $binary === '') {
+			return ['error' => 'Unable to download file from url'];
 		}
 
-		if (!empty($_FILES['file'])) {
-			$file = $_FILES['file'];
-			if ($file['error'] !== UPLOAD_ERR_OK) {
-				return ['status' => 400, 'message' => 'File upload error', 'data' => null];
-			}
-			$binary = file_get_contents($file['tmp_name']);
-			if (!$binary) {
-				return ['status' => 400, 'message' => 'Failed to read file', 'data' => null];
-			}
-			$url = $this->saveFile($binary, $file['name'], $entityId);
-			return $url ?? ['status' => 400, 'message' => 'Failed to save file', 'data' => null];
+		$mime = $this->detectMimeType($binary);
+		if ($mime === null) {
+			return ['error' => 'Unable to detect mime type'];
 		}
 
-		return ['status' => 400, 'message' => 'file_url, file_base64 or multipart file required', 'data' => null];
+		$ext = $this->resolveExtensionByMime($mime, $fileName ?: basename(parse_url($url, PHP_URL_PATH) ?: 'file'));
+		if ($ext === null) {
+			return ['error' => 'Unsupported mime type: ' . $mime];
+		}
+
+		$tmpPath = $this->saveTempFile($binary, $ext);
+		if ($tmpPath === null) {
+			return ['error' => 'Failed to save temporary file'];
+		}
+
+		return [
+			'path' => $tmpPath,
+			'name' => $fileName ?: basename(parse_url($url, PHP_URL_PATH) ?: 'file.' . $ext),
+			'type' => $mime,
+			'size' => strlen($binary),
+		];
+	}
+
+	private function saveTempFile(string $binary, string $ext): ?string
+	{
+		$root = rtrim(Connect::$projectDev['root'] ?? '', '/\\');
+		$dir = $root . '/packages/WeppsExtensions/Template/Forms/uploads';
+		if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+			return null;
+		}
+
+		$tmpPath = $dir . '/wepps_upload_' . uniqid('', true) . '.' . $ext;
+		if (file_put_contents($tmpPath, $binary) === false) {
+			return null;
+		}
+
+		return $tmpPath;
+	}
+
+	private function detectMimeType(string $binary): ?string
+	{
+		if (function_exists('finfo_open')) {
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			if ($finfo !== false) {
+				$mime = finfo_buffer($finfo, $binary);
+				finfo_close($finfo);
+				if ($mime !== false) {
+					return $mime;
+				}
+			}
+		}
+
+		if (function_exists('getimagesizefromstring')) {
+			$info = @getimagesizefromstring($binary);
+			if (!empty($info['mime'])) {
+				return $info['mime'];
+			}
+		}
+
+		return null;
+	}
+
+	private function resolveExtensionByMime(string $mime, string $fileName = ''): ?string
+	{
+		$ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+		if ($ext !== '') {
+			return $ext;
+		}
+
+		switch ($mime) {
+			case 'image/jpeg':
+			case 'image/pjpeg':
+				return 'jpg';
+			case 'image/png':
+				return 'png';
+			case 'image/gif':
+				return 'gif';
+			case 'image/webp':
+				return 'webp';
+			case 'image/svg+xml':
+				return 'svg';
+			case 'application/pdf':
+				return 'pdf';
+			case 'application/zip':
+				return 'zip';
+			case 'application/json':
+				return 'json';
+			case 'text/plain':
+				return 'txt';
+			case 'audio/mpeg':
+			case 'audio/mp3':
+				return 'mp3';
+			case 'video/mp4':
+				return 'mp4';
+			default:
+				return null;
+		}
 	}
 }
