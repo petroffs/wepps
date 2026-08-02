@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{base_url}}/rest/m2m/files?page=1&limit=100&list=Products&listId=326&listField=ImagesV
+  url: {{base_url}}/rest/m2m/files?page=1&limit=100&list=DataTbls&listId=1&listField=Image
   body: none
   auth: inherit
 }
@@ -13,9 +13,9 @@ get {
 params:query {
   page: 1
   limit: 100
-  list: Products
-  listId: 326
-  listField: ImagesV
+  list: DataTbls
+  listId: 1
+  listField: Image
   ~filter: Синий
 }
 

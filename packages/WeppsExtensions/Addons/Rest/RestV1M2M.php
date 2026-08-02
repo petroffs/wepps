@@ -704,6 +704,7 @@ class RestV1M2M extends RestV1
 	{
 		$records = $this->normalizeInput();
 		$utils = $this->getUtils('s_Files');
+		
 		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
 			// Парсим base64 проверяем на разрешенные типы и размеры, сохраняем в файловую систему и формируем FileUrl
 			// foreach ($records as &$value) {

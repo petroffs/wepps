@@ -937,11 +937,14 @@ class RestConfig
 						'note' => 'M2M: Create files (paginated). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
+							'name' => ['type' => 'string', 'required' => true],
 							'list' => ['type' => 'string', 'required' => true],
 							'listField' => ['type' => 'string', 'required' => true],
 							'listId' => ['type' => 'int', 'required' => true],
 							'description' => ['type' => 'string', 'required' => false],
 							'filter' => ['type' => 'string', 'required' => false],
+							'url' => ['type' => 'string', 'required' => false],
+							'base64' => ['type' => 'string', 'required' => false],
 						],
 					],
 

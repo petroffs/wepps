@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{base_url}}/rest/m2m/goods.images
+  url: {{base_url}}/rest/m2m/files
   body: json
   auth: inherit
 }
@@ -14,15 +14,15 @@ body:json {
   {
     "data": [
       {
-        "guid": "8b411621-7e3a-11f1-85a7-4ccc6ad9349d",
-        "name": "test.jpg",
-        "list": "Products",
-        "listField": "ImagesV",
-        "listId": 326,
+        "guid": "04034dad-8e67-11f1-b258-00155df337c8",
+        "name": "testurl.jpg",
+        "list": "DataTbls",
+        "listField": "Image",
+        "listId": 1,
         "description": "Черный",
-        "filter": "Черный",
-        "url": "/files/lists/Products/000326_ImagesV_1778280429_B01.jpg",
-        "base64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+        "filter": "",
+        "url": "{{base_url}}/ext/Template/files/wepps-cover.jpg",
+        "base64": ""
       }
     ]
   }
