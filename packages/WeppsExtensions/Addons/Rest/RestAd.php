@@ -7,7 +7,14 @@ use WeppsExtensions\Addons\Jwt\Jwt;
 use WeppsCore\Validator;
 
 /**
- * REST обработчик для работы со списками админки
+ * REST обработчик для работы со списками админки.
+ *
+ * Вызывается динамически через Rest::executeHandler() по конфигу версии 'v0'/'ad'
+ * из RestConfig.php. Предоставляет JWT-аутентификацию для админки (getToken),
+ * поиск по спискам админки с пагинацией (getListItems) и тестовые эндпоинты.
+ *
+ * Методы получают данные через ссылки на get/post/data экземпляра Rest
+ * и возвращают стандартный массив ответа ['status', 'message', 'data'].
  */
 class RestAd
 {
@@ -32,8 +39,11 @@ class RestAd
 	protected ?array $data = null;
 
 	/**
-	 * Конструктор класса RestAd
-	 * 
+	 * Конструктор класса RestAd.
+	 *
+	 * Сохраняет экземпляр Rest и устанавливает ссылки на его GET/POST параметры
+	 * и парсированные данные JSON-тела запроса.
+	 *
 	 * @param Rest $rest Экземпляр Rest с данными и методами
 	 */
 	public function __construct(Rest $rest)
@@ -45,9 +55,13 @@ class RestAd
 	}
 
 	/**
-	 * Аутентификация пользователя через GET-параметры и генерация JWT токена
-	 * 
-	 * @return array Результат аутентификации с токеном или сообщением об ошибке
+	 * Аутентификация пользователя через GET-параметры и генерация JWT токена.
+	 *
+	 * Параметры: login (email), password. Проверяет пользователя в таблице s_Users,
+	 * при успехе выдаёт JWT-токен (typ=auth) со сроком жизни ~86200 сек (24 часа).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']: при успехе
+	 *               data = ['token' => JWT, 'exp' => timestamp истечения]
 	 */
 	public function getToken(): array
 	{
@@ -89,8 +103,15 @@ class RestAd
 	}
 
 	/**
-	 * Получить список с поиском и пагинацией
-	 * @return array
+	 * Получить список с поиском и пагинацией.
+	 *
+	 * GET-параметры: list (имя списка/таблицы), field (id поля из s_ConfigFields),
+	 * search (строка поиска), page (номер страницы). Поле конфигурируется в
+	 * s_ConfigFields (FType вида List::Table::Field::Condition). Использует
+	 * custom_response: возвращает ['results' => [...], 'pagination' => ['more' => bool]]
+	 * без стандартной обёртки status/message/data.
+	 *
+	 * @return array Результаты поиска с пагинацией (custom_response)
 	 */
 	public function getListItems(): array
 	{
@@ -150,9 +171,11 @@ class RestAd
 	}
 
 	/**
-	 * Тестовый метод GET запроса
-	 * 
-	 * @return void
+	 * Тестовый метод GET запроса.
+	 *
+	 * Возвращает фиксированный набор тестовых данных.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getTest(): array
 	{
@@ -171,10 +194,13 @@ class RestAd
 	}
 
 	/**
-	 * Тестовый метод POST/PUT запроса
-	 * 
-	 * @param array|null $data Входные данные
-	 * @return array
+	 * Тестовый метод POST/PUT запроса.
+	 *
+	 * Принимает входные данные (не используются) и возвращает фиксированный
+	 * набор тестовых данных.
+	 *
+	 * @param array|null $data Входные данные тела запроса
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function setTest($data = null): array
 	{
@@ -199,9 +225,12 @@ class RestAd
 	}
 
 	/**
-	 * Тестовый метод DELETE запроса
-	 * 
-	 * @return void
+	 * Тестовый метод DELETE запроса.
+	 *
+	 * Возвращает переданные параметры (param / paramValue) из параметров
+	 * запроса или настроек как подтверждение удаления.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function removeTest(): array
 	{
@@ -218,9 +247,12 @@ class RestAd
 	}
 
 	/**
-	 * Тестовый метод CLI запроса
-	 * 
-	 * @return void
+	 * Тестовый метод CLI запроса.
+	 *
+	 * Вызывается из командной строки (версия 'cli'), возвращает фиксированный
+	 * ответ об успешном выполнении.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function cliTest(): array
 	{

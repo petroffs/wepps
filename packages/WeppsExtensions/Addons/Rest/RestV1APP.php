@@ -13,8 +13,21 @@ use WeppsExtensions\Products\ProductsUtils;
 use WeppsExtensions\Template\Filters\Filters;
 
 /**
- * REST обработчик для APP-методов API v1
- * Goods, Orders, News, Slides
+ * REST обработчик для APP-методов API v1 — товары, заказы, корзина, новости, слайды.
+ *
+ * Наследует RestV1 (авторизация и профиль). Вызывается динамически через
+ * Rest::executeHandler() по конфигу версии 'v1' из RestConfig.php.
+ *
+ * Реализует:
+ * - HOME: агрегированные данные главного экрана приложения;
+ * - GOODS: список/детали/категории/фильтры/избранное товаров, CRUD товара;
+ * - ORDERS: список/детали заказов, смена статуса, отмена;
+ * - CART: метрики, содержимое корзины, добавление/изменение/удаление позиций,
+ *   оформление заказа, выбор города/доставки/оплаты/ПВЗ;
+ * - NEWS / SLIDES: список и детали;
+ * - ORDERS MESSAGES: сообщения по заказу.
+ *
+ * URL картинок преобразуются в полные (protocol + host + /pic/...).
  */
 class RestV1APP extends RestV1
 {
@@ -23,9 +36,13 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/home — агрегированные данные для главного экрана приложения
-	 * Слайды, категории каталога, последние новости, последние товары.
-	 * Для авторизованных пользователей — активный заказ (OStatus=1).
+	 * GET v1/home — агрегированные данные для главного экрана приложения.
+	 *
+	 * Собирает слайды, категории каталога, последние новости, последние товары,
+	 * избранное (для авторизованных) и метрики корзины. Для авторизованных
+	 * пользователей дополнительно возвращает активные заказы (OStatus 1-2).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getHome(): array
 	{
@@ -80,7 +97,13 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/goods — список товаров (или один товар если передан 'id')
+	 * GET v1/goods — список товаров (или один товар, если передан 'id').
+	 *
+	 * GET-параметры: id (id или alias товара — вернёт один товар), page, limit,
+	 * category, а также параметры фильтров. Для каждого товара подгружаются
+	 * атрибуты и формируется полный URL картинки и страницы товара.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getGoods(): array
 	{
@@ -170,8 +193,11 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/goods.item — товар по id или alias
-	 * Вызывает getGoods() с параметром 'id' для унификации обработки
+	 * GET v1/goods.item — товар по id или alias.
+	 *
+	 * Вызывает getGoods() с параметром 'id' для унификации обработки.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getGoodsItem(): array
 	{
@@ -193,7 +219,12 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/goods.categories — список категорий товаров
+	 * GET v1/goods.categories — список категорий товаров.
+	 *
+	 * Возвращает разделы навигатора первого уровня каталога (без брендов)
+	 * с полем ParentId для построения дерева.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getGoodsCategories(): array
 	{
@@ -207,7 +238,12 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/goods.filters — доступные свойства/значения для фильтрации
+	 * GET v1/goods.filters — доступные свойства/значения для фильтрации.
+	 *
+	 * GET-параметры: category (id категории), search (префикс названия свойства).
+	 * Возвращает сгруппированные по свойству значения с количеством товаров.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getGoodsFilters(): array
 	{
@@ -243,7 +279,11 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/goods.favorites — избранные товары текущего пользователя
+	 * GET v1/goods.favorites — избранные товары текущего пользователя.
+	 *
+	 * Возвращает товары из JFav пользователя (максимум 100).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getGoodsFavorites(): array
 	{
@@ -285,7 +325,10 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * POST v1/goods — создание товара
+	 * POST v1/goods — создание товара.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['name' => ..., 'price' => ..., 'category' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data'] (data = ['id' => ...])
 	 */
 	public function postGoods($data = null): array
 	{
@@ -304,7 +347,10 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/goods — обновление товара
+	 * PUT v1/goods — обновление товара (частичное).
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['id' => ..., 'name' => ..., 'price' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putGoods($data = null): array
 	{
@@ -336,7 +382,9 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * DELETE v1/goods — удаление товара по id
+	 * DELETE v1/goods — удаление товара по id (мягкое, IsHidden=1).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function deleteGoods(): array
 	{
@@ -353,7 +401,13 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/orders — список заказов пользователя
+	 * GET v1/orders — список заказов пользователя.
+	 *
+	 * GET-параметры: page, limit. Для авторизованного пользователя возвращает
+	 * заказы с декодированным JData и полными URL картинок позиций.
+	 *
+	 * @param array|null $statuses Ограничение по статусам (используется getHome)
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getOrders(?array $statuses = null): array
 	{
@@ -391,7 +445,11 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/orders.item — заказ по id
+	 * GET v1/orders.item — заказ по id.
+	 *
+	 * Возвращает полный заказ (JData, JPositions, сообщения) с полными URL.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getOrdersItem(): array
 	{
@@ -438,7 +496,10 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/orders.status — обновление статуса заказа
+	 * PUT v1/orders.status — обновление статуса заказа.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['id' => ..., 'status' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putOrdersStatus($data = null): array
 	{
@@ -458,13 +519,16 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * DELETE v1/orders — отмена заказа по id
-	 * 
-	 * Отмена возможна только для заказов в статусе "новый" или "в обработке". Статус "отменён" — 6.
-	 * Желательно, настроить уведомления (через Tasks) или транспорт данных в учетную систему, 
-	 * чтобы видеть эти изменения статусов. 
-	 * Либо, если нужно полностью удалять заказ, можно добавить дополнительный флаг IsDeleted и 
-	 * фильтровать заказы с IsDeleted=0 в методах получения.
+	 * DELETE v1/orders — отмена заказа по id.
+	 *
+	 * Отмена возможна только для заказов в статусе «новый» (1) или «в обработке» (2);
+	 * заказ помечается статусом «отменён» (6). Желательно настроить уведомления
+	 * (через Tasks) или транспорт данных в учётную систему, чтобы видеть эти
+	 * изменения статусов. Либо, если нужно полностью удалять заказ, можно добавить
+	 * дополнительный флаг IsDeleted и фильтровать заказы с IsDeleted=0 в методах
+	 * получения.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function deleteOrders(): array
 	{
@@ -492,7 +556,11 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/cart.metrics — счётчик позиций корзины (работает для анонимных и авторизованных)
+	 * GET v1/cart.metrics — счётчик позиций корзины.
+	 *
+	 * Работает для анонимных (cookie) и авторизованных (JCart) пользователей.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getCartMetrics(): array
 	{
@@ -502,7 +570,9 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/cart — корзина текущего пользователя
+	 * GET v1/cart — корзина текущего пользователя с позициями и итогами.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getCart(): array
 	{
@@ -513,11 +583,13 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * POST v1/cart — добавить товар в корзину (или обновить кол-во, если уже есть)
-	 */
-	/**
-	 * POST v1/cart — добавить товар в корзину
-	 * Параметры: id (может быть "325" или "325-555"), quantity (опционально, по умолчанию 1)
+	 * POST v1/cart — добавить товар в корзину (или обновить кол-во, если уже есть).
+	 *
+	 * Параметры: id (может быть "325" или "325-555"), quantity (опционально,
+	 * по умолчанию 1). Возвращает обновлённую сводку корзины.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['id' => ..., 'quantity' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postCart($data = null): array
 	{
@@ -539,8 +611,12 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/cart — обновить количество и активность товара в корзине
-	 * Параметры: id, quantity, active (опционально, 0 или 1 по умолчанию 1)
+	 * PUT v1/cart — обновить количество и активность товара в корзине.
+	 *
+	 * Параметры: id, quantity, active (опционально, 0 или 1, по умолчанию 1).
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['id' => ..., 'quantity' => ..., 'active' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putCart($data = null): array
 	{
@@ -568,6 +644,8 @@ class RestV1APP extends RestV1
 
 	/**
 	 * DELETE v1/cart — удалить товар из корзины по ?id=...
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function deleteCart(): array
 	{
@@ -588,9 +666,13 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * POST v1/cart.placeOrder — оформить заказ из текущей корзины
-	 * Контактные данные берутся из профиля пользователя.
-	 * Валидация deliveryOperations происходит в addOrder().
+	 * POST v1/cart.placeOrder — оформить заказ из текущей корзины.
+	 *
+	 * Контактные данные берутся из профиля пользователя. Требует выбранные
+	 * город/доставку/оплату. Валидация deliveryOperations происходит в addOrder().
+	 *
+	 * @param array|null $data Данные тела: ['data' => [...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postCartPlaceOrder($data = null): array
 	{
@@ -642,7 +724,9 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/cart.city — поиск городов по строке запроса (?q=Мос)
+	 * GET v1/cart.city — поиск городов по строке запроса (?q=Мос).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getCartCity(): array
 	{
@@ -657,7 +741,9 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/cart.delivery — доступные способы доставки для города (?citiesId=123)
+	 * GET v1/cart.delivery — доступные способы доставки для города (?citiesId=123).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getCartDelivery(): array
 	{
@@ -674,7 +760,9 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/cart.checkout — доступные способы доставки и оплаты
+	 * GET v1/cart.checkout — доступные способы доставки и оплаты для текущей корзины.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getCartCheckout(): array
 	{
@@ -685,9 +773,13 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/cart.city — выбрать город доставки (шаг 1 оформления)
-	 * Аналог case "delivery" в веб-версии Cart/Request.php.
-	 * Сохраняет город только если для него есть доступные способы доставки.
+	 * PUT v1/cart.city — выбрать город доставки (шаг 1 оформления).
+	 *
+	 * Аналог case "delivery" в веб-версии Cart/Request.php. Сохраняет город
+	 * только если для него есть доступные способы доставки.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['citiesId' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putCartCity($data = null): array
 	{
@@ -705,9 +797,13 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/cart.delivery — выбрать способ доставки (шаг 2 оформления)
-	 * Аналог case "payments" в веб-версии Cart/Request.php.
-	 * Сохраняет deliveryId через setCartDelivery только если для него есть способы оплаты.
+	 * PUT v1/cart.delivery — выбрать способ доставки (шаг 2 оформления).
+	 *
+	 * Аналог case "payments" в веб-версии Cart/Request.php. Сохраняет deliveryId
+	 * через setCartDelivery только если для него есть способы оплаты.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['deliveryId' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putCartDelivery($data = null): array
 	{
@@ -725,7 +821,10 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/cart.payment — выбрать способ оплаты
+	 * PUT v1/cart.payment — выбрать способ оплаты.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['paymentsId' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putCartPayment($data = null): array
 	{
@@ -738,10 +837,14 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * PUT v1/cart.deliveryOperations — сохранить выбранное ПВЗ или адрес доставки
-	 * Аналог case "deliveryOperations" в веб-версии Cart/Request.php.
-	 * Сохраняет параметры доставки (выбранную точку выдачи или адрес) в корзину.
+	 * PUT v1/cart.deliveryOperations — сохранить выбранное ПВЗ или адрес доставки.
+	 *
+	 * Аналог case "deliveryOperations" в веб-версии Cart/Request.php. Сохраняет
+	 * параметры доставки (выбранную точку выдачи или адрес) в корзину.
 	 * Полная валидация происходит в addOrder() при оформлении заказа.
+	 *
+	 * @param array|null $data Данные тела: ['data' => [...operations-* параметры]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putCartDeliveryOperations($data = null): array
 	{
@@ -783,6 +886,8 @@ class RestV1APP extends RestV1
 	 * CartUtils требует пользователя через Connect::$projectData['user']
 	 * (аналогично веб-версии). Данные пользователя уже содержат JCart и JFav,
 	 * т.к. authenticateBearerToken делает SELECT * FROM s_Users.
+	 *
+	 * @return CartUtils Новый экземпляр CartUtils с установленным пользователем
 	 */
 	private function _newCartUtils(): CartUtils
 	{
@@ -827,7 +932,11 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/news — список новостей
+	 * GET v1/news — список новостей с пагинацией и поиском по названию.
+	 *
+	 * GET-параметры: page, limit, search.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getNews(): array
 	{
@@ -868,7 +977,9 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * GET v1/news.item — новость по id
+	 * GET v1/news.item — новость по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getNewsItem(): array
 	{
@@ -897,7 +1008,9 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/slides — список активных слайдов
+	 * GET v1/slides — список активных слайдов.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getSlides(): array
 	{
@@ -930,7 +1043,9 @@ class RestV1APP extends RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * GET v1/orders.messages — получить сообщения по заказу
+	 * GET v1/orders.messages — получить сообщения по заказу.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getOrdersMessages(): array
 	{
@@ -943,7 +1058,10 @@ class RestV1APP extends RestV1
 	}
 
 	/**
-	 * POST v1/orders.messages — добавить сообщение к заказу
+	 * POST v1/orders.messages — добавить сообщение к заказу.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['id' => ..., 'message' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postOrdersMessages($data = null): array
 	{

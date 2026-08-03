@@ -117,6 +117,14 @@ class RestV1M2MUtils
 	 */
 	private array $afterCallbacks = [];
 
+	/**
+	 * Конструктор класса RestV1M2MUtils.
+	 *
+	 * Создаёт экземпляр утилит для работы с конкретной таблицей. Инстанцируется
+	 * через RestV1M2M::getUtils() с кэшированием по имени таблицы.
+	 *
+	 * @param string $tableName Имя таблицы (например 's_Users', 'Products', 'Orders')
+	 */
 	public function __construct(string $tableName)
 	{
 		$this->tableName = $tableName;
@@ -161,6 +169,15 @@ class RestV1M2MUtils
 		return $this;
 	}
 
+	/**
+	 * Последовательно выполнить все before-callbacks над элементами batch-операции.
+	 *
+	 * Каждый callback может модифицировать items (вернув новый массив) — результат
+	 * передаётся следующему callback-у. Исключение в callback откатит транзакцию.
+	 *
+	 * @param array $items Элементы batch-операции (записи или id)
+	 * @return array Модифицированные элементы
+	 */
 	private function runBeforeCallbacks(array $items): array
 	{
 		foreach ($this->beforeCallbacks as $callback) {
@@ -187,6 +204,15 @@ class RestV1M2MUtils
 		return $this;
 	}
 
+	/**
+	 * Получить накопленные validation errors и сбросить хранилище.
+	 *
+	 * Ошибки, выставленные через setValidationErrors(), нормализуются и
+	 * возвращаются вместе с элементами batch-операции.
+	 *
+	 * @param array $items Элементы batch-операции
+	 * @return array ['records' => items, 'errors' => [index => ['status', 'message', 'data']]]
+	 */
 	private function getValidationErrors(array $items): array
 	{
 		$errors = $this->validationErrors;
@@ -206,6 +232,15 @@ class RestV1M2MUtils
 		return ['records' => $items, 'errors' => $normalized];
 	}
 
+	/**
+	 * Последовательно выполнить все after-callbacks над результатами batch-операции.
+	 *
+	 * Каждый callback может заменить результаты (вернув новый массив). Выполняется
+	 * ВНУТРИ транзакции перед COMMIT; исключение откатит все изменения.
+	 *
+	 * @param array $results Результаты batch-операции
+	 * @return array Итоговые результаты
+	 */
 	private function runAfterCallbacks(array $results): array
 	{
 		foreach ($this->afterCallbacks as $callback) {
@@ -1233,7 +1268,12 @@ class RestV1M2MUtils
 
 	/**
 	 * Обновить поисковый индекс для созданных или обновлённых записей.
-	 * @param array $result результаты CRUD операций
+	 *
+	 * Принимает результат CRUD-операции (одиночный или 207 Multi-Status) и
+	 * через Lists::setSearchIndex() формирует SQL для обновления индекса
+	 * каждой успешной записи (status 200/201).
+	 *
+	 * @param array $result Результаты CRUD-операций
 	 */
 	public function updateSearchIndex(array $result): void
 	{
@@ -1260,6 +1300,17 @@ class RestV1M2MUtils
 		}
 	}
 
+	/**
+	 * Подготовить загрузку файла из base64-строки.
+	 *
+	 * Декодирует base64, определяет MIME-тип и расширение, сохраняет во
+	 * временную директорию. Возвращает путь, имя, тип и размер файла либо
+	 * массив с ключом 'error'.
+	 *
+	 * @param string $base64   Данные файла в base64
+	 * @param string $fileName Оригинальное имя файла (для расширения)
+	 * @return array ['path','name','type','size'] или ['error' => string]
+	 */
 	public function prepareUploadFromBase64(string $base64, string $fileName): array
 	{
 		$binary = base64_decode($base64, true);
@@ -1290,6 +1341,17 @@ class RestV1M2MUtils
 		];
 	}
 
+	/**
+	 * Подготовить загрузку файла по URL.
+	 *
+	 * Скачивает файл по ссылке (file_get_contents), определяет MIME-тип и
+	 * расширение, сохраняет во временную директорию. Возвращает путь, имя,
+	 * тип и размер файла либо массив с ключом 'error'.
+	 *
+	 * @param string $url       URL файла
+	 * @param string $fileName  Оригинальное имя файла (для расширения)
+	 * @return array ['path','name','type','size'] или ['error' => string]
+	 */
 	public function prepareUploadFromUrl(string $url, string $fileName): array
 	{
 		if (!filter_var($url, FILTER_VALIDATE_URL)) {
@@ -1324,6 +1386,16 @@ class RestV1M2MUtils
 		];
 	}
 
+	/**
+	 * Сохранить бинарные данные во временный файл.
+	 *
+	 * Записывает данные в директорию uploads расширения Template/Forms с
+	 * уникальным именем wepps_upload_*. Возвращает путь или null при ошибке.
+	 *
+	 * @param string $binary Бинарные данные файла
+	 * @param string $ext    Расширение файла (без точки)
+	 * @return string|null Путь к временному файлу или null
+	 */
 	private function saveTempFile(string $binary, string $ext): ?string
 	{
 		$root = rtrim(Connect::$projectDev['root'] ?? '', '/\\');
@@ -1340,6 +1412,14 @@ class RestV1M2MUtils
 		return $tmpPath;
 	}
 
+	/**
+	 * Определить MIME-тип по бинарным данным.
+	 *
+	 * Использует finfo (FILEINFO_MIME_TYPE), при недоступности — getimagesize.
+	 *
+	 * @param string $binary Бинарные данные файла
+	 * @return string|null MIME-тип или null, если не удалось определить
+	 */
 	private function detectMimeType(string $binary): ?string
 	{
 		if (function_exists('finfo_open')) {
@@ -1363,6 +1443,17 @@ class RestV1M2MUtils
 		return null;
 	}
 
+	/**
+	 * Определить расширение файла по MIME-типу.
+	 *
+	 * Если у fileName есть расширение — используется оно. Иначе MIME-тип
+	 * сопоставляется с известными расширениями (jpg, png, gif, webp, svg,
+	 * pdf, zip, json, ...).
+	 *
+	 * @param string $mime     MIME-тип файла
+	 * @param string $fileName Имя файла (опционально, для взятия расширения)
+	 * @return string|null Расширение без точки или null, если тип не поддерживается
+	 */
 	private function resolveExtensionByMime(string $mime, string $fileName = ''): ?string
 	{
 		$ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));

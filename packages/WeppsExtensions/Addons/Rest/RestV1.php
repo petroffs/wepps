@@ -9,8 +9,17 @@ use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Profile\ProfileActions;
 
 /**
- * REST обработчик для API v1
- * Auth, Profile
+ * REST обработчик для API v1 — авторизация и профиль.
+ *
+ * Вызывается динамически через Rest::executeHandler() по конфигу версии 'v1'
+ * из RestConfig.php. Реализует:
+ * - AUTH: вход, регистрация (2 шага), refresh/confirm токены, восстановление
+ *   пароля, выход из сессии;
+ * - PROFILE: получение и обновление профиля, смена email/телефона/пароля
+ *   (2 шага с кодом подтверждения), настройки приложения, удаление аккаунта.
+ *
+ * Режим двухэтапной авторизации управляется константой CONFIRM_AUTH.
+ * Методы получают данные тела запроса через $data (массив вида ['data' => [...]]).
  */
 class RestV1
 {
@@ -41,6 +50,14 @@ class RestV1
 	 */
 	protected ?array $data = null;
 
+	/**
+	 * Конструктор класса RestV1.
+	 *
+	 * Сохраняет экземпляр Rest и устанавливает ссылки на его GET/POST параметры
+	 * и парсированные данные JSON-тела запроса.
+	 *
+	 * @param Rest $rest Экземпляр Rest с данными и методами
+	 */
 	public function __construct(Rest $rest)
 	{
 		$this->rest = $rest;
@@ -54,7 +71,14 @@ class RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * POST v1/auth.login — аутентификация и выдача JWT токена
+	 * POST v1/auth.login — аутентификация и выдача JWT токена.
+	 *
+	 * При CONFIRM_AUTH=false сразу возвращает пару access+refresh токенов.
+	 * При CONFIRM_AUTH=true возвращает confirm_token и отправляет письмо с кодом;
+	 * токены выдаются только после v1/auth.confirm.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['login' => ..., 'password' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postAuthLogin($data = null): array
 	{
@@ -110,7 +134,12 @@ class RestV1
 
 	/**
 	 * POST v1/register — инициация регистрации нового пользователя.
-	 * Отправляет письмо со ссылкой подтверждения; аккаунт создаётся через register.confirm.
+	 *
+	 * Отправляет письмо со ссылкой подтверждения; аккаунт создаётся через
+	 * v1/register.confirm.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['login' => ..., 'phone' => ..., 'nameSurname' => ..., 'nameFirst' => ..., 'namePatronymic' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postRegister($data = null): array
 	{
@@ -127,8 +156,12 @@ class RestV1
 
 	/**
 	 * POST v1/register.confirm — подтверждение регистрации по токену из письма.
+	 *
 	 * Клиент передаёт token (из ссылки в письме), password и password2.
 	 * После успеха аккаунт создан, возвращается пара access+refresh токенов.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['token' => ..., 'password' => ..., 'password2' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postRegisterConfirm($data = null): array
 	{
@@ -150,7 +183,13 @@ class RestV1
 	}
 
 	/**
-	 * POST v1/auth.refresh — обновление пары токенов по refresh token
+	 * POST v1/auth.refresh — обновление пары токенов по refresh token.
+	 *
+	 * Проверяет тип токена (typ=refresh) и активность пользователя (IsHidden=0),
+	 * выдаёт новую пару access+refresh токенов.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['refresh_token' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postAuthRefresh($data = null): array
 	{
@@ -196,6 +235,9 @@ class RestV1
 	 * Клиент получает confirm_token из ответа auth.login и сохраняет его.
 	 * Письмо содержит ссылку (?token=...) и 6-значный код для ручного ввода.
 	 * Оба варианта передают confirm_token; code — опциональная дополнительная проверка.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['token' => ..., 'code' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postAuthConfirm($data = null): array
 	{
@@ -241,6 +283,9 @@ class RestV1
 	/**
 	 * POST v1/auth.password-reset — запрос на восстановление пароля.
 	 * Отправляет письмо со ссылкой и токеном для установки нового пароля.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['login' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postAuthPasswordReset($data = null): array
 	{
@@ -256,8 +301,12 @@ class RestV1
 	// -------------------------------------------------------------------------
 
 	/**
-	 * POST v1/auth.logout — завершение сессии
-	 * Токены stateless, сервер их не хранит — клиент должен удалить оба токена из локального хранилища.
+	 * POST v1/auth.logout — завершение сессии.
+	 *
+	 * Токены stateless, сервер их не хранит — клиент должен удалить оба токена
+	 * из локального хранилища.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postAuthLogout(): array
 	{
@@ -266,7 +315,12 @@ class RestV1
 	}
 
 	/**
-	 * GET v1/profile — профиль текущего пользователя
+	 * GET v1/profile — профиль текущего пользователя.
+	 *
+	 * Возвращает персональные данные пользователя из JWT-аутентификации
+	 * (id, login, ФИО, телефон, город, адрес).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getProfile(): array
 	{
@@ -288,11 +342,13 @@ class RestV1
 	}
 
 	/**
-	 * PUT v1/profile — обновление профиля
-	 */
-	/**
-	 * PUT v1/profile — обновление ФИО и адреса.
+	 * PUT v1/profile — обновление ФИО и адреса текущего пользователя.
+	 *
+	 * Принимает хотя бы одно из полей nameSurname / nameFirst / namePatronymic.
 	 * Email и телефон изменяются через отдельные эндпоинты с кодом подтверждения.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['nameSurname' => ..., 'nameFirst' => ..., 'namePatronymic' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putProfile($data = null): array
 	{
@@ -327,6 +383,9 @@ class RestV1
 	 * PUT v1/profile.email — 2-шаговая смена e-mail.
 	 * Шаг 1 (без code): валидирует email, отправляет код на новый адрес.
 	 * Шаг 2 (с code): проверяет код, обновляет Email и Login.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['email' => ..., 'code' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putProfileEmail($data = null): array
 	{
@@ -343,6 +402,9 @@ class RestV1
 	 * PUT v1/profile.phone — 2-шаговая смена телефона.
 	 * Шаг 1 (без code): валидирует номер, отправляет код на e-mail пользователя.
 	 * Шаг 2 (с code): проверяет код, обновляет Phone.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['phone' => ..., 'code' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putProfilePhone($data = null): array
 	{
@@ -356,8 +418,11 @@ class RestV1
 	}
 
 	/**
-	 * GET v1/profile.settings — настройки пользователя
+	 * GET v1/profile.settings — настройки пользователя.
+	 *
 	 * Возвращает данные из JSettings с подстановкой значений по умолчанию.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function getProfileSettings(): array
 	{
@@ -375,8 +440,12 @@ class RestV1
 	}
 
 	/**
-	 * PUT v1/profile.settings — обновление настроек пользователя
+	 * PUT v1/profile.settings — обновление настроек пользователя.
+	 *
 	 * Принимает частичное обновление — только переданные ключи перезаписываются.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['theme' => ..., 'notificationsOrders' => ..., 'notificationsPromotions' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putProfileSettings($data = null): array
 	{
@@ -400,6 +469,9 @@ class RestV1
 	 * PUT v1/profile.password — 2-шаговая смена пароля с подтверждением по e-mail.
 	 * Шаг 1 (без code): валидирует пароль, отправляет код на e-mail.
 	 * Шаг 2 (с code): проверяет код, обновляет пароль.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['password_new' => ..., 'password_new2' => ..., 'code' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putProfilePassword($data = null): array
 	{
@@ -414,8 +486,13 @@ class RestV1
 	}
 
 	/**
-	 * DELETE v1/profile — удаление аккаунта (2-step: word confirmation → code confirmation)
-	 * После успешного удаления (статус 200) клиент должен удалить обе токены из локального хранилища.
+	 * DELETE v1/profile — удаление аккаунта (2-step: word confirmation → code confirmation).
+	 *
+	 * После успешного удаления (статус 200) клиент должен удалить обе токены
+	 * из локального хранилища.
+	 *
+	 * @param array|null $data Данные тела: ['data' => ['word' => ..., 'code' => ...]]
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function deleteProfile($data = null): array
 	{

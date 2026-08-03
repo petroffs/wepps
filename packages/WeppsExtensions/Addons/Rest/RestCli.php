@@ -5,26 +5,44 @@ use WeppsCore\Connect;
 use WeppsCore\Tasks;
 
 /**
- * REST обработчик для CLI запросов
+ * REST обработчик для CLI запросов.
+ *
+ * Вызывается из командной строки (версия 'cli' в RestConfig.php) через
+ * Rest::parseCliRequest(). Предоставляет служебные операции:
+ * - removeLogLocal - очистка таблицы s_Tasks и удаление локальных файлов логов;
+ * - tasksResult - получение результата задачи из очереди s_Tasks по id;
+ * - tasksProcess - обработка отложенных async M2M POST-задач из s_Tasks;
+ * - cliTest - тестовый эндпоинт.
  */
 class RestCli
 {
+	/**
+	 * Параметры CLI-запроса: version, method, type, params, param, paramValue.
+	 * Формируются в Rest::buildSettings() из argv (Request.php скрипт метод param paramValue).
+	 * @var array
+	 */
+	protected array $settings = [];
 
 	/**
-	 * Конструктор класса RestCli
-	 * 
-	 * @param array $settings Параметры инициализации
+	 * Конструктор класса RestCli.
+	 *
+	 * Сохраняет настройки запроса, переданные из Rest::routeRequest()
+	 * (массив buildSettings(): param, paramValue и т.д.).
+	 *
+	 * @param array $settings Параметры инициализации CLI-запроса
 	 */
 	public function __construct($settings = [])
 	{
-		// Инициализация без наследования
+		$this->settings = $settings;
 	}
 
 	/**
-	 * Удалить локальные логи и кэш файлы
-	 * Очищает таблицу s_Tasks и удаляет файлы логов из директории
-	 * 
-	 * @return void
+	 * Удалить локальные логи и кэш-файлы.
+	 *
+	 * Очищает таблицу s_Tasks (TRUNCATE) и удаляет файлы из директории
+	 * __DIR__/files/ (если они есть).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function removeLogLocal(): array
 	{
@@ -63,9 +81,11 @@ class RestCli
 	}
 
 	/**
-	 * Тестовый метод CLI запроса
-	 * 
-	 * @return void
+	 * Тестовый метод CLI запроса.
+	 *
+	 * Возвращает фиксированный ответ об успешном выполнении с временной меткой.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function cliTest(): array
 	{
@@ -80,18 +100,18 @@ class RestCli
 	}
 
 	/**
-	 * Обработать очередь async-задач (TRequest='post', IsProcessed=0)
-	 *
-	 * Для каждой задачи восстанавливает контекст REST-запроса, запускает обработчик
-	 * и сохраняет результат в s_Tasks.
-	 */
-	/**
 	 * Получить результат задачи из очереди по ID.
-	 * GET-параметр: ?id=
+	 *
+	 * ID передаётся аргументом CLI: Request.php tasks.result 123
+	 * (попадает в $this->settings['paramValue']). Возвращает детали задачи из
+	 * таблицы s_Tasks: тип запроса, url, статусы обработки и сохранённый ответ
+	 * (http_status + response).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function tasksResult(): array
 	{
-		$id = (int) ($this->get['id'] ?? 0);
+		$id = (int) ($this->settings['param'] ?? $this->settings['paramValue'] ?? 0);
 		if (!$id) {
 			return ['status' => 400, 'message' => 'id required', 'data' => null];
 		}
@@ -124,6 +144,18 @@ class RestCli
 		];
 	}
 
+	/**
+	 * Обработать очередь отложенных M2M POST-задач из s_Tasks.
+	 *
+	 * Выбирает до 50 необработанных задач (IsProcessed=0, TRequest='post',
+	 * Url LIKE '/rest/m2m%'). Для каждой задачи восстанавливает контекст REST
+	 * (данные тела, GET-параметры, пользователя), создаёт обработчик из payload
+	 * задачи и вызывает его метод, затем сохраняет результат в s_Tasks.
+	 * Задачи с некорректным payload помечаются ошибкой (400), исключения — 500.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']:
+	 *               data = ['processed' => количество обработанных задач]
+	 */
 	public function tasksProcess(): array
 	{
 		$tasks = Connect::$instance->fetch(
@@ -154,7 +186,7 @@ class RestCli
 				$rest->setUser($request['user'] ?? null);
 
 				$handler = new $handlerClass($rest);
-				$result  = $handler->$method();
+				$result  = $handler->$method($request['data'] ?? null);
 
 				$taskManager->update((int) $task['Id'], $result, $result['status'] ?? 200);
 				$processed++;

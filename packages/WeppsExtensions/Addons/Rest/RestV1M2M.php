@@ -11,21 +11,35 @@ use WeppsAdmin\Lists\Lists;
 use WeppsAdmin\ConfigExtensions\Processing\ProcessingProducts;
 
 /**
- * RestV1M2M - M2M API для работы с таблицами через CRUD операции
- * 
- * Использует упрощённый подход - явные методы для каждой таблицы:
+ * RestV1M2M — M2M API для работы с таблицами через CRUD-операции.
+ *
+ * Наследует RestV1 (авторизация и профиль). Вызывается динамически через
+ * Rest::executeHandler() по конфигу версии 'm2m' из RestConfig.php.
+ *
+ * Использует упрощённый подход — явные методы для каждой таблицы:
  * - getUsers, postUsers, putUsers, deleteUsers
- * - getProducts, postProducts, putProducts, deleteProducts
  * - getOrders, postOrders, putOrders, deleteOrders
- * 
- * Все методы используют единый helper для работы с БД.
- * Конфигурация берётся из s_Config и s_ConfigFields.
- * Валидация данных берётся из s_ConfigFields через RestV1M2MUtils.
+ * - getGoods, postGoods, putGoods, deleteGoods (+ категории, статусы, свойства,
+ *   значения свойств, вариации, остатки, файлы)
+ * - getTasksResult — результат async-задачи из очереди s_Tasks
+ *
+ * Все методы используют единый helper RestV1M2MUtils для работы с БД.
+ * Конфигурация и валидация берутся из s_Config и s_ConfigFields.
+ *
+ * Особенности:
+ * - POST одиночной записи возвращает 201, batch (массив, макс. 100) — 207 Multi-Status
+ *   с per-item статусом;
+ * - PUT — частичное обновление по id (id обязателен);
+ * - DELETE — batch-удаление по массиву id {"data": [123, 456, ...]};
+ * - через setBefore()/setAfter() навешиваются бизнес-колбэки: проставление
+ *   Priority, ParentId/Extension, генерация alias вариаций, загрузка файлов
+ *   (base64/url) и т.д.
  */
 class RestV1M2M extends RestV1
 {
 	/**
-	 * Utils для CRUD операций
+	 * Кэш экземпляров RestV1M2MUtils по имени таблицы.
+	 * @var array
 	 */
 	private array $utils = [];
 
@@ -33,6 +47,14 @@ class RestV1M2M extends RestV1
 	// USERS
 	// ========================================================================
 
+	/**
+	 * GET m2m/users — список пользователей.
+	 *
+	 * GET-параметры: page, limit, search, sort (добавляются автоматически
+	 * в query_validation). Поля выбираются из s_Config.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
+	 */
 	public function getUsers(): array
 	{
 		// GET параметры - служебные (page, limit, search, sort)
@@ -41,6 +63,11 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get);
 	}
 
+	/**
+	 * GET m2m/users.item — пользователь по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function getUsersItem(): array
 	{
 		$utils = $this->getUtils('s_Users');
@@ -48,6 +75,14 @@ class RestV1M2M extends RestV1
 		return $utils->item((int) ($this->get['id'] ?? 0));
 	}
 
+	/**
+	 * POST m2m/users — создание пользователя(ей).
+	 *
+	 * Поддерживает одиночный объект или batch (массив, макс. 100).
+	 * Возвращает 201 для одиночного или 207 для batch с per-item статусом.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function postUsers(): array
 	{
 		$records = $this->normalizeInput();
@@ -60,6 +95,14 @@ class RestV1M2M extends RestV1
 		return $this->create('s_Users', $records);
 	}
 
+	/**
+	 * PUT m2m/users — обновление пользователя(ей) по id.
+	 *
+	 * ID передаётся как ?id={{id}} или в теле JSON {"id": 123, ...}. Частичное
+	 * обновление: поля из POST-валидации наследуются как необязательные.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putUsers(): array
 	{
 		$records = $this->normalizeInput();
@@ -82,6 +125,13 @@ class RestV1M2M extends RestV1
 		return $this->update('s_Users', $records);
 	}
 
+	/**
+	 * DELETE m2m/users — удаление пользователя(ей) по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteUsers(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -92,6 +142,11 @@ class RestV1M2M extends RestV1
 	// ORDERS
 	// ========================================================================
 
+	/**
+	 * GET m2m/orders — список заказов (по убыванию Id).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
+	 */
 	public function getOrders(): array
 	{
 		$utils = $this->getUtils('Orders');
@@ -100,6 +155,11 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get);
 	}
 
+	/**
+	 * GET m2m/orders.item — заказ по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function getOrdersItem(): array
 	{
 		$utils = $this->getUtils('Orders');
@@ -108,18 +168,38 @@ class RestV1M2M extends RestV1
 		return $utils->item((int) ($this->get['id'] ?? 0));
 	}
 
+	/**
+	 * POST m2m/orders — создание заказа(ов).
+	 *
+	 * Batch (массив, макс. 100) возвращает 207 с per-item статусом.
+	 * Поддерживает вложенные data.items[] для позиций заказа.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function postOrders(): array
 	{
 		$records = $this->normalizeInput();
 		return $this->create('Orders', $records);
 	}
 
+	/**
+	 * PUT m2m/orders — обновление заказа(ов) по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putOrders(): array
 	{
 		$records = $this->normalizeInput();
 		return $this->update('Orders', $records);
 	}
 
+	/**
+	 * DELETE m2m/orders — удаление заказа(ов) по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteOrders(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -130,6 +210,11 @@ class RestV1M2M extends RestV1
 	// GOODS
 	// ========================================================================
 
+	/**
+	 * GET m2m/goods — список товаров (по убыванию Id).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
+	 */
 	public function getGoods()
 	{
 		$utils = $this->getUtils('Products');
@@ -138,6 +223,11 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get);
 	}
 
+	/**
+	 * GET m2m/goods.item — товар по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function getGoodsItem(): array
 	{
 		$utils = $this->getUtils('Products');
@@ -146,12 +236,25 @@ class RestV1M2M extends RestV1
 		return $utils->item((int) ($this->get['id'] ?? 0));
 	}
 
+	/**
+	 * POST m2m/goods — создание товара(ов).
+	 *
+	 * Поддерживает одиночный объект или batch (массив, макс. 100).
+	 * Возвращает 201 для одиночного или 207 для batch с per-item статусом.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function postGoods(): array
 	{
 		$records = $this->normalizeInput();
 		return $this->create('Products', $records);
 	}
 
+	/**
+	 * PUT m2m/goods — обновление товара(ов) по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putGoods(): array
 	{
 		$records = $this->normalizeInput();
@@ -163,6 +266,15 @@ class RestV1M2M extends RestV1
 		return $this->update('Products', $records);
 	}
 
+	/**
+	 * DELETE m2m/goods — удаление товара(ов) по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}. Для удаления связанных данных
+	 * (вариаций, изображений, файлов) используйте setAfter() — логика зависит
+	 * от бизнес-требований.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteGoods(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -175,7 +287,12 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: GET каталог товаров (navigator)
+	 * GET m2m/goods.navigator — список категорий каталога (разделы навигатора).
+	 *
+	 * Возвращает разделы первого уровня каталога (ParentId = catalog) кроме
+	 * раздела брендов. Сортировка по Priority (возрастание).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getGoodsNavigator(): array
 	{
@@ -186,6 +303,14 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get, "t.IsHidden = 0 AND t.ParentId = ? AND t.Id not in (?)");
 	}
 
+	/**
+	 * POST m2m/goods.navigator — создание категории(й) каталога.
+	 *
+	 * After-колбэк проставляет созданным разделам ParentId = catalog и
+	 * Extension = catalog.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function postGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
@@ -208,6 +333,14 @@ class RestV1M2M extends RestV1
 		return $this->create('s_Navigator', $records);
 	}
 
+	/**
+	 * PUT m2m/goods.navigator — обновление категории(й) каталога по id.
+	 *
+	 * Before-колбэк проверяет допустимость id: обновлять можно только разделы
+	 * каталога (Extension = catalog), кроме служебных (catalog/brands).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
@@ -229,6 +362,14 @@ class RestV1M2M extends RestV1
 		return $this->update('s_Navigator', $records);
 	}
 
+	/**
+	 * DELETE m2m/goods.navigator — удаление категории(й) каталога по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}. Before-колбэк проверяет
+	 * допустимость id (аналогично putGoodsNavigator).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteGoodsNavigator(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -249,6 +390,13 @@ class RestV1M2M extends RestV1
 		return $utils->remove($ids);
 	}
 
+	/**
+	 * GET m2m/goods.statuses — статусы товаров.
+	 *
+	 * Возвращает элементы s_Vars группы «ПродукцияСтатусы», сортировка по Priority.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
+	 */
 	public function getGoodsStatuses(): array
 	{
 		$utils = $this->getUtils('s_Vars');
@@ -258,6 +406,14 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get, 't.VarsGroup = ?');
 	}
 
+	/**
+	 * POST m2m/goods.statuses — создание статуса(ов) товаров.
+	 *
+	 * After-колбэк присваивает новым статусам группу «ПродукцияСтатусы» и
+	 * Priority по возрастанию с шагом 5 (5, 10, 15, ...).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function postGoodsStatuses(): array
 	{
 		$records = $this->normalizeInput();
@@ -288,6 +444,13 @@ class RestV1M2M extends RestV1
 		return $this->create('s_Vars', $records);
 	}
 
+	/**
+	 * PUT m2m/goods.statuses — обновление статуса(ов) по id.
+	 *
+	 * Before-колбэк отклоняет id, не принадлежащие группе «ПродукцияСтатусы».
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putGoodsStatuses(): array
 	{
 		$records = $this->normalizeInput();
@@ -306,6 +469,14 @@ class RestV1M2M extends RestV1
 		return $this->update('s_Vars', $records);
 	}
 
+	/**
+	 * DELETE m2m/goods.statuses — удаление статуса(ов) по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}. Before-колбэк аналогичен
+	 * putGoodsStatuses.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteGoodsStatuses(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -324,7 +495,11 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: GET доступные фильтры для товаров (свойства и их значения)
+	 * GET m2m/goods.attributes — свойства (атрибуты) товаров.
+	 *
+	 * Возвращает свойства фильтрации из s_Properties, сортировка по Priority.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getGoodsAttributes(): array
 	{
@@ -336,7 +511,11 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: GET доступные группы фильтров для товаров
+	 * GET m2m/goods.attributesGroups — группы свойств товаров.
+	 *
+	 * Возвращает группы из s_PropertiesGroups, сортировка по Priority.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getGoodsAttributesGroups(): array
 	{
@@ -348,8 +527,12 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: POST перезаписать все фильтры/свойства
-	 * Удаляет отсутствующие, обновляет существующие, добавляет новые
+	 * POST m2m/goods.attributes — создание свойства(й) товаров.
+	 *
+	 * Before-колбэк принудительно проставляет type='text-multi' и group=1
+	 * (по умолчанию). After-колбэк присваивает Priority по возрастанию с шагом 5.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postGoodsAttributes(): array
 	{
@@ -376,6 +559,11 @@ class RestV1M2M extends RestV1
 		return $this->create('s_Properties', $records);
 	}
 
+	/**
+	 * PUT m2m/goods.attributes — обновление свойства(й) по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putGoodsAttributes(): array
 	{
 		$records = $this->normalizeInput();
@@ -387,12 +575,27 @@ class RestV1M2M extends RestV1
 		return $this->update('s_Properties', $records);
 	}
 
+	/**
+	 * DELETE m2m/goods.attributes — удаление свойства(й) по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteGoodsAttributes(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
 		return $this->getUtils('s_Properties')->remove($ids);
 	}
 
+	/**
+	 * GET m2m/goods.attributesValues — значения свойств товаров.
+	 *
+	 * GET-параметры фильтрации: list (TableName), listId (TableNameId),
+	 * listField (TableNameField). Возвращает элементы s_PropertiesValues.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
+	 */
 	public function getGoodsAttributesValues(): array
 	{
 		$list = $this->get['list'] ?? '';
@@ -428,6 +631,13 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get, $conditions ? implode(' AND ', $conditions) : null);
 	}
 
+	/**
+	 * POST m2m/goods.attributesValues — создание значения(й) свойств.
+	 *
+	 * Before-колбэк генерирует w_guid через Lists::getPropertiesValuesGuid().
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function postGoodsAttributesValues(): array
 	{
 		$records = $this->normalizeInput();
@@ -440,6 +650,13 @@ class RestV1M2M extends RestV1
 		return $this->create('s_PropertiesValues', $records);
 	}
 
+	/**
+	 * PUT m2m/goods.attributesValues — обновление значения(й) свойств по id.
+	 *
+	 * Before-колбэк (после обработки пагинации) перегенерирует w_guid.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putGoodsAttributesValues(): array
 	{
 		$records = $this->normalizeInput();
@@ -457,6 +674,13 @@ class RestV1M2M extends RestV1
 		return $this->update('s_PropertiesValues', $records);
 	}
 
+	/**
+	 * DELETE m2m/goods.attributesValues — удаление значения(й) свойств по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteGoodsAttributesValues(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -464,7 +688,12 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: GET получить вариации товаров
+	 * GET m2m/goods.variations — вариации товаров (sku, цвет, размер, остатки).
+	 *
+	 * GET-параметры: goodsId (id товара). Поля Field1..Field4 соответствуют
+	 * цвету/размеру/sku/остаткам.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getGoodsVariations(): array
 	{
@@ -483,12 +712,15 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: POST создание вариаций товаров (одна или batch).
+	 * POST m2m/goods.variations — создание вариаций товаров (одна или batch).
+	 *
 	 * Сгруппировывает по goodsId и вызывает upsertVariations() batch-ом.
 	 * Не скрывает существующие вариации — только добавляет новые.
 	 *
 	 * Валидация по RestConfig уже выполнена в Rest::executeHandler() перед вызовом метода!
 	 * Формат тела: { "data": [ { "goodsId": 723, "sku": "SKU001", "color": "Красный", "size": "42", "stocks": "10" }, ... ] }
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function postGoodsVariations(): array
 	{
@@ -526,12 +758,15 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: PUT обновление вариаций по id (одна или batch).
-	 * Переформировывает alias если изменились color/size/sku.
-	 * Проверяет уникальность новых alias перед обновлением.
+	 * PUT m2m/goods.variations — обновление вариаций по id (одна или batch).
+	 *
+	 * Переформировывает alias, если изменились color/size/sku. Проверяет
+	 * уникальность новых alias перед обновлением.
 	 *
 	 * Одна запись: ?id=123 или { "data": { "id": 123, "color": "Синий" } }
 	 * Batch: { "data": [ { "id": 1, "sku": "NEW" }, { "id": 2, "color": "Зелёный" } ] }
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putGoodsVariations(): array
 	{
@@ -572,6 +807,15 @@ class RestV1M2M extends RestV1
 		return $this->update('ProductsVariations', $records);
 	}
 
+	/**
+	 * DELETE m2m/goods.variations — удаление вариаций по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}. Before-колбэк собирает ProductsId
+	 * удаляемых вариаций, after — пересобирает вариации товаров
+	 * (rebuildProductsVariations).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteGoodsVariations(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -602,7 +846,12 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: GET получить остатки товаров
+	 * GET m2m/goods.stocks — остатки товаров (sku, количества).
+	 *
+	 * GET-параметры: goodsId (id товара). Остатки хранятся в поле Field4
+	 * таблицы ProductsVariations.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getGoodsStocks(): array
 	{
@@ -621,12 +870,16 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: PUT обновление вариаций по id (одна или batch).
-	 * Переформировывает alias если изменились color/size/sku.
-	 * Проверяет уникальность новых alias перед обновлением.
+	 * PUT m2m/goods.stocks — обновление остатков товаров по id.
 	 *
-	 * Одна запись: ?id=123 или { "data": { "id": 123, "color": "Синий" } }
-	 * Batch: { "data": [ { "id": 1, "sku": "NEW" }, { "id": 2, "color": "Зелёный" } ] }
+	 * Если передана пагинация, то первая страница запускает обнуление всех
+	 * остатков (Field4 = 0). Это нужно для полной перезагрузки остатков товара
+	 * при пакетной синхронизации. After-колбэк убирает guid из ответа.
+	 *
+	 * Одна запись: ?id=123 или { "data": { "id": 123, "stocks": 10 } }
+	 * Batch: { "data": [ { "id": 1, "stocks": 5 }, { "id": 2, "stocks": 0 } ] }
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
 	public function putGoodsStocks(): array
 	{
@@ -657,7 +910,13 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * M2M: GET файлы (с постраничной выборкой)
+	 * GET m2m/files — файлы (с постраничной выборкой).
+	 *
+	 * GET-параметры фильтрации: goodsId / listId (TableNameId), list (TableName),
+	 * listField (TableNameField), filter (ApiFilter). Сортировка по
+	 * TableNameField, TableNameId, Priority.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data', 'pagination']
 	 */
 	public function getFiles(): array
 	{
@@ -700,6 +959,18 @@ class RestV1M2M extends RestV1
 		return $utils->fetch($this->get, $conditions ? implode(' AND ', $conditions) : null);
 	}
 
+	/**
+	 * POST m2m/files — создание файлов.
+	 *
+	 * Поддерживает одиночный объект или batch (массив, макс. 100). Загрузка
+	 * через base64 или url. Before-колбэк выполняет загрузку файла во временную
+	 * папку (prepareUploadFromBase64 / prepareUploadFromUrl), определяет
+	 * приоритет внутри группы (list|listField|listId) и финализирует имя файла
+	 * через Lists::getUploadFileName(). After-колбэк удаляет временные файлы,
+	 * а при ошибке — и загруженный файл.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function postFiles(): array
 	{
 		$records = $this->normalizeInput();
@@ -818,12 +1089,26 @@ class RestV1M2M extends RestV1
 		return $this->create('s_Files', $records);
 	}
 
+	/**
+	 * PUT m2m/files — обновление файлов по id.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function putFiles(): array
 	{
 		$records = $this->normalizeInput();
 		return $this->update('s_Files', $records);
 	}
 
+	/**
+	 * DELETE m2m/files — удаление файлов по id.
+	 *
+	 * Формат тела: {"data": [123, 456, ...]}. Before-колбэк собирает пути
+	 * физических файлов (FileUrl), after — удаляет файлы с диска после
+	 * успешного удаления записей.
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function deleteFiles(): array
 	{
 		$ids = $this->normalizeIds($this->normalizeInput());
@@ -867,6 +1152,14 @@ class RestV1M2M extends RestV1
 	// TASKS
 	// ========================================================================
 
+	/**
+	 * GET m2m/tasks.result — результат async-задачи из очереди s_Tasks.
+	 *
+	 * GET-параметр: ?id= (обязательный). Возвращает детали задачи: тип запроса,
+	 * url, статусы обработки и сохранённый ответ (http_status + response).
+	 *
+	 * @return array Ответ в формате ['status', 'message', 'data']
+	 */
 	public function getTasksResult(): array
 	{
 		$id = (int) ($this->get['id'] ?? 0);
@@ -902,6 +1195,12 @@ class RestV1M2M extends RestV1
 	// UTILITIES
 	// ========================================================================
 
+	/**
+	 * Получить (и закэшировать) экземпляр RestV1M2MUtils для таблицы.
+	 *
+	 * @param string $tableName Имя таблицы (например 's_Users', 'Products', 'Orders')
+	 * @return RestV1M2MUtils Экземпляр утилит для работы с таблицей
+	 */
 	protected function getUtils(string $tableName): RestV1M2MUtils
 	{
 		if (!isset($this->utils[$tableName])) {
@@ -913,9 +1212,14 @@ class RestV1M2M extends RestV1
 	/**
 	 * Создать записи (одну или пакет).
 	 *
-	 * @param string $tableName
-	 * @param array  $records [плоские записи из normalizeInput()]
-	 * @return array
+	 * Валидирует каждую запись (POST — все обязательные поля), выполняет
+	 * batch-вставку через RestV1M2MUtils::addBatch() и обновляет поисковый
+	 * индекс. Для одной записи возвращает результат записи (201/400 и т.д.),
+	 * для batch — 207 Multi-Status с per-item статусами.
+	 *
+	 * @param string $tableName Имя таблицы
+	 * @param array  $records  Плоские записи из normalizeInput()
+	 * @return array Результат создания
 	 */
 	protected function create(string $tableName, array $records): array
 	{
@@ -952,9 +1256,15 @@ class RestV1M2M extends RestV1
 	/**
 	 * Обновить записи (одну или пакет).
 	 *
-	 * @param string $tableName
-	 * @param array  $records [плоские записи с 'id' из normalizeInput()]
-	 * @return array
+	 * Требует id в каждой записи. Валидирует (PUT — частичное обновление,
+	 * обязательные поля не требуются), проверяет существование id в таблице
+	 * (несуществующие — 404) и выполняет batch-обновление через
+	 * RestV1M2MUtils::setBatch(). Для одной записи возвращает результат (200/400
+	 * и т.д.), для batch — 207 Multi-Status с per-item статусами.
+	 *
+	 * @param string $tableName Имя таблицы
+	 * @param array  $records  Плоские записи с 'id' из normalizeInput()
+	 * @return array Результат обновления
 	 */
 	protected function update(string $tableName, array $records): array
 	{
@@ -1020,7 +1330,10 @@ class RestV1M2M extends RestV1
 	}
 
 	/**
-	 * Helper: расчет параметров пагинации из GET параметров
+	 * Helper: расчёт параметров пагинации из GET-параметров.
+	 *
+	 * @param int $maxLimit Максимально допустимый limit (по умолчанию 100)
+	 * @return array ['page' => int, 'limit' => int, 'offset' => int]
 	 */
 	private function calculatePagination(int $maxLimit = 100): array
 	{
@@ -1045,13 +1358,14 @@ class RestV1M2M extends RestV1
 	/**
 	 * Валидировать запись по правилам из s_ConfigFields.
 	 *
-	 * Примечание: REST конфиг валидация уже пройдена в Rest::executeHandler(),
-	 * здесь проверяем только дополнительные правила из БД.
+	 * Примечание: REST-конфиг валидация уже пройдена в Rest::executeHandler(),
+	 * здесь проверяем только дополнительные правила из БД. JSON-поля исключаются
+	 * из проверки (они валидируются REST-конфигом).
 	 *
-	 * @param string $tableName
-	 * @param array  $record
+	 * @param string $tableName Имя таблицы
+	 * @param array  $record   Запись
 	 * @param bool   $requireAll true = POST (обязательные поля проверяются), false = PUT (partial update)
-	 * @throws \Exception
+	 * @throws \Exception При ошибке валидации
 	 */
 	private function validate(string $tableName, array $record, bool $requireAll): void
 	{
@@ -1077,8 +1391,10 @@ class RestV1M2M extends RestV1
 
 	/**
 	 * Нормализовать входные данные в массив плоских записей.
-	 * - Разворачивает обёртку {"data": ...}.
-	 * - Одиночная запись преобразуется в [{...}].
+	 *
+	 * - Разворачивает обёртку {"data": ...};
+	 * - Одиночная запись преобразуется в [{...}];
+	 * - Массив id (DELETE) остаётся массивом чисел.
 	 *
 	 * @return array [{...}] или [] если данных нет
 	 */
@@ -1099,6 +1415,16 @@ class RestV1M2M extends RestV1
 	}
 
 
+	/**
+	 * Собрать ошибки валидации для записей с недопустимыми id.
+	 *
+	 * Используется в before-колбэках для отклонения записей, чьи id не прошли
+	 * проверку (например, принадлежность группе/расширению).
+	 *
+	 * @param array $records     Записи (массив ассоциативных массивов или id)
+	 * @param array $invalidIds  Список недопустимых id
+	 * @return array Ошибки вида [index => ['status' => 400, 'message' => ..., 'data' => ...]]
+	 */
 	private function buildInvalidIdValidationErrors(array $records, array $invalidIds): array
 	{
 		$errors = [];
@@ -1115,6 +1441,15 @@ class RestV1M2M extends RestV1
 		return $errors;
 	}
 
+	/**
+	 * Извлечь плоский список id из нормализованных записей (для DELETE).
+	 *
+	 * Поддерживает и скалярные id ({"data": [1, 2, 3]}), и объекты с ключом id
+	 * ({"data": [{"id": 1}, {"id": 2}]}). Возвращает только id > 0.
+	 *
+	 * @param array $records Нормализованные записи
+	 * @return array Список int id
+	 */
 	private function normalizeIds(array $records): array
 	{
 		$ids = [];

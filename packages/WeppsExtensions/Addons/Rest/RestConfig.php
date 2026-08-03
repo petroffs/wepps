@@ -4,41 +4,59 @@ namespace WeppsExtensions\Addons\Rest;
 use WeppsCore\Utils;
 
 /**
- * Конфигурация REST API методов
- * Используется для маршрутизации и автодокументации
- * 
- * Примеры JSON для v1.post.test и v1.put.test:
- * - Объект: {"type": "test", "data": {"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}}
- * - Массив:  {"type": "test", "data": [{"id": 1, "title": "test 1", "date": "2023-10-01", "email": "test@example.com", "phone": "1234567890", "guid": "550e8400-e29b-41d4-a716-446655440000", "barcode": "1234567890128"}]}
- * 
- * M2M POST запросы (поддерживают batch-создание):
- * - Одиночное: POST /rest/m2m/goods с телом {"name": "Товар", "price": 99.99}
- * - Batch (макс 100): POST /rest/m2m/goods с телом [{"name": "Товар 1", "price": 99.99}, {"name": "Товар 2", "price": 199.99}]
- * - Возвращает 201 для одиночного, 207 для batch с per-item status'ами
- * 
- * M2M PUT запросы:
- * - Вариант 1: PUT /rest/m2m/goods?id=123 с телом {"Price": 1200, "Name": "Название"}
- * - Вариант 2: PUT /rest/m2m/goods с телом {"id": 123, "Price": 1200, "Name": "Название"}
- * ID можно передавать либо как GET параметр ?id={{id}}, либо в теле JSON
- * 
- * validation: валидация данных из тела JSON
- * - Простые поля: 'name' => ['type' => 'string', 'required' => true]
- * - Вложенные поля (dot-notation): 'items[].name' => ['type' => 'string', 'required' => true] или 'data.items[].name'
- *   Пример 1: заказ с массивом товаров в items
- *   POST body: {"name": "Заказ 1", "items": [{"name": "Товар 1", "quantity": 2, "sum": 100}]}
- *   Конфиг: 'items[].name' валидирует поле name в каждом элементе items[]
- *   
- *   Пример 2: заказ с массивом товаров в data.items (nested data)
- *   POST body: {"name": "Заказ 1", "data": {"items": [{"name": "Товар 1", "quantity": 2, "sum": 100}]}}
- *   Конфиг: 'data.items[].name' валидирует поле name в каждом элементе data.items[]
- * 
- * query_validation: валидация GET-параметров, например для фильтрации и сортировки
- * type: строка с типом данных ('int', 'int2', 'float', 'float2', 'string', 'email', 'date', 'phone', 'guid', 'barcode')
- * custom_response: если true, ответ возвращается без стандартной структуры status/message/data
- * log: если false, запрос не логируется (по умолчанию true)
+ * Конфигурация REST API методов.
+ *
+ * Единый реестр эндпоинтов платформы: используется для маршрутизации запросов
+ * (класс Rest::routeRequest()), автодокументации и валидации данных.
+ *
+ * Структура конфигурации:
+ * ```php
+ * 'v1' => [                     // версия API
+ *     'get' => [                // HTTP-метод: get | post | put | delete | cli
+ *         'goods' => [          // имя эндпоинта (становится частью URL)
+ *             'class'  => RestV1APP::class,  // класс-обработчик
+ *             'method' => 'getGoods',        // метод обработчика
+ *             'note'   => '...',             // описание для документации
+ *             // опциональные ключи:
+ *             'auth_required'   => true,     // требуется Bearer-токен
+ *             'auth_optional'   => true,     // токен опционален (не блокирует запрос)
+ *             'role_required'   => [1, 2],   // допустимые UserPermissions
+ *             'validation'      => [...],    // правила валидации тела JSON
+ *             'query_validation'=> [...],    // правила валидации GET-параметров
+ *             'custom_response' => true,     // ответ без обёртки status/message/data
+ *             'log'             => false,    // отключить логирование запроса
+ *             'async'           => true,     // поставить в очередь s_Tasks (202 Accepted)
+ *         ],
+ *     ],
+ * ],
+ * ```
+ *
+ * Правила валидации (validation / query_validation):
+ * - Простые поля: `'name' => ['type' => 'string', 'required' => true]`
+ * - Вложенные (dot-notation): `'items[].name'` или `'data.items[].name'`
+ *   валидируют поле в каждом элементе вложенного массива
+ * - Типы: int, int2, float, float2, string, email, date, phone, guid, barcode, object
+ *   (массивы типов — с суффиксом `[]`, например `'int[]'`)
+ *
+ * Особенности M2M (версия 'm2m'):
+ * - POST поддерживает одиночный объект или batch (массив, макс. 100):
+ *   ответ 201 для одиночного, 207 Multi-Status для batch с per-item статусами
+ * - PUT: ID можно передавать как GET-параметр `?id={{id}}` или в теле JSON `{"id": 123, ...}`
+ * - DELETE: batch-формат тела `{"data": [123, 456, ...]}`
+ * - Для get/put/delete отсутствующие правила валидации достраиваются
+ *   автоматически методом inheritEndpointConfig()
  */
 class RestConfig
 {
+	/**
+	 * Получить полную конфигурацию всех REST-эндпоинтов.
+	 *
+	 * Собирает конфиги по версиям API (v0, v1, wepps, m2m, cli) и возвращает
+	 * итоговый массив. Для версии 'm2m' дополнительно достраивает правила
+	 * валидации через inheritEndpointConfig().
+	 *
+	 * @return array Конфигурация вида [версия][HTTP-метод][эндпоинт] => настройки
+	 */
 	public static function getConfig(): array
 	{
 		$config = [
@@ -47,7 +65,7 @@ class RestConfig
 					'test' => [
 						'class' => RestAd::class,
 						'method' => 'getTest',
-						'note' => 'Retrieve test data with optional filtering',
+						'note' => 'Получение тестовых данных с опциональной фильтрацией',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => false],
 							'sort' => ['type' => 'string', 'required' => false]
@@ -59,7 +77,7 @@ class RestConfig
 					'test' => [
 						'class' => RestAd::class,
 						'method' => 'setTest',
-						'note' => 'Create or update test data with validation',
+						'note' => 'Создание или обновление тестовых данных с валидацией',
 						#'auth_required' => true,
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
@@ -76,7 +94,7 @@ class RestConfig
 					'test' => [
 						'class' => RestAd::class,
 						'method' => 'removeTest',
-						'note' => 'Remove test data by ID. Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'note' => 'Удаление тестовых данных. Поддерживает ?id=123 или batch через тело {"ids": [123, 456, ...]}',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => false],
 						],
@@ -89,7 +107,7 @@ class RestConfig
 					'test' => [
 						'class' => RestAd::class,
 						'method' => 'setTest',
-						'note' => 'Update existing test data',
+						'note' => 'Обновление существующих тестовых данных',
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
 							'title' => ['type' => 'string', 'required' => true]
@@ -100,22 +118,22 @@ class RestConfig
 					'removeLogLocal' => [
 						'class' => RestCli::class,
 						'method' => 'removeLogLocal',
-						'note' => 'Remove local log files',
+						'note' => 'Удаление локальных файлов логов и очистка таблицы s_Tasks',
 					],
 					'test' => [
 						'class' => RestCli::class,
 						'method' => 'cliTest',
-						'note' => 'Execute CLI test operations',
+						'note' => 'Выполнение тестовых операций CLI',
 					],
 					'tasks.process' => [
 						'class' => RestCli::class,
 						'method' => 'tasksProcess',
-						'note' => 'Process pending async tasks from s_Tasks queue',
+						'note' => 'Обработка отложенных async-задач из очереди s_Tasks',
 					],
 					'tasks.result' => [
 						'class' => RestCli::class,
 						'method' => 'tasksResult',
-						'note' => 'Get task result by id from s_Tasks queue',
+						'note' => 'Получение результата задачи по id из очереди s_Tasks',
 					],
 				],
 			],
@@ -124,25 +142,25 @@ class RestConfig
 					'home' => [
 						'class' => RestV1APP::class,
 						'method' => 'getHome',
-						'note' => 'Get aggregated home screen data: slides, categories, news, goods, active order (if authenticated)',
+						'note' => 'Агрегированные данные главного экрана: слайды, категории, новости, товары, активный заказ (если авторизован)',
 						'auth_optional' => true,
 					],
 					'profile' => [
 						'class' => RestV1::class,
 						'method' => 'getProfile',
-						'note' => 'Get current user profile: personal info, contacts',
+						'note' => 'Профиль текущего пользователя: персональные данные, контакты',
 						'auth_required' => true,
 					],
 					'profile.settings' => [
 						'class' => RestV1::class,
 						'method' => 'getProfileSettings',
-						'note' => 'Get current user app settings (theme, notifications)',
+						'note' => 'Настройки приложения текущего пользователя (тема, уведомления)',
 						'auth_required' => true,
 					],
 					'goods' => [
 						'class' => RestV1APP::class,
 						'method' => 'getGoods',
-						'note' => 'Get list of goods with filtering and pagination',
+						'note' => 'Список товаров с фильтрацией и пагинацией',
 						'query_validation' => [
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
@@ -154,26 +172,26 @@ class RestConfig
 					'goods.item' => [
 						'class' => RestV1APP::class,
 						'method' => 'getGoodsItem',
-						'note' => 'Get single goods item by id',
+						'note' => 'Получение товара по id',
 						'query_validation' => [
 							'id' => ['type' => 'string', 'required' => true],
 						],
 					],
 					'goods.categories' => [
 						'class' => RestV1APP::class,
-						'method' => 'getGoodsNavigator',
-						'note' => 'Get list of goods categories with ParentId for tree building',
+						'method' => 'getGoodsCategories',
+						'note' => 'Список категорий товаров с ParentId для построения дерева',
 					],
 					'goods.favorites' => [
 						'class' => RestV1APP::class,
 						'method' => 'getGoodsFavorites',
-						'note' => 'Get current user favorite goods',
+						'note' => 'Избранные товары текущего пользователя',
 						'auth_required' => true,
 					],
 					'goods.filters' => [
 						'class' => RestV1APP::class,
 						'method' => 'getGoodsFilters',
-						'note' => 'Get available property filters for goods list',
+						'note' => 'Доступные свойства-фильтры для списка товаров',
 						'query_validation' => [
 							'category' => ['type' => 'int2', 'required' => false],
 							'search' => ['type' => 'string', 'required' => false],
@@ -182,7 +200,7 @@ class RestConfig
 					'orders' => [
 						'class' => RestV1APP::class,
 						'method' => 'getOrders',
-						'note' => 'Get list of current user orders',
+						'note' => 'Список заказов текущего пользователя',
 						'auth_required' => true,
 						'query_validation' => [
 							'page' => ['type' => 'int2', 'required' => false],
@@ -192,7 +210,7 @@ class RestConfig
 					'orders.item' => [
 						'class' => RestV1APP::class,
 						'method' => 'getOrdersItem',
-						'note' => 'Get single order by id',
+						'note' => 'Получение заказа по id',
 						'auth_required' => true,
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
@@ -201,7 +219,7 @@ class RestConfig
 					'orders.messages' => [
 						'class' => RestV1APP::class,
 						'method' => 'getOrdersMessages',
-						'note' => 'Get messages for order by id',
+						'note' => 'Сообщения по заказу (по id)',
 						'auth_required' => true,
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
@@ -210,7 +228,7 @@ class RestConfig
 					'news' => [
 						'class' => RestV1APP::class,
 						'method' => 'getNews',
-						'note' => 'Get list of news with pagination',
+						'note' => 'Список новостей с пагинацией',
 						'query_validation' => [
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
@@ -220,7 +238,7 @@ class RestConfig
 					'news.item' => [
 						'class' => RestV1APP::class,
 						'method' => 'getNewsItem',
-						'note' => 'Get single news item by id',
+						'note' => 'Получение новости по id',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
 						],
@@ -228,24 +246,24 @@ class RestConfig
 					'slides' => [
 						'class' => RestV1APP::class,
 						'method' => 'getSlides',
-						'note' => 'Get list of active slides',
+						'note' => 'Список активных слайдов',
 					],
 					'cart' => [
 						'class' => RestV1APP::class,
 						'method' => 'getCart',
-						'note' => 'Get current user cart with items and totals',
+						'note' => 'Корзина текущего пользователя с позициями и итогами',
 						'auth_required' => true,
 					],
 					'cart.checkout' => [
 						'class' => RestV1APP::class,
 						'method' => 'getCartCheckout',
-						'note' => 'Get available delivery and payment options for current cart',
+						'note' => 'Доступные способы доставки и оплаты для текущей корзины',
 						'auth_required' => true,
 					],
 					'cart.city' => [
 						'class' => RestV1APP::class,
 						'method' => 'getCartCity',
-						'note' => 'Search cities by query string (?q=...)',
+						'note' => 'Поиск городов по строке запроса (?q=...)',
 						'auth_required' => true,
 						'query_validation' => [
 							'q' => ['type' => 'string', 'required' => true],
@@ -254,7 +272,7 @@ class RestConfig
 					'cart.delivery' => [
 						'class' => RestV1APP::class,
 						'method' => 'getCartDelivery',
-						'note' => 'Get available delivery methods for a city (?citiesId=...)',
+						'note' => 'Доступные способы доставки для города (?citiesId=...)',
 						'auth_required' => true,
 						'query_validation' => [
 							'citiesId' => ['type' => 'string', 'required' => true],
@@ -263,7 +281,7 @@ class RestConfig
 					'cart.metrics' => [
 						'class' => RestV1APP::class,
 						'method' => 'getCartMetrics',
-						'note' => 'Get cart item count and item ids (works for anonymous and authenticated users)',
+						'note' => 'Количество позиций корзины и их id (работает для анонимных и авторизованных)',
 						'auth_optional' => true,
 					],
 				],
@@ -271,7 +289,7 @@ class RestConfig
 					'auth.login' => [
 						'class' => RestV1::class,
 						'method' => 'postAuthLogin',
-						'note' => 'Authenticate user and return JWT token',
+						'note' => 'Аутентификация пользователя и выдача JWT-токенов (access + refresh)',
 						'log' => false,
 						'validation' => [
 							'login' => ['type' => 'email', 'required' => true],
@@ -281,14 +299,14 @@ class RestConfig
 					'auth.logout' => [
 						'class' => RestV1::class,
 						'method' => 'postAuthLogout',
-						'note' => 'Logout current user (client must delete both tokens from local storage)',
+						'note' => 'Завершение сессии текущего пользователя (клиент должен удалить оба токена из локального хранилища)',
 						'auth_required' => true,
 						'log' => false,
 					],
 					'auth.refresh' => [
 						'class' => RestV1::class,
 						'method' => 'postAuthRefresh',
-						'note' => 'Refresh access token using refresh token',
+						'note' => 'Обновление access-токена по refresh-токену',
 						'log' => false,
 						'validation' => [
 							'refresh_token' => ['type' => 'string', 'required' => true],
@@ -297,7 +315,7 @@ class RestConfig
 					'auth.confirm' => [
 						'class' => RestV1::class,
 						'method' => 'postAuthConfirm',
-						'note' => 'Confirm login via confirm_token from email (CONFIRM_AUTH mode)',
+						'note' => 'Подтверждение входа по confirm_token из письма (режим CONFIRM_AUTH)',
 						'log' => false,
 						'validation' => [
 							'token' => ['type' => 'string', 'required' => true],
@@ -307,7 +325,7 @@ class RestConfig
 					'register.confirm' => [
 						'class' => RestV1::class,
 						'method' => 'postRegisterConfirm',
-						'note' => 'Complete registration via token from email. Returns access+refresh tokens.',
+						'note' => 'Завершение регистрации по токену из письма. Возвращает access+refresh токены',
 						'log' => false,
 						'validation' => [
 							'token' => ['type' => 'string', 'required' => true],
@@ -318,7 +336,7 @@ class RestConfig
 					'register' => [
 						'class' => RestV1::class,
 						'method' => 'postRegister',
-						'note' => 'Initiate registration: validate data and send confirmation email',
+						'note' => 'Инициация регистрации: валидация данных и отправка письма с подтверждением',
 						'validation' => [
 							'login' => ['type' => 'email', 'required' => true],
 							'phone' => ['type' => 'phone', 'required' => true],
@@ -330,7 +348,7 @@ class RestConfig
 					'profile.password-reset' => [
 						'class' => RestV1::class,
 						'method' => 'postAuthPasswordReset',
-						'note' => 'Request password reset: send recovery link to email',
+						'note' => 'Запрос восстановления пароля: отправка ссылки сброса на email',
 						'validation' => [
 							'login' => ['type' => 'email', 'required' => true],
 						],
@@ -338,7 +356,7 @@ class RestConfig
 					'goods' => [
 						'class' => RestV1APP::class,
 						'method' => 'postGoods',
-						'note' => 'Create new goods item(s). Supports single item (object) or batch (array of objects, max 100). Returns 201 for single item or 207 for batch with per-item status.',
+						'note' => 'Создание товара(ов). Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'role_required' => [1, 2],
 						'validation' => [
 							'name' => ['type' => 'string', 'required' => true],
@@ -349,7 +367,7 @@ class RestConfig
 					'cart' => [
 						'class' => RestV1APP::class,
 						'method' => 'postCart',
-						'note' => 'Add item to cart or update quantity if already in cart',
+						'note' => 'Добавление товара в корзину (или обновление количества, если уже есть)',
 						'auth_required' => true,
 						'validation' => [
 							'id' => ['type' => 'string', 'required' => true],
@@ -359,13 +377,13 @@ class RestConfig
 					'cart.placeOrder' => [
 						'class' => RestV1APP::class,
 						'method' => 'postCartPlaceOrder',
-						'note' => 'Place an order from current cart (contact info taken from user profile)',
+						'note' => 'Оформление заказа из текущей корзины (контактные данные берутся из профиля)',
 						'auth_required' => true,
 					],
 					'orders.messages' => [
 						'class' => RestV1APP::class,
 						'method' => 'postOrdersMessages',
-						'note' => 'Add message to order',
+						'note' => 'Добавление сообщения к заказу',
 						'auth_required' => true,
 						'validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
@@ -377,7 +395,7 @@ class RestConfig
 					'profile' => [
 						'class' => RestV1::class,
 						'method' => 'deleteProfile',
-						'note' => 'Delete current user account (2-step: word "УДАЛИТЬ" → code confirmation). Supports batch via body {"ids": [...]} (if implemented in handler)',
+						'note' => 'Удаление аккаунта текущего пользователя (2 шага: слово «УДАЛИТЬ» → код подтверждения)',
 						'auth_required' => true,
 						'validation' => [
 							'word' => ['type' => 'string', 'required' => false],
@@ -388,7 +406,7 @@ class RestConfig
 					'goods' => [
 						'class' => RestV1APP::class,
 						'method' => 'deleteGoods',
-						'note' => 'Delete goods item by id or batch. Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'note' => 'Удаление товара по id или batch. Поддерживает ?id=123 или batch через тело {"ids": [123, 456, ...]}',
 						'role_required' => [1, 2],
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => false],
@@ -400,7 +418,7 @@ class RestConfig
 					'cart' => [
 						'class' => RestV1APP::class,
 						'method' => 'deleteCart',
-						'note' => 'Remove item(s) from cart. Supports ?id=item_id or batch via body {"ids": ["item_1", "item_2", ...]}',
+						'note' => 'Удаление позиции(й) из корзины. Поддерживает ?id=item_id или batch через тело {"ids": ["item_1", "item_2", ...]}',
 						'auth_required' => true,
 						'query_validation' => [
 							'id' => ['type' => 'string', 'required' => false],
@@ -412,7 +430,7 @@ class RestConfig
 					'orders' => [
 						'class' => RestV1APP::class,
 						'method' => 'deleteOrders',
-						'note' => 'Cancel order(s). Supports ?id=123 or batch via body {"ids": [123, 456, ...]}',
+						'note' => 'Отмена заказа(ов). Поддерживает ?id=123 или batch через тело {"ids": [123, 456, ...]}',
 						'auth_required' => true,
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => false],
@@ -426,7 +444,7 @@ class RestConfig
 					'profile' => [
 						'class' => RestV1::class,
 						'method' => 'putProfile',
-						'note' => 'Update current user name (ФИО) and address. Email and phone are changed via separate endpoints with confirmation.',
+						'note' => 'Обновление ФИО и адреса текущего пользователя. Email и телефон меняются через отдельные эндпоинты с подтверждением',
 						'auth_required' => true,
 						'validation' => [
 							'nameSurname' => ['type' => 'string', 'required' => false],
@@ -439,7 +457,7 @@ class RestConfig
 					'profile.email' => [
 						'class' => RestV1::class,
 						'method' => 'putProfileEmail',
-						'note' => 'Change email (2-step). Step 1: send {email} → receive confirmation code. Step 2: send {email, code} → confirm change.',
+						'note' => 'Смена email (2 шага). Шаг 1: {email} → получение кода подтверждения. Шаг 2: {email, code} → подтверждение смены',
 						'auth_required' => true,
 						'validation' => [
 							'email' => ['type' => 'email', 'required' => true],
@@ -449,7 +467,7 @@ class RestConfig
 					'profile.phone' => [
 						'class' => RestV1::class,
 						'method' => 'putProfilePhone',
-						'note' => 'Change phone (2-step). Step 1: send {phone} → receive code via email. Step 2: send {phone, code} → confirm change.',
+						'note' => 'Смена телефона (2 шага). Шаг 1: {phone} → получение кода на email. Шаг 2: {phone, code} → подтверждение смены',
 						'auth_required' => true,
 						'validation' => [
 							'phone' => ['type' => 'phone', 'required' => true],
@@ -459,7 +477,7 @@ class RestConfig
 					'profile.settings' => [
 						'class' => RestV1::class,
 						'method' => 'putProfileSettings',
-						'note' => 'Update current user app settings (partial update)',
+						'note' => 'Обновление настроек приложения текущего пользователя (частичное обновление)',
 						'auth_required' => true,
 						'validation' => [
 							'theme' => ['type' => 'string', 'required' => false],
@@ -470,7 +488,7 @@ class RestConfig
 					'profile.password' => [
 						'class' => RestV1::class,
 						'method' => 'putProfilePassword',
-						'note' => 'Change current user password (2-step: send code → confirm with code)',
+						'note' => 'Смена пароля текущего пользователя (2 шага: отправка кода → подтверждение кодом)',
 						'auth_required' => true,
 						'validation' => [
 							'password_new' => ['type' => 'string', 'required' => true],
@@ -481,7 +499,7 @@ class RestConfig
 					'goods' => [
 						'class' => RestV1APP::class,
 						'method' => 'putGoods',
-						'note' => 'Update goods item by id',
+						'note' => 'Обновление товара по id',
 						'role_required' => [1, 2],
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
@@ -492,7 +510,7 @@ class RestConfig
 					'orders.status' => [
 						'class' => RestV1APP::class,
 						'method' => 'putOrdersStatus',
-						'note' => 'Update order status by id',
+						'note' => 'Обновление статуса заказа по id',
 						'role_required' => [1, 2],
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
@@ -502,7 +520,7 @@ class RestConfig
 					'cart' => [
 						'class' => RestV1APP::class,
 						'method' => 'putCart',
-						'note' => 'Update item quantity and activity in cart',
+						'note' => 'Обновление количества и активности товара в корзине',
 						'auth_required' => true,
 						'validation' => [
 							'id' => ['type' => 'string', 'required' => true],
@@ -513,7 +531,7 @@ class RestConfig
 					'cart.city' => [
 						'class' => RestV1APP::class,
 						'method' => 'putCartCity',
-						'note' => 'Set delivery city for cart (step 1). Returns available delivery methods.',
+						'note' => 'Установка города доставки для корзины (шаг 1). Возвращает доступные способы доставки',
 						'auth_required' => true,
 						'validation' => [
 							'citiesId' => ['type' => 'string', 'required' => true],
@@ -522,7 +540,7 @@ class RestConfig
 					'cart.delivery' => [
 						'class' => RestV1APP::class,
 						'method' => 'putCartDelivery',
-						'note' => 'Set delivery method for cart (step 2). Returns available payment methods.',
+						'note' => 'Установка способа доставки для корзины (шаг 2). Возвращает доступные способы оплаты',
 						'auth_required' => true,
 						'validation' => [
 							'deliveryId' => ['type' => 'string', 'required' => true],
@@ -531,7 +549,7 @@ class RestConfig
 					'cart.payment' => [
 						'class' => RestV1APP::class,
 						'method' => 'putCartPayment',
-						'note' => 'Set payment method for cart',
+						'note' => 'Установка способа оплаты для корзины',
 						'auth_required' => true,
 						'validation' => [
 							'paymentsId' => ['type' => 'string', 'required' => true],
@@ -540,7 +558,7 @@ class RestConfig
 					'cart.deliveryOperations' => [
 						'class' => RestV1APP::class,
 						'method' => 'putCartDeliveryOperations',
-						'note' => 'Save selected pickup point or delivery address. Sends parameters like operations-id, operations-title, etc.',
+						'note' => 'Сохранение выбранного ПВЗ или адреса доставки. Передаёт параметры вида operations-id, operations-title и т.д.',
 						'auth_required' => true,
 					],
 				],
@@ -551,7 +569,7 @@ class RestConfig
 					'token' => [
 						'class' => RestAd::class,
 						'method' => 'getToken',
-						'note' => 'Authenticate user and return JWT token',
+						'note' => 'Аутентификация пользователя и выдача JWT-токена (для админки)',
 						'log' => false,
 						'query_validation' => [
 							'login' => ['type' => 'string', 'required' => true],
@@ -561,7 +579,7 @@ class RestConfig
 					'list_items' => [
 						'class' => RestAd::class,
 						'method' => 'getListItems',
-						'note' => 'Retrieve list of available items',
+						'note' => 'Получение списка доступных элементов списка (для полей админки)',
 						'auth_required' => true,
 						'custom_response' => true,
 						'log' => false,
@@ -584,7 +602,7 @@ class RestConfig
 						'method' => 'getTasksResult',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get async task result by id',
+						'note' => 'M2M: получение результата async-задачи по id',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
 						],
@@ -595,14 +613,14 @@ class RestConfig
 						'method' => 'getUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get list of users (configurable via s_Config)',
+						'note' => 'M2M: список пользователей (конфигурируется через s_Config)',
 					],
 					'users.item' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getUsersItem',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get single user by id',
+						'note' => 'M2M: пользователь по id',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
 						],
@@ -613,14 +631,14 @@ class RestConfig
 						'method' => 'getOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get list of orders (configurable via s_Config)',
+						'note' => 'M2M: список заказов (конфигурируется через s_Config)',
 					],
 					'orders.item' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getOrdersItem',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get single order by id',
+						'note' => 'M2M: заказ по id',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
 						],
@@ -631,14 +649,14 @@ class RestConfig
 						'method' => 'getGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get list of goods (configurable via s_Config)',
+						'note' => 'M2M: список товаров (конфигурируется через s_Config)',
 					],
 					'goods.item' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsItem',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get single goods by id',
+						'note' => 'M2M: товар по id',
 						'query_validation' => [
 							'id' => ['type' => 'int2', 'required' => true],
 						],
@@ -648,35 +666,35 @@ class RestConfig
 						'method' => 'getGoodsNavigator',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get goods categories (navigators)',
+						'note' => 'M2M: категории товаров (разделы навигатора)',
 					],
 					'goods.statuses' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsStatuses',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get goods statuses',
+						'note' => 'M2M: статусы товаров',
 					],
 					'goods.attributes' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsAttributes',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get available goods attributes (properties)',
+						'note' => 'M2M: свойства (атрибуты) товаров',
 					],
 					'goods.attributesGroups' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsAttributesGroups',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get available goods attributes (properties)',
+						'note' => 'M2M: группы свойств товаров',
 					],
 					'goods.attributesValues' => [
 						'class' => RestV1M2M::class,
 						'method' => 'getGoodsAttributesValues',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get available goods attributesValues (propertiesValues)',
+						'note' => 'M2M: значения свойств товаров',
 						'query_validation' => [
 							'list' => ['type' => 'string', 'required' => false],
 							'listId' => ['type' => 'int2', 'required' => false],
@@ -690,7 +708,7 @@ class RestConfig
 						'method' => 'getGoodsVariations',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get goods variations (sku, prices, stocks)',
+						'note' => 'M2M: вариации товаров (sku, цены, остатки)',
 						'query_validation' => [
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
@@ -702,7 +720,7 @@ class RestConfig
 						'method' => 'getGoodsStocks',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get goods stocks (sku, quantities)',
+						'note' => 'M2M: остатки товаров (sku, количества)',
 						'query_validation' => [
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
@@ -714,7 +732,7 @@ class RestConfig
 						'method' => 'getFiles',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Get files (paginated)',
+						'note' => 'M2M: файлы (с пагинацией)',
 						'query_validation' => [
 							'page' => ['type' => 'int2', 'required' => false],
 							'limit' => ['type' => 'int2', 'required' => false],
@@ -723,40 +741,8 @@ class RestConfig
 							'listId' => ['type' => 'int2', 'required' => false],
 							'description' => ['type' => 'string', 'required' => false],
 							'filter' => ['type' => 'string', 'required' => false],
-						],
-					],
-
-
-
-
-
-
-
-
-					'goods.images' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getGoodsImages',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Get goods images (paginated)',
-						'query_validation' => [
-							'goodsId' => ['type' => 'int2', 'required' => false],
-							'page' => ['type' => 'int2', 'required' => false],
-							'limit' => ['type' => 'int2', 'required' => false],
-						],
-					],
-					'goods.imagesVariations' => [
-						'class' => RestV1M2M::class,
-						'method' => 'getGoodsImagesVariations',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Get goods variations images (paginated)',
-						'query_validation' => [
-							'goodsId' => ['type' => 'int2', 'required' => false],
-							'page' => ['type' => 'int2', 'required' => false],
-							'limit' => ['type' => 'int2', 'required' => false],
-						],
-					],
+						]
+					]
 				],
 				'post' => [
 					// ===== Users =====
@@ -765,7 +751,7 @@ class RestConfig
 						'method' => 'postUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create user(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание пользователя(ей). Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
@@ -783,7 +769,7 @@ class RestConfig
 						'method' => 'postOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create order(s). Batch only (array, max 100). Returns 207 with per-item status. Supports nested items[] for order lines.',
+						'note' => 'M2M: создание заказа(ов). Batch (массив, макс. 100). Возвращает 207 с per-item статусом. Поддерживает вложенные data.items[] для позиций заказа',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
@@ -829,7 +815,7 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'async' => true,
-						'note' => 'M2M: Create goods item(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание товара(ов). Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
@@ -854,7 +840,7 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'async' => false, //выполнять немедленно
-						'note' => 'M2M: Create goods item(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание категории(й) каталога. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
@@ -867,7 +853,7 @@ class RestConfig
 						'method' => 'postGoodsStatuses',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create goods status(es). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание статуса(ов) товаров. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
@@ -881,7 +867,7 @@ class RestConfig
 						'method' => 'postGoodsAttributes',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create goods attribute(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание свойства(й) товаров. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
@@ -896,7 +882,7 @@ class RestConfig
 						'method' => 'postGoodsAttributesValues',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create goods attribute values(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание значения(й) свойств товаров. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'w_guid' => ['type' => 'guid', 'required' => false],
@@ -917,7 +903,7 @@ class RestConfig
 						'async' => false,
 						// ! сделать асинхронным (т.е. через s_Tasks, после тестирования), т.к. может быть много вариаций и долго обрабатываться
 						// 'async' => true,
-						'note' => 'M2M: Create goods variation(s). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание вариации(й) товаров. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							//'name' => ['type' => 'string', 'required' => true],
 							'goodsId' => ['type' => 'int', 'required' => true],
@@ -934,7 +920,7 @@ class RestConfig
 						'method' => 'postFiles',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Create files (paginated). Supports single item (object) or batch (array, max 100). Returns 201 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: создание файлов. Поддерживает одиночный объект или batch (массив, макс. 100). Загрузка через base64 или url. Возвращает 201 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'guid' => ['type' => 'guid', 'required' => true],
 							'name' => ['type' => 'string', 'required' => true],
@@ -945,29 +931,8 @@ class RestConfig
 							'filter' => ['type' => 'string', 'required' => false],
 							'url' => ['type' => 'string', 'required' => false],
 							'base64' => ['type' => 'string', 'required' => false],
-						],
-					],
-
-
-
-
-
-
-
-					'goods.images' => [
-						'class' => RestV1M2M::class,
-						'method' => 'postGoodsImages',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Add image to goods',
-					],
-					'goods.imagesVariations' => [
-						'class' => RestV1M2M::class,
-						'method' => 'postGoodsImagesVariations',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Add image to goods variation',
-					],
+						]
+					]
 				],
 				'put' => [
 					// ===== Users =====
@@ -976,7 +941,7 @@ class RestConfig
 						'method' => 'putUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update user by id. ID can be passed as ?id={{id}} or in JSON body {"id": 123, ...}',
+						'note' => 'M2M: обновление пользователя по id. ID можно передавать как ?id={{id}} или в теле JSON {"id": 123, ...}',
 						// validation - необязательный в put, inheritance от post, но можно переопределить.
 						// при этом id - ставится обязательным, т.к. без него не понятно что обновлять. 
 						// Остальные поля - необязательные, т.к. put - частичное обновление.
@@ -990,7 +955,7 @@ class RestConfig
 						'method' => 'putOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update order by id. ID can be passed in JSON body {"id": 123, ...}',
+						'note' => 'M2M: обновление заказа по id. ID можно передавать в теле JSON {"id": 123, ...}',
 					],
 					// ===== Goods =====
 					'goods' => [
@@ -998,14 +963,14 @@ class RestConfig
 						'method' => 'putGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods by id. ID can be passed in JSON body {"id": 123, ...}',
+						'note' => 'M2M: обновление товара по id. ID можно передавать в теле JSON {"id": 123, ...}',
 					],
 					'goods.navigator' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsNavigator',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods.navigator by id. ID can be passed in JSON body {"id": 123, ...}',
+						'note' => 'M2M: обновление категории каталога по id. ID можно передавать в теле JSON {"id": 123, ...}',
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
 							'parentId' => ['type' => 'int', 'required' => false],
@@ -1016,21 +981,21 @@ class RestConfig
 						'method' => 'putGoodsStatuses',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods.statuses by id. ID can be passed in JSON body {"id": 123, ...}',
+						'note' => 'M2M: обновление статуса товаров по id. ID можно передавать в теле JSON {"id": 123, ...}',
 					],
 					'goods.attributes' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsAttributes',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods.attributes by id. ID can be passed in JSON body {"id": 123, ...}',
+						'note' => 'M2M: обновление свойства товаров по id. ID можно передавать в теле JSON {"id": 123, ...}',
 					],
 					'goods.attributesValues' => [
 						'class' => RestV1M2M::class,
 						'method' => 'putGoodsAttributesValues',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update goods.attributesValues by id. ID can be passed in JSON body {"id": 123, ...}',
+						'note' => 'M2M: обновление значения свойства товаров по id. ID можно передавать в теле JSON {"id": 123, ...}',
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
 							'guid' => ['type' => 'guid', 'required' => false],
@@ -1051,7 +1016,7 @@ class RestConfig
 						'async' => false,
 						// ! сделать асинхронным (после тестирования), т.к. может быть много вариаций и долго обрабатываться
 						// 'async' => true,
-						'note' => 'M2M: Update goods variation(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: обновление вариации(й) товаров. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 200 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
 							'goodsId' => ['type' => 'int', 'required' => false],
@@ -1069,7 +1034,7 @@ class RestConfig
 						'role_required' => [1],
 						'auth_required' => true,
 						'async' => false,
-						'note' => 'M2M: Update goods stock(s). Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: обновление остатков товаров. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 200 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
 							'stocks' => ['type' => 'int', 'required' => true],
@@ -1080,7 +1045,7 @@ class RestConfig
 						'method' => 'putFiles',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Update files. Supports single item (object) or batch (array, max 100). Returns 200 for single or 207 for batch with per-item status.',
+						'note' => 'M2M: обновление файлов. Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 200 для одиночного или 207 для batch с per-item статусом',
 						'validation' => [
 							'id' => ['type' => 'int', 'required' => true],
 							'guid' => ['type' => 'guid', 'required' => false],
@@ -1101,7 +1066,7 @@ class RestConfig
 						'method' => 'deleteUsers',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete user by id(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление пользователя(ей) по id. Формат тела: {"data": [123, 456, ...]}'
 						// validation - необязательный в delete, т.к. генерируется автоматически 
 						// в inheritEndpointConfig() и требует массив id для удаления.
 					],
@@ -1111,7 +1076,7 @@ class RestConfig
 						'method' => 'deleteOrders',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete order(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление заказа(ов) по id. Формат тела: {"data": [123, 456, ...]}'
 					],
 					// ===== Goods =====
 					'goods' => [
@@ -1119,94 +1084,73 @@ class RestConfig
 						'method' => 'deleteGoods',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods by id(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление товара(ов) по id. Формат тела: {"data": [123, 456, ...]}'
 					],
 					'goods.navigator' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsNavigator',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods.navigator by id(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление категории(й) каталога по id. Формат тела: {"data": [123, 456, ...]}'
 					],
 					'goods.statuses' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsStatuses',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods.statuses by id(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление статуса(ов) товаров по id. Формат тела: {"data": [123, 456, ...]}'
 					],
 					'goods.attributes' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsAttributes',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods.attributes by id(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление свойства(й) товаров по id. Формат тела: {"data": [123, 456, ...]}'
 					],
 					'goods.attributesValues' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsAttributesValues',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods.attributesValues by id(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление значения(й) свойств товаров по id. Формат тела: {"data": [123, 456, ...]}'
 					],
 					'goods.variations' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteGoodsVariations',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete goods variations by id(s) via body. Format: {"data": [123, 456, ...]}'
+						'note' => 'M2M: удаление вариации(й) товаров по id. Формат тела: {"data": [123, 456, ...]}'
 					],
 					'files' => [
 						'class' => RestV1M2M::class,
 						'method' => 'deleteFiles',
 						'role_required' => [1],
 						'auth_required' => true,
-						'note' => 'M2M: Delete files by id(s) via body. Format: {"data": [123, 456, ...]}'
-					],
-					
-
-
-
-
-
-
-					'goods.images' => [
-						'class' => RestV1M2M::class,
-						'method' => 'deleteGoodsImages',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Delete goods image(s) via body. Format: {"data": [123, 456, ...]}'
-					],
-					'goods.imagesVariations' => [
-						'class' => RestV1M2M::class,
-						'method' => 'deleteGoodsImagesVariations',
-						'role_required' => [1],
-						'auth_required' => true,
-						'note' => 'M2M: Delete goods variation image(s) via body. Format: {"data": [123, 456, ...]}'
-					],
-				],
+						'note' => 'M2M: удаление файлов по id. Формат тела: {"data": [123, 456, ...]}'
+					]
+				]
 			],
 			'cli' => [
 				'cli' => [
 					'removeLogLocal' => [
 						'class' => RestCli::class,
 						'method' => 'removeLogLocal',
-						'note' => 'Remove local log files',
+						'note' => 'Удаление локальных файлов логов и очистка таблицы s_Tasks',
 					],
 					'test' => [
 						'class' => RestCli::class,
 						'method' => 'cliTest',
-						'note' => 'Execute CLI test operations',
+						'note' => 'Выполнение тестовых операций CLI',
 					],
 					'tasks.process' => [
 						'class' => RestCli::class,
 						'method' => 'tasksProcess',
-						'note' => 'Process pending async tasks from s_Tasks queue',
+						'note' => 'Обработка отложенных async-задач из очереди s_Tasks',
 					],
 					'tasks.result' => [
 						'class' => RestCli::class,
 						'method' => 'tasksResult',
-						'note' => 'Get task result by id from s_Tasks queue',
+						'note' => 'Получение результата задачи по id из очереди s_Tasks',
 					],
 				],
 			],
@@ -1216,6 +1160,19 @@ class RestConfig
 		return $config;
 	}
 
+	/**
+	 * Достроить правила валидации для M2M-эндпоинтов, у которых они не заданы явно.
+	 *
+	 * Для каждого типа запроса применяются правила «по умолчанию»:
+	 * - GET: query_validation = {page, limit} (если не задано явно)
+	 * - PUT: validation = {id: int, required} + поля из POST-валидации как необязательные
+	 *   (частичное обновление; поля POST наследуются и помечаются required=false)
+	 * - DELETE: validation = {ARRAY: int[], required} — batch-удаление по массиву id
+	 *
+	 * @param array $baseConfig Конфигурация версии 'm2m' ([get][post][put][delete])
+	 * @param array $overrides  Зарезервировано для точечных переопределений (в текущей версии не используется)
+	 * @return array Конфигурация с достроенными правилами валидации
+	 */
 	private static function inheritEndpointConfig(array $baseConfig, array $overrides = []): array
 	{
 		foreach ($baseConfig['get'] ?? [] as $key => $value) {

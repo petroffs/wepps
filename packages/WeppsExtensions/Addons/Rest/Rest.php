@@ -171,11 +171,7 @@ class Rest
 	}
 
 	/**
-	 * Получить HTTP заголовки
-	 * @return array|null
-	 */
-	/**
-	 * Получить заголовки запроса
+	 * Получить заголовки запроса.
 	 *
 	 * @return array|null Заголовки HTTP запроса или null для CLI
 	 */
@@ -299,17 +295,19 @@ class Rest
 			}
 		}
 		return;
-	}	/**
-		 * Выполнить обработчик запроса
-		 *
-		 * Выполняет обработчик с валидацией данных, аутентификацией и вызовом метода.
-		 * Поддерживает кастомные ответы и логирование по конфигурации.
-		 *
-		 * @param object $handler Объект обработчика с методами API
-		 * @param array|null $config Конфигурация метода (валидация, аутентификация, логирование)
-		 * @return array Стандартизированный ответ API с status, message, data
-		 * @throws \Exception При ошибках валидации или выполнения
-		 */
+	}
+
+	/**
+	 * Выполнить обработчик запроса
+	 *
+	 * Выполняет обработчик с валидацией данных, аутентификацией и вызовом метода.
+	 * Поддерживает кастомные ответы и логирование по конфигурации.
+	 *
+	 * @param object $handler Объект обработчика с методами API
+	 * @param array|null $config Конфигурация метода (валидация, аутентификация, логирование)
+	 * @return array Стандартизированный ответ API с status, message, data
+	 * @throws \Exception При ошибках валидации или выполнения
+	 */
 	private function executeHandler($handler, $config = null): array
 	{
 		try {
@@ -831,7 +829,6 @@ class Rest
 		return $handlers;
 	}
 
-
 	/**
 	 * Настройка параметров запроса
 	 *
@@ -900,6 +897,8 @@ class Rest
 	 * Парсинг CLI запроса
 	 *
 	 * Устанавливает параметры для запросов из командной строки.
+	 * Формат аргументов: script.php метод [param] [paramValue],
+	 * например: Request.php tasks.result 123
 	 *
 	 * @param array $settings Параметры CLI с командой и аргументами
 	 */
@@ -908,7 +907,10 @@ class Rest
 		$this->version = 'cli';
 		$this->method = @$settings['cli'][1] ?? '';
 		$this->type = 'cli';
-		$this->params = [];
+		$this->params = [
+			@$settings['cli'][2] ?? '',
+			@$settings['cli'][3] ?? '',
+		];
 	}
 
 	/**
@@ -1001,20 +1003,13 @@ class Rest
 	}
 
 	/**
-	 * Логирование API запроса и ответа
-	 * Записывает в таблицы s_Tasks (для задач) или s_Logs (для логирования)
-	 * 
-	 * @param array $responseData Данные ответа [status, message, data]
-	 * @param string $logType Тип логирования: 'task' или 'log'
-	 * @return bool Результат логирования
-	 */
-	/**
-	 * Логирование API запроса
+	 * Логирование API запроса.
 	 *
 	 * Сохраняет информацию о запросе в базу данных, если логирование включено.
-	 * Собирает данные запроса, ответа, заголовки и статус.
+	 * Собирает данные запроса, ответа, заголовки и статус. В зависимости от
+	 * logType пишет в s_Tasks ('task') или s_Logs ('log').
 	 *
-	 * @param array $responseData Данные ответа для логирования
+	 * @param array $responseData Данные ответа для логирования [status, message, data]
 	 * @param string $logType Тип лога ('log' для s_Logs или 'task' для s_Tasks)
 	 * @return bool Успешность сохранения лога
 	 */
@@ -1200,6 +1195,7 @@ class Rest
 		}
 		return $formatted;
 	}
+
 	/**
 	 * Кодировать массив в JSON строку
 	 *
