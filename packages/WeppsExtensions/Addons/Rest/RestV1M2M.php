@@ -28,7 +28,7 @@ use WeppsAdmin\ConfigExtensions\Processing\ProcessingProducts;
  *
  * Особенности:
  * - POST одиночной записи возвращает 201, batch (массив, макс. 100) — 207 Multi-Status
- *   с per-item статусом;
+ *   с per-item статусом; batch обрезается до 100 записей в normalizeInput() (MAX_BATCH_SIZE);
  * - PUT — частичное обновление по id (id обязателен);
  * - DELETE — batch-удаление по массиву id {"data": [123, 456, ...]};
  * - через setBefore()/setAfter() навешиваются бизнес-колбэки: проставление
@@ -37,6 +37,12 @@ use WeppsAdmin\ConfigExtensions\Processing\ProcessingProducts;
  */
 class RestV1M2M extends RestV1
 {
+	/**
+	 * Максимальный размер batch-массива {"data": [...]} за один запрос.
+	 * Сверх лимита записи аккуратно отбрасываются в normalizeInput().
+	 */
+	private const MAX_BATCH_SIZE = 100;
+
 	/**
 	 * Кэш экземпляров RestV1M2MUtils по имени таблицы.
 	 * @var array
@@ -98,7 +104,7 @@ class RestV1M2M extends RestV1
 	/**
 	 * PUT m2m/users — обновление пользователя(ей) по id.
 	 *
-	 * ID передаётся как ?id={{id}} или в теле JSON {"id": 123, ...}. Частичное
+	 * ID передаётся в теле JSON {"id": 123, ...}. Частичное
 	 * обновление: поля из POST-валидации наследуются как необязательные.
 	 *
 	 * @return array Ответ в формате ['status', 'message', 'data']
@@ -763,7 +769,7 @@ class RestV1M2M extends RestV1
 	 * Переформировывает alias, если изменились color/size/sku. Проверяет
 	 * уникальность новых alias перед обновлением.
 	 *
-	 * Одна запись: ?id=123 или { "data": { "id": 123, "color": "Синий" } }
+	 * Одна запись: { "data": { "id": 123, "color": "Синий" } }
 	 * Batch: { "data": [ { "id": 1, "sku": "NEW" }, { "id": 2, "color": "Зелёный" } ] }
 	 *
 	 * @return array Ответ в формате ['status', 'message', 'data']
@@ -876,7 +882,7 @@ class RestV1M2M extends RestV1
 	 * остатков (Field4 = 0). Это нужно для полной перезагрузки остатков товара
 	 * при пакетной синхронизации. After-колбэк убирает guid из ответа.
 	 *
-	 * Одна запись: ?id=123 или { "data": { "id": 123, "stocks": 10 } }
+	 * Одна запись: { "data": { "id": 123, "stocks": 10 } }
 	 * Batch: { "data": [ { "id": 1, "stocks": 5 }, { "id": 2, "stocks": 0 } ] }
 	 *
 	 * @return array Ответ в формате ['status', 'message', 'data']
@@ -1394,11 +1400,13 @@ class RestV1M2M extends RestV1
 	 *
 	 * - Разворачивает обёртку {"data": ...};
 	 * - Одиночная запись преобразуется в [{...}];
-	 * - Массив id (DELETE) остаётся массивом чисел.
+	 * - Массив id (DELETE) остаётся массивом чисел;
+	 * - Batch-массив обрезается до $maxBatchSize записей.
 	 *
+	 * @param int $maxBatchSize Максимальное число записей в batch (по умолчанию MAX_BATCH_SIZE = 100)
 	 * @return array [{...}] или [] если данных нет
 	 */
-	private function normalizeInput(): array
+	private function normalizeInput(int $maxBatchSize = self::MAX_BATCH_SIZE): array
 	{
 		$raw = $this->data ?? [];
 
@@ -1411,6 +1419,12 @@ class RestV1M2M extends RestV1
 			return [];
 		}
 		$records = (isset($raw[0]) && (is_array($raw[0]) || is_int($raw[0]))) ? $raw : [$raw];
+
+		// Аккуратно ограничиваем batch до $maxBatchSize (макс. 100 записей)
+		if (count($records) > $maxBatchSize) {
+			$records = array_slice($records, 0, $maxBatchSize);
+		}
+
 		return $records;
 	}
 

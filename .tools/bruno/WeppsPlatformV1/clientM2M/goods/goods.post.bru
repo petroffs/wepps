@@ -3,12 +3,7 @@ meta {
   type: http
   seq: 2
   tags: [
-    m
-    a
-    n
-    u
-    a
-    l
+    manual
   ]
 }
 
@@ -22,6 +17,7 @@ body:json {
   {
       "data": [
           {
+              "guid": "04034dad-8e67-11f1-b258-00155df337c8",
               "name": "Свитер Wistedi-abcd",
               "alias": "sviter-wistedi-722-abcd",
               "navigatorId": "8",
@@ -32,8 +28,8 @@ body:json {
 }
 
 tests {
-  test("status 200", function() {
-    expect(res.status).to.equal(200);
+  test("status 201 or 207", function() {
+    expect([201, 207]).to.include(res.status);
   });
   test("returns created id", function() {
     expect(res.body.data).to.have.property("id");
@@ -43,10 +39,23 @@ tests {
 docs {
   Create a new goods item.
   Доступно только для M2M клиентов.
+  Эндпоинт настроен как 'async' => true — запрос ставится в очередь s_Tasks,
+  сразу возвращает 202 Accepted с task_id, а результат получается через
+  GET /rest/m2m/tasks.result?id={task_id} (is_processed: true → data).
   
-  name — название товара (обязательно).
-  price — цена товара (необязательно).
-  category — категория/NavigatorId (необязательно).
+  Обязательные поля:
+  - guid — уникальный GUID записи
+  - name — название товара
+  - alias — алиас (URL-часть)
+  - navigatorId — категория/NavigatorId
+  - price — цена товара
+  
+  Опциональные поля:
+  - article, descr, isHidden, priceBefore, status, metaTitle,
+    metaDescription, metaKeyword, weightPack, displayFirst
+  
+  Одна запись: { "data": { ... } }  → status 201
+  Batch:       { "data": [ { ... }, ... ] } (макс. 100) → status 207
   
   Возвращает id созданного товара.
 }

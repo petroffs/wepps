@@ -25,11 +25,11 @@ tests {
 }
 
 docs {
-  Get available goods filters (properties with values).
+  GET /rest/m2m/goods.attributesGroups — группы свойств товаров (s_PropertiesGroups).
   Доступно только для M2M клиентов.
   
-  category — фильтр по категории (NavigatorId) (необязательно)
-  search — поиск по названию товара (необязательно)
+  Параметры (опциональные): page, limit
   
-  Возвращает список свойств товаров с доступными значениями и их количеством.
+  Возвращает список групп свойств: id, guid, name, alias, priority.
+  Сортировка по Priority asc.
 }

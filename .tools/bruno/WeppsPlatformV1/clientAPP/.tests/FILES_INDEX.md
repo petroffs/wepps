@@ -21,8 +21,7 @@
             │   ├── goods.filters.bru
             │   ├── goods.filters.full-tests.bru     ← ⭐ Полные тесты L1-L5
             │   ├── goods.favorites.bru
-            │   ├── goods.favorites.full-tests.bru   ← ⭐ Полные тесты L1-L5
-            │   └── goods.variations.full-tests.bru  ← ⭐ Полные тесты L1-L5 (новый)
+            │   └── goods.favorites.full-tests.bru   ← ⭐ Полные тесты L1-L5
             ├── orders/                ← TODO: Примеры для разработки
             ├── news/                  ← TODO: Примеры для разработки
             └── slides/                ← TODO: Примеры для разработки

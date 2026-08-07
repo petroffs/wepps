@@ -12,7 +12,6 @@ post {
 
 body:json {
   {
-    "type": "register.confirm",
     "data": {
       "token": "{{reg_token}}",
       "password": "{{reg_password}}",
@@ -24,8 +23,8 @@ body:json {
 script:post-response {
   if (res.status === 200) {
     const data = res.body?.data;
-    if (data?.accessToken)  bru.setVar("access_token",  data.accessToken);
-    if (data?.refreshToken) bru.setVar("refresh_token", data.refreshToken);
+    if (data?.access_token)  bru.setVar("access_token",  data.access_token);
+    if (data?.refresh_token) bru.setVar("refresh_token", data.refresh_token);
   }
 }
 
@@ -33,17 +32,17 @@ tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);
   });
-  test("response has accessToken", function() {
-    expect(res.body.data).to.have.property("accessToken");
+  test("response has access_token", function() {
+    expect(res.body.data).to.have.property("access_token");
   });
-  test("response has refreshToken", function() {
-    expect(res.body.data).to.have.property("refreshToken");
+  test("response has refresh_token", function() {
+    expect(res.body.data).to.have.property("refresh_token");
   });
   test("save access_token", function() {
-    bru.setVar("access_token", res.body.data.accessToken);
+    bru.setVar("access_token", res.body.data.access_token);
   });
   test("save refresh_token", function() {
-    bru.setVar("refresh_token", res.body.data.refreshToken);
+    bru.setVar("refresh_token", res.body.data.refresh_token);
   });
 }
 

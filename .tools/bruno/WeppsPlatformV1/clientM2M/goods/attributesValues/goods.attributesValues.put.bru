@@ -33,7 +33,12 @@ body:json {
         "listField": "PCategory",
         "value": "Wistedi"
       }
-    ]
+    ],
+    "pagination": {
+      "count": 1,
+      "limit": 100,
+      "page": 1
+    }
   }
 }
 
@@ -41,4 +46,17 @@ tests {
   test("status 200", function() {
     expect(res.status).to.equal(200);
   });
+}
+
+docs {
+  Обновление значений свойств по id.
+  Доступно только для M2M клиентов.
+  
+  Массовое скрытие через пагинацию:
+  { "data": [...], "pagination": { "count": N, "page": 1 } }
+  - page=1: все значения свойств помечаются IsHiddenCandidate=1
+  - каждая страница: сбрасывает флаг для переданных id
+  - последняя страница (page === count): финализирует IsHidden = IsHiddenCandidate
+  
+  Без pagination — только обновление переданных записей (без массового скрытия).
 }

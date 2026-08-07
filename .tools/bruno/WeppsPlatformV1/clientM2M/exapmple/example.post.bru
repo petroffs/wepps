@@ -12,11 +12,30 @@ post {
 
 body:json {
   {
-    "data": [
-      "guid": "string",
-      "name": "string",
+    "data": {
+      "guid": "550e8400-e29b-41d4-a716-446655440000",
+      "name": "Example",
       "priority": 0,
-      "is_hidden": 0
-    ]
+      "isHidden": 0
+    }
   }
+}
+
+docs {
+  Шаблон для нового M2M-эндпоинта.
+  
+  Формат:
+  - Одна запись: { "data": { ... } }  → status 201
+  - Batch:       { "data": [ { ... }, { ... } ] } (макс. 100) → status 207
+  
+  Поля определяются конфигурацией в RestConfig.php:
+  'example' => [
+      'class' => RestV1M2M::class,
+      'method' => 'postExample',
+      'validation' => [
+          'guid' => ['type' => 'guid', 'required' => true],
+          'name' => ['type' => 'string', 'required' => true],
+          ...
+      ],
+  ]
 }

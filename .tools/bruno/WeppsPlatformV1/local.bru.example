@@ -7,6 +7,9 @@ vars {
   news_id: 1
   order_id: 1
   user_id: 1
+  goodsv_id: 1
+  reg_token: your-registration-token-from-email
+  reg_password: your-new-password
 }
 vars:secret [
   access_token,

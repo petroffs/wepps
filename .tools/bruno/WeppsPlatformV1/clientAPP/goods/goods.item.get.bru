@@ -24,5 +24,7 @@ tests {
 docs {
   Get single goods item by id or alias.
   id может быть числовым ID или строковым alias товара.
-  Возвращает вариации (W_Variations) и атрибуты (W_Attributes).
+  Возвращает вариации (W_Variations — массив групп по цветам,
+  каждая группа — массив вариаций {id, color, size, sku, stocks})
+  и атрибуты (W_Attributes).
 }

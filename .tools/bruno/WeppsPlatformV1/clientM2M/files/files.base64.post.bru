@@ -38,33 +38,38 @@ tests {
 }
 
 docs {
-  POST /rest/m2m/goods.images — добавить изображение товара
+  POST /rest/m2m/files — загрузка файла по base64 (основной способ для 1С).
+  Универсальный эндпоинт: привязывается к любой таблице через list/listField/listId.
   
   Приоритет источников:
-  1. file_url — ссылка на файл (скачаем на сервер)
-  2. file_base64 — данные в base64 (декодируем и сохраним)
-  3. multipart file — бинарный файл в body (сохраним напрямую)
+  1. base64 — данные в base64 (декодируем и сохраним)
+  2. url — ссылка на файл (скачаем на сервер)
   
-  Примеры:
+  Поля записи:
+  - guid (string) — уникальный GUID (обязательно)
+  - name (string) — имя файла (обязательно)
+  - list (string) — TableName (например "Products", "DataTbls")
+  - listField (string) — TableNameField (например "Id", "Image")
+  - listId (int) — TableNameId (ID записи)
+  - description (string) — описание (необязательно)
+  - filter (string) — ApiFilter (необязательно)
+  - base64 (string) — данные файла в base64 (вариант 1)
+  - url (string) — ссылка на файл (вариант 2)
   
-  # Вариант 1: по URL
+  Одна запись: { "data": { ... } }  → status 201
+  Batch:       { "data": [ { ... }, ... ] } (макс. 100) → status 207
+  
+  Пример (base64 — удобно для 1С):
   {
-    "goods_id": 123,
-    "name": "Main photo",
-    "file_url": "https://external-system.com/photos/img123.jpg"
+    "data": [
+      {
+        "guid": "04034dad-8e67-11f1-b258-00155df337c8",
+        "name": "photo.jpg",
+        "list": "Products",
+        "listField": "Id",
+        "listId": 123,
+        "base64": "iVBORw0KGgoAAAANSUhEUgAA..."
+      }
+    ]
   }
-  
-  # Вариант 2: base64 (удобно для 1С)
-  {
-    "goods_id": 123,
-    "name": "Main photo",
-    "file_name": "photo.jpg",
-    "file_base64": "iVBORw0KGgoAAAANSUhEUgAA..."
-  }
-  
-  # Вариант 3: multipart (для веб-форм)
-  Content-Type: multipart/form-data
-  goods_id: 123
-  name: Main photo
-  file: @/path/to/photo.jpg
 }

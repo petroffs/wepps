@@ -46,13 +46,19 @@ tests {
     expect(item).to.have.property("IsHidden");
   });
 
-  test("L2: W_Variations is array (when present)", function() {
+  test("L2: W_Variations is array of groups (when present)", function() {
     if (res.body.data.W_Variations) {
       expect(res.body.data.W_Variations).to.be.an("array");
-      res.body.data.W_Variations.forEach(v => {
-        expect(v).to.have.property("Id");
-        expect(v).to.have.property("Name");
-        expect(v).to.have.property("Price");
+      res.body.data.W_Variations.forEach(group => {
+        // Группа — массив вариаций одного цвета
+        expect(group).to.be.an("array");
+        group.forEach(v => {
+          expect(v).to.have.property("id");
+          expect(v).to.have.property("color");
+          expect(v).to.have.property("size");
+          expect(v).to.have.property("sku");
+          expect(v).to.have.property("stocks");
+        });
       });
     }
   });
@@ -91,13 +97,13 @@ tests {
     }
   });
 
-  test("L3: Variations have valid Price and Stock", function() {
+  test("L3: Variations have valid id and stocks", function() {
     if (res.body.data.W_Variations) {
-      res.body.data.W_Variations.forEach(v => {
-        expect(v.Price).to.be.a("number").and.to.be.at.least(0);
-        if (v.Stock !== undefined) {
-          expect(v.Stock).to.be.a("number").and.to.be.at.least(0);
-        }
+      res.body.data.W_Variations.forEach(group => {
+        group.forEach(v => {
+          expect(v.id).to.be.a("number").and.to.be.greaterThan(0);
+          expect(v.stocks).to.be.a("number").and.to.be.at.least(0);
+        });
       });
     }
   });
@@ -110,16 +116,18 @@ tests {
 
   test("L4: Variation IDs are unique", function() {
     if (res.body.data.W_Variations && res.body.data.W_Variations.length > 0) {
-      const ids = res.body.data.W_Variations.map(v => v.Id);
+      const ids = res.body.data.W_Variations.flatMap(group => group.map(v => v.id));
       const uniqueIds = new Set(ids);
       expect(uniqueIds.size).to.equal(ids.length);
     }
   });
 
-  test("L4: All variations belong to main item", function() {
+  test("L4: Variations do not contain GoodsId field", function() {
     if (res.body.data.W_Variations) {
-      res.body.data.W_Variations.forEach(v => {
-        expect(v.GoodsId || v.ProductId).to.equal(res.body.data.Id);
+      res.body.data.W_Variations.forEach(group => {
+        group.forEach(v => {
+          expect(v.GoodsId).to.be.undefined;
+        });
       });
     }
   });
@@ -161,19 +169,7 @@ docs {
     message: "OK",
     data: {
       Id, Name, Price, Url, Images_FileUrl,
-      W_Variations: [ { Id, Name, Price, Stock, GoodsId } ],
-      W_Attributes: [ { id, name, values } ],
-      IsHidden, Description, ...
-    }
-  }
-
-  Error responses:
-  - 400: Missing 'id' parameter
-  - 404: Item not found
-
-  Test levels:
-  L1: Basic response structure
-  L2: Object structure and nested arrays
+      W_Variations: [ [ { id, color, size, sku, stocks } ] ],  // группы по цветам
   L3: Value validation and data types
   L4: Relationships and consistency
   L5: Edge cases (no variations, ID vs alias)

@@ -21,8 +21,7 @@ body:json {
       "pagination": {
           "count": 1,
           "limit": 100,
-          "page": 1,
-          "note": "Template for update - remove pagination if updating only selected items"
+          "page": 1
       }
   }
 }
@@ -37,4 +36,12 @@ docs {
   Update user by id.
   Доступно только для M2M клиентов.
   Поля name, phone, email необязательные.
+  
+  Массовое скрытие через пагинацию:
+  { "data": [...], "pagination": { "count": N, "page": 1 } }
+  - page=1: все записи помечаются IsHiddenCandidate=1
+  - каждая страница: сбрасывает флаг для переданных id
+  - последняя страница (page === count): финализирует IsHidden = IsHiddenCandidate
+  
+  Без pagination обновляются только переданные записи (без массового скрытия).
 }

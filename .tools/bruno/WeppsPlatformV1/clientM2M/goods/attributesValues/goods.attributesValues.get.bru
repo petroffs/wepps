@@ -28,11 +28,12 @@ tests {
 }
 
 docs {
-  Get available goods filters (properties with values).
+  GET /rest/m2m/goods.attributesValues — значения свойств товаров (s_PropertiesValues).
   Доступно только для M2M клиентов.
   
-  category — фильтр по категории (NavigatorId) (необязательно)
-  search — поиск по названию товара (необязательно)
+  Параметры (опциональные): page, limit, list (TableName), listId (TableNameId), listField (TableNameField)
   
-  Возвращает список свойств товаров с доступными значениями и их количеством.
+  Возвращает список значений свойств:
+  id, guidSync, name, alias, tableName, tableNameId, tableNameField, pValue.
+  Сортировка по Priority asc.
 }
