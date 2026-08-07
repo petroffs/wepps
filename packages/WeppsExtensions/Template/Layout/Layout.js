@@ -150,81 +150,43 @@ class LayoutWepps {
 
 class ThemeWepps {
 	constructor() {
-		this.themeSaved = localStorage.getItem('w_theme') || 'auto';
 		this.themeSystem = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-		this.themeValue = (this.themeSaved == 'auto') ? this.themeSystem : this.themeSaved;
-		this.applyTheme(this.themeValue);
-	}
-	applyTheme(theme) {
-		$('html').attr('data-theme', theme);
-	}
-	applyThemeIcons(theme) {
-		$('.theme-icon').addClass('w_hide');
-		switch (theme) {
-			case 'light':
-				$('.theme-icon-light').removeClass('w_hide');
-				break;
-			case 'dark':
-				$('.theme-icon-dark').removeClass('w_hide');
-				break;
-			case 'auto':
-				$('.theme-icon-auto').removeClass('w_hide');
-				break;
-		};
-	}
-	initSelect(selector) {
-		const $select = $(selector);
-		if ($select.length === 0) return;
-		$select.val(this.themeSaved).trigger('change');
-		this.applyTheme(this.themeValue);
-		this.applyThemeIcons(this.themeSaved);
-		$select.on('select2:select', () => {
-			const selectedTheme = $select.val();
-			this.themeSaved = selectedTheme;
-			localStorage.setItem('w_theme', selectedTheme);
-			this.themeValue = (selectedTheme == 'auto') ? this.themeSystem : selectedTheme;
-			this.applyTheme(this.themeValue);
-			this.applyThemeIcons(selectedTheme);
-		});
-		if (window.matchMedia) {
-			window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-				if (this.themeSaved === 'auto') {
-					this.themeSystem = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-					this.applyTheme(this.themeSystem);
-				}
-			});
+		this.themeSaved = localStorage.getItem('w_theme');
+		let themeTs = parseInt(localStorage.getItem('w_theme_ts') || 0, 10);
+		let tsExpired = (Date.now() - themeTs) > 6 * 60 * 60 * 1000;
+		if (!this.themeSaved || this.themeSaved == 'auto' || tsExpired) {
+			this.themeSaved = this.themeSystem;
+			localStorage.removeItem('w_theme');
+			localStorage.removeItem('w_theme_ts');
+		}
+		this.themeValue = this.themeSaved;
+		if (this.themeValue === 'dark') {
+			document.documentElement.setAttribute('data-theme', 'dark');
 		}
 	}
 	theme() {
-		this.applyThemeIcons(this.themeSaved);
-		$(document).off('click.theme').on('click.theme', '.theme-switcher', () => {
+		var themeIcon = (theme) => {
+			$('html').attr('data-theme', theme);
+			$('.theme-icon').addClass('w_hide');
 			switch (this.themeSaved) {
 				case 'light':
-					this.themeSaved = 'dark';
+					$('.theme-icon-light').removeClass('w_hide');
 					break;
 				case 'dark':
-					this.themeSaved = 'auto';
+					$('.theme-icon-dark').removeClass('w_hide');
 					break;
-				case 'auto':
-					this.themeSaved = 'light';
-					break;
-				default:
-					this.themeSaved = 'light';
-					break;
-			}
+			};
+		};
+		themeIcon(this.themeValue);
+		$('#theme-switcher').on('click', () => {
+			this.themeSaved = (this.themeSaved == 'light') ? 'dark' : 'light';
 			localStorage.setItem('w_theme', this.themeSaved);
-			this.themeValue = (this.themeSaved == 'auto') ? this.themeSystem : this.themeSaved;
-			let actualTheme;
-			if (this.themeSaved === 'auto') {
-				actualTheme = this.themeSystem;
-			} else {
-				actualTheme = this.themeValue;
-			}
-			this.applyTheme(actualTheme);
-			this.applyThemeIcons(this.themeSaved);
+			localStorage.setItem('w_theme_ts', Date.now());
+			this.themeValue = this.themeSaved;
+			themeIcon(this.themeValue);
 		});
 	};
-}
+};
 
 class UtilsWepps {
 	digit(val) {

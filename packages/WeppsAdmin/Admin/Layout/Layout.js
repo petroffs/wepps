@@ -132,9 +132,16 @@ class LayoutWepps {
 
 class ThemeWepps {
 	constructor() {
-		this.themeSaved = localStorage.getItem('w_theme') || 'auto';
 		this.themeSystem = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-		this.themeValue = (this.themeSaved == 'auto') ? this.themeSystem : this.themeSaved;
+		this.themeSaved = localStorage.getItem('w_theme');
+		let themeTs = parseInt(localStorage.getItem('w_theme_ts') || 0, 10);
+		let tsExpired = (Date.now() - themeTs) > 6 * 60 * 60 * 1000;
+		if (!this.themeSaved || this.themeSaved == 'auto' || tsExpired) {
+			this.themeSaved = this.themeSystem;
+			localStorage.removeItem('w_theme');
+			localStorage.removeItem('w_theme_ts');
+		}
+		this.themeValue = this.themeSaved;
 		if (this.themeValue === 'dark') {
 			document.documentElement.setAttribute('data-theme', 'dark');
 		}
@@ -150,39 +157,18 @@ class ThemeWepps {
 				case 'dark':
 					$('.theme-icon-dark').removeClass('w_hide');
 					break;
-				case 'auto':
-					$('.theme-icon-auto').removeClass('w_hide');
-					break;
 			};
 		};
 		themeIcon(this.themeValue);
 		$('#theme-switcher').on('click', () => {
-			switch (this.themeSaved) {
-				case 'light':
-					this.themeSaved = 'dark';
-					break;
-				case 'dark':
-					this.themeSaved = 'auto';
-					break;
-				case 'auto':
-					this.themeSaved = 'light';
-					break;
-				default:
-					this.themeSaved = 'light';
-					break;
-			}
+			this.themeSaved = (this.themeSaved == 'light') ? 'dark' : 'light';
 			localStorage.setItem('w_theme', this.themeSaved);
-			this.themeValue = (this.themeSaved == 'auto') ? this.themeSystem : this.themeSaved;
-			let actualTheme;
-			if (this.themeSaved === 'auto') {
-				actualTheme = this.themeSystem;
-			} else {
-				actualTheme = this.themeValue;
-			}
-			themeIcon(actualTheme);
+			localStorage.setItem('w_theme_ts', Date.now());
+			this.themeValue = this.themeSaved;
+			themeIcon(this.themeValue);
 		});
 	};
-}
+};
 
 class UtilsWepps {
 	digit(val) {

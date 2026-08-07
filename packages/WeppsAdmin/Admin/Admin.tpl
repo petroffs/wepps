@@ -50,7 +50,6 @@
 			<button id="theme-switcher" title="Переключить тему">
 				<i class="bi bi-sun theme-icon theme-icon-light"></i>
 				<i class="bi bi-moon theme-icon theme-icon-dark"></i>
-				<i class="bi bi-circle-half theme-icon theme-icon-auto"></i>
 			</button>
 		</div>
 	</div>
