@@ -160,7 +160,8 @@ class ThemeWepps {
 			};
 		};
 		themeIcon(this.themeValue);
-		$('#theme-switcher').on('click', () => {
+		$(document).off('click', '.theme-switcher');
+		$(document).on('click', '.theme-switcher', () => {
 			this.themeSaved = (this.themeSaved == 'light') ? 'dark' : 'light';
 			localStorage.setItem('w_theme', this.themeSaved);
 			localStorage.setItem('w_theme_ts', Date.now());

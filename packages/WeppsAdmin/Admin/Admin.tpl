@@ -47,7 +47,7 @@
 	<div class="page footer w_flex w_flex_row">
 		<div class="page2  w_flex w_flex_row">
 			<div>© 2019–{$smarty.now|date_format:"%Y"} <a href="//wepps.dev">Wepps Project</a></div>
-			<button id="theme-switcher" title="Переключить тему">
+			<button class="theme-switcher" title="Переключить тему">
 				<i class="bi bi-sun theme-icon theme-icon-light"></i>
 				<i class="bi bi-moon theme-icon theme-icon-dark"></i>
 			</button>
