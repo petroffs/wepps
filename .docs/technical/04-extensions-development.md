@@ -74,7 +74,7 @@ class MyExtension extends Extension {
     public function request() {
         // Получение данных из БД
         $data = new Data('MyTable');
-        $items = $data->fetch('t.IsActive=1', 10, $this->page, 't.Priority DESC');
+        $items = $data->fetch('t.IsHidden=0', 10, $this->page, 't.Priority DESC');
         
         // Получение Smarty и передача данных
         $smarty = Smarty::getSmarty();
@@ -294,15 +294,15 @@ use WeppsCore\Smarty;
 $data = new Data('Products');
 
 // Простая выборка (без автоматических JOIN)
-$products = $data->fetchmini('IsActive=1 AND Price>1000', 20, $this->page, 'Priority DESC');
+$products = $data->fetchmini('IsHidden=0 AND Price>1000', 20, $this->page, 'Priority DESC');
 
 // Выборка с JOIN по схеме полей (автоматически подтягивает связи и файлы)
-$products = $data->fetch('t.IsActive=1 AND t.Price>1000', 20, $this->page, 't.Priority DESC');
+$products = $data->fetch('t.IsHidden=0 AND t.Price>1000', 20, $this->page, 't.Priority DESC');
 
 // Настройка запроса перед fetch()
 $data->setFields('Id,Name,Price');  // Только нужные поля
-$data->setJoin('LEFT JOIN Brands b ON b.Id = t.BrandId');
-$products = $data->fetch('t.IsActive=1');
+$data->setJoin("left join ProductsVariations pv on pv.ProductsId=t.Id and pv.IsHidden=0");  // Кастомный JOIN
+$products = $data->fetch('t.IsHidden=0');
 
 // Пагинация доступна после fetch/fetchmini
 $paginator = $data->paginator;  // ['current' => 1, 'pages' => [1,2,3], ...]
@@ -312,7 +312,7 @@ $totalCount = $data->count;     // Общее количество
 $id = $data->add([
     'Name' => 'Новый товар',
     'Price' => 1500,
-    'IsActive' => 1
+    'IsHidden' => 0
 ]);
 
 // Обновление записи
@@ -343,20 +343,20 @@ $products = Connect::$instance->fetch("
     SELECT p.Id, p.Name, COUNT(o.Id) as OrdersCount
     FROM Products p
     LEFT JOIN Orders o ON p.Id = o.ProductId
-    WHERE p.IsActive = ? AND p.Price > ?
+    WHERE p.IsHidden = ? AND p.Price > ?
     GROUP BY p.Id
     HAVING OrdersCount > ?
-", [1, 1000, 10]);
+", [0, 1000, 10]);
 
 // 2. Через Connect::$db - прямой PDO (prepared statements)
 // Используйте для INSERT/UPDATE/DELETE и когда не нужно кэширование
 
 // INSERT
 $sth = Connect::$db->prepare("
-    INSERT INTO Products (Name, Price, IsActive) 
+    INSERT INTO Products (Name, Price, IsHidden) 
     VALUES (?, ?, ?)
 ");
-$sth->execute(['Товар', 1500, 1]);
+$sth->execute(['Товар', 1500, 0]);
 $newId = Connect::$db->lastInsertId();
 
 // UPDATE
@@ -629,7 +629,7 @@ class RequestMyExtension extends Request
         
         // Получение данных
         $data = new Data('MyTable');
-        $items = $data->fetch('t.IsActive=1', 10, $this->get['page'] ?? 1);
+        $items = $data->fetch('t.IsHidden=0', 10, $this->get['page'] ?? 1);
         
         // Передача данных в шаблон через метод assign()
         $this->assign('items', $items);
@@ -648,7 +648,7 @@ class RequestMyExtension extends Request
         $data = new Data('MyTable');
         $id = $data->add([
             'Name' => $this->get['name'],
-            'IsActive' => 1
+            'IsHidden' => 0
         ]);
         
         // JSON ответ

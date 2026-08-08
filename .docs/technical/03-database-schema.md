@@ -16,12 +16,12 @@
 
 | Поле | Тип | Описание |
 |------|-----|----------|
-| `Id` | INT PRIMARY KEY | Уникальный идентификатор раздела |
+| `Id` | INT PRIMARY KEY AUTO_INCREMENT | Уникальный идентификатор раздела |
 | `Name` | VARCHAR(128) | Название раздела |
 | `Priority` | INT | Порядок сортировки в меню |
 | `Text1` | TEXT | Дополнительный текст 1 |
-| `Url` | VARCHAR(255) | URL-путь раздела |
-| `ParentId` | INT | ID родительского раздела (1 для корневых) |
+| `Url` | VARCHAR(128) | URL-путь раздела |
+| `ParentId` | VARCHAR(128) | ID родительского раздела (строковый, пусто для корневых) |
 | `NGroup` | VARCHAR(128) | Группа раздела |
 | `NameMenu` | VARCHAR(255) | Название в меню |
 | `Date` | DATETIME | Дата создания/изменения |
@@ -39,6 +39,7 @@
 | `UrlMenu` | VARCHAR(255) | URL для меню |
 | `DisplayFirst` | INT | Отображать первым |
 | `IsBlocksActive` | INT | Активность блоков |
+| `Guid` | CHAR(36) | Глобальный уникальный идентификатор (для синхронизации) |
 
 **Связи:**
 - `ParentId` → `s_Navigator.Id` (иерархия разделов)
@@ -110,11 +111,12 @@
 | `ActionDrop` | VARCHAR(255) | Действие при удалении записи |
 | `ActionShow` | VARCHAR(255) | Действие при просмотре записи |
 | `ActionShowId` | VARCHAR(255) | ID для действия просмотра |
+| `IsApiAvailable` | INT | Доступна ли таблица для REST API (0/1) |
 
 **Создание таблицы:**
 При добавлении записи в `s_Config` через админку (раздел «Списки данных») автоматически:
 1. Создается новая таблица в БД с базовой структурой
-2. Устанавливаются стандартные индексы (PRIMARY KEY, Priority, IsActive и др.)
+2. Устанавливаются стандартные индексы (PRIMARY KEY, Priority, IsHidden и др.)
 3. Настраивается utf8mb4 кодировка
 
 ---
@@ -131,14 +133,18 @@
 | `TableName` | VARCHAR(32) | Имя таблицы |
 | `Name` | VARCHAR(32) | Отображаемое название поля |
 | `Description` | TEXT | Описание поля |
-| `Field` | VARCHAR(32) | Имя поля в БД |
+| `TableField` | VARCHAR(32) | Имя поля в БД |
 | `Priority` | INT | Порядок в форме |
-| `Required` | INT | Обязательное поле (0/1) |
-| `Type` | VARCHAR(128) | Тип поля: `text`, `textarea`, `select`, `checkbox`, `file`, `date` и др. |
+| `IsRequired` | INT | Обязательное поле (0/1) |
+| `FType` | VARCHAR(128) | Тип поля: `text`, `textarea`, `select`, `checkbox`, `file`, `date` и др. |
 | `CreateMode` | ENUM('','hidden','disabled') | Режим при создании |
 | `ModifyMode` | ENUM('','hidden','disabled') | Режим при изменении |
 | `IsHidden` | INT | Скрыть поле (0/1) |
 | `FGroup` | VARCHAR(255) | Группа полей |
+| `IsApiAvailable` | INT | Доступно ли поле для REST API (0/1) |
+| `ApiMapping` | VARCHAR(128) | Маппинг имени поля для REST API |
+| `ApiFieldType` | VARCHAR(128) | Тип поля для REST API (например, `guid`) |
+| `IsUnique` | INT | Уникальность значения (0/1) |
 
 **Типы полей:**
 - `text` - текстовое поле
@@ -206,9 +212,11 @@
 | `NameSurname` | VARCHAR(128) | Фамилия |
 | `NamePatronymic` | VARCHAR(32) | Отчество |
 | `Country` | VARCHAR(32) | Страна |
-| `JCart` | TEXT | JSON-данные корзины |
-| `JFav` | TEXT | JSON-данные избранного |
-| `JData` | TEXT | JSON-дополнительные данные |
+| `JCart` | LONGTEXT | JSON-данные корзины |
+| `JFav` | LONGTEXT | JSON-данные избранного |
+| `JData` | LONGTEXT | JSON-дополнительные данные |
+| `IsHiddenCandidate` | INT | Кандидат на скрытие (для синхронизации) |
+| `Guid` | CHAR(36) | Глобальный уникальный идентификатор (для синхронизации) |
 
 **Связи:**
 - `UserPermissions` → `s_Permissions.Id` (уровень прав доступа)
@@ -236,11 +244,14 @@
 | `FileDate` | DATETIME | Дата загрузки |
 | `FileSize` | VARCHAR(255) | Размер файла |
 | `FileExt` | VARCHAR(255) | Расширение файла |
-| `FileType` | VARCHAR(255) | MIME-тип файла |
+| `FileType` | VARCHAR(128) | MIME-тип файла |
 | `TableNameId` | INT | ID записи в таблице |
-| `FileDescription` | VARCHAR(255) | Описание файла |
-| `TableNameField` | VARCHAR(255) | Поле таблицы для привязки |
-| `FileUrl` | VARCHAR(255) | URL файла |
+| `FileDescription` | VARCHAR(128) | Описание файла |
+| `TableNameField` | VARCHAR(128) | Поле таблицы для привязки |
+| `FileUrl` | VARCHAR(128) | URL файла |
+| `APIFilter` | VARCHAR(128) | Фильтр для REST API |
+| `Guid` | CHAR(36) | Глобальный уникальный идентификатор (для синхронизации) |
+| `Base64` | VARCHAR(128) | Base64-представление (для интеграций) |
 
 **Связи:**
 - `TableName` + `TableNameId` → связь с любой контентной таблицей
@@ -277,9 +288,9 @@
 | `WeightPack` | DECIMAL(10,2) | Вес упаковки |
 | `DisplayFirst` | INT | Отображать первым |
 | `Variations` | MEDIUMTEXT | Вариации товара (JSON) |
-
-**Связи:**
-- `BrandId` → `Brands.Id`
+| `ImagesV` | INT | Количество изображений вариаций |
+| `IsHiddenCandidate` | INT | Кандидат на скрытие (для синхронизации) |
+| `Guid` | CHAR(36) | Глобальный уникальный идентификатор (для синхронизации) |
 
 ---
 
@@ -360,7 +371,7 @@
 - `Id` - PRIMARY KEY AUTO_INCREMENT
 - `Name` - название/заголовок
 - `Alias` - алиас для URL или внутреннего использования
-- `IsActive` - флаг активности (0/1)
+- `IsHidden` - флаг скрытия (0=активен, 1=скрыт)
 - `Priority` - порядок сортировки
 
 Дополнительные поля (такие как `Url`, `Description`, `CreatedAt` и др.) добавляются через `s_ConfigFields` в зависимости от требований проекта.
@@ -401,10 +412,10 @@ INSERT INTO s_Config (TableName, Name, Category, Priority)
 VALUES ('MyTable', 'Моя таблица', 'Контент', 50);
 
 -- Настроить поля
-INSERT INTO s_ConfigFields (TableName, Field, Name, Type, Required, Priority) VALUES
+INSERT INTO s_ConfigFields (TableName, TableField, Name, FType, IsRequired, Priority) VALUES
 ('MyTable', 'Name', 'Название', 'text', 1, 1),
 ('MyTable', 'Description', 'Описание', 'wysiwyg', 0, 2),
-('MyTable', 'IsActive', 'Активно', 'checkbox', 0, 3);
+('MyTable', 'IsHidden', 'Скрыть', 'checkbox', 0, 3);
 ```
 
 ## Индексы и оптимизация
@@ -414,28 +425,25 @@ INSERT INTO s_ConfigFields (TableName, Field, Name, Type, Required, Priority) VA
 При создании таблиц через `s_Config` автоматически устанавливаются стандартные индексы:
 - `PRIMARY KEY` на поле `Id`
 - INDEX на `Priority` (для сортировки)
-- INDEX на `IsActive` (для фильтрации)
+- INDEX на `IsHidden` (для фильтрации)
 
 ### Дополнительные индексы
 
 Добавлять кастомные индексы следует в соответствии с требованиями конкретного приложения:
 
 ```sql
--- Пример: индекс для связи с другой таблицей
-CREATE INDEX idx_brand ON Products(BrandId);
-
 -- Пример: составной индекс для частых запросов
-CREATE INDEX idx_active_priority ON Products(IsActive, Priority);
+CREATE INDEX idx_active_priority ON Products(IsHidden, Priority);
 ```
 
 ### Полнотекстовый поиск
 
 ```sql
-ALTER TABLE Products ADD FULLTEXT idx_search (Name, Description);
+ALTER TABLE Products ADD FULLTEXT idx_search (Name, Descr);
 
 -- Использование
 SELECT * FROM Products 
-WHERE MATCH(Name, Description) AGAINST('поисковый запрос' IN BOOLEAN MODE);
+WHERE MATCH(Name, Descr) AGAINST('поисковый запрос' IN BOOLEAN MODE);
 ```
 
 ## Миграции

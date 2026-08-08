@@ -252,7 +252,7 @@ class Products extends Extension {
     public function request() {
         // Для детальной страницы (если есть /catalog/item.html)
         if (Navigator::$pathItem != '') {
-            $product = $this->getItem('Products', 't.IsActive=1');
+            $product = $this->getItem('Products', 't.IsHidden=0');
             $smarty = Smarty::getSmarty();
             $smarty->assign('product', $product);
             $this->tpl = 'packages/WeppsExtensions/Products/ProductsItem.tpl';
@@ -261,7 +261,7 @@ class Products extends Extension {
         
         // Для списка товаров
         $data = new Data('Products');
-        $products = $data->fetch('t.IsActive=1', 20, $this->page, 't.Priority DESC');
+        $products = $data->fetch('t.IsHidden=0', 20, $this->page, 't.Priority DESC');
         
         // Получение Smarty и передача данных
         $smarty = Smarty::getSmarty();
@@ -349,15 +349,15 @@ use WeppsCore\Connect;
 
 // SELECT с автоматическим кэшированием (join-запросы)
 $products = Connect::$instance->fetch(
-    "SELECT p.*, b.Name as BrandName FROM Products p LEFT JOIN Brands b ON p.BrandId = b.Id WHERE p.IsActive = ?",
-    [1]
+    "SELECT p.* FROM Products p WHERE p.IsHidden = ?",
+    [0]
 );
 
 // INSERT с автоматическим Priority
 $id = Connect::$instance->insert('Products', [
     'Name' => 'Новый товар',
     'Price' => 1500,
-    'IsActive' => 1
+    'IsHidden' => 0
 ]);
 
 // UPDATE через query()
@@ -387,21 +387,21 @@ use WeppsCore\Data;
 $data = new Data('Products');
 
 // Простая выборка (без автоматических JOIN)
-$products = $data->fetchmini("IsActive=1 AND Price>100", 20, 1, "Priority DESC");
+$products = $data->fetchmini("IsHidden=0 AND Price>100", 20, 1, "Priority DESC");
 
 // Выборка с JOIN по схеме полей (автоматически подтягивает связанные таблицы и файлы)
-$products = $data->fetch("t.IsActive=1", 20, 1, "t.Priority DESC");
+$products = $data->fetch("t.IsHidden=0", 20, 1, "t.Priority DESC");
 
 // Настройка запроса
 $data->setFields('Id,Name,Price');  // Выбрать только нужные поля
-$data->setJoin('LEFT JOIN Brands b ON b.Id = t.BrandId');
-$products = $data->fetch("t.IsActive=1");
+$data->setJoin("left join ProductsVariations pv on pv.ProductsId=t.Id and pv.IsHidden=0");  // Кастомный JOIN
+$products = $data->fetch("t.IsHidden=0");
 
 // Добавление записи
 $id = $data->add([
     'Name' => 'Новый товар',
     'Price' => 1500,
-    'IsActive' => 1
+    'IsHidden' => 0
 ]);
 
 // Обновление записи
@@ -452,6 +452,13 @@ $totalCount = $data->count;     // Общее количество записе�
 - **s_ConfigFields** - настройки полей таблиц
 - **s_Users** - пользователи системы
 - **s_Files** - файловое хранилище
+- **s_Panels / s_Blocks** - панели и блоки (конструктор страниц)
+- **s_Tasks** - очередь задач
+- **s_Logs** - журнал запросов
+- **s_Permissions** - уровни прав доступа
+- **s_Properties / s_PropertiesGroups / s_PropertiesValues** - свойства товаров
+- **s_Lang / s_NGroupsLang** - мультиязычность
+- **s_NGroups / s_Templates / s_UploadsSource / s_SearchKeys / s_Vars** - справочники
 
 ### Контентные таблицы
 
@@ -460,6 +467,11 @@ $totalCount = $data->count;     // Общее количество записе�
 - **Gallery** - галерея
 - **Contacts** - контакты
 - **Brands** - бренды
+- **Promotions** - акции
+- **Orders / OrdersStatuses / OrdersDelivery / OrdersPayments / OrdersEvents** - заказы и их составляющие
+- **ProductsVariations** - вариации товаров
+- **PromoCodes** - промокоды
+- **Payments** - платежи
 - и другие (создаются через админку)
 
 ## Кэширование
@@ -484,7 +496,7 @@ use WeppsCore\Connect;
 
 // fetch() автоматически кэширует join-запросы (если memcached активен)
 $products = Connect::$instance->fetch(
-    "SELECT p.*, b.Name FROM Products p LEFT JOIN Brands b ON p.BrandId = b.Id"
+    "SELECT p.* FROM Products p WHERE p.IsHidden = 0"
 );
 // Первый вызов - из БД, сохраняется в memcached
 // Последующие - из кэша (ключ = md5(sql + params))
