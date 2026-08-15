@@ -48,6 +48,14 @@ $projectSettings = [
 			'brands' => 0, // ID брендов
 			'profile' => 0, // ID профиля
 		],
+		'api-m2m' => [
+			'sku' => [
+				'Field1' => 'Цвет', // Название первого поля для SKU
+				'Field2' => 'Размер', // Название второго поля для SKU
+				'Field3' => 'Артикул', // Название третьего поля для SKU
+				'Field4' => 'Остатки', // Название четвертого поля для SKU
+			]
+		],
 		'memcached' => [
 			'active' => false, // Флаг активности Memcached (true - активен, false - неактивен)
 			'host' => 'localhost', // Адрес хоста Memcached
@@ -73,10 +81,17 @@ $projectSettings = [
 			'secret' => 'YOUR_SMARTCAPTCHA_SECRET_KEY', // Secret key для SmartCaptcha
 		],
 		'telegram' => [
-			'bot' => 'YourBot', // Имя бота Telegram
-			'token' => 'YOUR_TELEGRAM_BOT_TOKEN', // Токен бота Telegram
-			'proxy' => '', // Прокси для Telegram
-			'dev' => '0', // ID разработчика в Telegram
+			'bot' => '', // Имя бота Telegram
+			'token' => '', // Токен бота Telegram
+			'proxy' => [
+				'type' => 'socks5', // Тип протокола прокси
+				'host' => '', // IP-адрес или хост прокси-сервера
+				'port' => 3306, // Порт прокси-сервера
+				'username' => 'YOUR_TG_PROXY_USERNAME', // Логин для авторизации на прокси
+				'password' => 'YOUR_TG_PROXY_PASSWORD' // Пароль для авторизации на прокси
+			], // Прокси для Telegram
+			'timeout' => 10, // Таймаут для запросов к Telegram в секундах
+			'dev' => '', // ID разработчика в Telegram
 		],
 		'cdek' => [
 			'url' => 'https://api.cdek.ru', // URL API CDEK
@@ -89,8 +104,8 @@ $projectSettings = [
 		],
 		'russianpost' => [
 			'url' => 'url', // URL API Почты России
-			'login' => 'login', // Логин Почты России
-			'password' => 'password', // Пароль Почты России
+			'login' => 'YOUR_POSTRF_LOGIN', // Логин Почты России
+			'password' => 'YOUR_POSTRF_PASSWORD', // Пароль Почты России
 			'office' => [
 				'alias' => 'spb', // Алиас офиса Почты России
 				'sender' => '000000', // Индекс отправителя Почты России
