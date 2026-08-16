@@ -112,8 +112,8 @@ class Products extends Extension
 		} else {
 			$this->navigator->content['MetaTitle'] = $element['Name'];
 		}
-		if (!empty($element['MetaKeyword'])) {
-			$this->navigator->content['MetaKeyword'] = $element['MetaKeyword'];
+		if (!empty($element['MetaKeywords'])) {
+			$this->navigator->content['MetaKeywords'] = $element['MetaKeywords'];
 		}
 		if (!empty($element['MetaDescription'])) {
 			$this->navigator->content['MetaDescription'] = $element['MetaDescription'];

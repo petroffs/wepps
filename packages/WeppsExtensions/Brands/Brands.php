@@ -49,8 +49,8 @@ class Brands extends Extension
 		// } else {
 		// 	$this->navigator->content['MetaTitle'] = $res['Name'];
 		// }
-		// if (!empty($res['MetaKeyword'])) {
-		// 	$this->navigator->content['MetaKeyword'] = $res['MetaKeyword'];
+		// if (!empty($res['MetaKeywords'])) {
+		// 	$this->navigator->content['MetaKeywords'] = $res['MetaKeywords'];
 		// }
 		// if (!empty($res['MetaDescription'])) {
 		// 	$this->navigator->content['MetaDescription'] = $res['MetaDescription'];

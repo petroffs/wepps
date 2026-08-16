@@ -3,7 +3,7 @@
 
 <head>
 	<title>{$content.MetaTitle|default:$contenttop.Name|strip_tags}</title>
-	<meta name="keywords" content="{$contenttop.MetaKeyword|strip_tags}" />
+	<meta name="keywords" content="{$contenttop.MetaKeywords|strip_tags}" />
 	<meta name="description" content="{$contenttop.MetaDescription|strip_tags}" />
 	<meta name="author" content="Aleksei Petrov" />
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1" />

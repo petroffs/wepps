@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>{$content.MetaTitle|default:$content.Name|strip_tags}</title>
-<meta name="keywords" content="{$content.MetaKeyword|strip_tags}" />
+<meta name="keywords" content="{$content.MetaKeywords|strip_tags}" />
 <meta name="description" content="{$content.MetaDescription|strip_tags}" />
 <meta name="viewport" content="initial-scale=1, maximum-scale=3" />
 {$headers.meta}

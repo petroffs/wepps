@@ -27,7 +27,7 @@
 | `Date` | DATETIME | Дата создания/изменения |
 | `Images` | INT | Количество изображений |
 | `Files` | INT | Количество файлов |
-| `MetaKeyword` | VARCHAR(255) | SEO: ключевые слова |
+| `MetaKeywords` | VARCHAR(255) | SEO: ключевые слова |
 | `MetaDescription` | TEXT | SEO: описание |
 | `MetaTitle` | VARCHAR(255) | SEO: заголовок страницы |
 | `Template` | VARCHAR(128) | Имя шаблона (для Template расширения) |
@@ -283,7 +283,7 @@
 | `Descr` | TEXT | Описание товара |
 | `MetaTitle` | VARCHAR(255) | SEO: заголовок |
 | `MetaDescription` | VARCHAR(255) | SEO: описание |
-| `MetaKeyword` | VARCHAR(255) | SEO: ключевые слова |
+| `MetaKeywords` | VARCHAR(255) | SEO: ключевые слова |
 | `PCategory` | VARCHAR(128) | Категория товара |
 | `WeightPack` | DECIMAL(10,2) | Вес упаковки |
 | `DisplayFirst` | INT | Отображать первым |
@@ -309,7 +309,7 @@
 | `Descr` | TEXT | Полное содержание |
 | `MetaTitle` | VARCHAR(255) | SEO: заголовок |
 | `MetaDescription` | VARCHAR(255) | SEO: описание |
-| `MetaKeyword` | VARCHAR(255) | SEO: ключевые слова |
+| `MetaKeywords` | VARCHAR(255) | SEO: ключевые слова |
 
 ---
 

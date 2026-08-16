@@ -225,7 +225,7 @@ class RestV1M2M extends RestV1
 	{
 		$utils = $this->getUtils('Products');
 		$utils->setOrderBy('Id desc');
-		$utils->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
+		$utils->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeywords,WeightPack');
 		return $utils->fetch($this->get);
 	}
 
@@ -238,7 +238,7 @@ class RestV1M2M extends RestV1
 	{
 		$utils = $this->getUtils('Products');
 		$utils->setOrderBy('Id desc');
-		$utils->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeyword,WeightPack');
+		$utils->setFields('Id,Guid,Name,Alias,IsHidden,Priority,NavigatorId,PStatus,Article,Descr,MetaTitle,MetaDescription,MetaKeywords,WeightPack');
 		return $utils->item((int) ($this->get['id'] ?? 0));
 	}
 

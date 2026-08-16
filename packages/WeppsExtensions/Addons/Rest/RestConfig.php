@@ -829,7 +829,7 @@ class RestConfig
 							'status' => ['type' => 'int2', 'required' => false],
 							'metaTitle' => ['type' => 'string', 'required' => false],
 							'metaDescription' => ['type' => 'string', 'required' => false],
-							'metaKeyword' => ['type' => 'string', 'required' => false],
+							'metaKeywords' => ['type' => 'string', 'required' => false],
 							'weightPack' => ['type' => 'float2', 'required' => false],
 							'displayFirst' => ['type' => 'int2', 'required' => false],
 						],
