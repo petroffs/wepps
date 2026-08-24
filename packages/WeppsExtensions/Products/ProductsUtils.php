@@ -57,8 +57,17 @@ class ProductsUtils
 				$conditions = "t.IsHidden=0 and t.Id in (select pv.TableNameId from s_PropertiesValues pv where pv.Alias=? and pv.IsHidden=0 and pv.Name=1)";
 				$prepare[] = Navigator::$pathItem;
 			} else {
-				$conditions = "t.IsHidden=0 and t.NavigatorId=?";
-				$prepare[] = $this->navigator->content['Id'];
+				// Собираем ID текущего раздела и всех дочерних,
+				// чтобы поиск/фильтры работали из родительских разделов.
+				$ids = [$this->navigator->content['Id']];
+				if (!empty($this->navigator->child)) {
+					foreach ($this->navigator->child as $child) {
+						$ids[] = $child['Id'];
+					}
+				}
+				$placeholders = implode(',', array_fill(0, count($ids), '?'));
+				$conditions = "t.IsHidden=0 and t.NavigatorId in ($placeholders)";
+				$prepare = array_merge($prepare, $ids);
 			}
 			if (!empty($params['text'])) {
 				$conditions .= " and lower(t.Name) like lower(?)";
