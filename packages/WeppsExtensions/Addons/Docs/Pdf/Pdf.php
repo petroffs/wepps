@@ -2,6 +2,7 @@
 namespace WeppsExtensions\Addons\Docs\Pdf;
 
 use WeppsCore\Utils;
+use Dompdf\Dompdf;
 use WeppsCore\Exception;
 use WeppsCore\Smarty;
 use WeppsCore\Data;
@@ -116,7 +117,7 @@ class Pdf
 	}
 	function output($download = false)
 	{
-		$dompdf = new \Dompdf\Dompdf();
+		$dompdf = new Dompdf();
 		$dompdf->setPaper('A4', 'portrait');
 
 		$html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' . $this->css . '</style></head><body>';
