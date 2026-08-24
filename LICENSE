@@ -1,21 +1,71 @@
-MIT License
+Лицензионное соглашение с конечным пользователем (EULA) платформы Wepps
+Wepps Platform End-User License Agreement (EULA)
 
-Copyright (c) 2025 Aleksei Petrov (mail@petroffs.com)
+Правообладатель: Общество с ограниченной ответственностью «ПЕТРОФФС»
+(ООО «ПЕТРОФФС», ОГРН 1087847004480, ИНН 7810530249, РФ, г. Санкт-Петербург).
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Настоящее Лицензионное соглашение (далее — Лицензия) устанавливает условия
+использования программного обеспечения «Wepps» (далее — Программа) и регулирует
+отношения между ООО «ПЕТРОФФС» (далее — Правообладатель) и любым физическим
+или юридическим лицом (далее — Пользователь).
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Использование Программы означает полное и безоговорочное согласие Пользователя
+со всеми пунктами настоящего соглашения. Если вы не согласны с условиями, вы
+не имеете права использовать Программу.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+---
+
+## 1. Варианты лицензирования и условия использования
+
+### 1.1. Лицензия «Wepps Community» (Бесплатная)
+
+Предоставляется на условиях простой неисключительной лицензии без взимания платы.
+
+- **Разрешено:** Использование физическими лицами, независимыми разработчиками,
+  фрилансерами, а также в образовательных, научных, личных и некоммерческих
+  проектах. Разрешается модификация исходного кода под нужды собственного проекта.
+- **Ограничения:** Программа предоставляется по принципу «как есть» (as is).
+  Правообладатель не несет ответственности за любые прямые или косвенные убытки,
+  потерю данных или сбои. Официальная техническая поддержка не предоставляется.
+
+### 1.2. Лицензия «Wepps Commercial & Enterprise» (Коммерческая)
+
+Является обязательной для использования Программы в коммерческой деятельности
+юридических лиц, государственных органов, крупных корпораций, а также при
+создании информационных систем в рамках государственных и муниципальных
+закупок (44-ФЗ, 223-ФЗ).
+
+- **Условия:** Предоставляется на основании отдельного письменного лицензионного
+  или сублицензионного договора с ООО «ПЕТРОФФС».
+- **Преимущества:** Включает предоставление официальной гарантии, техническую
+  поддержку уровня SLA, акты приема-передачи прав, полную юридическую чистоту
+  для комплаенса и ИТ-импортозамещения.
+
+---
+
+## 2. Интеллектуальная собственность и ограничения
+
+2.1. Все исключительные права на Программу (включая исходный код, архитектуру,
+дизайн, товарные знаки и документацию) во всех странах мира принадлежат
+ООО «ПЕТРОФФС».
+
+2.2. Запрещается удалять, скрывать или изменять знаки авторского права
+(Copyright), содержащиеся в исходных файлах Программы.
+
+2.3. Запрещается создавать на базе Программы аналогичные программные продукты
+(форки) с целью их дальнейшей перепродажи или дистрибуции под иными брендами
+без письменного согласия Правообладателя.
+
+---
+
+## English Short Summary (For International Users)
+
+Starting from version 1.10.0, Wepps platform is no longer licensed under the MIT
+License. All rights are owned by PETROFFS LLC (Russia).
+
+- **Wepps Community:** 100% FREE for individual developers, freelancers,
+  educational, and non-commercial projects. Provided "AS IS", without warranties.
+- **Wepps Commercial & Enterprise:** Mandatory for corporate, commercial, and
+  government use. Requires a formal contract with PETROFFS LLC.
+
+Official licensing page and contacts: https://wepps.dev

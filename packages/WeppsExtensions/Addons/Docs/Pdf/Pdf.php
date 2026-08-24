@@ -116,19 +116,22 @@ class Pdf
 	}
 	function output($download = false)
 	{
-		$mpdf = new \Mpdf\Mpdf();
-		$mpdf->showImageErrors = true;
-		$mpdf->curlAllowUnsafeSslRequests = true;
+		$dompdf = new \Dompdf\Dompdf();
+		$dompdf->setPaper('A4', 'portrait');
 
-		$mpdf->SetMargins(3, 3, 25);
-		$mpdf->WriteHTML($this->css, 1);
-		$mpdf->SetHTMLHeader($this->header);
-		$mpdf->SetHTMLFooter($this->footer);
-		$mpdf->WriteHTML($this->output);
+		$html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' . $this->css . '</style></head><body>';
+		$html .= $this->header;
+		$html .= $this->output;
+		$html .= $this->footer;
+		$html .= '</body></html>';
+
+		$dompdf->loadHtml($html);
+		$dompdf->render();
+
 		if ($download == false) {
-			$mpdf->Output();
+			$dompdf->stream($this->filename, ['Attachment' => false]);
 		} else {
-			$mpdf->Output($this->filename, 'D');
+			$dompdf->stream($this->filename, ['Attachment' => true]);
 		}
 	}
 	function __destruct()
