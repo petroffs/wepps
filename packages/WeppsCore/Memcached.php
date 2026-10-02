@@ -23,25 +23,48 @@ class Memcached
 	public function __construct($isActive = 'auto', $isSystemCache = false)
 	{
 		$this->isSystemCache = $isSystemCache;
+		$memcachedConfig = Connect::$projectServices['memcached'] ?? [];
+		$configActive = (bool) ($memcachedConfig['active'] ?? false);
+		if (!$configActive) {
+			return;
+		}
 		switch ($isActive) {
 			case 'yes':
 				$isActive = true;
 				break;
 			case 'no':
-				// Для системного кэша переопределяем на yes
-				$isActive = $isSystemCache ? true : false;
+				$isActive = false;
 				break;
 			default:
-				// Если системный кэш - берём значение по умолчанию, иначе из конфига
-				$isActive = $isSystemCache ? true : Connect::$projectServices['memcached']['active'];
+				$isActive = true;
 				break;
 		}
-		if (class_exists('Memcache') && $isActive) {
-			$this->memcache = new \Memcache();
-			$this->memcache->connect(Connect::$projectServices['memcached']['host'], Connect::$projectServices['memcached']['port']);
-		} else if (class_exists('Memcached') && $isActive) {
-			$this->memcached = new \Memcached();
-			$this->memcached->addServer(Connect::$projectServices['memcached']['host'], Connect::$projectServices['memcached']['port']);
+		$host = isset(Connect::$projectServices['memcached']['host'])
+			? trim((string) Connect::$projectServices['memcached']['host'])
+			: '';
+		if (!$isActive || $host === '') {
+			return;
+		}
+		$port = (int) (Connect::$projectServices['memcached']['port'] ?? 11211);
+		set_error_handler(function ($errno, $errstr) {
+			throw new \RuntimeException($errstr, $errno);
+		});
+		try {
+			if (class_exists('Memcache')) {
+				$this->memcache = new \Memcache();
+				if (!$this->memcache->connect($host, $port)) {
+					throw new \RuntimeException("Memcached connection failed: {$host}:{$port}");
+				}
+			} else if (class_exists('Memcached')) {
+				$this->memcached = new \Memcached();
+				if (!$this->memcached->addServer($host, $port)) {
+					throw new \RuntimeException("Memcached server registration failed: {$host}:{$port}");
+				}
+			}
+		} catch (\Throwable $e) {
+			throw new \RuntimeException("Memcached connection error for {$host}:{$port}: {$e->getMessage()}", 0, $e);
+		} finally {
+			restore_error_handler();
 		}
 	}
 
