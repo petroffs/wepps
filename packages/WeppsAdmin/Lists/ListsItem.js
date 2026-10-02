@@ -170,94 +170,156 @@ var readyListsItemInit = function () {
 		}
 	});
 };
+// Ссылка на CSS внутри content-iframe с cache-busting: $rand берём из
+// data-headers-rand на <body> (Admin.php -> Admin.tpl), а путь file.RAND.css
+// срезается правилом .htaccess обратно до file.css
+var wIframeCssUrl = function (path, name) {
+	var rand = document.body.getAttribute('data-headers-rand') || '';
+	return path + name + (rand ? '.' + rand : '') + '.css';
+};
+// Текущая тема редактора — по data-theme админки (light/dark)
+var wJoditTheme = function () {
+	return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default';
+};
+// Синхронизация темы у всех открытых редакторов
+var wJoditApplyTheme = function () {
+	if (!window.Jodit) {
+		return;
+	}
+	var theme = wJoditTheme();
+	Object.keys(Jodit.instances).forEach(function (id) {
+		var inst = Jodit.instances[id];
+		if (!inst) {
+			return;
+		}
+		inst.o.theme = theme;
+		// data-theme внутрь content-iframe — стили контента по теме
+		try {
+			var doc = inst.iframe && inst.iframe.contentDocument;
+			if (doc && doc.documentElement) {
+				doc.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light');
+			}
+		} catch (e) {}
+	});
+	// Контейнеры редакторов, открытые диалоги и попапы
+	Array.prototype.forEach.call(
+		document.querySelectorAll('.jodit_theme_default, .jodit_theme_dark'),
+		function (el) {
+			el.classList.remove('jodit_theme_default', 'jodit_theme_dark');
+			el.classList.add(theme === 'dark' ? 'jodit_theme_dark' : 'jodit_theme_default');
+		}
+	);
+};
 var readyListsItemVEInit = function () {
+	// Переключение темы админки меняет тему уже открытых редакторов
+	if (window.MutationObserver && !window.__wJoditThemeObserver) {
+		window.__wJoditThemeObserver = new MutationObserver(wJoditApplyTheme);
+		window.__wJoditThemeObserver.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme']
+		});
+	}
 	$('form.list-data').find('.field-ve').off('click');
 	$('form.list-data').find('.field-ve').on('click', function (event) {
 		event.preventDefault();
-		var dest = $(this).closest('.item').find('textarea').eq(0).attr('id');
-		var tinymceOpen = 1;
-		if (tinymce.editors.length) {
-			for (i = 0; i < tinyMCE.editors.length; i++) {
-				if (tinymce.editors[i].id == dest) {
-					tinymce.remove('#' + tinymce.editors[i].id);
-					tinymceOpen = 0;
+		// Ищем только textarea с id: зеркало Jodit (jodit-source__mirror) id не имеет
+		var dest = $(this).closest('.item').find('textarea[id]').eq(0).attr('id');
+		if (!dest || !window.Jodit) {
+			return;
+		}
+		// Повторный клик по кнопке — закрыть редактор
+		if (Jodit.instances[dest]) {
+			Jodit.instances[dest].destruct();
+			var $taClosed = $('#' + dest);
+			var $labelClosed = $taClosed.closest('label.w_label');
+			if (!$labelClosed.length) {
+				// textarea вынесена из label при открытии — возвращаем обратно
+				$labelClosed = $taClosed.siblings('label.w_label').first();
+				if ($labelClosed.length) {
+					$taClosed.appendTo($labelClosed);
 				}
 			}
-		};
-		if (tinymceOpen == 1) {
-			tinymce.init({
-				selector: '#' + dest,
-				language: 'ru',
-				language_url: '/packages/vendor_local/tinymce_wepps/languages/ru.js',
-				height: 500,
-				menubar: 'insert',
-				convert_urls: false,
-				allow_script_urls: true,
-				entity_encoding: "raw",
-				fontsize_formats: "12px 13px 15px 18px 20px 24px 36px",
-				plugins:
-					' autolink lists link image charmap print preview anchor textcolor ' +
-					'searchreplace visualblocks code fullscreen ' +
-					'insertdatetime media table contextmenu paste code help'
-				,
-				contextmenu: "cut copy paste | link image table",
-				content_css: [
-					'/packages/vendor_local/tinymce_wepps/styles.css'
-				],
-				style_formats: [
-					{
-						title: "Headers", items: [
-							{ title: "Header 1", format: "h1" },
-							{ title: "Header 2", format: "h2" },
-							{ title: "Header 3", format: "h3" },
-							{ title: "Header 4", format: "h4" },
-							{ title: "Header 5", format: "h5" },
-							{ title: "Header 6", format: "h6" }
-						]
+			$labelClosed.removeClass('w_hide');
+			$taClosed.show();
+			return;
+		}
+		// Выносим textarea из label ДО инициализации: Jodit вставляет контейнер
+		// перед textarea, и он попадает сразу вне label (стили label.w_label
+		// не перебивают стили редактора). Переносить контейнер ПОСЛЕ make
+		// нельзя: это перезагружает его iframe и ломает ввод текста.
+		var $ta = $('#' + dest);
+		var $label = $ta.closest('label.w_label');
+		if ($label.length) {
+			$ta.insertAfter($label);
+			$label.addClass('w_hide');
+		}
+		var editor = Jodit.make('#' + dest, {
+			theme: wJoditTheme(),
+			height: 500,
+			language: 'ru',
+			// Весь набор кнопок всегда виден: без адаптивной подмены и «трoеточия»
+			toolbarAdaptive: false,
+			// Как и TinyMCE: контент в изолированном iframe + свои content-стили
+			iframe: true,
+			// Settings.css — системные css-переменные (--font, --color-*, --s*),
+			// styles.css — стили контента; обе со схемой file.RAND.css
+			iframeCSSLinks: [
+				wIframeCssUrl('/packages/WeppsAdmin/Admin/Layout/', 'Settings'),
+				wIframeCssUrl('/packages/vendor_local/jodit_wepps/', 'styles')
+			],
+			buttons: [
+				'paragraph', 'bold', 'italic', 'underline', 'strikethrough', '|',
+				'align', 'ul', 'ol', 'outdent', 'indent', 'mystyles', '|',
+				'link', 'image', 'table', '|',
+				'fullsize', 'source'
+			],
+			controls: {
+				// Аналог TinyMCE style_formats, раздел «Мой стиль»
+				mystyles: {
+					icon: 'class-span',
+					tooltip: 'Мой стиль',
+					list: {
+						video: 'Видео блок',
+						mkcite1: 'Желтая плашка',
+						style1header: 'Стиль 1: Заголовок',
+						style1text: 'Стиль 1: Текст',
+						style2cite: 'Цитата серая плашка',
+						hrefbutton: 'Кнопка-ссылка'
 					},
-					{
-						title: "Inline", items: [
-							{ title: "Bold", icon: "bold", format: "bold" },
-							{ title: "Italic", icon: "italic", format: "italic" },
-							{ title: "Underline", icon: "underline", format: "underline" },
-							{ title: "Strikethrough", icon: "strikethrough", format: "strikethrough" },
-							{ title: "Superscript", icon: "superscript", format: "superscript" },
-							{ title: "Subscript", icon: "subscript", format: "subscript" },
-							{ title: "Code", icon: "code", format: "code" }
-						]
-					},
-					{
-						title: "Blocks", items: [
-							{ title: "Paragraph", format: "p" },
-							{ title: "Blockquote", format: "blockquote" },
-							{ title: "Div", format: "div" },
-							{ title: "Pre", format: "pre" }
-						]
-					},
-					{
-						title: "Alignment", items: [
-							{ title: "Left", icon: "alignleft", format: "alignleft" },
-							{ title: "Center", icon: "aligncenter", format: "aligncenter" },
-							{ title: "Right", icon: "alignright", format: "alignright" },
-							{ title: "Justify", icon: "alignjustify", format: "alignjustify" }
-						]
-					},
-					{
-						title: "Мой стиль", items: [
-							{ title: "Видео блок", selector: 'p', classes: 'video' },
-							{ title: "Желтая плашка", selector: 'p', classes: 'mkcite1' },
-							{ title: "Стиль 1: Заголовок", selector: 'p', classes: 'style1header' },
-							{ title: "Стиль 1: Текст", selector: 'p', classes: 'style1text' },
-							{ title: "Цитата серая плашка", selector: 'p', classes: 'style2cite' },
-							{ title: "Кнопка-ссылка", selector: 'a', classes: 'hrefbutton' }
-						]
-					},
-				],
-				menubar: 'edit insert format table tc help',
-				toolbar: 'styleselect alignleft aligncenter alignright alignjustify bullist numlist outdent indent',
-				//toolbar: []
-			});
-		};
+					childExec: function (editor, current, options) {
+						var cls = options.control.args && options.control.args[0];
+						if (!cls) {
+							return;
+						}
+						// Как и в TinyMCE: класс вешаем на <p>, для кнопки-ссылки — на <a>
+						var tag = (cls === 'hrefbutton') ? 'A' : 'P';
+						var node = editor.s.current();
+						var el = (node && node.nodeType === 1) ? node : (node ? node.parentNode : null);
+						var root = editor.editor;
+						var target = null;
+						while (el && el !== root) {
+							if (el.tagName === tag) {
+								target = el;
+								break;
+							}
+							el = el.parentNode;
+						}
+						if (!target) {
+							return;
+						}
+						if (target.classList.contains(cls)) {
+							target.classList.remove(cls);
+						} else {
+							target.classList.add(cls);
+						}
+					}
+				}
+			}
+		});
+		// textarea уже вынесена из label, контейнер Jodit вставлен сразу вне
+		// label — переносить его после make нельзя (перезагрузка iframe)
+		// data-theme внутрь content-iframe для стилей контента по теме
+		wJoditApplyTheme();
 	});
 };
 var readyListsItemFilesInit = function () {

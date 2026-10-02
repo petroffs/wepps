@@ -1,0 +1,123 @@
+/* ===== Настройки визуального редактора Jodit (UI админки) =====
+   Отдельный файл: подключается ПОСЛЕ jodit.min.css (см. Lists.php),
+   поэтому правила перебивают нативные стили Jodit и по специфичности,
+   и по порядку загрузки.
+   НЕ путать с /packages/vendor_local/jodit_wepps/styles.css — тот
+   подключается внутрь content-iframe (iframeCSSLinks в ListsItem.js)
+   и описывает стили КОНТЕНТА, а не интерфейс редактора. */
+
+/* UI-шрифт редактора — шрифт проекта (грузится после jodit.min.css;
+   специфичность 0-3-0 перебивает правила Jodit вида .jodit .jodit-input) */
+.jodit.jodit-container *:not(.jodit-source__mirror),
+.jodit.jodit-dialog *:not(.jodit-source__mirror),
+.jodit.jodit-popup *:not(.jodit-source__mirror),
+.jodit.jodit-container,
+.jodit.jodit-dialog,
+.jodit.jodit-popup {
+        font-family: var(--font);
+}
+
+/* Контейнер выносится из label на уровень .field — занимает всю ширину.
+   Рамка и скругления как у полей w_input/w_area (border 3px color-85,
+   radius s2) вместо дефолтных 1px/#dadada/3px у Jodit.
+   overflow: hidden — внутренний тулбар/статус-бар со своим радиусом 3px
+   не вылезают за скруглённые углы (попапы/диалоги Jodit вешаются на body
+   и не обрезаются) */
+form.list-data .item .field > .jodit-container {
+        width: 100%;
+        box-sizing: border-box;
+        border: var(--s-half) solid var(--color-85);
+        border-radius: var(--s2);
+        overflow: hidden;
+        outline: none;
+}
+
+/* Фокус — как у обычных полей формы: подсветка цветом кнопки */
+form.list-data .item .field > .jodit-container:focus-within {
+        border-color: var(--color-button);
+}
+
+/* ===== Тёмная тема: чёрный фон системы вместо серого Jodit =====
+   Нативные #575757 (контейнер/холст), #5f5c5c (тулбар/статус-бар),
+   #787878 (наведение/попапы) заменяем на палитру админки:
+   --color-100 (#0c0c0c) — фон, --color-98 (#181818) — панели,
+   --color-95 (#292929) — наведение, --color-85 (#333) — границы. */
+
+/* Контейнер и холст (iframe с контентом); border-color — на случай
+   fullsize, где контейнер переносится в body и вне rules формы */
+.jodit_theme_dark.jodit-container,
+.jodit_theme_dark.jodit-container .jodit-workplace,
+.jodit_theme_dark .jodit-wysiwyg,
+.jodit_theme_dark .jodit-wysiwyg_iframe {
+        background-color: var(--color-100);
+}
+
+.jodit_theme_dark.jodit-container {
+        border-color: var(--color-85);
+}
+
+/* Тулбар и статус-бар — панели на тон светлее холста */
+.jodit_theme_dark.jodit-container .jodit-toolbar__box:not(:empty),
+.jodit_theme_dark.jodit-container .jodit-workplace+.jodit-status-bar:not(:empty),
+.jodit_theme_dark .jodit-status-bar {
+        background-color: var(--color-98);
+        border-color: var(--color-85);
+        color: var(--color-primary);
+}
+
+/* Наведение на кнопки тулбара/форм */
+.jodit_theme_dark.jodit-container .jodit-toolbar-button:hover:not([disabled]),
+.jodit_theme_dark.jodit-container .jodit-toolbar-button__button:hover:not([disabled]),
+.jodit_theme_dark.jodit-container .jodit-toolbar-button__trigger:hover:not([disabled]),
+.jodit_theme_dark .jodit-ui-button:hover:not([disabled]),
+.jodit_theme_dark .jodit-ui-button__button:hover:not([disabled]),
+.jodit_theme_dark .jodit-ui-button__trigger:hover:not([disabled]) {
+        background-color: var(--color-95);
+}
+
+/* Выпадающие меню и диалоги */
+.jodit_theme_dark .jodit-popup__content {
+        background: var(--color-98);
+}
+
+.jodit_theme_dark.jodit-dialog {
+        background-color: var(--color-98);
+}
+
+.jodit_theme_dark.jodit-dialog .jodit-dialog__header {
+        border-color: var(--color-85);
+}
+
+/* Поля ввода и кнопки внутри диалогов/попапов (#787878 и rgba-серые) */
+.jodit_theme_dark .jodit-form input[type="text"],
+.jodit_theme_dark .jodit-form input[type="url"],
+.jodit_theme_dark .jodit-form textarea,
+.jodit_theme_dark .jodit-input,
+.jodit_theme_dark .jodit-select {
+        background-color: var(--color-100);
+        border-color: var(--color-85);
+        color: var(--color-primary);
+}
+
+.jodit_theme_dark .jodit-form button {
+        background-color: var(--color-95);
+        color: var(--color-primary);
+}
+
+/* Страховка: если контейнер всё же оказался внутри label.w_label,
+   сбиваем конфликтующие стили формы (transition: all на всём,
+   letter-spacing) */
+form.list-data label.w_label .jodit-container,
+form.list-data label.w_label .jodit-container * {
+        transition: none;
+        letter-spacing: normal;
+}
+
+form.list-data label.w_label .jodit-source__mirror {
+        font-family: Monaco, Menlo, Consolas, monospace;
+        font-size: var(--font-small);
+        min-height: 150px;
+        max-height: none;
+        overflow: auto;
+        resize: vertical;
+}

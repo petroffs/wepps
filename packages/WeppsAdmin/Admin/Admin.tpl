@@ -11,7 +11,7 @@
 	{$headers.cssjs}
 </head>
 
-<body>
+<body data-headers-rand="{$headersrand}">
 	<div class="page header w_flex w_flex_col">
 		<div class="page2">
 			<div class="nav w_flex w_flex_row">

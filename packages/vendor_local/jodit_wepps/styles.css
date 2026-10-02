@@ -1,0 +1,68 @@
+html body {
+	font-family: var(--font, 'Roboto', sans-serif);
+	/* iframeStyle задаёт body{font-size:13px} — перебиваем базовым размером проекта */
+	font-size: 16px;
+	/* Цвет темы: #333 в light, #f2f2f2 в dark ([data-theme="dark"] переопределяет
+	   --color-primary в Settings.css) — как у текста полей формы админки */
+	color: var(--color-primary, #333333);
+}
+
+/* Светлые плашки/кнопки остаются светлыми — текст в них тёмный.
+   Здесь именно литерал: переменная --color-20 в теме dark тоже инвертируется
+   (#cccccc) и сделала бы светлый текст на светлой плашке */
+html[data-theme="dark"] p.mkcite,
+html[data-theme="dark"] p.mkcite1,
+html[data-theme="dark"] p.style1text,
+html[data-theme="dark"] p.style2cite,
+html[data-theme="dark"] p.video,
+html[data-theme="dark"] a.hrefbutton {
+	color: #333333;
+}
+
+p.mkcite {
+	background: #f1f1f1;
+	padding: 10px
+}
+
+p.mkcite1 {
+	background: #ffffdc;
+	padding: 10px;
+	font-weight: bold
+}
+
+p.style1header {
+	font-weight: bold;
+	color: #0880c6
+}
+
+p.style1text {
+	color: #888888;
+	background: #eaeaea;
+	border: 1px solid #dad9d9;
+	padding: 10px;
+	border-radius: 5px
+}
+
+p.style2cite {
+	background: #f0f0f0;
+	padding: 10px 10px 10px 100px;
+	font-style: italic;
+	font-size: 14px
+}
+
+p.video {
+	background: tomato;
+	padding: 10px;
+}
+
+p.video iframe {
+	max-width: 100%;
+	width: 100%;
+	min-width: 100%;
+}
+
+a.hrefbutton {
+	display: inline-block;
+	background: silver;
+	border-radius: 5px;
+}

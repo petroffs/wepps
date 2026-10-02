@@ -233,9 +233,12 @@ class Lists
 		 * Настройки шаблона
 		 */
 		$headers->js("/packages/vendor/components/jqueryui/ui/i18n/datepicker-ru.js");
-		$headers->js("/packages/vendor/tinymce/tinymce/tinymce.min.js");
+		$headers->css("/packages/vendor/xdan/jodit/build/jodit.min.css");
+		$headers->js("/packages/vendor/xdan/jodit/build/jodit.min.js");
 		$headers->css("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.css");
 		$headers->css("/packages/WeppsAdmin/Lists/ListsItem.{$headers::$rand}.css");
+		// Настройки UI редактора — после jodit.min.css (перебивает его правила)
+		$headers->css("/packages/WeppsAdmin/Lists/ListsItemJodit.{$headers::$rand}.css");
 		$headers->js("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.js");
 		$headers->js("/packages/WeppsAdmin/Lists/ListsItem.{$headers::$rand}.js");
 

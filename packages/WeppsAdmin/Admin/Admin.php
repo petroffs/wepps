@@ -80,6 +80,7 @@ class Admin {
 		$smarty = Smarty::getSmarty();
 		$smarty->assign('navtop',$this->nav);
 		$smarty->assign('contenttop',$navItem);
+		$smarty->assign('headersrand',$headers::$rand);
 		//$smarty->assign('navTpl',$smarty->fetch( __DIR__ . '/AdminNav.tpl'));
 		
 		if (Connect::$projectServices['wepps']['multilang']==1) {

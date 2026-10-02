@@ -49,14 +49,6 @@ form.list-data .item .field .w_area textarea {
 	scrollbar-width: thin;
 }
 
-form.list-data .item .field .w_area textarea::-webkit-scrollbar {
-	width: thin;
-}
-
-form.list-data .item .field .descr {
-	font-weight: 300;
-}
-
 form.list-data .item .field .list-item-int {
 	max-width: 250px;
 }
