@@ -1,5 +1,7 @@
 <?php
 namespace WeppsCore;
+
+use WeppsAdmin\Lists\Lists;
 /**
  * Класс Language
  *
@@ -92,37 +94,172 @@ class Language
 			return $data;
 		}
 		$res = Utils::array($data);
-		$resKeys = implode(",", array_keys($res));
-		if ($resKeys == "") {
+		$baseIds = array_keys($res);
+		if (empty($baseIds)) {
 			return $data;
 		}
-		$sql = "select * from {$scheme['TableId'][0]['TableName']} where TableId in ({$resKeys}) and LanguageId=? and IsHidden=0";
-		$res2 = Connect::$instance->fetch($sql, [(int)@$lang['id']]);
-		if (count($res2) == 0)
+		$resKeys = implode(',', $baseIds);
+		$tableName = $scheme['TableId'][0]['TableName'] ?? '';
+		if ($tableName == '') {
 			return $data;
-		$resParall = Utils::array($res2, 'TableId');
-		$resParall2 = [];
-		foreach ($res as $key => $value) {
-			if (!empty($resParall[$key]['Id'])) {
-				$resParall2[$key] = $resParall[$key];
-				foreach ($value as $k => $v) {
-					$resParall2[$key][$k] = (!isset($resParall[$key][$k]) || $resParall[$key][$k] == '') ? $v : $resParall[$key][$k];
-				}
-				$resParall2[$key]['Id'] = $value['Id'];
-				if (isset($value['Template']))
-					$resParall2[$key]['Template'] = $value['Template'];
-				if (isset($value['NGroup']))
-					$resParall2[$key]['NGroup'] = $value['NGroup'];
-				if (isset($value['ParentId']))
-					$resParall2[$key]['ParentId'] = $value['ParentId'];
-				if (isset($value['Alias']))
-					$resParall2[$key]['Alias'] = $value['Alias'];
-				if (isset($value['Url']))
-					$resParall2[$key]['Url'] = $value['Url'];
-			} else {
-				$resParall2[$key] = $value;
+		}
+
+		$fileFields = [];
+		foreach ($scheme as $fieldName => $fieldRows) {
+			if (!is_array($fieldRows) || empty($fieldRows)) {
+				continue;
+			}
+			$fieldConfig = reset($fieldRows);
+			if (!is_array($fieldConfig) || empty($fieldConfig['Type'])) {
+				continue;
+			}
+			if (strtolower(explode('::', $fieldConfig['Type'], 2)[0]) === 'file') {
+				$fileFields[$fieldName] = true;
 			}
 		}
-		return array_merge($resParall2);
+		$currentLangId = (int) (@$lang['id'] ?? 0);
+		$defaultLangId = (int) (@$lang['defaultId'] ?? 0);
+		$res2 = Connect::$instance->fetch(
+			"select * from {$tableName} where TableId in ({$resKeys}) and LanguageId='{$currentLangId}' and IsHidden=0"
+		);
+		if (empty($res2)) {
+			return $data;
+		}
+		$rowIdsForFiles = $baseIds;
+		foreach ($res2 as $rowValue) {
+			if (!empty($rowValue['Id'])) {
+				$rowIdsForFiles[] = (int) $rowValue['Id'];
+			}
+		}
+		$defaultRowsByTableId = [];
+		if ($defaultLangId > 0 && $defaultLangId != $currentLangId) {
+			foreach (Connect::$instance->fetch(
+				"select * from {$tableName} where TableId in ({$resKeys}) and LanguageId='{$defaultLangId}' and IsHidden=0"
+			) as $defaultRow) {
+				if (!empty($defaultRow['Id'])) {
+					$rowIdsForFiles[] = (int) $defaultRow['Id'];
+					$defaultRowsByTableId[(int) $defaultRow['TableId']] = $defaultRow;
+				}
+			}
+		}
+		//UtilsWepps::debug($tableName);
+		// if ($tableName=='Sliders') {
+		// 	UtilsWepps::debug($resFiles,21);
+		// }
+		$filesByRowId = [];
+		if (!empty($fileFields)) {
+			$rowIdsForFiles = array_values(array_unique(array_map('intval', $rowIdsForFiles)));
+			$fileIds = implode(',', $rowIdsForFiles);
+			$resFiles = Connect::$instance->fetch(
+				"select TableNameId, TableNameField, FileUrl from s_Files where TableName = ? and TableNameId in ({$fileIds}) order by Priority",
+				[$tableName],
+				'group'
+			);
+
+			foreach ($resFiles as $rowId => $rowFiles) {
+				$rowId = (int) $rowId;
+				if ($rowId <= 0) {
+					continue;
+				}
+				foreach ($rowFiles as $fileValue) {
+					$fieldName = $fileValue['TableNameField'] ?? '';
+					if ($fieldName === '') {
+						continue;
+					}
+					$filesByRowId[$rowId][$fieldName][] = $fileValue;
+				}
+			}
+		}
+
+		$fileFieldNames = array_keys($fileFields);
+		$resParall = Utils::array($res2, 'TableId');
+		$out = [];
+		foreach ($res as $baseId => $value) {
+			$translated = $resParall[$baseId] ?? null;
+			if (empty($translated['Id'])) {
+				$out[] = $value;
+				continue;
+			}
+			$row = $translated;
+			foreach ($value as $k => $v) {
+				if (empty($row[$k]) || $row[$k] == '0.00') {
+					$row[$k] = $v;
+				}
+			}
+			foreach (['Id', 'Template', 'NGroup', 'ParentDir', 'Alias', 'Url'] as $keepKey) {
+				if (isset($value[$keepKey])) {
+					$row[$keepKey] = $value[$keepKey];
+				}
+			}
+			$currentRowId = (int) $translated['Id'];
+			$baseRowId = (int) $baseId;
+			$defaultRowId = (int) ($defaultRowsByTableId[$baseId]['Id'] ?? 0);
+			$candidates = array_values(array_unique([$currentRowId, $baseRowId, $defaultRowId]));
+			$rowFiles = [];
+			foreach ($fileFieldNames as $fieldName) {
+				$filesForCurrent = [];
+				foreach ($candidates as $rowId) {
+					if ($rowId <= 0) {
+						continue;
+					}
+					$filesForCurrent = $filesByRowId[$rowId][$fieldName] ?? [];
+					if (!empty($filesForCurrent)) {
+						break;
+					}
+				}
+				if (empty($filesForCurrent)) {
+					continue;
+				}
+				$rowFiles = array_merge($rowFiles, $filesForCurrent);
+				$urls = [];
+				foreach ($filesForCurrent as $file) {
+					if (!empty($file['FileUrl'])) {
+						$urls[] = $file['FileUrl'];
+					}
+				}
+				if (!empty($urls)) {
+					$row[$fieldName . '_FileUrl'] = implode(':::', $urls);
+				}
+			}
+			if (!empty($rowFiles)) {
+				$row['Files'] = $rowFiles;
+				$row['files'] = $rowFiles;
+			}
+			$out[] = $row;
+		}
+		return $out;
+	}
+	public static function copyListItemLang($list = "", $id = 0, $path = "lists", $lang = 0)
+	{
+		$sql = "select * from $list where Id=?";
+		$res2 = Connect::$instance->fetch($sql, [$id]);
+
+		if (!empty($res2[0]['TableId'])) {
+			$id = $res2[0]['TableId'];
+		}
+
+		if ($lang == 1) {
+			$lang = 0;
+			$condition = "TableId=0 and Id=? and LanguageId=?";
+		} else {
+			$condition = "TableId=? and LanguageId=?";
+		}
+		$sql = "select * from {$list} where $condition";
+		$res = Connect::$instance->fetch($sql, [$id, $lang]);
+		if (!empty($res[0]['Id'])) {
+			$href = "'/_wepps/lists/{$list}/{$res[0]['Id']}/'";
+			if ($path == 'navigator') {
+				$href = "'/_wepps/navigator/{$res[0]['Url']}/'";
+			}
+			$js = "
+						<script>
+						location.href={$href};
+						</script>
+					";
+			return [
+				'html' => $js
+			];
+		}
+		return Lists::copyListItem($list, $id, $path, $lang);
 	}
 }

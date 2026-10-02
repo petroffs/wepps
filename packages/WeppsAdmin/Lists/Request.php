@@ -3,6 +3,7 @@ require_once '../../../configloader.php';
 
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use WeppsAdmin\Lists\Lists;
+use WeppsCore\Language;
 use WeppsCore\Request;
 use WeppsCore\Exception;
 use WeppsCore\Connect;
@@ -264,6 +265,13 @@ class RequestLists extends Request
 					Exception::error404();
 				}
 				$outer = Lists::copyListItem($this->get['list'], $this->get['id'], $this->get['w_path']);
+				echo $outer['html'];
+				break;
+			case "copylang":
+				if (!isset($this->get['id']) || !isset($this->get['list'])) {
+					Exception::error404();
+				}
+				$outer = Language::copyListItemLang($this->get['list'],$this->get['id'],$this->get['w_path'],$this->get['langId']);
 				echo $outer['html'];
 				break;
 			case "propOptionAdd":

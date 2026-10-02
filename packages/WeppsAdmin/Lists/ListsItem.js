@@ -95,11 +95,32 @@ var readyListsItemInit = function () {
 		var dest = $(this).closest('.item').find('input').eq(0);
 		if (dest.val() == '') dest.val(urlRusLat(source.val()));
 	});
+	
+	// $('form.list-data').find('select[name="list-item-language"]').off('select2:select');
+	// $('form.list-data').find('select[name="list-item-language"]').on('select2:select', function (event) {
+	// 	$(this).trigger('change');
+	// 	console.log($(this).val())
+	// });
+
 	$('form.list-data').find('select[name="list-item-language"]').off('select2:select');
-	$('form.list-data').find('select[name="list-item-language"]').on('select2:select', function (event) {
+	$('form.list-data').find('select[name="list-item-language"]').on('select2:select',function(event) {
 		$(this).trigger('change');
-		console.log($(this).val())
+		let langId = $(this).val();
+		let element = $(this).closest('form');
+		let tableName = element.find('input[name="w_tablename"]').val();  
+		let tableNameId = element.find('input[name="w_tablename_id"]').val();
+		let path = element.find('input[name="w_path"]').eq(0).val();
+		let str = 'action=copylang&list='+tableName+'&id='+tableNameId+'&langId='+langId+'&w_path='+path;
+		let settings = {
+			data:str,
+			url:'/packages/WeppsAdmin/Lists/Request.php'
+		}
+		layoutWepps.request(settings);
 	});
+
+
+	
+
 	$('form.list-data').find('.list-item-date').find('input').datepicker({
 		dateFormat: "yy-mm-dd"
 	}, $.datepicker.regional["ru"]);

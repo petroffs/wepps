@@ -292,7 +292,7 @@ class CartUtils
 			from $sql x
 			left join ProductsVariations pv on x.id=pv.ProductsId and x.idv = pv.Id
 			join Products p on p.Id = x.id
-			join s_Navigator n on n.Id=p.NavigatorId
+			join s_Navigator n on n.Id=p.NavigatorId and n.TableId=0
 			left join s_Files f on f.TableNameId = p.Id and f.TableName = 'Products' and f.TableNameField = 'Images'
 			group by x.idv";
 		$this->summary['items'] = Connect::$instance->fetch($sql);

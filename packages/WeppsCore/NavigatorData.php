@@ -119,7 +119,7 @@ class NavigatorData extends Data
 		$this->setParams([]);
 		if ($parent == 1) {
 			$sql = "select if(ParentId=0,1,ParentId) as ParentId,Id,Name,NameMenu,Url,NGroup,IsHidden 
-                    from s_Navigator
+                    from s_Navigator where TableId=0
                     order by ParentId,Priority";
 			$res = Connect::$instance->fetch($sql, array(), "group");
 		}

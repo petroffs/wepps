@@ -20,7 +20,7 @@
 		<label class="w_label w_select list-item-language">
 			<select name="list-item-language" data-minimum-results-for-search="Infinity">
 				{foreach name="out" item="item" from=$language}
-				<option value="{$item.Id}">{$item.Name}</option>
+				<option value="{$item.Id}" {if $element.LanguageId==$item.Id}selected="selected"{/if}>{$item.Name}</option>
 				{/foreach}
 			</select>
 		</label>

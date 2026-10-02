@@ -66,6 +66,7 @@ font-family: 'bootstrap-icons';
 
 label.w_label.w_select.list-item-language {
 	margin-left: auto;
+	display: inline-block;
 }
 
 .controls-area-form {

@@ -151,23 +151,23 @@ class Utils
 	/**
 	 * Установка массиву ключей по произвольному полю
 	 *
-	 * @param array $value Входной массив
+	 * @param array $array Входной массив
 	 * @param string $index Поле, которое будет использоваться в качестве ключа
 	 * @param string $output Поле, которое будет использоваться в качестве значения (опционально)
 	 * @return array Массив с ключами, установленными по указанному полю
 	 */
-	public static function array(array $value, string $index = 'Id', string $output = ''): array
+	public static function array(array $array, string $index = 'Id', string $output = ''): array
 	{
 		$arr = [];
-		if (!is_array($value))
+		if (!is_array($array))
 			return [];
 
 		if ($output == '') {
-			foreach ($value as $v) {
+			foreach ($array as $v) {
 				$arr[$v[$index]] = $v;
 			}
 		} else {
-			foreach ($value as $v) {
+			foreach ($array as $v) {
 				$arr[$v[$index]] = $v[$output];
 			}
 		}

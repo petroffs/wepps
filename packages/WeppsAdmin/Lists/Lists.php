@@ -873,7 +873,7 @@ class Lists
 		#$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','GUID',6,0,'guid','','','FieldIntegration');\n";
 		return $sql;
 	}
-	public static function copyListItem($list = "", $id = 0, $path = "lists")
+	public static function copyListItem($list = "", $id = 0, $path = "lists", $lang = 0)
 	{
 		if ($list == "" || (int) $id == 0) {
 			return array('status' => '0', 'output' => "");
@@ -889,10 +889,11 @@ class Lists
 			if (isset($source['GUID'])) {
 				$source['GUID'] = "";
 			}
-			/*
-			 * Копирование элемента
-			 * $newId = 5; - для тестирования
-			 */
+			if ($lang>1) {
+				$source['LanguageId'] = $lang;
+				$source['TableId'] = $source['Id'];
+			}
+
 			unset($source['Id']);
 			$newId = $obj->add($source);
 
