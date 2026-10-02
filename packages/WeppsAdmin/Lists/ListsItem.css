@@ -125,6 +125,7 @@ form.list-data .item .field .fileadd a.file-remove {
 form.list-data .item .field .properties {
 	padding: var(--s4);
 	margin: var(--s2) 0;
+	border-radius: var(--s2);
 }
 
 form.list-data .item .field .properties .title2 {
