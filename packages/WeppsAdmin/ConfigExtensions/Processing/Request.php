@@ -5,6 +5,7 @@ use WeppsAdmin\Admin\AdminUtils;
 use WeppsAdmin\ConfigExtensions\Processing\ProcessingProducts;
 use WeppsAdmin\ConfigExtensions\Processing\ProcessingRestApi;
 use WeppsAdmin\ConfigExtensions\Processing\ProcessingTasks;
+use WeppsAdmin\ConfigExtensions\Processing\RestApiDocs;
 use WeppsCore\Request;
 use WeppsCore\Utils;
 use WeppsCore\Exception;
@@ -70,6 +71,10 @@ class RequestProcessing extends Request
 					$obj = new ProcessingRestApi();
 					$obj->addTests();
 					break;
+				case 'restapdocs':
+					$files = (new RestApiDocs())->generate();
+					$message = '✅ Создано файлов: ' . count($files) . ' в .docs/restapi (auth, cclient, m2m — HTML + Markdown)';
+					break;
 				default:
 					Utils::debug('def1', 1);
 					Exception::error404();
@@ -79,7 +84,7 @@ class RequestProcessing extends Request
 			AdminUtils::modal('❌ Ошибка: ' . $e->getMessage(), $this->cli);
 			return;
 		}
-		AdminUtils::modal('✅ Обработка завершена', $this->cli);
+		AdminUtils::modal($message ?? '✅ Обработка завершена', $this->cli);
 	}
 }
 $request = new RequestProcessing(!empty($argv) ? $argv : $_REQUEST);
