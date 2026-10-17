@@ -54,6 +54,10 @@ class RequestProcessing extends Request
 					$obj = new BotSystem();
 					$obj->clearCache();
 					break;
+				case 'clearminify':
+					$obj = new ProcessingTasks();
+					$obj->clearMinify();
+					break;
 				case 'mappingtypes':
 					$obj = new ProcessingRestApi();
 					$obj->mappingTypes();

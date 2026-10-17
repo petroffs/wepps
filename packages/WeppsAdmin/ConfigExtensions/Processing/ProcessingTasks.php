@@ -56,6 +56,24 @@ class ProcessingTasks
 		}
 		echo "\n$i files deleted\n";
 	}
+	public function clearMinify(): void
+	{
+		$dir = $this->root . '/files/tpl/minify/';
+		if (!is_dir($dir)) {
+			echo "no minify dir\n";
+			return;
+		}
+		$i = 0;
+		foreach (scandir($dir) as $file) {
+			if ($file === '.' || $file === '..') {
+				continue;
+			}
+			if (is_file($dir . $file) && unlink($dir . $file)) {
+				$i++;
+			}
+		}
+		echo "\n$i files deleted\n";
+	}
 	private function findFiles($dirs, $exclude = ['.htaccess']): array
 	{
 		$files = [];
