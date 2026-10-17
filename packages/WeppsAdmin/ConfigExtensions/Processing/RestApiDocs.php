@@ -41,12 +41,10 @@ class RestApiDocs
 	 * Человекочитаемые названия версий API (для тегов).
 	 */
 	private const VERSION_TAGS = [
-		'v1' => 'ClientAPP (v1)',
+		'v1' => 'ClientAPP',
 		'm2m' => 'M2M',
 		'wepps' => 'Wepps Admin',
 	];
-
-	private string $baseUrl = '';
 
 	private string $generatedAt = '';
 
@@ -59,7 +57,6 @@ class RestApiDocs
 	public function generate(): array
 	{
 		$config = RestConfig::getConfig();
-		$this->baseUrl = $this->detectBaseUrl();
 		$this->generatedAt = date('Y-m-d H:i');
 
 		$dir = $this->docsDir();
@@ -86,10 +83,10 @@ class RestApiDocs
 	private function docs(): array
 	{
 		$authIntro = <<<MD
-Платформа Wepps предоставляет три типа REST API. Токены всех типов — JWT (`typ=auth`)
+Авторизация REST API едина для всех типов. Токены — JWT (`typ=auth`)
 и передаются в заголовке `Authorization: Bearer <token>`.
 
-### 1. ClientAPP (v1) — клиентское API
+### 1. ClientAPP (/rest/v1) — клиентское API
 
 Используется клиентскими приложениями (витриной, мобильным приложением). Токены
 выдаются по логину и паролю:
@@ -107,21 +104,11 @@ Content-Type: application/json
 - подтверждение входа (двухфакторный режим `CONFIRM_AUTH`) — `POST /rest/v1/auth.confirm`;
 - выход из сессии — `POST /rest/v1/auth.logout`.
 
-### 2. M2M — машинное взаимодействие
+### 2. M2M (/rest/m2m) — машинное взаимодействие
 
 M2M-эндпоинты (`/rest/m2m/*`) **не имеют собственного эндпоинта авторизации**:
 используется тот же `access_token`, что и в ClientAPP, полученный учётной записью
 с правами `UserPermissions = 1` (это проверяется на каждом M2M-эндпоинте).
-Ниже в разделе M2M приведён пример защищённого эндпоинта.
-
-### 3. Wepps (админка)
-
-```http
-GET /rest/wepps/token?login=admin@wepps.loc&password=secret
-```
-
-Ответ: `{"token": "...", "exp": 1760000000}` — срок жизни ~24 часа (86 200 с).
-Пользователь должен иметь `ShowAdmin = 1`.
 MD;
 
 		$clientappIntro = <<<MD
@@ -154,17 +141,10 @@ MD;
 			'auth' => [
 				'title' => 'Wepps REST API — Авторизация',
 				'description' => $authIntro,
-				'versions' => ['v1', 'm2m', 'wepps'],
+				'versions' => ['v1'],
 				'tagBy' => 'version',
 				'filter' => function (string $version, string $name): bool {
-					if ($version === 'v1') {
-						return in_array($name, self::AUTH_ENDPOINTS, true);
-					}
-					if ($version === 'wepps') {
-						return $name === 'token';
-					}
-					// Пример защищённого M2M-эндпоинта (у самого M2M эндпоинта авторизации нет)
-					return $version === 'm2m' && $name === 'users';
+					return in_array($name, self::AUTH_ENDPOINTS, true);
 				},
 			],
 			'clientapp' => [
@@ -243,17 +223,22 @@ MD;
 			$tags[$tag] = ['name' => $tag];
 
 			$path = '/rest/' . $version . '/' . $name;
-			$paths[$path][strtoupper($method)] = $this->buildOperation($tag, $cfg, $version, $method, $name);
+			$paths[$path][strtolower($method)] = $this->buildOperation($tag, $cfg, $version, $method, $name);
 		}
+
+		// В HTML-версии ссылки вводных текстов ведут на HTML-документы, в Markdown — на .md
+		$description = str_replace('[auth.md](./auth.md)', '[auth.html](./auth.html)', $doc['description']);
+		$description .= "\n\n---\n_Сгенерировано: " . $this->generatedAt . '_';
 
 		return [
 			'openapi' => '3.1.0',
 			'info' => [
 				'title' => $doc['title'],
 				'version' => '1.0.0',
-				'description' => $doc['description'] . "\n\n---\n_Сгенерировано: " . $this->generatedAt . '_',
+				'description' => $description,
 			],
-			'servers' => [['url' => $this->baseUrl]],
+			// Без зашитого домена: при открытии по http/https JS подставит текущий origin
+			'servers' => [['url' => '/']],
 			'tags' => array_values($tags),
 			'paths' => $paths,
 			'components' => [
@@ -262,8 +247,7 @@ MD;
 						'type' => 'http',
 						'scheme' => 'bearer',
 						'bearerFormat' => 'JWT',
-						'description' => 'JWT access_token (typ=auth), полученный через POST /rest/v1/auth.login '
-							. 'или GET /rest/wepps/token',
+						'description' => 'JWT access_token (typ=auth), полученный через POST /rest/v1/auth.login',
 					],
 				],
 				'schemas' => [
@@ -672,8 +656,13 @@ body { margin: 0; background: #fafafa; }
 <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
 <script>
 window.onload = function () {
+	var spec = JSON.parse(document.getElementById('openapi-spec').textContent);
+	// Домен при открытии по http/https — текущий, а не зашитый при генерации
+	if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+		spec.servers = [{ url: window.location.origin }];
+	}
 	window.ui = SwaggerUIBundle({
-		spec: JSON.parse(document.getElementById('openapi-spec').textContent),
+		spec: spec,
 		dom_id: '#swagger-ui',
 		deepLinking: true,
 		docExpansion: 'list',
@@ -704,7 +693,8 @@ HTML;
 		$out = [];
 		$out[] = '# ' . $doc['title'];
 		$out[] = '';
-		$out[] = '- **Базовый URL:** `' . $this->baseUrl . '`';
+		$out[] = '- **Базовый URL:** `/rest/...` — относительно текущего домена сайта '
+			. '(в HTML-версии домен определяется автоматически при открытии)';
 		$out[] = '- **Сгенерировано:** ' . $this->generatedAt;
 		$out[] = '- **Обёртка ответа:** `{"status": 200, "message": "OK", "data": ...}`';
 		$out[] = '- **HTML-версия (Swagger UI):** [`' . $key . '.html`](./' . $key . '.html)';
@@ -910,19 +900,6 @@ HTML;
 			throw new \RuntimeException('Не удалось создать папку: ' . $dir);
 		}
 		return $dir;
-	}
-
-	/**
-	 * Базовый URL проекта (protocol + host из config.php).
-	 */
-	private function detectBaseUrl(): string
-	{
-		$protocol = rtrim((string) (Connect::$projectDev['protocol'] ?? 'https://'), ':/');
-		$host = (string) (Connect::$projectDev['host'] ?? '');
-		if ($host === '') {
-			$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-		}
-		return ($protocol !== '' ? $protocol : 'https') . '://' . $host;
 	}
 
 	/**

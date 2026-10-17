@@ -1,14 +1,14 @@
 # Wepps REST API — Авторизация
 
-- **Базовый URL:** `https://platform.wepps`
-- **Сгенерировано:** 2026-10-17 23:58
+- **Базовый URL:** `/rest/...` — относительно текущего домена сайта (в HTML-версии домен определяется автоматически при открытии)
+- **Сгенерировано:** 2026-10-18 01:12
 - **Обёртка ответа:** `{"status": 200, "message": "OK", "data": ...}`
 - **HTML-версия (Swagger UI):** [`auth.html`](./auth.html)
 
-Платформа Wepps предоставляет три типа REST API. Токены всех типов — JWT (`typ=auth`)
+Авторизация REST API едина для всех типов. Токены — JWT (`typ=auth`)
 и передаются в заголовке `Authorization: Bearer <token>`.
 
-### 1. ClientAPP (v1) — клиентское API
+### 1. ClientAPP (/rest/v1) — клиентское API
 
 Используется клиентскими приложениями (витриной, мобильным приложением). Токены
 выдаются по логину и паролю:
@@ -26,21 +26,11 @@ Content-Type: application/json
 - подтверждение входа (двухфакторный режим `CONFIRM_AUTH`) — `POST /rest/v1/auth.confirm`;
 - выход из сессии — `POST /rest/v1/auth.logout`.
 
-### 2. M2M — машинное взаимодействие
+### 2. M2M (/rest/m2m) — машинное взаимодействие
 
 M2M-эндпоинты (`/rest/m2m/*`) **не имеют собственного эндпоинта авторизации**:
 используется тот же `access_token`, что и в ClientAPP, полученный учётной записью
 с правами `UserPermissions = 1` (это проверяется на каждом M2M-эндпоинте).
-Ниже в разделе M2M приведён пример защищённого эндпоинта.
-
-### 3. Wepps (админка)
-
-```http
-GET /rest/wepps/token?login=admin@wepps.loc&password=secret
-```
-
-Ответ: `{"token": "...", "exp": 1760000000}` — срок жизни ~24 часа (86 200 с).
-Пользователь должен иметь `ShowAdmin = 1`.
 
 ## Примеры ответов
 
@@ -75,13 +65,8 @@ GET /rest/wepps/token?login=admin@wepps.loc&password=secret
 | POST | `/rest/v1/register.confirm` | не требуется | Завершение регистрации по токену из письма |
 | POST | `/rest/v1/register` | не требуется | Инициация регистрации: валидация данных и отправка письма с подтверждением |
 | POST | `/rest/v1/profile.password-reset` | не требуется | Запрос восстановления пароля: отправка ссылки сброса на email |
-| GET | `/rest/m2m/users` | `Bearer`, права: 1 | M2M: список пользователей |
-| POST | `/rest/m2m/users` | `Bearer`, права: 1 | M2M: создание пользователя |
-| PUT | `/rest/m2m/users` | `Bearer`, права: 1 | M2M: обновление пользователя по id |
-| DELETE | `/rest/m2m/users` | `Bearer`, права: 1 | M2M: удаление пользователя |
-| GET | `/rest/wepps/token` | не требуется | Аутентификация пользователя и выдача JWT-токена |
 
-## ClientAPP (v1)
+## ClientAPP
 
 ### `POST /rest/v1/auth.login`
 
@@ -234,126 +219,4 @@ GET /rest/wepps/token?login=admin@wepps.loc&password=secret
     }
 }
 ```
-
-## M2M
-
-### `GET /rest/m2m/users`
-
-M2M: список пользователей (конфигурируется через s_Config)
-
-- **Авторизация:** `Bearer`, права: 1
-
-**Query-параметры:**
-
-| Имя | Тип | Обязательный |
-|---|---|---|
-| `page` | `int2` | нет |
-| `limit` | `int2` | нет |
-
-### `POST /rest/m2m/users`
-
-M2M: создание пользователя(ей). Поддерживает одиночный объект или batch (массив, макс. 100). Возвращает 201 для одиночного или 207 для batch с per-item статусом
-
-- **Авторизация:** `Bearer`, права: 1
-
-**Тело запроса** (JSON, ключ `data`):
-
-| Поле | Тип | Обязательный |
-|---|---|---|
-| `guid` | `guid` | да |
-| `name` | `string` | да |
-| `nameFirst` | `string` | да |
-| `nameSurname` | `string` | да |
-| `namePatronymic` | `string` | нет |
-| `login` | `string` | да |
-| `email` | `string` | да |
-| `phone` | `string` | да |
-
-**Пример запроса:**
-
-```json
-{
-    "data": [
-        {
-            "guid": "a6a5a7b0-520a-fb8d-4b24-23451de424e6",
-            "name": "string",
-            "nameFirst": "string",
-            "nameSurname": "string",
-            "login": "string",
-            "email": "string",
-            "phone": "string"
-        }
-    ]
-}
-```
-
-### `PUT /rest/m2m/users`
-
-M2M: обновление пользователя по id. ID передаётся в теле JSON {"id": 123, ...}
-
-- **Авторизация:** `Bearer`, права: 1
-
-**Тело запроса** (JSON, ключ `data`):
-
-| Поле | Тип | Обязательный |
-|---|---|---|
-| `id` | `int` | да |
-| `guid` | `guid` | нет |
-| `name` | `string` | нет |
-| `nameFirst` | `string` | нет |
-| `nameSurname` | `string` | нет |
-| `namePatronymic` | `string` | нет |
-| `login` | `string` | нет |
-| `email` | `string` | нет |
-| `phone` | `string` | нет |
-
-**Пример запроса:**
-
-```json
-{
-    "data": [
-        {
-            "id": 1
-        }
-    ]
-}
-```
-
-### `DELETE /rest/m2m/users`
-
-M2M: удаление пользователя(ей) по id. Формат тела: {"data": [123, 456, ...]}
-
-- **Авторизация:** `Bearer`, права: 1
-
-**Тело запроса** (JSON, ключ `data`):
-
-| Поле | Тип | Обязательный |
-|---|---|---|
-| `data[] (массив id)` | `int` | да |
-
-**Пример запроса:**
-
-```json
-{
-    "data": [
-        1,
-        2
-    ]
-}
-```
-
-## Wepps Admin
-
-### `GET /rest/wepps/token`
-
-Аутентификация пользователя и выдача JWT-токена (для админки)
-
-- **Авторизация:** не требуется
-
-**Query-параметры:**
-
-| Имя | Тип | Обязательный |
-|---|---|---|
-| `login` | `string` | да |
-| `password` | `string` | да |
 

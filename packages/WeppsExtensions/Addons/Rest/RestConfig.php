@@ -566,16 +566,6 @@ class RestConfig
 			],
 			'wepps' => [
 				'get' => [
-					'token' => [
-						'class' => RestAd::class,
-						'method' => 'getToken',
-						'note' => 'Аутентификация пользователя и выдача JWT-токена (для админки)',
-						'log' => false,
-						'query_validation' => [
-							'login' => ['type' => 'string', 'required' => true],
-							'password' => ['type' => 'string', 'required' => true]
-						]
-					],
 					'list_items' => [
 						'class' => RestAd::class,
 						'method' => 'getListItems',

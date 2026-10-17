@@ -3,15 +3,14 @@ namespace WeppsExtensions\Addons\Rest;
 
 use WeppsCore\Connect;
 use WeppsCore\Utils;
-use WeppsExtensions\Addons\Jwt\Jwt;
-use WeppsCore\Validator;
 
 /**
  * REST обработчик для работы со списками админки.
  *
  * Вызывается динамически через Rest::executeHandler() по конфигу версии 'v0'/'ad'
- * из RestConfig.php. Предоставляет JWT-аутентификацию для админки (getToken),
- * поиск по спискам админки с пагинацией (getListItems) и тестовые эндпоинты.
+ * из RestConfig.php. Предоставляет поиск по спискам админки с пагинацией
+ * (getListItems) и тестовые эндпоинты. Авторизация — общий метод
+ * POST /rest/v1/auth.login.
  *
  * Методы получают данные через ссылки на get/post/data экземпляра Rest
  * и возвращают стандартный массив ответа ['status', 'message', 'data'].
@@ -52,54 +51,6 @@ class RestAd
 		$this->get = &$rest->getGet();
 		$this->post = &$rest->getPost();
 		$this->data = &$rest->getData();
-	}
-
-	/**
-	 * Аутентификация пользователя через GET-параметры и генерация JWT токена.
-	 *
-	 * Параметры: login (email), password. Проверяет пользователя в таблице s_Users,
-	 * при успехе выдаёт JWT-токен (typ=auth) со сроком жизни ~86200 сек (24 часа).
-	 *
-	 * @return array Ответ в формате ['status', 'message', 'data']: при успехе
-	 *               data = ['token' => JWT, 'exp' => timestamp истечения]
-	 */
-	public function getToken(): array
-	{
-		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$login = $this->get['login'] ?? '';
-		$password = $this->get['password'] ?? '';
-
-		if (empty($login) || empty($password)) {
-			return ['status' => 400, 'message' => 'Login and password are required', 'data' => null];
-		}
-
-		// Если логин является email, приводим к нижнему регистру
-		$errorMessage = 'Invalid email format';
-		$error = Validator::isEmail($login, $errorMessage);
-
-		if (!empty($error)) {
-			return ['status' => 401, 'message' => $errorMessage, 'data' => null];
-		}
-
-		$login = strtolower($login);
-
-		// Проверка в таблице s_Users
-		$res = Connect::$instance->fetch("SELECT Id, Login, Password FROM s_Users WHERE Login = ?", [$login]);
-
-		if (empty($res) || empty($res[0]) || !password_verify($password, $res[0]['Password'] ?? '')) {
-			return ['status' => 401, 'message' => 'Invalid credentials', 'data' => null];
-		}
-
-		$user = $res[0];
-		$jwt = new Jwt();
-		$lifetime = 86200;
-		$token = $jwt->token_encode([
-			'typ' => 'auth',
-			'id' => $user['Id']
-		], $lifetime);
-		$tokenData = $jwt->token_decode($token);
-
-		return ['status' => 200, 'message' => 'Login successful', 'data' => ['token' => $token, 'exp' => $tokenData['payload']['exp']]];
 	}
 
 	/**
