@@ -1,7 +1,7 @@
 # Wepps M2M REST API
 
 - **Базовый URL:** `https://platform.wepps`
-- **Сгенерировано:** 2026-10-17 23:48
+- **Сгенерировано:** 2026-10-17 23:58
 - **Обёртка ответа:** `{"status": 200, "message": "OK", "data": ...}`
 - **HTML-версия (Swagger UI):** [`m2m.html`](./m2m.html)
 

@@ -1,11 +1,11 @@
-# Wepps CClient REST API (v1)
+# Wepps ClientAPP REST API (v1)
 
 - **Базовый URL:** `https://platform.wepps`
-- **Сгенерировано:** 2026-10-17 23:48
+- **Сгенерировано:** 2026-10-17 23:58
 - **Обёртка ответа:** `{"status": 200, "message": "OK", "data": ...}`
-- **HTML-версия (Swagger UI):** [`cclient.html`](./cclient.html)
+- **HTML-версия (Swagger UI):** [`clientapp.html`](./clientapp.html)
 
-Клиентское API v1 (CClient) — эндпоинты витрины и мобильного приложения:
+Клиентское API v1 (ClientAPP) — эндпоинты витрины и мобильного приложения:
 авторизация, профиль, товары, корзина, заказы, новости, слайды.
 
 - **Авторизация:** Bearer-токен из `POST /rest/v1/auth.login` — подробности в [auth.md](./auth.md).

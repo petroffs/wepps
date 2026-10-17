@@ -91,8 +91,8 @@
 		<div class="w_flex_12 w_flex_11_view_medium">
 			<strong>Сформировать RestAPI Docs</strong><br /><br />
 			Генерирует/обновляет документацию REST API из RestConfig (OpenAPI 3.1):<br />
-			— <b>auth</b> — авторизация для 3 типов REST (CClient, M2M, Wepps);<br />
-			— <b>cclient</b> — клиентское API v1 (витрина/мобильное приложение);<br />
+			— <b>auth</b> — авторизация для 3 типов REST (ClientAPP, M2M, Wepps);<br />
+			— <b>clientapp</b> — клиентское API v1 (витрина/мобильное приложение);<br />
 			— <b>m2m</b> — машинный CRUD-доступ к таблицам.<br /><br />
 			Для каждого документа создаётся HTML (Swagger UI, кнопка «Try it out») и Markdown.<br /><br />
 			Файлы сохранятся в {$projectDev.root}/.docs/restapi/*

@@ -73,7 +73,7 @@ class RequestProcessing extends Request
 					break;
 				case 'restapdocs':
 					$files = (new RestApiDocs())->generate();
-					$message = '✅ Создано файлов: ' . count($files) . ' в .docs/restapi (auth, cclient, m2m — HTML + Markdown)';
+					$message = '✅ Создано файлов: ' . count($files) . ' в .docs/restapi (auth, clientapp, m2m — HTML + Markdown)';
 					break;
 				default:
 					Utils::debug('def1', 1);

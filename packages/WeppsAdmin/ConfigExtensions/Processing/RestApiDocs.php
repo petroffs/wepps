@@ -9,8 +9,8 @@ use WeppsExtensions\Addons\Rest\RestConfig;
  *
  * Собирает конфигурацию из RestConfig::getConfig() и формирует три документа
  * в папке .docs/restapi:
- * - auth    — авторизация для трёх типов REST (CClient, M2M, Wepps);
- * - cclient — клиентское API v1 (витрина/мобильное приложение);
+ * - auth      — авторизация для трёх типов REST (ClientAPP, M2M, Wepps);
+ * - clientapp — клиентское API v1 (витрина/мобильное приложение);
  * - m2m     — машинный CRUD-доступ к таблицам платформы.
  *
  * Каждый документ сохраняется в двух форматах:
@@ -41,7 +41,7 @@ class RestApiDocs
 	 * Человекочитаемые названия версий API (для тегов).
 	 */
 	private const VERSION_TAGS = [
-		'v1' => 'CClient (v1)',
+		'v1' => 'ClientAPP (v1)',
 		'm2m' => 'M2M',
 		'wepps' => 'Wepps Admin',
 	];
@@ -89,7 +89,7 @@ class RestApiDocs
 Платформа Wepps предоставляет три типа REST API. Токены всех типов — JWT (`typ=auth`)
 и передаются в заголовке `Authorization: Bearer <token>`.
 
-### 1. CClient (v1) — клиентское API
+### 1. ClientAPP (v1) — клиентское API
 
 Используется клиентскими приложениями (витриной, мобильным приложением). Токены
 выдаются по логину и паролю:
@@ -110,7 +110,7 @@ Content-Type: application/json
 ### 2. M2M — машинное взаимодействие
 
 M2M-эндпоинты (`/rest/m2m/*`) **не имеют собственного эндпоинта авторизации**:
-используется тот же `access_token`, что и в CClient, полученный учётной записью
+используется тот же `access_token`, что и в ClientAPP, полученный учётной записью
 с правами `UserPermissions = 1` (это проверяется на каждом M2M-эндпоинте).
 Ниже в разделе M2M приведён пример защищённого эндпоинта.
 
@@ -124,8 +124,8 @@ GET /rest/wepps/token?login=admin@wepps.loc&password=secret
 Пользователь должен иметь `ShowAdmin = 1`.
 MD;
 
-		$cclientIntro = <<<MD
-Клиентское API v1 (CClient) — эндпоинты витрины и мобильного приложения:
+		$clientappIntro = <<<MD
+Клиентское API v1 (ClientAPP) — эндпоинты витрины и мобильного приложения:
 авторизация, профиль, товары, корзина, заказы, новости, слайды.
 
 - **Авторизация:** Bearer-токен из `POST /rest/v1/auth.login` — подробности в [auth.md](./auth.md).
@@ -167,9 +167,9 @@ MD;
 					return $version === 'm2m' && $name === 'users';
 				},
 			],
-			'cclient' => [
-				'title' => 'Wepps CClient REST API (v1)',
-				'description' => $cclientIntro,
+			'clientapp' => [
+				'title' => 'Wepps ClientAPP REST API (v1)',
+				'description' => $clientappIntro,
 				'versions' => ['v1'],
 				'tagBy' => 'resource',
 				'filter' => function (string $version, string $name): bool {
@@ -695,7 +695,7 @@ HTML;
 	/**
 	 * Отрисовать Markdown-версию документа.
 	 *
-	 * @param string $key Ключ документа (auth/cclient/m2m)
+	 * @param string $key Ключ документа (auth/clientapp/m2m)
 	 * @param array $doc Определение документа
 	 * @param array $items Эндпоинты
 	 */

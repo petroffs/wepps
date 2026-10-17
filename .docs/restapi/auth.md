@@ -1,14 +1,14 @@
 # Wepps REST API — Авторизация
 
 - **Базовый URL:** `https://platform.wepps`
-- **Сгенерировано:** 2026-10-17 23:48
+- **Сгенерировано:** 2026-10-17 23:58
 - **Обёртка ответа:** `{"status": 200, "message": "OK", "data": ...}`
 - **HTML-версия (Swagger UI):** [`auth.html`](./auth.html)
 
 Платформа Wepps предоставляет три типа REST API. Токены всех типов — JWT (`typ=auth`)
 и передаются в заголовке `Authorization: Bearer <token>`.
 
-### 1. CClient (v1) — клиентское API
+### 1. ClientAPP (v1) — клиентское API
 
 Используется клиентскими приложениями (витриной, мобильным приложением). Токены
 выдаются по логину и паролю:
@@ -29,7 +29,7 @@ Content-Type: application/json
 ### 2. M2M — машинное взаимодействие
 
 M2M-эндпоинты (`/rest/m2m/*`) **не имеют собственного эндпоинта авторизации**:
-используется тот же `access_token`, что и в CClient, полученный учётной записью
+используется тот же `access_token`, что и в ClientAPP, полученный учётной записью
 с правами `UserPermissions = 1` (это проверяется на каждом M2M-эндпоинте).
 Ниже в разделе M2M приведён пример защищённого эндпоинта.
 
@@ -81,7 +81,7 @@ GET /rest/wepps/token?login=admin@wepps.loc&password=secret
 | DELETE | `/rest/m2m/users` | `Bearer`, права: 1 | M2M: удаление пользователя |
 | GET | `/rest/wepps/token` | не требуется | Аутентификация пользователя и выдача JWT-токена |
 
-## CClient (v1)
+## ClientAPP (v1)
 
 ### `POST /rest/v1/auth.login`
 
