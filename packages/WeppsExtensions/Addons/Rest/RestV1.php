@@ -420,7 +420,12 @@ class RestV1
 	/**
 	 * GET v1/profile.settings — настройки пользователя.
 	 *
-	 * Возвращает данные из JSettings с подстановкой значений по умолчанию.
+	 * Возвращает данные настроек с подстановкой значений по умолчанию.
+	 *
+	 * Хранение: JData['settings'] колонки s_Users.JData.
+	 * Колонки s_Users.JSettings в канонической схеме нет
+	 * (см. Backup/files/wepps.platform.release.sql) — сюда переехали
+	 * настройки из-под отсутствующей колонки; форма ответа не изменилась.
 	 *
 	 * @return array Ответ в формате ['status', 'message', 'data']
 	 */
@@ -428,7 +433,7 @@ class RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		$saved = json_decode($user['JSettings'] ?? '', true) ?? [];
+		$saved = $this->getUserSettings($user);
 
 		$defaults = [
 			'theme'                   => 'auto',
@@ -443,6 +448,7 @@ class RestV1
 	 * PUT v1/profile.settings — обновление настроек пользователя.
 	 *
 	 * Принимает частичное обновление — только переданные ключи перезаписываются.
+	 * Запись — в s_Users.JData['settings'] (см. getProfileSettings()).
 	 *
 	 * @param array|null $data Данные тела: ['data' => ['theme' => ..., 'notificationsOrders' => ..., 'notificationsPromotions' => ...]]
 	 * @return array Ответ в формате ['status', 'message', 'data']
@@ -451,7 +457,13 @@ class RestV1
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
 		$user = $this->rest->getUser();
-		$current = json_decode($user['JSettings'] ?? '', true) ?? [];
+
+		// Текущее содержимое JData (сохраняем посторонние ключи, если есть)
+		$jdata = json_decode($user['JData'] ?? '', true);
+		if (!is_array($jdata)) {
+			$jdata = [];
+		}
+		$current = is_array($jdata['settings'] ?? null) ? $jdata['settings'] : [];
 
 		$allowed = ['theme', 'notificationsOrders', 'notificationsPromotions'];
 		foreach ($allowed as $key) {
@@ -460,9 +472,26 @@ class RestV1
 			}
 		}
 
-		Connect::$instance->query("UPDATE s_Users SET JSettings = ? WHERE Id = ?", [json_encode($current, JSON_UNESCAPED_UNICODE), $user['Id']]);
+		$jdata['settings'] = $current;
+		Connect::$instance->query("UPDATE s_Users SET JData = ? WHERE Id = ?", [json_encode($jdata, JSON_UNESCAPED_UNICODE), $user['Id']]);
 
 		return ['status' => 200, 'message' => 'Settings updated', 'data' => null];
+	}
+
+	/**
+	 * Прочитать блок settings из s_Users.JData пользователя.
+	 *
+	 * @param array|null $user Данные пользователя (SELECT * из s_Users)
+	 * @return array Ассоциативный массив настроек (пустой, если не заполнены)
+	 */
+	private function getUserSettings(?array $user): array
+	{
+		$jdata = json_decode($user['JData'] ?? '', true);
+		if (!is_array($jdata) || !is_array($jdata['settings'] ?? null)) {
+			return [];
+		}
+
+		return $jdata['settings'];
 	}
 
 	/**
