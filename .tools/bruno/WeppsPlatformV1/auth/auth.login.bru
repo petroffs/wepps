@@ -22,8 +22,8 @@ body:json {
 script:post-response {
   if (res.status === 200) {
     const data = res.body?.data;
-    if (data?.access_token)  bru.setVar("access_token",  data.access_token);
-    if (data?.refresh_token) bru.setVar("refresh_token", data.refresh_token);
+    if (data?.accessToken)  bru.setVar("access_token",  data.accessToken);
+    if (data?.refreshToken) bru.setVar("refresh_token", data.refreshToken);
   }
 }
 
