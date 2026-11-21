@@ -608,7 +608,13 @@ class CartUtils
 			return '';
 		}
 		$jdata = json_decode($order['JData'], true);
+		if (!is_array($jdata)) {
+			$jdata = [];
+		}
 		$jpositions = json_decode($order['JPositions'], true);
+		if (!is_array($jpositions)) {
+			$jpositions = [];
+		}
 		$positions = "<table width=\"100%\" border=\"1\">";
 		$positions .= "<tr>";
 		$positions .= "<th width=\"50%\" align=\"left\">Наименование</th>";
@@ -623,28 +629,30 @@ class CartUtils
 			$positions .= '</tr>';
 		}
 		$deliveryAddress = (!empty($order['Address'])) ? '<br/>' . $order['PostalCode'] . ', ' . $order['Address'] : '';
+		$deliveryTitle = (string) ($jdata['delivery']['tariff']['title'] ?? '');
+		$deliveryPrice = (float) ($jdata['delivery']['tariff']['price'] ?? 0);
 		$positions .= '<tr>';
-		$positions .= '<td align="left">' . $jdata['delivery']['tariff']['title'] . $deliveryAddress . '</td>';
+		$positions .= '<td align="left">' . $deliveryTitle . $deliveryAddress . '</td>';
 		$positions .= '<td align="center"></td>';
-		$positions .= '<td align="right">' . Utils::round($jdata['delivery']['tariff']['price'], 2, 'str') . '</td>';
+		$positions .= '<td align="right">' . Utils::round($deliveryPrice, 2, 'str') . '</td>';
 		$positions .= '</tr>';
 		if (!empty($jdata['delivery']['discount']['price'])) {
 			$positions .= '<tr>';
-			$positions .= '<td align="left">' . $jdata['delivery']['discount']['text'] . '</td>';
+			$positions .= '<td align="left">' . ($jdata['delivery']['discount']['text'] ?? '') . '</td>';
 			$positions .= '<td align="center"></td>';
 			$positions .= '<td align="right">- ' . Utils::round($jdata['delivery']['discount']['price'], 2, 'str') . '</td>';
 			$positions .= '</tr>';
 		}
 		if (!empty($jdata['payments']['tariff']['price'])) {
 			$positions .= '<tr>';
-			$positions .= '<td align="left">' . $jdata['payments']['tariff']['text'] . '</td>';
+			$positions .= '<td align="left">' . ($jdata['payments']['tariff']['text'] ?? '') . '</td>';
 			$positions .= '<td align="center"></td>';
 			$positions .= '<td align="right">- ' . Utils::round($jdata['payments']['tariff']['price'], 2, 'str') . '</td>';
 			$positions .= '</tr>';
 		}
 		if (!empty($jdata['payments']['discount']['price'])) {
 			$positions .= '<tr>';
-			$positions .= '<td align="left">' . $jdata['payments']['discount']['text'] . '</td>';
+			$positions .= '<td align="left">' . ($jdata['payments']['discount']['text'] ?? '') . '</td>';
 			$positions .= '<td align="center"></td>';
 			$positions .= '<td align="right">- ' . Utils::round($jdata['payments']['discount']['price'], 2, 'str') . '</td>';
 			$positions .= '</tr>';
@@ -688,6 +696,9 @@ class CartUtils
 			}
 		}
 		$order['W_Positions'] = json_decode($order['JPositions'], true);
+		if (!is_array($order['W_Positions'])) {
+			$order['W_Positions'] = [];
+		}
 		$sql = '';
 		$sum = 0;
 		$order['W_Positions'] = $this->getCartPositionsRecounter($order['W_Positions'], $order['ODeliveryDiscount'], $order['OPaymentTariff'], $order['OPaymentDiscount']);
@@ -711,10 +722,12 @@ class CartUtils
 				];
 			}
 			$order['W_Positions'] = $typedPositions;		}
-		$sum += $order['OPaymentTariff'];
-		$sum -= $order['OPaymentDiscount'];
-
-		$order['OSum'] = Utils::round($sum);
+		// При отсутствии позиций не пересчитываем сумму, иначе затрётся сохранённое значение
+		if (!empty($order['W_Positions'])) {
+			$sum += $order['OPaymentTariff'];
+			$sum -= $order['OPaymentDiscount'];
+			$order['OSum'] = Utils::round($sum);
+		}
 
 		$obj = new Data("OrdersEvents");
 		$obj->setParams([$id]);
