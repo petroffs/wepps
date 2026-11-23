@@ -25,18 +25,12 @@ use WeppsCore\Exception;
 
 class RequestNews extends Request {
 	#[\Override]
-	/**
-	 * @return never
-	 */
-	public function request($action="") {
+	public function request($action=""): never {
 		switch ($action) {
 			case 'test':
 				exit();
-				break;
 			default:
 				Exception::error(404);
-				exit();
-				break;
 		}
 	}
 }

@@ -135,14 +135,6 @@ class BotTest extends Bot {
 		exit();
 		#$password2 = "556";
 		#$hash = password_hash($password2,PASSWORD_BCRYPT);
-		if (password_verify($password,$hash)) {
-			#Utils::debug('ok',31);
-			$this->cli->success('ok');
-			exit();
-		}
-		#Utils::debug('fail',31);
-		$this->cli->error('fail');
-		exit();
 	}
 	public function testOrderText(): void {
 		/*

@@ -785,9 +785,8 @@ class Lists
 	 * Обновить ApiMapping/ApiFieldType для поля и инвалидировать кэш схемы.
 	 * Выполняется после того, как поле уже создано в БД и запись есть в s_ConfigFields.
 	 *
-	 * @return void
 	 */
-	public static function updateListFieldApi($id)
+	public static function updateListFieldApi($id): void
 	{
 		if ((int) $id == 0) {
 			return;

@@ -32,10 +32,7 @@ class SaveItemPanels extends Request
 
 
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		$this->listSettings = $this->get['listSettings'];
 		$this->element = $this->get['element'];

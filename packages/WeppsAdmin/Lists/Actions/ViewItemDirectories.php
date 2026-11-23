@@ -25,10 +25,7 @@ class ViewItemDirectories extends Request {
 	public $scheme = [];
 	public $element = [];
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action="") {
+	public function request($action=""): void {
 		$element = $this->get['element'];
 		$this->element = &$this->get['element'];
 		$this->scheme = $this->get['listScheme'];

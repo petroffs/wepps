@@ -24,14 +24,10 @@ use WeppsCore\Request;
 
 class RequestServices extends Request {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action="") {
+	public function request($action=""): void {
 		switch ($action) {
 			case 'test':
 				exit();
-				break;
 			default:
 				$this->tpl = "RequestServices.tpl";
 				break;

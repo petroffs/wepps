@@ -26,10 +26,7 @@ use WeppsCore\Request;
 
 class RequestBlocks extends Request {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action="") {
+	public function request($action=""): void {
 		switch ($action) {
 			case 'sortable':
 				if (@Connect::$projectData['user']['ShowAdmin']==1 && !empty($this->get['items'])) {

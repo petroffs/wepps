@@ -29,10 +29,7 @@ class ProcessingProducts
 	{
 
 	}
-	/**
-	 * @return void
-	 */
-	public function resetProducts()
+	public function resetProducts(): void
 	{
 		if (Connect::$projectDev['debug'] == 0) {
 			return;
@@ -54,10 +51,7 @@ class ProcessingProducts
 			Utils::debug($e, 21);
 		}
 	}
-	/**
-	 * @return void
-	 */
-	public function resetProductsAliases()
+	public function resetProductsAliases(): void
 	{
 		if (Connect::$projectDev['debug'] == 0) {
 			return;
@@ -70,10 +64,7 @@ class ProcessingProducts
 			$sth->execute([$alias, $value['Id']]);
 		}
 	}
-	/**
-	 * @return void
-	 */
-	public function generateProductsVariations()
+	public function generateProductsVariations(): void
 	{
 		if (Connect::$projectDev['debug'] == 0) {
 			return;

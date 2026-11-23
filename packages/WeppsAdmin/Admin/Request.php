@@ -28,10 +28,7 @@ use WeppsCore\Users;
 class RequestAdmin extends Request
 {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		$this->tpl = '';
 		#$translate = Admin::getTranslate();

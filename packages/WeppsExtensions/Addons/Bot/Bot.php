@@ -84,7 +84,6 @@ class Bot {
 			case 'passtest':
 				$obj = new BotTest();
 				$obj->password();
-				break;
 			case 'deliverytariffs':
 				$obj = new DeliveryUtils();
 				$cartUtils = new CartUtils();

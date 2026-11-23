@@ -26,10 +26,7 @@ use WeppsCore\Exception;
 class Request_Example11 extends Request
 {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		switch ($action) {
 			case 'test':

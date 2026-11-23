@@ -26,10 +26,7 @@ use WeppsExtensions\Addons\Files\Files;
 
 class RequestTemplate extends Request {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = '') {
+	public function request($action = ''): void {
 		switch ($action) {
 			case 'files':
 				if (!isset($this->get['fileUrl'])) {
@@ -37,7 +34,6 @@ class RequestTemplate extends Request {
 				}
 				$files = new Files();
 				$files->output($this->get['fileUrl']);
-				break;
 			case 'upload':
 				if (!isset($this->get['filesfield'])) {
 					Exception::error(404);

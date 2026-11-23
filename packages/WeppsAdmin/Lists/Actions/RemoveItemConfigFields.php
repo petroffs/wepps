@@ -28,10 +28,7 @@ class RemoveItemConfigFields extends Request {
 	private $id;
 	public $element = [];
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action="") {
+	public function request($action=""): void {
 		$this->listSettings = $this->get['listSettings'];
 		$this->id = (int) $this->get['id'];
 		if ($this->listSettings['TableName']=='s_ConfigFields') {

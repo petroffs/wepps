@@ -31,10 +31,7 @@ use WeppsExtensions\Addons\Bot\BotSystem;
 class RequestProcessing extends Request
 {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		$this->tpl = '';
 		if (empty($this->cli) && @Connect::$projectData['user']['ShowAdmin'] != 1) {

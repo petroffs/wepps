@@ -97,9 +97,8 @@ abstract class Request
 	 * файл RequestExample.tpl.css или RequestExample.tpl.js
 	 * Шаблон следует определять в self::request()
 	 *
-	 * @return void
 	 */
-	private function cssjs()
+	private function cssjs(): void
 	{
 		if ($this->tpl == '')
 			return;

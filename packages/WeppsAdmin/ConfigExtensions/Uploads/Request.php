@@ -32,10 +32,7 @@ use WeppsCore\Utils;
 class RequestUploads extends Request
 {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		$this->tpl = '';
 		if ((Connect::$projectData['user']['ShowAdmin']??0) != 1) {

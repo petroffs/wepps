@@ -29,10 +29,7 @@ class RequestProducts extends Request
 {
 	private $navigator;
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		switch ($action) {
 			case 'suggestions':

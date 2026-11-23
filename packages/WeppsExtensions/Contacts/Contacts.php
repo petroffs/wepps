@@ -32,10 +32,7 @@ if (!session_id()) {
 
 class Contacts extends Extension {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request() {
+	public function request(): void {
 		$smarty = Smarty::getSmarty();
 		#Utils::debug($_SESSION,21);
 		switch (Navigator::$pathItem) {

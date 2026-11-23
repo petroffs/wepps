@@ -36,10 +36,7 @@ if (!session_id()) {
 class RequestContacts extends Request
 {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = '')
+	public function request($action = ''): void
 	{
 		$navigator = new Navigator(@$this->get['link']);
 		$this->assign('multilang', $navigator->multilang);

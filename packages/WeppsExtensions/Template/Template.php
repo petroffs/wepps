@@ -50,11 +50,9 @@ class Template extends Extension {
 	 * @uses TemplateAddons Для расширения функционала.
 	 * @uses Blocks Для управления блоками на странице.
 	 * @uses Exception::error404() Для обработки ошибок маршрутизации.
-	 *
-	 * @return void
 	 */
 	#[\Override]
-	public function request() {
+	public function request(): void {
 		$smarty = Smarty::getSmarty();
 		$smarty->assign('parent',$this->navigator->parent);
 		$smarty->assign('child',$this->navigator->child);

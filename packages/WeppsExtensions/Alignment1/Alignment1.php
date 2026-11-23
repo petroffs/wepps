@@ -25,10 +25,7 @@ use WeppsCore\Exception;
 
 class Alignment1 extends Extension {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request() {
+	public function request(): void {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {
 			case '':

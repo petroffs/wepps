@@ -118,10 +118,7 @@ class Admin {
 			exit();
 		}
 	}
-	/**
-	 * @return void
-	 */
-	private function getNavigateUrl($url) {
+	private function getNavigateUrl($url): void {
 		//Utils::debug($url,1);
 		$match = [];
 		$m = preg_match ( "/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match );

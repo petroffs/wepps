@@ -36,10 +36,7 @@ class Profile extends Extension
 	private $profileTpl = '';
 	private $user;
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request()
+	public function request(): void
 	{
 		$this->tpl = __DIR__ . '/Profile.tpl';
 		$this->user = Connect::$projectData['user'] ?? [];
@@ -159,10 +156,7 @@ class Profile extends Extension
 
 		$smarty->assign('orders', $ordersData['orders']);
 	}
-	/**
-	 * @return void
-	 */
-	private function favorites(\Smarty\Smarty $smarty, array $profileNav)
+	private function favorites(\Smarty\Smarty $smarty, array $profileNav): void
 	{
 		$this->navigator->content['Name'] = 'Избранное';
 		$productsUtils = new ProductsUtils();

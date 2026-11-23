@@ -31,10 +31,7 @@ class Uploads extends Request {
 	public $title;
 	public $headers;
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action="") {
+	public function request($action=""): void {
 		$smarty = Smarty::getSmarty();
 		$this->tpl = 'Uploads.tpl';
 		$this->title = $this->get['ext']['Name'];

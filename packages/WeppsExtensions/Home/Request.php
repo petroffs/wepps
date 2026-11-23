@@ -24,10 +24,7 @@ use WeppsCore\Request;
 
 class RequestHome extends Request {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "") {
+	public function request($action = ""): void {
 		switch ($action) {
 			case 'test':
 				$this->tpl = "RequestCustom2.tpl";

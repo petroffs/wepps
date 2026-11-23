@@ -23,10 +23,7 @@ use WeppsCore\Extension;
 
 class Error404 extends Extension {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request() {
+	public function request(): void {
 		$root = $_SERVER['DOCUMENT_ROOT'];
 		$this->tpl = $root.'/packages/WeppsExtensions/Error404/Error404.tpl';
 		$smarty = Smarty::getSmarty();

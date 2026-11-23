@@ -69,10 +69,7 @@ class TemplateUtils extends Utils
 		$headers->meta("<link itemprop=\"thumbnailUrl\" href=\"" . $metaimage['src'] . "\">");
 	}
 
-	/**
-	 * @return void
-	 */
-	public static function getMetaOrganization(Navigator &$navigator, TemplateHeaders &$headers)
+	public static function getMetaOrganization(Navigator &$navigator, TemplateHeaders &$headers): void
 	{
 		if ($navigator->content['Id'] != 1) {
 			return;

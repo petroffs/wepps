@@ -29,10 +29,7 @@ class ViewItem extends Request {
 	public $settings = [];
 	public $headers;
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action="") {
+	public function request($action=""): void {
 		//$this->get['element']['Name'] = "Wepps";
 		$this->element = &$this->get['element'];
 		//unset($this->get['listScheme']['Name']);

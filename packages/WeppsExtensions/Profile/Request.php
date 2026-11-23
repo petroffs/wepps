@@ -40,11 +40,9 @@ class RequestProfile extends Request
 	 * Обрабатывает запросы профиля пользователя.
 	 *
 	 * @param string $action Действие, которое необходимо выполнить.
-	 *
-	 * @return void
 	 */
 	#[\Override]
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		$profileActions = new ProfileActions(true);
 		switch ($action) {

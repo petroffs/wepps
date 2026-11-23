@@ -30,10 +30,7 @@ use WeppsExtensions\Products\ProductsUtils;
 class RequestCart extends Request
 {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		$cartUtils = new CartUtils();
 		switch ($action) {

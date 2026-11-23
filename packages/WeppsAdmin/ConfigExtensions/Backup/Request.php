@@ -30,10 +30,7 @@ use WeppsCore\Utils;
 class RequestBackup extends Request
 {
 	#[\Override]
-	/**
-	 * @return void
-	 */
-	public function request($action = "")
+	public function request($action = ""): void
 	{
 		$this->tpl = '';
 		if (empty($this->cli) && @Connect::$projectData['user']['ShowAdmin'] != 1) {

@@ -31,9 +31,8 @@ class Exception
 	 *
 	 * @param \Exception $e Объект исключения
 	 *
-	 * @return void
 	 */
-	public static function display(\Exception $e)
+	public static function display(\Exception $e): void
 	{
 		if (Connect::$projectDev['debug'] == 1) {
 			$error = [];

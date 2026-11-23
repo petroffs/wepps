@@ -226,9 +226,8 @@ class Connect
 	 *
 	 * @param int $exit Флаг выхода из скрипта.
 	 *
-	 * @return void
 	 */
-	public function close($exit = 1)
+	public function close($exit = 1): void
 	{
 		self::$db = null;
 		if ($exit == 1) {
