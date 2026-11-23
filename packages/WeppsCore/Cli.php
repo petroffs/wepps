@@ -234,7 +234,7 @@ class Cli
 			$this->warning('no project path');
 			return false;
 		}
-		exec("rm $dir -rf");
+		exec("rm " . escapeshellarg($dir) . " -rf");
 		return true;
 	}
 

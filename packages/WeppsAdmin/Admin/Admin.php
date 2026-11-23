@@ -132,7 +132,7 @@ class Admin {
 		}
 		elseif (substr ( $url, - 1 ) != '/' && $m==0 && $url!='' && $_SERVER['REQUEST_URI']!='/') {
 			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: /_wepps/{$url}/");
+			header("Location: /_wepps/" . Utils::safeChars($url) . "/");
 			exit();
 		} elseif (strstr($_SERVER['REQUEST_URI'],'index.php')) {
 			header("HTTP/1.1 301 Moved Permanently");
@@ -149,7 +149,7 @@ class Admin {
 		if (preg_match("/(\/{2,10})/",  $_SERVER['REQUEST_URI'])) {
 			$url = preg_replace("/(\/{2,10})/", "/", $_SERVER['REQUEST_URI']);
 			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: $url");
+			header("Location: " . Utils::safeChars($url));
 			exit();
 		}
 		self::$path = explode("/", substr($url, 0,-1));

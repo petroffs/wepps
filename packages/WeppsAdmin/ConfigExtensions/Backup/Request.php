@@ -25,6 +25,7 @@ use WeppsCore\Request;
 use WeppsCore\Exception;
 use WeppsCore\Connect;
 use WeppsCore\TextTransforms;
+use WeppsCore\Utils;
 
 class RequestBackup extends Request
 {
@@ -49,7 +50,7 @@ class RequestBackup extends Request
 				/*
 				 * Создать бекап
 				 */
-				$table = (!empty($this->get['list'])) ? $this->get['list'] : '';
+				$table = (!empty($this->get['list']) && is_string($this->get['list'])) ? $this->get['list'] : '';
 				$path = $root . $backupPath;
 				$type = 1;
 				$comment = (!empty($this->get['comment'])) ? "-" . TextTransforms::translit($this->get['comment'], 2) : "";
@@ -60,13 +61,14 @@ class RequestBackup extends Request
 				 */
 				switch ($type) {
 					case "1":
-						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set={$charset} --add-drop-table $db $table > $filename";
+						$tableArg = ($table !== '') ? ' ' . escapeshellarg($table) : '';
+						$str = "mysqldump --defaults-extra-file=" . escapeshellarg((string)$cnf) . " -K --default-character-set=" . escapeshellarg((string)$charset) . " --add-drop-table " . escapeshellarg((string)$db) . $tableArg . " > " . escapeshellarg($filename);
 						break;
 					case "2":
-						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set={$charset} --add-drop-table $db DataTbls > $filename";
+						$str = "mysqldump --defaults-extra-file=" . escapeshellarg((string)$cnf) . " -K --default-character-set=" . escapeshellarg((string)$charset) . " --add-drop-table " . escapeshellarg((string)$db) . " DataTbls > " . escapeshellarg($filename);
 						break;
 					default:
-						$str = "mysqldump --defaults-extra-file={$cnf} -K --default-character-set={$charset} --add-drop-table $db > $filename";
+						$str = "mysqldump --defaults-extra-file=" . escapeshellarg((string)$cnf) . " -K --default-character-set=" . escapeshellarg((string)$charset) . " --add-drop-table " . escapeshellarg((string)$db) . " > " . escapeshellarg($filename);
 						break;
 				}
 				system($str, $error);
@@ -89,12 +91,17 @@ class RequestBackup extends Request
 				 * Восстановить из бекапа
 				 */
 				$path = $root . '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
-				$filename = $path . $this->get['id'];
+				$id = is_string($this->get['id'] ?? null) ? basename($this->get['id']) : '';
+				if (!preg_match('/^[A-Za-z0-9._-]+$/', $id)) {
+					AdminUtils::modal("<p>Некорректное имя файла резервной копии</p>");
+					break;
+				}
+				$filename = $path . $id;
 				$charset = Connect::$projectDB['charset'];
 				if (strstr($filename, "sql.gz")) {
-					$str = "zcat $filename | mysql --defaults-file={$cnf} --default-character-set={$charset} $db";
+					$str = "zcat " . escapeshellarg($filename) . " | mysql --defaults-file=" . escapeshellarg((string)$cnf) . " --default-character-set=" . escapeshellarg((string)$charset) . " " . escapeshellarg((string)$db);
 				} else {
-					$str = "mysql --defaults-file={$cnf} --default-character-set={$charset} $db < $filename";
+					$str = "mysql --defaults-file=" . escapeshellarg((string)$cnf) . " --default-character-set=" . escapeshellarg((string)$charset) . " " . escapeshellarg((string)$db) . " < " . escapeshellarg($filename);
 				}
 				$error = "";
 				system($str, $error);
@@ -261,7 +268,7 @@ class RequestBackup extends Request
 				}
 
 				header("Content-Type: text/sql");
-				header("Content-Disposition:attachment;filename=list_{$table}.sql");
+				header("Content-Disposition:attachment;filename=list_" . Utils::safeChars($table, '/[^A-Za-z0-9_]/') . ".sql");
 				$str = preg_replace("/values \('(\d+)'/", 'values (null', $str);
 				echo $str;
 				break;

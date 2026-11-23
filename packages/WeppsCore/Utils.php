@@ -133,6 +133,26 @@ class Utils
 	}
 
 	/**
+	 * Белый список символов для безопасной подстановки пользовательских строк
+	 * в URL, компоненты URL и HTTP-заголовки: переносы строк, кавычки, пробелы
+	 * и прочие спецсимволы удаляются.
+	 *
+	 * @param string $value Строка (в том числе пользовательский ввод)
+	 * @param string $pattern PCRE-шаблон разрешённых символов (без ограничителей ^$)
+	 * @return string Строка, состоящая только из разрешённых символов
+	 *
+	 * @psalm-taint-escape redirect
+	 * @psalm-taint-escape header
+	 * @psalm-taint-escape url_component
+	 * @psalm-taint-escape url_path
+	 * @psalm-taint-escape url_scheme
+	 */
+	public static function safeChars(string $value, string $pattern = '/[^A-Za-z0-9\/._~\-?&=%+]/'): string
+	{
+		return preg_replace($pattern, '', $value) ?? '';
+	}
+
+	/**
 	 * Форматирование телефонного номера
 	 *
 	 * @param string $string Входная строка с телефонным номером
