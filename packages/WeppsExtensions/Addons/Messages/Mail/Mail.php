@@ -136,7 +136,11 @@ class Mail
 		if ($this->debug == 1) {
 			$to = Connect::$projectDev['email'];
 		}
-		return mail($to, $subj, $this->contentAll, $headers, "-f" . Connect::$projectInfo['email']);
+		$sent = false;
+		if (preg_match('/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/D', $to) === 1) {
+			$sent = mail($to, $subj, $this->contentAll, $headers, "-f" . Connect::$projectInfo['email']);
+		}
+		return $sent;
 	}
 	/**
 	 * Переопределяет отправителя письма.
@@ -255,6 +259,8 @@ class Mail
 				//return '';
 			} else {
 				$f_name = $value;
+				// Вложение: выше проверен is_file(), URL-схемы до fopen не доходят
+				/** @psalm-suppress TaintedInput */
 				$handle = fopen($f_name, 'rb');
 				$f_contents = fread($handle, filesize($f_name));
 				$f_contents = chunk_split(base64_encode($f_contents));

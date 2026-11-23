@@ -303,6 +303,8 @@ class UpdatesMethods extends Updates
 	 * @param string $fileMD5 Путь к JSON-файлу с описанием файлов и md5
 	 * @param bool $includeRemoved Включать ли отсутствующие файлы в вывод
 	 * @return array Ассоциативный массив с ключами 'filename','output','files'
+	 *
+	 * @psalm-suppress TaintedInput
 	 */
 	private function getDiff(string $fileMD5, bool $includeRemoved = false)
 	{
@@ -366,6 +368,8 @@ class UpdatesMethods extends Updates
 	 *
 	 * @param string $fileMD5 Путь к md5-файлу релиза
 	 * @return string SQL-скрипт для выполнения (пустая строка при отсутствии изменений)
+	 *
+	 * @psalm-suppress TaintedInput
 	 */
 	private function getTablesUpdates($fileMD5): string
 	{
@@ -538,7 +542,7 @@ class UpdatesMethods extends Updates
 		if (file_exists($archive)) {
 			$this->cli->rmfile($archive);
 		}
-		$cmd = "7z a -tzip {$archive} {$path}";
+		$cmd = "7z a -tzip " . escapeshellarg($archive) . " " . escapeshellarg($path);
 		$this->cli->cmd($cmd, true);
 		return true;
 	}

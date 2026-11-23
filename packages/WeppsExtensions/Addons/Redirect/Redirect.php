@@ -22,6 +22,7 @@ use WeppsCore\Navigator;
 use WeppsCore\Smarty;
 use WeppsCore\Extension;
 use WeppsCore\Exception;
+use WeppsCore\Utils;
 
 class Redirect extends Extension {
 	#[\Override]
@@ -32,7 +33,7 @@ class Redirect extends Extension {
 				$this->tpl = 'packages/WeppsExtensions/Addons/Redirect/Redirect.tpl';
 				if (isset($this->navigator->child[0])) {
 					header("HTTP/1.1 301 Moved Permanently");
-					header("Location: {$this->navigator->child[0]['Url']}");
+					header("Location: " . Utils::safeChars((string) $this->navigator->child[0]['Url']));
 					exit();
 				}
 				break;

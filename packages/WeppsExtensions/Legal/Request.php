@@ -52,8 +52,14 @@ class RequestLegacy extends Request
 		switch ($action) {
 			case 'agree':
 				$lifetime = 60*60*24*180;
-				$default = $this->get['default'] ?? 'false';
-				$analytics = $this->get['analytics'] ?? 'false';
+				$default = 'false';
+				$analytics = 'false';
+				if (($this->get['default'] ?? '') === 'true') {
+					$default = 'true';
+				}
+				if (($this->get['analytics'] ?? '') === 'true') {
+					$analytics = 'true';
+				}
 				if ($default === 'false' && $analytics === 'false') {
 				    $default = '';
 				    $analytics = '';

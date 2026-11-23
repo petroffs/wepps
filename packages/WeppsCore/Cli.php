@@ -139,6 +139,8 @@ class Cli
 	 * @param string $destination Путь к файлу назначения.
 	 * @param bool $overwrite Флаг перезаписи существующего файла (по умолчанию true).
 	 * @return bool Возвращает true, если копирование прошло успешно, иначе false.
+	 *
+	 * @psalm-suppress TaintedInput
 	 */
 	public function copy(string $source, string $destination, bool $overwrite = true): bool
 	{

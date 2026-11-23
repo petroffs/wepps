@@ -392,7 +392,7 @@ class RequestLists extends Request
 
 				// Redirect output to a client’s web browser (Xlsx)
 				header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-				header('Content-Disposition: attachment;filename=' . $filename);
+				header('Content-Disposition: attachment;filename=' . Utils::safeChars($filename, '/[\x00-\x1F\x7F"\'\\\\;]+/u'));
 				header('Cache-Control: max-age=0');
 				// If you're serving to IE 9, then the following may be needed
 				header('Cache-Control: max-age=1');

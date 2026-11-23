@@ -135,19 +135,23 @@ class Utils
 	/**
 	 * Белый список символов для безопасной подстановки пользовательских строк
 	 * в URL, компоненты URL и HTTP-заголовки: переносы строк, кавычки, пробелы
-	 * и прочие спецсимволы удаляются.
+	 * и прочие спецсимволы удаляются. Буквы всех языков (\p{L}) и цифры (\p{N})
+	 * сохраняются — кириллица в путях и именах файлов не пострадает.
 	 *
 	 * @param string $value Строка (в том числе пользовательский ввод)
-	 * @param string $pattern PCRE-шаблон разрешённых символов (без ограничителей ^$)
-	 * @return string Строка, состоящая только из разрешённых символов
+	 * @param string $pattern PCRE-шаблон фильтрации без ограничителей ^$:
+	 *                        по умолчанию удаляется всё вне белого списка;
+	 *                        можно передать и шаблон удаляемых символов ([...]+)
+	 * @return string Отфильтрованная строка
 	 *
 	 * @psalm-taint-escape redirect
 	 * @psalm-taint-escape header
 	 * @psalm-taint-escape url_component
 	 * @psalm-taint-escape url_path
 	 * @psalm-taint-escape url_scheme
+	 * @psalm-taint-specialize
 	 */
-	public static function safeChars(string $value, string $pattern = '/[^A-Za-z0-9\/._~\-?&=%+]/'): string
+	public static function safeChars(string $value, string $pattern = '/[^\p{L}\p{N}\/._~\-?&=%+]+/u'): string
 	{
 		return preg_replace($pattern, '', $value) ?? '';
 	}
@@ -318,6 +322,8 @@ class Utils
 	 * @param string $value Значение куки
 	 * @param int $lifetime Время жизни куки в секундах
 	 * @return string|null
+	 *
+	 * @psalm-taint-specialize
 	 */
 	public static function cookies(string $name, ?string $value = null, int $lifetime = 86400): string|null
 	{
@@ -336,6 +342,10 @@ class Utils
 		if (empty($value)) {
 			unset($settings['expires']);
 		}
+		// Значения наших куки — собственные данные пользователя (корзина, флаги
+		// согласий, преференции): пользовательское значение в собственную куку —
+		// штатное поведение. Сессионные куки формирует PHP (session.*), сюда не попадают.
+		/** @psalm-suppress TaintedInput */
 		setcookie($name, $value, $settings);
 		return (string) $value;
 	}

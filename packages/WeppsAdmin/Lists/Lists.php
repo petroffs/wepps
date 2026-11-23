@@ -627,12 +627,23 @@ class Lists
 		return ['status' => '1', 'html' => $js];
 	}
 
+	/**
+	 * Сборка пути загружаемого файла.
+	 *
+	 * Все пользовательские компоненты ($list, $field, $guid, расширение)
+	 * отфильтрованы white-list-паттернами Utils::safeChars до склейки пути.
+	 *
+	 * @psalm-suppress TaintedInput
+	 */
 	public static function getUploadFileName($upload, $list, $field, $id)
 	{
 		$pathinfo = pathinfo($upload['path']);
+		$list = Utils::safeChars((string) $list, '/[^A-Za-z0-9_]+/');
+		$field = Utils::safeChars((string) $field, '/[^A-Za-z0-9_]+/');
 		$folder = "/files/lists/{$list}/" . floor($id / 500) * 500 . "/";
-		$guid = $upload['guid'] ?? Utils::guid();
-		$destination = sprintf("%06d", $id) . "_" . $field . "_" . $guid . "." . $pathinfo['extension'];
+		$guid = Utils::safeChars((string) ($upload['guid'] ?? Utils::guid()), '/[^A-Za-z0-9\-]+/');
+		$extension = Utils::safeChars((string) ($pathinfo['extension'] ?? ''), '/[^A-Za-z0-9]+/');
+		$destination = sprintf("%06d", $id) . "_" . $field . "_" . $guid . "." . $extension;
 		$url = $folder . $destination;
 		$upload['list'] = $list;
 		$upload['field'] = $field;

@@ -52,7 +52,7 @@ class Files
 		$filetitle = $row['Name'];
 
 		header("Content-type: application/octet-stream");
-		header("Content-Disposition: attachment; filename=\"$filetitle\"");
+		header("Content-Disposition: attachment; filename=\"" . Utils::safeChars($filetitle, '/[\x00-\x1F\x7F"\'\\\\;]+/u') . "\"");
 		header("Content-Length: " . filesize($filenameFull));
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s", mktime(0, 0, 0, 1, 1, 2000)) . " GMT"); // Дата в прошлом
 		header('Content-Transfer-Encoding: binary');

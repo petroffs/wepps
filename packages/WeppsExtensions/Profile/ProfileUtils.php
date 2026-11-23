@@ -138,7 +138,7 @@ class ProfileUtils
 	public function processPasswordTask(array $request, Tasks $tasks)
 	{
 		$jdata = json_decode($request['BRequest'], true);
-		$url = 'https://' . Connect::$projectDev['host'] . "/profile/?token={$jdata['token']}";
+		$url = 'https://' . Connect::$projectDev['host'] . "/profile/?token=" . rawurlencode((string) $jdata['token']);
 		$text = "<b>Добрый день, {$jdata['nameFirst']}!</b><br/><br/>Поступил запрос на смену пароля!";
 		$text .= "<br/><br/>Для установки нового пароля перейдите по ссылке:";
 		$text .= "<br/><br/><center><a href=\"{$url}\" class=\"button\">Установить новый пароль</a></center>";

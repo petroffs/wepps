@@ -156,7 +156,7 @@ class ProcessingRestApi
 		// Получаем данные из формы
 		$source = $_REQUEST['source'] ?? '';
 		$destination = $_REQUEST['destination'] ?? [];
-		$m2mToken = $_REQUEST['m2m_token'] ?? '';
+		$m2mToken = Utils::safeChars((string) ($_REQUEST['m2m_token'] ?? ''), '/[^A-Za-z0-9._\-]+/');
 
 		// Нормализуем destination в массив
 		if (!is_array($destination)) {
