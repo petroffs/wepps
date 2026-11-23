@@ -36,7 +36,7 @@ class PaymentsUtils
         }
         $sql = "SELECT p.Id,p.Name,p.Priority,p.IsHidden,
                 p.Tariff,p.IsTariffPercentage,p.Discount,p.IsDiscountPercentage,
-                if (p.PaymentsExt!='',p.PaymentsExt,'PaymentsDefault') PaymentsExt
+                if (p.PaymentsExt!='',p.PaymentsExt,'DefaultPayments') PaymentsExt
                 from OrdersPayments p
                 join s_SearchKeys sk on sk.Name = p.Id and sk.Field3 = 'List::OrdersPayments::Delivery'
                 join OrdersDelivery d on d.Id = sk.Field1
