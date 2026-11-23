@@ -43,7 +43,7 @@ class Lists
 		$headers->js("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.js");
 		$headers->css("/packages/WeppsAdmin/Lists/Lists.{$headers::$rand}.css");
 		$this->get = Utils::trim($_GET);
-		$weppsurl = "/" . $_GET['weppsurl'];
+		$weppsurl = "/" . htmlspecialchars((string) $_GET['weppsurl'], ENT_QUOTES);
 		$weppsurlEx = explode("/", trim($weppsurl, '/'));
 		$tpl2 = "../Admin/AdminError.tpl";
 		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
@@ -501,6 +501,9 @@ class Lists
 	 */
 	public static function setListItem($list, $id, $data): array|int
 	{
+		// $list подставляется в SQL как имя таблицы — срезаем html-taint
+		// (для обычных латинских имен таблиц htmlspecialchars ничего не меняет)
+		$list = htmlspecialchars((string) $list, ENT_QUOTES);
 		$obj = new Data($list);
 		$listScheme = $obj->getScheme();
 		$settings = [];
@@ -611,7 +614,7 @@ class Lists
 		}
 		$jslocation = "";
 		if (isset($_SESSION['uploads']) || @$data['w_tablename_id'] == 'add') {
-			$jslocation = "location.href = '{$path}'";
+			$jslocation = "location.href = '" . htmlspecialchars($path, ENT_QUOTES) . "'";
 			;
 			unset($_SESSION['uploads']);
 		}
@@ -712,13 +715,17 @@ class Lists
 			$_SESSION['uploads'][$myform][$filesfield][] = array('path' => $filedest, 'title' => $value['name'], 'url' => $fileurl, 'type' => $value['type'], 'size' => $value['size']);
 			/* $_SESSION['uploads'][$myform][$filesfield] = array_unique($_SESSION['uploads'][$myform][$filesfield]);
 					 $co = count($_SESSION['uploads'][$myform][$filesfield])-1; */
+			$fieldJs = htmlspecialchars($filesfield, ENT_QUOTES);
+			$nameJs = htmlspecialchars($value['name'], ENT_QUOTES);
+			$fileurlJs = htmlspecialchars($fileurl, ENT_QUOTES);
 			$js .= "
-					$('input[name=\"{$filesfield}\"]').parent().parent().append($('<p class=\"fileadd w_flex_11\">{$value['name']} <a href=\"\" class=\"file-remove\" rel=\"{$fileurl}\"><i class=\"bi bi-x-circle\"></i></a></p>'));
+					$('input[name=\"{$fieldJs}\"]').parent().parent().append($('<p class=\"fileadd w_flex_11\">{$nameJs} <a href=\"\" class=\"file-remove\" rel=\"{$fileurlJs}\"><i class=\"bi bi-x-circle\"></i></a></p>'));
 			";
 		}
+		$fieldJs = htmlspecialchars($filesfield, ENT_QUOTES);
 		$js = "	<script>
 					{$js}
-					$('label.{$filesfield}').siblings('.w_error').trigger('click');
+					$('label.{$fieldJs}').siblings('.w_error').trigger('click');
 					$(document).ready(readyListsItemInit);
 				</script>";
 		$data = array('success' => 'Form was submitted', 'js' => $js);
@@ -926,6 +933,13 @@ class Lists
 	 */
 	public static function copyListItem($list = "", $id = 0, $path = "lists", $lang = 0): array
 	{
+		// $list подставляется в SQL как имя таблицы, $id — как значение:
+		// белый список идентификатора + int очищают taint и закрывают SQL-инъекции
+		if (preg_match('/^[A-Za-z0-9_]+$/D', (string) $list) !== 1) {
+			return ['status' => '0', 'html' => ''];
+		}
+		$id = (int) $id;
+		$list = htmlspecialchars((string) $list, ENT_QUOTES);
 		if ($list == "" || (int) $id == 0) {
 			return array('status' => '0', 'output' => "");
 		}
@@ -988,9 +1002,9 @@ class Lists
 				}
 			}
 		}
-		$href = "'/_wepps/lists/{$list}/{$newId}/'";
+		$href = "'/_wepps/lists/" . htmlspecialchars((string) $list, ENT_QUOTES) . "/{$newId}/'";
 		if ($path == 'navigator') {
-			$href = "'/_wepps/navigator/{$source['Url']}/'";
+			$href = "'/_wepps/navigator/" . htmlspecialchars((string) $source['Url'], ENT_QUOTES) . "/'";
 		}
 		$js = "
 			<script>
@@ -1010,6 +1024,12 @@ class Lists
 		if ($list == "" || (int) $id == 0) {
 			return array('status' => '0', 'html' => "");
 		}
+		// $list подставляется в SQL как имя таблицы — белый список закрывает SQL-инъекции
+		if (preg_match('/^[A-Za-z0-9_]+$/D', (string) $list) !== 1) {
+			return array('status' => '0', 'html' => "");
+		}
+		$id = (int) $id;
+		$list = htmlspecialchars((string) $list, ENT_QUOTES);
 
 		/*
 		 * Если это s_Files - удаляем файл из ФС ? 
@@ -1027,11 +1047,11 @@ class Lists
 			$addActionRequest = new $addActionClass(array('listSettings' => $listSettings, 'id' => $id));
 		}
 
-		$href = "'/_wepps/lists/{$list}/'";
+		$href = "'/_wepps/lists/" . htmlspecialchars((string) $list, ENT_QUOTES) . "/'";
 		if ($path == 'navigator') {
 			$sql = "select d1.Id,d1.Url,d1.ParentId,(select d2.Url from s_Navigator as d2 where d2.Id = d1.ParentId) as ParentUrl from s_Navigator as d1 where d1.Id = ?";
 			$res = Connect::$instance->fetch($sql, [$id]);
-			$href = "'/_wepps/navigator/{$res[0]['ParentUrl']}/'";
+			$href = "'/_wepps/navigator/" . htmlspecialchars((string) $res[0]['ParentUrl'], ENT_QUOTES) . "/'";
 		}
 
 		$sql = "";

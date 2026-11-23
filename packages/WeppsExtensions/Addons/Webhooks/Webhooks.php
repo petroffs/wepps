@@ -19,6 +19,7 @@
 namespace WeppsExtensions\Addons\Webhooks;
 
 use WeppsCore\Connect;
+use WeppsCore\Utils;
 
 class Webhooks
 {
@@ -35,7 +36,7 @@ class Webhooks
         $result = $this->handleEvent($this->get['action'] ?? '', $this->input);
         http_response_code($result['status']);
         header('Content-Type: application/json');
-        echo json_encode($result);
+        echo Utils::json($result);
     }
 
     public function handleEvent(string $action, array &$data): array

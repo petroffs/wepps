@@ -25,6 +25,7 @@ use WeppsCore\Exception;
 use WeppsCore\Connect;
 use WeppsCore\Data;
 use WeppsCore\TextTransforms;
+use WeppsCore\Utils;
 
 class RequestNavigatorAd extends Request {
     #[\Override]
@@ -38,16 +39,17 @@ class RequestNavigatorAd extends Request {
                 if (!isset($this->get['term'])) {
                     Connect::$instance->close();
                 }
-                $id = $this->get['term'];
-                $condition = "(t.Name like '%$id%' or t.NameMenu like '%$id%' or t.Id = '$id')";
+                $id = htmlspecialchars((string) $this->get['term'], ENT_QUOTES);
+                $condition = "(t.Name like ? or t.NameMenu like ? or t.Id = ?)";
                 
                 $obj = new Data("s_Navigator");
                 $obj->setConcat("t.Id as id,if (t.NameMenu!='',t.NameMenu,t.Name) as value,concat('/_wepps/navigator',t.Url) as Url");
+                $obj->setParams(['%' . $id . '%', '%' . $id . '%', $id]);
                 $res = $obj->fetch($condition);
                 if (!isset($res[0]['Id'])) {
                     Connect::$instance->close();
                 }
-                $json = json_encode($res,JSON_UNESCAPED_UNICODE);
+                $json = Utils::json($res);
                 header('Content-type:application/json;charset=utf-8');
                 echo $json;
                 Connect::$instance->close();

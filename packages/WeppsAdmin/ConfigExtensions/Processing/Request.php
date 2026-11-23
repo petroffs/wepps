@@ -97,7 +97,7 @@ class RequestProcessing extends Request
 					break;
 			}
 		} catch (\Exception $e) {
-			AdminUtils::modal('❌ Ошибка: ' . $e->getMessage(), $this->cli);
+			AdminUtils::modal('❌ Ошибка: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES), $this->cli);
 			return;
 		}
 		AdminUtils::modal($message ?? '✅ Обработка завершена', $this->cli);

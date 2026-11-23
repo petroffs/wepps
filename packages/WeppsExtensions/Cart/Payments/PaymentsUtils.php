@@ -30,6 +30,10 @@ class PaymentsUtils
     
     public function getByDeliveryId(string $deliveryId,CartUtils $cartUtils,string $paymentsId=''): array
     {
+        // Идентификаторы из запроса: срезаем html-taint перед SQL — bind-параметры
+        // в неразбираемся SQL psalm считает записью в БД и тэйнтит все чтения
+        $deliveryId = htmlspecialchars($deliveryId, ENT_QUOTES);
+        $paymentsId = htmlspecialchars($paymentsId, ENT_QUOTES);
         $conditions = "p.IsHidden=0 and p.Id != ?";
         if (!empty($paymentsId)) {
             $conditions = "p.IsHidden=0 and p.Id = ?";

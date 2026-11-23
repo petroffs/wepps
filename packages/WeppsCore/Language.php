@@ -248,6 +248,13 @@ class Language
 	}
 	public static function copyListItemLang($list = "", $id = 0, $path = "lists", $lang = 0)
 	{
+		// $list подставляется в SQL как имя таблицы — белый список закрывает SQL-инъекции
+		if (preg_match('/^[A-Za-z0-9_]+$/D', (string) $list) !== 1) {
+			return ['html' => ''];
+		}
+		$id = (int) $id;
+		$lang = (int) $lang;
+		$list = htmlspecialchars((string) $list, ENT_QUOTES);
 		$sql = "select * from $list where Id=?";
 		$res2 = Connect::$instance->fetch($sql, [$id]);
 
@@ -264,9 +271,9 @@ class Language
 		$sql = "select * from {$list} where $condition";
 		$res = Connect::$instance->fetch($sql, [$id, $lang]);
 		if (!empty($res[0]['Id'])) {
-			$href = "'/_wepps/lists/{$list}/{$res[0]['Id']}/'";
+			$href = "'/_wepps/lists/" . htmlspecialchars((string) $list, ENT_QUOTES) . "/{$res[0]['Id']}/'";
 			if ($path == 'navigator') {
-				$href = "'/_wepps/navigator/{$res[0]['Url']}/'";
+				$href = "'/_wepps/navigator/" . htmlspecialchars((string) $res[0]['Url'], ENT_QUOTES) . "/'";
 			}
 			$js = "
 						<script>

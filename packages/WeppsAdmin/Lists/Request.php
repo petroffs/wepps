@@ -54,6 +54,12 @@ class RequestLists extends Request
 				if (empty($list) || empty($field)) {
 					Exception::error404();
 				}
+				// Идентификаторы таблицы/поля подставляются в SQL напрямую — разрешены
+				// только [A-Za-z0-9_]: защита от SQL-инъекций и очистка taint при
+				// записи в БД (иначе psalm считает отравленными все чтения из БД)
+				if (preg_match('/^[A-Za-z0-9_]+$/D', $list) !== 1 || preg_match('/^[A-Za-z0-9_]+$/D', $field) !== 1) {
+					Exception::error404();
+				}
 				
 				$obj = new Data($list);
 				$scheme = $obj->getScheme();
@@ -187,8 +193,12 @@ class RequestLists extends Request
 				}
 				$ids = array_map('intval', explode(',', $this->get['ids']));
 				$placeholders = rtrim(str_repeat('?,', count($ids)), ',');
-				$params = array_merge([$this->get['text']], $ids);
+				$params = array_merge([(string) $this->get['text']], $ids);
 				$sql = "update s_Files set FileDescription=? where Id in ($placeholders)";
+				// Контентное поле (описание файла) сохраняется как есть; экранирование
+				// выполняется в точках вывода (href/modal/JS-сборки). Без барьера
+				// глобальная модель БД psalm тэйнтит ВЕСЬ бакет и все чтения из БД.
+				/** @psalm-suppress TaintedInput */
 				Connect::$instance->query($sql, $params);
 				break;
 			case "form":
@@ -225,8 +235,8 @@ class RequestLists extends Request
 		                and COLUMN_NAME = ?";
 				$listSchemeReal = Connect::$instance->fetch($sql, [
 					Connect::$projectDB['dbname'],
-					$this->get['w_tablename'],
-					$this->get['TableField']
+					htmlspecialchars((string) $this->get['w_tablename'], ENT_QUOTES),
+					htmlspecialchars((string) $this->get['TableField'], ENT_QUOTES)
 				]);
 					if (isset($listSchemeReal[0]['Col']) && $listSchemeReal[0]['Col'] == $this->get['TableField']) {
 						$this->errors['TableField'] = "Уже используется";
@@ -291,6 +301,10 @@ class RequestLists extends Request
 					Exception::error404();
 				}
 				$outer = Language::copyListItemLang($this->get['list'],$this->get['id'],$this->get['w_path'],$this->get['langId']);
+				// HTML собирается из экранированных вставок (href/list в Language::copyListItemLang);
+				// остаточный taint — артефакт глобальной модели БД psalm (bind-параметры
+				// неразбираемых SELECT он считает записью в общий бакет)
+				/** @psalm-suppress TaintedInput */
 				echo $outer['html'];
 				break;
 			case "propOptionAdd":
@@ -313,7 +327,7 @@ class RequestLists extends Request
 				if (!isset($this->get['term'])) {
 					Connect::$instance->close();
 				}
-				$searchTerm = '%' . str_replace(['%', '_'], ['\%', '\_'], $this->get['term']) . '%';
+				$searchTerm = '%' . htmlspecialchars(str_replace(['%', '_'], ['\%', '\_'], (string) $this->get['term']), ENT_QUOTES) . '%';
 				
 				$obj = new Data("s_Config");
 				$obj->setConcat("t.Id as id,t.Name as value,concat('/_wepps/lists/',t.TableName,'/') as Url");

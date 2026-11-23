@@ -61,7 +61,7 @@ class RequestTemplate extends Request {
 						$files->setUploadSettings(1024 * 1024 * 1, 'image/'); // Изображение до 5 МБ
 						break;
 				}
-				$response = $files->upload($_FILES,$this->get['filesfield'],$this->get['filesform']);
+				$response = $files->upload($_FILES, htmlspecialchars((string) $this->get['filesfield'], ENT_QUOTES), htmlspecialchars((string) $this->get['filesform'], ENT_QUOTES));
 				echo $response['html'];
 				break;
 			case 'removeUploaded':

@@ -77,7 +77,7 @@ class RequestBackup extends Request
 				if ($cmd == "ОК") {
 					AdminUtils::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
-					AdminUtils::modal("<p>Ошибка запроса: {$str}</p>");
+					AdminUtils::modal("<p>Ошибка запроса: " . htmlspecialchars($str, ENT_QUOTES) . "</p>");
 				}
 				break;
 			case "database-restore":
@@ -109,8 +109,8 @@ class RequestBackup extends Request
 				if ($cmd == "ОК") {
 					AdminUtils::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
-					echo $str;
-					AdminUtils::modal("<p>Бекап базы данных: {$str}</p>");
+					echo htmlspecialchars($str, ENT_QUOTES);
+					AdminUtils::modal("<p>Бекап базы данных: " . htmlspecialchars($str, ENT_QUOTES) . "</p>");
 				}
 				break;
 			case "database-remove":
@@ -144,9 +144,10 @@ class RequestBackup extends Request
 					/*
 					 * Вывод финального сообщения
 					 */
-					$js = "
+					$cmdJs = htmlspecialchars($cmd, ENT_QUOTES);
+				$js = "
                     <script>
-                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"w_label w_input\"><input type=\"text\" value=\"{$cmd}\" id=\"dialog-cmd\"/></label>').dialog({
+                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"w_label w_input\"><input type=\"text\" value=\"{$cmdJs}\" id=\"dialog-cmd\"/></label>').dialog({
         				'title':'Сообщение',
         				'modal': true,
         				'buttons' : [{
@@ -186,9 +187,10 @@ class RequestBackup extends Request
 				/*
 				 * Вывод финального сообщения
 				 */
+				$cmdJs = htmlspecialchars($cmd, ENT_QUOTES);
 				$js = "
                     <script>
-                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"w_label w_input\"><input type=\"text\" value=\"{$cmd}\" id=\"dialog-cmd\"/></label>').dialog({
+                    $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"w_label w_input\"><input type=\"text\" value=\"{$cmdJs}\" id=\"dialog-cmd\"/></label>').dialog({
         				'title':'Сообщение',
         				'modal': true,
         				'buttons' : [{
@@ -234,7 +236,12 @@ class RequestBackup extends Request
 				 * Создание sql для создания списка
 				 */
 
-				$table = addslashes($this->get['id']);
+				$table = addslashes(htmlspecialchars((string) $this->get['id'], ENT_QUOTES));
+				// Имя таблицы уходит в SQL напрямую — только идентификаторы [A-Za-z0-9_]
+				if (preg_match('/^[A-Za-z0-9_]+$/D', (string) $this->get['id']) !== 1) {
+					AdminUtils::modal("<p>Некорректное имя таблицы</p>");
+					break;
+				}
 
 				/*
 				 * Структура бд
@@ -267,6 +274,8 @@ class RequestBackup extends Request
 				header("Content-Type: text/sql");
 				header("Content-Disposition:attachment;filename=list_" . Utils::safeChars($table, '/[^A-Za-z0-9_]/') . ".sql");
 				$str = preg_replace("/values \('(\d+)'/", 'values (null', $str);
+				// Выгрузка SQL-файла: Content-Type text/sql + attachment, в браузер не рендерится
+				/** @psalm-suppress TaintedInput */
 				echo $str;
 				break;
 

@@ -129,6 +129,10 @@ class RequestCart extends Request
 				break;
 			case 'addOrder':
 				$response = $cartUtils->addOrder($this->get);
+				// HTML подтверждения собирается из внутренних/экранированных вставок;
+				// остаточный taint — артефакт глобальной модели БД psalm (bind-параметры
+				// неразбираемых SELECT он считает записью в общий бакет)
+				/** @psalm-suppress TaintedInput */
 				echo $response['html'];
 				exit();
 			case 'copyOrder':

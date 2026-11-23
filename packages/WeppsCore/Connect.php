@@ -129,6 +129,8 @@ class Connect
 	 * @param string $group Группировка результатов.
 	 * @return array Результат запроса.
 	 * @throws \Exception Если произошла ошибка при выполнении запроса.
+	 *
+	 * @psalm-database-query $sql $params rows
 	 */
 	public function fetch($sql, $params = [], $group = ''): array
 	{
@@ -168,6 +170,8 @@ class Connect
 	 * @param array $params Параметры запроса.
 	 * @return int Количество затронутых строк.
 	 * @throws \Exception Если произошла ошибка при выполнении запроса.
+	 *
+	 * @psalm-database-query $sql $params none
 	 */
 	public function query(string $sql, array $params = [])
 	{

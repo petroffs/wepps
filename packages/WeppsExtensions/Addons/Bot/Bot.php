@@ -105,6 +105,6 @@ class Bot {
 				exit();
 		}
 		$start = microtime(true)-$start;
-		echo "\n$action - OK [$start sec.]\n";
+		echo "\n" . htmlspecialchars((string) $action, ENT_QUOTES) . " - OK [$start sec.]\n";
 	}
 }

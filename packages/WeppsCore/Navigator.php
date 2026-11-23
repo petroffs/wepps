@@ -104,7 +104,7 @@ class Navigator
 	function __construct($url = null, $backOffice = null)
 	{
 		if ($url == null) {
-			$url = (isset($_GET['weppsurl'])) ? $_GET['weppsurl'] : "";
+			$url = (isset($_GET['weppsurl'])) ? htmlspecialchars((string) $_GET['weppsurl'], ENT_QUOTES) : "";
 		}
 		/*
 		 * Для компоновки страницы создания нового элемента

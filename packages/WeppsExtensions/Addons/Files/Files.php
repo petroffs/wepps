@@ -138,10 +138,13 @@ class Files
 		}
 		$js = "<script>
         $('.w_upload_add').children().remove();\n";
+		$fieldJs = htmlspecialchars($field, ENT_QUOTES);
 		foreach ($_SESSION['uploads'][$form][$field] as $key => $file) {
-			$js .= "$('input[name=\"{$field}\"]').parent().siblings('div.w_upload_add').append($('<div class=\"w_upload_file\" data-key=\"{$key}\">{$file['name']} <i class=\"bi bi-x-circle-fill\"></i></div>'));\n";
+			$keyJs = (int) $key;
+			$nameJs = htmlspecialchars($file['name'], ENT_QUOTES);
+			$js .= "$('input[name=\"{$fieldJs}\"]').parent().siblings('div.w_upload_add').append($('<div class=\"w_upload_file\" data-key=\"{$keyJs}\">{$nameJs} <i class=\"bi bi-x-circle-fill\"></i></div>'));\n";
 		}
-		$js .= "$('label.{$field}').siblings('.w_error').trigger('click');formsInit();</script>";
+		$js .= "$('label.{$fieldJs}').siblings('.w_error').trigger('click');formsInit();</script>";
 		return [
 			'message' => 'Файлы загружены',
 			'html' => $js];
@@ -204,9 +207,12 @@ class Files
 			unlink($_SESSION['uploads'][$form][$field][$index]['dest_name']);
 		}
 		unset($_SESSION['uploads'][$form][$field][$index]);
+		$formJs = htmlspecialchars($form, ENT_QUOTES);
+		$fieldJs = htmlspecialchars($field, ENT_QUOTES);
+		$indexJs = htmlspecialchars($index, ENT_QUOTES);
 		return [
 			'message' => "Файл удален",
-			'html' => "<script>$('#{$form}').find('input[name=\"{$field}\"]').parent().siblings('.w_upload_add').children('[data-key=\"{$index}\"]').remove();</script>"
+			'html' => "<script>$('#{$formJs}').find('input[name=\"{$fieldJs}\"]').parent().siblings('.w_upload_add').children('[data-key=\"{$indexJs}\"]').remove();</script>"
 		];
 	}
 }

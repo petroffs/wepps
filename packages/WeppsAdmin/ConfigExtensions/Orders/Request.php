@@ -120,7 +120,7 @@ class RequestOrders extends Request {
 					Exception::error(404);
 				}
 				$sql = "update Orders set OStatus=? where Id=?";
-				Connect::$instance->query($sql,[$this->get['status'],$this->get['id']]);
+				Connect::$instance->query($sql,[(int) $this->get['status'],(int) $this->get['id']]);
 				$order = $this->getOrder($this->get['id']);
 				break;
 			case "addPayments":

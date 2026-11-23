@@ -969,6 +969,8 @@ class Rest
 				http_response_code($this->status);
 				header('X-API-Status: ' . $this->status);
 				header('Content-Type: application/json');
+				// JSON-тело с явным content-type: браузер его не рендерит как HTML
+				/** @psalm-suppress TaintedInput */
 				echo $this->response;
 				exit();
 			}
@@ -1013,6 +1015,8 @@ class Rest
 
 		if ($print == true) {
 			header('Content-Type: application/json');
+			// JSON-тело с явным content-type: браузер его не рендерит как HTML
+			/** @psalm-suppress TaintedInput */
 			echo $this->response;
 			exit();
 		}

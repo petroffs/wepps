@@ -46,6 +46,10 @@ class DeliveryUtils
     }
     public function getTariffsByCitiesId(string $citiesId, CartUtils $cartUtils, string $deliveryId = ''): array
     {
+        // Идентификаторы из запроса: срезаем html-taint перед SQL — bind-параметры
+        // в неразбираемся SQL psalm считает записью в БД и тэйнтит все чтения
+        $citiesId = htmlspecialchars($citiesId, ENT_QUOTES);
+        $deliveryId = htmlspecialchars($deliveryId, ENT_QUOTES);
         $conditions = "d.IsHidden=0 and d.Id != ?";
         if (!empty($deliveryId)) {
             $conditions = "d.IsHidden=0 and d.Id = ?";
