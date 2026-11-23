@@ -16,14 +16,14 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Home;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Request;
 
 class RequestHome extends Request {
-	public function request($get) {
-		$action = (isset($get['action'])) ? $get['action'] : '';
-
+	public function request($action = "") {
 		switch ($action) {
 			case 'test':
 				$this->tpl = "RequestCustom2.tpl";
