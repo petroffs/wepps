@@ -16,9 +16,10 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsAdmin\Updates;
+
 require_once __DIR__ . '/../../../configloader.php';
 
-use WeppsAdmin\Updates\Updates;
 
 if (empty($argv)) {
 	exit();

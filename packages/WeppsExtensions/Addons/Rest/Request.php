@@ -16,9 +16,10 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Addons\Rest;
+
 require_once __DIR__ . '/../../../../configloader.php';
 
-use WeppsExtensions\Addons\Rest\Rest;
 
 $obj = new Rest(['cli' => ($argv ?? [])]);
 unset($obj);

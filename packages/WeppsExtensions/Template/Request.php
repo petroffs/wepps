@@ -16,6 +16,8 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Template;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Exception;

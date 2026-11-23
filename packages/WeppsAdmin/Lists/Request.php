@@ -16,10 +16,11 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsAdmin\Lists;
+
 require_once '../../../configloader.php';
 
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
-use WeppsAdmin\Lists\Lists;
 use WeppsCore\Language;
 use WeppsCore\Request;
 use WeppsCore\Exception;

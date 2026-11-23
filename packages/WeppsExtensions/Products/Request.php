@@ -16,12 +16,13 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Products;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Request;
 use WeppsCore\Navigator;
 use WeppsExtensions\Cart\CartUtils;
-use WeppsExtensions\Products\ProductsUtils;
 use WeppsExtensions\Template\Filters\Filters;
 
 class RequestProducts extends Request

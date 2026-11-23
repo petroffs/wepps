@@ -16,13 +16,14 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Legal;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Request;
 use WeppsCore\Exception;
 use WeppsCore\TemplateHeaders;
 use WeppsCore\Utils;
-use WeppsExtensions\Legal\LegalUtils;
 
 /**
  * Обработчик AJAX-запросов для юридических соглашений

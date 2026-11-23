@@ -16,6 +16,8 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Contacts;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Request;

@@ -16,6 +16,8 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Profile;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Connect;
@@ -28,7 +30,6 @@ use WeppsCore\Validator;
 use WeppsExtensions\Addons\RemoteServices\RecaptchaV2;
 use WeppsExtensions\Addons\RemoteServices\SmartCaptcha;
 use WeppsExtensions\Cart\CartUtils;
-use WeppsExtensions\Profile\ProfileActions;
 
 /**
  * Класс для обработки запросов профиля пользователя.

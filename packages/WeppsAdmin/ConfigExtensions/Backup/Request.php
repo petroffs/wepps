@@ -16,10 +16,11 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsAdmin\ConfigExtensions\Backup;
+
 require_once __DIR__ . '/../../../../configloader.php';
 
 use WeppsAdmin\Admin\AdminUtils;
-use WeppsAdmin\ConfigExtensions\Backup\BackupFiles;
 use WeppsCore\Request;
 use WeppsCore\Exception;
 use WeppsCore\Connect;

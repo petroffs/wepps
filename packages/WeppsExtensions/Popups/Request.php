@@ -16,6 +16,8 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Popups;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Exception;

@@ -16,13 +16,13 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Cart;
+
 require_once '../../../configloader.php';
 
 use WeppsCore\Smarty;
 use WeppsCore\Request;
 use WeppsCore\Exception;
-use WeppsExtensions\Cart\CartTemplates;
-use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Cart\Delivery\DeliveryUtils;
 use WeppsExtensions\Cart\Payments\PaymentsUtils;
 use WeppsExtensions\Products\ProductsUtils;

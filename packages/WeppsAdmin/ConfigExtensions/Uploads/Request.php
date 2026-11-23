@@ -16,6 +16,8 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsAdmin\ConfigExtensions\Uploads;
+
 require_once '../../../../configloader.php';
 
 use WeppsAdmin\Admin\AdminUtils;

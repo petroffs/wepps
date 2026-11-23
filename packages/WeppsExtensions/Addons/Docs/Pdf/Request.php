@@ -16,6 +16,8 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsExtensions\Addons\Docs\Pdf;
+
 require_once __DIR__ . '/../../../../../configloader.php';
 
 $obj = new Pdf($_REQUEST);

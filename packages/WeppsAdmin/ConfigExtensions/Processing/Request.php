@@ -16,13 +16,11 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
+namespace WeppsAdmin\ConfigExtensions\Processing;
+
 require_once __DIR__ . '/../../../../configloader.php';
 
 use WeppsAdmin\Admin\AdminUtils;
-use WeppsAdmin\ConfigExtensions\Processing\ProcessingProducts;
-use WeppsAdmin\ConfigExtensions\Processing\ProcessingRestApi;
-use WeppsAdmin\ConfigExtensions\Processing\ProcessingTasks;
-use WeppsAdmin\ConfigExtensions\Processing\RestApiDocs;
 use WeppsCore\Request;
 use WeppsCore\Utils;
 use WeppsCore\Exception;
