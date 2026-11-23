@@ -96,7 +96,12 @@ class CartUtils
 	{
 		return $this->cart;
 	}
-	public function getCartMetrics()
+	/**
+	 * @return (float|int|int[]|mixed|null)[]
+	 *
+	 * @psalm-return array{count: float|int, items: list<int>, itemsv: list<int>, settings: mixed|null}
+	 */
+	public function getCartMetrics(): array
 	{
 		return [
 			'count' => array_sum(array_column($this->cart['items'] ?? [], 'qu')),
@@ -145,7 +150,7 @@ class CartUtils
 		}
 		$this->setCart();
 	}
-	public function setCartDeliveryOperations(array $operations = [])
+	public function setCartDeliveryOperations(array $operations = []): void
 	{
 		$this->cart['deliveryOperations'] = $operations;
 		$this->setCart();
@@ -439,11 +444,11 @@ class CartUtils
 		}
 		return $items;
 	}
-	private function _getCartHash(string $jcart = '')
+	private function _getCartHash(string $jcart = ''): string
 	{
 		return Utils::guid($jcart . Connect::$projectServices['jwt']['secret']);
 	}
-	private function _getCartFromCookies(bool $shouldCreate = true)
+	private function _getCartFromCookies(bool $shouldCreate = true): string|null
 	{
 		$cart = '';
 		if (Utils::cookies('wepps_cart_guid') == self::_getCartHash(Utils::cookies('wepps_cart')??'')) {
@@ -457,7 +462,12 @@ class CartUtils
 		}
 		return $cart;
 	}
-	public function getCheckoutData()
+	/**
+	 * @return (array|mixed|null|string)[]
+	 *
+	 * @psalm-return array{city: mixed|null, delivery: array, deliveryActive: string, deliveryOperations: array<never, never>|mixed, payments: array, paymentsActive: ''|'0'|mixed}
+	 */
+	public function getCheckoutData(): array
 	{
 		$deliveryUtils = new DeliveryUtils();
 		$paymentsUtils = new PaymentsUtils();
@@ -508,7 +518,7 @@ class CartUtils
 	{
 		return $this->memcached;
 	}
-	public function addOrder(array $get = [])
+	public function addOrder(array $get = []): array
 	{
 		$this->setCartSummary();
 		$cartSummary = $this->getCartSummary();
@@ -768,7 +778,7 @@ class CartUtils
 		$order = $obj->fetch("t.Guid = ?")[0]??[];
 		return $order;
 	}
-	public function processTask(array $request, Tasks $tasks)
+	public function processTask(array $request, Tasks $tasks): array
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		$order = $this->getOrder($jdata['id']);
@@ -800,7 +810,7 @@ class CartUtils
 		];
 		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processPaymentTask(array $request, Tasks $tasks)
+	public function processPaymentTask(array $request, Tasks $tasks): array
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		$order = $this->getOrder($jdata['id']);

@@ -32,7 +32,12 @@ class Payments
 		$this->cartUtils = $cartUtils;
 		$this->paymentsUtils = new PaymentsUtils();
 	}
-	public function getTariff(CartUtils $cartUtils)
+	/**
+	 * @return (float|int|mixed|string)[]
+	 *
+	 * @psalm-return array{status?: 0|200, title?: mixed, text?: 'Наценка за выбранный способ оплаты', price?: float|string}
+	 */
+	public function getTariff(CartUtils $cartUtils): array
 	{
 		$cartSummary = $cartUtils->getCartSummary();
 		if (empty($cartSummary)) {

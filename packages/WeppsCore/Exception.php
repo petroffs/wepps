@@ -30,6 +30,8 @@ class Exception
 	 * Выводит сообщение об ошибке в браузер
 	 *
 	 * @param \Exception $e Объект исключения
+	 *
+	 * @return void
 	 */
 	public static function display(\Exception $e)
 	{
@@ -58,7 +60,7 @@ class Exception
 	/**
 	 * Обрабатывает ошибку 404
 	 */
-	public static function error404()
+	public static function error404(): never
 	{
 		http_response_code(404);
 		$navigator = new Navigator('/error404/');
@@ -73,7 +75,7 @@ class Exception
 	 *
 	 * @param int $status HTTP-код статуса (по умолчанию 404)
 	 */
-	public static function error($status = 404)
+	public static function error($status = 404): never
 	{
 		http_response_code($status);
 		echo "Status: $status";

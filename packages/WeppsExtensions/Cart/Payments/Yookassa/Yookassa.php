@@ -49,6 +49,7 @@ class Yookassa extends Payments
 			$this->client->setAuth($this->shopId, $this->secretKey);
 		}
 	}
+	#[\Override]
 	public function getOperations($order): array
 	{
 		$sql = "select * from Payments where TableName='Orders' and TableNameId=? and Name='Yookassa' and IsPaid=1 and IsProcessed=1";
@@ -62,6 +63,11 @@ class Yookassa extends Payments
 			]
 		];
 	}
+	/**
+	 * @return array
+	 *
+	 * @psalm-return array{url: mixed}
+	 */
 	public function form()
 	{
 		if (empty($this->settings['id'])) {
@@ -194,7 +200,7 @@ class Yookassa extends Payments
 			Exception::page('Что-то не так с настройками Yookassa', "<p>Похоже, в параметрах подключения к сервису платежной системы есть ошибка. Из-за этого мы не можем обработать запрос.</p><p>{$e->getMessage()}</p><p><b>Что делать?</b></p><p>Проверьте параметры подключения: Убедитесь, что ShopID и Секретный ключ из личного кабинета ЮKassa скопированы правильно и без лишних символов.</p>", 401);
 		}
 	}
-	public function return()
+	public function return(): void
 	{
 		if (empty($this->settings['token'])) {
 			Exception::error404();
@@ -248,7 +254,7 @@ class Yookassa extends Payments
 			$cartTemplates->page($data, __DIR__ . '/ReturnError.tpl');
 		}
 	}
-	public function webhook()
+	public function webhook(): void
 	{
 		$json = file_get_contents('php://input');
 		$jdata = json_decode($json, true);
@@ -259,7 +265,7 @@ class Yookassa extends Payments
 		$tasks->add('yookassa', $jdata, '', '', 'post');
 		Exception::error(200);
 	}
-	public function processTask(array $request, Tasks $tasks)
+	public function processTask(array $request, Tasks $tasks): array
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		if (empty($id = $jdata['object']['id'])) {
@@ -317,7 +323,12 @@ class Yookassa extends Payments
 		Connect::$instance->query($sql, $arr);
 		return $tasks->update((int) $request['Id'], $response, $status);
 	}
-	private function getStatuses()
+	/**
+	 * @return string[]
+	 *
+	 * @psalm-return array{succeeded: 'Оплата прошла успешно!', 3d_secure_failed: 'Не пройдена аутентификация по 3-D Secure. При новой попытке оплаты вам следует использовать другое платежное средство или обратиться в банк за уточнениями.', call_issuer: 'Оплата данным платежным средством отклонена по неизвестным причинам. Вам следует обратиться в организацию, выпустившую платежное средство.', canceled_by_merchant: 'Платеж отменен по API при оплате в две стадии.', card_expired: 'Истек срок действия банковской карты. При новой попытке оплаты вам следует использовать другое платежное средство.', country_forbidden: 'Нельзя заплатить банковской картой, выпущенной в этой стране. При новой попытке оплаты вам следует использовать другое платежное средство.', deal_expired: 'Закончился срок жизни сделки.', expired_on_capture: 'Истек срок списания оплаты у двухстадийного платежа.', expired_on_confirmation: 'Истек срок оплаты.', fraud_suspected: 'Платеж заблокирован из-за подозрения в мошенничестве. При новой попытке оплаты вам следует использовать другое платежное средство', general_decline: 'Причина не детализирована.', identification_required: 'Превышены ограничения на платежи для кошелька ЮMoney.', insufficient_funds: 'Не хватает средств для оплаты.', internal_timeout: 'Технические неполадки на стороне ЮKassa: не удалось обработать запрос в течение 30 секунд.', invalid_card_number: 'Неправильно указан номер карты. При новой попытке оплаты вам следует ввести корректные данные', invalid_csc: 'Неправильно указан код CVV2 (CVC2, CID). При новой попытке оплаты вам следует ввести корректные данные.', issuer_unavailable: 'Организация, выпустившая платежное средство, недоступна. При новой попытке оплаты вам следует использовать другое платежное средство или повторить оплату позже.', payment_method_limit_exceeded: 'Исчерпан лимит платежей. При новой попытке оплаты вам следует использовать другое платежное средство или повторить оплату на следующий день.', payment_method_restricted: 'Запрещены операции данным платежным средством (например, карта заблокирована из-за утери, кошелек — из-за взлома мошенниками). Вам следует обратиться в организацию, выпустившую платежное средство.', permission_revoked: 'Нельзя провести безакцептное списание: вы отозвали разрешение на автоплатежи.', unsupported_mobile_operator: 'Нельзя заплатить с номера телефона этого мобильного оператора. При новой попытке оплаты вам следует использовать другое платежное средство'}
+	 */
+	private function getStatuses(): array
 	{
 		return [
 			'succeeded' => 'Оплата прошла успешно!',

@@ -22,6 +22,7 @@ use Smarty\Compile\Modifier\Base;
 use WeppsCore\Connect;
 
 class AdModifierCompiler extends Base {
+	#[\Override]
 	public function compile($params, \Smarty\Compiler\Template $compiler) : string {
 		$id = $params[0];
 		$tablename = $params[1];

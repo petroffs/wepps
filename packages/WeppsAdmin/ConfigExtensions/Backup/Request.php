@@ -28,6 +28,10 @@ use WeppsCore\TextTransforms;
 
 class RequestBackup extends Request
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->tpl = '';

@@ -22,6 +22,10 @@ use WeppsCore\Request;
 
 class RemoveItem extends Request {
 	public $noclose = 1;
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		
 	}

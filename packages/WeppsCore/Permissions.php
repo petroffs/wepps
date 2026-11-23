@@ -19,7 +19,7 @@
 namespace WeppsCore;
 class Permissions
 {
-	public function getRights($userId = NULL)
+	public function getRights($userId = NULL): void
 	{
 	}
 }

@@ -109,7 +109,12 @@ class UploadsExcelFields
 		return $this->validator;
 	}
 
-	private function getValidator()
+	/**
+	 * @return (int|string)[]
+	 *
+	 * @psalm-return array{status: 200|400, message: '✅ Формат OK'|'❌ Формат некорректный'}
+	 */
+	private function getValidator(): array
 	{
 		if (!empty($this->settings['data'][1])) {
 			if (

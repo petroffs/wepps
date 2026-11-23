@@ -43,6 +43,7 @@ class Legal extends Extension {
      *
      * @return void
      */
+    #[\Override]
     public function request() {
         $smarty = Smarty::getSmarty ();
         switch (Navigator::$pathItem) {

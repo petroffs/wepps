@@ -85,7 +85,7 @@ class ConfigExtensions
 		$tpl = $smarty->fetch(__DIR__ . '/' . $tpl2);
 		$smarty->assign('extension', $tpl);
 	}
-	private function getExtensionsEnv()
+	private function getExtensionsEnv(): void
 	{
 		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
 		$fcond = "'" . implode("','", $perm['extensions']) . "'";

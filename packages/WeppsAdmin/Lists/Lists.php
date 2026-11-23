@@ -218,7 +218,12 @@ class Lists
 		$smarty->assign('extension', $tpl);
 	}
 
-	public static function getListItemForm(TemplateHeaders &$headers, $list, $id)
+	/**
+	 * @return (TemplateHeaders|array|mixed)[]
+	 *
+	 * @psalm-return array{permFields: mixed, tabs: array, element: mixed, listScheme: mixed, listSettings: mixed, headers: TemplateHeaders|mixed}
+	 */
+	public static function getListItemForm(TemplateHeaders &$headers, $list, $id): array
 	{
 		$translate = Admin::getTranslate();
 		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions'], array('list' => $list));
@@ -485,7 +490,12 @@ class Lists
 		return $element;
 	}
 
-	public static function setListItem($list, $id, $data)
+	/**
+	 * @return int|string[]
+	 *
+	 * @psalm-return 0|array{status: '1', html: string}
+	 */
+	public static function setListItem($list, $id, $data): array|int
 	{
 		$obj = new Data($list);
 		$listScheme = $obj->getScheme();
@@ -647,9 +657,12 @@ class Lists
 	 * @param array $myFiles - $_FILES
 	 * @param string $filesfield - Наименование поля type="file"
 	 * @param string $myform - Идентификатор формы
-	 * @return []
+	 *
+	 * @return (mixed|string)[]
+	 *
+	 * @psalm-return array{success?: 'Form was submitted', js: mixed|string, error?: 'Слишком большой файл'}
 	 */
-	public static function addUpload($myFiles, $filesfield, $myform)
+	public static function addUpload($myFiles, $filesfield, $myform): array
 	{
 		$root = $_SERVER['DOCUMENT_ROOT'];
 		$errors = [];
@@ -696,7 +709,7 @@ class Lists
 		$data = array('success' => 'Form was submitted', 'js' => $js);
 		return $data;
 	}
-	public static function removeUpload($field = '', $filename = '')
+	public static function removeUpload($field = '', $filename = ''): string
 	{
 		if ($field == '')
 			return 'Error.';
@@ -718,7 +731,7 @@ class Lists
 		}
 		return "OK";
 	}
-	public static function addListProperty($list = "", $id = 0, $field = "", $prop = 0, $value = "")
+	public static function addListProperty($list = "", $id = 0, $field = "", $prop = 0, $value = ""): string
 	{
 		if ($list == "" || $id == 0 || $field == "" || $prop == 0 || $value == "") {
 			return "";
@@ -771,6 +784,8 @@ class Lists
 	/**
 	 * Обновить ApiMapping/ApiFieldType для поля и инвалидировать кэш схемы.
 	 * Выполняется после того, как поле уже создано в БД и запись есть в s_ConfigFields.
+	 *
+	 * @return void
 	 */
 	public static function updateListFieldApi($id)
 	{
@@ -796,7 +811,7 @@ class Lists
 	 * Сгенерировать DDL (ALTER TABLE) для добавления/изменения поля без обращения к s_ConfigFields.
 	 * Используется для выполнения DDL до записи в s_ConfigFields.
 	 */
-	public static function addListFieldDdl($tableName, $field, $type)
+	public static function addListFieldDdl($tableName, $field, $type): string
 	{
 		$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
                 WHERE TABLE_SCHEMA = ? and TABLE_NAME = ? and COLUMN_NAME = ?";
@@ -856,11 +871,11 @@ class Lists
 		}
 		return $str;
 	}
-	public static function removeListField($list = "", $field = "")
+	public static function removeListField($list = "", $field = ""): void
 	{
 	}
 
-	public static function addList($list = "")
+	public static function addList($list = ""): string
 	{
 		if ($list == "") {
 			return "";
@@ -890,7 +905,12 @@ class Lists
 		#$sql .= "INSERT ignore INTO s_ConfigFields (Id,TableName,Name,Description,TableField,Priority,IsRequired,FType,CreateMode,ModifyMode,FGroup) VALUES (null,'{$list}','GUID','','GUID',6,0,'guid','','','FieldIntegration');\n";
 		return $sql;
 	}
-	public static function copyListItem($list = "", $id = 0, $path = "lists", $lang = 0)
+	/**
+	 * @return string[]
+	 *
+	 * @psalm-return array{status: '0'|'1', html?: string, output?: ''}
+	 */
+	public static function copyListItem($list = "", $id = 0, $path = "lists", $lang = 0): array
 	{
 		if ($list == "" || (int) $id == 0) {
 			return array('status' => '0', 'output' => "");
@@ -965,7 +985,12 @@ class Lists
 		";
 		return array('status' => '1', 'html' => $js);
 	}
-	public static function removeListItem($list = "", $id = 0, $path = "lists")
+	/**
+	 * @return string[]
+	 *
+	 * @psalm-return array{status: '0'|'1', html: string}
+	 */
+	public static function removeListItem($list = "", $id = 0, $path = "lists"): array
 	{
 
 		if ($list == "" || (int) $id == 0) {
@@ -1009,7 +1034,7 @@ class Lists
 		";
 		return array('status' => '1', 'html' => $js);
 	}
-	public static function setSearchIndex($list = '', $id = 0)
+	public static function setSearchIndex($list = '', $id = 0): string
 	{
 		switch ($list) {
 			case '':

@@ -28,7 +28,7 @@ class DefaultPayments extends Payments
 	{
 		parent::__construct($settings,$cartUtils);
 	}
-	public function getOrderComplete()
+	public function getOrderComplete(): void
 	{
 		Utils::debug(1, 1);
 	}

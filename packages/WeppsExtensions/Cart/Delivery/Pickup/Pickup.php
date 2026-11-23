@@ -28,6 +28,12 @@ class Pickup extends Delivery
 	{
 		parent::__construct($settings, $cartUtils);
 	}
+	#[\Override]
+	/**
+	 * @return ((mixed|null)[]|mixed|string|true)[]
+	 *
+	 * @psalm-return array{title: mixed, ext: mixed, tpl: 'Pickup/Notice.tpl', data: array{text: mixed, address: mixed|null}, active: mixed, allowOrderBtn: true}
+	 */
 	public function getOperations()
 	{
 		$headers = $this->cartUtils->getHeaders();

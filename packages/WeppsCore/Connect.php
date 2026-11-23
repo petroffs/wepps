@@ -225,6 +225,8 @@ class Connect
 	 * Закрывает соединение с базой данных.
 	 *
 	 * @param int $exit Флаг выхода из скрипта.
+	 *
+	 * @return void
 	 */
 	public function close($exit = 1)
 	{
@@ -309,7 +311,7 @@ class Connect
 	 *
 	 * @param string $isActive Флаг активации кэширования.
 	 */
-	public function cached($isActive = 'auto')
+	public function cached($isActive = 'auto'): void
 	{
 		$this->memcached = new Memcached($isActive);
 	}

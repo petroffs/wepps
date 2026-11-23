@@ -37,6 +37,10 @@ if (!session_id()) {
 }
 class RequestLists extends Request
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->tpl = '';

@@ -24,6 +24,10 @@ use WeppsCore\Request;
 use WeppsCore\Exception;
 
 class RequestNews extends Request {
+	#[\Override]
+	/**
+	 * @return never
+	 */
 	public function request($action="") {
 		switch ($action) {
 			case 'test':

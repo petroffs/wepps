@@ -46,6 +46,7 @@ class RequestLegacy extends Request
 	 * @return void
 	 * @throws Exception При неизвестном действии возвращает 404 ошибку
 	 */
+	#[\Override]
 	public function request($action = "")
 	{
 		switch ($action) {

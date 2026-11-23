@@ -31,6 +31,10 @@ use WeppsCore\Utils;
 
 class RequestUploads extends Request
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->tpl = '';

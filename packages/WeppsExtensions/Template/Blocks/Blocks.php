@@ -27,6 +27,10 @@ use WeppsCore\Exception;
 
 class Blocks extends Extension
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request()
 	{
 		$smarty = Smarty::getSmarty();

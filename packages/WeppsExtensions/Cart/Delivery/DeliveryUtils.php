@@ -130,7 +130,7 @@ class DeliveryUtils
         $cartUtils->setCartDeliveryOperations($cart['deliveryOperations']);
         return true;
     }
-    private function _match($digit, $field)
+    private function _match($digit, $field): bool
     {
         $ex = explode(',', $field);
         $ex = array_map('trim', $ex);

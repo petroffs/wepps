@@ -28,6 +28,10 @@ use WeppsExtensions\Template\TemplateUtils;
 
 class Home extends Extension
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request()
 	{
 		$smarty = Smarty::getSmarty();

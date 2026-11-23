@@ -31,6 +31,10 @@ class SaveItemPanels extends Request
 	public $element = [];
 
 
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->listSettings = $this->get['listSettings'];
@@ -63,7 +67,7 @@ class SaveItemPanels extends Request
 			}
 		}
 	}
-	private function isStrictLatin(string $variable, string $errorMessage)
+	private function isStrictLatin(string $variable, string $errorMessage): string
 	{
 		if (preg_match('/^[A-Z][a-zA-Z0-9]*$/', $variable)) {
 			return '';

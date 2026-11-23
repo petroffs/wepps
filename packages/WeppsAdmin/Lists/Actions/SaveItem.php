@@ -26,6 +26,10 @@ class SaveItem extends Request {
 	public $listSettings = [];
 	public $element = [];
 	
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];

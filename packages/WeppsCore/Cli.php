@@ -45,7 +45,7 @@ class Cli
 	 *
 	 * @param bool $display Флаг отображения сообщений (по умолчанию true).
 	 */
-	public function display(bool $display = true)
+	public function display(bool $display = true): void
 	{
 		$this->display = $display;
 	}
@@ -121,7 +121,7 @@ class Cli
 	 * @param int $done Количество выполненных задач.
 	 * @param int $total Общее количество задач.
 	 */
-	public function progress($done, $total)
+	public function progress($done, $total): void
 	{
 		$perc = floor(($done / $total) * 100);
 		$left = 100 - $perc;

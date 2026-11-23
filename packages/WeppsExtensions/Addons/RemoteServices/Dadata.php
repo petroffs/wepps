@@ -35,7 +35,7 @@ class Dadata extends RemoteServices {
 	/*
 	 * API справочников: отделения Почты России
 	 */
-	public function getPostalCode($city) {
+	public function getPostalCode($city): array {
 		$url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/postal_office";
 		$body = '{"query": "'.addslashes($city).'"}';
 		return $this->getResponse($url,$body);
@@ -44,7 +44,7 @@ class Dadata extends RemoteServices {
 	/*
 	 * Поиск Идентификатор города в СДЭК, Boxberry и DPD
 	 */
-	public function getDeliveryCode($cityKladrCode) {
+	public function getDeliveryCode($cityKladrCode): array {
 		$url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/delivery";
 		$body = '{"query": "'.addslashes($cityKladrCode).'"}';
 		return $this->getResponse($url,$body);

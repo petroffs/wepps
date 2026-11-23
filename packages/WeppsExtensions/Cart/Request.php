@@ -29,6 +29,10 @@ use WeppsExtensions\Products\ProductsUtils;
 
 class RequestCart extends Request
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$cartUtils = new CartUtils();
@@ -136,7 +140,7 @@ class RequestCart extends Request
 				break;
 		}
 	}
-	private function add(CartUtils $cartUtils)
+	private function add(CartUtils $cartUtils): void
 	{
 		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
 			Exception::error(400);
@@ -171,7 +175,7 @@ class RequestCart extends Request
 		$this->assign('cartSummary', $cartSummary);
 		$this->assign('get', $this->get);
 	}
-	private function displayCart(CartUtils $cartUtils)
+	private function displayCart(CartUtils $cartUtils): void
 	{
 		$this->tpl = 'RequestDefault.tpl';
 		$smarty = Smarty::getSmarty();
@@ -179,7 +183,7 @@ class RequestCart extends Request
 		$template->default();
 		return;
 	}
-	private function displayCheckoutCart(CartUtils $cartUtils)
+	private function displayCheckoutCart(CartUtils $cartUtils): void
 	{
 		$this->tpl = 'RequestCheckout.tpl';
 		$smarty = Smarty::getSmarty();
@@ -187,7 +191,7 @@ class RequestCart extends Request
 		$template->checkout();
 		return;
 	}
-	private function displayVariations(CartUtils $cartUtils)
+	private function displayVariations(CartUtils $cartUtils): void
 	{
 		$this->tpl = 'RequestVariations.tpl';
 		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
@@ -200,7 +204,7 @@ class RequestCart extends Request
 		$this->assign('element', $el);
 		return;
 	}
-	private function findById(array $array, $id, string $key = 'id')
+	private function findById(array $array, $id, string $key = 'id'): array
 	{
 		// Поддержка вложенной структуры (массив групп)
 		foreach ($array as $group) {

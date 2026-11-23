@@ -59,6 +59,7 @@ class Cdek extends Delivery
 		$this->getToken();
 	}
 
+	#[\Override]
 	public function getTariff(): array
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();
@@ -113,6 +114,7 @@ class Cdek extends Delivery
 			'period' => $period
 		];
 	}
+	#[\Override]
 	public function getOperations(): array
 	{
 		$headers = $this->cartUtils->getHeaders();
@@ -184,6 +186,7 @@ class Cdek extends Delivery
 			'allowOrderBtn' => $allowBtn
 		];
 	}
+	#[\Override]
 	public function getErrors(array $get): array
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();
@@ -207,7 +210,10 @@ class Cdek extends Delivery
 	}
 	public function setPoints(): bool
 	{
-		$func = function (array $args) {
+		$func = /**
+		 * @psalm-return array<never, never>
+		 */
+		function (array $args): array {
 			$data = [
 				'country_code' => 'RU',
 			];
@@ -244,7 +250,10 @@ class Cdek extends Delivery
 	}
 	public function setCities(int $page = 0)
 	{
-		$func = function (array $args) {
+		$func = /**
+		 * @psalm-return array<never, never>
+		 */
+		function (array $args): array {
 			$page = $args['page'] ?? 0;
 			$url = $this->url . '/v2/location/cities?country_codes=RU&&size=1000&page=' . $page;
 			$cli = new Cli();
@@ -287,9 +296,15 @@ class Cdek extends Delivery
 		}
 		return [];
 	}
-	public function setRegions()
+	/**
+	 * @return true
+	 */
+	public function setRegions(): bool
 	{
-		$func = function (array $args) {
+		$func = /**
+		 * @psalm-return array<never, never>
+		 */
+		function (array $args): array {
 			$data = [
 				'country_codes' => 'RU',
 			];

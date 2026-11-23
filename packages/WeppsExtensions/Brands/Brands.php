@@ -26,6 +26,10 @@ use WeppsCore\Extension;
 
 class Brands extends Extension
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request()
 	{
 		$smarty = Smarty::getSmarty();
@@ -49,6 +53,7 @@ class Brands extends Extension
 		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
+	#[\Override]
 	public function getItem($tableName, $condition = '')
 	{
 		$this->extensionData['element'] = 1;

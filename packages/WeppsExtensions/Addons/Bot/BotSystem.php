@@ -32,7 +32,7 @@ class BotSystem extends Bot {
 	public function __construct() {
 		parent::__construct();
 	}
-	public function tasks() {
+	public function tasks(): void {
 		$sql = "select * from s_Tasks where IsHidden=0 and InProgress in (1,0) and IsProcessed=0 and COALESCE(TRequest,'') != 'post' and Url not LIKE '/rest/m2m%' order by Id,InProgress desc limit 50";
 		$res = Connect::$instance->fetch($sql);
 		if (!empty($res) && $res[0]['InProgress'] != 1) {
@@ -89,7 +89,7 @@ class BotSystem extends Bot {
 		// Обработка async REST задач (TRequest='post'), поставленных в очередь через Rest::queueTask()
 		(new RestCli())->tasksProcess();
 	}
-	public function clearCache() {
+	public function clearCache(): void {
 		$mem = new Memcached('auto', true); // системный кэш
 		$mem->flushAll();
 	}

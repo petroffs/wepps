@@ -23,7 +23,7 @@ use WeppsCore\Utils;
 use WeppsCore\Connect;
 
 class AdminUtils extends Utils {
-	public static function modal(string $message = '', ?Cli $cli = null)
+	public static function modal(string $message = '', ?Cli $cli = null): void
 	{
 		if (!empty($cli)) {
 			$cli->info($message);

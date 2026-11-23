@@ -1226,7 +1226,12 @@ class Rest
 }
 
 if (!function_exists('apache_request_headers')) {
-	function apache_request_headers()
+	/**
+	 * @return (scalar|string[])[]
+	 *
+	 * @psalm-return array<string, non-empty-list<string>|scalar>
+	 */
+	function apache_request_headers(): array
 	{
 		$arh = [];
 		$rx_http = '/\AHTTP_/';

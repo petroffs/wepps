@@ -26,6 +26,10 @@ use WeppsCore\Utils;
 
 class RequestYookassa extends Request
 {
+    #[\Override]
+    /**
+     * @return void
+     */
     public function request($action = "")
     {
         $cartUtils = new CartUtils();

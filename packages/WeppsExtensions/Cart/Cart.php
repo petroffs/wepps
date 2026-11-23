@@ -27,6 +27,10 @@ use WeppsCore\TemplateHeaders;
 use WeppsCore\Utils;
 
 class Cart extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty();
 		$cartUtils = new CartUtils();

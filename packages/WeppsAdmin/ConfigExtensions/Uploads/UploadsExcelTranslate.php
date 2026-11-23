@@ -78,7 +78,12 @@ class UploadsExcelTranslate {
 		
 	}
 	
-	private function getValidator() {
+	/**
+	 * @return string[]
+	 *
+	 * @psalm-return array{status: '0'|'1', message: 'format error'|'no errors'}
+	 */
+	private function getValidator(): array {
 		if (!empty($this->settings['data'][1])) {
 			if ($this->settings['data'][1]['A']=='Name' && 
 				$this->settings['data'][1]['B']=='Category' && 

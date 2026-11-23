@@ -25,6 +25,10 @@ use WeppsCore\Exception;
 use WeppsCore\Utils;
 
 class Childs extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {

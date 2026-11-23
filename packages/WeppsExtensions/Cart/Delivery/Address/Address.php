@@ -29,6 +29,7 @@ class Address extends Delivery
 	{
 		parent::__construct($settings, $cartUtils);
 	}
+	#[\Override]
 	public function getOperations(): array
 	{
 		$headers = $this->cartUtils->getHeaders();
@@ -57,6 +58,7 @@ class Address extends Delivery
 			'allowOrderBtn' => $allowBtn
 		];
 	}
+	#[\Override]
 	public function getErrors(array $get): array
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();

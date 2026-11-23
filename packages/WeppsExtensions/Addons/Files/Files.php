@@ -38,7 +38,7 @@ class Files
 	 * Вывод указанного файла в браузер на сохранение или открытие на стороне клиента
 	 * @param string $file
 	 */
-	public function output(string $filename)
+	public function output(string $filename): never
 	{
 		$filenameFull = Connect::$projectDev['root'] . $filename;
 		if (!is_file($filenameFull)) {
@@ -66,7 +66,7 @@ class Files
 	/**
 	 * Очистка файловой ситсемы от файлов, не указанных в s_Files
 	 */
-	public function clear()
+	public function clear(): void
 	{
 
 	}
@@ -74,7 +74,7 @@ class Files
 	/**
 	 * Запись файлов в s_Files с физическим копировнием
 	 */
-	public function save($file)
+	public function save($file): void
 	{
 
 	}

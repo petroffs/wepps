@@ -30,6 +30,10 @@ class Uploads extends Request {
 	public $way;
 	public $title;
 	public $headers;
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		$smarty = Smarty::getSmarty();
 		$this->tpl = 'Uploads.tpl';

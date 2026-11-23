@@ -64,11 +64,19 @@ class RemoteServices {
 	 * Для реализации там, где это необходимо
 	 * Например ПВЗ для СДЕК
 	 */
-	public function getExtension() {
+	/**
+	 * @psalm-return array<never, never>
+	 */
+	public function getExtension(): array {
 	    return [];
 	}
 	
-	private function getCache($hash) {
+	/**
+	 * @return (mixed|string)[]|string
+	 *
+	 * @psalm-return ''|array{response: mixed, url: ''|mixed, body: ''|mixed}
+	 */
+	private function getCache($hash): array|string {
 	    $sql = "select * from RemoteServicesCache where binary Alias = '$hash'";
 	    $res = Connect::$instance->fetch($sql);
 	    if (!empty($res[0]['Id'])) {
@@ -81,7 +89,7 @@ class RemoteServices {
 	    return '';
 	}
 	
-	private function addCache($url='',$body='',$response='') {
+	private function addCache($url='',$body='',$response=''): int {
 	    $className = get_class($this);
 	    
 		$prepare = Connect::$instance->prepare([

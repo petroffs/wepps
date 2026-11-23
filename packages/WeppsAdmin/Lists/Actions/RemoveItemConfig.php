@@ -27,6 +27,10 @@ class RemoveItemConfig extends Request {
 	public $listSettings = [];
 	public $element = [];
 	private $id;
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		$this->listSettings = $this->get['listSettings'];
 		$this->id = (int) $this->get['id'];

@@ -31,7 +31,10 @@ class Filters
 		$this->setParams($params);
 		$this->setParamsFilters();
 	}
-	public function getFilters($conditions)
+	/**
+	 * @psalm-return list<mixed>
+	 */
+	public function getFilters($conditions): array
 	{
 		$fieldIds = "'' ProductsId";
 		if (!empty($conditions['params'])) {
@@ -99,7 +102,7 @@ class Filters
 		
 		return $result;
 	}
-	public function getFiltersCodeJS(array $filtersActive = [], int $count = 0)
+	public function getFiltersCodeJS(array $filtersActive = [], int $count = 0): string
 	{
 		if (empty($filtersActive)) {
 			return '';
@@ -150,7 +153,7 @@ class Filters
 		#Utils::debug($js,1);
 		return $js;
 	}
-	public function setBrowserStateCodeJS(string $title = '')
+	public function setBrowserStateCodeJS(string $title = ''): string
 	{
 		if (!empty($this->params['text'])) {
 			$this->paramsFilters['text'] = $this->params['text'];
@@ -167,7 +170,7 @@ class Filters
 		";
 		return $js;
 	}
-	private function setParams(array $params)
+	private function setParams(array $params): void
 	{
 		$arr = [];
 		foreach ($params as $key => $value) {

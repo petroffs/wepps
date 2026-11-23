@@ -35,6 +35,10 @@ if (!session_id()) {
 
 class RequestContacts extends Request
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = '')
 	{
 		$navigator = new Navigator(@$this->get['link']);
@@ -49,7 +53,7 @@ class RequestContacts extends Request
 				break;
 		}
 	}
-	private function feedback()
+	private function feedback(): void
 	{
 		$this->errors = [];
 		$this->errors['name'] = Validator::isNotEmpty($this->get['name'], "Не заполнено");

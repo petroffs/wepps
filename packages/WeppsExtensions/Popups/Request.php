@@ -25,6 +25,10 @@ use WeppsCore\Request;
 use WeppsExtensions\Addons\Bot\BotTest;
 
 class RequestPopups extends Request {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		switch ($action) {
 			case 'test':

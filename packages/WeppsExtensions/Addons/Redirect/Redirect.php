@@ -24,6 +24,10 @@ use WeppsCore\Extension;
 use WeppsCore\Exception;
 
 class Redirect extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {

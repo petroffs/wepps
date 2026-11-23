@@ -58,7 +58,7 @@ class RecaptchaV2 extends RemoteServices
 		return $this->sitekey;
 	}
 
-	public function render($gwidgetId = 'gwidgetId', $id = 'greacptchaV2', $recaptchadub = 'recaptchadub')
+	public function render($gwidgetId = 'gwidgetId', $id = 'greacptchaV2', $recaptchadub = 'recaptchadub'): string
 	{
 		if (empty($this->sitekey)) {
 			return '<div style="color: var(--color-attention);">Ошибка: не задан ключ сайта (site key) для reCAPTCHA V2</div>';
@@ -99,7 +99,7 @@ class RecaptchaV2 extends RemoteServices
 		";
 		return $html;
 	}
-	public function reset($gwidgetId = 'gwidgetId')
+	public function reset($gwidgetId = 'gwidgetId'): string
 	{
 		$html = "
         <script>

@@ -32,6 +32,7 @@ class RussianPost extends Delivery
     {
         parent::__construct($settings, $cartUtils);
     }
+    #[\Override]
     public function getTariff(): array
     {
         $cartSummary = $this->cartUtils->getCartSummary();
@@ -87,6 +88,7 @@ class RussianPost extends Delivery
         ];
         return $output;
     }
+    #[\Override]
     public function getOperations(): array
     {
         $headers = $this->cartUtils->getHeaders();
@@ -114,6 +116,7 @@ class RussianPost extends Delivery
             'allowOrderBtn' => $allowBtn
         ];
     }
+    #[\Override]
     public function getErrors(array $get): array
 	{
 		$cartSummary = $this->cartUtils->getCartSummary();

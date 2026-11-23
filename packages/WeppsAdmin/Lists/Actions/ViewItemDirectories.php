@@ -24,6 +24,10 @@ class ViewItemDirectories extends Request {
 	public $noclose = 1;
 	public $scheme = [];
 	public $element = [];
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		$element = $this->get['element'];
 		$this->element = &$this->get['element'];

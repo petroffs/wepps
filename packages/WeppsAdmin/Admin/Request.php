@@ -27,6 +27,10 @@ use WeppsCore\Users;
 
 class RequestAdmin extends Request
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->tpl = '';

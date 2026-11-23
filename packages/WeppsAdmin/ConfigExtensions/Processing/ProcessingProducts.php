@@ -29,6 +29,9 @@ class ProcessingProducts
 	{
 
 	}
+	/**
+	 * @return void
+	 */
 	public function resetProducts()
 	{
 		if (Connect::$projectDev['debug'] == 0) {
@@ -51,6 +54,9 @@ class ProcessingProducts
 			Utils::debug($e, 21);
 		}
 	}
+	/**
+	 * @return void
+	 */
 	public function resetProductsAliases()
 	{
 		if (Connect::$projectDev['debug'] == 0) {
@@ -64,6 +70,9 @@ class ProcessingProducts
 			$sth->execute([$alias, $value['Id']]);
 		}
 	}
+	/**
+	 * @return void
+	 */
 	public function generateProductsVariations()
 	{
 		if (Connect::$projectDev['debug'] == 0) {
@@ -266,14 +275,14 @@ class ProcessingProducts
 	{
 		return md5($id . '_' . ($value[0] ?? '') . '_' . ($value[1] ?? '') . '_' . ($value[2] ?? ''));
 	}
-	public function resetProductsVariationsAll()
+	public function resetProductsVariationsAll(): void
 	{
 		$res = Connect::$instance->fetch("select * from Products where Variations!=''");
 		foreach ($res as $value) {
 			$this->setProductsVariations($value);
 		}
 	}
-	public function setProductsFilesAPIFilter(int $id = 0)
+	public function setProductsFilesAPIFilter(int $id = 0): void
 	{
 		$conditions = "TableName='Products' and TableNameField='ImagesV'";
 		$params = [];

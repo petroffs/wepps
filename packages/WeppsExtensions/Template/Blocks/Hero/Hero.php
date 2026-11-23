@@ -22,6 +22,10 @@ use WeppsCore\Extension;
 use WeppsCore\Smarty;
 
 class Hero extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty();
 		$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Blocks/Hero/Hero.tpl');

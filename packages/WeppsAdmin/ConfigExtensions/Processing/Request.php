@@ -30,6 +30,10 @@ use WeppsExtensions\Addons\Bot\BotSystem;
 
 class RequestProcessing extends Request
 {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->tpl = '';

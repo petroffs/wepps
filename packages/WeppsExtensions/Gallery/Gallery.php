@@ -25,6 +25,10 @@ use WeppsCore\Extension;
 use WeppsCore\Exception;
 
 class Gallery extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {

@@ -292,7 +292,7 @@ class RestV1M2MUtils
 		}
 
 		// Before callback: вызывается на каждой странице
-		$beforeCallback = function (array $items, string $tableName, self $utils) use ($currentPage) {
+		$beforeCallback = function (array $items, string $tableName, self $utils) use ($currentPage): array {
 			// На первой странице: маркировка всех записей как кандидатов на скрытие
 			if ($currentPage === 1) {
 				Connect::$instance->query(
@@ -312,7 +312,7 @@ class RestV1M2MUtils
 		};
 
 		// After callback: вызывается на каждой странице
-		$afterCallback = function (array $results, string $tableName, self $utils) use ($currentPage, $totalPages) {
+		$afterCallback = function (array $results, string $tableName, self $utils) use ($currentPage, $totalPages): void {
 			// Только на последней странице: финализация скрытия
 			if ($currentPage !== $totalPages) {
 				return;

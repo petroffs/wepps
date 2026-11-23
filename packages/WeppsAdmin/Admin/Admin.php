@@ -65,7 +65,7 @@ class Admin {
 		$smarty->display( __DIR__ . '/Admin.tpl');
 		Connect::$instance->close();
 	}
-	public function request() {
+	public function request(): object {
 		$headers = &$this->headers;
 		$path = (self::$path[0]=='') ? 'home' : self::$path[0];
 		if (@Connect::$projectData['user']['ShowAdmin'] != 1) {
@@ -118,6 +118,9 @@ class Admin {
 			exit();
 		}
 	}
+	/**
+	 * @return void
+	 */
 	private function getNavigateUrl($url) {
 		//Utils::debug($url,1);
 		$match = [];
@@ -152,7 +155,12 @@ class Admin {
 		self::$path = explode("/", substr($url, 0,-1));
 	}
 	
-	public static function getPermissions($permId=0,$check=[]) {
+	/**
+	 * @return (int|string[])[]
+	 *
+	 * @psalm-return array{status: 0|1, lists?: non-empty-list<string>, extensions?: non-empty-list<string>}
+	 */
+	public static function getPermissions($permId=0,$check=[]): array {
 		if ($permId==0 || (int) $permId==0) return array('status'=>0);
 		$obj = new Data("s_Permissions");
 		$res = $obj->fetch($permId)[0];
@@ -180,7 +188,7 @@ class Admin {
 		return array('status'=>1,'lists'=>$lists,'extensions'=>$extensions);
 	}
 	
-	public static function getTranslate() {
+	public static function getTranslate(): array {
 		$sql = "select Name,LangRu,LangEn from s_Lang where Category='back'";
 		$res = Connect::$instance->fetch($sql,[],'group');
 		$translate = [];

@@ -40,7 +40,7 @@ class BackupFiles {
 		$this->dateMask = date("Ymd-His");
 	}
 	
-	public function addBackupIgnoredByGit() {
+	public function addBackupIgnoredByGit(): int {
 		$content = file_get_contents( $this->root . "/.gitignore");
 		$files = explode("\n", $content);
 		$backupFilename = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}-gitignored.7z";
@@ -68,7 +68,7 @@ class BackupFiles {
 		return 1;
 	}
 	
-	public function addBackup() {
+	public function addBackup(): int {
 		$backupFilename = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}.7z";
 		$this->addBackupDB();
 		$this->removeBackup();
@@ -79,7 +79,7 @@ class BackupFiles {
 		return 1;
 	}
 	
-	public function removeBackup() {
+	public function removeBackup(): int {
 		$scandir = scandir($this->root.$this->backupPath);
 		foreach ($scandir as $file) {
 			if (strstr($file,".7z")) {
@@ -89,7 +89,7 @@ class BackupFiles {
 		return 1;
 	}
 	
-	public function addBackupDB($removeSqlFiles=true) {
+	public function addBackupDB($removeSqlFiles=true): int {
 		if ($removeSqlFiles==true) {
 			$this->removeBackupDB();
 		}
@@ -108,7 +108,7 @@ class BackupFiles {
 		return 1;
 	}
 	
-	public function removeBackupDB() {
+	public function removeBackupDB(): int {
 		$scandir = scandir($this->root.$this->backupPath);
 		foreach ($scandir as $file) {
 			if (strstr($file,".sql")) {

@@ -25,6 +25,10 @@ use WeppsCore\Request;
 use WeppsExtensions\Addons\Files\Files;
 
 class RequestTemplate extends Request {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = '') {
 		switch ($action) {
 			case 'files':

@@ -128,11 +128,11 @@ class Pdf
 				break;
 		}
 	}
-	function save()
+	function save(): never
 	{
 		exit();
 	}
-	function output($download = false)
+	function output($download = false): void
 	{
 		$dompdf = new Dompdf();
 		$dompdf->setPaper('A4', 'portrait');

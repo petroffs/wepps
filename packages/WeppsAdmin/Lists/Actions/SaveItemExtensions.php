@@ -26,6 +26,10 @@ class SaveItemExtensions extends Request {
 	public $scheme = [];
 	public $listSettings = [];
 	public $element = [];
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
@@ -48,7 +52,7 @@ class SaveItemExtensions extends Request {
 	    	}
 	    }
 	}
-	private function copyExts($ext, $fileend, $dirstart, $stamp) {
+	private function copyExts($ext, $fileend, $dirstart, $stamp): void {
 		$ext = ucfirst($ext);
 		$dir = "{$dirstart}/{$ext}";
 		if (!is_dir($dir)) {

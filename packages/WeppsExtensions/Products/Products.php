@@ -34,6 +34,10 @@ class Products extends Extension
 {
 	private $filters;
 	private $productsUtils;
+	#[\Override]
+	/**
+	 * @return Brands|Childs|null
+	 */
 	public function request()
 	{
 		$smarty = Smarty::getSmarty();
@@ -116,6 +120,7 @@ class Products extends Extension
 		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
+	#[\Override]
 	public function getItem($tableName, $condition = '')
 	{
 		$id = Navigator::$pathItem;

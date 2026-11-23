@@ -26,6 +26,10 @@ use WeppsCore\Exception;
 class _Example10 extends Request
 {
 	public $title;
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 

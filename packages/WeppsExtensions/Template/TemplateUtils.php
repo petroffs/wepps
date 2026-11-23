@@ -25,12 +25,12 @@ use WeppsCore\Utils;
 
 class TemplateUtils extends Utils
 {
-	public static function test()
+	public static function test(): void
 	{
 		self::debug(1, 21);
 	}
 
-	public static function getMeta(Navigator &$navigator, TemplateHeaders &$headers)
+	public static function getMeta(Navigator &$navigator, TemplateHeaders &$headers): void
 	{
 		$host = Connect::$projectDev['host'];
 		if (isset($_GET['weppsurl'])) {
@@ -69,6 +69,9 @@ class TemplateUtils extends Utils
 		$headers->meta("<link itemprop=\"thumbnailUrl\" href=\"" . $metaimage['src'] . "\">");
 	}
 
+	/**
+	 * @return void
+	 */
 	public static function getMetaOrganization(Navigator &$navigator, TemplateHeaders &$headers)
 	{
 		if ($navigator->content['Id'] != 1) {

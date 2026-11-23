@@ -33,7 +33,7 @@ class ProductsUtils
 	{
 
 	}
-	public function setNavigator(Navigator $navigator, string $list)
+	public function setNavigator(Navigator $navigator, string $list): void
 	{
 		$this->navigator = &$navigator;
 		$this->list = $list;
@@ -111,7 +111,7 @@ class ProductsUtils
 			'params' => $prepare
 		];
 	}
-	public function getLimit()
+	public function getLimit(): int
 	{
 		return 12;
 	}

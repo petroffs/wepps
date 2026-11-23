@@ -79,7 +79,12 @@ class UploadsExcelListData {
 		
 	}
 	
-	private function getValidator() {
+	/**
+	 * @return string[]
+	 *
+	 * @psalm-return array{status: '0'|'1', message: string}
+	 */
+	private function getValidator(): array {
 		$obj = new Data($this->settings['title']);
 		$scheme = $obj->getScheme();
 		$error = 0;

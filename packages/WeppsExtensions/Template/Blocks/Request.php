@@ -25,6 +25,10 @@ use WeppsCore\Connect;
 use WeppsCore\Request;
 
 class RequestBlocks extends Request {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		switch ($action) {
 			case 'sortable':

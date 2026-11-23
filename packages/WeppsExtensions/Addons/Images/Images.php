@@ -237,7 +237,7 @@ class Images
 				return 'image/jpeg';
 		}
 	}
-	private function createSourceImage(string $filename)
+	private function createSourceImage(string $filename): \GdImage|false
 	{
 		switch ($this->mime) {
 			case 'image/gif':

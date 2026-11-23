@@ -27,6 +27,7 @@ class Qrcode extends Payments
 	{
 		parent::__construct($settings, $cartUtils);
 	}
+	#[\Override]
 	public function getOperations($order): array
 	{
 		#$headers = $this->cartUtils->getHeaders();

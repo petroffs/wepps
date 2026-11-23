@@ -35,6 +35,10 @@ class Profile extends Extension
 {
 	private $profileTpl = '';
 	private $user;
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request()
 	{
 		$this->tpl = __DIR__ . '/Profile.tpl';
@@ -155,6 +159,9 @@ class Profile extends Extension
 
 		$smarty->assign('orders', $ordersData['orders']);
 	}
+	/**
+	 * @return void
+	 */
 	private function favorites(\Smarty\Smarty $smarty, array $profileNav)
 	{
 		$this->navigator->content['Name'] = 'Избранное';

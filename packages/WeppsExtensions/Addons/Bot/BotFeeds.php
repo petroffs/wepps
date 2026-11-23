@@ -29,7 +29,7 @@ class BotFeeds extends Bot {
 		parent::__construct();
 	}
 	
-	public function setSitemap() {
+	public function setSitemap(): void {
 		$arr = [];
 		
 		/*

@@ -22,6 +22,10 @@ use WeppsCore\Extension;
 use WeppsCore\Smarty;
 
 class AltBlocks extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty();
 		$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Blocks/AltBlocks/AltBlocks.tpl');

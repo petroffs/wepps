@@ -29,6 +29,10 @@ class Processing extends Request
 	public $way;
 	public $title;
 	public $headers;
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->tpl = 'Processing.tpl';

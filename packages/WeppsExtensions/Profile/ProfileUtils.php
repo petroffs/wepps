@@ -34,11 +34,16 @@ class ProfileUtils
 	{
 		$this->user = $user;
 	}
-	public function setNavigator(Navigator $navigator)
+	public function setNavigator(Navigator $navigator): void
 	{
 		$this->navigator = $navigator;
 	}
-	public function getNav($pathItem = '')
+	/**
+	 * @return string[][]
+	 *
+	 * @psalm-return list{0: array{title: 'Вход'|'Профайл', alias: '', url: '/profile/', event?: ''}, 1: array{title: 'Мои заказы'|'Регистрация', alias: 'orders'|'reg', url: '/profile/orders.html'|'/profile/reg.html', event?: ''}, 2: array{title: 'Восстановление доступа'|'Избранное', alias: 'favorites'|'password', url: '/profile/favorites.html'|'/profile/password.html', event?: ''}, 3?: array{title: 'Настройки', alias: 'settings', url: '/profile/settings.html'}, 4?: array{title: 'Выход', alias: 'signout', url: '/profile/', event: 'sign-out'}}
+	 */
+	public function getNav($pathItem = ''): array
 	{
 		if (!empty($this->user)) {
 			$nav = [
@@ -93,7 +98,7 @@ class ProfileUtils
 		];
 		return $nav;
 	}
-	public function getFavorites()
+	public function getFavorites(): void
 	{
 		// $jdata = json_decode($this->partner['JFav'], true);
 		// if (!is_array($jdata)) {
@@ -114,7 +119,7 @@ class ProfileUtils
 		// return $products;
 	}
 
-	public function getOrders($id = 0)
+	public function getOrders($id = 0): void
 	{
 
 	}
@@ -147,7 +152,7 @@ class ProfileUtils
 		];
 		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processPasswordConfirmTask(array $request, Tasks $tasks)
+	public function processPasswordConfirmTask(array $request, Tasks $tasks): array
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		$url = 'https://' . Connect::$projectDev['host'] . "/profile/";
@@ -163,7 +168,7 @@ class ProfileUtils
 		];
 		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processRegConfirmTask(array $request, Tasks $tasks)
+	public function processRegConfirmTask(array $request, Tasks $tasks): array
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		$jwt = new Jwt();
@@ -184,7 +189,7 @@ class ProfileUtils
 		];
 		return $tasks->update($request['Id'], $response, 200);
 	}
-	public function processRegCompleteTask(array $request, Tasks $tasks)
+	public function processRegCompleteTask(array $request, Tasks $tasks): array
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		$url = 'https://' . Connect::$projectDev['host'] . "/profile/";

@@ -24,6 +24,10 @@ use WeppsCore\Data;
 use WeppsCore\Extension;
 
 class News extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty ();
 		switch (Navigator::$pathItem) {

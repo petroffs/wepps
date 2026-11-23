@@ -27,6 +27,10 @@ class SaveItemTemplates extends Request {
 	public $listSettings = [];
 	public $element = [];
 	
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
@@ -35,7 +39,7 @@ class SaveItemTemplates extends Request {
 	    	$this->copyTpl($this->element['FileTemplate']);
 	    }
 	}
-	private function copyTpl($tpl) {
+	private function copyTpl($tpl): void {
 		$tmp = substr($tpl, 0, - 4);
 		$root = Connect::$projectDev['root']."/packages/WeppsExtensions/Template/";
 		if (! is_file("{$root}{$tmp}.tpl")) {

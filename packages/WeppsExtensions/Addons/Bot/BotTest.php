@@ -31,7 +31,7 @@ class BotTest extends Bot {
 	public function __construct() {
 		parent::__construct();
 	}
-	public function setHashes() {
+	public function setHashes(): void {
 		$sql = "select * from s_PropertiesValues;";
 		$res = Connect::$instance->fetch($sql);
 		$str = "";
@@ -49,7 +49,7 @@ class BotTest extends Bot {
 		echo 'Processed ' . count($res) . ' rows';
 		return;
 	}
-	public function telegram() {
+	public function telegram(): void {
 		/*
 		 * Как узнать chat_id - находим бот в ТГ. Пишем ему /start
 		 * Далее через getUpdates находим chat_id пользователя (который ввел /start)
@@ -60,11 +60,11 @@ class BotTest extends Bot {
 		$response = $tg->send(Connect::$projectServices['telegram']['dev'],'Hello from Bot (Telegram)');
 		Utils::debug($response,2);
 	}
-	public function mail() {
+	public function mail(): void {
 		$mail = new Mail("html");
 		$mail->mail(Connect::$projectInfo['email'], "Test subject", "Test text");
 	}
-	public function testDB() {
+	public function testDB(): void {
 		$row = [
 				'Name' => 'TEST1',
 				'Text' => 'test text',
@@ -122,13 +122,13 @@ class BotTest extends Bot {
 				);
 		Utils::debug($t,21);
 	}
-	public function cli() {
+	public function cli(): void {
 		$this->cli->text("simle text");
 		$this->cli->success("success text");
 		$this->cli->warning("warning text");
 		$this->cli->error("error text");
 	}
-	public function password() {
+	public function password(): never {
 		$password = "1541";
 		$hash = password_hash($password,PASSWORD_BCRYPT);
 		$this->cli->info($hash);
@@ -144,7 +144,7 @@ class BotTest extends Bot {
 		$this->cli->error('fail');
 		exit();
 	}
-	public function testOrderText() {
+	public function testOrderText(): void {
 		/*
 		 * EText - комментарий
 		 */

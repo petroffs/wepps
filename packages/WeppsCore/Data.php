@@ -423,7 +423,7 @@ class Data
 	 *
 	 * @param string $value Перечисление полей
 	 */
-	public function setFields($value)
+	public function setFields($value): void
 	{
 		$this->fields = $value;
 	}
@@ -433,7 +433,7 @@ class Data
 	 *
 	 * @param string $value Перечисление дополнительных полей
 	 */
-	public function setConcat($value)
+	public function setConcat($value): void
 	{
 		$this->concat = $value;
 	}
@@ -444,7 +444,7 @@ class Data
 	 *
 	 * @param string $value Компоновка left outer join
 	 */
-	public function setJoin($value)
+	public function setJoin($value): void
 	{
 		$this->join = $value;
 	}

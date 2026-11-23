@@ -28,6 +28,10 @@ use WeppsExtensions\Template\Filters\Filters;
 class RequestProducts extends Request
 {
 	private $navigator;
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		switch ($action) {

@@ -31,6 +31,10 @@ if (!session_id()) {
 }
 
 class Contacts extends Extension {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request() {
 		$smarty = Smarty::getSmarty();
 		#Utils::debug($_SESSION,21);

@@ -29,6 +29,10 @@ use WeppsCore\TextTransforms;
 use WeppsExtensions\Profile\ProfileActions;
 
 class RequestOrders extends Request {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		$this->tpl = '';
 		if (@Connect::$projectData['user']['ShowAdmin']!=1) {
@@ -195,7 +199,12 @@ class RequestOrders extends Request {
 				break;
 		}
 	}
-	private function getOrder($id) {
+	/**
+	 * @return array[]
+	 *
+	 * @psalm-return array{order: array, statuses: array}
+	 */
+	private function getOrder($id): array {
 		$profileActions = new ProfileActions(false);
 		$order = $profileActions->getFullOrder($id, 0); // 0 = без проверки userId (админпанель видит все заказы)
 		if (empty($order)) {
@@ -210,7 +219,12 @@ class RequestOrders extends Request {
 		$this->assign('order', $order);
 		return ['order'=>$order,'statuses'=>$statuses];
 	}
-	private function searchProducts($text='',$page=1) {
+	/**
+	 * @return array[]
+	 *
+	 * @psalm-return array{results: array, pagination: array{more: bool}}
+	 */
+	private function searchProducts($text='',$page=1): array {
 		if (strlen($text) < 0) {
 			$res = [];
 		} else {
@@ -242,7 +256,7 @@ class RequestOrders extends Request {
 	/**
 	 * @deprecated
 	 */
-	private function getOrderPositionsText($order) {
+	private function getOrderPositionsText($order): string {
 		$text = "";
 		$text.= "<h4>ТОВАРЫ ЗАКАЗА</h4>\n";
 		$text .= "<table border=\"0\" cellspacing=\"0\" cellpadding=\"10\">\n";

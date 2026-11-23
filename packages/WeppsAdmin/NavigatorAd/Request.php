@@ -27,6 +27,10 @@ use WeppsCore\Data;
 use WeppsCore\TextTransforms;
 
 class RequestNavigatorAd extends Request {
+    #[\Override]
+    /**
+     * @return void
+     */
     public function request($action="") {
         $this->tpl = '';
         if (@Connect::$projectData['user']['ShowAdmin']!=1) {

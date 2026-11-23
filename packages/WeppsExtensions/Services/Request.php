@@ -23,6 +23,10 @@ require_once '../../../configloader.php';
 use WeppsCore\Request;
 
 class RequestServices extends Request {
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		switch ($action) {
 			case 'test':

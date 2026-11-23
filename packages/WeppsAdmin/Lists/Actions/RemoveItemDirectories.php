@@ -27,6 +27,10 @@ class RemoveItemDirectories extends Request {
 	public $listSettings = [];
 	private $id;
 	public $element = [];
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action="") {
 		$this->listSettings = $this->get['listSettings'];
 		$this->id = (int) $this->get['id'];

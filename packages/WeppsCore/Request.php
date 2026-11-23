@@ -96,6 +96,8 @@ abstract class Request
 	 * Для шаблона $this->tpl = "RequestExample.tpl" требуется
 	 * файл RequestExample.tpl.css или RequestExample.tpl.js
 	 * Шаблон следует определять в self::request()
+	 *
+	 * @return void
 	 */
 	private function cssjs()
 	{
@@ -122,7 +124,7 @@ abstract class Request
 	 * @param string $key Ключ переменной.
 	 * @param mixed $value Значение переменной.
 	 */
-	public function assign($key, $value)
+	public function assign($key, $value): void
 	{
 		$this->assign[$key] = $value;
 	}
@@ -133,7 +135,7 @@ abstract class Request
 	 * @param string $key Ключ переменной.
 	 * @param string $value Значение переменной.
 	 */
-	public function fetch($key, $value)
+	public function fetch($key, $value): void
 	{
 		$smarty = Smarty::getSmarty();
 		foreach ($this->assign as $k => $v) {

@@ -30,6 +30,10 @@ class SaveItemDirectories extends Request
 	public $listSettings = [];
 	public $element = [];
 
+	#[\Override]
+	/**
+	 * @return void
+	 */
 	public function request($action = "")
 	{
 		$this->scheme = $this->get['listScheme'];
