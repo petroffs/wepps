@@ -23,6 +23,7 @@ require_once '../../../configloader.php';
 use WeppsCore\Smarty;
 use WeppsCore\Request;
 use WeppsCore\Exception;
+use WeppsCore\Utils;
 use WeppsExtensions\Cart\Delivery\DeliveryUtils;
 use WeppsExtensions\Cart\Payments\PaymentsUtils;
 use WeppsExtensions\Products\ProductsUtils;
@@ -81,9 +82,9 @@ class RequestCart extends Request
 				}
 				$html = '';
 				foreach ($res as $row) {
-					$html .= '<div class="w_suggestions-item" data-id="' . $row['Id'] . '"><div>' . htmlspecialchars($row['Title']) . '</div></div>';
+					$html .= '<div class="w_suggestions-item" data-id="' . (int) $row['Id'] . '"><div>' . htmlspecialchars($row['Title']) . '</div></div>';
 				}
-				echo json_encode([
+				echo Utils::json([
 					'html' => $html,
 					'hasMore' => true
 				]);

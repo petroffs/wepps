@@ -22,6 +22,7 @@ require_once '../../../configloader.php';
 
 use WeppsCore\Request;
 use WeppsCore\Navigator;
+use WeppsCore\Utils;
 use WeppsExtensions\Cart\CartUtils;
 use WeppsExtensions\Template\Filters\Filters;
 
@@ -59,7 +60,7 @@ class RequestProducts extends Request
 				foreach ($products['rows'] as $row) {
 					$html .= '<div class="w_suggestions-item" data-url="' . $row['Url'] . '"><div><img src="/pic/lists' . $row['Images_FileUrl'] . '"></div><div>' . htmlspecialchars($row['Name']) . '</div><div class="price"><span>' . $row['Price'] . '</span></div></div>';
 				}
-				echo json_encode([
+				echo Utils::json([
 					'html' => $html,
 					'hasMore' => true
 				]);

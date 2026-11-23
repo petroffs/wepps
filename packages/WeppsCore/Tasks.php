@@ -49,11 +49,11 @@ class Tasks
 			'Name' => $name,
 			'LDate' => ($date != '') ? $date : date('Y-m-d H:i:s'),
 			'IP' => ($ip != '') ? $ip : @$_SERVER['REMOTE_ADDR'] ?? '',
-			'BRequest' => json_encode($jdata, JSON_UNESCAPED_UNICODE),
+			'BRequest' => Utils::json($jdata),
 			'TRequest' => $type,
 		];
 		if ($type == 'post') {
-			$row['Url'] = @$_SERVER['REQUEST_URI'];
+			$row['Url'] = htmlspecialchars(@$_SERVER['REQUEST_URI'], ENT_QUOTES);
 		}
 		$prepare = Connect::$instance->prepare($row);
 		$insert = Connect::$db->prepare("INSERT into s_Tasks {$prepare['insert']}");

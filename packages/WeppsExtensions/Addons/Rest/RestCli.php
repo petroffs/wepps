@@ -202,7 +202,11 @@ class RestCli
 				$rest->setRequestGet($request['get'] ?? []);
 				$rest->setUser($request['user'] ?? null);
 
+				// handler/method — из внутреннего реестра REST-маршрутов (поле handler
+				// сохраняется как имя класса при постановке задачи), class_exists() проверен выше
+				/** @psalm-suppress TaintedInput */
 				$handler = new $handlerClass($rest);
+				/** @psalm-suppress TaintedInput */
 				$result  = $handler->$method($request['data'] ?? null);
 
 				$taskManager->update((int) $task['Id'], $result, $result['status'] ?? 200);

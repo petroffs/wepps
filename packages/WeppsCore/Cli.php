@@ -324,6 +324,8 @@ class Cli
 	private function outer(string $text = ''): string
 	{
 		if ($this->display == true) {
+			// Вывод идёт в консоль/терминал (CLI-помощник), не в HTML-страницу
+			/** @psalm-suppress TaintedInput */
 			echo $text;
 		}
 		return $text;

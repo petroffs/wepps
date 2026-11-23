@@ -46,8 +46,16 @@ class PaymentsUtils
         $res = Connect::$instance->fetch($sql, [$paymentsId,$deliveryId]);
         foreach ($res as $key => $value) {
             $className = "\WeppsExtensions\\Cart\\Payments\\{$value['PaymentsExt']}\\{$value['PaymentsExt']}";
+            if (!class_exists($className)) {
+                continue;
+            }
             /**
              * @var \WeppsExtensions\Cart\Payments\Payments $class
+             *
+             * Имя класса — из внутренней конфигурации способов оплаты (PaymentsExt),
+             * class_exists() выше отсекает посторонние значения
+             *
+             * @psalm-suppress TaintedInput
              */
 		    $class = new $className($value,$cartUtils);
             $res[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);

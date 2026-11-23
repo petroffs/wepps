@@ -51,7 +51,7 @@ class Exception
 				Utils::debug($trace, 1);
 			}
 		} else {
-			echo $e->getMessage();
+			echo htmlspecialchars($e->getMessage(), ENT_QUOTES);
 			exit();
 		}
 	}

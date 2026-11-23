@@ -109,7 +109,7 @@ class RequestOrders extends Request {
 			case "searchProducts":
 				#Utils::debug($this->get,31);
 				$jdata = self::searchProducts(@$this->get['search'],$this->get['page']);
-				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				$json = Utils::json($jdata);
 				header ( 'Content-type:application/json;charset=utf-8' );
 				echo $json;
 				Connect::$instance->close();

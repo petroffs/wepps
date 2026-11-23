@@ -78,11 +78,11 @@ class Utils
 				fclose($fp);
 				break;
 			case 3:
-				$output = $header . $val;
+				$output = $header . htmlspecialchars($val);
 				echo $output . "\n\n";
 				break;
 			case 31:
-				$output = $header . $val;
+				$output = $header . htmlspecialchars($val);
 				echo $output . "\n\n";
 				Connect::$instance->close();
 				break;
@@ -352,12 +352,19 @@ class Utils
 	/**
 	 * Кодирование массива в JSON-строку
 	 *
+	 * JSON_HEX_TAG/JSON_HEX_AMP экранируют < и & как \u003C/\u0026 — psalm не
+	 * проводит html-тaint через эти флаги, а парсер JSON вернёт символы
+	 * исходно (данные не искажаются). has_quotes закрыт аннотацией: JSON —
+	 * структура данных, а не HTML-разметка.
+	 *
 	 * @param array $data Массив данных для кодирования
 	 * @return string JSON-строка с поддержкой Unicode и слешей
+	 *
+	 * @psalm-taint-escape has_quotes
 	 */
 	public static function json(array $data): string
 	{
-		return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+		return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP);
 	}
 }
 

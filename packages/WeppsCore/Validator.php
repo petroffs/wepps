@@ -293,9 +293,12 @@ class Validator
 	 */
 	public static function setFormErrorsIndicate(array $errors = [], string $form): array
 	{
+		$form = htmlspecialchars($form, ENT_QUOTES);
 		$str = "<script>\n";
 		if (!empty(array_filter($errors))) {
 			foreach ($errors as $key => $value) {
+				$key = htmlspecialchars((string) $key, ENT_QUOTES);
+				$value = htmlspecialchars((string) $value, ENT_QUOTES);
 				if ($value != "") {
 					$str .= "
 					var elem = $('#{$form}').find('[name=\"{$key}\"]');
@@ -351,7 +354,8 @@ class Validator
 	 */
 	public static function setFormSuccess(string $message, string $form, string $js = ""): array
 	{
-		$message = str_replace(["\r", "\n"], '', $message);
+		$form = htmlspecialchars($form, ENT_QUOTES);
+		$message = str_replace(["\r", "\n"], '', htmlspecialchars($message, ENT_QUOTES));
 		$messageJs = trim(json_encode($message, JSON_UNESCAPED_UNICODE), '"');
 		$str = "
 			<script>

@@ -86,8 +86,16 @@ class DeliveryUtils
         $cartSummary = $cartUtils->getCartSummary();
         foreach ($output as $key => $value) {
             $className = "\WeppsExtensions\\Cart\\Delivery\\{$value['DeliveryExt']}\\{$value['DeliveryExt']}";
+            if (!class_exists($className)) {
+                continue;
+            }
             /**
              * @var Delivery $class
+             *
+             * Имя класса — из внутренней конфигурации способов доставки (DeliveryExt),
+             * class_exists() выше отсекает посторонние значения
+             *
+             * @psalm-suppress TaintedInput
              */
             $class = new $className($value, $cartUtils);
             $output[$key]['Addons']['tariff'] = $class->getTariff();

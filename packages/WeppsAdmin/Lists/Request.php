@@ -322,7 +322,7 @@ class RequestLists extends Request
 				if (!isset($res[0]['Id'])) {
 					Connect::$instance->close();
 				}
-				$json = json_encode($res, JSON_UNESCAPED_UNICODE);
+				$json = Utils::json($res);
 				header('Content-type:application/json;charset=utf-8');
 				echo $json;
 				Connect::$instance->close();

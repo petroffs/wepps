@@ -128,6 +128,8 @@ class Lists
 			if (isset($listSettings['ActionShow']) && $listSettings['ActionShow'] != '') {
 				$addAction = str_replace(".php", "", $listSettings['ActionShow']);
 				$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
+				// Имя класса — из внутренней конфигурации списка (поле ActionShow в s_Config)
+				/** @psalm-suppress TaintedInput */
 				$addActionRequest = new $addActionClass(array('listSettings' => $listSettings, 'listScheme' => $listScheme));
 				$listCondition = $addActionRequest->condition;
 				if (!empty($addActionRequest->fields)) {
@@ -271,6 +273,8 @@ class Lists
 		if (isset($listSettings['ActionShowId']) && $listSettings['ActionShowId'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionShowId']);
 			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
+			// Имя класса — из внутренней конфигурации списка (поле ActionShowId в s_Config)
+			/** @psalm-suppress TaintedInput */
 			new $addActionClass(array('listSettings' => &$listSettings, 'listScheme' => &$listScheme, 'element' => &$element, 'headers' => &$headers));
 		}
 		return [
