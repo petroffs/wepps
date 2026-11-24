@@ -78,11 +78,15 @@ class Utils
 				fclose($fp);
 				break;
 			case 3:
-				$output = $header . htmlspecialchars($val);
+				// Режим «сырого вывода» задуман для терминала/файла (см. docblock):
+				// значения без преобразований. Вывод в браузер — на совести программиста.
+				$output = $header . $val;
+				/** @psalm-suppress TaintedInput */
 				echo $output . "\n\n";
 				break;
 			case 31:
-				$output = $header . htmlspecialchars($val);
+				$output = $header . $val;
+				/** @psalm-suppress TaintedInput */
 				echo $output . "\n\n";
 				Connect::$instance->close();
 				break;
