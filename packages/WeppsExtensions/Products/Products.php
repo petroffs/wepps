@@ -38,7 +38,7 @@ class Products extends Extension
 	/**
 	 * @return Brands|Childs|null
 	 */
-	public function request()
+	public function request() : Brands|Childs|null
 	{
 		$smarty = Smarty::getSmarty();
 		$this->productsUtils = new ProductsUtils();
