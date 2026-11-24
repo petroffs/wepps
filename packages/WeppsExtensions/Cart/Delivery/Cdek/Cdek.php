@@ -371,7 +371,7 @@ class Cdek extends Delivery
 		} elseif (!empty($jdata['access_token'])) {
 			$this->token = $jdata['access_token'];
 		} else {
-			Utils::debug('token error', 31);
+			Utils::debug('token error', 1);
 			exit();
 		}
 		$this->curl = new Curl();

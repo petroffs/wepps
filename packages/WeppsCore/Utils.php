@@ -36,10 +36,10 @@ class Utils
 	 *                  - 2: Записать данные в файл (перезапись)
 	 *                  - 21: Записать данные в файл и закрыть соединение
 	 *                  - 22: Дописать данные в файл
-	 *                  - 3: Вывести данные на экран (сырой текст)
-	 *                  - 31: Вывести данные на экран и закрыть соединение
-	 *                  - 1: Вывести данные в HTML-форматированном блоке
-	 *                  - default: Аналогичен режиму 1, но без закрытия соединения
+	 *                  - 1: Вывести данные на экран и закрыть соединение
+	 *                  - default: Вывести данные на экран
+	 *                  - 3, 31: Устаревшие алиасы default и 1 соответственно
+	 *                  Вывод на экран: в CLI — сырые строки, в вебе — экранированный HTML-блок. соединения
 	 * @param string $filename Имя файла для записи (по умолчанию `debug.conf`)
 	 * @return void
 	 */
@@ -78,32 +78,21 @@ class Utils
 				fclose($fp);
 				break;
 			case 3:
-				// Режим «сырого вывода» задуман для терминала/файла (см. docblock):
-				// значения без преобразований. Вывод в браузер — на совести программиста.
-				$output = $header . $val;
-				/** @psalm-suppress TaintedInput */
-				echo $output . "\n\n";
-				break;
 			case 31:
-				$output = $header . $val;
-				/** @psalm-suppress TaintedInput */
-				echo $output . "\n\n";
-				Connect::$instance->close();
-				break;
 			case 1:
-				$val = htmlspecialchars($val);
-				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;overflow:auto;position:relative;z-index:999;'>\n";
-				$output .= $header . $val;
-				$output .= "\n</pre>\n";
-				echo $output;
-				Connect::$instance->close();
-				break;
 			default:
-				$val = htmlspecialchars($val);
-				$output = "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;overflow:auto;position:relative;z-index:999;'>\n";
-				$output .= $header . $val;
-				$output .= "\n</pre>\n";
-				echo $output;
+				// Экран: в CLI — сырые данные как есть (терминал), в вебе —
+				// экранированный HTML-блок. 3/31 — устаревшие алиасы default/1;
+				// close() выполняется для правил 1 и 31, как и раньше.
+				if (PHP_SAPI === 'cli') {
+					echo $header . $val . "\n\n";
+				} else {
+					echo "\n<pre style='font:14px sans-serif;text-align:left;color:black;background: #80FF80;border:1px solid gray;box-sizing:border-box;margin:0;padding: 12px;width:100%;max-width:100%;height:400px;overflow:auto;position:relative;z-index:999;'>\n"
+						. $header . htmlspecialchars($val) . "\n</pre>\n";
+				}
+				if ($rule === 1 || $rule === 31) {
+					Connect::$instance->close();
+				}
 				break;
 		}
 	}

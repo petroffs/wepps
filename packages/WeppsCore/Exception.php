@@ -44,8 +44,8 @@ class Exception
 				$error['args'] = @$trace[1]['args'];
 			}
 			if (php_sapi_name() == 'cli') {
-				Utils::debug($error, 3);
-				Utils::debug($trace, 31);
+				Utils::debug($error);
+				Utils::debug($trace, 1);
 			} else {
 				Utils::debug($error, 0);
 				Utils::debug($trace, 1);

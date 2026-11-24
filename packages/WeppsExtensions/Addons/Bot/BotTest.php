@@ -93,7 +93,7 @@ class BotTest extends Bot {
 				'Alias' => 'AliasTest',
 		];
 		$id = $obj->add($row,1);
-		Utils::debug($id,31);
+		Utils::debug($id, 1);
 		
 		$obj = new Data("Products");
 		$obj->setParams([
