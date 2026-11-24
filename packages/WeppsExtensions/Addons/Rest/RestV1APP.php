@@ -135,7 +135,7 @@ class RestV1APP extends RestV1
 		// Если передан ID, ищем по ID, иначе используем фильтры и категорию
 		if (!empty($id)) {
 			$productsUtils->setNavigator($navigator, 'Products');
-			$isNumericId = (strlen((int) $id) === strlen($id));
+			$isNumericId = (strlen((string) (int) $id) === strlen($id));
 			$conditions = $isNumericId ? "t.IsHidden=0 and t.Id = ?" : "t.IsHidden=0 and binary t.Alias = ?";
 
 			$settings = [
@@ -251,7 +251,7 @@ class RestV1APP extends RestV1
 			[Connect::$projectServices['navigator']['catalog'] ?? 0, Connect::$projectServices['navigator']['brands'] ?? 0]
 		);
 
-		return ['status' => 200, 'message' => 'OK', 'data' => $res ?? []];
+		return ['status' => 200, 'message' => 'OK', 'data' => $res];
 	}
 
 	/**
@@ -286,7 +286,7 @@ class RestV1APP extends RestV1
 		$grouped = [];
 		foreach ($result as $id => $rows) {
 			$grouped[] = [
-				'id' => (int) $id,
+				'id' => $id,
 				'name' => $rows[0]['PropertyName'] ?? '',
 				'values' => array_map(fn($r) => ['alias' => $r['Alias'], 'value' => $r['PValue'], 'count' => (int) $r['Co']], $rows),
 			];
@@ -703,6 +703,9 @@ class RestV1APP extends RestV1
 			return ['status' => 400, 'message' => 'Cart is empty', 'data' => null];
 		}
 
+		// deliveryId === '0' — рабочий сентинел «доставка не выбрана»; вывод типа psalm
+		// (non-empty-mixed) построен по другой ветке построения cartSummary
+		/** @psalm-suppress TypeDoesNotContainType */
 		if (empty($cartSummary['delivery']['deliveryId']) || $cartSummary['delivery']['deliveryId'] === '0') {
 			return ['status' => 400, 'message' => 'Delivery method not selected', 'data' => null];
 		}

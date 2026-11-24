@@ -68,7 +68,7 @@ class TemplateHeaders
 	 */
 	public function meta(string $meta): string
 	{
-		return $this->output['meta'] .= (string) "\n" . $meta;
+		return $this->output['meta'] .= "\n" . $meta;
 	}
 
 	/**
@@ -108,13 +108,13 @@ class TemplateHeaders
 			if ($libOnly === true && strstr($filename, $this::$rand)) {
 				continue;
 			}
-			$this->output['cssjs'] .= (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
+			$this->output['cssjs'] .= "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
 		}
 		foreach ($this->cssjs['js'] as $filename) {
 			if ($libOnly === true && strstr($filename, $this::$rand)) {
 				continue;
 			}
-			$this->output['cssjs'] .= (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
+			$this->output['cssjs'] .= "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';
 		}
 		$this->output['cssjs'] = trim($this->output['cssjs'], "\n");
 		return $this->output;
@@ -182,7 +182,7 @@ class TemplateHeaders
 		$output .= "</script>";
 		$cli = new Cli();
 		$cli->put($output, $filehtml);
-		$arr['cssjs'] .= (string) "\n" . $output;
+		$arr['cssjs'] .= "\n" . $output;
 		return $arr;
 	}
 }

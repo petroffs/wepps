@@ -63,12 +63,13 @@ class SmartyPlugins
 		$smarty->registerPlugin('modifier', 'money', function ($string, $float = 0) {
 			if (!is_numeric($string))
 				return 0;
+			$string = (string) $string; // после is_numeric — числовой, нормализуем для строковых функций
 			$tmp = "";
 			if (strstr($string, "от ") !== false) {
 				$tmp = "от ";
 				$string = str_replace("от ", "", $string);
 			}
-			return $tmp . number_format($string, $float, ".", " ");
+			return $tmp . number_format((float) $string, $float, ".", " ");
 		});
 		$smarty->registerPlugin('modifier', 'number', function ($string) {
 			return sprintf("%04d", $string);
@@ -81,17 +82,17 @@ class SmartyPlugins
 			}
 			switch ($tablename) {
 				case "navigator":
-					$str = (string) '<div class="navigator w_admin_navigator"><a href="/_wepps/navigator' . $id . '" target="_blank" data-tooltip="Редактировать раздел"></a></div>';
+					$str = '<div class="navigator w_admin_navigator"><a href="/_wepps/navigator' . $id . '" target="_blank" data-tooltip="Редактировать раздел"></a></div>';
 					break;
 				case "panels":
-					$str = (string) '<div class="w_admin_list w_admin_panels">
+					$str = '<div class="w_admin_list w_admin_panels">
                             <a href="/_wepps/lists/s_Panels/' . $panel . '/" target="_blank" data-tooltip="Редактировать панель"></a>
                             <a href="/_wepps/lists/s_Panels/add/?NavigatorId=' . $id . '" target="_blank" data-tooltip="Добавить панель"></a>
                             <a href="/_wepps/lists/s_Blocks/add/?PanelId=' . $panel . '" target="_blank" data-tooltip="Добавить блок"></a>
                         </div>';
 					break;
 				default:
-					$str = (string) '<div class="default w_admin_list"><a href="/_wepps/lists/' . $tablename . '/' . $id . '/" target="_blank" data-tooltip="Редактировать элемент"></a></div>';
+					$str = '<div class="default w_admin_list"><a href="/_wepps/lists/' . $tablename . '/' . $id . '/" target="_blank" data-tooltip="Редактировать элемент"></a></div>';
 					break;
 			}
 			return $str;

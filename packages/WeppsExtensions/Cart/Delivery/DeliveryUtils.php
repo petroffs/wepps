@@ -29,7 +29,7 @@ class DeliveryUtils
     }
     public function getCitiesByQuery(string $term = '', int $page = 1, int $onpage = 12): array
     {
-        $page = max(1, (int) ($page) ?? 1);
+        $page = max(1, $page);
         $limit = ($page - 1) * $onpage;
         $term = urldecode($term);
         $sql = "SELECT c.Id,r.Id RegionsId,c.Name,concat(if(c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name))) Title from CitiesCdek c
@@ -38,7 +38,7 @@ class DeliveryUtils
     }
     public function getCitiesById(int $id, int $page = 1, int $onpage = 12): array
     {
-        $page = max(1, (int) ($page) ?? 1);
+        $page = max(1, $page);
         $limit = ($page - 1) * $onpage;
         $sql = "SELECT c.Id,r.Id RegionsId,r.Name RegionsName,c.Name,if (c.Name=r.Name,c.Name,concat(c.Name,', ',r.Name)) Title from CitiesCdek c
 						join RegionsCdek r on r.Id = c.RegionsId where c.Id = ? limit $limit,$onpage";

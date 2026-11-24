@@ -649,7 +649,7 @@ class Lists
 		$pathinfo = pathinfo($upload['path']);
 		$list = Utils::safeChars((string) $list, '/[^A-Za-z0-9_]+/');
 		$field = Utils::safeChars((string) $field, '/[^A-Za-z0-9_]+/');
-		$folder = "/files/lists/{$list}/" . floor($id / 500) * 500 . "/";
+		$folder = "/files/lists/{$list}/" . ((int) floor($id / 500)) * 500 . "/";
 		$guid = Utils::safeChars((string) ($upload['guid'] ?? Utils::guid()), '/[^A-Za-z0-9\-]+/');
 		$extension = Utils::safeChars((string) ($pathinfo['extension'] ?? ''), '/[^A-Za-z0-9]+/');
 		$destination = sprintf("%06d", $id) . "_" . $field . "_" . $guid . "." . $extension;
@@ -953,7 +953,7 @@ class Lists
 		}
 		$id = (int) $id;
 		$list = htmlspecialchars((string) $list, ENT_QUOTES);
-		if ($list === "" || (int) $id === 0) {
+		if ($list === "" || $id === 0) {
 			return array('status' => '0', 'output' => "");
 		}
 		$sql = "select * from $list where Id=?";
@@ -993,7 +993,7 @@ class Lists
 
 					// Путь из БД (имена генерируются при загрузке: транслит+дата):
 					// запрет .. в обоих путях + существующий is_file как шлюз
-					if (!str_contains((string) $value['FileUrl'], '..') && !str_contains((string) $file['FileUrl'], '..')
+					if (!str_contains((string) $value['FileUrl'], '..') && !str_contains($file['FileUrl'], '..')
 						&& is_file(Connect::$projectDev['root'] . $value['FileUrl'])) {
 						// Остаточный taint — артефакт глобальной модели БД psalm
 						/** @psalm-suppress TaintedInput */

@@ -276,10 +276,10 @@ class Data
 	 */
 	private function _getFormatted(string $conditions, $onPage, $currentPage, $orderBy)
 	{
-		$onPage = Utils::trim($onPage);
+		$onPage = Utils::trim((string) $onPage);
 		if ($onPage == '')
 			$onPage = 100;
-		$currentPage = Utils::trim($currentPage);
+		$currentPage = Utils::trim((string) $currentPage);
 		$orderBy = Utils::trim($orderBy);
 		if ($orderBy != '')
 			$orderBy = "order by $orderBy";
@@ -387,12 +387,11 @@ class Data
 
 			// Попытка получить из Memcached (системный кэш - всегда включен)
 			$memcached = new Memcached('auto', true);
-			if ($cacheKey) {
-				$cached = $memcached->get($cacheKey);
-				if ($cached !== null) {
-					$this->scheme = $cached;
-					return $this->scheme;
-				}
+			// $cacheKey = 'schema_full_' . имя таблицы — всегда непустой, проверка была мертвой
+			$cached = $memcached->get($cacheKey);
+			if ($cached !== null) {
+				$this->scheme = $cached;
+				return $this->scheme;
 			}
 
 			$sql = "select
@@ -408,10 +407,9 @@ class Data
 			}
 
 			// Кэшировать на 1 час (3600 сек)
-			if ($cacheKey) {
-				$memcached = new Memcached('auto', true);
-				$memcached->set($cacheKey, $res, 3600);
-			}
+			// $cacheKey всегда непустой (см. выше) — безусловное кэширование
+			$memcached = new Memcached('auto', true);
+			$memcached->set($cacheKey, $res, 3600);
 
 			$this->scheme = $res;
 		}

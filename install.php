@@ -45,6 +45,9 @@ if (!is_file(__DIR__ . '/packages/vendor/autoload.php')) {
 
 require_once __DIR__ . '/config.php';
 
+// Psalm видит типовые значения шаблона config.php; проверка реальна —
+// install работает с конфигом, который пользователь редактирует перед запуском
+/** @psalm-suppress TypeDoesNotContainType */
 if (empty($projectSettings['DB']['host']) || empty($projectSettings['DB']['port']) || empty($projectSettings['DB']['user']) || empty($projectSettings['DB']['dbname'])) {
     echo "error: Секция DB некорректно заполнена\n";
     exit();

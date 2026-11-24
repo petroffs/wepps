@@ -82,12 +82,9 @@ class UpdatesMethods extends Updates
 	 */
 	public function getReleasesList(): array
 	{
+		// Проверка empty($filename) удалена: суффикс "/releases.json" конкатенируется
+		// всегда, поэтому выражение не могло быть пустым и ветка была недостижима
 		$filename = @Connect::$projectServices['wepps']['updates'] . "/releases.json";
-		if (empty($filename)) {
-			return [
-				'output' => 'Wrong settings'
-			];
-		}
 		$arrContextOptions = [
 			"ssl" => [
 				"verify_peer" => false,
@@ -157,6 +154,8 @@ class UpdatesMethods extends Updates
 		$fileDst = __DIR__ . "/files/updates/$tag/$file";
 		$fileSrc = @Connect::$projectServices['wepps']['updates'] . "/packages/PPSAdmin/Releases/files/$tag/$file";
 
+		// @debug: ручной флаг разработчика (см. выше) — psalm видит сравнение с уже установленным значением
+		/** @psalm-suppress RedundantCondition */
 		if ($test === 0) {
 			$curl = new Curl();
 			$curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
@@ -444,9 +443,8 @@ class UpdatesMethods extends Updates
 				}
 				$str .= str_replace("\\\'", "'", file_get_contents($filename)) . "\n";
 			}
-			if (!empty($str)) {
-				$str .= "alter table s_Config auto_increment = 0;\nalter table s_ConfigFields auto_increment = 0;\n\n";
-			}
+			// $str к этому месту гарантированно непуст — проверка была мертвой по выводу типов
+			$str .= "alter table s_Config auto_increment = 0;\nalter table s_ConfigFields auto_increment = 0;\n\n";
 		}
 
 		/*

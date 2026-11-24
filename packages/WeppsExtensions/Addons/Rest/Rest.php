@@ -534,7 +534,7 @@ class Rest
 			}
 
 			// Проверка required
-			if ($rule['required'] && ($data === [] && $data !== '0')) {
+			if ($rule['required'] && $data === []) {
 				throw new \Exception("Array data is required");
 			}
 
@@ -548,7 +548,7 @@ class Rest
 		}
 
 		// Если data - массив объектов, валидируем каждый элемент
-		if (is_array($data) && isset($data[0]) && is_array($data[0])) {
+		if (isset($data[0]) && is_array($data[0])) {
 			foreach ($data as $item) {
 				$this->validateData($item, $rules);
 			}
@@ -922,11 +922,11 @@ class Rest
 	private function parseCliRequest(array $settings): void
 	{
 		$this->version = 'cli';
-		$this->method = @$settings['cli'][1] ?? '';
+		$this->method = $settings['cli'][1] ?? '';
 		$this->type = 'cli';
 		$this->params = [
-			@$settings['cli'][2] ?? '',
-			@$settings['cli'][3] ?? '',
+			$settings['cli'][2] ?? '',
+			$settings['cli'][3] ?? '',
 		];
 	}
 
@@ -978,7 +978,7 @@ class Rest
 		}
 
 		// Если это массив со структурированными данными
-		if (is_array($output) && isset($output['status'])) {
+		if (isset($output['status'])) {
 			$this->status = $output['status'];
 			$extra = array_diff_key($output, array_flip(['status', 'message', 'data']));
 
@@ -1000,8 +1000,8 @@ class Rest
 		} else {
 			// Если это просто данные, оборачиваем их
 			$responseData = [
-				'status' => $this->status ?? 200,
-				'message' => is_array($output) && isset($output['message']) ? $output['message'] : '',
+				'status' => $this->status,
+				'message' => isset($output['message']) ? $output['message'] : '',
 				'data' => $this->normalizeData($output),
 			];
 		}
@@ -1045,7 +1045,7 @@ class Rest
 
 		$logData = [
 			'Name' => $this->method,
-			'Url' => $this->url ?? '',
+			'Url' => $this->url,
 			'TRequest' => $this->type,
 			'LDate' => date("Y-m-d H:i:s"),
 			'BRequest' => $this->request,

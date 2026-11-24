@@ -457,7 +457,7 @@ class RestV1M2M extends RestV1
 			}
 			$sql = "SELECT MAX(Priority) Co FROM {$tableName} WHERE VarsGroup = 'ПродукцияСтатусы'";
 			$max = Connect::$instance->fetch($sql)[0]['Co'] ?? 0;
-			$max = round($max / 5) * 5;
+			$max = ((int) round($max / 5)) * 5;
 			foreach ($ids as $id) {
 				$max += 5;
 				Connect::$instance->query("UPDATE {$tableName} SET VarsGroup='ПродукцияСтатусы',Priority=? where Id=?", [$max, $id]);
@@ -570,7 +570,7 @@ class RestV1M2M extends RestV1
 		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
 			$sql = "SELECT MAX(Priority) Co FROM {$tableName} WHERE PGroup = 1";
 			$max = Connect::$instance->fetch($sql)[0]['Co'] ?? 0;
-			$max = round($max / 5) * 5;
+			$max = ((int) round($max / 5)) * 5;
 			foreach ($results as $value) {
 				$id = (int) ($value['data']['id'] ?? 0);
 				$max += 5;

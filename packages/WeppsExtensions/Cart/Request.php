@@ -48,7 +48,7 @@ class RequestCart extends Request
 				if (empty($this->get['quantity']) || !is_numeric($this->get['quantity'])) {
 					$this->get['quantity'] = 1;
 				}
-				$cartUtils->edit($this->get['id'], $this->get['quantity']);
+				$cartUtils->edit($this->get['id'], (int) $this->get['quantity']);
 				self::displayCart($cartUtils);
 				break;
 			case 'check':
@@ -73,7 +73,7 @@ class RequestCart extends Request
 				break;
 			case 'cities':
 				$deliveryUtils = new DeliveryUtils();
-				$res = $deliveryUtils->getCitiesByQuery($this->get['text'], (int) $this->get['page'] ?? 1);
+				$res = $deliveryUtils->getCitiesByQuery($this->get['text'], (int) $this->get['page']);
 				if ($res === []) {
 					echo json_encode([
 						'hasMore' => false
@@ -151,7 +151,7 @@ class RequestCart extends Request
 		$this->tpl = 'RequestAddCart.tpl';
 		$productsUtils = new ProductsUtils();
 		// Проверяем существование товара
-		$validation = $productsUtils->validateProductId($this->get['id']);
+		$validation = $productsUtils->validateProductId((string) $this->get['id']);
 		if (!$validation['exists']) {
 			Exception::error(404);
 		}
@@ -171,7 +171,7 @@ class RequestCart extends Request
 				$cartUtils->add($productWithVar, $quantity);
 			}
 		} else {
-			$cartUtils->add($this->get['id']);
+			$cartUtils->add((string) $this->get['id']);
 		}
 		$cartSummary = $cartUtils->getCartSummary();
 		$this->assign('cartSummary', $cartSummary);
@@ -200,7 +200,7 @@ class RequestCart extends Request
 			Exception::error(400);
 		}
 		$productsUtils = new ProductsUtils();
-		$el = $productsUtils->getProductsItem($this->get['id']);
+		$el = $productsUtils->getProductsItem((string) $this->get['id']);
 		$cartMetrics = $cartUtils->getCartMetrics();
 		$this->assign('cartMetrics', $cartMetrics);
 		$this->assign('element', $el);
