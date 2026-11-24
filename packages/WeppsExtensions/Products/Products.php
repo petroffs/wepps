@@ -46,7 +46,10 @@ class Products extends Extension
 		$this->filters = new Filters($this->get);
 		$params = $this->filters->getParams();
 		$displayForce = 0;
-		if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['catalog'] && empty($params['text'])) {
+		if (
+            $this->navigator->content['Id'] == Connect::$projectServices['navigator']['catalog']
+			&& empty($params['text'])
+        ) {
 			return new Childs($this->navigator, $this->headers);
 		}
 		if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands']) {
@@ -74,11 +77,15 @@ class Products extends Extension
 			];
 			$products = $this->productsUtils->getProducts($settings);
 			$smarty->assign('products', $products['rows']);
-			$smarty->assign('productsCount', $products['count'] . ' ' . TextTransforms::ending2("товар", $products['count']));
+			$smarty->assign('productsCount', $products['count'] . ' '
+				. TextTransforms::ending2("товар", $products['count']));
 			$smarty->assign('productsSorting', $sorting['rows']);
 			$smarty->assign('productsSortingActive', $sorting['active']);
 			$smarty->assign('paginator', $products['paginator']);
-			$smarty->assign('paginatorTpl', $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl'));
+			$smarty->assign(
+                'paginatorTpl',
+                $smarty->fetch('packages/WeppsExtensions/Template/Paginator/Paginator.tpl')
+            );
 			$smarty->assign('productsTpl', $smarty->fetch('packages/WeppsExtensions/Products/ProductsItems.tpl'));
 			$smarty->assign('childsNav', $this->navigator->nav['subs'][3]);
 			$smarty->assign('filtersNav', $this->filters->getFilters($conditions));
@@ -103,7 +110,6 @@ class Products extends Extension
 			$res = $this->getItem("Products");
 			// Загружаем картинки по цветам для динамической смены галереи
 			$imagesByColor = $this->productsUtils->getImagesByColor($res['Id']);
-			//$smarty->assign('imagesByColor', json_encode($imagesByColor, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 			$this->headers->meta('<script>var imagesByColor = ' . Utils::json($imagesByColor) . ';</script>');
 			$smarty->assign('element', $res);
 			$conditions = "t.IsHidden=0 and t.Id!='{$res['Id']}' and length(t.Variations)>0";
