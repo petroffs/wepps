@@ -23,39 +23,42 @@ use WeppsCore\Connect;
 use WeppsCore\Utils;
 use WeppsAdmin\Admin\Admin;
 
-class SaveItemConfigExtensions extends Request {
+class SaveItemConfigExtensions extends Request
+{
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
 	public $element = [];
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
 	    $root = Connect::$projectDev['root'];
-	    if ($this->listSettings['TableName']=='s_ConfigExtensions') {
+	    if ($this->listSettings['TableName'] == 's_ConfigExtensions') {
 	    	if ($this->element['CopyFiles'] == '1.0') {
-	    		$this->copyExts($this->element['Alias'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
-	    		$this->copyExts($this->element['Alias'], ".tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
-	    		$this->copyExts($this->element['Alias'], "Test.tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
-	    		$this->copyExts($this->element['Alias'], ".css", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
-	    		$this->copyExts($this->element['Alias'], ".js",  "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
-	    		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions",'10');
+	    		$this->copyExts($this->element['Alias'], ".php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '10');
+	    		$this->copyExts($this->element['Alias'], ".tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '10');
+	    		$this->copyExts($this->element['Alias'], "Test.tpl", "{$root}/packages/WeppsAdmin/ConfigExtensions", '10');
+	    		$this->copyExts($this->element['Alias'], ".css", "{$root}/packages/WeppsAdmin/ConfigExtensions", '10');
+	    		$this->copyExts($this->element['Alias'], ".js", "{$root}/packages/WeppsAdmin/ConfigExtensions", '10');
+	    		$this->copyExts($this->element['Alias'], "Request.php", "{$root}/packages/WeppsAdmin/ConfigExtensions", '10');
 	    	}
 	    }
-	    $perm = Admin::getPermissions(1,array('list'=>'s_ConfigExtensions'));
-	    if ($perm['status']==1) {
+	    $perm = Admin::getPermissions(1, array('list' => 's_ConfigExtensions'));
+	    if ($perm['status'] == 1) {
 	    	$sql = "update s_Permissions set SystemExt = concat(SystemExt,',','{$this->element['Id']}') where Id = 1";
 	    	Connect::$instance->query($sql);
 	    }
-	    
+
 	    /*
 	     * При тестировании
 	     */
 	    #exit();
 	}
-	private function copyExts($ext, $fileend, $dirstart, $stamp): void {
+	private function copyExts($ext, $fileend, $dirstart, $stamp): void
+    {
 		// Alias расширения приходит из запроса и участвует в путях mkdir/copy/file_*:
 		// строгий идентификатор + safeRelPath (снимает file/ssrf-taint) закрывают выход
 		// за каталог расширений

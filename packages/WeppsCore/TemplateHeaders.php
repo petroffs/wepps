@@ -20,6 +20,7 @@ namespace WeppsCore;
 
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
+
 /**
  * Генерация html-кода ссылок на css-таблицы и js-библиотеки для применения в шаблоне сайта
  * Генерация html-кода meta-тегов

@@ -24,7 +24,6 @@ use WeppsCore\Memcached;
 use WeppsCore\Utils;
 use WeppsAdmin\Lists\Lists;
 
-
 /**
  * RestV1M2MUtils - вспомогательный класс для CRUD операций M2M API
  *
@@ -159,7 +158,7 @@ class RestV1M2MUtils
 	 * Может модифицировать items и вернуть обновленный массив, или вернуть null.
 	 * Выполняется ВНУТРИ транзакции; исключение откатит все изменения.
 	 * Можно вызвать несколько раз для добавления нескольких callbacks.
-	 * 
+	 *
 	 * @param callable $callback fn(array $items, string $tableName, self $utils): array|null
 	 * @return self для цепочки вызовов
 	 */
@@ -176,7 +175,7 @@ class RestV1M2MUtils
 	 * Если возвращает массив, он заменяет текущие результаты.
 	 * Выполняются ВНУТРИ транзакции перед COMMIT; исключение откатит все.
 	 * Можно вызвать несколько раз для добавления нескольких callbacks.
-	 * 
+	 *
 	 * @param callable $callback fn(array $results, string $tableName, self $utils): array|null
 	 * @return self для цепочки вызовов
 	 */
@@ -271,13 +270,13 @@ class RestV1M2MUtils
 
 	/**
 	 * Создать callbacks для обработки пакетных операций с учётом пагинации.
-	 * 
+	 *
 	 * Поддерживает паттерн:
 	 * - Before callback на первой странице: подготовка перед первой партией (например, маркировка кандидатов на удаление)
 	 * - After callback на последней странице: финализация после последней партии (например, финализация скрытия)
-	 * 
+	 *
 	 * Если pagination не содержит 'page' и 'count', callbacks вернут null.
-	 * 
+	 *
 	 * @param array|null $pagination {page: int, count: int} или null
 	 * @return array {before: callable|null, after: callable|null}
 	 */
@@ -334,7 +333,7 @@ class RestV1M2MUtils
 
 	/**
 	 * Получить список записей
-	 * 
+	 *
 	 * @param array $query - параметры: page, limit, search
 	 * @param string|null $conditions - дополнительные условия WHERE (без WHERE)
 	 * @return array - {status, message, data, pagination}
@@ -398,7 +397,7 @@ class RestV1M2MUtils
 
 	/**
 	 * Получить одну запись
-	 * 
+	 *
 	 * @param int|string $id - ID записи
 	 * @param string|null $fields - список полей для вывода; если не указан, используется установленное через setFields()
 	 * @return array - {status, message, data}
@@ -931,7 +930,7 @@ class RestV1M2MUtils
 
 	/**
 	 * Извлечь значение поля из данных (с учетом регистра)
-	 * 
+	 *
 	 * @param array $data - данные
 	 * @param string $fieldName - имя поля
 	 * @return mixed - значение поля или null
@@ -1025,11 +1024,11 @@ class RestV1M2MUtils
 
 	/**
 	 * Получить валидационные правила из s_ConfigFields
-	 * 
+	 *
 	 * Читает таблицу s_ConfigFields и строит правила валидации на основе:
 	 * - ApiFieldType (int, string, email, date, float, guid)
 	 * - Required (обязательность поля)
-	 * 
+	 *
 	 * @return array - ассоциативный массив {fieldName => {type, required}}
 	 * @example ['id' => ['type' => 'int', 'required' => true], 'email' => ['type' => 'email', 'required' => false]]
 	 */
@@ -1164,7 +1163,7 @@ class RestV1M2MUtils
 
 	/**
 	 * Декодирует JSON-поля в результатах на основе схемы Data
-	 *	
+	 *
 	 * @param array $rows Строки результата
 	 * @return array
 	 */
@@ -1179,7 +1178,6 @@ class RestV1M2MUtils
 			return $rows;
 		}
 		foreach ($rows as &$row) {
-
 			foreach (array_keys($fields) as $fieldName) {
 				if (!isset($row[$fieldName]) || !is_string($row[$fieldName])) {
 					continue;
@@ -1241,10 +1239,10 @@ class RestV1M2MUtils
 
 	/**
 	 * Преобразует массив свойств в структуру W_Attributes для API
-	 * 
+	 *
 	 * Входные данные от buildAttributesForProducts: [PropertyId => [rows для этого свойства]]
 	 * Возвращает отформатированный массив W_Attributes для всех свойств товара
-	 * 
+	 *
 	 * @param array|null $propertiesData [PropertyId => [rows]] структура из buildAttributesForProducts
 	 * @return array|null Отформатированный массив W_Attributes или null
 	 */

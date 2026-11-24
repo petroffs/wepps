@@ -57,8 +57,8 @@ class CartUtils
 			}
 			$jdata2['date'] = date('Y-m-d H:i:s');
 			$this->user['JCart'] = json_encode($jdata2, JSON_UNESCAPED_UNICODE);
-			Utils::cookies('wepps_cart','');
-			Utils::cookies('wepps_cart_guid','');
+			Utils::cookies('wepps_cart', '');
+			Utils::cookies('wepps_cart_guid', '');
 			$this->cart = $jdata2;
 			$this->setCart();
 		}
@@ -445,10 +445,8 @@ class CartUtils
 	private function _getCartFromCookies(bool $shouldCreate = true): string|null
 	{
 		$cart = '';
-		if (Utils::cookies('wepps_cart_guid') == self::_getCartHash(Utils::cookies('wepps_cart')??'')) {
-			$cart = Utils::cookies('wepps_cart'
-		);
-
+		if (Utils::cookies('wepps_cart_guid') == self::_getCartHash(Utils::cookies('wepps_cart') ?? '')) {
+			$cart = Utils::cookies('wepps_cart');
 		} elseif ($shouldCreate === true) {
 			$cart = '{"items":null}';
 			Utils::cookies('wepps_cart', $this->user['JCart'] ?? '');
@@ -531,7 +529,7 @@ class CartUtils
 			 */
 			$class  = new $className([], $this);
 			$errors = $class->getErrors($get);
-			
+
 			// Если есть ошибки валидации
 			if (!empty(array_filter($errors))) {
 				// Для веб-версии: форматируем с HTML-визуализацией (если форма задана)
@@ -730,11 +728,11 @@ class CartUtils
 		}
 		$sum = 0;
 		$order['W_Positions'] = $this->getCartPositionsRecounter($order['W_Positions'], $order['ODeliveryDiscount'], $order['OPaymentTariff'], $order['OPaymentDiscount']);
-		
+
 		foreach ($order['W_Positions'] as $value) {
 			$sum += $value['sum'];
 		}
-		
+
 		// Типизируем позиции - это безопаснее чем SQL
 		if (!empty($order['W_Positions'])) {
 			$typedPositions = [];
@@ -749,7 +747,8 @@ class CartUtils
 					'sumTotal' => (float)$value['sumTotal']
 				];
 			}
-			$order['W_Positions'] = $typedPositions;		}
+			$order['W_Positions'] = $typedPositions;
+        }
 		// При отсутствии позиций не пересчитываем сумму, иначе затрётся сохранённое значение
 		if (!empty($order['W_Positions'])) {
 			$sum += $order['OPaymentTariff'];
@@ -776,7 +775,7 @@ class CartUtils
 		$obj = new Data("Orders");
 		$obj->setParams([$guid]);
 		$obj->setConcat("if(s3.PaymentsExt!='',PaymentsExt,'DefaultPayments') PaymentsExt,s3.DescrFinish PaymentDescrFinish");
-		$order = $obj->fetch("t.Guid = ?")[0]??[];
+		$order = $obj->fetch("t.Guid = ?")[0] ?? [];
 		return $order;
 	}
 	public function processTask(array $request, Tasks $tasks): array

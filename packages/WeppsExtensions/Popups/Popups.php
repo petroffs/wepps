@@ -23,9 +23,11 @@ use WeppsCore\Smarty;
 use WeppsCore\Extension;
 use WeppsCore\Exception;
 
-class Popups extends Extension {
+class Popups extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {
 			case '':
@@ -44,7 +46,7 @@ class Popups extends Extension {
 		$this->headers->css("/ext/Popups/Popups.{$this->rand}.css");
 		$this->headers->css("/ext/Popups/Popups.{$this->rand}.css");
 		$this->headers->js("/ext/Popups/Popups.{$this->rand}.js");
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
 }

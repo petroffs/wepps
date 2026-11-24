@@ -32,7 +32,7 @@ class ProcessingTasks
 	public function removeFiles(): void
 	{
 		self::removeDatabaseRows();
-		
+
 		$dirs = [
 			$this->root . '/files/lists/',
 			$this->root . '/pic/'
@@ -64,7 +64,7 @@ class ProcessingTasks
 			foreach ($diff as $value) {
 				if (isset($arr1[$value])) {
 					foreach ($arr1[$value] as $filename) {
-						echo $filename."\n";
+						echo $filename . "\n";
 						unlink($filename);
 						$i++;
 					}
@@ -95,8 +95,9 @@ class ProcessingTasks
 	{
 		$files = [];
 		foreach ((array) $dirs as $dir) {
-			if (!is_dir($dir))
+			if (!is_dir($dir)) {
 				continue;
+            }
 
 			$iterator = new RecursiveIteratorIterator(
 				new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)

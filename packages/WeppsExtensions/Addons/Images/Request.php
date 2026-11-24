@@ -22,7 +22,7 @@ require_once __DIR__ . '/../../../../configloader.php';
 
 
 $obj = new Images($_GET);
-$obj->stamp('center','bottom',0.1,'News|Gallery');
+$obj->stamp('center', 'bottom', 0.1, 'News|Gallery');
 $obj->output();
 $obj->save();
 unset($obj);

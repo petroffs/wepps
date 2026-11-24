@@ -24,7 +24,6 @@ use WeppsCore\Connect;
 
 class RecaptchaV2 extends RemoteServices
 {
-
 	private $sitekey;
 	private $secret;
 	private $headers;

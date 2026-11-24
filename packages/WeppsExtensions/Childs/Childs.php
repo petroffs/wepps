@@ -24,15 +24,17 @@ use WeppsCore\Extension;
 use WeppsCore\Exception;
 use WeppsCore\Utils;
 
-class Childs extends Extension {
+class Childs extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Childs/Childs.tpl';
 				#Utils::debug($this->navigator->child,1);
-				$smarty->assign('elements',$this->navigator->child);
+				$smarty->assign('elements', $this->navigator->child);
 				break;
 			default:
 				Exception::error404();
@@ -44,8 +46,7 @@ class Childs extends Extension {
 		 */
 		$this->headers->css("/ext/Childs/Childs.{$this->rand}.css");
 		#$this->headers->js("/ext/Childs/Childs.{$this->rand}.js");
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
 }
-?>

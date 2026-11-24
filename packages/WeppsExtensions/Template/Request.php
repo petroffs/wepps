@@ -24,9 +24,11 @@ use WeppsCore\Exception;
 use WeppsCore\Request;
 use WeppsExtensions\Addons\Files\Files;
 
-class RequestTemplate extends Request {
+class RequestTemplate extends Request
+{
 	#[\Override]
-	public function request($action = ''): void {
+	public function request($action = ''): void
+    {
 		switch ($action) {
 			case 'files':
 				if (!isset($this->get['fileUrl'])) {
@@ -34,6 +36,7 @@ class RequestTemplate extends Request {
 				}
 				$files = new Files();
 				$files->output($this->get['fileUrl']);
+				// no break — output() завершает выполнение (never)
 			case 'upload':
 				if (!isset($this->get['filesfield'])) {
 					Exception::error(404);
@@ -69,7 +72,7 @@ class RequestTemplate extends Request {
 					session_start();
 				}
 				$files = new Files();
-				$response = $files->removeUploaded($this->get['filesform']??'',$this->get['filesfield']??'',$this->get['key']??'0');
+				$response = $files->removeUploaded($this->get['filesform'] ?? '', $this->get['filesfield'] ?? '', $this->get['key'] ?? '0');
 				echo $response['html'];
 				break;
 			default:
@@ -78,6 +81,6 @@ class RequestTemplate extends Request {
 		}
 	}
 }
-$request = new RequestTemplate ($_REQUEST);
-$smarty->assign('get',$request->get);
+$request = new RequestTemplate($_REQUEST);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

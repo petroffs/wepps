@@ -51,7 +51,7 @@ class RequestLegacy extends Request
 	{
 		switch ($action) {
 			case 'agree':
-				$lifetime = 60*60*24*180;
+				$lifetime = 60 * 60 * 24 * 180;
 				$default = 'false';
 				$analytics = 'false';
 				if (($this->get['default'] ?? '') === 'true') {
@@ -64,8 +64,8 @@ class RequestLegacy extends Request
 				    $default = '';
 				    $analytics = '';
 				}
-				Utils::cookies('wepps_cookies_default',$default,$lifetime);
-				Utils::cookies('wepps_cookies_analytics',$analytics,$lifetime);
+				Utils::cookies('wepps_cookies_default', $default, $lifetime);
+				Utils::cookies('wepps_cookies_analytics', $analytics, $lifetime);
 				if ($default === 'true') {
 					echo "<script>$('.legal-modal').remove()</script>";
 				}

@@ -47,7 +47,7 @@ class Blocks extends Extension
 				$panelsParams = Connect::$instance->in($panelsId);
 				$obj = new Data("s_Blocks");
 				$obj->setParams($panelsId);
-				$res = $obj->fetch("t.IsHidden=0 and t.PanelId in (" . $panelsParams . ")",1500);
+				$res = $obj->fetch("t.IsHidden=0 and t.PanelId in (" . $panelsParams . ")", 1500);
 				if (empty($res)) {
 					return;
 				}

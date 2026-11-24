@@ -26,7 +26,7 @@ class Filters
 {
 	private $params = [];
 	private $paramsFilters = [];
-	function __construct(array $params = [])
+	public function __construct(array $params = [])
 	{
 		$this->setParams($params);
 		$this->setParamsFilters();
@@ -61,24 +61,24 @@ class Filters
 	public function buildAttributesForProducts(array $filterResult): array
 	{
 		$grouped = [];
-		
+
 		foreach ($filterResult as $filterGroup) {
 			if (!is_array($filterGroup) || $filterGroup === []) {
 				continue;
 			}
-			
+
 			// Каждый элемент filterGroup это массив с данными одного свойства-значения
 			foreach ($filterGroup as $row) {
 				$propId = (int) ($row['PId'] ?? 0);
 				$productsIds = $row['ProductsId'] ?? '';
-				
+
 				if (empty($productsIds) || $propId === 0) {
 					continue;
 				}
-				
+
 				// ProductsIds - это comma-separated список: "561,562,563,564,565"
 				$productIds = array_filter(array_map('intval', explode(',', $productsIds)));
-				
+
 				foreach ($productIds as $productId) {
 					if (!isset($grouped[$productId])) {
 						$grouped[$productId] = [];
@@ -92,14 +92,13 @@ class Filters
 				}
 			}
 		}
-		
+
 		// Переиндексируем PropertyId для каждого товара с числами начиная с 0
 		$result = [];
 		foreach ($grouped as $productId => $attrs) {
-
 			$result[$productId] = array_values($attrs);
 		}
-		
+
 		return $result;
 	}
 	public function getFiltersCodeJS(array $filtersActive = [], int $count = 0): string

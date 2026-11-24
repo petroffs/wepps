@@ -26,7 +26,7 @@ class DefaultPayments extends Payments
 {
 	public function __construct(array $settings = [], CartUtils $cartUtils)
 	{
-		parent::__construct($settings,$cartUtils);
+		parent::__construct($settings, $cartUtils);
 	}
 	public function getOrderComplete(): void
 	{

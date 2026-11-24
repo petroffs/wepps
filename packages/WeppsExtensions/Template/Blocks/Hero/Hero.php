@@ -21,9 +21,11 @@ namespace WeppsExtensions\Template\Blocks\Hero;
 use WeppsCore\Extension;
 use WeppsCore\Smarty;
 
-class Hero extends Extension {
+class Hero extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Blocks/Hero/Hero.tpl');
 		$this->headers->css("/ext/Template/Blocks/Hero/Hero.{$this->rand}.css");

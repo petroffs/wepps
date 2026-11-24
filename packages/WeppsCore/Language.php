@@ -19,6 +19,7 @@
 namespace WeppsCore;
 
 use WeppsAdmin\Lists\Lists;
+
 /**
  * Класс Language
  *
@@ -148,9 +149,11 @@ class Language
 		}
 		$defaultRowsByTableId = [];
 		if ($defaultLangId > 0 && $defaultLangId !== $currentLangId) {
-			foreach (Connect::$instance->fetch(
-				"select * from {$tableName} where TableId in ({$resKeys}) and LanguageId='{$defaultLangId}' and IsHidden=0"
-			) as $defaultRow) {
+			foreach (
+                Connect::$instance->fetch(
+                    "select * from {$tableName} where TableId in ({$resKeys}) and LanguageId='{$defaultLangId}' and IsHidden=0"
+                ) as $defaultRow
+            ) {
 				if (!empty($defaultRow['Id'])) {
 					$rowIdsForFiles[] = (int) $defaultRow['Id'];
 					$defaultRowsByTableId[(int) $defaultRow['TableId']] = $defaultRow;

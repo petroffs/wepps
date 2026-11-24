@@ -80,14 +80,14 @@ class Validator
 	 *
 	 * @param string $variable Строка для валидации.
 	 * @param string $errorMessage Сообщение об ошибке, которое возвращается при провале валидации.
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 *   - Пустая строка ('') — если валидация прошла успешно.
 	 *   - $errorMessage — если строка содержит недопустимые символы.
-	 * 
+	 *
 	 * @throws \TypeError Если $variable или $errorMessage не являются строками.
-	 * 
-	 * @note 
+	 *
+	 * @note
 	 *   - Регулярное выражение проверяет:
 	 *     - Латинские буквы (a-zA-Z).
 	 *     - Цифры (\d).
@@ -101,8 +101,9 @@ class Validator
 	public static function isLat(string $variable, string $errorMessage)
 	{
 		$tmp = '';
-		if (preg_match("/^[\w.-]+$/", $variable))
+		if (preg_match("/^[\w.-]+$/", $variable)) {
 			return $tmp;
+        }
 		return $errorMessage;
 	}
 
@@ -111,14 +112,14 @@ class Validator
 	 *
 	 * @param string $variable Строка для валидации (ожидается URL).
 	 * @param string $errorMessage Сообщение об ошибке, которое возвращается при провале валидации.
-	 * 
-	 * @return string 
+	 *
+	 * @return string
 	 *   - Пустая строка ('') — если валидация прошла успешно.
 	 *   - $errorMessage — если URL не соответствует требованиям.
-	 * 
+	 *
 	 * @throws \TypeError Если $variable или $errorMessage не являются строками.
-	 * 
-	 * @note 
+	 *
+	 * @note
 	 *   - Валидация осуществляется с помощью filter_var() с FILTER_VALIDATE_URL.
 	 *   - Поддерживает различные протоколы (http, https, ftp и т.д.).
 	 *   - Соответствует RFC 3986.
@@ -126,8 +127,9 @@ class Validator
 	public static function isUrl(string $variable, string $errorMessage)
 	{
 		$tmp = '';
-		if (filter_var($variable, FILTER_VALIDATE_URL) !== false)
+		if (filter_var($variable, FILTER_VALIDATE_URL) !== false) {
 			return $tmp;
+        }
 		return $errorMessage;
 	}
 

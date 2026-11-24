@@ -227,7 +227,7 @@ class Yookassa extends Payments
 				'text' => 'Платеж не найден'
 			];
 			$cartTemplates->page($data, __DIR__ . '/ReturnError.tpl');
-		} else if ($res[0]['IsPaid'] == 1 && $res[0]['IsProcessed'] == 1) {
+		} elseif ($res[0]['IsPaid'] == 1 && $res[0]['IsProcessed'] == 1) {
 			$data = [
 				'status' => 200,
 				'title' => 'Оплата прошла успешно!',

@@ -61,8 +61,9 @@ class SmartyPlugins
 			return $string;
 		});
 		$smarty->registerPlugin('modifier', 'money', function ($string, $float = 0) {
-			if (!is_numeric($string))
+			if (!is_numeric($string)) {
 				return 0;
+            }
 			$string = (string) $string; // после is_numeric — числовой, нормализуем для строковых функций
 			$tmp = "";
 			if (strstr($string, "от ") !== false) {

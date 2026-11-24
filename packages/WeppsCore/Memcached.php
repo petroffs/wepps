@@ -17,6 +17,7 @@
  */
 
 namespace WeppsCore;
+
 /**
  * Класс Memcached
  *
@@ -72,7 +73,7 @@ class Memcached
 				if (!$this->memcache->connect($host, $port)) {
 					throw new \RuntimeException("Memcached connection failed: {$host}:{$port}");
 				}
-			} else if (class_exists('Memcached')) {
+			} elseif (class_exists('Memcached')) {
 				$this->memcached = new \Memcached();
 				if (!$this->memcached->addServer($host, $port)) {
 					throw new \RuntimeException("Memcached server registration failed: {$host}:{$port}");
@@ -100,7 +101,7 @@ class Memcached
 		$expire = ($expire == 0) ? Connect::$projectServices['memcached']['expire'] : $expire;
 		if (!empty($this->memcache)) {
 			$this->memcache->set($key, $value, false, $expire);
-		} else if (!empty($this->memcached)) {
+		} elseif (!empty($this->memcached)) {
 			$this->memcached->set($key, $value, $expire);
 		}
 		return true;
@@ -135,7 +136,7 @@ class Memcached
 	{
 		if (!empty($this->memcache)) {
 			$this->memcache->delete($key);
-		} else if (!empty($this->memcached)) {
+		} elseif (!empty($this->memcached)) {
 			$this->memcached->delete($key);
 		}
 		return true;
@@ -150,7 +151,7 @@ class Memcached
 	{
 		if (!empty($this->memcache)) {
 			$this->memcache->flush();
-		} else if (!empty($this->memcached)) {
+		} elseif (!empty($this->memcached)) {
 			$this->memcached->flush();
 		}
 		return true;

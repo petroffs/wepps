@@ -317,7 +317,7 @@ class Connect
 	}
 	/**
 	 * ✅ Выполнить callback с защитой от "MySQL server has gone away"
-	 * 
+	 *
 	 * @param callable $callback Функция для выполнения
 	 * @param int $retries Количество повторных попыток
 	 * @return mixed Результат callback

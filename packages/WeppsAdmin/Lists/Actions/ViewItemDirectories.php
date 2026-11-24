@@ -20,12 +20,14 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Request;
 
-class ViewItemDirectories extends Request {
+class ViewItemDirectories extends Request
+{
 	public $noclose = 1;
 	public $scheme = [];
 	public $element = [];
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 		$element = $this->get['element'];
 		$this->element = &$this->get['element'];
 		$this->scheme = $this->get['listScheme'];
@@ -33,10 +35,10 @@ class ViewItemDirectories extends Request {
 			foreach (array_keys($this->scheme) as $key) {
 				$this->element[$key] = "";
 			}
-			$this->element['Id'] = 'add'; 
-			$this->element['Name'] = 'Новый раздел'; 
-			$this->element['ParentId_SelectChecked'] = $element['Id']; 
-			$this->element['Template_SelectChecked'] = ""; 
+			$this->element['Id'] = 'add';
+			$this->element['Name'] = 'Новый раздел';
+			$this->element['ParentId_SelectChecked'] = $element['Id'];
+			$this->element['Template_SelectChecked'] = "";
 			$this->element['Extension_SelectChecked'] = "";
 		}
 	}

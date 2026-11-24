@@ -22,7 +22,8 @@ use WeppsCore\Cli;
 use WeppsCore\Utils;
 use WeppsCore\Connect;
 
-class AdminUtils extends Utils {
+class AdminUtils extends Utils
+{
 	public static function modal(string $message = '', ?Cli $cli = null): void
 	{
 		if ($cli instanceof \WeppsCore\Cli) {

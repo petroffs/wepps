@@ -24,12 +24,14 @@ use WeppsCore\Exception;
 use WeppsCore\Connect;
 use WeppsCore\Request;
 
-class RequestBlocks extends Request {
+class RequestBlocks extends Request
+{
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 		switch ($action) {
 			case 'sortable':
-				if (@Connect::$projectData['user']['ShowAdmin']==1 && !empty($this->get['items'])) {
+				if (@Connect::$projectData['user']['ShowAdmin'] == 1 && !empty($this->get['items'])) {
 					$ex = explode(",", $this->get['items']);
 					$co = 50;
 					$str = "";
@@ -48,6 +50,6 @@ class RequestBlocks extends Request {
 		}
 	}
 }
-$request = new RequestBlocks ($_REQUEST);
-$smarty->assign('get',$request->get);
+$request = new RequestBlocks($_REQUEST);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

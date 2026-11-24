@@ -26,7 +26,7 @@ class Payments
 	protected $settings;
     protected $cartUtils;
 	protected $paymentsUtils;
-	public function __construct(array $settings = [],CartUtils $cartUtils)
+	public function __construct(array $settings = [], CartUtils $cartUtils)
 	{
 		$this->settings = $settings;
 		$this->cartUtils = $cartUtils;
@@ -68,7 +68,7 @@ class Payments
 			'status' => ($this->settings['Discount'] > 0) ? 200 : 0,
 			'title' => $this->settings['Name'],
 			'text' => "Скидка за выбранный способ оплаты",
-			
+
 		];
 		switch (@$this->settings['IsDiscountPercentage']) {
 			case 1:
@@ -80,7 +80,8 @@ class Payments
 		}
 		return $output;
 	}
-	public function getOperations(array $order): array {
+	public function getOperations(array $order): array
+    {
 		#$headers = $this->cartUtils->getHeaders();
 		#$headers->js("/ext/Cart/Payments/PaymentsDefault.{$headers::$rand}.js");
 		#$headers->css("/ext/Cart/Payments/PaymentsDefault.{$headers::$rand}.css");

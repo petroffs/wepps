@@ -17,6 +17,7 @@
  */
 
 namespace WeppsCore;
+
 /**
  * Класс Navigator отвечает за навигацию по сайту, обработку URL и управление контентом.
  */
@@ -25,7 +26,7 @@ class Navigator
 	private $data;
 	/**
 	 * Раздел сайта
-	 * 
+	 *
 	 * @var object
 	 */
 	public $path;
@@ -42,7 +43,7 @@ class Navigator
 	public $nav = [];
 	/**
 	 * Содержание раздела
-	 * 
+	 *
 	 * @var array
 	 */
 	public $content;
@@ -54,31 +55,31 @@ class Navigator
 	public $parent;
 	/**
 	 * Подразделы текущего раздела
-	 * 
+	 *
 	 * @var array
 	 */
 	public $child;
 	/**
 	 * Путь до текущего раздела (Хлебные крошки)
-	 * 
+	 *
 	 * @var array
 	 */
 	public $way;
 	/**
 	 * Данные о настройках языковой версии текущего контекста
-	 * 
+	 *
 	 * @var array
 	 */
 	public $lang;
 	/**
 	 * Перевод шаблонных фраз из таблицы "Перевод"
-	 * 
+	 *
 	 * @var array
 	 */
 	public $multilang;
 	/**
 	 * Признак текущего расположение (=1 если в админчасти)
-	 * 
+	 *
 	 * @var integer
 	 */
 	public $backOffice = 0;
@@ -101,7 +102,7 @@ class Navigator
 	 * @param integer|null $backOffice Признак текущего расположения (=1 если в админчасти).
 	 * @throws Exception Если раздел не найден.
 	 */
-	function __construct($url = null, $backOffice = null)
+	public function __construct($url = null, $backOffice = null)
 	{
 		if ($url == null) {
 			$url = (isset($_GET['weppsurl'])) ? htmlspecialchars((string) $_GET['weppsurl'], ENT_QUOTES) : "";
@@ -149,7 +150,7 @@ class Navigator
 	 */
 	private function getNavigateUrl($url)
 	{
-		$_SERVER['REQUEST_URI']??= '';
+		$_SERVER['REQUEST_URI'] ??= '';
 		$m = preg_match("/([^\/\?\&\=]+)\.([\w\d]{1,7}+)($|[\?])/", $url, $match);
         if (empty(str_ends_with($url, '/')) && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
             header("HTTP/1.1 301 Moved Permanently");

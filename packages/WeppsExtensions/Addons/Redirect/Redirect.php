@@ -24,9 +24,11 @@ use WeppsCore\Extension;
 use WeppsCore\Exception;
 use WeppsCore\Utils;
 
-class Redirect extends Extension {
+class Redirect extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {
 			case '':
@@ -41,15 +43,14 @@ class Redirect extends Extension {
 				Exception::error404();
 				break;
 		}
-		
+
 		/*
 		 * Переменные для глобального шаблона
 		 */
 		$this->headers->css("/ext/Redirect/Redirect.{$this->rand}.css");
 		$this->headers->js("/ext/Redirect/Redirect.{$this->rand}.js");
-		
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+
+		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
 }
-?>

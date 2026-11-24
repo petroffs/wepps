@@ -27,7 +27,6 @@ class ProcessingProducts
 {
 	public function __construct()
 	{
-
 	}
 	public function resetProducts(): void
 	{
@@ -82,7 +81,7 @@ class ProcessingProducts
 	}
 	/**
 	 * Генерирует массив вариаций товара с 3 случайными цветами и чётными размерами (42-48)
-	 * 
+	 *
 	 * @return array Массив вариаций в формате ['color' => string, 'size' => int, ...]
 	 */
 	private function _generateProductVariations(array $product): array
@@ -286,7 +285,7 @@ class ProcessingProducts
 	/**
 	 * Обновить вариации по ID (одна или batch).
 	 * Переформировывает alias если изменились color/size/sku.
-	 * 
+	 *
 	 * @param array $records Массив: [['id' => 123, 'color' => '...', 'size' => '...', 'sku' => '...', 'stocks' => '...'], ...]
 	 * @return array Результаты: {'updated': [123], 'skipped': [456], 'conflict': [789], 'notFound': [999]}
 	 *         - updated: успешно обновлены
@@ -411,7 +410,7 @@ class ProcessingProducts
 			'Id' => ''
 		]);
 		$stmt = Connect::$db->prepare("UPDATE ProductsVariations SET {$prepare['update']},IsHidden=0 WHERE Id=:Id");
-		
+
 		foreach ($updates as $upd) {
 			// Если данные не изменились - пропускаем
 			if (!$upd['dataChanged']) {

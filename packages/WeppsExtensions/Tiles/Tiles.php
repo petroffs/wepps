@@ -24,16 +24,18 @@ use WeppsCore\Data;
 use WeppsCore\Extension;
 use WeppsCore\Exception;
 
-class Tiles extends Extension {
+class Tiles extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Tiles/Tiles.tpl';
 				$obj = new Data("Services");
 				$res = $obj->fetch("t.IsHidden=0");
-				$smarty->assign('elements',$res);
+				$smarty->assign('elements', $res);
 				break;
 			default:
 				Exception::error404();
@@ -41,7 +43,7 @@ class Tiles extends Extension {
 		}
 		$this->headers->css("/ext/Tiles/Tiles.{$this->rand}.css");
 		$this->headers->js("/ext/Tiles/Tiles.{$this->rand}.js");
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
 }

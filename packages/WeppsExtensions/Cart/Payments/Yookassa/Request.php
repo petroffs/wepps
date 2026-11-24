@@ -45,7 +45,7 @@ class RequestYookassa extends Request
                 break;
             case 'webhook':
                 $yookassa->webhook();
-                break;    
+                break;
             default:
                 http_response_code(404);
                 exit();

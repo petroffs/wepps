@@ -83,6 +83,6 @@ class Processing extends Request
 		// Передаём в шаблон
 		$this->assign('sourceFiles', $sourceFiles);
 		$this->assign('destinationFiles', $destinationFiles);
-		$this->assign('projectDev',Connect::$projectDev);
+		$this->assign('projectDev', Connect::$projectDev);
 	}
 }

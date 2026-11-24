@@ -22,35 +22,38 @@ use WeppsCore\Request;
 use WeppsCore\Connect;
 use WeppsCore\Utils;
 
-class SaveItemExtensions extends Request {
+class SaveItemExtensions extends Request
+{
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
 	public $element = [];
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];
 	    $root = Connect::$projectDev['root'];
-	    if ($this->listSettings['TableName']=='s_Extensions') {
+	    if ($this->listSettings['TableName'] == 's_Extensions') {
 	    	if ($this->element['CopyFiles'] == '1.0') {
 	    		$this->copyExts($this->element['FileExt'], ".php", "{$root}/packages/WeppsExtensions", '10');
 	    		$this->copyExts($this->element['FileExt'], ".tpl", "{$root}/packages/WeppsExtensions", '10');
 	    		$this->copyExts($this->element['FileExt'], ".css", "{$root}/packages/WeppsExtensions", '10');
-	    		$this->copyExts($this->element['FileExt'], ".js",  "{$root}/packages/WeppsExtensions", '10');
-	    	} else if ($this->element['CopyFiles'] == '1.1') {
+	    		$this->copyExts($this->element['FileExt'], ".js", "{$root}/packages/WeppsExtensions", '10');
+	    	} elseif ($this->element['CopyFiles'] == '1.1') {
 	    		$this->copyExts($this->element['FileExt'], "Request.php", "{$root}/packages/WeppsExtensions", '11');
 	    		$this->copyExts($this->element['FileExt'], "RequestExample.tpl", "{$root}/packages/WeppsExtensions", '11');
-	    		$this->copyExts($this->element['FileExt'], ".php",        "{$root}/packages/WeppsExtensions", '11');
-	    		$this->copyExts($this->element['FileExt'], ".tpl",        "{$root}/packages/WeppsExtensions", '11');
-	    		$this->copyExts($this->element['FileExt'], "Item.tpl",	  "{$root}/packages/WeppsExtensions", '11');
-	    		$this->copyExts($this->element['FileExt'], ".css",        "{$root}/packages/WeppsExtensions", '11');
-	    		$this->copyExts($this->element['FileExt'], ".js",         "{$root}/packages/WeppsExtensions", '11');
+	    		$this->copyExts($this->element['FileExt'], ".php", "{$root}/packages/WeppsExtensions", '11');
+	    		$this->copyExts($this->element['FileExt'], ".tpl", "{$root}/packages/WeppsExtensions", '11');
+	    		$this->copyExts($this->element['FileExt'], "Item.tpl", "{$root}/packages/WeppsExtensions", '11');
+	    		$this->copyExts($this->element['FileExt'], ".css", "{$root}/packages/WeppsExtensions", '11');
+	    		$this->copyExts($this->element['FileExt'], ".js", "{$root}/packages/WeppsExtensions", '11');
 	    	}
 	    }
 	}
-	private function copyExts($ext, $fileend, $dirstart, $stamp): void {
+	private function copyExts($ext, $fileend, $dirstart, $stamp): void
+    {
 		// FileExt приходит из запроса и участвует в путях mkdir/copy/file_*:
 		// строгий идентификатор + safeRelPath (снимает file/ssrf-taint)
 		$extOk = null;

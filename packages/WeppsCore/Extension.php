@@ -17,6 +17,7 @@
  */
 
 namespace WeppsCore;
+
 /**
  * Абстрактный класс Extension
  *

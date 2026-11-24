@@ -24,9 +24,11 @@ use WeppsCore\Exception;
 use WeppsCore\Request;
 use WeppsExtensions\Addons\Bot\BotTest;
 
-class RequestPopups extends Request {
+class RequestPopups extends Request
+{
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 		switch ($action) {
 			case 'test':
 				#$obj = new BotTest();
@@ -42,5 +44,5 @@ class RequestPopups extends Request {
 }
 
 $request = new RequestPopups($_REQUEST);
-$smarty->assign('get',$request->get);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

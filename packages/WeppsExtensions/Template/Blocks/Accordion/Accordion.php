@@ -21,9 +21,11 @@ namespace WeppsExtensions\Template\Blocks\Accordion;
 use WeppsCore\Extension;
 use WeppsCore\Smarty;
 
-class Accordion extends Extension {
+class Accordion extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Blocks/Accordion/Accordion.tpl');
 		$this->headers->css("/ext/Template/Blocks/Accordion/Accordion.{$this->rand}.css");

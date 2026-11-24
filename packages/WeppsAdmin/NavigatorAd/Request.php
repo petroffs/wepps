@@ -27,11 +27,13 @@ use WeppsCore\Data;
 use WeppsCore\TextTransforms;
 use WeppsCore\Utils;
 
-class RequestNavigatorAd extends Request {
+class RequestNavigatorAd extends Request
+{
     #[\Override]
-    public function request($action=""): void {
+    public function request($action = ""): void
+    {
         $this->tpl = '';
-        if (@Connect::$projectData['user']['ShowAdmin']!=1) {
+        if (@Connect::$projectData['user']['ShowAdmin'] != 1) {
         	Exception::error404();
         }
         switch ($action) {
@@ -41,7 +43,7 @@ class RequestNavigatorAd extends Request {
                 }
                 $id = htmlspecialchars((string) $this->get['term'], ENT_QUOTES);
                 $condition = "(t.Name like ? or t.NameMenu like ? or t.Id = ?)";
-                
+
                 $obj = new Data("s_Navigator");
                 $obj->setConcat("t.Id as id,if (t.NameMenu!='',t.NameMenu,t.Name) as value,concat('/_wepps/navigator',t.Url) as Url");
                 $obj->setParams(['%' . $id . '%', '%' . $id . '%', $id]);
@@ -60,6 +62,6 @@ class RequestNavigatorAd extends Request {
         }
     }
 }
-$request = new RequestNavigatorAd ($_REQUEST);
-$smarty->assign('get',$request->get);
+$request = new RequestNavigatorAd($_REQUEST);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

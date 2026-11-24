@@ -277,12 +277,14 @@ class Data
 	private function _getFormatted(string $conditions, $onPage, $currentPage, $orderBy)
 	{
 		$onPage = Utils::trim((string) $onPage);
-		if ($onPage == '')
+		if ($onPage == '') {
 			$onPage = 100;
+        }
 		$currentPage = Utils::trim((string) $currentPage);
 		$orderBy = Utils::trim($orderBy);
-		if ($orderBy != '')
+		if ($orderBy != '') {
 			$orderBy = "order by $orderBy";
+        }
 		$currentPage = ((int) $currentPage <= 0) ? 1 : (int) $currentPage;
 		$limit = ($currentPage - 1) * $onPage;
 		// Если условие это число И не содержит плейсхолдер, преобразуем в условие с типизацией
@@ -376,7 +378,8 @@ class Data
 				$fieldsCondition = " and t.TableField in ($placeholders)";
 				$params = array_merge($params, $fieldsList);
 				$orderBy = "field(t.TableField," . implode(',', array_map(function ($f) {
-					return "'$f'"; }, $fieldsList)) . ")";
+					return "'$f'";
+                }, $fieldsList)) . ")";
 				// Кэш для выборки конкретных полей: table::field1,field2,...
 				$cacheKey = 'schema_' . $this->tableName . '::' . implode(',', $fieldsList);
 			} else {
@@ -581,6 +584,4 @@ class Data
 		Connect::$instance->query($sql, [$this->tableName, $id]);
 		return true;
 	}
-
-
 }

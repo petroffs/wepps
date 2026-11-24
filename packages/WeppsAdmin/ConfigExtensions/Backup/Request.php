@@ -151,7 +151,7 @@ class RequestBackup extends Request
 					 * Вывод финального сообщения
 					 */
 					$cmdJs = htmlspecialchars($cmd, ENT_QUOTES);
-				$js = "
+                    $js = "
                     <script>
                     $('#dialog').html('<p>Выполните код в вашей OS из папки DocumentRoot:</p><label class=\"w_label w_input\"><input type=\"text\" value=\"{$cmdJs}\" id=\"dialog-cmd\"/></label>').dialog({
         				'title':'Сообщение',
@@ -175,7 +175,6 @@ class RequestBackup extends Request
                     </script>
                     ";
 					echo $js;
-
 				}
 				break;
 			case "files-restore":

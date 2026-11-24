@@ -25,19 +25,21 @@ use WeppsExtensions\Cart\Delivery\Cdek\Cdek;
 use WeppsExtensions\Cart\Delivery\DeliveryUtils;
 use WeppsExtensions\Cart\Payments\PaymentsUtils;
 
-class Bot {
+class Bot
+{
 	public $parent = 1;
 	protected $host;
 	protected $root;
 	protected $cli;
 
-	public function __construct($settings=[]) {
+	public function __construct($settings = [])
+    {
 		$this->host = Connect::$projectDev['host'];
 		$this->root = Connect::$projectDev['root'];
 		$this->cli = new Cli();
 		$start = microtime(true);
 		$action = (!isset($settings[1])) ? "" : $settings[1];
-		if ($this->parent==0) {
+		if ($this->parent == 0) {
 			return;
 		}
 		switch ($action) {
@@ -53,7 +55,7 @@ class Bot {
 				$obj->setSitemap();
 				break;
 			case 'cdek':
-				$obj = new Cdek([],new CartUtils());
+				$obj = new Cdek([], new CartUtils());
 				$obj->setPoints();
 				$obj->setCities();
 				$obj->setRegions();
@@ -84,11 +86,12 @@ class Bot {
 			case 'passtest':
 				$obj = new BotTest();
 				$obj->password();
+				// no break — выполнение продолжается в следующем case
 			case 'deliverytariffs':
 				$obj = new DeliveryUtils();
 				$cartUtils = new CartUtils();
 				#$obj->getDeliveryTariffsByCitiesId(137);
-				$obj->getTariffsByCitiesId("20",$cartUtils);
+				$obj->getTariffsByCitiesId("20", $cartUtils);
 				break;
 			case 'paymentstariffs':
 				$obj = new PaymentsUtils();
@@ -104,7 +107,7 @@ class Bot {
 				echo "\nERROR\n";
 				exit();
 		}
-		$start = microtime(true)-$start;
+		$start = microtime(true) - $start;
 		echo "\n" . htmlspecialchars((string) $action, ENT_QUOTES) . " - OK [$start sec.]\n";
 	}
 }

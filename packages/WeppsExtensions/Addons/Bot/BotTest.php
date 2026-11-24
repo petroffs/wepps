@@ -26,12 +26,15 @@ use WeppsExtensions\Addons\Messages\Mail\Mail;
 use WeppsExtensions\Addons\Messages\Telegram\Telegram;
 use WeppsExtensions\Cart\CartUtils;
 
-class BotTest extends Bot {
+class BotTest extends Bot
+{
 	public $parent = 0;
-	public function __construct() {
+	public function __construct()
+    {
 		parent::__construct();
 	}
-	public function setHashes(): void {
+	public function setHashes(): void
+    {
 		$sql = "select * from s_PropertiesValues;";
 		$res = Connect::$instance->fetch($sql);
 		$str = "";
@@ -42,14 +45,15 @@ class BotTest extends Bot {
 			$prop = $value['Name'];
 			$v = $value['PValue'];
 			// $guid = Utils::guid($list . '_' . $field . '_' . $id . '_' . $prop . '_' . $v);
-			$guid = Lists::getPropertiesValuesGuid((string)$list,(string)$field,(string)$id,(string)$prop,(string)$v);
+			$guid = Lists::getPropertiesValuesGuid((string)$list, (string)$field, (string)$id, (string)$prop, (string)$v);
 			$str .= "update s_PropertiesValues set Guid='{$guid}' where Id='{$value['Id']}';\n";
 		}
 		Connect::$db->exec($str);
 		echo 'Processed ' . count($res) . ' rows';
 		return;
 	}
-	public function telegram(): void {
+	public function telegram(): void
+    {
 		/*
 		 * Как узнать chat_id - находим бот в ТГ. Пишем ему /start
 		 * Далее через getUpdates находим chat_id пользователя (который ввел /start)
@@ -57,30 +61,32 @@ class BotTest extends Bot {
 		 * chat_id группы начинается с минуса
 		 */
 		$tg = new Telegram();
-		$response = $tg->send(Connect::$projectServices['telegram']['dev'],'Hello from Bot (Telegram)');
-		Utils::debug($response,2);
+		$response = $tg->send(Connect::$projectServices['telegram']['dev'], 'Hello from Bot (Telegram)');
+		Utils::debug($response, 2);
 	}
-	public function mail(): void {
+	public function mail(): void
+    {
 		$mail = new Mail("html");
 		$mail->mail(Connect::$projectInfo['email'], "Test subject", "Test text");
 	}
-	public function testDB(): void {
+	public function testDB(): void
+    {
 		$row = [
 				'Name' => 'TEST1',
 				'Text' => 'test text',
-				'Priority'=>0
+				'Priority' => 0
 		];
 		$settings = [
 				'Text' => [
 						'fn' => 'md5(:Text)'
 				]
 		];
-		$t = Connect::$instance->insert('DataTbls',$row,$settings);
-		
-		Utils::debug($t,21);
+		$t = Connect::$instance->insert('DataTbls', $row, $settings);
+
+		Utils::debug($t, 21);
 
 		/* $obj = new Data("Products");
-		$res = $obj->fetch('',20,1);	
+        $res = $obj->fetch('',20,1);
 		Utils::debug($obj->paginator,21); */
 		$obj = new Data("DataTbls");
 		$row = [
@@ -91,16 +97,16 @@ class BotTest extends Bot {
 				'RemoteTest' => '3',
 				'Alias' => 'AliasTest',
 		];
-		$id = $obj->add($row,1);
+		$id = $obj->add($row, 1);
 		Utils::debug($id, 1);
-		
+
 		$obj = new Data("Products");
 		$obj->setParams([
 				'Брюки Armani Junior'
 		]);
-		$res = $obj->fetch("t.IsHidden=0 and t.Name = ?",5,1);
-		Utils::debug($res,21);
-		
+		$res = $obj->fetch("t.IsHidden=0 and t.Name = ?", 5, 1);
+		Utils::debug($res, 21);
+
 		/* $obj = new Data("DataTbls");
 		$t = $obj->add([
 				'Name'=>'TEST1',
@@ -108,34 +114,37 @@ class BotTest extends Bot {
 		],[
 				'BTest'=>['fn'=>'compress(:BTest)']
 		]); */
-		
-		
+
+
 		$t = Lists::setListItem(
-				"DataTbls",
-				55,
-				[
-						'w_path'=>'list',
+            "DataTbls",
+            55,
+            [
+						'w_path' => 'list',
 						'GUID' => "",
 						'BTest' => 'test text'
 				]
-				);
-		Utils::debug($t,21);
+        );
+		Utils::debug($t, 21);
 	}
-	public function cli(): void {
+	public function cli(): void
+    {
 		$this->cli->text("simle text");
 		$this->cli->success("success text");
 		$this->cli->warning("warning text");
 		$this->cli->error("error text");
 	}
-	public function password(): never {
+	public function password(): never
+    {
 		$password = "1541";
-		$hash = password_hash($password,PASSWORD_BCRYPT);
+		$hash = password_hash($password, PASSWORD_BCRYPT);
 		$this->cli->info($hash);
 		exit();
 		#$password2 = "556";
 		#$hash = password_hash($password2,PASSWORD_BCRYPT);
 	}
-	public function testOrderText(): void {
+	public function testOrderText(): void
+    {
 		/*
 		 * EText - комментарий
 		 */
@@ -143,12 +152,11 @@ class BotTest extends Bot {
 		$id = 41;
 		$sql = "select o.Id,o.Name,o.JData,o.JPositions,o.Address,o.PostalCode,o.Phone,o.Email,e.EText from Orders o
 		left join OrdersEvents e on e.OrderId=o.Id and e.EType='Msg' where o.Id=? order by e.Id";
-		$res = Connect::$instance->fetch($sql,[$id])[0];
+		$res = Connect::$instance->fetch($sql, [$id])[0];
 		$str = $cartUtils->getOrderText($res);
-		
+
 		$sql = "update Orders set OText=? where Id=?";
-		Connect::$instance->query($sql,[$str,$id]);
+		Connect::$instance->query($sql, [$str,$id]);
 		#Utils::debug($str,21);
 	}
 }
-?>

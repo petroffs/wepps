@@ -20,10 +20,11 @@ namespace WeppsExtensions\Addons\SmartyExt;
 
 use Smarty\Extension\Base;
 
-class SmartyExt extends Base {
-
+class SmartyExt extends Base
+{
     #[\Override]
-    public function getModifierCompiler(string $modifier): ?\Smarty\Compile\Modifier\ModifierCompilerInterface {
+    public function getModifierCompiler(string $modifier): ?\Smarty\Compile\Modifier\ModifierCompilerInterface
+    {
         if ($modifier === 'weppstest') {
             return new AdModifierCompiler();
         }

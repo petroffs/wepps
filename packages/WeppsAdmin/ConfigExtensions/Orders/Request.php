@@ -28,17 +28,19 @@ use WeppsCore\Data;
 use WeppsCore\TextTransforms;
 use WeppsExtensions\Profile\ProfileActions;
 
-class RequestOrders extends Request {
+class RequestOrders extends Request
+{
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 		$this->tpl = '';
-		if (@Connect::$projectData['user']['ShowAdmin']!=1) {
+		if (@Connect::$projectData['user']['ShowAdmin'] != 1) {
 			Exception::error(404);
 		}
 		Connect::$instance->cached('no');
 		switch ($action) {
 			case "test":
-				Utils::debug('test1',1);
+				Utils::debug('test1', 1);
 				break;
 			case 'viewOrder':
 			    $this->tpl = "RequestViewOrder.tpl";
@@ -47,25 +49,25 @@ class RequestOrders extends Request {
 			    }
 			    $this->getOrder($this->get['id']);
 			    break;
-			    
+
 			case 'setProducts':
 				$this->tpl = "RequestViewOrder.tpl";
 				if (empty($this->get['id'])) {
 					Exception::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
-				$jdata = json_decode($order['order']['JPositions'],true);
+				$jdata = json_decode($order['order']['JPositions'], true);
 				if (empty($jdata[$this->get['index']])) {
 					Exception::error(400);
 				}
-				
+
 				$jdata[$this->get['index']]['quantity'] = (int) $this->get['quantity'];
 				$jdata[$this->get['index']]['price'] = (float) $this->get['price'];
-				$jdata[$this->get['index']]['sum'] = Utils::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'],2);
-				
-				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				$jdata[$this->get['index']]['sum'] = Utils::round($jdata[$this->get['index']]['price'] * $jdata[$this->get['index']]['quantity'], 2);
+
+				$json = json_encode($jdata, JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
-				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
+				Connect::$instance->query($sql, [$json,$order['order']['Id']]);
 				$this->getOrder($this->get['id']);
 				break;
 			case 'addProducts':
@@ -74,19 +76,19 @@ class RequestOrders extends Request {
 					Exception::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
-				$jdata = json_decode($order['order']['JPositions'],true);
-				$ex = explode('-',$this->get['products']);
+				$jdata = json_decode($order['order']['JPositions'], true);
+				$ex = explode('-', $this->get['products']);
 				$jdata[] = [
 						'id' => (int) $ex[0],
 						'idv' => (int) $ex[1],
 						'name' => (string) $this->get['name'],
 						'quantity' => (int) $this->get['quantity'],
 						'price' => (float) $this->get['price'],
-						'sum' => Utils::round((float) $this->get['price'] * (float) (int) $this->get['quantity'],2),
+						'sum' => Utils::round((float) $this->get['price'] * (float) (int) $this->get['quantity'], 2),
 				];
-				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				$json = json_encode($jdata, JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
-				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
+				Connect::$instance->query($sql, [$json,$order['order']['Id']]);
 				$this->getOrder($this->get['id']);
 				break;
 			case "removeProducts":
@@ -95,22 +97,22 @@ class RequestOrders extends Request {
 					Exception::error(404);
 				}
 				$order = $this->getOrder($this->get['id']);
-				$jdata = json_decode($order['order']['JPositions'],true);
+				$jdata = json_decode($order['order']['JPositions'], true);
 				if (empty($jdata[$this->get['index']])) {
 					Exception::error(400);
 				}
 				unset($jdata[$this->get['index']]);
-				$jdata = array_merge([],$jdata);
-				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
+				$jdata = array_merge([], $jdata);
+				$json = json_encode($jdata, JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
-				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
+				Connect::$instance->query($sql, [$json,$order['order']['Id']]);
 				$this->getOrder($this->get['id']);
 				break;
 			case "searchProducts":
 				#Utils::debug($this->get,31);
-				$jdata = self::searchProducts(@$this->get['search'],$this->get['page']);
+				$jdata = self::searchProducts(@$this->get['search'], $this->get['page']);
 				$json = Utils::json($jdata);
-				header ( 'Content-type:application/json;charset=utf-8' );
+				header('Content-type:application/json;charset=utf-8');
 				echo $json;
 				Connect::$instance->close();
 				break;
@@ -120,7 +122,7 @@ class RequestOrders extends Request {
 					Exception::error(404);
 				}
 				$sql = "update Orders set OStatus=? where Id=?";
-				Connect::$instance->query($sql,[(int) $this->get['status'],(int) $this->get['id']]);
+				Connect::$instance->query($sql, [(int) $this->get['status'],(int) $this->get['id']]);
 				$this->getOrder($this->get['id']);
 				break;
 			case "addPayments":
@@ -139,7 +141,7 @@ class RequestOrders extends Request {
 						'Priority' => 0
 				]);
 				$sql = "insert into Payments {$arr['insert']}";
-				Connect::$instance->query($sql,$arr['row']);
+				Connect::$instance->query($sql, $arr['row']);
 				$this->getOrder($this->get['id']);
 				break;
 			case "addMessages":
@@ -161,7 +163,7 @@ class RequestOrders extends Request {
 						#'JData' => json_encode($jdata,JSON_UNESCAPED_UNICODE),
 				]);
 				$sql = "insert into OrdersEvents {$arr['insert']}";
-				Connect::$instance->query($sql,$arr['row']);
+				Connect::$instance->query($sql, $arr['row']);
 				$this->getOrder($this->get['id']);
 				break;
 			case 'setTariff':
@@ -170,7 +172,7 @@ class RequestOrders extends Request {
 					http_response_code(404);
 					exit();
 				}
-				switch(@$this->get['tariff']) {
+				switch (@$this->get['tariff']) {
 					case 'delivery-tariff':
 						$field = 'ODeliveryTariff';
 						break;
@@ -188,7 +190,7 @@ class RequestOrders extends Request {
 						exit();
 				}
 				$sql = "update Orders set $field = ? where Id = ?";
-				Connect::$instance->query($sql,[(float) $this->get['value'],(int) $this->get['id']]);
+				Connect::$instance->query($sql, [(float) $this->get['value'],(int) $this->get['id']]);
 				$this->getOrder($this->get['id']);
 				break;
 			default:
@@ -201,7 +203,8 @@ class RequestOrders extends Request {
 	 *
 	 * @psalm-return array{order: array, statuses: array}
 	 */
-	private function getOrder($id): array {
+	private function getOrder($id): array
+    {
 		$profileActions = new ProfileActions(false);
 		$order = $profileActions->getFullOrder($id, 0); // 0 = без проверки userId (админпанель видит все заказы)
 		if ($order === []) {
@@ -209,19 +212,20 @@ class RequestOrders extends Request {
 		}
 		$sql = "select ts.Id,ts.Name from OrdersStatuses ts group by ts.Id order by ts.Priority";
 		$statuses = Connect::$instance->fetch($sql);
-		$this->assign('statuses',$statuses);
-		$this->assign('statusesActive',$order['OStatus']);
+		$this->assign('statuses', $statuses);
+		$this->assign('statusesActive', $order['OStatus']);
 		$sql = 'update Orders set OSum = ? where Id = ?';
-		Connect::$instance->query($sql,[$order['OSum'],$id]);
+		Connect::$instance->query($sql, [$order['OSum'],$id]);
 		$this->assign('order', $order);
-		return ['order'=>$order,'statuses'=>$statuses];
+		return ['order' => $order,'statuses' => $statuses];
 	}
 	/**
 	 * @return array[]
 	 *
 	 * @psalm-return array{results: array, pagination: array{more: bool}}
 	 */
-	private function searchProducts($text='',$page=1): array {
+	private function searchProducts($text = '', $page = 1): array
+    {
 		if (strlen($text) < 0) {
 			$res = [];
 		} else {
@@ -235,22 +239,21 @@ class RequestOrders extends Request {
 				join ProductsVariations pv on pv.ProductsId=p.Id and pv.IsHidden=0 and pv.Field4>0
 				where p.IsHidden=0 and (p.Name like ? or p.Article like ? or concat(pv.Field1,', ',pv.Field2) like ? or pv.Field3 like ?)
 				group by p.Id order by p.Name asc limit $offset,$limit";
-			$res = Connect::$instance->fetch($sql,["%{$term}%","%{$term}%","%{$term}%","%{$term}%"]);
+			$res = Connect::$instance->fetch($sql, ["%{$term}%","%{$term}%","%{$term}%","%{$term}%"]);
 		}
 		$pagination = false;
 		if (!empty($res)) {
 			$pagination = true;
 		}
 		$output = [
-				'results'=>$res,
+				'results' => $res,
 				'pagination' => [
-						'more'=> $pagination
+						'more' => $pagination
 				]
 		];
 		return $output;
 	}
-
 }
-$request = new RequestOrders ($_REQUEST);
-$smarty->assign('get',$request->get);
+$request = new RequestOrders($_REQUEST);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

@@ -35,10 +35,10 @@ class RequestUploads extends Request
 	public function request($action = ""): void
 	{
 		$this->tpl = '';
-		if ((Connect::$projectData['user']['ShowAdmin']??0) != 1) {
+		if ((Connect::$projectData['user']['ShowAdmin'] ?? 0) != 1) {
 			Exception::error404();
 		}
-		
+
 		switch ($action) {
 			case "excel":
 				if (!isset($_SESSION)) {

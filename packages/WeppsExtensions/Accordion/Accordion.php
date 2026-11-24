@@ -24,16 +24,18 @@ use WeppsCore\Data;
 use WeppsCore\Extension;
 use WeppsCore\Exception;
 
-class Accordion extends Extension {
+class Accordion extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Accordion/Accordion.tpl';
 				$obj = new Data("Services");
 				$res = $obj->fetch("t.IsHidden=0");
-				$smarty->assign('elements',$res);
+				$smarty->assign('elements', $res);
 				break;
 			default:
 				Exception::error404();
@@ -41,8 +43,7 @@ class Accordion extends Extension {
 		}
 		$this->headers->css("/ext/Accordion/Accordion.{$this->rand}.css");
 		$this->headers->js("/ext/Accordion/Accordion.{$this->rand}.js");
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
 }
-?>

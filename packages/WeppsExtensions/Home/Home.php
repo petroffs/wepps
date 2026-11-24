@@ -17,6 +17,7 @@
  */
 
 namespace WeppsExtensions\Home;
+
 use WeppsCore\Extension;
 use WeppsCore\Data;
 use WeppsCore\Exception;

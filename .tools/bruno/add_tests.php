@@ -1,7 +1,9 @@
 <?php
+
 $base = __DIR__ . '/WeppPlatformV1';
 
-function testsBlock(array $checks): string {
+function testsBlock(array $checks): string
+{
     $lines = ["\ntests {"];
     foreach ($checks as [$label, $assertion]) {
         $lines[] = "  test(\"{$label}\", function() {";

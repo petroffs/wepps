@@ -50,7 +50,7 @@ class RequestLists extends Request
 				// Валидация входных данных через белый список
 				$list = Utils::trim($this->get['list'] ?? '');
 				$field = Utils::trim($this->get['field'] ?? '');
-				
+
 				if (empty($list) || empty($field)) {
 					Exception::error404();
 				}
@@ -60,7 +60,7 @@ class RequestLists extends Request
 				if (preg_match('/^[A-Za-z0-9_]+$/D', $list) !== 1 || preg_match('/^[A-Za-z0-9_]+$/D', $field) !== 1) {
 					Exception::error404();
 				}
-				
+
 				$obj = new Data($list);
 				$scheme = $obj->getScheme();
 				if (!isset($scheme[$field][0])) {
@@ -108,26 +108,32 @@ class RequestLists extends Request
 				}
 				break;
 			case 'upload':
-				if (!isset($this->get['filesfield']))
+				if (!isset($this->get['filesfield'])) {
 					Exception::error404();
-				if (!isset($this->get['myform']))
+                }
+				if (!isset($this->get['myform'])) {
 					Exception::error404();
-				if (!isset($_FILES))
+                }
+				if (!isset($_FILES)) {
 					Exception::error404();
+                }
 				$data = Lists::addUpload($_FILES, $this->get['filesfield'], $this->get['myform']);
 				echo $data['js'];
 				break;
 			case 'uploadRemove':
-				if (!isset($this->get['filesfield']))
+				if (!isset($this->get['filesfield'])) {
 					Exception::error404();
-				if (!isset($this->get['filename']))
+                }
+				if (!isset($this->get['filename'])) {
 					Exception::error404();
+                }
 				$t = Lists::removeUpload($this->get['filesfield'], $this->get['filename']);
 				echo $t;
 				break;
 			case 'fileRemove':
-				if (!isset($this->get['id']) || (int) $this->get['id'] === 0)
+				if (!isset($this->get['id']) || (int) $this->get['id'] === 0) {
 					Exception::error404();
+                }
 				$obj = new Data("s_Files");
 				$ids = array_map('intval', explode(',', $this->get['id']));
 				$placeholders = rtrim(str_repeat('?,', count($ids)), ',');
@@ -141,8 +147,9 @@ class RequestLists extends Request
 				 * Проверка прав доступа
 				 */
 				$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions'], array('list' => $res['TableName']));
-				if ($perm['status'] == 0)
+				if ($perm['status'] == 0) {
 					Exception::error404();
+                }
 
 				/*
 				 * Удалить файл (копии в pic удалим файлклинером)
@@ -236,11 +243,11 @@ class RequestLists extends Request
 					$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
 		                WHERE TABLE_SCHEMA = ? and TABLE_NAME = ?
 		                and COLUMN_NAME = ?";
-				$listSchemeReal = Connect::$instance->fetch($sql, [
+                    $listSchemeReal = Connect::$instance->fetch($sql, [
 					Connect::$projectDB['dbname'],
 					htmlspecialchars((string) $this->get['w_tablename'], ENT_QUOTES),
 					htmlspecialchars((string) $this->get['TableField'], ENT_QUOTES)
-				]);
+                    ]);
 					if (isset($listSchemeReal[0]['Col']) && $listSchemeReal[0]['Col'] == $this->get['TableField']) {
 						$this->errors['TableField'] = "Уже используется";
 					}
@@ -303,7 +310,7 @@ class RequestLists extends Request
 				if (!isset($this->get['id']) || !isset($this->get['list'])) {
 					Exception::error404();
 				}
-				$outer = Language::copyListItemLang($this->get['list'],$this->get['id'],$this->get['w_path'],$this->get['langId']);
+				$outer = Language::copyListItemLang($this->get['list'], $this->get['id'], $this->get['w_path'], $this->get['langId']);
 				// HTML собирается из экранированных вставок (href/list в Language::copyListItemLang);
 				// остаточный taint — артефакт глобальной модели БД psalm (bind-параметры
 				// неразбираемых SELECT он считает записью в общий бакет)
@@ -331,7 +338,7 @@ class RequestLists extends Request
 					Connect::$instance->close();
 				}
 				$searchTerm = '%' . htmlspecialchars(str_replace(['%', '_'], ['\%', '\_'], (string) $this->get['term']), ENT_QUOTES) . '%';
-				
+
 				$obj = new Data("s_Config");
 				$obj->setConcat("t.Id as id,t.Name as value,concat('/_wepps/lists/',t.TableName,'/') as Url");
 				$obj->setParams([$searchTerm, $searchTerm]);
@@ -345,8 +352,9 @@ class RequestLists extends Request
 				Connect::$instance->close();
 				break;
 			case "export":
-				if (!isset($this->get['list']))
+				if (!isset($this->get['list'])) {
 					Exception::error404();
+                }
 				$tableName = $this->get['list'];
 				$obj = new Data($tableName);
 				$tableData = $obj->fetchmini('', 5000, 1);

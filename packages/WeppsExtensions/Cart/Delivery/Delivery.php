@@ -39,7 +39,7 @@ class Delivery
             return [];
         }
         $price = (float) $this->settings['Tariff'];
-        if ($this->settings['FreeLevel']>0 && $this->settings['FreeLevel']<=$cartSummary['sumActive']) {
+        if ($this->settings['FreeLevel'] > 0 && $this->settings['FreeLevel'] <= $cartSummary['sumActive']) {
             $price = 0;
         }
         $output = [
@@ -68,10 +68,10 @@ class Delivery
         switch (@$this->settings['IsDiscountPercentage']) {
             case 1:
                 $output['price'] = $cartUtils->getCartPercentage((float)$this->settings['Discount']);
-            break;
+                break;
             default:
                 $output['price'] = Utils::round($this->settings['Discount']);
-            break;
+                break;
         }
         return $output;
     }
@@ -91,15 +91,17 @@ class Delivery
             'allowOrderBtn' => $allowBtn
         ];
     }
-    public function getOperationsActive(array $cart) {
+    public function getOperationsActive(array $cart)
+    {
         $operations = [];
-		$key = array_search($cart['deliveryId'], array_column(($cart['deliveryOperations']??[]), 'id'));
-		 if ($key !== false) {
+		$key = array_search($cart['deliveryId'], array_column(($cart['deliveryOperations'] ?? []), 'id'));
+        if ($key !== false) {
 			$operations = $cart['deliveryOperations'][$key]['data'];
         }
         return $operations;
     }
-    public function getErrors(array $get) : array {
+    public function getErrors(array $get): array
+    {
         return [];
 	}
 }

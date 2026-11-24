@@ -147,7 +147,7 @@ class RequestCart extends Request
 		if (empty($this->get['id']) || !is_numeric($this->get['id'])) {
 			Exception::error(400);
 		}
-		
+
 		$this->tpl = 'RequestAddCart.tpl';
 		$productsUtils = new ProductsUtils();
 		// Проверяем существование товара

@@ -120,7 +120,6 @@ class ProfileUtils
 
 	public function getOrders($id = 0): void
 	{
-
 	}
 	/**
 	 * Обрабатывает задачу на восстановление пароля пользователя.

@@ -40,7 +40,7 @@ class RussianPost extends Delivery
             return [];
         }
         if (empty($this->settings['PostalCode'])) {
-            $obj = new Cdek($this->settings,$this->cartUtils);
+            $obj = new Cdek($this->settings, $this->cartUtils);
             $this->settings['PostalCode'] = $obj->getPostalcodes();
             if (empty($this->settings['PostalCode'])) {
                 $output = [
@@ -55,21 +55,20 @@ class RussianPost extends Delivery
             /*
              * ? Записать PostalCode
              */
-
         }
         $from = Connect::$projectServices['russianpost']['office']['sender'];
         $to = $this->settings['PostalCode'];
         $weight = "1000";
         $sum = $cartSummary['sumActive'] * 100;
         $url = "https://delivery.pochta.ru/v2/calculate/tariff/delivery?json&object=54020&from=$from&to=$to&transtype=1&weight=$weight&size=30x30x10&group=0&closed=1&sumoc=$sum";
-        
+
         $hash = md5($url);
         if (empty($jdata = $this->cartUtils->getMemcached()->get($hash))) {
             $curl = new Curl();
             $curl->setHeader('Content-Type', 'application/json;charset=UTF-8');
             $response = $curl->get($url)->response;
             $jdata = json_decode($response, true);
-            $this->cartUtils->getMemcached()->set($hash,$jdata,86400);
+            $this->cartUtils->getMemcached()->set($hash, $jdata, 86400);
         }
         $period = "-";
         if (!empty($jdata['delivery']['min'])) {

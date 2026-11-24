@@ -53,8 +53,9 @@ class Backup extends Request
 				$this->tpl = 'BackupDatabase.tpl';
 				$dh = opendir(Connect::$projectDev['root'] . "/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
 				while ($file = readdir($dh)) {
-					if ($file !== '.' && $file !== '..' && strstr($file, ".sql"))
+					if ($file !== '.' && $file !== '..' && strstr($file, ".sql")) {
 						$files[] = $file;
+                    }
 				}
 				closedir($dh);
 				if (isset($files)) {
@@ -73,13 +74,13 @@ class Backup extends Request
 				/*
 				 * Списки с учетом прав доступа
 				 */
-			if (!empty($perm['lists'])) {
-				$placeholders = rtrim(str_repeat('?,', count($perm['lists'])), ',');
-				$sql = "select * from s_Config as t where TableName in ($placeholders) order by t.Category,t.Priority";
-				$res = Connect::$instance->fetch($sql, $perm['lists']);
-			} else {
-				$res = [];
-			}
+                if (!empty($perm['lists'])) {
+                    $placeholders = rtrim(str_repeat('?,', count($perm['lists'])), ',');
+                    $sql = "select * from s_Config as t where TableName in ($placeholders) order by t.Category,t.Priority";
+                    $res = Connect::$instance->fetch($sql, $perm['lists']);
+                } else {
+                    $res = [];
+                }
 				$arr = [];
 				foreach ($res as $value) {
 					$arr[$value['Category']][] = $value;
@@ -91,8 +92,9 @@ class Backup extends Request
 				$this->tpl = 'BackupFiles.tpl';
 				$dh = opendir(Connect::$projectDev['root'] . "/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
 				while ($file = readdir($dh)) {
-					if ($file !== '.' && $file !== '..' && strstr($file, ".7z"))
+					if ($file !== '.' && $file !== '..' && strstr($file, ".7z")) {
 						$files[] = $file;
+                    }
 				}
 				closedir($dh);
 				if (isset($files)) {

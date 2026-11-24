@@ -30,7 +30,6 @@ class ProductsUtils
 	private $list;
 	public function __construct()
 	{
-
 	}
 	public function setNavigator(Navigator $navigator, string $list): void
 	{
@@ -174,7 +173,7 @@ class ProductsUtils
 	 * Параметр может быть:
 	 * - "325" — просто товар по ID
 	 * - "325-555" — товар с вариацией (ID-variationId)
-	 * 
+	 *
 	 * @param string $productId ID товара или "ID-variationId"
 	 * @return array ['exists' => bool, 'message' => string, 'product' => array]
 	 */
@@ -213,9 +212,7 @@ class ProductsUtils
 							break 2;
 						}
 					}
-				}
-				// Проверяем плоскую структуру
-				else if (isset($group['id']) && $group['id'] == $variationId) {
+				} elseif (isset($group['id']) && $group['id'] == $variationId) { // Проверяем плоскую структуру
 					$variationFound = true;
 					break;
 				}

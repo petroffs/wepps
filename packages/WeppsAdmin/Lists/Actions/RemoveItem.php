@@ -20,10 +20,11 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Request;
 
-class RemoveItem extends Request {
+class RemoveItem extends Request
+{
 	public $noclose = 1;
 	#[\Override]
-	public function request($action=""): void {
-		
+	public function request($action = ""): void
+    {
 	}
 }

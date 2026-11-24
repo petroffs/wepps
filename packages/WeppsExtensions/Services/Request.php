@@ -22,9 +22,11 @@ require_once __DIR__ . '/../../../configloader.php';
 
 use WeppsCore\Request;
 
-class RequestServices extends Request {
+class RequestServices extends Request
+{
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 		switch ($action) {
 			case 'test':
 				exit();
@@ -35,5 +37,5 @@ class RequestServices extends Request {
 	}
 }
 $request = new RequestServices($_REQUEST);
-$smarty->assign('get',$request->get);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

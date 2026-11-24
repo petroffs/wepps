@@ -127,7 +127,7 @@ class DeliveryUtils
         foreach ($data as $key => $value) {
             $data2[str_replace('operations-', '', $key)] = trim(htmlspecialchars(substr($value, 0, 256)));
         }
-        $key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations']??[], 'id'));
+        $key = array_search($cart['deliveryId'], array_column($cart['deliveryOperations'] ?? [], 'id'));
         if ($key === false) {
             $cart['deliveryOperations'][] = [
                 'id' => (string) ($cart['deliveryId'] ?? '-1'),

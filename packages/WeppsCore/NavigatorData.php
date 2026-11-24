@@ -17,6 +17,7 @@
  */
 
 namespace WeppsCore;
+
 /**
  * Класс NavigatorData расширяет функциональность класса Data для работы с навигацией по сайту.
  */
@@ -52,8 +53,9 @@ class NavigatorData extends Data
             $sub = [];
             foreach ($this->nav as $value) {
 				foreach ($value as $v) {
-					if (isset($v['ParentId']))
+					if (isset($v['ParentId'])) {
 						$sub[$v['ParentId']][] = $v;
+                    }
 				}
 			}
             return ['groups' => $arr, 'subs' => $sub];
@@ -65,7 +67,7 @@ class NavigatorData extends Data
         if ($res2Keys == "") {
 				$this->navLevel++;
 				return $this->getNav($navLevel);
-			}
+        }
         $res = $this->fetch("{$condition} and t.ParentId in ({$res2Keys}) and t.TableId=0", 100, 1, "t.Priority");
         $this->nav[$this->navLevel] = $res;
         $this->navLevel++;
@@ -84,8 +86,9 @@ class NavigatorData extends Data
 		$this->setParams([(int) $id]);
 		$res = $this->fetch("t.Id=?");
 		array_push($this->way, $res[0]);
-		if ($res[0]['ParentId'] == 0)
+		if ($res[0]['ParentId'] == 0) {
 			return array_reverse($this->way);
+        }
 		return $this->getWay($res[0]['ParentId']);
 	}
 

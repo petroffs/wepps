@@ -78,7 +78,7 @@ class Images
 	 *
 	 * @param array $get Массив параметров (необработанный $_GET-подобный массив).
 	 */
-	function __construct($get)
+	public function __construct($get)
 	{
 		$this->get = Utils::trim($get);
 		$rawUrl = (isset($this->get['fileUrl'])) ? ltrim(str_replace('\\', '/', (string) $this->get['fileUrl']), '/') : '';
@@ -324,7 +324,7 @@ class Images
 			$this->width = $width;
 			$this->height = $width / $this->ratio;
 		}
-		
+
 		// Проверяем, влезают ли результирующие размеры в целевой прямоугольник
 		// и пересчитываем, если какой-то размер выходит за границы
 		if ($this->width > $width) {

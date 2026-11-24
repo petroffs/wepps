@@ -171,7 +171,7 @@ class RestV1APP extends RestV1
 		// Загружаем атрибуты для всех товаров одним вызовом
 		$filterResult = [];
 		$ids = array_column($result['rows'], 'Id');
-		
+
 		if ($ids !== []) {
 			$placeholders = Connect::$instance->in($ids);
 			$filters = new Filters();
@@ -884,7 +884,7 @@ class RestV1APP extends RestV1
 			 */
 			$class = new $className($cartSummary['delivery']['settings'] ?? [], $cartUtils);
 			$errors = $class->getErrors($data['data'] ?? []);
-			
+
 			// Фильтруем ошибки operations
 			$operationErrors = [];
 			foreach ($errors as $key => $error) {
@@ -892,7 +892,7 @@ class RestV1APP extends RestV1
 					$operationErrors[$key] = $error;
 				}
 			}
-			
+
 			if ($operationErrors !== []) {
 				return ['status' => 400, 'message' => 'Validation errors', 'data' => $operationErrors];
 			}
@@ -901,7 +901,7 @@ class RestV1APP extends RestV1
 		// Сохраняем данные
 		$deliveryUtils = new DeliveryUtils();
 		$deliveryUtils->setOperations($data['data'] ?? [], $cartUtils);
-		
+
 		return ['status' => 200, 'message' => 'OK', 'data' => null];
 	}
 
@@ -920,7 +920,7 @@ class RestV1APP extends RestV1
 
 	/**
 	 * Преобразует массив свойств в структуру W_Attributes для API
-	 * 
+	 *
 	 * @param array|null $propertiesData Массив данных о свойствах grouped по PropertyId: [PropertyId => rows]
 	 * @return array|null Отформатированный массив W_Attributes или null
 	 */

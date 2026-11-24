@@ -30,9 +30,11 @@ if (!session_id()) {
 	session_start();
 }
 
-class Contacts extends Extension {
+class Contacts extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		#Utils::debug($_SESSION,21);
 		switch (Navigator::$pathItem) {
@@ -41,7 +43,7 @@ class Contacts extends Extension {
 				$obj = new Data("Contacts");
 				$res = $obj->fetch("t.IsHidden=0");
 				#Utils::debug($res,1);
-				$smarty->assign('elements',$res);
+				$smarty->assign('elements', $res);
 				if (isset($_SESSION['uploads']['feedback-form'])) {
 					$smarty->assign('uploaded', $_SESSION['uploads']['feedback-form']);
 				}
@@ -50,8 +52,8 @@ class Contacts extends Extension {
 				Exception::error404();
 				break;
 		}
-		$smarty->assign('normalView',0);
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+		$smarty->assign('normalView', 0);
+		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		$this->headers->js("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.js");
 		$this->headers->css("/ext/Addons/YandexMaps/YandexMaps.{$this->rand}.css");
 		$apikey = Connect::$projectServices['yandexmaps']['apikey'];

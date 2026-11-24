@@ -99,8 +99,9 @@ abstract class Request
 	 */
 	private function cssjs(): void
 	{
-		if ($this->tpl == '')
+		if ($this->tpl == '') {
 			return;
+        }
 		$smarty = Smarty::getSmarty();
 		$css = (is_file($this->tpl . '.css')) ? 1 : 0;
 		$js = (is_file($this->tpl . '.js')) ? 1 : 0;
@@ -109,10 +110,12 @@ abstract class Request
 		}
 		if ($css === 1 || $js === 1) {
 			$this->get['cssjs'] = '';
-			if ($css === 1)
+			if ($css === 1) {
 				$this->get['cssjs'] = "<style>{$smarty->fetch($this->tpl . '.css')}</style>";
-			if ($js === 1)
+            }
+			if ($js === 1) {
 				$this->get['cssjs'] .= "<script type=\"text/javascript\">{$smarty->fetch($this->tpl . '.js')}</script>";
+            }
 		}
 	}
 

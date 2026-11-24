@@ -20,14 +20,16 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Request;
 
-class SaveItem extends Request {
+class SaveItem extends Request
+{
 	public $noclose = 1;
 	public $scheme = [];
 	public $listSettings = [];
 	public $element = [];
-	
+
 	#[\Override]
-	public function request($action=""): void {
+	public function request($action = ""): void
+    {
 	    $this->scheme = $this->get['listScheme'];
 	    $this->listSettings = $this->get['listSettings'];
 	    $this->element = $this->get['element'];

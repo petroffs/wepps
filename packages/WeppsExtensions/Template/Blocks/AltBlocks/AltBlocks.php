@@ -21,9 +21,11 @@ namespace WeppsExtensions\Template\Blocks\AltBlocks;
 use WeppsCore\Extension;
 use WeppsCore\Smarty;
 
-class AltBlocks extends Extension {
+class AltBlocks extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		$this->tpl = $smarty->fetch('packages/WeppsExtensions/Template/Blocks/AltBlocks/AltBlocks.tpl');
 		$this->headers->css("/ext/Template/Blocks/AltBlocks/AltBlocks.{$this->rand}.css");

@@ -29,11 +29,12 @@ class Telegram
     private $curl;
     private $timeout;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->token = "bot" . Connect::$projectServices['telegram']['token'];
         $this->curl = new Curl();
         $this->timeout = Connect::$projectServices['telegram']['timeout'] ?? 10;
-        
+
         $this->configureProxy();
         $this->curl->setOpt(CURLOPT_TIMEOUT, (int)$this->timeout);
     }
@@ -42,7 +43,8 @@ class Telegram
      * Настройка прокси для curl
      * @return void
      */
-    private function configureProxy(): void {
+    private function configureProxy(): void
+    {
         $proxy = Connect::$projectServices['telegram']['proxy'] ?? [];
         if (empty($proxy['host']) || empty($proxy['port'])) {
             return;
@@ -50,10 +52,10 @@ class Telegram
 
         $proxyString = $proxy['host'] . ':' . $proxy['port'];
         $proxyTypeConst = $this->mapProxyType(strtolower($proxy['type'] ?? 'socks5'));
-        
+
         $this->curl->setOpt(CURLOPT_PROXYTYPE, $proxyTypeConst);
         $this->curl->setOpt(CURLOPT_PROXY, $proxyString);
-        
+
         if (!empty($proxy['username']) && !empty($proxy['password'])) {
             $this->curl->setOpt(CURLOPT_PROXYUSERPWD, $proxy['username'] . ':' . $proxy['password']);
         }
@@ -64,7 +66,8 @@ class Telegram
      * @param string $type
      * @return int
      */
-    private function mapProxyType(string $type): int {
+    private function mapProxyType(string $type): int
+    {
         return match ($type) {
             'socks4' => defined('CURLPROXY_SOCKS4') ? CURLPROXY_SOCKS4 : 4,
             'socks4a' => defined('CURLPROXY_SOCKS4A') ? CURLPROXY_SOCKS4A : 6,
@@ -80,7 +83,8 @@ class Telegram
      * @param array $replyMarkup Разметка ответа (кнопки, инлайн-клавиатура)
      * @return array Результат запроса
      */
-    public function send(int $chat, string $text, string $parseMode = 'html', array $replyMarkup = []): array {
+    public function send(int $chat, string $text, string $parseMode = 'html', array $replyMarkup = []): array
+    {
         if (Connect::$projectDev['debug'] == 1) {
             $chat = Connect::$projectServices['telegram']['dev'];
         }
@@ -90,14 +94,14 @@ class Telegram
             'text' => $text,
             'parse_mode' => $parseMode
         ];
-        
+
         if ($replyMarkup !== []) {
             $data['reply_markup'] = json_encode($replyMarkup);
         }
 
         $url = "https://api.telegram.org/{$this->token}/sendMessage?" . http_build_query($data);
         $this->curl->get($url);
-        
+
         return $this->handleResponse($url, 'send');
     }
     /**
@@ -105,10 +109,11 @@ class Telegram
      * @param string $method Метод API (по умолчанию getUpdates)
      * @return array Результат запроса
      */
-    public function updates(string $method = "getUpdates"): array {
+    public function updates(string $method = "getUpdates"): array
+    {
         $url = "https://api.telegram.org/{$this->token}/{$method}";
         $this->curl->get($url);
-        
+
         return $this->handleResponse($url, 'updates');
     }
 
@@ -118,7 +123,8 @@ class Telegram
      * @param string $method Метод запроса (send, updates)
      * @return array Результат запроса
      */
-    private function handleResponse(string $url, string $method): array {
+    private function handleResponse(string $url, string $method): array
+    {
         $result = [
             'url' => $url,
             'response' => $this->curl->response,
@@ -153,7 +159,8 @@ class Telegram
      * @param string $url URL запроса
      * @return void
      */
-    private function handleTimeout(string $url): void {
+    private function handleTimeout(string $url): void
+    {
         try {
             $tasks = new Tasks();
             $tasks->add('telegram_timeout', [
@@ -173,7 +180,8 @@ class Telegram
      * @param string $url URL запроса
      * @return string URL с замаскированным токеном
      */
-    private function maskTokenInUrl(string $url): string {
+    private function maskTokenInUrl(string $url): string
+    {
         return preg_replace('/bot\d+:[A-Za-z0-9_-]+/', '<TOKEN>', $url);
     }
 
@@ -183,7 +191,8 @@ class Telegram
      * @param array $result Результат запроса
      * @return void
      */
-    private function logErrorToTasks(string $url, array $result): void {
+    private function logErrorToTasks(string $url, array $result): void
+    {
         try {
             $tasks = new Tasks();
             $tasks->add('telegram_error', [
@@ -209,7 +218,7 @@ class Telegram
 		$text .= "<strong>Сообщение об ошибке:</strong> " . htmlspecialchars($jdata['error_message'] ?? 'N/A') . "<br/>";
 		$text .= "<strong>Время ошибки:</strong> " . date('Y-m-d H:i:s') . "<br/>";
 		$text .= "<br/>Пожалуйста, проверьте настройки прокси и соединение.";
-		
+
 		$mail = new Mail('html');
 		$outputMessage = "email fail";
 		if ($mail->mail(Connect::$projectDev['email'], "⚠️ Telegram Timeout Error", $text)) {
@@ -234,7 +243,7 @@ class Telegram
 		$text .= "<code>" . htmlspecialchars(substr($jdata['response'] ?? '', 0, 500)) . "</code><br/>";
 		$text .= "<strong>Время ошибки:</strong> " . date('Y-m-d H:i:s') . "<br/>";
 		$text .= "<br/>Проверьте логи и конфигурацию Telegram API.";
-		
+
 		$mail = new Mail('html');
 		$outputMessage = "email fail";
 		if ($mail->mail(Connect::$projectDev['email'], "⚠️ Telegram API Error", $text)) {

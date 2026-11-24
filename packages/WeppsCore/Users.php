@@ -100,7 +100,7 @@ class Users
 		$jwt = new Jwt();
 		$data = $jwt->token_decode($token);
 		if (@$data['payload']['typ'] != 'auth' || empty($data['payload']['id'])) {
-			Utils::cookies('wepps_token','');
+			Utils::cookies('wepps_token', '');
 			return false;
 		}
 		$sql = "select * from s_Users where Id=? and IsHidden=0";
@@ -127,7 +127,7 @@ class Users
 		if (empty(Connect::$projectData['user'])) {
 			return false;
 		}
-		Utils::cookies('wepps_token','');
+		Utils::cookies('wepps_token', '');
 		return true;
 	}
 

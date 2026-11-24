@@ -38,7 +38,9 @@ class ProfileActions
 	/**
 	 * @param bool $useCookies true — веб-режим (работа с cookie), false — REST-режим
 	 */
-	public function __construct(protected bool $useCookies = false) {}
+	public function __construct(protected bool $useCookies = false)
+    {
+    }
 
 	/**
 	 * Возвращает итоговый ответ: наличие ошибок, сообщение об успехе и список ошибок.
@@ -241,7 +243,7 @@ class ProfileActions
 	public function changePassword(int $userId, string $password, string $password2, string $code = ''): array
 	{
 		$this->errors = [];
-		
+
 		// Получаем email пользователя
 		$user = Connect::$instance->fetch('SELECT Email FROM s_Users WHERE Id=?', [$userId]);
 		if (empty($user[0])) {
@@ -282,7 +284,7 @@ class ProfileActions
 		$cacheKey = 'password_code_' . $userId;
 		$memcache->set($cacheKey, $newCode, 600);
 		(new Mail('html'))->mail($userEmail, 'Подтверждение смены пароля', 'Код подтверждения смены пароля: <b>' . $newCode . '</b>');
-		
+
 		return ['status' => 202, 'message' => 'Код отправлен', 'data' => []];
 	}
 
@@ -414,7 +416,7 @@ class ProfileActions
 			'Password'       => password_hash($password, PASSWORD_BCRYPT),
 			'Name'           => trim("{$jdata['nameSurname']} {$jdata['nameFirst']} {$jdata['namePatronymic']}"),
 			'Email'          => $jdata['email'],
-			'UserPermissions'=> 3,
+			'UserPermissions' => 3,
 			'Phone'          => $jdata['phone'],
 			'CreateDate'     => date('Y-m-d H:i:s'),
 			'NameFirst'      => $jdata['nameFirst'],
@@ -581,8 +583,7 @@ class ProfileActions
 		int $page = 1,
 		int $perPage = 10,
 		?array $statuses = null
-	): array
-	{
+	): array {
 		$obj = new \WeppsCore\Data('Orders');
 
 		// Фильтрация по статусам
@@ -590,9 +591,7 @@ class ProfileActions
 			$in = rtrim(str_repeat('?,', count($statuses)), ',');
 			$obj->setParams(array_merge([$userId], $statuses));
 			$conditions = "t.UserId = ? AND t.OStatus IN ($in) AND t.IsHidden = 0";
-		}
-		// Все заказы пользователя
-		else {
+		} else { // Все заказы пользователя
 			$obj->setParams([$userId]);
 			$conditions = "t.UserId = ? AND t.IsHidden = 0";
 		}
@@ -609,7 +608,7 @@ class ProfileActions
 
 	/**
 	 * Получает полные данные заказа (включая позиции, платежи, сообщения).
-	 * 
+	 *
 	 * @param int $orderId ID заказа
 	 * @param int $userId ID пользователя для проверки принадлежности (опционально)
 	 * @return array Полные данные заказа

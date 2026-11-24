@@ -21,7 +21,8 @@ namespace WeppsAdmin\ConfigExtensions\Backup;
 use WeppsCore\Connect;
 use WeppsCore\Utils;
 
-class BackupFiles {
+class BackupFiles
+{
 	private $root;
 	private $host;
 	private $backupPath;
@@ -29,8 +30,9 @@ class BackupFiles {
 	private $cnf;
 	private $dbcharset;
 	private $dateMask;
-	
-	public function __construct() {
+
+	public function __construct()
+    {
 		$this->root = Connect::$projectDev['root'];
 		$this->host = Connect::$projectDev['host'];
 		$this->backupPath = '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
@@ -39,24 +41,25 @@ class BackupFiles {
 		$this->dbcharset = Connect::$projectDB['charset'];
 		$this->dateMask = date("Ymd-His");
 	}
-	
-	public function addBackupIgnoredByGit(): int {
-		$content = file_get_contents( $this->root . "/.gitignore");
+
+	public function addBackupIgnoredByGit(): int
+    {
+		$content = file_get_contents($this->root . "/.gitignore");
 		$files = explode("\n", $content);
 		$backupFilename = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}-gitignored.7z";
-		
+
 		$this->addBackupDB();
 		$this->removeBackup();
 		$str = "";
 		foreach ($files as $file) {
-			if (substr($file, 0,1) === '/' && !strstr($file, "Backup/files")) {
+			if (substr($file, 0, 1) === '/' && !strstr($file, "Backup/files")) {
 				$str .= " \"{$this->root}{$file}\"";
 			}
 		}
 		$filedb = "";
-		$scandir = scandir($this->root.$this->backupPath);
+		$scandir = scandir($this->root . $this->backupPath);
 		foreach ($scandir as $file) {
-			if (strstr($file,".sql")) {
+			if (strstr($file, ".sql")) {
 				$filedb = " \"{$this->root}{$this->backupPath}{$file}\"";
 			}
 		}
@@ -67,8 +70,9 @@ class BackupFiles {
 		$this->removeBackupDB();
 		return 1;
 	}
-	
-	public function addBackup(): int {
+
+	public function addBackup(): int
+    {
 		$backupFilename = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}.7z";
 		$this->addBackupDB();
 		$this->removeBackup();
@@ -78,25 +82,27 @@ class BackupFiles {
 		$this->removeBackupDB();
 		return 1;
 	}
-	
-	public function removeBackup(): int {
-		$scandir = scandir($this->root.$this->backupPath);
+
+	public function removeBackup(): int
+    {
+		$scandir = scandir($this->root . $this->backupPath);
 		foreach ($scandir as $file) {
-			if (strstr($file,".7z")) {
+			if (strstr($file, ".7z")) {
 				unlink("{$this->root}{$this->backupPath}{$file}");
 			}
 		}
 		return 1;
 	}
-	
-	public function addBackupDB($removeSqlFiles=true): int {
-		if ($removeSqlFiles==true) {
+
+	public function addBackupDB($removeSqlFiles = true): int
+    {
+		if ($removeSqlFiles == true) {
 			$this->removeBackupDB();
 		}
 		$backupFilenameDB = "{$this->root}{$this->backupPath}{$this->host}-{$this->dateMask}.sql";
 		$str = "mysqldump --defaults-file={$this->cnf} -K --default-character-set={$this->dbcharset} --set-charset --add-drop-table {$this->db} > $backupFilenameDB";
 		exec($str);
-		
+
 		// Исправляем заголовок кодировки для корректной работы с эмодзи
 		if (file_exists($backupFilenameDB) && $this->dbcharset === 'utf8mb4') {
 			$content = file_get_contents($backupFilenameDB);
@@ -104,14 +110,15 @@ class BackupFiles {
 			$content = preg_replace('/\/\*!50503 SET NAMES utf8 \*\/;/', '/*!50503 SET NAMES utf8mb4 */;', $content);
 			file_put_contents($backupFilenameDB, $content);
 		}
-		
+
 		return 1;
 	}
-	
-	public function removeBackupDB(): int {
-		$scandir = scandir($this->root.$this->backupPath);
+
+	public function removeBackupDB(): int
+    {
+		$scandir = scandir($this->root . $this->backupPath);
 		foreach ($scandir as $file) {
-			if (strstr($file,".sql")) {
+			if (strstr($file, ".sql")) {
 				unlink("{$this->root}{$this->backupPath}{$file}");
 			}
 		}

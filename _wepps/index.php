@@ -25,5 +25,5 @@ if (!session_id()) {
     session_start();
 }
 
-$obj = new Admin($_GET['weppsurl'],$headers);
+$obj = new Admin($_GET['weppsurl'], $headers);
 unset($obj);

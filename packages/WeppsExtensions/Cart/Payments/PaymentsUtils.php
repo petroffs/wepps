@@ -25,10 +25,9 @@ class PaymentsUtils
 {
     public function __construct()
     {
-
     }
-    
-    public function getByDeliveryId(string $deliveryId,CartUtils $cartUtils,string $paymentsId=''): array
+
+    public function getByDeliveryId(string $deliveryId, CartUtils $cartUtils, string $paymentsId = ''): array
     {
         // Идентификаторы из запроса: срезаем html-taint перед SQL — bind-параметры
         // в неразбираемся SQL psalm считает записью в БД и тэйнтит все чтения
@@ -61,7 +60,7 @@ class PaymentsUtils
              *
              * @psalm-suppress TaintedInput
              */
-		    $class = new $className($value,$cartUtils);
+		    $class = new $className($value, $cartUtils);
             $res[$key]['Addons']['tariff'] = $class->getTariff($cartUtils);
             $res[$key]['Addons']['discount'] = $class->getDiscount($cartUtils);
             $res[$key]['Addons']['extension'] = $value['PaymentsExt'];

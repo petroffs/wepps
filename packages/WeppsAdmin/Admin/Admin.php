@@ -25,18 +25,20 @@ use WeppsCore\Exception;
 use WeppsCore\Data;
 use WeppsCore\Connect;
 
-class Admin {
+class Admin
+{
 	private $headers;
 	private $nav;
 	private $page;
 	public static $pathItem;
 	public static $path;
-	public function __construct(string $weppsurl,TemplateHeaders &$headers) {
+	public function __construct(string $weppsurl, TemplateHeaders &$headers)
+    {
 		/*
 		 * Если не залогинен - вывести форму авторизации
 		 */
 		self::getNavigateUrl($weppsurl);
-		$this->page = (isset($_GET['page']))?(int)$_GET['page']:1;
+		$this->page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;
 		$this->headers = &$headers;
 		$this->nav = array (
 				'home' => array (
@@ -62,16 +64,17 @@ class Admin {
 		);
 		$this->request();
 		$smarty = Smarty::getSmarty();
-		$smarty->display( __DIR__ . '/Admin.tpl');
+		$smarty->display(__DIR__ . '/Admin.tpl');
 		Connect::$instance->close();
 	}
-	public function request(): object {
+	public function request(): object
+    {
 		$headers = &$this->headers;
-		$path = (self::$path[0]=='') ? 'home' : self::$path[0];
+		$path = (self::$path[0] == '') ? 'home' : self::$path[0];
 		if (@Connect::$projectData['user']['ShowAdmin'] != 1) {
         	$path = 'home';
 		}
-		
+
 		if (!isset($this->nav[$path])) {
 			Exception::error404();
 		}
@@ -95,100 +98,107 @@ class Admin {
 		$this->headers->js("/packages/WeppsAdmin/Admin/AdminWepps.{$headers::$rand}.js");
 		$this->headers->css("/packages/WeppsAdmin/Admin/AdminWepps.{$headers::$rand}.css");
 		$smarty = Smarty::getSmarty();
-		$smarty->assign('navtop',$this->nav);
-		$smarty->assign('contenttop',$navItem);
-		$smarty->assign('headersrand',$headers::$rand);
+		$smarty->assign('navtop', $this->nav);
+		$smarty->assign('contenttop', $navItem);
+		$smarty->assign('headersrand', $headers::$rand);
 		//$smarty->assign('navTpl',$smarty->fetch( __DIR__ . '/AdminNav.tpl'));
-		
-		if (Connect::$projectServices['wepps']['multilang']==1) {
+
+		if (Connect::$projectServices['wepps']['multilang'] == 1) {
 			$sql = "select * from s_NGroupsLang where IsHidden=0 order by Priority";
 			$language = Connect::$instance->fetch($sql);
-			$smarty->assign('language',$language);
+			$smarty->assign('language', $language);
 			$sql = "select * from s_Lang where Category='back' order by Priority";
 			$multilang = Connect::$instance->fetch($sql);
-			$smarty->assign('multilang',$multilang);
+			$smarty->assign('multilang', $multilang);
 		}
 		$className = "WeppsAdmin\\{$navItem['Extension']}\\{$navItem['Extension']}";
-		if(class_exists($className)) {
-			$obj = new $className($this->headers,$this->nav);
+		if (class_exists($className)) {
+			$obj = new $className($this->headers, $this->nav);
 			$smarty->assign('headers', $this->headers->get());
 			return $obj;
 		}
         echo "Класс $className не найден.";
         exit();
 	}
-	private function getNavigateUrl($url): void {
+	private function getNavigateUrl($url): void
+    {
 		//Utils::debug($url,1);
 		$match = [];
-		$m = preg_match ( "/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match );
+		$m = preg_match("/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match);
         if (strstr($url, "home/")) {
             header("HTTP/1.1 301 Moved Permanently");
             header("Location: /_wepps/");
             exit();
         }
-        if (substr ( $url, - 1 ) !== '/' && $m==0 && $url!='' && $_SERVER['REQUEST_URI']!='/') {
+        if (substr($url, - 1) !== '/' && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
             header("HTTP/1.1 301 Moved Permanently");
             header("Location: /_wepps/" . Utils::safeChars($url) . "/");
             exit();
         }
-        if (strstr($_SERVER['REQUEST_URI'],'index.php')) {
+        if (strstr($_SERVER['REQUEST_URI'], 'index.php')) {
             header("HTTP/1.1 301 Moved Permanently");
             header("Location: /");
             exit();
         }
-		if (substr($_SERVER['REQUEST_URI'], -1) === '/' && substr($_SERVER['REQUEST_URI'],1,1) === '/') {
+		if (substr($_SERVER['REQUEST_URI'], -1) === '/' && substr($_SERVER['REQUEST_URI'], 1, 1) === '/') {
             $url = "!";
         } elseif (isset($match[1])) {
 			self::$pathItem = $match[1];
 		}
-		$url = (empty ( $url )) ? '/' : Utils::trim ( $url );
-		$url = substr ( $url, 0, strrpos ( $url, "/", - 1 ) + 1 );
-		
-		if (preg_match("/(\/{2,10})/",  $_SERVER['REQUEST_URI'])) {
+		$url = (empty($url)) ? '/' : Utils::trim($url);
+		$url = substr($url, 0, strrpos($url, "/", - 1) + 1);
+
+		if (preg_match("/(\/{2,10})/", $_SERVER['REQUEST_URI'])) {
 			$url = preg_replace("/(\/{2,10})/", "/", $_SERVER['REQUEST_URI']);
 			header("HTTP/1.1 301 Moved Permanently");
 			header("Location: " . Utils::safeChars($url));
 			exit();
 		}
-		self::$path = explode("/", substr($url, 0,-1));
+		self::$path = explode("/", substr($url, 0, -1));
 	}
-	
+
 	/**
 	 * @return (int|string[])[]
 	 *
 	 * @psalm-return array{status: 0|1, lists?: non-empty-list<string>, extensions?: non-empty-list<string>}
 	 */
-	public static function getPermissions($permId=0,$check=[]): array {
-		if ($permId==0 || (int) $permId === 0) return array('status'=>0);
+	public static function getPermissions($permId = 0, $check = []): array
+    {
+		if ($permId == 0 || (int) $permId === 0) {
+            return array('status' => 0);
+        }
 		$obj = new Data("s_Permissions");
 		$res = $obj->fetch($permId)[0];
-		if (!isset($res['Id'])) return array('status'=>0);
+		if (!isset($res['Id'])) {
+            return array('status' => 0);
+        }
 
 		$lists = explode(",", $res['TableName']);
 		if (isset($check['list'])) {
 			$permLists = array_flip($lists);
 			if (isset($permLists[$check['list']])) {
-				return array('status'=>1);
+				return array('status' => 1);
 			}
-            return array('status'=>0);
+            return array('status' => 0);
 		}
-		
+
 		$extensions = explode(",", $res['SystemExt']);
 		if (isset($check['extension'])) {
 			$permExts = array_flip($extensions);
 			if (isset($permExts[$check['extension']])) {
-				return array('status'=>1);
+				return array('status' => 1);
 			}
-            return array('status'=>0);
+            return array('status' => 0);
 		}
-		return array('status'=>1,'lists'=>$lists,'extensions'=>$extensions);
+		return array('status' => 1,'lists' => $lists,'extensions' => $extensions);
 	}
-	
-	public static function getTranslate(): array {
+
+	public static function getTranslate(): array
+    {
 		$sql = "select Name,LangRu,LangEn from s_Lang where Category='back'";
-		$res = Connect::$instance->fetch($sql,[],'group');
+		$res = Connect::$instance->fetch($sql, [], 'group');
 		$translate = [];
-		foreach ($res as $key=>$value) {
+		foreach ($res as $key => $value) {
 			$translate[$key] = $value[0]['LangRu'];
 		}
 		return $translate;

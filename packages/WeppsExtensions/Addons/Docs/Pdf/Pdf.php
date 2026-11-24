@@ -35,13 +35,14 @@ class Pdf
 	private $header;
 	private $footer;
 	private $filename = 'pdf.pdf';
-	function __construct($get)
+	public function __construct($get)
 	{
 		$this->get = $get;
 		$action = Utils::trim($this->get['action']);
 		$id = Utils::trim($this->get['id']);
-		if ($action == '' || $id == '')
+		if ($action == '' || $id == '') {
 			Exception::error404();
+        }
 		$smarty = Smarty::getSmarty();
 		$obj = new Data("TradeShops");
 		$shop = $obj->fetch('1')[0];
@@ -64,8 +65,9 @@ class Pdf
 				$orderSummLetter = TextTransforms::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
-					if ($value['ProductId'] != 0)
+					if ($value['ProductId'] != 0) {
 						$orderPositionsCount += $value['ItemQty'];
+                    }
 				}
 				$obj = new Data("s_Users");
 				$user = $obj->fetch($order['UserId'])[0];
@@ -86,8 +88,9 @@ class Pdf
 				$orderSummLetter = TextTransforms::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
-					if ($value['ProductId'] != 0)
+					if ($value['ProductId'] != 0) {
 						$orderPositionsCount += $value['ItemQty'];
+                    }
 				}
 				$obj = new Data("s_Users");
 				$user = $obj->fetch($order['UserId'])[0];
@@ -112,8 +115,9 @@ class Pdf
 				$orderSummLetter = TextTransforms::num2str($order['Summ']);
 				$orderPositionsCount = 0;
 				foreach ($orderPositions as $value) {
-					if ($value['ProductId'] != 0)
+					if ($value['ProductId'] != 0) {
 						$orderPositionsCount += $value['ItemQty'];
+                    }
 				}
 				$smarty->assign('order', $order);
 				$smarty->assign('orderPositions', $orderPositions);
@@ -128,11 +132,11 @@ class Pdf
 				break;
 		}
 	}
-	function save(): never
+	public function save(): never
 	{
 		exit();
 	}
-	function output($download = false): void
+	public function output($download = false): void
 	{
 		$dompdf = new Dompdf();
 		$dompdf->setPaper('A4', 'portrait');
@@ -152,7 +156,7 @@ class Pdf
 			$dompdf->stream($this->filename, ['Attachment' => true]);
 		}
 	}
-	function __destruct()
+	public function __destruct()
 	{
 		exit();
 	}

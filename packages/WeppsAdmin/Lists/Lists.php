@@ -17,6 +17,7 @@
  */
 
 namespace WeppsAdmin\Lists;
+
 use WeppsAdmin\Admin\AdminUtils;
 use WeppsCore\Smarty;
 use WeppsCore\Utils;
@@ -368,7 +369,6 @@ class Lists
 							$options[$k][$v2['Id']] = $v2[$ex[2]];
 						}
 					}
-
 				} else {
 					$sql = "select t.Id,concat(t.{$ex[2]},' (',t.Id,') ') as {$ex[2]} from {$tablename} as t
 					{$where} order by {$ex[2]}";
@@ -391,7 +391,6 @@ class Lists
 					$optionsCounter = 12;
 				}
 				$element[0]["{$key}_SelectOptionsSizeView"] = $optionsCounter;
-
 			} elseif (strstr($value[0]['FType'], 'dbtable')) {
 				$sql = "select TableName,Name from s_ConfigFields order by TableName";
 				$res = Connect::$instance->fetch($sql, [], 'group');
@@ -418,7 +417,6 @@ class Lists
 					$optionsCounter = 12;
 				}
 				$element[0]["{$key}_SelectOptionsSizeView"] = $optionsCounter;
-
 			} elseif (strstr($value[0]['FType'], 'properties') && $id != 'add') {
 				$condition = "";
 				$ex = explode("::", $value[0]["FType"]);
@@ -542,8 +540,9 @@ class Lists
 				$row[$k] = '';
 			}
 		}
-		if (count($row) === 0)
+		if (count($row) === 0) {
 			return 0;
+        }
 		if (isset($_SESSION['uploads']['list-data-form'])) {
 			$sql = "delete from s_Files where Name = ''";
 			Connect::$instance->query($sql);
@@ -741,8 +740,9 @@ class Lists
 	}
 	public static function removeUpload($field = '', $filename = ''): string
 	{
-		if ($field == '')
+		if ($field == '') {
 			return 'Error.';
+        }
 		if ($filename == '') {
 			foreach ($_SESSION['uploads']['list-data-form'][$field] as $key => $value) {
 				unset($_SESSION['uploads']['list-data-form'][$field][$key]);
@@ -959,7 +959,7 @@ class Lists
 			if (isset($source['GUID'])) {
 				$source['GUID'] = "";
 			}
-			if ($lang>1) {
+			if ($lang > 1) {
 				$source['LanguageId'] = $lang;
 				$source['TableId'] = $source['Id'];
 			}
@@ -985,8 +985,10 @@ class Lists
 
 					// Путь из БД (имена генерируются при загрузке: транслит+дата):
 					// запрет .. в обоих путях + существующий is_file как шлюз
-					if (!str_contains((string) $value['FileUrl'], '..') && !str_contains($file['FileUrl'], '..')
-						&& is_file(Connect::$projectDev['root'] . $value['FileUrl'])) {
+					if (
+                        !str_contains((string) $value['FileUrl'], '..') && !str_contains($file['FileUrl'], '..')
+						&& is_file(Connect::$projectDev['root'] . $value['FileUrl'])
+                    ) {
 						// Остаточный taint — артефакт глобальной модели БД psalm
 						/** @psalm-suppress TaintedInput */
 						copy(Connect::$projectDev['root'] . $value['FileUrl'], Connect::$projectDev['root'] . $file['FileUrl']);
@@ -1042,7 +1044,7 @@ class Lists
 		$list = htmlspecialchars((string) $list, ENT_QUOTES);
 
 		/*
-		 * Если это s_Files - удаляем файл из ФС ? 
+         * Если это s_Files - удаляем файл из ФС ?
 		 * Bot cleaner ?
 		 */
 
@@ -1137,7 +1139,7 @@ class Lists
 
 	/**
 	 * Преобразует тип поля в ApiFieldType для REST API
-	 * 
+	 *
 	 * Маппинг типов:
 	 * - int → int
 	 * - flag → int
@@ -1146,7 +1148,7 @@ class Lists
 	 * - email → email
 	 * - digit → float
 	 * - остальные → string
-	 * 
+	 *
 	 * @param string $type Тип поля из s_ConfigFields
 	 * @return string ApiFieldType для использования в REST API
 	 */
@@ -1171,26 +1173,26 @@ class Lists
 	}
 	/**
 	 * Преобразует имя поля БД в camelCase формат для REST API
-	 * 
+	 *
 	 * Правила преобразования:
 	 * - Разбивает строку по подчеркиванию
 	 * - Первое слово → строчное (camelCase)
 	 * - Остальные слова → PascalCase
 	 * - Убирает однобуквенный PascalCase-префикс: OStatus → status, JData → data
 	 * - Служебный префикс W_ не трогает (остаётся wVariations)
-	 * 
+	 *
 	 * @param string $key Имя поля из БД (например: "Product_Status", "Order_Name", "w_product_list")
 	 * @return string Преобразованное имя в camelCase (например: "productStatus", "orderName", "wProductList")
-	 * 
+	 *
 	 * @example
 	 * // Базовое преобразование
 	 * $result = $this->_fieldApiMappingToCamelCase('Product_Name');      // 'productName'
 	 * $result = $this->_fieldApiMappingToCamelCase('Order_Status');      // 'orderStatus'
-	 * 
+	 *
 	 * // Удаление однобуквенных префиксов
 	 * $result = $this->_fieldApiMappingToCamelCase('OStatus');           // 'status'
 	 * $result = $this->_fieldApiMappingToCamelCase('JData');             // 'data'
-	 * 
+	 *
 	 * // Служебный префикс W_ не удаляется
 	 * $result = $this->_fieldApiMappingToCamelCase('w_product_list');    // 'wProductList'
 	 */

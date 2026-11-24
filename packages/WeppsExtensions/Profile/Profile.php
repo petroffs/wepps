@@ -53,7 +53,7 @@ class Profile extends Extension
 		$this->headers->css("/ext/Profile/Profile.{$this->rand}.css");
 		$this->headers->js("/packages/vendor/robinherbots/jquery.inputmask/dist/jquery.inputmask.min.js");
 		if (!empty($this->get['token'])) {
-			Utils::cookies('wepps_token','');
+			Utils::cookies('wepps_token', '');
 			$jwt = new Jwt();
 			$payload = $jwt->token_decode($this->get['token']);
 			// Фикс бага: было присваивание в условии (= 200 — всегда истинно, плюс
@@ -180,7 +180,6 @@ class Profile extends Extension
 			$this->profileTpl = 'ProfileFavoritesEmpty.tpl';
 			$this->tpl = __DIR__ . '/Profile.tpl';
 			return;
-
 		}
 		$ids = array_column($jfav, 'id');
 		$in = Connect::$instance->in($ids);

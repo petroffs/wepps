@@ -21,16 +21,19 @@ namespace WeppsExtensions\Addons\Bot;
 use WeppsCore\Connect;
 use WeppsCore\Data;
 
-class BotFeeds extends Bot {
+class BotFeeds extends Bot
+{
 	public $parent = 0;
 	private $data;
-	public function __construct() {
+	public function __construct()
+    {
 		parent::__construct();
 	}
-	
-	public function setSitemap(): void {
+
+	public function setSitemap(): void
+    {
 		$arr = [];
-		
+
 		/*
 		 * Структура
 		 */
@@ -39,18 +42,18 @@ class BotFeeds extends Bot {
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";
 		}
-		
+
 		/*
 		 * Данные в структуре
 		 */
 		$obj = new Data("News");
 		$obj->setFields("Name,Alias,Id");
-		$obj->setConcat ( "concat('/novosti/',if(Alias!='',Alias,Id),'.html') as Url" );
-		$res = $obj->fetchmini("IsHidden=0",50000,1);
+		$obj->setConcat("concat('/novosti/',if(Alias!='',Alias,Id),'.html') as Url");
+		$res = $obj->fetchmini("IsHidden=0", 50000, 1);
 		foreach ($res as $value) {
 			$arr[$value['Url']] = "<url><loc>https://{$this->host}{$value['Url']}</loc></url>";
 		}
-		
+
 		/*
 		 $sql = "select Id,Name,concat('/blog/',if(Alias!='',Alias,Id),'.html') as Url from Blog where IsHidden=0";
 		 $res = Connect::$instance->fetch($sql);
@@ -64,13 +67,13 @@ class BotFeeds extends Bot {
 									xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
 									xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9
 									http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd\">
-						","\t");
+						", "\t");
 		$str .= implode("\n", $arr);
 		$str .= "\n</urlset>";
 		$this->data = new \DOMDocument('1.0');
 		$this->data->preserveWhiteSpace = false;
 		$this->data->formatOutput = true;
 		$this->data->loadXML($str);
-		$this->data->save(dirname(__FILE__) .'/../../../../sitemap.xml');
+		$this->data->save(dirname(__FILE__) . '/../../../../sitemap.xml');
 	}
 }

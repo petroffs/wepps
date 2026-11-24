@@ -53,6 +53,5 @@ class Pickup extends Delivery
 			'active' => @$this->cartUtils->getCart()['deliveryOperations'],
 			'allowOrderBtn' => $allowBtn
 		];
-
 	}
 }

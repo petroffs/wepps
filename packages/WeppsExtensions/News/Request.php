@@ -23,9 +23,11 @@ require_once __DIR__ . '/../../../configloader.php';
 use WeppsCore\Request;
 use WeppsCore\Exception;
 
-class RequestNews extends Request {
+class RequestNews extends Request
+{
 	#[\Override]
-	public function request($action=""): never {
+	public function request($action = ""): never
+    {
 		switch ($action) {
 			case 'test':
 				exit();
@@ -35,5 +37,5 @@ class RequestNews extends Request {
 	}
 }
 $request = new RequestNews($_REQUEST);
-$smarty->assign('get',$request->get);
+$smarty->assign('get', $request->get);
 $smarty->display($request->tpl);

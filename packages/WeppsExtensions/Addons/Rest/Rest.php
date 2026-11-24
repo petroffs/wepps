@@ -25,7 +25,6 @@ use WeppsCore\Utils;
 use WeppsCore\Validator;
 use WeppsExtensions\Addons\Jwt\Jwt;
 
-
 /**
  * Класс для обработки REST API запросов
  *
@@ -512,7 +511,7 @@ class Rest
 	 *
 	 * Поддерживает объекты и массивы объектов. Проверяет обязательность полей,
 	 * типы данных и отсутствие лишних полей.
-	 * 
+	 *
 	 * Поддерживаемые типы:
 	 * - Примитивные: int, int2, float, float2, string, date, email, phone, guid, barcode
 	 * - Массивы: int[], int2[], float[], float2[], string[], date[], email[], phone[], guid[], barcode[]
@@ -655,9 +654,9 @@ class Rest
 
 	/**
 	 * Получить значение из массива по пути с точками
-	 * 
+	 *
 	 * Поддерживает многоуровневые пути: "data.items" → $array['data']['items']
-	 * 
+	 *
 	 * @param array $data Исходный массив
 	 * @param string $path Путь к значению, разделенный точками (например, "data.items")
 	 * @return mixed Значение или null если не найдено
@@ -973,7 +972,6 @@ class Rest
 				'message' => $output['message'] ?? '',
 				'data' => $normalizedData,
 			], $extra);
-
 		} else {
 			// Если это просто данные, оборачиваем их
 			$responseData = [
@@ -1061,7 +1059,7 @@ class Rest
 
 	/**
 	 * Сохранить логирование в таблицу s_Logs
-	 * 
+	 *
 	 * @param array $logData Данные логирования
 	 * @return bool Результат сохранения
 	 */
@@ -1126,7 +1124,7 @@ class Rest
 	/**
 	 * Конвертирует строку из PascalCase в camelCase.
 	 * Корректно обрабатывает смешанный формат: Images_FileUrl → imagesFileUrl.
-	 * Однобуквенные префиксы убираются: OStatus → status, JData → data. 
+	 * Однобуквенные префиксы убираются: OStatus → status, JData → data.
 	 * Служебные префиксы W_ сохраняются: W_Variations → wVariations.
 	 *
 	 * @param string $key Ключ для преобразования
@@ -1149,10 +1147,10 @@ class Rest
 
 	/**
 	 * Рекурсивно нормализует только вычисляемые поля (начинающиеся с заглавной буквы)
-	 * 
+	 *
 	 * Используется для M2M API где маппинг из БД уже применен, но нужно нормализовать
 	 * поля типа Url, PStatus, W_Variations и т.д.
-	 * 
+	 *
 	 * @param array|null $data Данные для преобразования
 	 * @return array|null Данные с нормализованными вычисляемыми полями
 	 */
@@ -1176,7 +1174,7 @@ class Rest
 
 	/**
 	 * Форматировать заголовки в строку
-	 * 
+	 *
 	 * @param array $headers Массив заголовков
 	 * @return string Отформатированная строка заголовков
 	 */
@@ -1220,8 +1218,9 @@ if (!function_exists('apache_request_headers')) {
 				$arh_key = preg_replace($rx_http, '', $key);
 				$rx_matches = explode('_', $arh_key);
 				if (count($rx_matches) > 0 && strlen($arh_key) > 2) {
-					foreach ($rx_matches as $ak_key => $ak_val)
+					foreach ($rx_matches as $ak_key => $ak_val) {
 						$rx_matches[$ak_key] = ucfirst($ak_val);
+                    }
 					$arh_key = implode('-', $rx_matches);
 				}
 				$arh[$arh_key] = $val;

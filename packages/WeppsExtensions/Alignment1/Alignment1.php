@@ -23,14 +23,16 @@ use WeppsCore\Smarty;
 use WeppsCore\Extension;
 use WeppsCore\Exception;
 
-class Alignment1 extends Extension {
+class Alignment1 extends Extension
+{
 	#[\Override]
-	public function request(): void {
+	public function request(): void
+    {
 		$smarty = Smarty::getSmarty();
 		switch (Navigator::$pathItem) {
 			case '':
 				$this->tpl = 'packages/WeppsExtensions/Alignment1/Alignment1.tpl';
-				$smarty->assign('element',$this->navigator->content);
+				$smarty->assign('element', $this->navigator->content);
 				$this->navigator->content['Text1'] = '';
 				break;
 			default:
@@ -39,7 +41,7 @@ class Alignment1 extends Extension {
 		}
 		$this->headers->css("/ext/Alignment1/Alignment1.{$this->rand}.css");
 		$this->headers->js("/ext/Alignment1/Alignment1.{$this->rand}.js");
-		$smarty->assign($this->targetTpl,$smarty->fetch($this->tpl));
+		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
 		return;
 	}
 }
