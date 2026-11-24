@@ -958,8 +958,8 @@ class Lists
 		if ($list == "" || (int) $id == 0) {
 			return array('status' => '0', 'output' => "");
 		}
-		$sql = "select * from $list where Id='$id'";
-		$res = Connect::$instance->fetch($sql);
+		$sql = "select * from $list where Id=?";
+		$res = Connect::$instance->fetch($sql, [$id]);
 		if (!empty($res[0])) {
 			$source = $res[0];
 			$obj = new Data($list);
@@ -980,8 +980,8 @@ class Lists
 			/*
 			 * Копирование файлов
 			 */
-			$sql = "select * from s_Files where TableName='$list' and TableNameId='$id'";
-			$res = Connect::$instance->fetch($sql);
+			$sql = "select * from s_Files where TableName='$list' and TableNameId=?";
+			$res = Connect::$instance->fetch($sql, [$id]);
 
 			if (!empty($res[0])) {
 				$objFiles = new Data("s_Files");
@@ -1008,8 +1008,8 @@ class Lists
 			/*
 			 * Копироваине свойств
 			 */
-			$sql = "select * from s_PropertiesValues where TableName='$list' and TableNameId='$id'";
-			$res = Connect::$instance->fetch($sql);
+			$sql = "select * from s_PropertiesValues where TableName='$list' and TableNameId=?";
+			$res = Connect::$instance->fetch($sql, [$id]);
 
 			if (!empty($res[0])) {
 				$objProps = new Data("s_PropertiesValues");
@@ -1092,6 +1092,12 @@ class Lists
 	}
 	public static function setSearchIndex($list = '', $id = 0): string
 	{
+		// $list подставляется в SQL как имя таблицы, $id — как значение:
+		// белый список идентификатора + int закрывают SQL-инъекции
+		if ($list !== '' && preg_match('/^[A-Za-z0-9_]+$/D', (string) $list) !== 1) {
+			return '';
+		}
+		$id = (int) $id;
 		switch ($list) {
 			case '':
 				$str = "truncate s_SearchKeys;\n";

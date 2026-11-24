@@ -265,8 +265,8 @@ class RequestBackup extends Request
 				/*
 				 * Конфиг
 				 */
-				$sql = "select * from s_Config where TableName = '$table'";
-				$res = Connect::$instance->fetch($sql);
+				$sql = "select * from s_Config where TableName = ?";
+				$res = Connect::$instance->fetch($sql, [$table]);
 
 				unset($res[0]['Id']);
 				$arr = Connect::$instance->prepare($res[0]);
@@ -275,8 +275,8 @@ class RequestBackup extends Request
 				/*
 				 * Конфиг полей
 				 */
-				$sql = "select * from s_ConfigFields where TableName = '$table'";
-				$res = Connect::$instance->fetch($sql);
+				$sql = "select * from s_ConfigFields where TableName = ?";
+				$res = Connect::$instance->fetch($sql, [$table]);
 
 				foreach ($res as $value) {
 					$arr = Connect::$instance->prepare($value);

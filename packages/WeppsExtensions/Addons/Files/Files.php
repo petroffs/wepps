@@ -41,17 +41,19 @@ class Files
 	public function output(string $filename): never
 	{
 		// Путь из запроса: только относительный без .. — защита от path traversal
-		// (safeRelPath снимает file/ssrf-taint)
-		$filename = Utils::safeRelPath($filename) ?? '';
-		if ($filename === '') {
+		// (safeRelPath снимает file/ssrf-taint). Ведущий / сохраняем: по нему
+		// сверяется FileUrl в БД и конкатенируется корень проекта.
+		$rel = Utils::safeRelPath(ltrim($filename, '/')) ?? '';
+		if ($rel === '') {
 			Exception::error(404);
 		}
+		$filename = '/' . $rel;
 		$filenameFull = Connect::$projectDev['root'] . $filename;
 		if (!is_file($filenameFull)) {
 			Exception::error(404);
 		}
-		$sql = "select * from s_Files where FileUrl='$filename' limit 1";
-		$res = Connect::$instance->fetch($sql);
+		$sql = "select * from s_Files where FileUrl=? limit 1";
+		$res = Connect::$instance->fetch($sql, [$filename]);
 		if (count($res) == 0)
 			Exception::error404();
 		$row = $res[0];

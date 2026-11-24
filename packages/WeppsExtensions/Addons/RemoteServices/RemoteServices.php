@@ -77,8 +77,8 @@ class RemoteServices {
 	 * @psalm-return ''|array{response: mixed, url: ''|mixed, body: ''|mixed}
 	 */
 	private function getCache($hash): array|string {
-	    $sql = "select * from RemoteServicesCache where binary Alias = '$hash'";
-	    $res = Connect::$instance->fetch($sql);
+	    $sql = "select * from RemoteServicesCache where binary Alias = ?";
+	    $res = Connect::$instance->fetch($sql, [$hash]);
 	    if (!empty($res[0]['Id'])) {
 	        $url = (!empty($res[0]['Url'])) ? $res[0]['Url'] : '';
 	        $body = (!empty($res[0]['Descr'])) ? $res[0]['Descr'] : '';
