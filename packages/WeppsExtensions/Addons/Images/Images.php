@@ -43,17 +43,29 @@ use WeppsCore\Connect;
  */
 class Images
 {
+	/** @var \GdImage|false Исходное изображение GD */
 	private $source;
+	/** @var \GdImage|false|resource Целевое изображение GD (resource — по легаси-ветке callmap) */
 	private $target;
+	/** @var string Путь к файлу назначения */
 	private $newfile;
+	/** @var mixed Строка результата из s_Files */
 	private $fileinfo;
+	/** @var string MIME-тип исходного изображения */
 	private $mime;
+	/** @var string MIME-тип результата */
 	private $outputMime;
+	/** @var float|int Соотношение сторон исходника */
 	private $ratio = 0.00;
+	/** @var float|int Ширина исходника */
 	private $width = 0;
+	/** @var float|int Высота исходника */
 	private $height = 0;
+	/** @var float|int Целевая ширина */
 	private $widthDst = 0;
+	/** @var float|int Целевая высота */
 	private $heightDst = 0;
+	/** @var array|string Параметры запроса */
 	public $get;
 	/**
 	 * Images constructor.
@@ -67,7 +79,6 @@ class Images
 	 * - `pref` : string Префикс вывода (lists, full, preview, medium и т.д.).
 	 *
 	 * @param array $get Массив параметров (необработанный $_GET-подобный массив).
-	 * @throws \WeppsCore\Exception При отсутствии файла или записи в БД (генерирует 404).
 	 */
 	function __construct($get)
 	{
@@ -270,6 +281,13 @@ class Images
 
 		return $source;
 	}
+	/**
+	 * Сохраняет изображение в файл или выводит его (в зависимости от outputMime).
+	 *
+	 * @param \GdImage|false $image Изображение GD (GdImage в PHP >= 8.0)
+	 * @param string|null $filename Целевой файл или null — вывод по умолчанию
+	 * @return void
+	 */
 	private function writeImage($image, ?string $filename = null): void
 	{
 		switch ($this->outputMime) {
