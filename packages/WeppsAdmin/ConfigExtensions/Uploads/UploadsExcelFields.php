@@ -83,7 +83,7 @@ class UploadsExcelFields
 						$res = $obj->fetchmini("TableName = '{$row['TableName']}' and TableField = '{$row['TableField']}'");
 						if (!isset($res[0]['Id'])) {
 							$id = $obj->add($row);
-							if ((int) $id !== 0) {
+							if ($id !== 0) {
 								$ids[] = $id;
 							}
 						}

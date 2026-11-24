@@ -60,10 +60,8 @@ class Processing extends Request
 				$this->prepareRestApiData();
 				break;
 			default:
-				if ($action != "") {
-					Exception::error404();
-				}
-				break;
+				// Ранний return при пустом $action выше: здесь он гарантированно непуст
+				Exception::error404();
 		}
 		array_push($this->way, [
 			'Url' => "/_wepps/extensions/{$this->get['ext']['Alias']}/{$action}.html",

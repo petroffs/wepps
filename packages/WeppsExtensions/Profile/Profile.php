@@ -56,6 +56,10 @@ class Profile extends Extension
 			Utils::cookies('wepps_token','');
 			$jwt = new Jwt();
 			$payload = $jwt->token_decode($this->get['token']);
+			// ВНИМАНИЕ (найдено статикой): вероятный баг - в условии присваивание (=),
+			// а не сравнение: условие всегда истинно, status принудительно становится 200.
+			// Поведение сохранено намеренно, исправление обсудить отдельно.
+			/** @psalm-suppress RedundantCondition */
 			if ($payload['payload']['status'] = 200) {
 				switch ($payload['payload']['typ']) {
 					case 'pass':

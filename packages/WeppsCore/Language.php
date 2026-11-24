@@ -133,8 +133,8 @@ class Language
 				$fileFields[$fieldName] = true;
 			}
 		}
-		$currentLangId = (int) (@$lang['id'] ?? 0);
-		$defaultLangId = (int) (@$lang['defaultId'] ?? 0);
+		$currentLangId = (int) ($lang['id'] ?? 0);
+		$defaultLangId = (int) ($lang['defaultId'] ?? 0);
 		$res2 = Connect::$instance->fetch(
 			"select * from {$tableName} where TableId in ({$resKeys}) and LanguageId='{$currentLangId}' and IsHidden=0"
 		);

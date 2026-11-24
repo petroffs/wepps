@@ -220,8 +220,6 @@ class Utils
 	public static function array(array $array, string $index = 'Id', string $output = ''): array
 	{
 		$arr = [];
-		if (!is_array($array))
-			return [];
 
 		if ($output === '') {
 			foreach ($array as $v) {
@@ -367,7 +365,7 @@ class Utils
 		// штатное поведение. Сессионные куки формирует PHP (session.*), сюда не попадают.
 		/** @psalm-suppress TaintedInput */
 		setcookie($name, $value, $settings);
-		return (string) $value;
+		return $value;
 	}
 	/**
 	 * Кодирование массива в JSON-строку

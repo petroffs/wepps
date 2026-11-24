@@ -103,7 +103,7 @@ class Cdek extends Delivery
 			return [];
 		}
 		$period = ($response['calendar_min'] == $response['calendar_max']) ? $response['calendar_max'] : "{$response['calendar_min']}-{$response['calendar_max']}";
-		$price = round($response['total_sum'] / 5) * 5;
+		$price = round($response['total_sum'] / 5) * 5.0;
 		if ($this->settings['FreeLevel'] > 0 && $this->settings['FreeLevel'] <= $cartSummary['sumActive']) {
 			$price = 0;
 		}

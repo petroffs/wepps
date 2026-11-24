@@ -112,9 +112,9 @@ class RequestContacts extends Request
 			$message = nl2br($message);
 			$mail = new Mail('html');
 			$files = new Files();
-			if (is_array($filesAttach = $files->getUploaded($this->get['form'], 'feedback-upload'))) {
-				$mail->setAttach($filesAttach);
-			}
+			// getUploaded объявлен с return array — проверка is_array была мертвой
+			$filesAttach = $files->getUploaded($this->get['form'], 'feedback-upload');
+			$mail->setAttach($filesAttach);
 			$mail->mail(Connect::$projectInfo['email'], $subject, $message);
 			$files->removeUploaded($this->get['form'], 'feedback-upload');
 			$arr = Validator::setFormSuccess("Ваше сообщение отправлено. Спасибо", $this->get['form']);

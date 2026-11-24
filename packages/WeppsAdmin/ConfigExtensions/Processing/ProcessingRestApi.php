@@ -147,6 +147,9 @@ class ProcessingRestApi
 		// Сортируем по ключам (группы и файлы)
 		ksort($result);
 		foreach ($result as &$group) {
+			// Ключи внутренних массивов — строки (имена групп/файлов); вывод psalm о
+			// возможных массивах-ключах — артефакт построения shape
+			/** @psalm-suppress InvalidArgument */
 			ksort($group);
 		}
 		return $result;
@@ -214,7 +217,7 @@ class ProcessingRestApi
 			$scheme = ($_SERVER['REQUEST_SCHEME'] ?? 'https');
 			// Host из заголовка: только hostname[:port] из белого списка символов
 			$host = 'localhost';
-			$hostRaw = (string) ($_SERVER['HTTP_HOST'] ?? '');
+			$hostRaw = $_SERVER['HTTP_HOST'] ?? '';
 			if (preg_match('/^[A-Za-z0-9.\-]+(:\d+)?$/', $hostRaw) === 1) {
 				$host = $hostRaw;
 			}
@@ -472,7 +475,7 @@ class ProcessingRestApi
 			throw new \Exception("HTTP {$httpCode}");
 		}
 		
-		$data = json_decode($response, true);
+		$data = json_decode((string) $response, true);
 		
 		if (!is_array($data)) {
 			throw new \Exception('Invalid JSON response');

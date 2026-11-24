@@ -388,7 +388,7 @@ class CartUtils
 	}
 	public function getCartPercentage(float $percentage = 0): float
 	{
-		$sum = 0;
+		$sum = 0.0;
 		foreach ($this->summary['items'] as $value) {
 			if ($value['active'] != 1) {
 				continue;
@@ -412,9 +412,9 @@ class CartUtils
 				$rate = Utils::round($value['sum'] / $sum, 6);
 				$tariffRecount = -Utils::round($rate * $deliveryDiscount);
 				if (empty($items[$key]['tariff'])) {
-					$items[$key]['tariff'] = 0;
+					$items[$key]['tariff'] = 0.0;
 				}
-				$items[$key]['tariff'] += $tariffRecount;
+				$items[$key]['tariff'] = (float) $items[$key]['tariff'] + (float) $tariffRecount;
 			}
 		}
 		if ($paymentTariff > 0) {

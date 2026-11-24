@@ -149,7 +149,7 @@ class ProductsUtils
 	public function getProductsItem(string|int $id): array
 	{
 		$conditions = '';
-		$conditions = (strlen((int) $id) === strlen($id)) ? "{$conditions} t.Id = ?" : " {$conditions} binary t.Alias = ?";
+		$conditions = (strlen((string) (int) $id) === strlen((string) $id)) ? "{$conditions} t.Id = ?" : " {$conditions} binary t.Alias = ?";
 		$conditions .= " and length(t.Variations)>0";
 		$settings = [
 			'limit' => 1,

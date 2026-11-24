@@ -123,8 +123,8 @@ class Cli
 	 */
 	public function progress($done, $total): void
 	{
-		$perc = floor(($done / $total) * 100);
-		$left = 100 - $perc;
+		$perc = floor(((float) $done / (float) $total) * 100.0);
+		$left = 100.0 - $perc;
 		$rate = 0.5;
 		$perc2 = floor($perc * $rate);
 		$left2 = ceil($left * $rate);

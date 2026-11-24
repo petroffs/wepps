@@ -48,7 +48,7 @@ class Tasks
 		$row = [
 			'Name' => $name,
 			'LDate' => ($date !== '') ? $date : date('Y-m-d H:i:s'),
-			'IP' => ($ip !== '') ? $ip : @$_SERVER['REMOTE_ADDR'] ?? '',
+			'IP' => ($ip !== '') ? $ip : $_SERVER['REMOTE_ADDR'] ?? '',
 			'BRequest' => Utils::json($jdata),
 			'TRequest' => $type,
 		];

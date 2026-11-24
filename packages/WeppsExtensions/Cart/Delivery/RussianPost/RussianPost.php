@@ -78,7 +78,7 @@ class RussianPost extends Delivery
                 $period = $jdata['delivery']['min'];
             }
         }
-        $price = round(($jdata['paynds']) / (100 * 5)) * 5;
+        $price = round(($jdata['paynds']) / (100 * 5)) * 5.0;
         $output = [
             'status' => 200,
             'title' => $this->settings['Name'],

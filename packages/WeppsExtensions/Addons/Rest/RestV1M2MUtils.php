@@ -444,7 +444,7 @@ class RestV1M2MUtils
 			$model = new Data($this->tableName);
 			$id = $model->add($mapped);
 
-			if ((int) $id === 0) {
+			if ($id === 0) {
 				return ['status' => 409, 'message' => 'Duplicate key or constraint violation', 'data' => null];
 			}
 
@@ -1153,7 +1153,7 @@ class RestV1M2MUtils
 		return [
 			'status' => 200,
 			'message' => 'OK',
-			'data' => $res ?? [],
+			'data' => $res,
 			'pagination' => [
 				'count' => $total,
 				'limit' => $limit,

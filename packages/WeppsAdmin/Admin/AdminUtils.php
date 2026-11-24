@@ -92,6 +92,9 @@ class AdminUtils extends Utils {
 			$strCond .= "{$key}={$value1} and ";
 			$strSelect .= "{$value1} {$key}, ";
 		}
+		// $strCond заполняется в предыдущем цикле для непустых строк данных;
+		// вывод psalm "всегда ''" не моделирует накопление — проверка реальна
+		/** @psalm-suppress RedundantCondition */
 		$strCond = ($strCond !== "") ? trim($strCond, " and ") : "";
 		$strCond = str_replace("\n", "\\n", $strCond);
 		$strUpdate = ($strCond != "") ? trim($strUpdate, ", ") : "";

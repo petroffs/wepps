@@ -77,7 +77,7 @@ class RequestUploads extends Request
 				 *  and Name like '%addfields%'
 				 */
 				$obj = new Data("s_UploadsSource");
-				$source = $obj->fetchmini($id)[0];
+				$source = $obj->fetchmini((string) $id)[0];
 
 				if (!isset($source['Id']) || $id === 0) {
 					AdminUtils::modal('Ошибка : Укажите источник');

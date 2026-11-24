@@ -44,7 +44,7 @@ class Pdf
 			Exception::error404();
 		$smarty = Smarty::getSmarty();
 		$obj = new Data("TradeShops");
-		$shop = $obj->fetch(1)[0];
+		$shop = $obj->fetch('1')[0];
 		$smarty->assign('shopInfo', $shop);
 		$smarty->assign('projectInfo', Connect::$projectInfo);
 		$smarty->assign('projectDev', Connect::$projectDev);

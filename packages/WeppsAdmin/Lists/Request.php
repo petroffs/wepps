@@ -183,7 +183,7 @@ class RequestLists extends Request
 				$ex = array_map('intval', explode(",", $this->get['id']));
 				$i = 1;
 				foreach ($ex as $value) {
-					if ((int) $value === 0) {
+					if ($value === 0) {
 						Exception::error404();
 					}
 					Connect::$instance->query("update s_Files set Priority=? where Id=?", [$i, $value]);
@@ -395,7 +395,7 @@ class RequestLists extends Request
 
 				$spreadsheet->getActiveSheet()
 					->getStyle('A1:AZ2')
-					->getFont()->setBold(2)
+					->getFont()->setBold(true)
 					->getColor()
 					->setARGB('0080C0');
 

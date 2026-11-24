@@ -87,7 +87,7 @@ class Excel
 
 		$spreadsheet->getActiveSheet()
 			->getStyle('A1:AZ1')
-			->getFont()->setBold(2)
+			->getFont()->setBold(true)
 			->getColor()
 			->setARGB('0080C0');
 

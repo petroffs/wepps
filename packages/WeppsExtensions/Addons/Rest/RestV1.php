@@ -113,6 +113,9 @@ class RestV1
 		$user = $signInResult['data']['user'];
 		$jwt = new Jwt();
 
+		// CONFIRM_AUTH — переключатель подтверждения заказа по email;
+		// psalm видит текущее значение константы (false) и считает ветку мертвой
+		/** @psalm-suppress TypeDoesNotContainType */
 		if (self::CONFIRM_AUTH) {
 			$code = random_int(100000, 999999);
 			$confirmLifetime = 600; // 10 минут

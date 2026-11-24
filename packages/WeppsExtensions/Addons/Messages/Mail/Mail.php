@@ -73,7 +73,7 @@ class Mail
 	{
 		$this->type = $type;
 		$this->from = "=?utf-8?B?" . base64_encode(Connect::$projectInfo['name']) . "?=" . " <" . Connect::$projectInfo['email'] . ">";
-		$this->mime_boundary = md5(time());
+		$this->mime_boundary = md5((string) time());
 		if (Connect::$projectDev['debug'] == 1) {
 			$this->debug = 1;
 		}
@@ -292,7 +292,7 @@ class Mail
 				$msg .= "Content-Type: 	application/octet-stream; name=\"{$value['title']}\"\n";
 				$msg .= "Content-Transfer-Encoding: base64\n";
 				$msg .= "Content-Disposition: attachment; filename=\"{$value['title']}\"\n\n";
-				$msg .= (string) $f_contents . "\n\n";
+				$msg .= $f_contents . "\n\n";
 			}
 		}
 		return $msg;

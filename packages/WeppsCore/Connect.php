@@ -221,7 +221,7 @@ class Connect
 	 */
 	public function selectRegx(string $id = ''): string
 	{
-		return (string) '(,+|^)' . $id . '(,+|$)';
+		return '(,+|^)' . $id . '(,+|$)';
 	}
 	/**
 	 * Закрывает соединение с базой данных.

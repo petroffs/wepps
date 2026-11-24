@@ -82,7 +82,7 @@ class RequestOrders extends Request {
 						'name' => (string) $this->get['name'],
 						'quantity' => (int) $this->get['quantity'],
 						'price' => (float) $this->get['price'],
-						'sum' => Utils::round((float) $this->get['price'] * (int) $this->get['quantity'],2),
+						'sum' => Utils::round((float) $this->get['price'] * (float) (int) $this->get['quantity'],2),
 				];
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";

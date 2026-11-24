@@ -57,7 +57,7 @@ class SaveItemDirectories extends Request
 					if ($res[0]['Co'] == 0) {
 						$data = new Data("s_Blocks");
 						$data->add([
-							'Name' => 'Блок для панели ' . ((int) $panelId),
+							'Name' => 'Блок для панели ' . $panelId,
 							'PanelId' => $panelId,
 						]);
 					}
