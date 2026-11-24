@@ -46,17 +46,18 @@ class Products extends Extension
 		$this->filters = new Filters($this->get);
 		$params = $this->filters->getParams();
 		$displayForce = 0;
-		if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['catalog'] && empty($params['text'])) {
-			return new Childs($this->navigator, $this->headers);
-		} elseif ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands']) {
-			$obj = new Brands($this->navigator, $this->headers);
-			$this->extensionData = $obj->extensionData;
-			$displayForce = 1;
-			if (Navigator::$pathItem == '') {
+        if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['catalog'] && empty($params['text'])) {
+            return new Childs($this->navigator, $this->headers);
+        }
+		if ($this->navigator->content['Id'] == Connect::$projectServices['navigator']['brands']) {
+            $obj = new Brands($this->navigator, $this->headers);
+            $this->extensionData = $obj->extensionData;
+            $displayForce = 1;
+            if (Navigator::$pathItem == '') {
 				return $obj;
 			}
-		}
-		if (Navigator::$pathItem == '' || $displayForce == 1) {
+        }
+		if (Navigator::$pathItem == '' || $displayForce === 1) {
 			$this->tpl = 'packages/WeppsExtensions/Products/Products.tpl';
 			$this->headers->css("/ext/Products/ProductsItems.{$this->rand}.css");
 			$this->headers->css("/ext/Template/Filters/Filters.{$this->rand}.css");
@@ -118,7 +119,7 @@ class Products extends Extension
 		$this->headers->css("/ext/Products/Products.{$this->rand}.css");
 		$this->headers->js("/packages/vendor_local/jquery-cookie/jquery.cookie.js");
 		$smarty->assign($this->targetTpl, $smarty->fetch($this->tpl));
-		return;
+		return null;
 	}
 	#[\Override]
 	public function getItem($tableName, $condition = '')

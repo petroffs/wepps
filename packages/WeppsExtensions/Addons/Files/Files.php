@@ -54,7 +54,7 @@ class Files
 		}
 		$sql = "select * from s_Files where FileUrl=? limit 1";
 		$res = Connect::$instance->fetch($sql, [$filename]);
-		if (count($res) == 0)
+		if (count($res) === 0)
 			Exception::error404();
 		$row = $res[0];
 		$filetitle = $row['Name'];
@@ -143,7 +143,7 @@ class Files
 				$errors[] = "Ошибка сохранения файла '{$file['name']}'";
 			}
 		}
-		if (!empty($errors)) {
+		if ($errors !== []) {
 			$outer = Validator::setFormErrorsIndicate($errors, $form);
 			return [
 				'message' => implode(', ', $errors),

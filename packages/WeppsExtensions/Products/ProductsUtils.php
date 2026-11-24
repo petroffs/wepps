@@ -91,14 +91,14 @@ class ProductsUtils
 				$prepare[] = $params['text'] . "%";
 			}
 		}
-		if ($isFilters == false) {
+		if ($isFilters === false) {
 			return [
 				'conditions' => $conditions,
 				'params' => $prepare
 			];
 		}
 		foreach ($params as $key => $value) {
-			if (substr($key, 0, 2) == 'f_') {
+			if (substr($key, 0, 2) === 'f_') {
 				$ex = explode('|', $value);
 				$ids = str_repeat('?,', count($ex) - 1) . '?';
 				$fieldName = str_replace('f_', '', $key);
@@ -149,7 +149,7 @@ class ProductsUtils
 	public function getProductsItem(string|int $id): array
 	{
 		$conditions = '';
-		$conditions = (strlen((int) $id) == strlen($id)) ? "{$conditions} t.Id = ?" : " {$conditions} binary t.Alias = ?";
+		$conditions = (strlen((int) $id) === strlen($id)) ? "{$conditions} t.Id = ?" : " {$conditions} binary t.Alias = ?";
 		$conditions .= " and length(t.Variations)>0";
 		$settings = [
 			'limit' => 1,
@@ -192,7 +192,7 @@ class ProductsUtils
 
 		// Проверяем существование товара
 		$product = $this->getProductsItem($id);
-		if (empty($product)) {
+		if ($product === []) {
 			return ['exists' => false, 'message' => 'Product not found', 'product' => null];
 		}
 

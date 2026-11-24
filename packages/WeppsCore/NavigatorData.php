@@ -38,38 +38,38 @@ class NavigatorData extends Data
 	{
 		$this->setParams([]);
 		$condition = ($this->backOffice == 1) ? "t.IsHidden in (0,1)" : "t.IsHidden = 0";
-		if ($this->navLevel == 0) {
-			$this->nav[$this->navLevel] = $this->fetch("{$condition} and t.ParentId in (1,0) and t.NGroup!=0 and t.TableId=0", 100, 1, "t.NGroup,t.Priority");
-			$this->navLevel++;
-			return $this->getNav($navLevel);
-		} elseif ($navLevel <= $this->navLevel) {
-			$arr = [];
-			foreach ($this->nav[0] as $value) {
+        if ($this->navLevel == 0) {
+            $this->nav[$this->navLevel] = $this->fetch("{$condition} and t.ParentId in (1,0) and t.NGroup!=0 and t.TableId=0", 100, 1, "t.NGroup,t.Priority");
+            $this->navLevel++;
+            return $this->getNav($navLevel);
+        }
+		if ($navLevel <= $this->navLevel) {
+            $arr = [];
+            foreach ($this->nav[0] as $value) {
 				$arr[$value['NGroup']][] = $value;
 			}
-			unset($this->nav[0]);
-			$sub = [];
-			foreach ($this->nav as $value) {
+            unset($this->nav[0]);
+            $sub = [];
+            foreach ($this->nav as $value) {
 				foreach ($value as $v) {
 					if (isset($v['ParentId']))
 						$sub[$v['ParentId']][] = $v;
 				}
 			}
-			return ['groups' => $arr, 'subs' => $sub];
-		} else {
-			$res = $this->nav[$this->navLevel - 1];
-			$res2 = Utils::array($res);
-			unset($res2[1]);
-			$res2Keys = implode(",", array_keys($res2));
-			if ($res2Keys == "") {
+            return ['groups' => $arr, 'subs' => $sub];
+        }
+        $res = $this->nav[$this->navLevel - 1];
+        $res2 = Utils::array($res);
+        unset($res2[1]);
+        $res2Keys = implode(",", array_keys($res2));
+        if ($res2Keys == "") {
 				$this->navLevel++;
 				return $this->getNav($navLevel);
 			}
-			$res = $this->fetch("{$condition} and t.ParentId in ({$res2Keys}) and t.TableId=0", 100, 1, "t.Priority");
-			$this->nav[$this->navLevel] = $res;
-			$this->navLevel++;
-			return $this->getNav($navLevel);
-		}
+        $res = $this->fetch("{$condition} and t.ParentId in ({$res2Keys}) and t.TableId=0", 100, 1, "t.Priority");
+        $this->nav[$this->navLevel] = $res;
+        $this->navLevel++;
+        return $this->getNav($navLevel);
 	}
 
 	/**

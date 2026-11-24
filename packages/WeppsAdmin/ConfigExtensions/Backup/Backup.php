@@ -53,7 +53,7 @@ class Backup extends Request
 				$this->tpl = 'BackupDatabase.tpl';
 				$dh = opendir(Connect::$projectDev['root'] . "/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
 				while ($file = readdir($dh)) {
-					if ($file != '.' && $file != '..' && strstr($file, ".sql"))
+					if ($file !== '.' && $file !== '..' && strstr($file, ".sql"))
 						$files[] = $file;
 				}
 				closedir($dh);
@@ -91,7 +91,7 @@ class Backup extends Request
 				$this->tpl = 'BackupFiles.tpl';
 				$dh = opendir(Connect::$projectDev['root'] . "/packages/WeppsAdmin/ConfigExtensions/Backup/files/");
 				while ($file = readdir($dh)) {
-					if ($file != '.' && $file != '..' && strstr($file, ".7z"))
+					if ($file !== '.' && $file !== '..' && strstr($file, ".7z"))
 						$files[] = $file;
 				}
 				closedir($dh);

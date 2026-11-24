@@ -231,7 +231,7 @@ class CartUtils
 	 */
 	public function setActive(string $id, int $active = 1): bool
 	{
-		$active = ($active == 1) ? 1 : 0;
+		$active = ($active === 1) ? 1 : 0;
 		$keys = array_column($this->cart['items'], 'id');
 		$index = array_search($id, $keys);
 		if (intval($index) >= 0) {
@@ -455,7 +455,7 @@ class CartUtils
 			$cart = Utils::cookies('wepps_cart'
 		);
 
-		} elseif ($shouldCreate == true) {
+		} elseif ($shouldCreate === true) {
 			$cart = '{"items":null}';
 			Utils::cookies('wepps_cart', $this->user['JCart'] ?? '');
 			Utils::cookies('wepps_cart_guid', self::_getCartHash($this->user['JCart'] ?? ''));
@@ -567,7 +567,7 @@ class CartUtils
 				'sum'      => $value['sum'],
 			];
 		}
-		if (empty($positions)) {
+		if ($positions === []) {
 			return [];
 		}
 		$positions = $this->getCartPositionsRecounter(
@@ -777,7 +777,7 @@ class CartUtils
 	}
 	public function getOrderByGuid(string $guid): array
 	{
-		if (strlen($guid) != 36) {
+		if (strlen($guid) !== 36) {
 			return [];
 		}
 		$obj = new Data("Orders");
@@ -790,7 +790,7 @@ class CartUtils
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		$order = $this->getOrder($jdata['id']);
-		if (empty($order)) {
+		if ($order === []) {
 			$response = [
 				'message' => 'no order'
 			];
@@ -822,7 +822,7 @@ class CartUtils
 	{
 		$jdata = json_decode($request['BRequest'], true);
 		$order = $this->getOrder($jdata['id']);
-		if (empty($order)) {
+		if ($order === []) {
 			$response = [
 				'message' => 'no order'
 			];

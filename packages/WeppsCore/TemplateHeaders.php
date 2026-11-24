@@ -105,13 +105,13 @@ class TemplateHeaders
 		$this->cssjs['js'] = array_unique($this->cssjs['js']);
 		$this->output['cssjs'] = "";
 		foreach ($this->cssjs['css'] as $filename) {
-			if ($libOnly == true && strstr($filename, $this::$rand)) {
+			if ($libOnly === true && strstr($filename, $this::$rand)) {
 				continue;
 			}
 			$this->output['cssjs'] .= (string) "\n" . '<link rel="stylesheet" type="text/css" href="' . $filename . '"/>';
 		}
 		foreach ($this->cssjs['js'] as $filename) {
-			if ($libOnly == true && strstr($filename, $this::$rand)) {
+			if ($libOnly === true && strstr($filename, $this::$rand)) {
 				continue;
 			}
 			$this->output['cssjs'] .= (string) "\n" . '<script type="text/javascript" src="' . $filename . '"></script>';

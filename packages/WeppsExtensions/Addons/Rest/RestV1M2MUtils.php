@@ -301,7 +301,7 @@ class RestV1M2MUtils
 			}
 			// На каждой странице: сброс флага для записей, которые мы обновляем
 			$ids = array_filter(array_column($items, 'id'), fn($v) => (int) $v > 0);
-			if (!empty($ids)) {
+			if ($ids !== []) {
 				$in = Connect::$instance->in($ids);
 				Connect::$instance->query(
 					"UPDATE {$tableName} SET IsHiddenCandidate = 0 WHERE Id IN ($in)",
@@ -343,7 +343,7 @@ class RestV1M2MUtils
 	{
 
 		if ($conditions !== null) {
-			$conditions = $conditions . ' AND ';
+			$conditions .= ' AND ';
 		} else {
 			$conditions = '';
 		}
@@ -475,7 +475,7 @@ class RestV1M2MUtils
 			$toInsert[$index] = $record;
 		}
 
-		if (!empty($toInsert)) {
+		if ($toInsert !== []) {
 			$items = $this->runBeforeCallbacks($toInsert);
 			$validation = $this->getValidationErrors($items);
 			$validatedRecords = $validation['records'];
@@ -490,7 +490,7 @@ class RestV1M2MUtils
 				$validItems[$index] = $record;
 			}
 
-			if (!empty($validItems)) {
+			if ($validItems !== []) {
 				$batchResults = $this->executeBatchInsert($validItems);
 				foreach ($batchResults as $index => $result) {
 					$results[$index] = $result;
@@ -544,7 +544,7 @@ class RestV1M2MUtils
 		$results = [];
 		$toUpdate = $items;
 
-		if (!empty($toUpdate)) {
+		if ($toUpdate !== []) {
 			$dupeErrors = $this->checkDuplicate($toUpdate, true);
 			foreach ($toUpdate as $index => $_) {
 				if ($dupeErrors[$index] ?? null) {
@@ -554,7 +554,7 @@ class RestV1M2MUtils
 			}
 		}
 
-		if (empty($toUpdate)) {
+		if ($toUpdate === []) {
 			return $results;
 		}
 
@@ -576,7 +576,7 @@ class RestV1M2MUtils
 					}
 
 					// Выполнить пакетное обновление только по валидным записям
-					if (!empty($validItems)) {
+					if ($validItems !== []) {
 						$results += $this->executeBatchUpdate($validItems);
 					}
 
@@ -611,7 +611,7 @@ class RestV1M2MUtils
 	 */
 	public function remove(array $ids): array
 	{
-		if (empty($ids)) {
+		if ($ids === []) {
 			return ['status' => 400, 'message' => 'No IDs provided', 'data' => null];
 		}
 
@@ -636,7 +636,7 @@ class RestV1M2MUtils
 			$validItems[$index] = $id;
 		}
 
-		if (!empty($validItems)) {
+		if ($validItems !== []) {
 			$results += $this->executeBatchRemove($validItems);
 		}
 
@@ -751,7 +751,7 @@ class RestV1M2MUtils
 			unset($mapped['Id'], $mapped['id']);
 			ksort($mapped);
 
-			if (empty($mapped)) {
+			if ($mapped === []) {
 				$results[$index] = ['status' => 400, 'message' => 'Nothing to update', 'data' => null];
 				continue;
 			}
@@ -834,12 +834,12 @@ class RestV1M2MUtils
 	public function checkDuplicate(array $records, bool $forUpdate): array
 	{
 		$result = array_fill_keys(array_keys($records), null);
-		if (empty($records)) {
+		if ($records === []) {
 			return $result;
 		}
 
 		$uniqueFields = $this->getUniqueFields(); // [DbField => apiName]
-		if (empty($uniqueFields)) {
+		if ($uniqueFields === []) {
 			return $result;
 		}
 
@@ -872,7 +872,7 @@ class RestV1M2MUtils
 				}
 			}
 
-			if (empty($uniqueValues)) {
+			if ($uniqueValues === []) {
 				continue;
 			}
 
@@ -895,7 +895,7 @@ class RestV1M2MUtils
 			$params = $uniqueValues;
 			$excludeClause = '';
 
-			if ($forUpdate && !empty($updateIds)) {
+			if ($forUpdate && $updateIds !== []) {
 				$inIds = Connect::$instance->in($updateIds);
 				$excludeClause = " AND `Id` NOT IN ($inIds)";
 				$params = array_merge($params, $updateIds);
@@ -1170,12 +1170,12 @@ class RestV1M2MUtils
 	 */
 	private function decodeJsonFields(array $rows): array
 	{
-		if (empty($rows)) {
+		if ($rows === []) {
 			return $rows;
 		}
 
 		$fields = $this->getJsonFields();
-		if (empty($fields)) {
+		if ($fields === []) {
 			return $rows;
 		}
 		foreach ($rows as &$row) {
@@ -1259,7 +1259,7 @@ class RestV1M2MUtils
 		$attributes = [];
 
 		foreach ($propertiesData as $propId => $rows) {
-			if (!is_array($rows) || empty($rows)) {
+			if (!is_array($rows) || $rows === []) {
 				continue;
 			}
 
@@ -1280,7 +1280,7 @@ class RestV1M2MUtils
 			];
 		}
 
-		return !empty($attributes) ? $attributes : null;
+		return $attributes !== [] ? $attributes : null;
 	}
 
 	/**

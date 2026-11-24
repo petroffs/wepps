@@ -60,7 +60,7 @@ class ProcessingTasks
 		 * Удаление файлов, не записанных в s_Files
 		 */
 		$i = 0;
-		if (count($diff) != 0) {
+		if (count($diff) !== 0) {
 			foreach ($diff as $value) {
 				if (isset($arr1[$value])) {
 					foreach ($arr1[$value] as $filename) {

@@ -25,7 +25,7 @@ use WeppsCore\Connect;
 class AdminUtils extends Utils {
 	public static function modal(string $message = '', ?Cli $cli = null): void
 	{
-		if (!empty($cli)) {
+		if ($cli instanceof \WeppsCore\Cli) {
 			$cli->info($message);
 			Connect::$instance->close();
 			return;
@@ -69,7 +69,7 @@ class AdminUtils extends Utils {
 	public static function query(array $row): array
 	{
 		$strCond = $strUpdate = $strInsert1 = $strInsert2 = $strSelect = "";
-		if (empty($row)) {
+		if ($row === []) {
 			return [];
 		}
 		foreach ($row as $key => $value) {
@@ -80,7 +80,7 @@ class AdminUtils extends Utils {
 				$value1 = $value;
 				$strUpdate .= "{$key}={$value}, ";
 				$strInsert2 .= "{$value},";
-			} elseif ($value1 == "null" && $key == "GUID") {
+			} elseif ($value1 === "null" && $key == "GUID") {
 				$value1 = "uuid()";
 				$strUpdate .= "{$key}=uuid(), ";
 				$strInsert2 .= "uuid(),";
@@ -92,7 +92,7 @@ class AdminUtils extends Utils {
 			$strCond .= "{$key}={$value1} and ";
 			$strSelect .= "{$value1} {$key}, ";
 		}
-		$strCond = ($strCond != "") ? trim($strCond, " and ") : "";
+		$strCond = ($strCond !== "") ? trim($strCond, " and ") : "";
 		$strCond = str_replace("\n", "\\n", $strCond);
 		$strUpdate = ($strCond != "") ? trim($strUpdate, ", ") : "";
 		$strUpdate = str_replace("\r\n", "\\n", $strUpdate);

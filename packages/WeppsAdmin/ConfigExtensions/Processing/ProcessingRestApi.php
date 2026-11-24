@@ -163,7 +163,7 @@ class ProcessingRestApi
 			$destination = !empty($destination) ? [$destination] : [];
 		}
 
-		if (empty($source) || empty($destination) || empty($m2mToken)) {
+		if (empty($source) || $destination === [] || empty($m2mToken)) {
 			throw new \Exception('Источник, назначение и токен M2M должны быть выбраны и заполнены');
 		}
 		
@@ -285,7 +285,7 @@ class ProcessingRestApi
 		
 		// Если обязательных полей меньше 3 для POST/PUT - добавляем 2-е и 3-е поле из ответа
 		if (count($requiredFields) < 3 && in_array($destMethod, ['POST', 'PUT'])) {
-			if (!empty($data) && is_array($data[0])) {
+			if ($data !== [] && is_array($data[0])) {
 				$firstItem = $data[0];
 				$keys = array_keys($firstItem);
 				
@@ -335,7 +335,7 @@ class ProcessingRestApi
 				
 				// Для PUT - берем элемент с ID
 				$items = [];
-				if (!empty($data)) {
+				if ($data !== []) {
 					$item = $data[0];
 					if (isset($item['id'])) {
 						$items[] = $item;
@@ -538,7 +538,7 @@ class ProcessingRestApi
 	private function filterDataByRequiredFields(array $data, array $requiredFields): array
 	{
 		// Если нет ограничений на поля, возвращаем все данные
-		if (empty($requiredFields)) {
+		if ($requiredFields === []) {
 			return $data;
 		}
 		
@@ -557,11 +557,11 @@ class ProcessingRestApi
 			}
 			
 			// Добавляем только если что-то осталось
-			if (!empty($filteredItem)) {
+			if ($filteredItem !== []) {
 				$filtered[] = $filteredItem;
 			}
 		}
 		
-		return !empty($filtered) ? $filtered : $data;
+		return $filtered !== [] ? $filtered : $data;
 	}
 }

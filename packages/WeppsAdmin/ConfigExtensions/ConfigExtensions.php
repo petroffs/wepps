@@ -61,7 +61,7 @@ class ConfigExtensions
 				$action = substr($action, 0, -5);
 				$smarty->assign('extsActive', $action);
 			}
-			if ($action == "" && $_GET['weppsurl'] != "extensions/{$ext['Alias']}/") {
+			if ($action === "" && $_GET['weppsurl'] != "extensions/{$ext['Alias']}/") {
 				Exception::error404();
 			}
 			$request = ['action' => $action];

@@ -247,7 +247,7 @@ class TextTransforms {
 		              
 		// Поехали!
 		$levels = explode ( '-', number_format ( $rub, 0, '', '-' ) );
-		$offset = sizeof ( $levels ) - 1;
+		$offset = count ( $levels ) - 1;
 		foreach ( $levels as $k => $level ) {
 			$index = $offset - $k;
 			$level = str_pad ( $level, 3, '0', STR_PAD_LEFT );
@@ -259,7 +259,7 @@ class TextTransforms {
 				for($i = 0, $m = strlen ( $tmp ); $i < $m; $i ++) {
 					// $forms[$index][3] - род слова для текущего уровня
 					$rod = $forms [$index] [3];
-					$tmp_o = ($i + 1) == 2 ? $str [$rod] [$tmp [$i]] : $str [$i + 1] [$tmp [$i]];
+					$tmp_o = $i + 1 === 2 ? $str [$rod] [$tmp [$i]] : $str [$i + 1] [$tmp [$i]];
 					if (! empty ( $tmp_o ))
 						$o [] = $tmp_o;
 				}
@@ -270,7 +270,7 @@ class TextTransforms {
 			if (! empty ( $tmp_o ))
 				$o [] = $tmp_o;
 		}
-		if ('000' == $kop) { // Если ноль копеек
+		if ('000' === $kop) { // Если ноль копеек
 			$o [] = '00';
 			$o [] = $forms [0] [2];
 		}
@@ -287,7 +287,7 @@ class TextTransforms {
 	 * @return string Правильная форма существительного
 	 */
 	private static function pluralForm($n, $f1, $f2, $f5) {
-		if (intval ( $n ) == 0)
+		if (intval ( $n ) === 0)
 			return '';
 		$n = abs ( $n ) % 100;
 		$n1 = $n % 10;
@@ -295,7 +295,7 @@ class TextTransforms {
 			return $f5;
 		if ($n1 > 1 && $n1 < 5)
 			return $f2;
-		if ($n1 == 1)
+		if ($n1 === 1)
 			return $f1;
 		return $f5;
 	}
@@ -322,7 +322,7 @@ class TextTransforms {
 		$str = $string;
 		if (extension_loaded('intl') && class_exists('Transliterator')) {
 			$transliterator = \Transliterator::create('Any-Latin; Latin-ASCII');
-			if ($transliterator !== null) {
+			if ($transliterator instanceof \Transliterator) {
 				$result = $transliterator->transliterate($string);
 				if ($result !== null) {
 					$str = $result;

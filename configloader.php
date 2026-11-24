@@ -16,8 +16,8 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
-require_once 'config.php';
-require_once 'packages/vendor/autoload.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/packages/vendor/autoload.php';
 
 use WeppsCore\Connect;
 use WeppsCore\Smarty;

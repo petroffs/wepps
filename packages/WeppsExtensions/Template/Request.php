@@ -18,7 +18,7 @@
 
 namespace WeppsExtensions\Template;
 
-require_once '../../../configloader.php';
+require_once __DIR__ . '/../../../configloader.php';
 
 use WeppsCore\Exception;
 use WeppsCore\Request;

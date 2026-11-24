@@ -98,7 +98,7 @@ abstract class Extension
 	{
 		$id = Navigator::$pathItem;
 		$prefix = ($condition != '') ? ' and ' : '';
-		$condition = (strlen((int) $id) == strlen($id)) ? $condition . " {$prefix} t.Id = ?" : $condition . " {$prefix} binary t.Alias = ?";
+		$condition = (strlen((int) $id) === strlen($id)) ? $condition . " {$prefix} t.Id = ?" : $condition . " {$prefix} binary t.Alias = ?";
 		$obj = new Data($tableName);
 		$obj->setParams([$id]);
 		$res = $obj->fetch($condition)[0];

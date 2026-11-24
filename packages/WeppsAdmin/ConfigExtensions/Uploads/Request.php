@@ -18,7 +18,7 @@
 
 namespace WeppsAdmin\ConfigExtensions\Uploads;
 
-require_once '../../../../configloader.php';
+require_once __DIR__ . '/../../../../configloader.php';
 
 use WeppsAdmin\Admin\AdminUtils;
 use WeppsCore\Request;
@@ -79,7 +79,7 @@ class RequestUploads extends Request
 				$obj = new Data("s_UploadsSource");
 				$source = $obj->fetchmini($id)[0];
 
-				if (!isset($source['Id']) || $id == 0) {
+				if (!isset($source['Id']) || $id === 0) {
 					AdminUtils::modal('Ошибка : Укажите источник');
 				}
 

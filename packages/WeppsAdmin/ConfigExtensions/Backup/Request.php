@@ -74,7 +74,7 @@ class RequestBackup extends Request
 				/*
 				 * Вывод финального сообщения
 				 */
-				if ($cmd == "ОК") {
+				if ($cmd === "ОК") {
 					AdminUtils::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
 					AdminUtils::modal("<p>Ошибка запроса: " . htmlspecialchars($str, ENT_QUOTES) . "</p>");
@@ -106,7 +106,7 @@ class RequestBackup extends Request
 				/*
 				 * Вывод финального сообщения
 				 */
-				if ($cmd == "ОК") {
+				if ($cmd === "ОК") {
 					AdminUtils::modal("<p>Бекап базы данных: {$cmd}</p>");
 				} else {
 					echo htmlspecialchars($str, ENT_QUOTES);
@@ -135,7 +135,7 @@ class RequestBackup extends Request
 				AdminUtils::modal('<p>Бекап базы данных: удален</p>');
 				break;
 			case "files":
-				if (isset($this->get['add']) && (int) $this->get['add'] == 1) {
+				if (isset($this->get['add']) && (int) $this->get['add'] === 1) {
 					$exclude = "-xr\\\!pic/* -xr\\\!{$host}*.7z";
 					if (empty($this->get['add-git'])) {
 						$exclude .= " -xr\\\!.git";

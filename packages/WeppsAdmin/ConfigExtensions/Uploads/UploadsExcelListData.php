@@ -62,7 +62,7 @@ class UploadsExcelListData {
 					$str .= "update {$this->tableName} set {$arr['update']} where Id='{$row['Id']}';\n";
 				}
 			}
-			if ($str != "") {
+			if ($str !== "") {
 				Connect::$db->exec($str);
 				return [
 						'status'=>0,
@@ -73,9 +73,8 @@ class UploadsExcelListData {
 					'status'=>3,
 					'message'=>'Нет обновлений'
 			];
-		} else {
-			return $this->validator;
 		}
+        return $this->validator;
 		
 	}
 	
@@ -96,7 +95,7 @@ class UploadsExcelListData {
 				break;
 			}
 		}
-		if ($error==0) {
+		if ($error === 0) {
 			$out = ['status' => '0',
 					'message' => 'no errors'];
 			$this->tableName = $this->settings['title'];

@@ -151,10 +151,7 @@ class Cli
 		if (!file_exists($path['dirname'])) {
 			mkdir($path['dirname'], 0755, true);
 		}
-		if (!copy($source, $destination)) {
-			return false;
-		}
-		return true;
+        return copy($source, $destination);
 	}
 
 	/**
@@ -168,18 +165,16 @@ class Cli
 	public function move(string $source, string $destination, bool $overwrite = true)
 	{
 		if ($overwrite === false && file_exists($destination)) {
-			return false;
-		} elseif (!file_exists($source)) {
-			return false;
-		}
+            return false;
+        }
+        if (!file_exists($source)) {
+            return false;
+        }
 		$path = pathinfo($destination);
 		if (!file_exists($path['dirname'])) {
 			mkdir($path['dirname'], 0755, true);
 		}
-		if (!rename($source, $destination)) {
-			return false;
-		}
-		return true;
+        return rename($source, $destination);
 	}
 
 	/**
@@ -200,10 +195,7 @@ class Cli
 		if (!file_exists($path['dirname'])) {
 			mkdir($path['dirname'], 0755, true);
 		}
-		if (!file_put_contents($destination, $content)) {
-			return false;
-		}
-		return true;
+        return (bool) file_put_contents($destination, $content);
 	}
 
 	/**
@@ -234,13 +226,14 @@ class Cli
 	public function rmdir(string $dir)
 	{
 		$dir = str_replace('\\', '/', $dir);
-		if (!is_dir($dir)) {
-			$this->warning('no dir');
-			return false;
-		} elseif (!stristr($dir, Connect::$projectDev['root'])) {
-			$this->warning('no project path');
-			return false;
-		}
+        if (!is_dir($dir)) {
+            $this->warning('no dir');
+            return false;
+        }
+		if (!stristr($dir, Connect::$projectDev['root'])) {
+            $this->warning('no project path');
+            return false;
+        }
 		exec("rm " . escapeshellarg($dir) . " -rf");
 		return true;
 	}
@@ -288,7 +281,7 @@ class Cli
 			}
 			exit();
 		}
-		if ($silent == false && !empty($o)) {
+		if ($silent === false && !empty($o)) {
 			$this->info(implode("\n", $o));
 		}
 		return $o;

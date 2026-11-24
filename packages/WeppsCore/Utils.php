@@ -185,27 +185,28 @@ class Utils
 	{
 		$num = preg_replace("/[^0-9]/", "", $string);
 		$num = preg_replace("/^8(.+)/", "7$1", $num);
-		if (strlen($num) == 11 && substr($num, 0, 2) == '79') {
-			#РФ
-			$part1 = substr($num, 0, 4);
-			$part2 = substr($num, 4, 3);
-			$part3 = substr($num, 7, 2);
-			$part4 = substr($num, 9, 2);
-			return [
+        if (strlen($num) === 11 && substr($num, 0, 2) === '79') {
+            #РФ
+            $part1 = substr($num, 0, 4);
+            $part2 = substr($num, 4, 3);
+            $part3 = substr($num, 7, 2);
+            $part4 = substr($num, 9, 2);
+            return [
 				'num' => (int) $num,
 				'view' => "+" . $part1 . " " . $part2 . "-" . $part3 . "-" . $part4
 			];
-		} elseif (strlen($num) == 12 && substr($num, 0, 3) == '375') {
-			#РБ
-			$part1 = substr($num, 0, 5);
-			$part2 = substr($num, 5, 3);
-			$part3 = substr($num, 8, 2);
-			$part4 = substr($num, 10, 2);
-			return [
+        }
+		if (strlen($num) === 12 && substr($num, 0, 3) === '375') {
+            #РБ
+            $part1 = substr($num, 0, 5);
+            $part2 = substr($num, 5, 3);
+            $part3 = substr($num, 8, 2);
+            $part4 = substr($num, 10, 2);
+            return [
 				'num' => (int) $num,
 				'view' => "+" . $part1 . " " . $part2 . "-" . $part3 . "-" . $part4
 			];
-		}
+        }
 		return [];
 	}
 	/**
@@ -222,7 +223,7 @@ class Utils
 		if (!is_array($array))
 			return [];
 
-		if ($output == '') {
+		if ($output === '') {
 			foreach ($array as $v) {
 				$arr[$v[$index]] = $v;
 			}
@@ -397,7 +398,7 @@ if (!function_exists('getallheaders')) {
 	{
 		$headers = [];
 		foreach ($_SERVER as $name => $value) {
-			if (substr($name, 0, 5) == 'HTTP_') {
+			if (substr($name, 0, 5) === 'HTTP_') {
 				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
 			}
 		}

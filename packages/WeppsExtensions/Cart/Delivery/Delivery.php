@@ -57,7 +57,7 @@ class Delivery
     public function getDiscount(CartUtils $cartUtils): array
     {
         $cartSummary = $cartUtils->getCartSummary();
-        if (empty($cartSummary)) {
+        if ($cartSummary === []) {
             return [];
         }
         $output = [

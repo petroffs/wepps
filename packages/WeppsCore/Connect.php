@@ -142,7 +142,7 @@ class Connect
 				$isCache = 1;
 			}
 			$key = md5($sql . implode(';', $params));
-			if (!empty($this->memcached) && $isCache == 1 && !empty($res = $this->memcached->get($key))) {
+			if (!empty($this->memcached) && $isCache === 1 && !empty($res = $this->memcached->get($key))) {
 				return $res;
 			}
 			$res = $this->executeWithRetry(function () use ($sql, $params, $group) {
@@ -150,11 +150,10 @@ class Connect
 				$sth->execute($params);
 				if ($group == 'group') {
 					return $sth->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
-				} else {
-					return $sth->fetchAll(PDO::FETCH_ASSOC);
 				}
+                return $sth->fetchAll(PDO::FETCH_ASSOC);
 			});
-			if (!empty($this->memcached) && $isCache == 1) {
+			if (!empty($this->memcached) && $isCache === 1) {
 				$this->memcached->set($key, $res);
 			}
 			return $res;
@@ -178,14 +177,13 @@ class Connect
 		$this->count++;
 		try {
 			return $this->executeWithRetry(function () use ($sql, $params) {
-				if (empty($params)) {
+				if ($params === []) {
 					$state = self::$db->query($sql);
 					return $state->rowCount();
-				} else {
-					$this->sth = self::$db->prepare($sql);
-					$this->sth->execute($params);
-					return $this->sth->rowCount();
 				}
+                $this->sth = self::$db->prepare($sql);
+                $this->sth->execute($params);
+                return $this->sth->rowCount();
 			});
 		} catch (\Exception $e) {
 			Exception::display($e);
@@ -206,7 +204,7 @@ class Connect
 		$sql = "insert ignore into $tableName (Priority) select round((max(Priority)+5)/5)*5 from $tableName on duplicate key update Id=last_insert_id(`Id`)";
 		self::$instance->query($sql);
 		$id = self::$db->lastInsertId();
-		if ((int) $id != 0) {
+		if ((int) $id !== 0) {
 			$arr = self::prepare($row, $settings);
 			$sql = "update ignore $tableName set {$arr['update']} where Id='{$id}'";
 			self::query($sql, $arr['row']);

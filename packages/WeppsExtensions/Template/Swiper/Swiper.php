@@ -39,7 +39,7 @@ class Swiper
 	}
 	public function render(array $slides): string
 	{
-		if (empty($slides)) {
+		if ($slides === []) {
 			return '';
 		}
 		$this->headers->js("/ext/Template/Swiper/Swiper.{$this->rand}.js");

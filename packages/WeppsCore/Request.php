@@ -108,11 +108,11 @@ abstract class Request
 		foreach ($this->assign as $key => $value) {
 			$smarty->assign($key, $value);
 		}
-		if ($css == 1 || $js == 1) {
+		if ($css === 1 || $js === 1) {
 			$this->get['cssjs'] = '';
-			if ($css == 1)
+			if ($css === 1)
 				$this->get['cssjs'] = "<style>{$smarty->fetch($this->tpl . '.css')}</style>";
-			if ($js == 1)
+			if ($js === 1)
 				$this->get['cssjs'] .= "<script type=\"text/javascript\">{$smarty->fetch($this->tpl . '.js')}</script>";
 		}
 	}

@@ -63,7 +63,7 @@ class Filters
 		$grouped = [];
 		
 		foreach ($filterResult as $filterGroup) {
-			if (!is_array($filterGroup) || empty($filterGroup)) {
+			if (!is_array($filterGroup) || $filterGroup === []) {
 				continue;
 			}
 			
@@ -104,13 +104,13 @@ class Filters
 	}
 	public function getFiltersCodeJS(array $filtersActive = [], int $count = 0): string
 	{
-		if (empty($filtersActive)) {
+		if ($filtersActive === []) {
 			return '';
 		}
-		$checked = (@$this->params['checked'] === false) ? false : true;
+		$checked = @$this->params['checked'] !== false;
 		$last = 1;
 		foreach ($this->paramsFilters as $key => $value) {
-			if (substr($key, 0, 2) == 'f_') {
+			if (substr($key, 0, 2) === 'f_') {
 				$last = substr($key, 2);
 				break;
 			}
@@ -144,7 +144,7 @@ class Filters
 			}
 			";
 		foreach ($this->paramsFilters as $key => $value) {
-			if (substr($key, 0, 2) == 'f_') {
+			if (substr($key, 0, 2) === 'f_') {
 				foreach (explode('|', $value) as $v) {
 					$js .= "$('.nav-filters-" . substr($key, 2) . "').find('input[name=\"{$v}\"]').prop('checked',true);\n";
 				}
@@ -195,7 +195,7 @@ class Filters
 		}
 		$this->paramsFilters = [];
 		foreach ($this->params as $key => $value) {
-			if (substr($key, 0, 2) == 'f_') {
+			if (substr($key, 0, 2) === 'f_') {
 				$this->paramsFilters[$key] = $value;
 			}
 		}

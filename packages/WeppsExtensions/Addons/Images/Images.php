@@ -93,7 +93,7 @@ class Images
 			Exception::error(404);
 		}
 		$res = Connect::$instance->fetch("select * from s_Files where FileType like 'image/%' and FileUrl=?", ['/' . $filename]);
-		if (count($res) == 0) {
+		if (count($res) === 0) {
 			Exception::error(404);
 		}
 		$this->fileinfo = $res[0];
@@ -180,7 +180,7 @@ class Images
 			if ($size[0] < $this->widthDst && $size[1] < $this->heightDst) {
 				$this->width = $size[0];
 				$this->height = $size[1];
-			} elseif ($crop == 0) {
+			} elseif ($crop === 0) {
 				$this->resize($this->widthDst, $this->heightDst, $ratio);
 			} else {
 				$this->crop($this->widthDst, $this->heightDst, $ratio);
@@ -386,7 +386,7 @@ class Images
 				$exit = 0;
 			}
 		}
-		if ($exit == 1) {
+		if ($exit === 1) {
 			return;
 		}
 		if (empty($filename)) {

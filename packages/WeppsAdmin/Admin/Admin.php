@@ -113,31 +113,32 @@ class Admin {
 			$obj = new $className($this->headers,$this->nav);
 			$smarty->assign('headers', $this->headers->get());
 			return $obj;
-		} else {
-			echo "Класс $className не найден.";
-			exit();
 		}
+        echo "Класс $className не найден.";
+        exit();
 	}
 	private function getNavigateUrl($url): void {
 		//Utils::debug($url,1);
 		$match = [];
 		$m = preg_match ( "/([^\/\?\&\=]+)\.html($|[\?])/", $url, $match );
-		if (strstr($url, "home/")) {
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: /_wepps/");
-			exit();
-		}
-		elseif (substr ( $url, - 1 ) != '/' && $m==0 && $url!='' && $_SERVER['REQUEST_URI']!='/') {
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: /_wepps/" . Utils::safeChars($url) . "/");
-			exit();
-		} elseif (strstr($_SERVER['REQUEST_URI'],'index.php')) {
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: /");
-			exit();
-		} elseif (substr($_SERVER['REQUEST_URI'], -1)=='/' && substr($_SERVER['REQUEST_URI'],1,1)=='/') {
-			$url = "!";
-		} elseif (isset($match[1])) {
+        if (strstr($url, "home/")) {
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: /_wepps/");
+            exit();
+        }
+        if (substr ( $url, - 1 ) !== '/' && $m==0 && $url!='' && $_SERVER['REQUEST_URI']!='/') {
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: /_wepps/" . Utils::safeChars($url) . "/");
+            exit();
+        }
+        if (strstr($_SERVER['REQUEST_URI'],'index.php')) {
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: /");
+            exit();
+        }
+		if (substr($_SERVER['REQUEST_URI'], -1) === '/' && substr($_SERVER['REQUEST_URI'],1,1) === '/') {
+            $url = "!";
+        } elseif (isset($match[1])) {
 			self::$pathItem = $match[1];
 		}
 		$url = (empty ( $url )) ? '/' : Utils::trim ( $url );
@@ -158,7 +159,7 @@ class Admin {
 	 * @psalm-return array{status: 0|1, lists?: non-empty-list<string>, extensions?: non-empty-list<string>}
 	 */
 	public static function getPermissions($permId=0,$check=[]): array {
-		if ($permId==0 || (int) $permId==0) return array('status'=>0);
+		if ($permId==0 || (int) $permId === 0) return array('status'=>0);
 		$obj = new Data("s_Permissions");
 		$res = $obj->fetch($permId)[0];
 		if (!isset($res['Id'])) return array('status'=>0);
@@ -168,9 +169,8 @@ class Admin {
 			$permLists = array_flip($lists);
 			if (isset($permLists[$check['list']])) {
 				return array('status'=>1);
-			} else {
-				return array('status'=>0);
 			}
+            return array('status'=>0);
 		}
 		
 		$extensions = explode(",", $res['SystemExt']);
@@ -178,9 +178,8 @@ class Admin {
 			$permExts = array_flip($extensions);
 			if (isset($permExts[$check['extension']])) {
 				return array('status'=>1);
-			} else {
-				return array('status'=>0);
 			}
+            return array('status'=>0);
 		}
 		return array('status'=>1,'lists'=>$lists,'extensions'=>$extensions);
 	}

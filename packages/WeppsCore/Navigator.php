@@ -151,17 +151,19 @@ class Navigator
 	{
 		$_SERVER['REQUEST_URI']??= '';
 		$m = preg_match("/([^\/\?\&\=]+)\.([\w\d]{1,7}+)($|[\?])/", $url, $match);
-		if (empty(str_ends_with($url, '/')) && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: " . Utils::safeChars($url) . "/");
-			exit();
-		} elseif (strstr($_SERVER['REQUEST_URI'], 'index.php')) {
-			header("HTTP/1.1 301 Moved Permanently");
-			header("Location: /");
-			exit();
-		} elseif (substr($_SERVER['REQUEST_URI'], -1) == '/' && substr($_SERVER['REQUEST_URI'], 1, 1) == '/') {
-			$url = "!";
-		} elseif (isset($match[1])) {
+        if (empty(str_ends_with($url, '/')) && $m == 0 && $url != '' && $_SERVER['REQUEST_URI'] != '/') {
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: " . Utils::safeChars($url) . "/");
+            exit();
+        }
+        if (strstr($_SERVER['REQUEST_URI'], 'index.php')) {
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: /");
+            exit();
+        }
+		if (substr($_SERVER['REQUEST_URI'], -1) === '/' && substr($_SERVER['REQUEST_URI'], 1, 1) === '/') {
+            $url = "!";
+        } elseif (isset($match[1])) {
 			if (isset($match[2]) && $match[2] == 'html') {
 				self::$pathItem = $match[1];
 			} else {

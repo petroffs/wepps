@@ -200,7 +200,7 @@ class ProfileActions
 			}
 
 			$currentHash = $res[0]['Password'];
-			if (strlen($currentHash) == 32) {
+			if (strlen($currentHash) === 32) {
 				// Старый формат MD5
 				if (md5($passwordOld) != $currentHash) {
 					$this->errors['password'] = 'Неверный текущий пароль';
@@ -495,7 +495,7 @@ class ProfileActions
 
 		if (empty($res[0]['Id'])) {
 			$this->errors['login'] = 'Неверный логин';
-		} elseif (strlen($res[0]['Password']) == 32) {
+		} elseif (strlen($res[0]['Password']) === 32) {
 			if (md5($password) != $res[0]['Password']) {
 				$this->errors['password'] = 'Неверный пароль';
 			}

@@ -81,7 +81,7 @@ class RestApiDocs
 
 		foreach ($this->docs() as $key => $doc) {
 			$items = $this->collectEndpoints($config, $doc);
-			if (empty($items)) {
+			if ($items === []) {
 				throw new \RuntimeException("Документ «{$doc['title']}» не содержит эндпоинтов");
 			}
 			$spec = $this->buildSpec($doc, $items);
@@ -337,7 +337,7 @@ MD;
 					'description' => 'Тип: `' . ($rule['type'] ?? 'string') . '`',
 				];
 			}
-			if (!empty($parameters)) {
+			if ($parameters !== []) {
 				$op['parameters'] = $parameters;
 			}
 		}
@@ -403,7 +403,7 @@ MD;
 	 */
 	private function buildBody(array $rules, string $version, string $method): ?array
 	{
-		if (empty($rules)) {
+		if ($rules === []) {
 			return null;
 		}
 
@@ -832,7 +832,7 @@ HTML;
 					}
 				}
 
-				if (!empty($simpleRules)) {
+				if ($simpleRules !== []) {
 					$out[] = '**Тело запроса** (JSON, ключ `data`):';
 					$out[] = '';
 					$out[] = '| Поле | Тип | Обязательный |';
@@ -842,11 +842,11 @@ HTML;
 						$out[] = '| `' . $label . '` | `' . ($rule['type'] ?? 'string') . '` | '
 							. (!empty($rule['required']) ? 'да' : 'нет') . ' |';
 					}
-				} elseif (empty($nestedKeys)) {
+				} elseif ($nestedKeys === []) {
 					$out[] = '**Тело запроса** (JSON): массив в ключе `data`.';
 				}
-				if (!empty($nestedKeys)) {
-					if (!empty($simpleRules)) {
+				if ($nestedKeys !== []) {
+					if ($simpleRules !== []) {
 						$out[] = '';
 					}
 					$out[] = 'Вложенные поля тела: '

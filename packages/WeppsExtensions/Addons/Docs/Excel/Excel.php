@@ -104,7 +104,7 @@ class Excel
 			 * Записать в файл для проверки
 			 */
 			$writer->save($filename);
-			return;
+			return null;
 		}
 		ob_start();
 		$writer->save('php://output');

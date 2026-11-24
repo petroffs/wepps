@@ -56,7 +56,7 @@ class SaveItemPanels extends Request
 				if (is_dir($source) && !is_dir($target)) {
 					mkdir($target, 0775, true);
 					foreach (scandir($source) as $file) {
-						if ($file == '.' || $file == '..')
+						if ($file === '.' || $file === '..')
 							continue;
 						$content = file_get_contents($source . '/' . $file);
 						$content = str_replace('-example', '-' . strtolower($tpl), $content);

@@ -133,9 +133,9 @@ class Yookassa extends Payments
 		foreach ($products as $value) {
 			$row = [
 				'description' => $value['name'],
-				'quantity' => doubleval($value['quantity']),
+				'quantity' => floatval($value['quantity']),
 				'amount' => [
-					'value' => doubleval($value['priceTotal']),
+					'value' => floatval($value['priceTotal']),
 					'currency' => $this->currency
 				],
 				'vat_code' => $this->vatCode,
@@ -150,7 +150,7 @@ class Yookassa extends Payments
 				'description' => 'Доставка',
 				'quantity' => 1,
 				'amount' => [
-					'value' => doubleval($order['ODeliveryTariff']),
+					'value' => floatval($order['ODeliveryTariff']),
 					'currency' => $this->currency
 				],
 				'vat_code' => $this->vatCode,

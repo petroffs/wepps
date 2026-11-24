@@ -135,7 +135,7 @@ class RestV1APP extends RestV1
 		// Если передан ID, ищем по ID, иначе используем фильтры и категорию
 		if (!empty($id)) {
 			$productsUtils->setNavigator($navigator, 'Products');
-			$isNumericId = (strlen((int) $id) == strlen($id));
+			$isNumericId = (strlen((int) $id) === strlen($id));
 			$conditions = $isNumericId ? "t.IsHidden=0 and t.Id = ?" : "t.IsHidden=0 and binary t.Alias = ?";
 
 			$settings = [
@@ -172,7 +172,7 @@ class RestV1APP extends RestV1
 		$filterResult = [];
 		$ids = array_column($result['rows'], 'Id');
 		
-		if (!empty($ids)) {
+		if ($ids !== []) {
 			$placeholders = Connect::$instance->in($ids);
 			$filters = new Filters();
 			$filterResult = $filters->getFilters([
@@ -188,7 +188,7 @@ class RestV1APP extends RestV1
 
 		// Унифицированный цикл: атрибуты и URLs для обоих случаев
 		foreach ($result['rows'] as &$row) {
-			if (!empty($filterResult)) {
+			if ($filterResult !== []) {
 				// Распределяем атрибуты по товарам
 				// $row['W_Attributes'] = $this->_buildAttributesFromPropertiesValues($filterResult[$row['Id']] ?? null);
 				$row['W_Attributes'] = $attributesByProduct[$row['Id']] ?? null;
@@ -388,7 +388,7 @@ class RestV1APP extends RestV1
 			$params[] = $price;
 		}
 
-		if (empty($set)) {
+		if ($set === []) {
 			return ['status' => 400, 'message' => 'No fields to update', 'data' => null];
 		}
 
@@ -481,7 +481,7 @@ class RestV1APP extends RestV1
 		$profileActions = new ProfileActions(false);
 		$order = $profileActions->getFullOrder($id, $user['Id']);
 
-		if (empty($order)) {
+		if ($order === []) {
 			return ['status' => 404, 'message' => 'Order not found', 'data' => null];
 		}
 
@@ -806,7 +806,7 @@ class RestV1APP extends RestV1
 		$cartUtils->setCartSummary();
 		$deliveryUtils = new DeliveryUtils();
 		$delivery = $deliveryUtils->getTariffsByCitiesId($citiesId, $cartUtils);
-		if (empty($delivery)) {
+		if ($delivery === []) {
 			return ['status' => 400, 'message' => 'No delivery options for this city', 'data' => null];
 		}
 		$cartUtils->setCartCitiesId($citiesId);
@@ -830,7 +830,7 @@ class RestV1APP extends RestV1
 		$cartUtils->setCartSummary();
 		$paymentsUtils = new PaymentsUtils();
 		$payments = $paymentsUtils->getByDeliveryId($deliveryId, $cartUtils);
-		if (empty($payments)) {
+		if ($payments === []) {
 			return ['status' => 400, 'message' => 'No payment options for this delivery', 'data' => null];
 		}
 		$cartUtils->setCartDelivery($deliveryId);
@@ -891,7 +891,7 @@ class RestV1APP extends RestV1
 				}
 			}
 			
-			if (!empty($operationErrors)) {
+			if ($operationErrors !== []) {
 				return ['status' => 400, 'message' => 'Validation errors', 'data' => $operationErrors];
 			}
 		}
@@ -931,7 +931,7 @@ class RestV1APP extends RestV1
 		// Входные данные: [PropertyId => rows] (после filtersByCompositeKey())
 		$grouped = [];
 		foreach ($propertiesData as $propId => $rows) {
-			if (!is_array($rows) || empty($rows)) {
+			if (!is_array($rows) || $rows === []) {
 				continue;
 			}
 			$grouped[$propId] = $rows;
@@ -975,7 +975,7 @@ class RestV1APP extends RestV1
 		}
 
 		$obj = new Data("News");
-		if (!empty($params)) {
+		if ($params !== []) {
 			$obj->setParams($params);
 		}
 		$res = $obj->fetch($conditions, $limit, $page, "t.NDate desc");

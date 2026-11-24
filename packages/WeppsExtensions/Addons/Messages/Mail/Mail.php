@@ -191,28 +191,30 @@ class Mail
 		$this->attachmentInput = $attachment;
 	}
 	/**
-	 * Включает режим отладки, если debug=1 в конфигурации проекта.
-	 *
-	 * В режиме отладки все письма перенаправляются на email разработчика.
-	 *
-	 * @return int|void
-	 */
-	public function setDebug()
+     * Включает режим отладки, если debug=1 в конфигурации проекта.
+     *
+     * В режиме отладки все письма перенаправляются на email разработчика.
+     *
+     * @return int|null
+     */
+    public function setDebug()
 	{
 		if (Connect::$projectDev['debug'] == 1) {
 			return $this->debug = 1;
 		}
+        return null;
 	}
 	/**
-	 * Отключает режим отладки, если debug=1 в конфигурации проекта.
-	 *
-	 * @return int|void
-	 */
-	public function unsetDebug()
+     * Отключает режим отладки, если debug=1 в конфигурации проекта.
+     *
+     * @return int|null
+     */
+    public function unsetDebug()
 	{
 		if (Connect::$projectDev['debug'] == 1) {
 			return $this->debug = 0;
 		}
+        return null;
 	}
 	/**
 	 * Возвращает содержимое письма после последнего вызова mail().
@@ -222,7 +224,7 @@ class Mail
 	 */
 	public function getContent(bool $contentAll = false)
 	{
-		if ($contentAll == true) {
+		if ($contentAll === true) {
 			return $this->contentAll;
 		}
 		return $this->content;
@@ -250,7 +252,7 @@ class Mail
 	private function getAttach()
 	{
 		$msg = "";
-		if (count($this->attachment) == 0) {
+		if (count($this->attachment) === 0) {
 			return $msg;
 		}
 		foreach ($this->attachment as $value) {
@@ -283,7 +285,7 @@ class Mail
 	private function getAttachInput()
 	{
 		$msg = "";
-		if (!empty($this->attachmentInput)) {
+		if ($this->attachmentInput !== []) {
 			foreach ($this->attachmentInput as $value) {
 				$f_contents = chunk_split(base64_encode($value['content']));
 				$msg .= "--{$this->mime_boundary}\n";

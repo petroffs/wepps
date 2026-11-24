@@ -47,12 +47,12 @@ class Tasks
 	{
 		$row = [
 			'Name' => $name,
-			'LDate' => ($date != '') ? $date : date('Y-m-d H:i:s'),
-			'IP' => ($ip != '') ? $ip : @$_SERVER['REMOTE_ADDR'] ?? '',
+			'LDate' => ($date !== '') ? $date : date('Y-m-d H:i:s'),
+			'IP' => ($ip !== '') ? $ip : @$_SERVER['REMOTE_ADDR'] ?? '',
 			'BRequest' => Utils::json($jdata),
 			'TRequest' => $type,
 		];
-		if ($type == 'post') {
+		if ($type === 'post') {
 			$row['Url'] = htmlspecialchars(@$_SERVER['REQUEST_URI'], ENT_QUOTES);
 		}
 		$prepare = Connect::$instance->prepare($row);

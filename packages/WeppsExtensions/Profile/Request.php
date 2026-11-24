@@ -18,7 +18,7 @@
 
 namespace WeppsExtensions\Profile;
 
-require_once '../../../configloader.php';
+require_once __DIR__ . '/../../../configloader.php';
 
 use WeppsCore\Connect;
 use WeppsCore\Request;
@@ -145,7 +145,7 @@ class RequestProfile extends Request
 				);
 				if ($result['status'] === 200) {
 					$order = $profileActions->getFullOrder((int) ($this->get['id'] ?? 0), Connect::$projectData['user']['Id']);
-					if (!empty($order)) {
+					if ($order !== []) {
 						$this->assign('order', $order);
 						$this->tpl = 'ProfileOrdersItem.tpl';
 					}

@@ -24,8 +24,8 @@ class SmartyExt extends Base {
 
     #[\Override]
     public function getModifierCompiler(string $modifier): ?\Smarty\Compile\Modifier\ModifierCompilerInterface {
-        switch ($modifier) {
-            case 'weppstest': return new AdModifierCompiler();
+        if ($modifier === 'weppstest') {
+            return new AdModifierCompiler();
         }
         return null;
     }

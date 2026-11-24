@@ -83,7 +83,7 @@ class DeliveryUtils
             if (!empty($value['RegionsId']) && !empty($value['ExcludeRegionsId']) && ($this->_match($value['RegionsId'], $value['ExcludeRegionsId']))) {
                 $w = 0;
             }
-            if ($w == 1) {
+            if ($w === 1) {
                 $output[] = $value;
             }
         }
@@ -118,7 +118,7 @@ class DeliveryUtils
     public function setOperations(array $data, CartUtils $cartUtils): bool
     {
         $data = array_filter($data, fn($key) => str_starts_with($key, 'operations-'), ARRAY_FILTER_USE_KEY);
-        if (empty($data)) {
+        if ($data === []) {
             $cartUtils->setCartDeliveryOperations();
             return true;
         }

@@ -299,7 +299,7 @@ class Validator
 			foreach ($errors as $key => $value) {
 				$key = htmlspecialchars((string) $key, ENT_QUOTES);
 				$value = htmlspecialchars((string) $value, ENT_QUOTES);
-				if ($value != "") {
+				if ($value !== "") {
 					$str .= "
 					var elem = $('#{$form}').find('[name=\"{$key}\"]');
 					if (elem.length==0) {

@@ -45,7 +45,7 @@ class ProfileUtils
 	 */
 	public function getNav($pathItem = ''): array
 	{
-		if (!empty($this->user)) {
+		if ($this->user !== []) {
 			$nav = [
 				[
 					'title' => 'Профайл',

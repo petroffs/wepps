@@ -36,7 +36,7 @@ class SaveItemConfig extends Request {
 	    $this->element = $this->get['element'];
 	    if ($this->listSettings['TableName']=='s_Config') {
 	        $str = Lists::addList($this->element['TableName']);
-	        if ($str!="") {
+	        if ($str !== "") {
 	            Connect::$db->exec($str);
 	            $perm = Admin::getPermissions(1,array('list'=>'s_Config'));
 	            if ($perm['status']==1) {

@@ -16,7 +16,7 @@
  * @author Aleksei Petrov <mail@petroffs.com>
  */
 
-require_once 'configloader.php';
+require_once __DIR__ . '/configloader.php';
 
 use WeppsCore\Connect;
 use WeppsCore\Navigator;

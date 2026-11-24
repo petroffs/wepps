@@ -43,14 +43,14 @@ if (!is_file(__DIR__ . '/packages/vendor/autoload.php')) {
     exit();
 }
 
-require_once 'config.php';
+require_once __DIR__ . '/config.php';
 
 if (empty($projectSettings['DB']['host']) || empty($projectSettings['DB']['port']) || empty($projectSettings['DB']['user']) || empty($projectSettings['DB']['dbname'])) {
     echo "error: Секция DB некорректно заполнена\n";
     exit();
 }
 
-require_once 'configloader.php';
+require_once __DIR__ . '/configloader.php';
 
 use WeppsCore\Connect;
 use WeppsCore\Cli;

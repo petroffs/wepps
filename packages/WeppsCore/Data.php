@@ -172,7 +172,7 @@ class Data
 			$this->paginator = $paginator;
 		}
 		$res = Language::getRows($res, $this->scheme, $this->lang);
-		if (count($res) == 0) {
+		if (count($res) === 0) {
 			return [];
 		}
 		return $res;
@@ -192,7 +192,7 @@ class Data
 			$conditions = "t.Id!=0";
 		}
 		$formatted = $this->_getFormatted($conditions, $onPage, $currentPage, $orderBy);
-		if (substr($formatted['conditions'], 0, 2) == 'Id') {
+		if (substr($formatted['conditions'], 0, 2) === 'Id') {
 			$formatted['conditions'] = "t." . $formatted['conditions'];
 		}
 		$settings = $this->getScheme();
@@ -402,7 +402,7 @@ class Data
 			where t.TableName = ? $fieldsCondition order by $orderBy";
 
 			$res = Connect::$instance->fetch($sql, $params, 'group');
-			if (count($res) == 0) {
+			if (count($res) === 0) {
 				http_response_code(404);
 				Utils::debug("Указанной таблицы {$this->tableName} не существует", 1);
 			}
@@ -532,15 +532,15 @@ class Data
 		$sql = "insert ignore into {$this->tableName} {$prepare['insert']}";
 		Connect::$instance->query($sql, $prepare['row']);
 		$id = Connect::$db->lastInsertId();
-		if ($insertOnly == 1) {
+		if ($insertOnly === 1) {
 			return $id;
 		}
-		if ((int) $id != 0) {
+		if ((int) $id !== 0) {
 			unset($update['Id']);
 			if (empty($update['Priority'])) {
 				unset($update['Priority']);
 			}
-			if (!empty($update)) {
+			if ($update !== []) {
 				$prepare = Connect::$instance->prepare($update);
 				$sql = "update {$this->tableName} set {$prepare['update']} where Id=:Id";
 				Connect::$instance->query($sql, array_merge($prepare['row'], ['Id' => $id]));

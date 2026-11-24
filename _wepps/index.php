@@ -18,7 +18,7 @@
 
 use WeppsAdmin\Admin\Admin;
 
-require_once '../configloader.php';
+require_once __DIR__ . '/../configloader.php';
 $projectSettings['Services']['memcached']['active'] = false;
 
 if (!session_id()) {

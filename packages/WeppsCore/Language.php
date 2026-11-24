@@ -52,7 +52,7 @@ class Language
 		if (!empty($_SERVER['REQUEST_URI'])) {
 			$url = $_SERVER['REQUEST_URI'];
 		}
-		if (count($langData) == 1) {
+		if (count($langData) === 1) {
 			return [
 				'id' => $langData[0]['Id'],
 				'defaultId' => $langData[0]['Id'],
@@ -62,8 +62,8 @@ class Language
 				'link' => "",
 				'url' => $url
 			];
-		} else {
-			return [
+		}
+        return [
 				'id' => $langData[0]['Id'],
 				'defaultId' => $langData[1]['Id'],
 				'default' => 0,
@@ -72,7 +72,6 @@ class Language
 				'link' => substr($langData[0]['LinkDirectory'], 0, -1),
 				'url' => $url
 			];
-		}
 	}
 
 	/**
@@ -112,7 +111,7 @@ class Language
 		}
 		$res = Utils::array($data);
 		$baseIds = array_keys($res);
-		if (empty($baseIds)) {
+		if ($baseIds === []) {
 			return $data;
 		}
 		$resKeys = implode(',', $baseIds);
@@ -123,7 +122,7 @@ class Language
 
 		$fileFields = [];
 		foreach ($scheme as $fieldName => $fieldRows) {
-			if (!is_array($fieldRows) || empty($fieldRows)) {
+			if (!is_array($fieldRows) || $fieldRows === []) {
 				continue;
 			}
 			$fieldConfig = reset($fieldRows);
@@ -149,7 +148,7 @@ class Language
 			}
 		}
 		$defaultRowsByTableId = [];
-		if ($defaultLangId > 0 && $defaultLangId != $currentLangId) {
+		if ($defaultLangId > 0 && $defaultLangId !== $currentLangId) {
 			foreach (Connect::$instance->fetch(
 				"select * from {$tableName} where TableId in ({$resKeys}) and LanguageId='{$defaultLangId}' and IsHidden=0"
 			) as $defaultRow) {
@@ -164,7 +163,7 @@ class Language
 		// 	UtilsWepps::debug($resFiles,21);
 		// }
 		$filesByRowId = [];
-		if (!empty($fileFields)) {
+		if ($fileFields !== []) {
 			$rowIdsForFiles = array_values(array_unique(array_map('intval', $rowIdsForFiles)));
 			$fileIds = implode(',', $rowIdsForFiles);
 			$resFiles = Connect::$instance->fetch(
@@ -220,11 +219,11 @@ class Language
 						continue;
 					}
 					$filesForCurrent = $filesByRowId[$rowId][$fieldName] ?? [];
-					if (!empty($filesForCurrent)) {
+					if ($filesForCurrent !== []) {
 						break;
 					}
 				}
-				if (empty($filesForCurrent)) {
+				if ($filesForCurrent === []) {
 					continue;
 				}
 				$rowFiles = array_merge($rowFiles, $filesForCurrent);
@@ -234,11 +233,11 @@ class Language
 						$urls[] = $file['FileUrl'];
 					}
 				}
-				if (!empty($urls)) {
+				if ($urls !== []) {
 					$row[$fieldName . '_FileUrl'] = implode(':::', $urls);
 				}
 			}
-			if (!empty($rowFiles)) {
+			if ($rowFiles !== []) {
 				$row['Files'] = $rowFiles;
 				$row['files'] = $rowFiles;
 			}
@@ -262,7 +261,7 @@ class Language
 			$id = $res2[0]['TableId'];
 		}
 
-		if ($lang == 1) {
+		if ($lang === 1) {
 			$lang = 0;
 			$condition = "TableId=0 and Id=? and LanguageId=?";
 		} else {

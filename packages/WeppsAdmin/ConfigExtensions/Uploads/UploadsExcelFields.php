@@ -57,7 +57,7 @@ class UploadsExcelFields
 				}
 			}
 
-			if (empty($ddlStatements)) {
+			if ($ddlStatements === []) {
 				return ['status' => 400, 'message' => '❌ Нет полей для добавления'];
 			}
 
@@ -83,7 +83,7 @@ class UploadsExcelFields
 						$res = $obj->fetchmini("TableName = '{$row['TableName']}' and TableField = '{$row['TableField']}'");
 						if (!isset($res[0]['Id'])) {
 							$id = $obj->add($row);
-							if ((int) $id != 0) {
+							if ((int) $id !== 0) {
 								$ids[] = $id;
 							}
 						}

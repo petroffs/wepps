@@ -18,7 +18,7 @@
 
 namespace WeppsAdmin\Lists;
 
-require_once '../../../configloader.php';
+require_once __DIR__ . '/../../../configloader.php';
 
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use WeppsCore\Language;
@@ -126,7 +126,7 @@ class RequestLists extends Request
 				echo $t;
 				break;
 			case 'fileRemove':
-				if (!isset($this->get['id']) || (int) $this->get['id'] == 0)
+				if (!isset($this->get['id']) || (int) $this->get['id'] === 0)
 					Exception::error404();
 				$obj = new Data("s_Files");
 				$ids = array_map('intval', explode(',', $this->get['id']));
@@ -183,7 +183,7 @@ class RequestLists extends Request
 				$ex = array_map('intval', explode(",", $this->get['id']));
 				$i = 1;
 				foreach ($ex as $value) {
-					if ((int) $value == 0) {
+					if ((int) $value === 0) {
 						Exception::error404();
 					}
 					Connect::$instance->query("update s_Files set Priority=? where Id=?", [$i, $value]);

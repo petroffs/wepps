@@ -40,7 +40,7 @@ class Payments
 	public function getTariff(CartUtils $cartUtils): array
 	{
 		$cartSummary = $cartUtils->getCartSummary();
-		if (empty($cartSummary)) {
+		if ($cartSummary === []) {
 			return [];
 		}
 		$output = [
@@ -61,7 +61,7 @@ class Payments
 	public function getDiscount(CartUtils $cartUtils): array
 	{
 		$cartSummary = $cartUtils->getCartSummary();
-		if (empty($cartSummary)) {
+		if ($cartSummary === []) {
 			return [];
 		}
 		$output = [

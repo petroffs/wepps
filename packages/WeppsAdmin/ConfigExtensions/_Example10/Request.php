@@ -18,7 +18,7 @@
 
 namespace WeppsAdmin\ConfigExtensions\_Example10;
 
-require_once '../../../../configloader.php';
+require_once __DIR__ . '/../../../../configloader.php';
 
 use WeppsAdmin\Admin\AdminUtils;
 use WeppsCore\Request;

@@ -70,7 +70,7 @@ class Lists
 		}
 		$smarty->assign('lists', $arr);
 		$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
-		if ($weppsurl == '/lists/') {
+		if ($weppsurl === '/lists/') {
 			/*
 			 * Список списков
 			 */
@@ -80,7 +80,7 @@ class Lists
 			$content['NameNavItem'] = "Списки данных";
 			$smarty->assign('content', $content);
 			$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
-		} elseif (count($weppsurlEx) == 2 && in_array($weppsurlEx[1], $perm['lists'])) {
+		} elseif (count($weppsurlEx) === 2 && in_array($weppsurlEx[1], $perm['lists'])) {
 			/*
 			 * Элементы списка
 			 */
@@ -167,7 +167,7 @@ class Lists
 				$headers->css("/packages/WeppsAdmin/Admin/Paginator/Paginator.{$headers::$rand}.css");
 			}
 			$smarty->assign('listsNavTpl', $smarty->fetch(Connect::$projectDev['root'] . '/packages/WeppsAdmin/Lists/ListsNav.tpl'));
-		} elseif (count($weppsurlEx) == 3) {
+		} elseif (count($weppsurlEx) === 3) {
 			/*
 			 * Элемент списка
 			 */
@@ -293,7 +293,7 @@ class Lists
 			$arr = array_fill_keys(array_keys($listScheme), '');
 			$arr['Name'] = "Новый элемент";
 			$element = array(0 => $arr);
-		} elseif ((int) $id == 0) {
+		} elseif ((int) $id === 0) {
 			Exception::error404();
 		} else {
 			$element = $obj->fetch($id);
@@ -309,7 +309,7 @@ class Lists
 				from s_Files where TableName = '{$obj->tableName}' and TableNameId = '{$id}'
 				order by Priority";
 		$files = Connect::$instance->fetch($sql, [], 'group');
-		if (count($files) != 0) {
+		if (count($files) !== 0) {
 			$element[0] = array_merge($element[0], $files);
 		}
 
@@ -441,7 +441,7 @@ class Lists
 				$properties = [];
 				$options2 = [];
 				$selected2 = [];
-				if (isset($element[0][$key]) && (int) $element[0][$key] != 0) {
+				if (isset($element[0][$key]) && (int) $element[0][$key] !== 0) {
 					$selected[$element[0][$key]] = $element[0][$key];
 					/*
 					 * Свойства выбранной группы
@@ -544,7 +544,7 @@ class Lists
 				$row[$k] = '';
 			}
 		}
-		if (count($row) == 0)
+		if (count($row) === 0)
 			return 0;
 		if (isset($_SESSION['uploads']['list-data-form'])) {
 			$sql = "delete from s_Files where Name = ''";
@@ -571,7 +571,7 @@ class Lists
 				}
 			}
 		}
-		if (count($props) != 0) {
+		if (count($props) !== 0) {
 			$str = "";
 			foreach ($props as $k => $v) {
 				$ex = explode("_", $k);
@@ -580,7 +580,7 @@ class Lists
 				$v = str_replace("\r\n", ":::", $v);
 				$str .= self::addListProperty($list, $id, $propField, $propId, $v);
 			}
-			if ($str != "") {
+			if ($str !== "") {
 				$str .= "update s_PropertiesValues set IsHidden=IsHiddenCandidate;\n";
 				Connect::$db->exec($str);
 			}
@@ -803,7 +803,7 @@ class Lists
 
 	public static function addListField($id = 0, $type = "text")
 	{
-		if ((int) $id == 0) {
+		if ((int) $id === 0) {
 			return "";
 		}
 		$sql = "select Id,TableName,TableField,FType,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
@@ -825,7 +825,7 @@ class Lists
 	 */
 	public static function updateListFieldApi($id): void
 	{
-		if ((int) $id == 0) {
+		if ((int) $id === 0) {
 			return;
 		}
 		$sql = "select Id,TableName,TableField,FType,ApiFieldType,ApiMapping from s_ConfigFields where Id=?";
@@ -901,11 +901,9 @@ class Lists
 
 		$str = "";
 		if (isset($schemeReal[0]['Col'])) {
-			$str = "ALTER TABLE $tableName CHANGE $field $field $typeReal $alterDefault";
-		} else {
-			$str = "ALTER TABLE $tableName ADD $field $typeReal $alterDefault";
+			return "ALTER TABLE $tableName CHANGE $field $field $typeReal $alterDefault";
 		}
-		return $str;
+		return "ALTER TABLE $tableName ADD $field $typeReal $alterDefault";
 	}
 	public static function removeListField($list = "", $field = ""): void
 	{
@@ -955,7 +953,7 @@ class Lists
 		}
 		$id = (int) $id;
 		$list = htmlspecialchars((string) $list, ENT_QUOTES);
-		if ($list == "" || (int) $id == 0) {
+		if ($list === "" || (int) $id === 0) {
 			return array('status' => '0', 'output' => "");
 		}
 		$sql = "select * from $list where Id=?";
@@ -1041,7 +1039,7 @@ class Lists
 	public static function removeListItem($list = "", $id = 0, $path = "lists"): array
 	{
 
-		if ($list == "" || (int) $id == 0) {
+		if ($list == "" || (int) $id === 0) {
 			return array('status' => '0', 'html' => "");
 		}
 		// $list подставляется в SQL как имя таблицы — белый список закрывает SQL-инъекции

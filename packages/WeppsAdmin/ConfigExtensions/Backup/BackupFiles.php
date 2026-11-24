@@ -49,7 +49,7 @@ class BackupFiles {
 		$this->removeBackup();
 		$str = "";
 		foreach ($files as $file) {
-			if (substr($file, 0,1)=='/' && !strstr($file, "Backup/files")) {
+			if (substr($file, 0,1) === '/' && !strstr($file, "Backup/files")) {
 				$str .= " \"{$this->root}{$file}\"";
 			}
 		}

@@ -157,7 +157,7 @@ class UpdatesMethods extends Updates
 		$fileDst = __DIR__ . "/files/updates/$tag/$file";
 		$fileSrc = @Connect::$projectServices['wepps']['updates'] . "/packages/PPSAdmin/Releases/files/$tag/$file";
 
-		if ($test == 0) {
+		if ($test === 0) {
 			$curl = new Curl();
 			$curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
 			$curl->setOpt(CURLOPT_SSL_VERIFYPEER, 0);
@@ -187,7 +187,7 @@ class UpdatesMethods extends Updates
 		/*
 		 * При отладке скрыть
 		 */
-		if ($test == 0) {
+		if ($test === 0) {
 			$zip->extractTo($zipPath);
 			$zip->close();
 		}
@@ -225,7 +225,7 @@ class UpdatesMethods extends Updates
 		$this->cli->warning("Type 'yes' to continue: ");
 		$handle = fopen("php://stdin", "r");
 		$line = fgets($handle);
-		if (trim($line) != 'yes') {
+		if (trim($line) !== 'yes') {
 			return [
 				'output' => "Aborting!"
 			];
@@ -348,7 +348,7 @@ class UpdatesMethods extends Updates
 			$md5sum = $this->getFilesum($filename);
 			$status = ($md5sum == $value['md5']) ? 1 : 2;
 
-			if ($status == 1) {
+			if ($status === 1) {
 				continue;
 			}
 
@@ -421,20 +421,20 @@ class UpdatesMethods extends Updates
 			'add' => [],
 			'update' => []
 		];
-		if ($disallowed) {
+		if ($disallowed !== []) {
 			$this->cli->br();
 			$this->cli->warning("Disallowed db-tables:\n" . implode("\n", $disallowed));
 		}
-		if ($new) {
+		if ($new !== []) {
 			$this->cli->br();
 			$this->cli->success("New db-tables:\n" . implode("\n", $new));
 		}
-		if ($allowed) {
+		if ($allowed !== []) {
 			$this->cli->br();
 			$this->cli->success("Allowed db-tables:\n" . implode("\n", $allowed));
 		}
 		$str = '';
-		if (!empty($new)) {
+		if ($new !== []) {
 			foreach ($new as $value) {
 				$filename = $this->path['dirname'] . '/updates/packages/WeppsAdmin/Updates/files/db/' . $value . '-table.sql';
 				if (!file_exists($filename)) {
@@ -466,7 +466,7 @@ class UpdatesMethods extends Updates
 			 * Новый столбец
 			 */
 			$arr = array_diff($columnsRelease, $columnsCurrent);
-			if (!empty($arr)) {
+			if ($arr !== []) {
 				$filedata = '';
 				foreach ($arr as $v) {
 					$col = $value['columns'][$v];
@@ -493,7 +493,7 @@ class UpdatesMethods extends Updates
 			 * Обновить
 			 */
 			$arr = array_intersect($columnsRelease, $columnsCurrent);
-			if (!empty($arr)) {
+			if ($arr !== []) {
 				foreach ($arr as $v) {
 					$col = $value['columns'][$v];
 					foreach ($res as $v2) {
@@ -517,7 +517,7 @@ class UpdatesMethods extends Updates
 			 * Возможно при определенном флаге можно
 			 */
 			$arr = array_diff($columnsCurrent, $columnsRelease);
-			if (!empty($arr)) {
+			if ($arr !== []) {
 				foreach ($arr as $v) {
 					$columns['delete'][] = "{$value['table']}.{$v}";
 					#$str .= "alter table {$value['table']} drop {$v};\n";
@@ -558,7 +558,7 @@ class UpdatesMethods extends Updates
 	 */
 	private function command(string $cmd): array
 	{
-		if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
+		if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
 			$cmd = str_replace("\\", "/", $cmd);
 		}
 		return $this->cli->cmd($cmd, true);

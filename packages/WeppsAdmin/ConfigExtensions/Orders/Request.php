@@ -18,7 +18,7 @@
 
 namespace WeppsAdmin\ConfigExtensions\Orders;
 
-require_once '../../../../configloader.php';
+require_once __DIR__ . '/../../../../configloader.php';
 
 use WeppsCore\Request;
 use WeppsCore\Utils;
@@ -204,7 +204,7 @@ class RequestOrders extends Request {
 	private function getOrder($id): array {
 		$profileActions = new ProfileActions(false);
 		$order = $profileActions->getFullOrder($id, 0); // 0 = без проверки userId (админпанель видит все заказы)
-		if (empty($order)) {
+		if ($order === []) {
 			Exception::error(404);
 		}
 		$sql = "select ts.Id,ts.Name from OrdersStatuses ts group by ts.Id order by ts.Priority";

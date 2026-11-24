@@ -338,7 +338,7 @@ class RestV1M2M extends RestV1
 	{
 		$records = $this->normalizeInput();
 		$this->getUtils('s_Navigator')->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
-			if (empty($results)) {
+			if ($results === []) {
 				return null;
 			}
 			$ids = [];
@@ -347,7 +347,7 @@ class RestV1M2M extends RestV1
 					$ids[] = (int) $value['data']['id'];
 				}
 			}
-			if (empty($ids)) {
+			if ($ids === []) {
 				return null;
 			}
 			$sql = "UPDATE {$tableName} SET ParentId=?, Extension=? where Id in (" . Connect::$instance->in($ids) . ")";
@@ -443,7 +443,7 @@ class RestV1M2M extends RestV1
 
 		// После создания новых статусов, обновляем их Priority по возрастанию (5, 10, 15, ...)
 		$this->getUtils('s_Vars')->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
-			if (empty($results)) {
+			if ($results === []) {
 				return null;
 			}
 			$ids = [];
@@ -452,7 +452,7 @@ class RestV1M2M extends RestV1
 					$ids[] = (int) $value['data']['id'];
 				}
 			}
-			if (empty($ids)) {
+			if ($ids === []) {
 				return null;
 			}
 			$sql = "SELECT MAX(Priority) Co FROM {$tableName} WHERE VarsGroup = 'ПродукцияСтатусы'";
@@ -647,11 +647,11 @@ class RestV1M2M extends RestV1
 		$utils->setOrderBy('Priority asc');
 		$utils->setFields('Id, GuidSync, Name, Alias, TableName, TableNameId, TableNameField, PValue');
 
-		if (!empty($params)) {
+		if ($params !== []) {
 			$utils->setParams($params);
 		}
 
-		return $utils->fetch($this->get, $conditions ? implode(' AND ', $conditions) : null);
+		return $utils->fetch($this->get, $conditions !== [] ? implode(' AND ', $conditions) : null);
 	}
 
 	/**
@@ -752,7 +752,7 @@ class RestV1M2M extends RestV1
 		$utils = $this->getUtils('ProductsVariations');
 		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) use ($goodsIds) {
 			$maxByGoods = [];
-			if (!empty($goodsIds)) {
+			if ($goodsIds !== []) {
 				$sql = "SELECT ProductsId, MAX(Priority) Co FROM {$tableName} WHERE IsHidden = 0 AND ProductsId IN (" . Connect::$instance->in($goodsIds) . ") GROUP BY ProductsId";
 				$rows = Connect::$instance->fetch($sql, $goodsIds);
 				foreach ($rows as $row) {
@@ -769,7 +769,7 @@ class RestV1M2M extends RestV1
 			}
 			return $records;
 		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) use ($goodsIds) {
-			if (empty($results)) {
+			if ($results === []) {
 				return $results;
 			}
 			$processing = new ProcessingProducts();
@@ -808,7 +808,7 @@ class RestV1M2M extends RestV1
 			}
 			return $records;
 		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
-			if (empty($results)) {
+			if ($results === []) {
 				return $results;
 			}
 
@@ -845,7 +845,7 @@ class RestV1M2M extends RestV1
 		$goodsIds = [];
 		$utils = $this->getUtils('ProductsVariations');
 		$utils->setBefore(function (array $ids, string $tableName) use (&$goodsIds) {
-			if (empty($ids)) {
+			if ($ids === []) {
 				return $ids;
 			}
 			$sql = "SELECT ProductsId FROM {$tableName} WHERE Id IN (" . Connect::$instance->in($ids) . ")";
@@ -856,10 +856,10 @@ class RestV1M2M extends RestV1
 			}
 			return $ids;
 		})->setAfter(function (array $results, string $tableName) use (&$goodsIds) {
-			if (empty($results)) {
+			if ($results === []) {
 				return $results;
 			}
-			if (!empty($goodsIds)) {
+			if ($goodsIds !== []) {
 				$processing = new ProcessingProducts();
 				$processing->rebuildProductsVariations(array_unique($goodsIds));
 			}
@@ -913,7 +913,7 @@ class RestV1M2M extends RestV1
 		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
 			$pagination = $this->data['pagination'] ?? null;
 			if (isset($pagination['count']) && isset($pagination['page'])) {
-				if ((int) $pagination['page'] == 1) {
+				if ((int) $pagination['page'] === 1) {
 					$sql = "UPDATE {$tableName} SET Field4 = 0 WHERE 1";
 					Connect::$instance->query($sql);
 				}
@@ -921,7 +921,7 @@ class RestV1M2M extends RestV1
 			return $records;
 		});
 		$utils->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
-			if (empty($results)) {
+			if ($results === []) {
 				return $results;
 			}
 			foreach ($results as &$value) {
@@ -975,11 +975,11 @@ class RestV1M2M extends RestV1
 			$params[] = $this->get['listField'];
 		}
 
-		if (!empty($params)) {
+		if ($params !== []) {
 			$utils->setParams($params);
 		}
 
-		return $utils->fetch($this->get, $conditions ? implode(' AND ', $conditions) : null);
+		return $utils->fetch($this->get, $conditions !== [] ? implode(' AND ', $conditions) : null);
 	}
 
 	/**
@@ -1017,7 +1017,7 @@ class RestV1M2M extends RestV1
 				}
 			}
 
-			if (!empty($groups)) {
+			if ($groups !== []) {
 				$where = implode(' OR ', array_fill(0, count($groups), 'TableName = ? AND TableNameField = ? AND TableNameId = ?'));
 				$params = [];
 				foreach ($groups as $group) {
@@ -1138,7 +1138,7 @@ class RestV1M2M extends RestV1
 		$utils = $this->getUtils('s_Files');
 		$fileUrls = [];
 		$utils->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) use (&$fileUrls) {
-			if (empty($ids)) {
+			if ($ids === []) {
 				return $ids;
 			}
 
@@ -1259,11 +1259,11 @@ class RestV1M2M extends RestV1
 		}
 
 		$results = $errors;
-		if (!empty($valid)) {
+		if ($valid !== []) {
 			$results += $this->getUtils($tableName)->addBatch($valid);
 		}
 
-		if (!empty($results)) {
+		if ($results !== []) {
 			ksort($results);
 		}
 
@@ -1309,13 +1309,13 @@ class RestV1M2M extends RestV1
 		}
 
 		// Проверяем существование всех ID перед обновлением
-		if (!empty($valid)) {
+		if ($valid !== []) {
 			$ids = array_filter(
 				array_column($valid, 'id'),
 				fn($v) => (int) $v > 0
 			);
 
-			if (!empty($ids)) {
+			if ($ids !== []) {
 				$placeholders = Connect::$instance->in($ids);
 				$existing = Connect::$instance->fetch(
 					"SELECT Id FROM $tableName WHERE Id IN ($placeholders)",
@@ -1335,11 +1335,11 @@ class RestV1M2M extends RestV1
 		}
 
 		$results = $errors;
-		if (!empty($valid)) {
+		if ($valid !== []) {
 			$results += $this->getUtils($tableName)->setBatch($valid);
 		}
 
-		if (!empty($results)) {
+		if ($results !== []) {
 			ksort($results);
 		}
 
@@ -1395,7 +1395,7 @@ class RestV1M2M extends RestV1
 		// Получаем правила из БД - REST конфиг уже был применен в Rest::executeHandler()
 		$rules = $this->getUtils($tableName)->getFieldRules();
 
-		if (empty($rules)) {
+		if ($rules === []) {
 			return;
 		}
 
@@ -1432,7 +1432,7 @@ class RestV1M2M extends RestV1
 			$raw = $raw['data'];
 		}
 
-		if (empty($raw)) {
+		if ($raw === []) {
 			return [];
 		}
 		$records = (isset($raw[0]) && (is_array($raw[0]) || is_int($raw[0]))) ? $raw : [$raw];

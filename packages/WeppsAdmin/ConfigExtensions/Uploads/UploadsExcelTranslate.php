@@ -61,7 +61,7 @@ class UploadsExcelTranslate {
 					$str .= "update {$this->tableName} set {$arr['update']} where Name='{$row1['Name']}';\n";
 				}
 			}
-			if ($str != "") {
+			if ($str !== "") {
 				Connect::$db->exec($str);
 				return [
 						'status'=>0,
@@ -72,9 +72,8 @@ class UploadsExcelTranslate {
 					'status'=>3,
 					'message'=>'Нет обновлений'
 			];
-		} else {
-			return $this->validator;
 		}
+        return $this->validator;
 		
 	}
 	

@@ -269,12 +269,11 @@ class Rest
 				'message' => 'Endpoint not found',
 				'data' => null,
 			];
-		} else {
-			$handlerObject = $handler['data'];
-			$config = $handler['config'];
-			$this->customResponse = $config['custom_response'] ?? false;
-			return $this->executeHandler($handlerObject, $config);
 		}
+        $handlerObject = $handler['data'];
+        $config = $handler['config'];
+        $this->customResponse = $config['custom_response'] ?? false;
+        return $this->executeHandler($handlerObject, $config);
 	}
 
 	/**
@@ -450,14 +449,15 @@ class Rest
 		if ($bearer['status'] != 200) {
 			throw new \Exception('Authentication failed: ' . $bearer['message'], (int) $bearer['status']);
 		}
+        if ($bearer['payload']['typ'] != 'auth') {
+            throw new \Exception('Invalid token payload: auth expected', 401);
+        }
 
-		if ($bearer['payload']['typ'] != 'auth') {
-			throw new \Exception('Invalid token payload: auth expected', 401);
-		} elseif (empty($bearer['payload']['id'])) {
-			throw new \Exception('Invalid token payload: id expected', 401);
-		}
+		if (empty($bearer['payload']['id'])) {
+            throw new \Exception('Invalid token payload: id expected', 401);
+        }
 
-		if ($this->version == 'wepps') {
+		if ($this->version === 'wepps') {
 			$sql = "SELECT * from s_Users where Id=? and IsHidden=0 and ShowAdmin=1";
 			$res = Connect::$instance->fetch($sql, [$bearer['payload']['id']]);
 			if (empty($res[0]['Id'])) {
@@ -495,7 +495,7 @@ class Rest
 		$class = $config['class'];
 		if ($class === RestCli::class) {
 			$instance = new $class($this->settings);
-		} elseif ($class === RestAd::class || $class === RestV1::class || $class === RestV1APP::class || $class === RestV1M2M::class) {
+		} elseif (in_array($class, [RestAd::class, RestV1::class, RestV1APP::class, RestV1M2M::class], true)) {
 			$instance = new $class($this);
 		} else {
 			$instance = new $class($this->get, $this->post, $this->data, $this->headers);
@@ -530,16 +530,16 @@ class Rest
 
 			// Если тип без [], добавляем [] автоматически для массива
 			if (!str_ends_with($type, '[]')) {
-				$type = $type . '[]';
+				$type .= '[]';
 			}
 
 			// Проверка required
-			if ($rule['required'] && (empty($data) && $data !== '0')) {
+			if ($rule['required'] && ($data === [] && $data !== '0')) {
 				throw new \Exception("Array data is required");
 			}
 
 			// Валидация типа
-			if (!empty($data) || !$rule['required']) {
+			if ($data !== [] || !$rule['required']) {
 				if (!$this->validateType($data, $type)) {
 					throw new \Exception("Array data must be {$rule['type']}");
 				}
@@ -1013,7 +1013,7 @@ class Rest
 		// Логирование запроса
 		$this->logRequest($responseData);
 
-		if ($print == true) {
+		if ($print === true) {
 			header('Content-Type: application/json');
 			// JSON-тело с явным content-type: браузер его не рендерит как HTML
 			/** @psalm-suppress TaintedInput */
@@ -1036,7 +1036,7 @@ class Rest
 	 */
 	protected function logRequest($responseData, $logType = 'log'): bool
 	{
-		if ($this->log == 0) {
+		if ($this->log === 0) {
 			return false;
 		}
 
@@ -1058,9 +1058,8 @@ class Rest
 
 		if ($logType === 'task') {
 			return $this->saveTaskLog($logData);
-		} else {
-			return $this->saveLog($logData);
 		}
+        return $this->saveLog($logData);
 	}
 
 	/**
@@ -1119,7 +1118,7 @@ class Rest
 		}
 		if (is_array($data)) {
 			// Для поля 'data' оборачиваем ассоциативные массивы в массив
-			if ($forDataField && !empty($data) && !is_numeric(key($data))) {
+			if ($forDataField && $data !== [] && !is_numeric(key($data))) {
 				return [$data];
 			}
 			// Для кастомных ответов или индексированных массивов возвращаем как есть
@@ -1244,7 +1243,7 @@ if (!function_exists('apache_request_headers')) {
 				$arh_key = preg_replace($rx_http, '', $key);
 				$rx_matches = [];
 				$rx_matches = explode('_', $arh_key);
-				if (count($rx_matches) > 0 and strlen($arh_key) > 2) {
+				if (count($rx_matches) > 0 && strlen($arh_key) > 2) {
 					foreach ($rx_matches as $ak_key => $ak_val)
 						$rx_matches[$ak_key] = ucfirst($ak_val);
 					$arh_key = implode('-', $rx_matches);

@@ -91,7 +91,7 @@ class Telegram
             'parse_mode' => $parseMode
         ];
         
-        if (!empty($replyMarkup)) {
+        if ($replyMarkup !== []) {
             $data['reply_markup'] = json_encode($replyMarkup);
         }
 

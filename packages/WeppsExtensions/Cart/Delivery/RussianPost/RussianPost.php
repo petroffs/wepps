@@ -51,11 +51,11 @@ class RussianPost extends Delivery
                     'period' => '0'
                 ];
                 return $output;
-            } else {
-                /*
-                 * ? Записать PostalCode
-                 */
             }
+            /*
+             * ? Записать PostalCode
+             */
+
         }
         $from = Connect::$projectServices['russianpost']['office']['sender'];
         $to = $this->settings['PostalCode'];

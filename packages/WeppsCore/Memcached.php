@@ -118,7 +118,8 @@ class Memcached
 	{
 		if (!empty($this->memcache) && !empty($this->memcache->get($key))) {
 			return $this->memcache->get($key);
-		} else if (!empty($this->memcached) && !empty($this->memcached->get($key))) {
+		}
+        if (!empty($this->memcached) && !empty($this->memcached->get($key))) {
 			return $this->memcached->get($key);
 		}
 	}

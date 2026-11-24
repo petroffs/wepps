@@ -147,7 +147,7 @@ class ProcessingProducts
 	public function rebuildProductsVariations(array $productIds): array
 	{
 		$productIds = array_values(array_filter(array_map('intval', $productIds)));
-		if (empty($productIds)) {
+		if ($productIds === []) {
 			return [];
 		}
 
@@ -169,7 +169,7 @@ class ProcessingProducts
 		// Сбросить IsHiddenCandidate=0 для тех записей, которые остаются видимыми
 		$visibleIds = array_map(static fn($row) => (int) $row['Id'], $rows);
 
-		if (!empty($visibleIds)) {
+		if ($visibleIds !== []) {
 			$visibleIn = Connect::$instance->in($visibleIds);
 			Connect::$instance->query("update ProductsVariations set IsHiddenCandidate=0 where Id in ($visibleIn)", $visibleIds);
 			Connect::$instance->query("update ProductsVariations set IsHidden = IsHiddenCandidate where Id in ($visibleIn)", $visibleIds);
@@ -202,7 +202,7 @@ class ProcessingProducts
 			Connect::$instance->query("update ProductsVariations set IsHidden=1 where ProductsId=?", [$productId]);
 		}
 
-		if (empty($variations)) {
+		if ($variations === []) {
 			return [];
 		}
 
@@ -223,7 +223,7 @@ class ProcessingProducts
 		$toInsert = array_diff($aliases, $existing);
 		$insertedIds = [];
 
-		if (!empty($toInsert)) {
+		if ($toInsert !== []) {
 			$stmt = Connect::$db->prepare("insert ignore into ProductsVariations (Alias,Guid) values (?,uuid())");
 			foreach ($toInsert as $alias) {
 				$stmt->execute([$alias]);
@@ -296,13 +296,13 @@ class ProcessingProducts
 	 */
 	public function updateVariations(array $records): array
 	{
-		if (empty($records)) {
+		if ($records === []) {
 			return [];
 		}
 
 		// Получить IDs из входных данных
 		$ids = array_filter(array_column($records, 'id'));
-		if (empty($ids)) {
+		if ($ids === []) {
 			return [];
 		}
 
@@ -388,7 +388,7 @@ class ProcessingProducts
 
 		// Проверим существующие новые alias один раз
 		$existingAliases = [];
-		if (!empty($newAliases)) {
+		if ($newAliases !== []) {
 			$newAliasesForCheck = array_keys($newAliases);
 			$in = Connect::$instance->in($newAliasesForCheck);
 			$res = Connect::$instance->fetch(

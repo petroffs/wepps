@@ -58,7 +58,7 @@ class Orders extends Request
 				if (!empty($this->get['status'])) {
 					$statusesActive = (int) $this->get['status'];
 				}
-				$statusesActive = ($statusesActive == 0) ? 1 : $statusesActive;
+				$statusesActive = ($statusesActive === 0) ? 1 : $statusesActive;
 
 				/*
 				 * Статусы
@@ -81,7 +81,7 @@ class Orders extends Request
 				 */
 				$obj = new Data("Orders");
 				$condition = "t.OStatus!=-1 * ?";
-				if ($statusesActive != -1) {
+				if ($statusesActive !== -1) {
 					$condition = "t.OStatus=?";
 				}
 				$obj->setParams([$statusesActive]);

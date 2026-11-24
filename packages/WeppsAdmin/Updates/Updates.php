@@ -30,7 +30,7 @@ class Updates
 	{
 		$this->settings = $settings;
 		$this->cli = new Cli();
-		if ($this->parent == 0) {
+		if ($this->parent === 0) {
 			return;
 		}
 		$output = "";

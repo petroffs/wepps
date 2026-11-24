@@ -18,7 +18,7 @@
 
 namespace WeppsExtensions\Cart;
 
-require_once '../../../configloader.php';
+require_once __DIR__ . '/../../../configloader.php';
 
 use WeppsCore\Smarty;
 use WeppsCore\Request;
@@ -74,7 +74,7 @@ class RequestCart extends Request
 			case 'cities':
 				$deliveryUtils = new DeliveryUtils();
 				$res = $deliveryUtils->getCitiesByQuery($this->get['text'], (int) $this->get['page'] ?? 1);
-				if (empty($res)) {
+				if ($res === []) {
 					echo json_encode([
 						'hasMore' => false
 					]);
