@@ -92,9 +92,6 @@ class RussianPost extends Delivery
     public function getOperations(): array
     {
         $headers = $this->cartUtils->getHeaders();
-        $jdata = json_decode($this->settings['JSettings'], true);
-        $data = [];
-        $allowBtn = false;
         $cart = $this->cartUtils->getCart();
         $citiesById = $this->deliveryUtils->getCitiesById($cart['citiesId']);
         $headers->js("/ext/Cart/Delivery/Address/Address.{$headers::$rand}.js");
@@ -119,7 +116,6 @@ class RussianPost extends Delivery
     #[\Override]
     public function getErrors(array $get): array
 	{
-		$cartSummary = $this->cartUtils->getCartSummary();
 		$errors = [];
 		$errors['operations-city'] = Validator::isNotEmpty($get['operations-city'] ?? '', "Не заполнено");
 		$errors['operations-address-short'] = Validator::isNotEmpty($get['operations-address-short'] ?? '', "Не заполнено");

@@ -24,7 +24,6 @@ use WeppsCore\Data;
 class BotFeeds extends Bot {
 	public $parent = 0;
 	private $data;
-	private $date;
 	public function __construct() {
 		parent::__construct();
 	}

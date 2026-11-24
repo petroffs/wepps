@@ -45,7 +45,6 @@ abstract class Request
 	 * Подключение шаблона, который передается в общий шаблон self::$tpl
 	 * @var array
 	 */
-	private $fetch = [];
 
 	/**
 	 * Закрытие соединения с БД
@@ -147,7 +146,8 @@ abstract class Request
 	 * Вывод сообщений об ошибках и успехе.
 	 *
 	 * @param string $message Сообщение об успехе.
-	 * @param bool $print Флаг для вывода сообщения.
+	 * @param bool $printErrors Выводить ли ошибки.
+	 * @param bool $printSuccess Выводить ли успешные сообщения.
 	 * @return array Массив с HTML-кодом сообщения и количеством ошибок.
 	 */
 	public function outer(string $message = '', bool $printErrors = true, bool $printSuccess = true): array

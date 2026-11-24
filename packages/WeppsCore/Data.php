@@ -365,7 +365,6 @@ class Data
 			$orderBy = "t.Priority";
 			$params = [$this->tableName];
 			$fieldsCondition = '';
-			$cacheKey = null;
 
 			if (!empty($fields)) {
 				// Валидация имен полей - только буквы, цифры и подчеркивания

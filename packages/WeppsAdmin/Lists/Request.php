@@ -364,7 +364,7 @@ class RequestLists extends Request
 				$i = 1;
 				$j = 1;
 				$scheme = $obj->getScheme();
-				foreach ($scheme as $key => $value) {
+				foreach ($scheme as $value) {
 					$str = trim($value[0]['Name']);
 					$spreadsheet->setActiveSheetIndex(0)
 						->setCellValueExplicit([$j, $i], $str, DataType::TYPE_STRING)
@@ -374,7 +374,7 @@ class RequestLists extends Request
 
 				$i++;
 				$j = 1;
-				foreach ($scheme as $key => $value) {
+				foreach (array_keys($scheme) as $key) {
 					$str = trim($key);
 					$spreadsheet->setActiveSheetIndex(0)
 						->setCellValueExplicit([$j, $i], $str, DataType::TYPE_STRING);
@@ -382,9 +382,9 @@ class RequestLists extends Request
 				}
 
 				$i++;
-				foreach ($tableData as $k => $v) {
+				foreach ($tableData as $v) {
 					$j = 1;
-					foreach ($scheme as $key => $value) {
+					foreach (array_keys($scheme) as $key) {
 						$str = trim($v[$key]);
 						$spreadsheet->setActiveSheetIndex(0)
 							->setCellValueExplicit([$j, $i], $str, DataType::TYPE_STRING);

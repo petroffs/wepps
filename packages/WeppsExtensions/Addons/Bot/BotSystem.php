@@ -36,7 +36,6 @@ class BotSystem extends Bot {
 		$sql = "select * from s_Tasks where IsHidden=0 and InProgress in (1,0) and IsProcessed=0 and COALESCE(TRequest,'') != 'post' and Url not LIKE '/rest/m2m%' order by Id,InProgress desc limit 50";
 		$res = Connect::$instance->fetch($sql);
 		if (!empty($res) && $res[0]['InProgress'] != 1) {
-			$ids = array_column($res,'Id');
 			new Memcached('no');
 			$tasks = new Tasks();
 			$cartUtils = new CartUtils();

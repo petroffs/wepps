@@ -288,17 +288,11 @@ class CartUtils
 		}
 		$sql = "";
 		#Utils::debug($this->cart['items'],1);
-		$ids = [];
-		$idv = [];
 		foreach ($this->cart['items'] as $value) {
 			$this->summary['quantity'] += $value['qu'];
 			$ex = explode('-', $value['id']);
 			$sql .= "\n(select '{$ex[0]}'*1 `id`,'" . ($ex[1] ?? 0) . "'*1 `idv`,'{$value['qu']}' `quantity`,'{$value['ac']}' `active`) union";
-			$ids[] = $ex[0];
-			$idv[] = $ex[1] ?? 0;
 		}
-		$ids = implode(',', array_unique($ids));
-		$idv = implode(',', array_unique($idv));
 		$sql = "(select * from (\n" . trim($sql, " union\n") . ') y)';
 
 		$sql = "select x.id,x.idv,if(pv.Field1!='',concat(p.Name,' / ',pv.Field1,if(pv.Field2!='',concat(', ',pv.Field2),'')),p.Name) name,
@@ -734,7 +728,6 @@ class CartUtils
 		if (!is_array($order['W_Positions'])) {
 			$order['W_Positions'] = [];
 		}
-		$sql = '';
 		$sum = 0;
 		$order['W_Positions'] = $this->getCartPositionsRecounter($order['W_Positions'], $order['ODeliveryDiscount'], $order['OPaymentTariff'], $order['OPaymentDiscount']);
 		

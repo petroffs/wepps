@@ -292,7 +292,7 @@ class RestV1M2MUtils
 		}
 
 		// Before callback: вызывается на каждой странице
-		$beforeCallback = function (array $items, string $tableName, self $utils) use ($currentPage): array {
+		$beforeCallback = function (array $items, string $tableName) use ($currentPage): array {
 			// На первой странице: маркировка всех записей как кандидатов на скрытие
 			if ($currentPage === 1) {
 				Connect::$instance->query(
@@ -312,7 +312,7 @@ class RestV1M2MUtils
 		};
 
 		// After callback: вызывается на каждой странице
-		$afterCallback = function (array $results, string $tableName, self $utils) use ($currentPage, $totalPages): void {
+		$afterCallback = function (array $results, string $tableName) use ($currentPage, $totalPages): void {
 			// Только на последней странице: финализация скрытия
 			if ($currentPage !== $totalPages) {
 				return;
@@ -1258,7 +1258,7 @@ class RestV1M2MUtils
 		// Преобразуем в формат W_Attributes
 		$attributes = [];
 
-		foreach ($propertiesData as $propId => $rows) {
+		foreach ($propertiesData as $rows) {
 			if (!is_array($rows) || $rows === []) {
 				continue;
 			}
@@ -1294,7 +1294,6 @@ class RestV1M2MUtils
 	 */
 	public function updateSearchIndex(array $result): void
 	{
-		$items = [];
 		if (isset($result['status'], $result['data'])) {
 			if ($result['status'] === 207 && is_array($result['data'])) {
 				$items = $result['data'];

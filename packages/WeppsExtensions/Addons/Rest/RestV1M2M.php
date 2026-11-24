@@ -337,7 +337,7 @@ class RestV1M2M extends RestV1
 	public function postGoodsNavigator(): array
 	{
 		$records = $this->normalizeInput();
-		$this->getUtils('s_Navigator')->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+		$this->getUtils('s_Navigator')->setAfter(function (array $results, string $tableName) {
 			if ($results === []) {
 				return null;
 			}
@@ -442,7 +442,7 @@ class RestV1M2M extends RestV1
 		$records = $this->normalizeInput();
 
 		// После создания новых статусов, обновляем их Priority по возрастанию (5, 10, 15, ...)
-		$this->getUtils('s_Vars')->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+		$this->getUtils('s_Vars')->setAfter(function (array $results, string $tableName) {
 			if ($results === []) {
 				return null;
 			}
@@ -560,14 +560,14 @@ class RestV1M2M extends RestV1
 	public function postGoodsAttributes(): array
 	{
 		$records = $this->normalizeInput();
-		$this->getUtils('s_Properties')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+		$this->getUtils('s_Properties')->setBefore(function (array $records) {
 			foreach ($records as &$value) {
 				$value['type'] = 'text-multi';
 				$value['group'] = $value['group'] ?? 1;
 			}
 			//Utils::debug($records, 1);
 			return $records;
-		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+		})->setAfter(function (array $results, string $tableName) {
 			$sql = "SELECT MAX(Priority) Co FROM {$tableName} WHERE PGroup = 1";
 			$max = Connect::$instance->fetch($sql)[0]['Co'] ?? 0;
 			$max = ((int) round($max / 5)) * 5;
@@ -664,7 +664,7 @@ class RestV1M2M extends RestV1
 	public function postGoodsAttributesValues(): array
 	{
 		$records = $this->normalizeInput();
-		$this->getUtils('s_PropertiesValues')->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+		$this->getUtils('s_PropertiesValues')->setBefore(function (array $records) {
 			foreach ($records as &$value) {
 				$value['w_guid'] = Lists::getPropertiesValuesGuid((string) $value['list'], (string) $value['listField'], (string) $value['listId'], (string) $value['attributesId'], (string) $value['value']);
 			}
@@ -688,7 +688,7 @@ class RestV1M2M extends RestV1
 		if ($callbackBefore || $callbackAfter) {
 			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
 		}
-		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+		$utils->setBefore(function (array $records) {
 			foreach ($records as &$value) {
 				$value['w_guid'] = Lists::getPropertiesValuesGuid((string) $value['list'], (string) $value['listField'], (string) $value['listId'], (string) $value['attributesId'], (string) $value['value']);
 			}
@@ -750,7 +750,7 @@ class RestV1M2M extends RestV1
 		$records = $this->normalizeInput();
 		$goodsIds = array_unique(array_column($records, 'goodsId'));
 		$utils = $this->getUtils('ProductsVariations');
-		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) use ($goodsIds) {
+		$utils->setBefore(function (array $records, string $tableName) use ($goodsIds) {
 			$maxByGoods = [];
 			if ($goodsIds !== []) {
 				$sql = "SELECT ProductsId, MAX(Priority) Co FROM {$tableName} WHERE IsHidden = 0 AND ProductsId IN (" . Connect::$instance->in($goodsIds) . ") GROUP BY ProductsId";
@@ -768,7 +768,7 @@ class RestV1M2M extends RestV1
 				$value['priority'] = $maxByGoods[$goodsId];
 			}
 			return $records;
-		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) use ($goodsIds) {
+		})->setAfter(function (array $results) use ($goodsIds) {
 			if ($results === []) {
 				return $results;
 			}
@@ -799,7 +799,7 @@ class RestV1M2M extends RestV1
 		if ($callbackBefore || $callbackAfter) {
 			$utils->setBefore($callbackBefore)->setAfter($callbackAfter);
 		}
-		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+		$utils->setBefore(function (array $records) {
 			$processing = new ProcessingProducts();
 			foreach ($records as &$value) {
 				$goodsId = (int) ($value['goodsId'] ?? 0);
@@ -807,7 +807,7 @@ class RestV1M2M extends RestV1
 				$value['alias'] = $processing->getProductsVariationsAlias($goodsId, [$value['color'] ?? '', $value['size'] ?? '', $value['sku'] ?? '']);
 			}
 			return $records;
-		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+		})->setAfter(function (array $results, string $tableName) {
 			if ($results === []) {
 				return $results;
 			}
@@ -855,7 +855,7 @@ class RestV1M2M extends RestV1
 				$goodsIds[$goodsId] = $goodsId;
 			}
 			return $ids;
-		})->setAfter(function (array $results, string $tableName) use (&$goodsIds) {
+		})->setAfter(function (array $results) use (&$goodsIds) {
 			if ($results === []) {
 				return $results;
 			}
@@ -910,7 +910,7 @@ class RestV1M2M extends RestV1
 		$utils = $this->getUtils('ProductsVariations');
 		// Если передана пагинация, то первая страница запускает обнуление всех остатков.
 		// Это нужно для полной перезагрузки остатков товара при пакетной синхронизации.
-		$utils->setBefore(function (array $records, string $tableName, RestV1M2MUtils $utils) {
+		$utils->setBefore(function (array $records, string $tableName) {
 			$pagination = $this->data['pagination'] ?? null;
 			if (isset($pagination['count']) && isset($pagination['page'])) {
 				if ((int) $pagination['page'] === 1) {
@@ -920,7 +920,7 @@ class RestV1M2M extends RestV1
 			}
 			return $records;
 		});
-		$utils->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) {
+		$utils->setAfter(function (array $results) {
 			if ($results === []) {
 				return $results;
 			}
@@ -1090,7 +1090,7 @@ class RestV1M2M extends RestV1
 				//unset($record['base64']);
 			}
 			return $records;
-		})->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) use (&$uploadContext) {
+		})->setAfter(function (array $results) use (&$uploadContext) {
 			foreach ($results as $index => &$result) {
 				$context = $uploadContext[$index] ?? null;
 				if (empty($context['upload_temp'])) {
@@ -1137,7 +1137,7 @@ class RestV1M2M extends RestV1
 		$ids = $this->normalizeIds($this->normalizeInput());
 		$utils = $this->getUtils('s_Files');
 		$fileUrls = [];
-		$utils->setBefore(function (array $ids, string $tableName, RestV1M2MUtils $utils) use (&$fileUrls) {
+		$utils->setBefore(function (array $ids, string $tableName) use (&$fileUrls) {
 			if ($ids === []) {
 				return $ids;
 			}
@@ -1155,7 +1155,7 @@ class RestV1M2M extends RestV1
 			}
 			return $ids;
 		});
-		$utils->setAfter(function (array $results, string $tableName, RestV1M2MUtils $utils) use (&$fileUrls) {
+		$utils->setAfter(function (array $results) use (&$fileUrls) {
 			foreach ($results as $value) {
 				if ($value['status'] !== 200 || empty($value['data']['id'])) {
 					continue;
@@ -1352,31 +1352,6 @@ class RestV1M2M extends RestV1
 		return ['status' => 207, 'message' => 'Multi-Status', 'data' => $results];
 	}
 
-	/**
-	 * Helper: расчёт параметров пагинации из GET-параметров.
-	 *
-	 * @param int $maxLimit Максимально допустимый limit (по умолчанию 100)
-	 * @return array ['page' => int, 'limit' => int, 'offset' => int]
-	 */
-	private function calculatePagination(int $maxLimit = 100): array
-	{
-		$page = max(1, (int) ($this->get['page'] ?? 1));
-		$limit = (int) ($this->get['limit'] ?? 100);
-		if ($limit > $maxLimit) {
-			$limit = $maxLimit;
-		}
-		if ($limit < 1) {
-			$limit = 100;
-		}
-
-		$offset = ($page - 1) * $limit;
-
-		return [
-			'page' => $page,
-			'limit' => $limit,
-			'offset' => $offset,
-		];
-	}
 
 	/**
 	 * Валидировать запись по правилам из s_ConfigFields.

@@ -27,7 +27,6 @@ use WeppsExtensions\Addons\Messages\Mail\Mail;
 
 class ProfileUtils
 {
-	private $settings = [];
 	private $navigator = [];
 	private $user = [];
 	public function __construct(array $user)

@@ -43,8 +43,6 @@ use WeppsCore\Connect;
  */
 class Images
 {
-	/** @var \GdImage|false Исходное изображение GD */
-	private $source;
 	/** @var \GdImage|false|resource Целевое изображение GD (resource — по легаси-ветке callmap) */
 	private $target;
 	/** @var string Путь к файлу назначения */
@@ -196,7 +194,6 @@ class Images
 			imagecopyresampled($target, $source, 0, 0, 0, 0, (int) $this->width, (int) $this->height, $size[0], $size[1]);
 			imagecopy($target2, $target, (int) $newX, (int) $newY, 0, 0, (int) $this->width, (int) $this->height);
 			$this->target = $target2;
-			$this->source = $source;
 			return;
 		}
 
@@ -207,7 +204,6 @@ class Images
 		$target = $this->imagefill($target);
 		imagecopyresampled($target, $source, 0, 0, 0, 0, (int) $this->widthDst, (int) ((float) $this->widthDst / $this->ratio), $size[0], $size[1]);
 		$this->target = $target;
-		$this->source = $source;
 		return;
 	}
 	/**

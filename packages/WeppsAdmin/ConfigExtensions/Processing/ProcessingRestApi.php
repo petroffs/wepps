@@ -50,14 +50,10 @@ class ProcessingRestApi
 		}
 
 		$updateSql = "UPDATE s_ConfigFields SET ApiMapping = ? WHERE Id = ?";
-		$updatedCount = 0;
 
 		foreach ($fields as $field) {
 			$apiMapping = $this->fieldApiMappingToCamelCase($field['TableField']);
-			$result = Connect::$instance->query($updateSql, [$apiMapping, $field['Id']]);
-			if ($result > 0) {
-				$updatedCount++;
-			}
+			Connect::$instance->query($updateSql, [$apiMapping, $field['Id']]);
 		}
 	}
 
@@ -254,21 +250,18 @@ class ProcessingRestApi
 		
 		// Для каждого destination создаём template
 		foreach ($destination as $destFile) {
-			$this->createTestFromSource($destFile, $sourceGroup, $data, $clientM2MPath, $testsPath);
+			$this->createTestFromSource($destFile, $data, $clientM2MPath, $testsPath);
 		}
 	}
 
 	/**
 	 * Создает JSON template для тестового запроса на основе данных от GET
 	 */
-	private function createTestFromSource(string $destFile, string $sourceGroup, array $data, string $clientM2MPath, string $testsPath): void
+	private function createTestFromSource(string $destFile, array $data, string $clientM2MPath, string $testsPath): void
 	{
 		// Парсим destination для получения метода
 		$destPathParts = explode('/', $destFile);
 		$destFilename = array_pop($destPathParts) ?? '';
-		$destGroup = $destPathParts[0] ?? $sourceGroup;
-
-
 
 		// Извлекаем метод из имени файла (например "goods.post.bru" → "post")
 		$destMethodMatch = [];
@@ -293,7 +286,7 @@ class ProcessingRestApi
 				$keys = array_keys($firstItem);
 				
 				// Пропускаем уже существующие требуемые поля и добавляем недостающие
-				foreach ($keys as $index => $key) {
+				foreach ($keys as $key) {
 					if (!in_array($key, $requiredFields) && count($requiredFields) < 3) {
 						$requiredFields[] = $key;
 					}

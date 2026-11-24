@@ -22,7 +22,6 @@ use WeppsExtensions\Addons\RemoteServices\RemoteServices;
 
 class Dadata extends RemoteServices {
 	private $token = '';
-	private $secret = '';
 	
 	public function __construct($settings=[]) {
 		$this->curl = new Curl();

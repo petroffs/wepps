@@ -213,7 +213,7 @@ class Cdek extends Delivery
 		$func = /**
 		 * @psalm-return array<never, never>
 		 */
-		function (array $args): array {
+		function (): array {
 			$data = [
 				'country_code' => 'RU',
 			];
@@ -304,7 +304,7 @@ class Cdek extends Delivery
 		$func = /**
 		 * @psalm-return array<never, never>
 		 */
-		function (array $args): array {
+		function (): array {
 			$data = [
 				'country_codes' => 'RU',
 			];

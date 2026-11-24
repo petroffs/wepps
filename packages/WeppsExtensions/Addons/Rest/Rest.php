@@ -634,7 +634,7 @@ class Rest
 		// Проверка на лишние поля (простые ключи + ключи из вложенных правил)
 		$allowedSimpleKeys = array_keys($simpleRules);
 		$allowedNestedArrays = [];
-		foreach ($nestedRules as $path => $rule) {
+		foreach (array_keys($nestedRules) as $path) {
 			// Извлекаем путь до массива (например, "data" из "data.items[]")
 			if (preg_match('/^(.+?)\[\]/', $path, $matches)) {
 				$arrayPath = $matches[1];  // "data.items" или "items"
@@ -646,7 +646,7 @@ class Rest
 		}
 		$allowedKeys = array_merge($allowedSimpleKeys, $allowedNestedArrays);
 
-		foreach ($data as $key => $value) {
+		foreach (array_keys($data) as $key) {
 			if (!in_array($key, $allowedKeys)) {
 				throw new \Exception("Unexpected field '$key'");
 			}
@@ -822,29 +822,6 @@ class Rest
 		return $this->config[$version][$type][$method] ?? null;
 	}
 
-	/**
-	 * Получить структуру обработчиков API
-	 *
-	 * Создает экземпляры классов-обработчиков для всех настроенных методов API.
-	 * Структура позволяет легко добавлять новые версии, методы и типы запросов.
-	 *
-	 * @return array Многомерный массив с экземплярами обработчиков [$version][$type][$method] => instance
-	 */
-	private function getHandlers(): array
-	{
-		$handlers = [];
-		foreach ($this->config as $version => $types) {
-			$handlers[$version] = [];
-			foreach ($types as $type => $methods) {
-				$handlers[$version][$type] = [];
-				foreach ($methods as $methodName => $config) {
-					$class = $config['class'];
-					$handlers[$version][$type][$methodName] = ($class === RestCli::class) ? new $class($this->settings) : new $class();
-				}
-			}
-		}
-		return $handlers;
-	}
 
 	/**
 	 * Настройка параметров запроса
@@ -1241,7 +1218,6 @@ if (!function_exists('apache_request_headers')) {
 		foreach ($_SERVER as $key => $val) {
 			if (preg_match($rx_http, $key)) {
 				$arh_key = preg_replace($rx_http, '', $key);
-				$rx_matches = [];
 				$rx_matches = explode('_', $arh_key);
 				if (count($rx_matches) > 0 && strlen($arh_key) > 2) {
 					foreach ($rx_matches as $ak_key => $ak_val)

@@ -70,7 +70,7 @@ class ProcessingProducts
 			return;
 		}
 		$sql = "truncate ProductsVariations";
-		$res = Connect::$instance->query($sql);
+		Connect::$instance->query($sql);
 		$sql = "select Id,Name,NavigatorId from Products";
 		$res = Connect::$instance->fetch($sql);
 		$sth = Connect::$db->prepare("update Products set Variations = ? where Id = ?");

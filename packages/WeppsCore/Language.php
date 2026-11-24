@@ -86,7 +86,6 @@ class Language
 	public static function getMultilanguage($langData, $backOffice = 0)
 	{
 		$ppsInterface = [];
-		$condition = ($backOffice == 0) ? "Category='front'" : "Category='back'";
 		$interfaceLangs = ($langData['default'] == 1) ? $langData['interface'] : $langData['interface'] . "," . $langData['interfaceDefault'];
 		$res = Connect::$instance->fetch("select Name," . $interfaceLangs . " from s_Lang where Category=? order by Name", [$backOffice == 0 ? 'front' : 'back']);
 		foreach ($res as $v) {

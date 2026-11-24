@@ -34,7 +34,6 @@ if (!session_id() && php_sapi_name() !== 'cli') {
 
 class Lists
 {
-	private $content;
 	private $get;
 	public $headers;
 	public function __construct(TemplateHeaders &$headers)
@@ -45,7 +44,6 @@ class Lists
 		$this->get = Utils::trim($_GET);
 		$weppsurl = "/" . htmlspecialchars((string) $_GET['weppsurl'], ENT_QUOTES);
 		$weppsurlEx = explode("/", trim($weppsurl, '/'));
-		$tpl2 = "../Admin/AdminError.tpl";
 		$perm = Admin::getPermissions(Connect::$projectData['user']['UserPermissions']);
 		$translate = Admin::getTranslate();
 		$smarty->assign('translate', $translate);
@@ -329,7 +327,7 @@ class Lists
 				$sql = "select Id,{$ex[2]} from {$tablename} {$where} order by {$ex[2]}";
 				$res = Connect::$instance->fetch($sql);
 				$selected = [];
-				foreach ($res as $k => $v) {
+				foreach ($res as $v) {
 					$selected[$v['Id']] = "{$v[$ex[2]]} ({$v['Id']})";
 				}
 				$element[0]["{$key}_SelectChecked"] = $selected;
@@ -346,7 +344,7 @@ class Lists
 				$res = Connect::$instance->fetch($sql);
 				$selected = [];
 
-				foreach ($res as $k => $v) {
+				foreach ($res as $v) {
 					$selected[$v['Id']] = $v['Id'];
 				}
 
@@ -377,7 +375,7 @@ class Lists
 					$res = Connect::$instance->fetch($sql);
 					$options = [];
 					$options[0] = "-";
-					foreach ($res as $k => $v) {
+					foreach ($res as $v) {
 						$options[$v['Id']] = $v[$ex[2]];
 					}
 				}
@@ -399,13 +397,13 @@ class Lists
 				$res = Connect::$instance->fetch($sql, [], 'group');
 				$options = [];
 				$options[0] = "-";
-				foreach ($res as $k => $v) {
+				foreach (array_keys($res) as $k) {
 					$options[$k] = $k;
 				}
 				$selected = [];
 				if (isset($element[0][$key])) {
 					$res = explode(',', $element[0][$key]);
-					foreach ($res as $k => $v) {
+					foreach ($res as $v) {
 						$selected[$v] = $v;
 					}
 				}
@@ -434,7 +432,7 @@ class Lists
 				$res = Connect::$instance->fetch($sql);
 				$options = [];
 				$options[0] = "-";
-				foreach ($res as $k => $v) {
+				foreach ($res as $v) {
 					$options[$v['Id']] = $v['Name'];
 				}
 				$selected = [];
@@ -455,7 +453,7 @@ class Lists
 						$sql = "select Name,Id,PValue from s_PropertiesValues where IsHidden=0 and TableName = '{$value[0]['TableName']}' and TableNameId = '{$element[0]['Id']}' and TableNameField = '{$key}'";
 						$res2 = Connect::$instance->fetch($sql, [], 'group');
 						//$selected2 = [];
-						foreach ($res as $k => $v) {
+						foreach ($res as $v) {
 							if ($v['PType'] == 'select') {
 								$exp = explode("\r\n", trim($v['PValues'], '\n'));
 								$options2[$v['Id']] = array_combine($exp, $exp);
@@ -551,7 +549,7 @@ class Lists
 			Connect::$instance->query($sql);
 			$objFile = new Data("s_Files");
 			foreach ($_SESSION['uploads']['list-data-form'] as $key => $value) {
-				foreach ($value as $k => $v) {
+				foreach ($value as $v) {
 					$file = self::getUploadFileName($v, $list, $key, $id);
 					$rowFile = array(
 						'Name' => $file['title'],
@@ -852,11 +850,6 @@ class Lists
 		$sql = "SELECT COLUMN_NAME as Col FROM INFORMATION_SCHEMA.COLUMNS
                 WHERE TABLE_SCHEMA = ? and TABLE_NAME = ? and COLUMN_NAME = ?";
 		$schemeReal = Connect::$instance->fetch($sql, [Connect::$projectDB['dbname'], $tableName, $field]);
-		$alterDefault = "";
-		if ($field == 'LanguageId' || $field == 'TableId') {
-			$typeReal = "int(11)";
-			$alterDefault = "NOT NULL default '0'";
-		}
 		switch ($type) {
 			case "area":
 				$typeReal = 'text COLLATE utf8mb4_unicode_ci';
@@ -899,7 +892,6 @@ class Lists
 				break;
 		}
 
-		$str = "";
 		if (isset($schemeReal[0]['Col'])) {
 			return "ALTER TABLE $tableName CHANGE $field $field $typeReal $alterDefault";
 		}
@@ -1064,7 +1056,7 @@ class Lists
 			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
 			// Имя класса — из внутренней конфигурации списка (поле ActionDrop в s_Config)
 			/** @psalm-suppress TaintedInput */
-			$addActionRequest = new $addActionClass(array('listSettings' => $listSettings, 'id' => $id));
+			new $addActionClass(array('listSettings' => $listSettings, 'id' => $id));
 		}
 
 		$href = "'/_wepps/lists/" . htmlspecialchars((string) $list, ENT_QUOTES) . "/'";

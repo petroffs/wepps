@@ -43,7 +43,6 @@ class UploadsExcelTranslate {
 			/*
 			 * Запись/обновление данных
 			 */
-			$obj = new Data($this->tableName);
 			$str = "";
 			unset($this->settings['data'][1]);
 			foreach ($this->settings['data'] as $value) {

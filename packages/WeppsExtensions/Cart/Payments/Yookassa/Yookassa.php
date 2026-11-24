@@ -258,7 +258,7 @@ class Yookassa extends Payments
 	{
 		$json = file_get_contents('php://input');
 		$jdata = json_decode($json, true);
-		if (empty($id = $jdata['object']['id'])) {
+		if (empty($jdata['object']['id'])) {
 			Exception::error(400);
 		}
 		$tasks = new Tasks();

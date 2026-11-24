@@ -36,7 +36,7 @@ class Files
 	}
 	/**
 	 * Вывод указанного файла в браузер на сохранение или открытие на стороне клиента
-	 * @param string $file
+	 * @param string $filename Имя файла для вывода
 	 */
 	public function output(string $filename): never
 	{

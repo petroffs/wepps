@@ -45,7 +45,7 @@ class RequestOrders extends Request {
 			    if (empty($this->get['id'])) {
 			    	Exception::error(400);
 			    }
-			    $order = $this->getOrder($this->get['id']);
+			    $this->getOrder($this->get['id']);
 			    break;
 			    
 			case 'setProducts':
@@ -66,7 +66,7 @@ class RequestOrders extends Request {
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
 				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
-				$order = $this->getOrder($this->get['id']);
+				$this->getOrder($this->get['id']);
 				break;
 			case 'addProducts':
 				$this->tpl = "RequestViewOrder.tpl";
@@ -87,7 +87,7 @@ class RequestOrders extends Request {
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
 				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
-				$order = $this->getOrder($this->get['id']);
+				$this->getOrder($this->get['id']);
 				break;
 			case "removeProducts":
 				$this->tpl = "RequestViewOrder.tpl";
@@ -104,7 +104,7 @@ class RequestOrders extends Request {
 				$json = json_encode($jdata,JSON_UNESCAPED_UNICODE);
 				$sql = "update Orders set JPositions=? where Id=?";
 				Connect::$instance->query($sql,[$json,$order['order']['Id']]);
-				$order = $this->getOrder($this->get['id']);
+				$this->getOrder($this->get['id']);
 				break;
 			case "searchProducts":
 				#Utils::debug($this->get,31);
@@ -121,7 +121,7 @@ class RequestOrders extends Request {
 				}
 				$sql = "update Orders set OStatus=? where Id=?";
 				Connect::$instance->query($sql,[(int) $this->get['status'],(int) $this->get['id']]);
-				$order = $this->getOrder($this->get['id']);
+				$this->getOrder($this->get['id']);
 				break;
 			case "addPayments":
 				$this->tpl = "RequestViewOrder.tpl";
@@ -140,7 +140,7 @@ class RequestOrders extends Request {
 				]);
 				$sql = "insert into Payments {$arr['insert']}";
 				Connect::$instance->query($sql,$arr['row']);
-				$order = $this->getOrder($this->get['id']);
+				$this->getOrder($this->get['id']);
 				break;
 			case "addMessages":
 				$this->tpl = "RequestViewOrder.tpl";
@@ -162,7 +162,7 @@ class RequestOrders extends Request {
 				]);
 				$sql = "insert into OrdersEvents {$arr['insert']}";
 				Connect::$instance->query($sql,$arr['row']);
-				$order = $this->getOrder($this->get['id']);
+				$this->getOrder($this->get['id']);
 				break;
 			case 'setTariff':
 				$this->tpl = "RequestViewOrder.tpl";
@@ -189,7 +189,7 @@ class RequestOrders extends Request {
 				}
 				$sql = "update Orders set $field = ? where Id = ?";
 				Connect::$instance->query($sql,[(float) $this->get['value'],(int) $this->get['id']]);
-				$order = $this->getOrder($this->get['id']);
+				$this->getOrder($this->get['id']);
 				break;
 			default:
 				Exception::error(404);
@@ -250,62 +250,6 @@ class RequestOrders extends Request {
 		return $output;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	private function getOrderPositionsText($order): string {
-		$text = "";
-		$text.= "<h4>ТОВАРЫ ЗАКАЗА</h4>\n";
-		$text .= "<table border=\"0\" cellspacing=\"0\" cellpadding=\"10\">\n";
-		$text .= "
-			<tr style=\"color:gray;font-size:12px;\">
-				<td width=\"50%\" style=\"border-bottom: 1px solid #ddd;\">
-					Наименование
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					Цена
-				</td>
-				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					Кол.
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					Сумма
-				</td>
-			</tr>
-			";
-		foreach ($order['positions'] as $value) {
-			
-			$options = json_decode($value['Options'],true);
-			$optionsText = "";
-			if (is_array($options)) {
-				$optionsText = "<br/>{$options['ProductCity']}<br/>{$options['ProductDateText']}";
-			}
-			$text .= "
-			<tr>
-				<td width=\"50%\" style=\"border-bottom: 1px solid #ddd;\">
-					<strong>{$value['Name']}</strong>{$optionsText}
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".TextTransforms::money($value['Price'])." Р.
-				</td>
-				<td width=\"10%\" style=\"border-bottom: 1px solid #ddd;\" align=\"center\">
-					{$value['ItemQty']}
-				</td>
-				<td width=\"20%\" style=\"border-bottom: 1px solid #ddd;\" align=\"right\">
-					".TextTransforms::money($value['Summ'])." Р.
-				</td>
-			</tr>
-			";
-		}
-		$text .= "
-		<tr>
-			<td colspan=\"3\" align=\"right\"><strong>ИТОГО: </strong></td>
-			<td align=\"right\">".TextTransforms::money($order['order']['Summ'])." Р.</td>
-		</tr>
-		";
-		$text .= "</table>\n";
-		return $text;
-	}
 }
 $request = new RequestOrders ($_REQUEST);
 $smarty->assign('get',$request->get);

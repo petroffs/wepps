@@ -206,28 +206,6 @@ class RequestCart extends Request
 		$this->assign('element', $el);
 		return;
 	}
-	private function findById(array $array, $id, string $key = 'id'): array
-	{
-		// Поддержка вложенной структуры (массив групп)
-		foreach ($array as $group) {
-			if (!is_array($group)) {
-				continue;
-			}
-			// Пробуем как вложенную структуру
-			if (isset($group[0]) && is_array($group[0])) {
-				foreach ($group as $item) {
-					if (is_array($item) && isset($item[$key]) && $item[$key] == $id) {
-						return $item;
-					}
-				}
-			}
-			// Пробуем как плоскую структуру
-			else if (isset($group[$key]) && $group[$key] == $id) {
-				return $group;
-			}
-		}
-		return [];
-	}
 }
 $request = new RequestCart($_REQUEST);
 $smarty->assign('get', $request->get);

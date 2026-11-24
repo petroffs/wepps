@@ -137,7 +137,6 @@ class Connect
 		$this->count++;
 		try {
 			$isCache = 0;
-			$cacheExpire = Connect::$projectServices['memcached']['expire'];
 			if (strstr($sql, 'join ')) {
 				$isCache = 1;
 			}
@@ -245,7 +244,7 @@ class Connect
 	 */
 	public function prepare($row = [], $settings = [])
 	{
-		$insert = $insert2 = $update = $select = "";
+		$insert2 = $update = $select = "";
 		$keys = array_keys($row);
 		$insert = '(' . implode(',', $keys) . ') values ';
 		foreach ($keys as $value) {

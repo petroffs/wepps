@@ -379,7 +379,6 @@ class UpdatesMethods extends Updates
 		if (!is_file($fileMD5)) {
 			return '';
 		}
-		$files = [];
 		$jdata = json_decode(file_get_contents($this->filename), true);
 		$jrelease = json_decode(file_get_contents($fileMD5), true);
 		if (empty($jdata['db']) || empty($jrelease['db'])) {
@@ -454,7 +453,6 @@ class UpdatesMethods extends Updates
 			if (!in_array($value['table'], $allowed)) {
 				continue;
 			}
-			$table = $this->getTablesStructure($value['table']);
 			$sql = "show columns from {$value['table']}";
 			$res = Connect::$instance->fetch($sql);
 			$columnsRelease = array_keys($value['columns']);
@@ -537,29 +535,15 @@ class UpdatesMethods extends Updates
 	 *
 	 * @param string $archive Путь к создаваемому архиву
 	 * @param string $path Маска/путь файлов для упаковки
-	 * @return bool Всегда возвращает true при завершении команды
+	 * @return void
 	 */
-	private function zip(string $archive, string $path): bool
+	private function zip(string $archive, string $path): void
 	{
 		if (file_exists($archive)) {
 			$this->cli->rmfile($archive);
 		}
 		$cmd = "7z a -tzip " . escapeshellarg($archive) . " " . escapeshellarg($path);
 		$this->cli->cmd($cmd, true);
-		return true;
-	}
-	/**
-	 * Выполняет shell-команду через CLI helper и возвращает результат.
-	 *
-	 * @param string $cmd Команда для выполнения
-	 * @return array Результат выполнения (вывод и коды)
-	 */
-	private function command(string $cmd): array
-	{
-		if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
-			$cmd = str_replace("\\", "/", $cmd);
-		}
-		return $this->cli->cmd($cmd, true);
 	}
 	/**
 	 * Собирает структуру таблицы (CREATE TABLE + insert ignore в s_Config/s_ConfigFields)
@@ -635,7 +619,6 @@ class UpdatesMethods extends Updates
 		 * 2 - структуру таблицы надо обновить (возможно и данные, если есть),
 		 * 3 - такой таблицы нет в тек.версии
 		 */
-		$status = 0;
 		$files = [];
 		$files2 = [];
 		foreach ($db1 as $value) {

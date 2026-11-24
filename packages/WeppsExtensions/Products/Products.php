@@ -124,7 +124,6 @@ class Products extends Extension
 	#[\Override]
 	public function getItem($tableName, $condition = '')
 	{
-		$id = Navigator::$pathItem;
 		if (empty($element = $this->productsUtils->getProductsItem(Navigator::$pathItem))) {
 			Exception::error404();
 		}

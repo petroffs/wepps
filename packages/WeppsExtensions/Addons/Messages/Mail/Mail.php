@@ -46,8 +46,6 @@ class Mail
 	/** @var string Тип письма: 'html' или 'plain' */
 	private $type;
 
-	/** @var mixed Зарезервировано для внешнего контента */
-	private $outer;
 
 	/** @var string Содержимое письма (после QP-кодирования для html-типа) */
 	private $content;

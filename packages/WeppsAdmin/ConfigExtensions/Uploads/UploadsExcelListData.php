@@ -43,12 +43,11 @@ class UploadsExcelListData {
 			/*
 			 * Запись/обновление данных
 			 */
-			$obj = new Data($this->tableName);
 			$str = "";
 			$fields = $this->settings['data'][2];
 			unset($this->settings['data'][1]);
 			unset($this->settings['data'][2]);
-			foreach ($this->settings['data'] as $key => $value) {
+			foreach ($this->settings['data'] as $value) {
 				if (!empty($value['A'])) {
 					$row = [];
 					foreach ($fields as $k=>$v) {

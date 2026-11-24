@@ -30,7 +30,7 @@ class ViewItemDirectories extends Request {
 		$this->element = &$this->get['element'];
 		$this->scheme = $this->get['listScheme'];
 		if (strstr($_GET['weppsurl'], '/addNavigator/')) {
-			foreach ($this->scheme as $key=>$value) {
+			foreach (array_keys($this->scheme) as $key) {
 				$this->element[$key] = "";
 			}
 			$this->element['Id'] = 'add'; 

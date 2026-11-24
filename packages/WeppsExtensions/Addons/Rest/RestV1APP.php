@@ -694,7 +694,6 @@ class RestV1APP extends RestV1
 	public function postCartPlaceOrder($data = null): array
 	{
 		/** @used Метод вызывается динамически через Rest::executeHandler() */
-		$user = $this->rest->getUser();
 		$cartUtils = $this->_newCartUtils();
 		$cartUtils->setCartSummary();
 		$cartSummary = $cartUtils->getCartSummary();

@@ -65,7 +65,7 @@ class Excel
 		$i = 1;
 		$j = 1;
 		$fields = $data[0];
-		foreach ($fields as $key => $value) {
+		foreach (array_keys($fields) as $key) {
 			$str = trim($key);
 			$spreadsheet->setActiveSheetIndex(0)
 				->setCellValueExplicit([$j, $i], $str, 's')
@@ -76,7 +76,7 @@ class Excel
 		$i++;
 		foreach ($data as $v) {
 			$j = 1;
-			foreach ($fields as $key => $value) {
+			foreach (array_keys($fields) as $key) {
 				$str = trim($v[$key]);
 				$spreadsheet->setActiveSheetIndex(0)
 					->setCellValueExplicit([$j, $i], $str, 's');

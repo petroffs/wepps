@@ -74,7 +74,7 @@ class UploadsExcelFields
 
 			// Шаг 3: INSERT'ы в s_ConfigFields — в транзакции
 			try {
-				$insertedIds = Connect::$instance->transaction(function ($args) use ($rows) {
+				$insertedIds = Connect::$instance->transaction(function () use ($rows) {
 					$obj = new Data($this->tableName);
 					$ids = [];
 					foreach ($rows as $row) {

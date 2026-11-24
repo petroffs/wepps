@@ -28,7 +28,6 @@ class ProductsUtils
 {
 	private $navigator;
 	private $list;
-	private $filters;
 	public function __construct()
 	{
 

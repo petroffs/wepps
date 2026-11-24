@@ -296,7 +296,6 @@ class Cli
 	 */
 	private function color(string $str = '', string $type = ''): string
 	{
-		$output = '';
 		switch ($type) {
 			case 'e': //error
 				$output = "\033[0;31;47m$str\033[0m\n";

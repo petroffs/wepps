@@ -194,7 +194,7 @@ class Profile extends Extension
 			'conditions' => $conditionsFilters,
 		];
 		$subs = [];
-		foreach ($profileNav as $key => $item) {
+		foreach ($profileNav as $item) {
 			if (!empty($item['event'])) {
 				continue;
 			}

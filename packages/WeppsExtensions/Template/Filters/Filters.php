@@ -109,7 +109,7 @@ class Filters
 		}
 		$checked = @$this->params['checked'] !== false;
 		$last = 1;
-		foreach ($this->paramsFilters as $key => $value) {
+		foreach (array_keys($this->paramsFilters) as $key) {
 			if (substr($key, 0, 2) === 'f_') {
 				$last = substr($key, 2);
 				break;

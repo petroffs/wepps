@@ -116,7 +116,6 @@ class ProcessingTasks
 		$result = Connect::$instance->fetch("SELECT DISTINCT TableName,TableNameField FROM s_Files WHERE TableName != ''");
 		foreach ($result as $value) {
 			$table = $value['TableName'];
-			$tableField = $value['TableNameField'];
 			// Проверяем существует ли таблица
 			$check = Connect::$instance->fetch("SELECT COUNT(*) as cnt FROM information_schema.tables 
                                     WHERE table_name = ? AND table_schema = DATABASE()", [$table]);

@@ -40,7 +40,6 @@ class RequestProducts extends Request
 				$filters = new Filters($this->get);
 				$params = $filters->getParams();
 				$sorting = $productsUtils->getSorting();
-				$conditions = $productsUtils->getConditions($params, false);
 				$conditionsFilters = $productsUtils->getConditions($params, true);
 				$conditionsFilters['conditions'] .= " and length(t.Variations)>0";
 				$settings = [

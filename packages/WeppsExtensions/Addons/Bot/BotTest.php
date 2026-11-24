@@ -70,7 +70,6 @@ class BotTest extends Bot {
 				'Text' => 'test text',
 				'Priority'=>0
 		];
-		$settings = [];
 		$settings = [
 				'Text' => [
 						'fn' => 'md5(:Text)'

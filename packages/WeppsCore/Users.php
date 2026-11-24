@@ -25,7 +25,6 @@ use WeppsExtensions\Addons\Jwt\Jwt;
  */
 class Users
 {
-	private $token = '';
 	private $get = [];
 	private $errors = [];
 
