@@ -428,12 +428,28 @@ class ProcessingRestApi
 	 * Выполняет GET запрос с токеном M2M
 	 *
 	 * URL собирается из локальных .bru-файлов проекта и валидированного
-	 * HTTP_HOST (white-list символов hostname) — штатный импорт m2m-интеграции.
+	 * HTTP_HOST. Хост сверяется с allowlist Services.m2m.allowedHosts
+	 * (config.php): пустой список — ограничений нет, при заданном списке
+	 * Dev.host разрешён всегда.
 	 *
 	 * @psalm-suppress TaintedInput
 	 */
 	private function performGetRequest(string $url, string $token): array
 	{
+		$allowedHosts = trim((string) (Connect::$projectServices['m2m']['allowedHosts'] ?? ''));
+		if ($allowedHosts !== '') {
+			$allowed = [strtolower((string) Connect::$projectDev['host'])];
+			foreach (explode(',', $allowedHosts) as $allowedHost) {
+				$allowedHost = strtolower(trim($allowedHost));
+				if ($allowedHost !== '') {
+					$allowed[] = $allowedHost;
+				}
+			}
+			$urlHost = strtolower((string) (parse_url($url, PHP_URL_HOST) ?? ''));
+			if (!in_array($urlHost, $allowed, true)) {
+				throw new \Exception("M2M-импорт: хост не входит в allowlist - {$urlHost}");
+			}
+		}
 		$ch = curl_init($url);
 		
 		curl_setopt_array($ch, [
