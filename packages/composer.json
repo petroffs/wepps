@@ -7,6 +7,7 @@
 		}
 	},
 	"require": {
+		"php": "^8.4",
 		"smarty/smarty": "^5.8",
 		"components/jquery": "^3.7",
 		"components/jqueryui": "^1.12",
