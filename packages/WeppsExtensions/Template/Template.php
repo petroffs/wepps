@@ -73,7 +73,11 @@ class Template extends Extension {
 		 */
 		if ($this->navigator->content['Extension_FileExt']) {
 			$extensionClass = "\WeppsExtensions\\{$this->navigator->content['Extension_FileExt']}\\{$this->navigator->content['Extension_FileExt']}";
-			$extension = new $extensionClass($this->navigator,$this->headers,$_GET);
+			if (class_exists($extensionClass)) {
+				// Имя класса — из конфигурации расширения в БД (Extension_FileExt)
+				/** @psalm-suppress TaintedInput */
+				$extension = new $extensionClass($this->navigator,$this->headers,$_GET);
+			}
 		}
 		$navigator = &$this->navigator;
 		if ($navigator::$pathItem!='' && !isset($extension->extensionData['element'])) {

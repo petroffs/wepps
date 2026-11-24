@@ -185,9 +185,14 @@ class Cli
 	/**
 	 * Записывает содержимое в файл.
 	 *
+	 * Пути приходят из CLI-аргументов оператора (Updates и консольные сценарии),
+	 * не из веб-запроса.
+	 *
 	 * @param mixed $content Содержимое для записи.
 	 * @param string $destination Путь к файлу назначения.
 	 * @return bool Возвращает true, если запись прошла успешно, иначе false.
+	 *
+	 * @psalm-suppress TaintedInput
 	 */
 	public function put($content, $destination)
 	{
@@ -243,8 +248,12 @@ class Cli
 	/**
 	 * Удаляет файл.
 	 *
+	 * Пути приходят из CLI-аргументов оператора, не из веб-запроса.
+	 *
 	 * @param string $file Путь к файлу.
 	 * @return bool Возвращает true, если файл удален успешно, иначе false.
+	 *
+	 * @psalm-suppress TaintedInput
 	 */
 	public function rmfile(string $file)
 	{

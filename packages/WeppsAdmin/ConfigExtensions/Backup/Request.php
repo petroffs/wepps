@@ -121,7 +121,13 @@ class RequestBackup extends Request
 				 * Удалить файл бекапа
 				 */
 				$path = $root . '/packages/WeppsAdmin/ConfigExtensions/Backup/files/';
-				$filename = $path . $this->get['id'];
+				// id из запроса: basename + safeRelPath — удаление только внутри папки бекапов
+				$id = Utils::safeRelPath(basename((string) ($this->get['id'] ?? ''))) ?? '';
+				if ($id === '') {
+					AdminUtils::modal('<p>Некорректное имя файла резервной копии</p>');
+					break;
+				}
+				$filename = $path . $id;
 
 				if (is_file($filename)) {
 					unlink($filename);
@@ -221,7 +227,13 @@ class RequestBackup extends Request
 				 * Удалить файл бекапа
 				 */
 				$path = $root . $backupPath;
-				$filename = $path . $this->get['id'];
+				// id из запроса: basename + safeRelPath — удаление только внутри папки бекапов
+				$id = Utils::safeRelPath(basename((string) ($this->get['id'] ?? ''))) ?? '';
+				if ($id === '') {
+					AdminUtils::modal('<p>Некорректное имя файла резервной копии</p>');
+					break;
+				}
+				$filename = $path . $id;
 				if (is_file($filename)) {
 					unlink($filename);
 				}

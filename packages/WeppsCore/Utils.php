@@ -157,6 +157,32 @@ class Utils
 	}
 
 	/**
+	 * Относительный путь внутри проекта для file-операций.
+	 *
+	 * Отклоняет пустой путь, path traversal ('..'), абсолютные пути и схемы
+	 * (://): строка обязана начинаться с буквы и состоять только из
+	 * [A-Za-z0-9_\-./]. Прошедшая проверка строка — путь относительно корня
+	 * без выхода наружу, поэтому file/ssrf-тaint снимается честно.
+	 *
+	 * @param string $path Путь из запроса или конфигурации
+	 * @return string|null Путь или null, если проверка не пройдена
+	 *
+	 * @psalm-taint-escape file
+	 * @psalm-taint-escape ssrf
+	 * @psalm-taint-escape url_component
+	 * @psalm-taint-escape url_path
+	 * @psalm-taint-escape url_scheme
+	 */
+	public static function safeRelPath(string $path): ?string
+	{
+		$path = str_replace('\\', '/', $path);
+		if ($path === '' || str_contains($path, '..') || preg_match('#^[A-Za-z0-9][A-Za-z0-9_\-./]*$#D', $path) !== 1) {
+			return null;
+		}
+		return $path;
+	}
+
+	/**
 	 * Форматирование телефонного номера
 	 *
 	 * @param string $string Входная строка с телефонным номером

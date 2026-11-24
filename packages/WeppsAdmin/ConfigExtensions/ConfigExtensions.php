@@ -67,6 +67,11 @@ class ConfigExtensions
 			$request = ['action' => $action];
 			$request = array_merge($request, $_REQUEST, array('ext' => $ext));
 			$extClass = "\WeppsAdmin\\ConfigExtensions\\{$ext['Alias']}\\{$ext['Alias']}";
+			if (!class_exists($extClass)) {
+				Exception::error404();
+			}
+			// Имя класса — из внутреннего реестра расширений (s_ConfigExtensions)
+			/** @psalm-suppress TaintedInput */
 			$extResult = new $extClass($request);
 			$smarty->assign('ext', $ext);
 			$smarty->assign('extNavSubTpl', $smarty->fetch(__DIR__ . '/' . 'ConfigExtensionsNavSub.tpl'));

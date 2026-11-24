@@ -20,6 +20,7 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Request;
 use WeppsCore\Connect;
+use WeppsCore\Utils;
 use WeppsAdmin\Admin\Admin;
 
 class SaveItemConfigExtensions extends Request {
@@ -55,7 +56,17 @@ class SaveItemConfigExtensions extends Request {
 	    #exit();
 	}
 	private function copyExts($ext, $fileend, $dirstart, $stamp): void {
-		$ext = ucfirst($ext);
+		// Alias расширения приходит из запроса и участвует в путях mkdir/copy/file_*:
+		// строгий идентификатор + safeRelPath (снимает file/ssrf-taint) закрывают выход
+		// за каталог расширений
+		$extOk = null;
+		if (preg_match('/^[A-Za-z0-9_]+$/D', (string) $ext) === 1) {
+			$extOk = Utils::safeRelPath((string) $ext);
+		}
+		if ($extOk === null) {
+			return;
+		}
+		$ext = ucfirst($extOk);
 		$dir = "{$dirstart}/{$ext}";
 		if (!is_dir($dir)) {
 			mkdir($dir, 0755, true);

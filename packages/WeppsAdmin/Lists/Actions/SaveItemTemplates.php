@@ -20,6 +20,7 @@ namespace WeppsAdmin\Lists\Actions;
 
 use WeppsCore\Request;
 use WeppsCore\Connect;
+use WeppsCore\Utils;
 
 class SaveItemTemplates extends Request {
 	public $noclose = 1;
@@ -37,6 +38,17 @@ class SaveItemTemplates extends Request {
 	    }
 	}
 	private function copyTpl($tpl): void {
+		// Имя шаблона приходит из запроса и участвует в путях copy():
+		// строгий паттерн + safeRelPath (снимает file/ssrf-taint) закрывают выход
+		// за каталог Template
+		$tplOk = null;
+		if (preg_match('/^[A-Za-z0-9_\/\-]+\.tpl$/D', (string) $tpl) === 1) {
+			$tplOk = Utils::safeRelPath((string) $tpl);
+		}
+		if ($tplOk === null) {
+			return;
+		}
+		$tpl = $tplOk;
 		$tmp = substr($tpl, 0, - 4);
 		$root = Connect::$projectDev['root']."/packages/WeppsExtensions/Template/";
 		if (! is_file("{$root}{$tmp}.tpl")) {

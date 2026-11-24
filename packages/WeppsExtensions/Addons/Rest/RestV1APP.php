@@ -875,6 +875,10 @@ class RestV1APP extends RestV1
 			$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}\\{$cartSummary['delivery']['extension']}";
 			/**
 			 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
+			 *
+			 * Имя класса — из конфигурации способа доставки (DeliveryExt в БД)
+			 *
+			 * @psalm-suppress TaintedInput
 			 */
 			$class = new $className($cartSummary['delivery']['settings'] ?? [], $cartUtils);
 			$errors = $class->getErrors($data['data'] ?? []);

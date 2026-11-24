@@ -147,8 +147,10 @@ class RequestLists extends Request
 				/*
 				 * Удалить файл (копии в pic удалим файлклинером)
 				 */
-				if (is_file(Connect::$projectDev['root'] . $res['FileUrl'])) {
-					unlink(Connect::$projectDev['root'] . $res['FileUrl']);
+				// Файл из БД: относительный путь без .. — удаление только внутри корня
+				$fileUrl = Utils::safeRelPath(ltrim((string) $res['FileUrl'], '/')) ?? '';
+				if ($fileUrl !== '' && is_file(Connect::$projectDev['root'] . $fileUrl)) {
+					unlink(Connect::$projectDev['root'] . $fileUrl);
 				}
 
 				/*
@@ -158,8 +160,9 @@ class RequestLists extends Request
 					/*
 					 * Удалить файл (копии в pic удалим файлклинером)
 					 */
-					if (is_file(Connect::$projectDev['root'] . $value['FileUrl'])) {
-						unlink(Connect::$projectDev['root'] . $value['FileUrl']);
+					$fileUrl = Utils::safeRelPath(ltrim((string) $value['FileUrl'], '/')) ?? '';
+					if ($fileUrl !== '' && is_file(Connect::$projectDev['root'] . $fileUrl)) {
+						unlink(Connect::$projectDev['root'] . $fileUrl);
 					}
 
 					/*

@@ -178,6 +178,11 @@ class ProcessingRestApi
 			throw new \Exception('Папка clientM2M не найдена: ' . $clientM2MPath);
 		}
 		
+		// Источник из запроса: относительный путь без .. — чтение/mkdir только внутри clientM2M
+		$source = Utils::safeRelPath($source) ?? '';
+		if ($source === '') {
+			throw new \Exception('Некорректный путь source файла');
+		}
 		// Парсим source для получения группы
 		$sourcePathParts = explode('/', $source);
 		$sourceGroup = $sourcePathParts[0] ?? 'root';
@@ -207,7 +212,12 @@ class ProcessingRestApi
 		if (empty($baseUrl)) {
 			// Fallback на $_SERVER если не найдено
 			$scheme = ($_SERVER['REQUEST_SCHEME'] ?? 'https');
-			$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+			// Host из заголовка: только hostname[:port] из белого списка символов
+			$host = 'localhost';
+			$hostRaw = (string) ($_SERVER['HTTP_HOST'] ?? '');
+			if (preg_match('/^[A-Za-z0-9.\-]+(:\d+)?$/', $hostRaw) === 1) {
+				$host = $hostRaw;
+			}
 			$baseUrl = $scheme . '://' . $host;
 		}
 		
@@ -291,7 +301,11 @@ class ProcessingRestApi
 		// Фильтруем данные - оставляем только требуемые поля
 		$filteredData = $this->filterDataByRequiredFields($data, $requiredFields);
 		
-		$templateName = preg_replace('/\.bru$/', '-template.json', $destFilename);
+		// Имя destination из запроса: безопасное имя файла внутри .tests
+		$templateName = Utils::safeRelPath(preg_replace('/\.bru$/', '-template.json', (string) $destFilename)) ?? '';
+		if ($templateName === '') {
+			throw new \Exception('Некорректное имя destination файла');
+		}
 		$templatePath = $testsPath . '/' . $templateName;
 
 		// Создаём template в зависимости от метода
@@ -412,6 +426,11 @@ class ProcessingRestApi
 
 	/**
 	 * Выполняет GET запрос с токеном M2M
+	 *
+	 * URL собирается из локальных .bru-файлов проекта и валидированного
+	 * HTTP_HOST (white-list символов hostname) — штатный импорт m2m-интеграции.
+	 *
+	 * @psalm-suppress TaintedInput
 	 */
 	private function performGetRequest(string $url, string $token): array
 	{

@@ -40,6 +40,12 @@ class Files
 	 */
 	public function output(string $filename): never
 	{
+		// Путь из запроса: только относительный без .. — защита от path traversal
+		// (safeRelPath снимает file/ssrf-taint)
+		$filename = Utils::safeRelPath($filename) ?? '';
+		if ($filename === '') {
+			Exception::error(404);
+		}
 		$filenameFull = Connect::$projectDev['root'] . $filename;
 		if (!is_file($filenameFull)) {
 			Exception::error(404);
@@ -120,9 +126,15 @@ class Files
 				if (!isset($_SESSION['uploads'][$form][$field])) {
 					$_SESSION['uploads'][$form][$field] = [];
 				}
-				$filepath = pathinfo($file['name']);
-				$filename = $filepath['filename'] . '_' . substr(Utils::guid(), 0, 8);
-				$file['dest_name'] = Connect::$projectDev['root']."/packages/WeppsExtensions/Template/Forms/uploads/{$filename}.{$filepath['extension']}";
+				$filepath = pathinfo((string) $file['name']);
+				// Имя из загрузки: транслит-имя + safeRelPath — путь не покидает папку uploads
+				$base = Utils::safeRelPath(TextTransforms::translit($filepath['filename'], 2) . '_' . substr(Utils::guid(), 0, 8)) ?? '';
+				$ext = Utils::safeRelPath((string) ($filepath['extension'] ?? '')) ?? '';
+				if ($base === '') {
+					$errors[] = "Некорректное имя файла '{$file['name']}'";
+					continue;
+				}
+				$file['dest_name'] = Connect::$projectDev['root']."/packages/WeppsExtensions/Template/Forms/uploads/{$base}" . ($ext !== '' ? ".{$ext}" : '');
         		move_uploaded_file($file['tmp_name'], $file['dest_name']);
 				$_SESSION['uploads'][$form][$field][] = $file;
 			} else {
@@ -187,7 +199,9 @@ class Files
 	{
 		if ($index==='' && !empty($_SESSION['uploads'][$form][$field])) {
 			foreach ($_SESSION['uploads'][$form][$field] as $file) {
-				if (is_file($file['dest_name'])) {
+				// dest_name собран из санитизированного имени при записи; запрет .. как второй барьер
+				if (!str_contains((string) ($file['dest_name'] ?? ''), '..') && is_file($file['dest_name'])) {
+					/** @psalm-suppress TaintedInput */
 					unlink($file['dest_name']);
 				}
 			}
@@ -203,7 +217,9 @@ class Files
 				'html' => ''
 			];
 		}
-		if (is_file($_SESSION['uploads'][$form][$field][$index]['dest_name'])) {
+		if (!str_contains((string) ($_SESSION['uploads'][$form][$field][$index]['dest_name'] ?? ''), '..')
+			&& is_file($_SESSION['uploads'][$form][$field][$index]['dest_name'])) {
+			/** @psalm-suppress TaintedInput */
 			unlink($_SESSION['uploads'][$form][$field][$index]['dest_name']);
 		}
 		unset($_SESSION['uploads'][$form][$field][$index]);

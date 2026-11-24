@@ -133,6 +133,10 @@ class UpdatesMethods extends Updates
 	 *
 	 * @param string $tag Тег релиза, например 'v1.2.3'
 	 * @return array Ассоциативный массив с ключом 'output' и сообщением об ошибке или результате
+	 *
+	 * CLI-операция: $tag и пути приходят из аргументов оператора, а не из веб-запроса
+	 *
+	 * @psalm-suppress TaintedInput
 	 */
 	public function setUpdates(string $tag)
 	{

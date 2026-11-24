@@ -524,8 +524,16 @@ class CartUtils
 		$cartSummary = $this->getCartSummary();
 		if (!empty($cartSummary['delivery']['extension'])) {
 			$className = "\WeppsExtensions\\Cart\\Delivery\\{$cartSummary['delivery']['extension']}\\{$cartSummary['delivery']['extension']}";
+			if (!class_exists($className)) {
+				return ['html' => '', 'errors' => []];
+			}
 			/**
 			 * @var \WeppsExtensions\Cart\Delivery\Delivery $class
+			 *
+			 * Имя класса — из конфигурации способа доставки (DeliveryExt в БД),
+			 * class_exists() выше отсекает посторонние значения
+			 *
+			 * @psalm-suppress TaintedInput
 			 */
 			$class  = new $className([], $this);
 			$errors = $class->getErrors($get);

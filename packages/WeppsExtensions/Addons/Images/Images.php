@@ -72,11 +72,13 @@ class Images
 	function __construct($get)
 	{
 		$this->get = Utils::trim($get);
-		$filename = (isset($this->get['fileUrl'])) ? ltrim(str_replace('\\', '/', $this->get['fileUrl']), '/') : '';
-		$action = (isset($this->get['pref'])) ? $this->get['pref'] : '';
+		$rawUrl = (isset($this->get['fileUrl'])) ? ltrim(str_replace('\\', '/', (string) $this->get['fileUrl']), '/') : '';
+		// Относительный путь без .. и посторонних символов — защита от path traversal
+		$filename = Utils::safeRelPath($rawUrl) ?? '';
+		$action = (isset($this->get['pref'])) ? (string) $this->get['pref'] : '';
 		$root = dirname(__DIR__, 4);
 		$rootfilename = $root . DIRECTORY_SEPARATOR . $filename;
-		if (!is_file($rootfilename)) {
+		if ($filename === '' || !is_file($rootfilename)) {
 			Exception::error(404);
 		}
 		$res = Connect::$instance->fetch("select * from s_Files where FileType like 'image/%' and FileUrl=?", ['/' . $filename]);

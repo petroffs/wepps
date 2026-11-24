@@ -66,6 +66,8 @@ class Blocks extends Extension
 					if (empty($value['Template'])) {
 						$this->tpl .= $smarty->fetch('packages/WeppsExtensions/Template/Blocks/Blocks.tpl');
 					} else {
+						// class_exists выше: класс из внутреннего реестра блоков
+						/** @psalm-suppress TaintedInput */
 						$extension = new $extensionClass($this->navigator, $this->headers);
 						$this->tpl .= $extension->tpl;
 					}

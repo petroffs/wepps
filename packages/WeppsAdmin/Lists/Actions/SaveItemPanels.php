@@ -46,18 +46,22 @@ class SaveItemPanels extends Request
 					'PanelId' => $this->element['Id'],
 				]);
 			}
-			if (!empty($this->element['Template']) && $this->isStrictLatin($this->element['Template'], 'Error: Template name must be in strict Latin format') === '') {
+			if (!empty($this->element['Template']) && $this->isStrictLatin($this->element['Template'], 'Error: Template name must be in strict Latin format') === '' && preg_match('/^[A-Z][a-zA-Z0-9]*$/D', (string) $this->element['Template']) === 1) {
+				$tpl = Utils::safeRelPath((string) $this->element['Template']) ?? '';
+				if ($tpl === '') {
+					return;
+				}
 				$source = Connect::$projectDev['root'] . '/packages/WeppsExtensions/Template/Blocks/Example';
-				$target = Connect::$projectDev['root'] . '/packages/WeppsExtensions/Template/Blocks/' . $this->element['Template'];
+				$target = Connect::$projectDev['root'] . '/packages/WeppsExtensions/Template/Blocks/' . $tpl;
 				if (is_dir($source) && !is_dir($target)) {
 					mkdir($target, 0775, true);
 					foreach (scandir($source) as $file) {
 						if ($file == '.' || $file == '..')
 							continue;
 						$content = file_get_contents($source . '/' . $file);
-						$content = str_replace('-example', '-' . strtolower($this->element['Template']), $content);
-						$content = str_replace('Example', $this->element['Template'], $content);
-						$newFileName = str_replace('Example', $this->element['Template'], $file);
+						$content = str_replace('-example', '-' . strtolower($tpl), $content);
+						$content = str_replace('Example', $tpl, $content);
+						$newFileName = str_replace('Example', $tpl, $file);
 						file_put_contents($target . '/' . $newFileName, $content);
 					}
 				}

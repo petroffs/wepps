@@ -92,7 +92,12 @@ class RequestUploads extends Request
 				/*
 				 * Получить содержимое файла для дальнейшей обработки
 				 */
-				$inputFileName = Connect::$projectDev['root'] . $files[0]['FileUrl'];
+				// Файл из БД: относительный путь без .. — чтение только внутри корня
+				$relFile = Utils::safeRelPath(ltrim((string) $files[0]['FileUrl'], '/')) ?? '';
+				if ($relFile === '') {
+					AdminUtils::modal('Ошибка : Файл не найден');
+				}
+				$inputFileName = Connect::$projectDev['root'] . $relFile;
 				$spreadsheet = IOFactory::load($inputFileName);
 				$sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 				$sheetTitle = $spreadsheet->getActiveSheet()->getTitle();
@@ -102,6 +107,8 @@ class RequestUploads extends Request
 				 */
 				if (!empty($source['Alias'])) {
 					$class = "WeppsAdmin\\ConfigExtensions\\Uploads\\" . $source['Alias'];
+					// Alias — из внутренней конфигурации загрузок
+					/** @psalm-suppress TaintedInput */
 					$uploadObj = new $class(['title' => $sheetTitle, 'data' => $sheetData]);
 					$response = $uploadObj->setData();
 				} else {

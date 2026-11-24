@@ -606,6 +606,8 @@ class Lists
 		if (isset($listSettings['ActionModify']) && $listSettings['ActionModify'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionModify']);
 			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
+			// Имя класса — из внутренней конфигурации списка (поле ActionModify в s_Config)
+			/** @psalm-suppress TaintedInput */
 			$addActionRequest = new $addActionClass(['listSettings' => $listSettings, 'listScheme' => $listScheme, 'element' => $row]);
 		}
 		$path = "/_wepps/lists/{$list}/{$id}/";
@@ -704,9 +706,17 @@ class Lists
 				return array('error' => $errors[$filesfield], 'js' => $outer['html']);
 			}
 
-			$filepathinfo = pathinfo($value['name']);
-			$filepathinfo['filename'] = strtolower(TextTransforms::translit($filepathinfo['filename'], 2));
-			$fileurl = "/packages/WeppsAdmin/Admin/Forms/uploads/{$filepathinfo['filename']}-" . date("U") . ".{$filepathinfo['extension']}";
+			$filepathinfo = pathinfo((string) $value['name']);
+			// Имя из загрузки: транслит + safeRelPath — путь не покидает папку uploads
+			// (safeRelPath снимает file/ssrf-taint)
+			$base = Utils::safeRelPath(strtolower(TextTransforms::translit($filepathinfo['filename'], 2))) ?? '';
+			$ext = Utils::safeRelPath((string) ($filepathinfo['extension'] ?? '')) ?? '';
+			if ($base === '') {
+				$errors[$filesfield] = "Некорректное имя файла";
+				$outer = Validator::setFormErrorsIndicate($errors, $myform);
+				return array('error' => $errors[$filesfield], 'js' => $outer['html']);
+			}
+			$fileurl = "/packages/WeppsAdmin/Admin/Forms/uploads/{$base}-" . date("U") . ($ext !== '' ? ".{$ext}" : '');
 			$filedest = "{$root}{$fileurl}";
 			move_uploaded_file($value['tmp_name'], $filedest);
 			if (!isset($_SESSION['uploads'][$myform][$filesfield])) {
@@ -738,15 +748,20 @@ class Lists
 		if ($filename == '') {
 			foreach ($_SESSION['uploads']['list-data-form'][$field] as $key => $value) {
 				unset($_SESSION['uploads']['list-data-form'][$field][$key]);
-				if (is_file($_SERVER["DOCUMENT_ROOT"] . $value['url']))
+				// url собран из санитизированного имени при записи; запрет .. как второй барьер
+				if (!str_contains((string) ($value['url'] ?? ''), '..') && is_file($_SERVER["DOCUMENT_ROOT"] . $value['url'])) {
+					/** @psalm-suppress TaintedInput */
 					unlink($_SERVER["DOCUMENT_ROOT"] . $value['url']);
+				}
 			}
 		} else {
 			foreach ($_SESSION['uploads']['list-data-form'][$field] as $key => $value) {
 				if ($value['url'] == $filename) {
 					unset($_SESSION['uploads']['list-data-form'][$field][$key]);
-					if (is_file($_SERVER["DOCUMENT_ROOT"] . $value['url']))
+					if (!str_contains((string) ($value['url'] ?? ''), '..') && is_file($_SERVER["DOCUMENT_ROOT"] . $value['url'])) {
+						/** @psalm-suppress TaintedInput */
 						unlink($_SERVER["DOCUMENT_ROOT"] . $value['url']);
+					}
 					break;
 				}
 			}
@@ -978,7 +993,12 @@ class Lists
 					$file['FileDate'] = date('Y-m-d H:i:s');
 					$file['TableNameId'] = $newId;
 
-					if (is_file(Connect::$projectDev['root'] . $value['FileUrl'])) {
+					// Путь из БД (имена генерируются при загрузке: транслит+дата):
+					// запрет .. в обоих путях + существующий is_file как шлюз
+					if (!str_contains((string) $value['FileUrl'], '..') && !str_contains((string) $file['FileUrl'], '..')
+						&& is_file(Connect::$projectDev['root'] . $value['FileUrl'])) {
+						// Остаточный taint — артефакт глобальной модели БД psalm
+						/** @psalm-suppress TaintedInput */
 						copy(Connect::$projectDev['root'] . $value['FileUrl'], Connect::$projectDev['root'] . $file['FileUrl']);
 						$objFiles->add($file);
 					}
@@ -1044,6 +1064,8 @@ class Lists
 		if (isset($listSettings['ActionDrop']) && $listSettings['ActionDrop'] != '') {
 			$addAction = str_replace(".php", "", $listSettings['ActionDrop']);
 			$addActionClass = "\WeppsAdmin\\Lists\\Actions\\{$addAction}";
+			// Имя класса — из внутренней конфигурации списка (поле ActionDrop в s_Config)
+			/** @psalm-suppress TaintedInput */
 			$addActionRequest = new $addActionClass(array('listSettings' => $listSettings, 'id' => $id));
 		}
 
