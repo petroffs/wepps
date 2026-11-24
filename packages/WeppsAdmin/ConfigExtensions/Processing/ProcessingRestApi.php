@@ -34,7 +34,7 @@ class ProcessingRestApi
 			WHEN `FType` = 'date' THEN 'date'
 			WHEN `FType` = 'email' THEN 'email'
 			WHEN `FType` = 'json' THEN 'json'
-			WHEN `FType` = 'digit' THEN 'string' -- В основном для финансовых даннвх, поэтому оставляем как string, чтобы не было проблем с точностью
+			WHEN `FType` = 'digit' THEN 'string' -- финансовые данные: string ради точности
 			ELSE 'string'
 		END
 		WHERE ApiFieldType IS NULL OR ApiFieldType = ''";
@@ -42,7 +42,9 @@ class ProcessingRestApi
 	}
 	public function mappingNames(): void
 	{
-		$sql = "SELECT Id, TableField FROM s_ConfigFields WHERE ApiMapping IS NULL OR ApiMapping = '' ORDER BY TableName, TableField";
+		$sql = "SELECT Id, TableField FROM s_ConfigFields
+			WHERE ApiMapping IS NULL OR ApiMapping = ''
+			ORDER BY TableName, TableField";
 		$fields = Connect::$instance->fetch($sql);
 
 		if (empty($fields)) {
@@ -59,7 +61,7 @@ class ProcessingRestApi
 
 	/**
 	 * Преобразует имя поля БД в camelCase формат для REST API
-	 * 
+	 *
 	 * @param string $key Имя поля из БД
 	 * @return string Преобразованное имя в camelCase
 	 */
@@ -80,7 +82,7 @@ class ProcessingRestApi
 
 	/**
 	 * Сканирует папку .tools/bruno/WeppsPlatformV1/clientM2M и возвращает структурированный список .bru файлов
-	 * 
+	 *
 	 * @param string $type 'get' для GET запросов (source) или 'not_get' для остальных (destination)
 	 * @return array Массив с группировкой: ['goods' => ['goods.get.bru' => 'goods/goods.get.bru', ...], ...]
 	 */
@@ -165,18 +167,18 @@ class ProcessingRestApi
 		if (empty($source) || $destination === [] || empty($m2mToken)) {
 			throw new \Exception('Источник, назначение и токен M2M должны быть выбраны и заполнены');
 		}
-		
+
 
 
 		// Получаем путь к папке clientM2M
-		$platformRoot = Connect::$projectDev['root']??'';
+		$platformRoot = Connect::$projectDev['root'] ?? '';
 		$clientM2MPath = $platformRoot . '/.tools/bruno/WeppsPlatformV1/clientM2M';
-		
+
 		// Проверяем, что папка существует
 		if (!is_dir($clientM2MPath)) {
 			throw new \Exception('Папка clientM2M не найдена: ' . $clientM2MPath);
 		}
-		
+
 		// Источник из запроса: относительный путь без .. — чтение/mkdir только внутри clientM2M
 		$source = Utils::safeRelPath($source) ?? '';
 		if ($source === '') {
@@ -186,7 +188,7 @@ class ProcessingRestApi
 		$sourcePathParts = explode('/', $source);
 		$sourceGroup = $sourcePathParts[0] ?? 'root';
 		$sourceFilename = array_pop($sourcePathParts) ?? '';
-		
+
 		// Извлекаем имя метода из source (например "goods.get.bru" → "get")
 		$sourceMethodMatch = [];
 		if (preg_match('/\.(\w+)\.bru$/', $sourceFilename, $sourceMethodMatch)) {
@@ -194,7 +196,7 @@ class ProcessingRestApi
 		} else {
 			throw new \Exception('Некорректное имя source файла: ' . $sourceFilename);
 		}
-		
+
 		// Проверяем что это GET запрос
 		if ($sourceMethod !== 'GET') {
 			throw new \Exception('Исходный запрос должен быть GET, получено: ' . $sourceMethod);
@@ -205,7 +207,7 @@ class ProcessingRestApi
 		if (!file_exists($bruFilePath)) {
 			throw new \Exception('Файл запроса не найден: ' . $bruFilePath);
 		}
-		
+
 		// Получаем base_url ПЕРЕД чтением .bru файла
 		$baseUrl = $this->getBaseUrlFromBruEnvironment($clientM2MPath);
 		if (empty($baseUrl)) {
@@ -219,17 +221,17 @@ class ProcessingRestApi
 			}
 			$baseUrl = $scheme . '://' . $host;
 		}
-		
+
 		// Читаем содержимое .bru файла
 		$bruContent = file_get_contents($bruFilePath);
-		
+
 		// Извлекаем URL из .bru файла (может содержать {{base_url}})
 		$urlFromBru = $this->extractUrlFromBru($bruContent);
-		
+
 		if (empty($urlFromBru)) {
 			throw new \Exception('Не удалось извлечь URL из файла: ' . $sourceFilename);
 		}
-		
+
 		// Заменяем переменные {{base_url}} на реальное значение
 		if (strpos($urlFromBru, '{{base_url}}') !== false) {
 			$fullUrl = str_replace('{{base_url}}', $baseUrl, $urlFromBru);
@@ -238,16 +240,16 @@ class ProcessingRestApi
 			$urlPath = parse_url($urlFromBru, PHP_URL_PATH) ?: $urlFromBru;
 			$fullUrl = rtrim($baseUrl, '/') . '/' . ltrim($urlPath, '/');
 		}
-		
+
 		// Отправляем GET запрос
 		$data = $this->performGetRequest($fullUrl, $m2mToken);
-		
+
 		// Создаем папку .tests если не существует
 		$testsPath = $clientM2MPath . '/.tests/' . $sourceGroup;
 		if (!is_dir($testsPath)) {
 			mkdir($testsPath, 0755, true);
 		}
-		
+
 		// Для каждого destination создаём template
 		foreach ($destination as $destFile) {
 			$this->createTestFromSource($destFile, $data, $clientM2MPath, $testsPath);
@@ -270,21 +272,21 @@ class ProcessingRestApi
 		}
 
 		$destMethod = strtoupper($destMethodMatch[1]); // "POST", "PUT", "DELETE"
-		
+
 		// Извлекаем ресурс (например "goods.post.bru" → "goods")
 		$resourceName = preg_replace('/\.(get|post|put|delete|patch)\.bru$/i', '', $destFilename);
-		
 
-		
+
+
 		// Получаем список требуемых полей для этого метода
 		$requiredFields = $this->getRequiredFieldsForMethod($destMethod, $resourceName);
-		
+
 		// Если обязательных полей меньше 3 для POST/PUT - добавляем 2-е и 3-е поле из ответа
 		if (count($requiredFields) < 3 && in_array($destMethod, ['POST', 'PUT'])) {
 			if ($data !== [] && is_array($data[0])) {
 				$firstItem = $data[0];
 				$keys = array_keys($firstItem);
-				
+
 				// Пропускаем уже существующие требуемые поля и добавляем недостающие
 				foreach ($keys as $key) {
 					if (!in_array($key, $requiredFields) && count($requiredFields) < 3) {
@@ -293,10 +295,10 @@ class ProcessingRestApi
 				}
 			}
 		}
-		
+
 		// Фильтруем данные - оставляем только требуемые поля
 		$filteredData = $this->filterDataByRequiredFields($data, $requiredFields);
-		
+
 		// Имя destination из запроса: безопасное имя файла внутри .tests
 		$templateName = Utils::safeRelPath(preg_replace('/\.bru$/', '-template.json', (string) $destFilename)) ?? '';
 		if ($templateName === '') {
@@ -328,7 +330,7 @@ class ProcessingRestApi
 					$item = array_filter($item, fn($k) => $k !== 'id', ARRAY_FILTER_USE_KEY);
 					return ['data' => [$item]];
 				}
-				
+
 				// Для PUT - берем элемент с ID
 				$items = [];
 				if ($data !== []) {
@@ -374,17 +376,17 @@ class ProcessingRestApi
 			ob_start();
 			include $configPath;
 			ob_end_clean();
-			
+
 			if (!empty($projectSettings['Dev']['protocol']) && !empty($projectSettings['Dev']['host'])) {
 				// protocol может быть 'https://' или 'https', хост это 'platform.wepps'
 				$protocol = $projectSettings['Dev']['protocol'];
 			// Убираем ':' и '/' в конце если они есть
-			$protocol = rtrim($protocol, ':/');
+                $protocol = rtrim($protocol, ':/');
 				$host = $projectSettings['Dev']['host'];
 				return $protocol . '://' . $host;
 			}
 		}
-		
+
 		// 2. Fallback - читаем из local.bru
 		$localEnvPath = dirname($clientM2MPath) . '/environments/local.bru';
 		if (file_exists($localEnvPath)) {
@@ -393,7 +395,7 @@ class ProcessingRestApi
 				return trim($matches[1]);
 			}
 		}
-		
+
 		return '';
 	}
 
@@ -409,14 +411,14 @@ class ProcessingRestApi
 		//   url: {{base_url}}/rest/m2m/goods body: none
 		if (preg_match('/url\s*:\s*(.+?)(?:\s+\w+\s*:|$)/i', $bruContent, $matches)) {
 			$urlLine = trim($matches[1]);
-			
+
 			// Убираем пробелы и точку с запятой в конце
 			$urlLine = trim($urlLine, " \t\n\r\0\x0B;");
-			
+
 			// Возвращаем URL как есть (с переменными если они есть)
 			return $urlLine;
 		}
-		
+
 		return '';
 	}
 
@@ -424,7 +426,7 @@ class ProcessingRestApi
 	 * Выполняет GET запрос с токеном M2M
 	 *
 	 * URL собирается из локальных .bru-файлов проекта и валидированного
-	 * HTTP_HOST. Хост сверяется с allowlist Services.m2m.allowedHosts
+	 * HTTP_HOST. Хост сверяется с allowlist Services.api-m2m.allowedHosts
 	 * (config.php): пустой список — ограничений нет, при заданном списке
 	 * Dev.host разрешён всегда.
 	 *
@@ -432,7 +434,7 @@ class ProcessingRestApi
 	 */
 	private function performGetRequest(string $url, string $token): array
 	{
-		$allowedHosts = trim((string) (Connect::$projectServices['m2m']['allowedHosts'] ?? ''));
+		$allowedHosts = trim((string) (Connect::$projectServices['api-m2m']['allowedHosts'] ?? ''));
 		if ($allowedHosts !== '') {
 			$allowed = [strtolower((string) Connect::$projectDev['host'])];
 			foreach (explode(',', $allowedHosts) as $allowedHost) {
@@ -447,7 +449,7 @@ class ProcessingRestApi
 			}
 		}
 		$ch = curl_init($url);
-		
+
 		curl_setopt_array($ch, [
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_TIMEOUT => 10,
@@ -459,31 +461,31 @@ class ProcessingRestApi
 			CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_SSL_VERIFYHOST => false,
 		]);
-		
+
 		$response = curl_exec($ch);
 		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
-		
+
 		if ($httpCode !== 200) {
 			throw new \Exception("HTTP {$httpCode}");
 		}
-		
+
 		$data = json_decode((string) $response, true);
-		
+
 		if (!is_array($data)) {
 			throw new \Exception('Invalid JSON response');
 		}
-		
+
 		if (!isset($data['data']) || !is_array($data['data'])) {
 			throw new \Exception("Missing 'data' in response");
 		}
-		
+
 		return $data['data'];
 	}
 
 	/**
 	 * Получает список требуемых полей для метода из RestConfig
-	 * 
+	 *
 	 * @param string $method POST, PUT, DELETE
 	 * @param string $resourceName Название ресурса (goods, users, orders и т.д.)
 	 * @return array Массив названий требуемых полей
@@ -493,22 +495,22 @@ class ProcessingRestApi
 		try {
 			// Используем RestConfig для получения конфигурации
 			$restConfig = \WeppsExtensions\Addons\Rest\RestConfig::getConfig();
-			
+
 			// Путь в конфиге: m2m -> {method} -> {resourceName}
 			$methodLower = strtolower($method);
-			
+
 			if (!isset($restConfig['m2m'][$methodLower][$resourceName])) {
 				// Если конфига нет, возвращаем пустой массив (все поля допустимы)
 				return [];
 			}
-			
+
 			$config = $restConfig['m2m'][$methodLower][$resourceName];
-			
+
 			// Если нет validation, возвращаем все поля
 			if (!isset($config['validation']) || !is_array($config['validation'])) {
 				return [];
 			}
-			
+
 			// Собираем только требуемые поля
 			$requiredFields = [];
 			foreach ($config['validation'] as $fieldName => $fieldConfig) {
@@ -516,7 +518,7 @@ class ProcessingRestApi
 					$requiredFields[] = $fieldName;
 				}
 			}
-			
+
 			return $requiredFields;
 		} catch (\Exception $e) {
 			// Если что-то пошло не так, возвращаем пустой массив (используем все поля)
@@ -526,7 +528,7 @@ class ProcessingRestApi
 
 	/**
 	 * Фильтрует данные, оставляя только требуемые поля
-	 * 
+	 *
 	 * @param array $data Исходные данные (массив объектов)
 	 * @param array $requiredFields Список требуемых полей
 	 * @return array Отфильтрованные данные
@@ -537,27 +539,27 @@ class ProcessingRestApi
 		if ($requiredFields === []) {
 			return $data;
 		}
-		
+
 		// Фильтруем каждый элемент массива
 		$filtered = [];
 		foreach ($data as $item) {
 			if (!is_array($item)) {
 				continue;
 			}
-			
+
 			$filteredItem = [];
 			foreach ($requiredFields as $fieldName) {
 				if (isset($item[$fieldName])) {
 					$filteredItem[$fieldName] = $item[$fieldName];
 				}
 			}
-			
+
 			// Добавляем только если что-то осталось
 			if ($filteredItem !== []) {
 				$filtered[] = $filteredItem;
 			}
 		}
-		
+
 		return $filtered !== [] ? $filtered : $data;
 	}
 }
