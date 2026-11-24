@@ -26,7 +26,7 @@ class Payments
 	protected $settings;
     protected $cartUtils;
 	protected $paymentsUtils;
-	public function __construct(array $settings = [], CartUtils $cartUtils)
+	public function __construct(array $settings, CartUtils $cartUtils)
 	{
 		$this->settings = $settings;
 		$this->cartUtils = $cartUtils;

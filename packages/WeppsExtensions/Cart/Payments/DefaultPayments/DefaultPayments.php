@@ -24,7 +24,7 @@ use WeppsExtensions\Cart\Payments\Payments;
 
 class DefaultPayments extends Payments
 {
-	public function __construct(array $settings = [], CartUtils $cartUtils)
+	public function __construct(array $settings, CartUtils $cartUtils)
 	{
 		parent::__construct($settings, $cartUtils);
 	}

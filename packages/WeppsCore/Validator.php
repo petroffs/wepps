@@ -293,7 +293,7 @@ class Validator
 	 * @param string $form   ID элемента формы для отображения ошибок
 	 * @return array         Массив с данными об ошибках и HTML-скриптом
 	 */
-	public static function setFormErrorsIndicate(array $errors = [], string $form): array
+	public static function setFormErrorsIndicate(array $errors, string $form): array
 	{
 		$form = htmlspecialchars($form, ENT_QUOTES);
 		$str = "<script>\n";
