@@ -56,11 +56,11 @@ class Profile extends Extension
 			Utils::cookies('wepps_token','');
 			$jwt = new Jwt();
 			$payload = $jwt->token_decode($this->get['token']);
-			// ВНИМАНИЕ (найдено статикой): вероятный баг - в условии присваивание (=),
-			// а не сравнение: условие всегда истинно, status принудительно становится 200.
-			// Поведение сохранено намеренно, исправление обсудить отдельно.
-			/** @psalm-suppress RedundantCondition */
-			if ($payload['payload']['status'] = 200) {
+			// Фикс бага: было присваивание в условии (= 200 — всегда истинно, плюс
+			// мутация payload). Сравниваем результат декодирования токена: 200 = ок,
+			// 401/400 = протух/битый, 403 = нет токена. Внутри payload status нет —
+			// он верхнего уровня в token_decode().
+			if ($payload['status'] === 200) {
 				switch ($payload['payload']['typ']) {
 					case 'pass':
 						$user = @Connect::$instance->fetch('SELECT * from s_Users where Id=? and IsHidden=0', [$payload['payload']['id']])[0];
