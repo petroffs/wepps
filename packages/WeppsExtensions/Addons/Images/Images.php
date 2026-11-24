@@ -55,7 +55,7 @@ class Images
 	private $mime;
 	/** @var string MIME-тип результата */
 	private $outputMime;
-	/** @var float|int Соотношение сторон исходника */
+	/** @var float Соотношение сторон исходника (присваивается только как результат деления) */
 	private $ratio = 0.00;
 	/** @var float|int Ширина исходника */
 	private $width = 0;
@@ -103,7 +103,7 @@ class Images
 		}
 		$this->mime = $size['mime'];
 		$this->outputMime = $this->resolveOutputMime($this->mime);
-		$this->ratio = $size[0] / $size[1];
+		$this->ratio = (float) ($size[0] / $size[1]);
 
 		/*
 		 * Проверка на наличие установочных параметров для ресайза/кропа
@@ -168,10 +168,10 @@ class Images
 		 */
 
 		if ($side > 0) {
-			$side = (is_numeric($side) && $side > 0) ? $side : 100;
-			$side = ($side > 1920) ? 1920 : $side;
-			$this->widthDst = ($this->ratio >= 1) ? $side : $side * $this->ratio;
-			$this->heightDst = ($this->ratio >= 1) ? $side / $this->ratio : $side;
+			// $side числовой и не больше 1920 по типу (600|1280 из switch) —
+			// прежние проверки is_numeric/>0/>1920 были дублирующими
+			$this->widthDst = ($this->ratio >= 1) ? $side : (float) $side * $this->ratio;
+			$this->heightDst = ($this->ratio >= 1) ? (float) $side / $this->ratio : $side;
 		}
 
 		$source = $this->createSourceImage($rootfilename);
@@ -187,14 +187,14 @@ class Images
 			}
 			$this->width = round($this->width);
 			$this->height = round($this->height);
-			$target = imagecreatetruecolor($this->width, $this->height);
+			$target = imagecreatetruecolor((int) $this->width, (int) $this->height);
 			$target = $this->imagefill($target);
-			$target2 = imagecreatetruecolor($this->widthDst, $this->heightDst);
+			$target2 = imagecreatetruecolor((int) $this->widthDst, (int) $this->heightDst);
 			$target2 = $this->imagefill($target2);
-			$newX = round(($this->widthDst - $this->width) / 2);
-			$newY = round(($this->heightDst - $this->height) / 2);
-			imagecopyresampled($target, $source, 0, 0, 0, 0, $this->width, $this->height, $size[0], $size[1]);
-			imagecopy($target2, $target, $newX, $newY, 0, 0, $this->width, $this->height);
+			$newX = round(((float) $this->widthDst - $this->width) / 2.0);
+			$newY = round(((float) $this->heightDst - $this->height) / 2.0);
+			imagecopyresampled($target, $source, 0, 0, 0, 0, (int) $this->width, (int) $this->height, $size[0], $size[1]);
+			imagecopy($target2, $target, (int) $newX, (int) $newY, 0, 0, (int) $this->width, (int) $this->height);
 			$this->target = $target2;
 			$this->source = $source;
 			return;
@@ -203,9 +203,9 @@ class Images
 		/*
 		 * Сохранение для вывода
 		 */
-		$target = imagecreatetruecolor($this->widthDst, $this->heightDst);
+		$target = imagecreatetruecolor((int) $this->widthDst, (int) $this->heightDst);
 		$target = $this->imagefill($target);
-		imagecopyresampled($target, $source, 0, 0, 0, 0, $this->widthDst, $this->widthDst / $this->ratio, $size[0], $size[1]);
+		imagecopyresampled($target, $source, 0, 0, 0, 0, (int) $this->widthDst, (int) ((float) $this->widthDst / $this->ratio), $size[0], $size[1]);
 		$this->target = $target;
 		$this->source = $source;
 		return;
@@ -401,14 +401,14 @@ class Images
 		if ($size === false || empty($size[0]) || empty($size[1])) {
 			Exception::error(500);
 		}
-		$ratio = $size[0] / $size[1];
+		$ratio = (float) ($size[0] / $size[1]);
 
 		/*
 		 * Уменьшить штамп
 		 */
 		$width = $size[0];
-		$height = $width / $ratio;
-		$thumb = imagecreatetruecolor($width, $height);
+		$height = (float) $width / $ratio;
+		$thumb = imagecreatetruecolor($width, (int) $height);
 		$background = imagecolorallocatealpha($thumb, 255, 255, 255, 127);
 		imagecolortransparent($thumb, $background);
 		imagealphablending($thumb, false);
@@ -416,13 +416,13 @@ class Images
 
 		// Рассчитать размеры штампа на основе меньшей размерности целевого изображения
 		$minDimension = min($this->widthDst, $this->heightDst);
-		$width = $minDimension * 0.15;
+		$width = (float) $minDimension * 0.15;
 		$height = $width / $ratio;
 
 		$width = round($width);
 		$height = round($height);
 
-		imagecopyresampled($thumb, $target, 0, 0, 0, 0, $width, $height, $size[0], $size[1]);
+		imagecopyresampled($thumb, $target, 0, 0, 0, 0, (int) $width, (int) $height, $size[0], $size[1]);
 		$target = $thumb;
 		$gap = $width * $gap;
 		switch ($x) {
@@ -430,11 +430,11 @@ class Images
 				$posX = $gap;
 				break;
 			case 'center':
-				$posX = $this->widthDst / 2 - $width / 2;
+				$posX = (float) $this->widthDst / 2.0 - $width / 2.0;
 				break;
 			case 'right':
 			default:
-				$posX = $this->widthDst - $width - $gap;
+				$posX = (float) $this->widthDst - $width - $gap;
 				break;
 		}
 		switch ($y) {
@@ -442,26 +442,30 @@ class Images
 				$posY = $gap;
 				break;
 			case 'center':
-				$posY = $this->heightDst / 2 - $height / 2;
+				$posY = (float) $this->heightDst / 2.0 - $height / 2.0;
 				break;
 			case 'bottom':
 			default:
-				$posY = $this->heightDst - $height - $gap;
+				$posY = (float) $this->heightDst - $height - $gap;
 				break;
 		}
 		$posX = round($posX);
 		$posY = round($posY);
-		imagecopy($this->target, $target, $posX, $posY, 0, 0, $width, $height);
+		imagecopy($this->target, $target, (int) $posX, (int) $posY, 0, 0, (int) $width, (int) $height);
 	}
 	/**
 	 * Заполняет целевой ресурс фоном, учитывая прозрачность для PNG и белый фон
 	 * для остальных форматов.
 	 *
-	 * @param resource $target Ресурс изображения, созданный через `imagecreatetruecolor`
-	 * @return resource Заполненный ресурс
+	 * @param \GdImage|false $target Изображение из `imagecreatetruecolor`
+	 * @return \GdImage То же изображение с залитым фоном
 	 */
 	private function imagefill($target)
 	{
+		if ($target === false) {
+			// PHP 8: GD-функции принимают GdImage; false здесь означает сбой выделения памяти
+			Exception::error(404);
+		}
 		switch ($this->mime) {
 			case "image/png":
 				imagealphablending($target, false);

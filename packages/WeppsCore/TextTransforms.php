@@ -33,7 +33,7 @@ class TextTransforms {
 	 */
 	public static function ending1(string $string,int $count) : string {
 		$tmp1 = $count;
-		$tmp2 = substr ( $tmp1, - 1 );
+		$tmp2 = substr ((string) $tmp1, - 1 );
 		
 		$suffix = "а";
 		if ($tmp2 == 0 || ($tmp2 >= 5 && $tmp2 <= 9) || ($tmp1 >= 11 && $tmp1 <= 19)) {
@@ -54,7 +54,7 @@ class TextTransforms {
 	 */
 	public static function ending2(string $string,int $count) : string {
 		$tmp1 = $count;
-		$tmp2 = substr($tmp1,-1);
+		$tmp2 = substr((string) $tmp1,-1);
 		$output = "";
 		if ($tmp2 == 0 || ($tmp2 >= 5 && $tmp2 <= 9) || ($tmp1 >= 11 && $tmp1 <= 19)) {
 			$output = "ов";
@@ -78,12 +78,12 @@ class TextTransforms {
 			$string = str_replace("от ","",$string);
 		}
 		if ($view==1) {
-			return number_format($string,2,".","");
+			return number_format((float) $string,2,".","");
 		}
 		if (is_numeric($string)) {
-			return $tmp.number_format($string,0,","," ");
+			return $tmp.number_format((float) $string,0,","," ");
 		}
-		return 0;
+		return '0';
 	}
 
 	/**
@@ -114,10 +114,10 @@ class TextTransforms {
 				"декабря" 
 		);
 		$dateD = $matches [3];
-		$dateM = $month [$matches [2] - 1];
+		$dateM = $month [(int) $matches [2] - 1];
 		$dateY = $matches [1];
 		if ($plusyear == 1) {
-			$timestamp = mktime ( 0, 0, 0, $matches [2], $matches [3], $matches [1] + 1 );
+			$timestamp = mktime ( 0, 0, 0, (int) $matches [2], (int) $matches [3], (int) $matches [1] + 1 );
 			$date = date ( "Y-m-d", $timestamp );
 			return self::date ( $date );
 		}
@@ -240,13 +240,13 @@ class TextTransforms {
 		);
 
 		// Нормализация значения, избавляемся от ТОЧКИ, например 6754321.67 переводим в 7654321067
-		$tmp = explode ( '.', str_replace ( ',', '.', $inn ) );
+		$tmp = explode ( '.', str_replace ( ',', '.', (string) $inn ) );
 		$rub = $tmp [0]; // рубли
 		$kop = isset ( $tmp [1] ) ? str_pad ( str_pad ( $tmp [1], 2, '0' ), 3, '0', STR_PAD_LEFT ) : '000'; // копейки
 		$rub .= $kop; // нормализованное значение
 		              
 		// Поехали!
-		$levels = explode ( '-', number_format ( $rub, 0, '', '-' ) );
+		$levels = explode ( '-', number_format ( (float) $rub, 0, '', '-' ) );
 		$offset = count ( $levels ) - 1;
 		foreach ( $levels as $k => $level ) {
 			$index = $offset - $k;
@@ -266,7 +266,7 @@ class TextTransforms {
 			} else {
 				$o [] = ($tmp > 10 ? $str11 [$tmp] : $str [$forms [$index] [3]] [$tmp]);
 			}
-			$tmp_o = self::pluralForm ( $level, $forms [$index] [0], $forms [$index] [1], $forms [$index] [2] );
+			$tmp_o = self::pluralForm ( (int) $level, $forms [$index] [0], $forms [$index] [1], $forms [$index] [2] );
 			if (! empty ( $tmp_o ))
 				$o [] = $tmp_o;
 		}
@@ -324,9 +324,8 @@ class TextTransforms {
 			$transliterator = \Transliterator::create('Any-Latin; Latin-ASCII');
 			if ($transliterator instanceof \Transliterator) {
 				$result = $transliterator->transliterate($string);
-				if ($result !== null) {
-					$str = $result;
-				}
+				// transliterate() возвращает string|false и никогда null — проверка была мёртвой
+				$str = $result;
 			}
 		}
 		if ($str === $string) {
