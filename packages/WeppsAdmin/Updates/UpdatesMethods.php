@@ -78,13 +78,19 @@ class UpdatesMethods extends Updates
 	/**
 	 * Загружает список релизов с удалённого `releases.json` и помечает текущий.
 	 *
-	 * @return array Массив с ключами: 'releases','list','output','version' или 'output' с ошибкой
+	 * Контракт: ВСЕГда возвращает полный набор ключей 'releases','list',
+	 * 'output','version' — при ошибке загрузки 'releases' пуст, 'output'
+	 * содержит причину. Раньше ошибочные возвраты содержали только 'output',
+	 * и вызывающий код падал с TypeError на in_array($tag, null).
+	 *
+	 * @return array Массив с ключами: 'releases','list','output','version'
 	 */
 	public function getReleasesList(): array
 	{
 		// Проверка empty($filename) удалена: суффикс "/releases.json" конкатенируется
 		// всегда, поэтому выражение не могло быть пустым и ветка была недостижима
 		$filename = @Connect::$projectServices['wepps']['updates'] . "/releases.json";
+		$current = $this->getReleaseCurrentVersion();
 		$arrContextOptions = [
 			"ssl" => [
 				"verify_peer" => false,
@@ -94,14 +100,19 @@ class UpdatesMethods extends Updates
 		$json = @file_get_contents($filename, false, stream_context_create($arrContextOptions));
 		if (empty($json)) {
 			return [
-				'output' => 'Wrong settings weppsurl'
+				'releases' => [],
+				'list' => [],
+				'output' => 'Wrong settings weppsurl',
+				'version' => $current
 			];
 		}
-		$current = $this->getReleaseCurrentVersion();
 		$jdata = $jdata2 = json_decode($json, true);
 		if (empty($jdata)) {
 			return [
-				'output' => 'Wrong settings url: ' . $filename
+				'releases' => [],
+				'list' => [],
+				'output' => 'Wrong settings url: ' . $filename,
+				'version' => $current
 			];
 		}
 		$index = 0;
@@ -138,6 +149,15 @@ class UpdatesMethods extends Updates
 	public function setUpdates(string $tag)
 	{
 		$releases = $this->getReleasesList();
+		if (empty($releases['releases'])) {
+			/*
+			 * Список не получен (сеть/JSON) — сообщаем причину загрузки,
+			 * а не маскируем её под "Wrong tag"
+			 */
+			return [
+				'output' => $releases['output'] ?? 'Cannot get releases list'
+			];
+		}
 		if (!in_array($tag, $releases['releases']) || $releases['version'] == $tag) {
 			return [
 				'output' => "Wrong tag"
@@ -379,7 +399,11 @@ class UpdatesMethods extends Updates
 		if (!is_file($fileMD5)) {
 			return '';
 		}
-		$jdata = json_decode(file_get_contents($this->filename), true);
+		/*
+		 * Локального md5.conf может не быть (свежая установка) — раньше
+		 * file_get_contents здесь давал Warning в вывод
+		 */
+		$jdata = is_file($this->filename) ? json_decode(file_get_contents($this->filename), true) : [];
 		$jrelease = json_decode(file_get_contents($fileMD5), true);
 		if (empty($jdata['db']) || empty($jrelease['db'])) {
 			return '';
